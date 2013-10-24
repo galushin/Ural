@@ -1,0 +1,4 @@
+# depslib dependency file v1.0
+1382600878 source:c:\devtools\ural_repo\ural\ural_test\main.cpp
+	<boost/test/unit_test.hpp>
+

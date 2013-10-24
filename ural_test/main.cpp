@@ -1,8 +1,8 @@
-#include <iostream>
+#define BOOST_TEST_MAIN
+#include <boost/test/unit_test.hpp>
 
-using namespace std;
-
-int main()
+BOOST_AUTO_TEST_CASE(assert_true)
 {
-    return 0;
+    BOOST_CHECK(true);
 }
+//------------------------------------------------------------------------------
