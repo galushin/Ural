@@ -4,13 +4,53 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
 <body>
 <tt>
-Build started on: <u>24-10-2013 at 15:48.41</u><br />
-Build ended on: <u>24-10-2013 at 15:48.44</u><p />
+Build started on: <u>24-10-2013 at 17:53.07</u><br />
+Build ended on: <u>24-10-2013 at 17:53.08</u><p />
 <b>-------------- Build: Debug in ural_test (compiler: GNU GCC Compiler)---------------</b><br />
-g++.exe  -o bin\Debug\ural_test.exe obj\Debug\main.o   C:\DevTools\boost_1_54_0\stage\lib\libboost_unit_test_framework-mgw48-mt-d-1_54.a<br />
-Output file is bin\Debug\ural_test.exe with size 7.92 MB<br />
-<font color="#0000ff">Process terminated with status 0 (0 minute(s), 3 second(s))</font><br />
-<font color="#0000ff">0 error(s), 0 warning(s) (0 minute(s), 3 second(s))</font><br />
+g++.exe -Wall -fexceptions -g -Wmain -Wextra -Wall -std=gnu++0x -Wno-switch-default -Wno-unused-local-typedefs -IC:\DevTools\ural_repo\Ural\ -IC:\DevTools\boost_1_53_0 -c C:\DevTools\ural_repo\Ural\tests\iterator_sequence_test.cpp -o obj\Debug\tests\iterator_sequence_test.o<br />
+In file included from C:\DevTools\ural_repo\Ural/ural/algorithm.hpp:6:0,<br />
+                 from C:\DevTools\ural_repo\Ural\tests\iterator_sequence_test.cpp:4:<br />
+<font color="#0000ff">C:\DevTools\ural_repo\Ural/ural/algorithm/details/copy.hpp: In instantiation of 'ural::tuple&lt;Input, Output&gt; ural::details::copy(Input, Output) [with Input = ural::iterator_sequence&lt;__gnu_cxx::__normal_iterator&lt;const int*, std::vector&lt;int&gt; &gt; &gt;; Output = ural::iterator_sequence&lt;__gnu_cxx::__normal_iterator&lt;int*, std::vector&lt;int&gt; &gt; &gt;]':</font><br />
+<font color="#0000ff">C:\DevTools\ural_repo\Ural\tests\iterator_sequence_test.cpp:13:63:   required from here</font><br />
+<font color="#ff0000">C:\DevTools\ural_repo\Ural/ural/algorithm/details/copy.hpp:14:24: error: no match for 'operator!' (operand type is 'ural::iterator_sequence&lt;__gnu_cxx::__normal_iterator&lt;int*, std::vector&lt;int&gt; &gt; &gt;')</font><br />
+         for(; !!in &amp;&amp; !!out; ++ in, ++ out)<br />
+                        ^<br />
+C:\DevTools\ural_repo\Ural/ural/algorithm/details/copy.hpp:14:24: note: candidate is:<br />
+C:\DevTools\ural_repo\Ural/ural/algorithm/details/copy.hpp:14:24: note: operator!(bool) &lt;built-in&gt;<br />
+C:\DevTools\ural_repo\Ural/ural/algorithm/details/copy.hpp:14:24: note:   no known conversion for argument 1 from 'ural::iterator_sequence&lt;__gnu_cxx::__normal_iterator&lt;int*, std::vector&lt;int&gt; &gt; &gt;' to 'bool'<br />
+<font color="#ff0000">C:\DevTools\ural_repo\Ural/ural/algorithm/details/copy.hpp:14:16: error: no match for 'operator!' (operand type is 'ural::iterator_sequence&lt;__gnu_cxx::__normal_iterator&lt;const int*, std::vector&lt;int&gt; &gt; &gt;')</font><br />
+         for(; !!in &amp;&amp; !!out; ++ in, ++ out)<br />
+                ^<br />
+C:\DevTools\ural_repo\Ural/ural/algorithm/details/copy.hpp:14:16: note: candidate is:<br />
+C:\DevTools\ural_repo\Ural/ural/algorithm/details/copy.hpp:14:16: note: operator!(bool) &lt;built-in&gt;<br />
+C:\DevTools\ural_repo\Ural/ural/algorithm/details/copy.hpp:14:16: note:   no known conversion for argument 1 from 'ural::iterator_sequence&lt;__gnu_cxx::__normal_iterator&lt;const int*, std::vector&lt;int&gt; &gt; &gt;' to 'bool'<br />
+<font color="#ff0000">C:\DevTools\ural_repo\Ural/ural/algorithm/details/copy.hpp:14:30: error: no match for 'operator++' (operand type is 'ural::iterator_sequence&lt;__gnu_cxx::__normal_iterator&lt;const int*, std::vector&lt;int&gt; &gt; &gt;')</font><br />
+         for(; !!in &amp;&amp; !!out; ++ in, ++ out)<br />
+                              ^<br />
+<font color="#ff0000">C:\DevTools\ural_repo\Ural/ural/algorithm/details/copy.hpp:14:37: error: no match for 'operator++' (operand type is 'ural::iterator_sequence&lt;__gnu_cxx::__normal_iterator&lt;int*, std::vector&lt;int&gt; &gt; &gt;')</font><br />
+         for(; !!in &amp;&amp; !!out; ++ in, ++ out)<br />
+                                     ^<br />
+<font color="#ff0000">C:\DevTools\ural_repo\Ural/ural/algorithm/details/copy.hpp:16:20: error: no match for 'operator*' (operand type is 'ural::iterator_sequence&lt;__gnu_cxx::__normal_iterator&lt;const int*, std::vector&lt;int&gt; &gt; &gt;')</font><br />
+             *out = *in;<br />
+                    ^<br />
+<font color="#ff0000">C:\DevTools\ural_repo\Ural/ural/algorithm/details/copy.hpp:16:13: error: no match for 'operator*' (operand type is 'ural::iterator_sequence&lt;__gnu_cxx::__normal_iterator&lt;int*, std::vector&lt;int&gt; &gt; &gt;')</font><br />
+             *out = *in;<br />
+             ^<br />
+<font color="#ff0000">C:\DevTools\ural_repo\Ural/ural/algorithm/details/copy.hpp:19:24: error: converting to 'ural::tuple&lt;ural::iterator_sequence&lt;__gnu_cxx::__normal_iterator&lt;const int*, std::vector&lt;int, std::allocator&lt;int&gt; &gt; &gt; &gt;, ural::iterator_sequence&lt;__gnu_cxx::__normal_iterator&lt;int*, std::vector&lt;int, std::allocator&lt;int&gt; &gt; &gt; &gt; &gt;' from initializer list would use explicit constructor 'constexpr ural::tuple&lt;Ts&gt;::tuple(const Ts&amp; ...) [with Ts = {ural::iterator_sequence&lt;__gnu_cxx::__normal_iterator&lt;const int*, std::vector&lt;int, std::allocator&lt;int&gt; &gt; &gt; &gt;, ural::iterator_sequence&lt;__gnu_cxx::__normal_iterator&lt;int*, std::vector&lt;int, std::allocator&lt;int&gt; &gt; &gt; &gt;}]'</font><br />
+         return {in, out};<br />
+                        ^<br />
+In file included from C:\DevTools\boost_1_53_0/boost/test/unit_test_log.hpp:28:0,<br />
+                 from C:\DevTools\boost_1_53_0/boost/test/test_tools.hpp:20,<br />
+                 from C:\DevTools\boost_1_53_0/boost/test/unit_test.hpp:19,<br />
+                 from C:\DevTools\ural_repo\Ural\tests\iterator_sequence_test.cpp:2:<br />
+<font color="#0000ff">C:\DevTools\boost_1_53_0/boost/test/unit_test_log.hpp:134:28: warning: 'boost::unit_test::{anonymous}::unit_test_log' defined but not used [-Wunused-variable]</font><br />
+ BOOST_TEST_SINGLETON_INST( unit_test_log )<br />
+                            ^<br />
+C:\DevTools\boost_1_53_0/boost/test/utils/trivial_singleton.hpp:64:36: note: in definition of macro 'BOOST_TEST_SINGLETON_INST'<br />
+ namespace { BOOST_JOIN( inst, _t)&amp; inst = BOOST_JOIN( inst, _t)::instance(); }<br />
+                                    ^<br />
+<font color="#a00000">Process terminated with status 1 (0 minute(s), 1 second(s))</font><br />
+<font color="#a00000">7 error(s), 3 warning(s) (0 minute(s), 1 second(s))</font><br />
 </tt>
 </body>
 </html>

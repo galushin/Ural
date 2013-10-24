@@ -1,4 +1,32 @@
 # depslib dependency file v1.0
-1382600878 source:c:\devtools\ural_repo\ural\ural_test\main.cpp
+1382602060 source:c:\devtools\ural_repo\ural\ural_test\main.cpp
 	<boost/test/unit_test.hpp>
+
+1382605123 source:c:\devtools\ural_repo\ural\tests\tuple_tests.cpp
+	<boost/test/unit_test.hpp>
+	<ural/tuple.hpp>
+
+1382604693 c:\devtools\ural_repo\ural\\ural\tuple.hpp
+	<tuple>
+	<ural/placeholders.hpp>
+
+1382604883 c:\devtools\ural_repo\ural\\ural\placeholders.hpp
+
+1382607277 source:c:\devtools\ural_repo\ural\tests\iterator_sequence_test.cpp
+	<boost/concept/assert.hpp>
+	<boost/test/unit_test.hpp>
+	<ural/algorithm.hpp>
+	<ural/sequence/all.hpp>
+
+1382606970 c:\devtools\ural_repo\ural\\ural\algorithm.hpp
+	<ural/sequence/all.hpp>
+	<ural/algorithm/details/copy.hpp>
+
+1382607890 c:\devtools\ural_repo\ural\\ural\sequence\all.hpp
+	<ural/sequence/iterator_sequence.hpp>
+
+1382607929 c:\devtools\ural_repo\ural\\ural\sequence\iterator_sequence.hpp
+
+1382608313 c:\devtools\ural_repo\ural\\ural\algorithm\details\copy.hpp
+	<ural/tuple.hpp>
 

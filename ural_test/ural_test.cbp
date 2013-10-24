@@ -34,7 +34,16 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
+			<Add directory="C:/DevTools/ural_repo/Ural/" />
 		</Compiler>
+		<Unit filename="../tests/iterator_sequence_test.cpp" />
+		<Unit filename="../tests/tuple_tests.cpp" />
+		<Unit filename="../ural/algorithm.hpp" />
+		<Unit filename="../ural/algorithm/details/copy.hpp" />
+		<Unit filename="../ural/placeholders.hpp" />
+		<Unit filename="../ural/sequence/all.hpp" />
+		<Unit filename="../ural/sequence/iterator_sequence.hpp" />
+		<Unit filename="../ural/tuple.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
