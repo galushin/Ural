@@ -11,12 +11,13 @@ namespace details
     ural::tuple<Input, Output>
     copy(Input in, Output out)
     {
+        // @todo Проверка концепций
         for(; !!in && !!out; ++ in, ++ out)
         {
             *out = *in;
         }
 
-        return {in, out};
+        return ural::tuple<Input, Output>{in, out};
     }
 }
 // namespace details
