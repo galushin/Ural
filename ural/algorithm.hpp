@@ -7,6 +7,13 @@
 
 namespace ural
 {
+    template <class Input, class Output>
+    void copy(Input && in, Output && out)
+    {
+        // @todo forward
+        ural::details::copy(ural::sequence(std::forward<Input>(in)),
+                            ural::sequence(std::forward<Output>(out)));
+    }
 }
 // namespace ural
 

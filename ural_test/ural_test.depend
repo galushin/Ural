@@ -12,13 +12,13 @@
 
 1382604883 c:\devtools\ural_repo\ural\\ural\placeholders.hpp
 
-1382607277 source:c:\devtools\ural_repo\ural\tests\iterator_sequence_test.cpp
+1382672935 source:c:\devtools\ural_repo\ural\tests\iterator_sequence_test.cpp
 	<boost/concept/assert.hpp>
 	<boost/test/unit_test.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/all.hpp>
 
-1382606970 c:\devtools\ural_repo\ural\\ural\algorithm.hpp
+1382673045 c:\devtools\ural_repo\ural\\ural\algorithm.hpp
 	<ural/sequence/all.hpp>
 	<ural/algorithm/details/copy.hpp>
 
