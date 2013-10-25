@@ -35,15 +35,18 @@
 
 1382674135 c:\devtools\ural_repo\ural\\ural\sequence\insertion.hpp
 
-1382676012 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
+1382676654 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
 	<numeric>
 	<forward_list>
 	<boost/test/unit_test.hpp>
 	<ural/numeric.hpp>
 
-1382675979 c:\devtools\ural_repo\ural\\ural\numeric.hpp
+1382677137 c:\devtools\ural_repo\ural\\ural\numeric.hpp
+	<ural/functional.hpp>
 	<ural/sequence/all.hpp>
 	<ural/numeric/details/num_algo.hpp>
 
-1382675957 c:\devtools\ural_repo\ural\\ural\numeric\details\num_algo.hpp
+1382677300 c:\devtools\ural_repo\ural\\ural\numeric\details\num_algo.hpp
+
+1382677221 c:\devtools\ural_repo\ural\\ural\functional.hpp
 

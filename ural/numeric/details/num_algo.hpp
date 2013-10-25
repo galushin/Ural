@@ -16,6 +16,17 @@ namespace details
 
         return init_value;
     }
+
+    template <class InputSequence, class T, class BinaryOperation>
+    T accumulate(InputSequence in, T init_value, BinaryOperation op)
+    {
+        for(; !!in; ++ in)
+        {
+            init_value = op(std::move(init_value), *in);
+        }
+
+        return init_value;
+    }
 }
 // namespace details
 }

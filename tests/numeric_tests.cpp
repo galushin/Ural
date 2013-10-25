@@ -18,3 +18,13 @@ BOOST_AUTO_TEST_CASE(iota_test)
     BOOST_CHECK_EQUAL_COLLECTIONS(x1.begin(), x1.end(), x2.begin(), x2.end());
     BOOST_CHECK_EQUAL(init_value + n, result);
 }
+
+BOOST_AUTO_TEST_CASE(accumulate_test)
+{
+    std::vector<int> const  v{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+    auto const sum_std = std::accumulate(v.begin(), v.end(), 0);
+    auto const sum_ural = ural::accumulate(v, 0);
+
+    BOOST_CHECK_EQUAL(sum_std, sum_ural);
+}
