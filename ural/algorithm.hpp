@@ -8,11 +8,12 @@
 namespace ural
 {
     template <class Input, class Output>
-    void copy(Input && in, Output && out)
+    auto copy(Input && in, Output && out)
+    -> decltype(ural::details::copy(ural::sequence(std::forward<Input>(in)),
+                                    ural::sequence(std::forward<Output>(out))))
     {
-        // @todo forward
-        ural::details::copy(ural::sequence(std::forward<Input>(in)),
-                            ural::sequence(std::forward<Output>(out)));
+        return ural::details::copy(ural::sequence(std::forward<Input>(in)),
+                                   ural::sequence(std::forward<Output>(out)));
     }
 }
 // namespace ural

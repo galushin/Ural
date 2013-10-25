@@ -23,7 +23,21 @@ BOOST_AUTO_TEST_CASE(copy_sequence_test)
 
     std::vector<int> x1(xs.size());
 
-    ural::copy(xs, x1);
+    auto const r = ural::copy(xs, x1);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(x1.begin(), x1.end(), xs.begin(), xs.end());
+
+    BOOST_CHECK(!r[ural::_1]);
+    BOOST_CHECK(!r[ural::_2]);
+}
+
+BOOST_AUTO_TEST_CASE(copy_to_back_inserter)
+{
+    std::vector<int> const xs = {1, 2, 3, 4};
+
+    std::vector<int> x1;
+
+    ural::copy(xs, std::back_inserter(x1));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(xs.begin(), xs.end(), x1.begin(), x1.end());
 }
