@@ -6,7 +6,7 @@
 	<boost/test/unit_test.hpp>
 	<ural/tuple.hpp>
 
-1382604693 c:\devtools\ural_repo\ural\\ural\tuple.hpp
+1382666452 c:\devtools\ural_repo\ural\\ural\tuple.hpp
 	<tuple>
 	<ural/placeholders.hpp>
 
@@ -25,8 +25,9 @@
 1382607890 c:\devtools\ural_repo\ural\\ural\sequence\all.hpp
 	<ural/sequence/iterator_sequence.hpp>
 
-1382607929 c:\devtools\ural_repo\ural\\ural\sequence\iterator_sequence.hpp
+1382668114 c:\devtools\ural_repo\ural\\ural\sequence\iterator_sequence.hpp
+	<ural/tuple.hpp>
 
-1382608313 c:\devtools\ural_repo\ural\\ural\algorithm\details\copy.hpp
+1382660262 c:\devtools\ural_repo\ural\\ural\algorithm\details\copy.hpp
 	<ural/tuple.hpp>
 
