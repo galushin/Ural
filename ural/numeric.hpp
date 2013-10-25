@@ -31,6 +31,27 @@ namespace ural
                                   std::move(init_value),
                                   ural::plus<>());
     }
+
+    template <class Input1, class Input2, class T,
+                class BinaryOperation1, class BinaryOperation2>
+    T inner_product(Input1 && in1, Input2 && in2, T init_value,
+                    BinaryOperation1 add, BinaryOperation2 mult)
+    {
+        return ::ural::details::inner_product(ural::sequence(std::forward<Input1>(in1)),
+                                              ural::sequence(std::forward<Input2>(in2)),
+                                              std::move(init_value),
+                                              ural::make_functor(std::move(add)),
+                                              ural::make_functor(std::move(mult)));
+    }
+
+    template <class Input1, class Input2, class T>
+    T inner_product(Input1 && in1, Input2 && in2, T init_value)
+    {
+        return ::ural::inner_product(std::forward<Input1>(in1),
+                                     std::forward<Input2>(in2),
+                                     std::move(init_value),
+                                     ural::plus<>{}, ural::multiplies<>{});
+    }
 }
 // namespace ural
 

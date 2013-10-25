@@ -27,6 +27,19 @@ namespace details
 
         return init_value;
     }
+
+    template <class Input1, class Input2, class T,
+              class BinaryOperation1, class BinaryOperation2>
+    T inner_product(Input1 in1, Input2 in2, T value,
+                    BinaryOperation1 add, BinaryOperation2 mult)
+    {
+        for(; !!in1 && !!in2; ++ in1, ++in2)
+        {
+            value = add(std::move(value), mult(*in1, *in2));
+        }
+
+        return value;
+    }
 }
 // namespace details
 }
