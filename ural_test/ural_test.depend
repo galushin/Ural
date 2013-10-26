@@ -10,7 +10,7 @@
 	<tuple>
 	<ural/placeholders.hpp>
 
-1382604883 c:\devtools\ural_repo\ural\\ural\placeholders.hpp
+1382764809 c:\devtools\ural_repo\ural\\ural\placeholders.hpp
 
 1382674876 source:c:\devtools\ural_repo\ural\tests\iterator_sequence_test.cpp
 	<boost/concept/assert.hpp>
@@ -18,7 +18,7 @@
 	<ural/algorithm.hpp>
 	<ural/sequence/all.hpp>
 
-1382674836 c:\devtools\ural_repo\ural\\ural\algorithm.hpp
+1382761504 c:\devtools\ural_repo\ural\\ural\algorithm.hpp
 	<ural/sequence/all.hpp>
 	<ural/algorithm/details/copy.hpp>
 
@@ -27,7 +27,7 @@
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/insertion.hpp>
 
-1382668114 c:\devtools\ural_repo\ural\\ural\sequence\iterator_sequence.hpp
+1382764513 c:\devtools\ural_repo\ural\\ural\sequence\iterator_sequence.hpp
 	<ural/tuple.hpp>
 
 1382660262 c:\devtools\ural_repo\ural\\ural\algorithm\details\copy.hpp
@@ -35,18 +35,23 @@
 
 1382674135 c:\devtools\ural_repo\ural\\ural\sequence\insertion.hpp
 
-1382684331 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
+1382760459 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
 	<numeric>
 	<forward_list>
 	<boost/test/unit_test.hpp>
+	<ural/algorithm.hpp>
 	<ural/numeric.hpp>
 
-1382684529 c:\devtools\ural_repo\ural\\ural\numeric.hpp
+1382760303 c:\devtools\ural_repo\ural\\ural\numeric.hpp
 	<ural/functional.hpp>
 	<ural/sequence/all.hpp>
 	<ural/numeric/details/num_algo.hpp>
+	<ural/numeric/partial_sums.hpp>
 
 1382685103 c:\devtools\ural_repo\ural\\ural\numeric\details\num_algo.hpp
 
 1382684311 c:\devtools\ural_repo\ural\\ural\functional.hpp
+
+1382764998 c:\devtools\ural_repo\ural\\ural\numeric\partial_sums.hpp
+	<ural/functional.hpp>
 

@@ -3,7 +3,10 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <ural/algorithm.hpp>
 #include <ural/numeric.hpp>
+
+// @todo тестировать с минимальными типами
 
 BOOST_AUTO_TEST_CASE(iota_test)
 {
@@ -39,4 +42,18 @@ BOOST_AUTO_TEST_CASE(inner_product_test)
     auto const r_ural = ural::inner_product(a, b, 0);
 
     BOOST_CHECK_EQUAL(r_std, r_ural);
+}
+
+BOOST_AUTO_TEST_CASE(partial_sums_sequence)
+{
+    std::vector<int> const v = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
+
+    std::vector<int> x_std;
+    std::partial_sum(v.begin(), v.end(), std::back_inserter(x_std));
+
+    std::vector<int> x_ural;
+    ural::copy(ural::partial_sums(v), std::back_inserter(x_ural));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
 }

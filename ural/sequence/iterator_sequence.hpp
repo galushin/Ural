@@ -26,6 +26,7 @@ namespace ural
     {
     public:
         typedef typename std::iterator_traits<Iterator>::reference reference;
+        typedef typename std::iterator_traits<Iterator>::value_type value_type;
 
         typedef Policy policy_type;
 

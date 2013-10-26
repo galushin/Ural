@@ -5,6 +5,7 @@
 #include <ural/sequence/all.hpp>
 
 #include <ural/numeric/details/num_algo.hpp>
+#include <ural/numeric/partial_sums.hpp>
 
 namespace ural
 {
