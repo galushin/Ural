@@ -1,5 +1,6 @@
-#include <boost/concept/assert.hpp>
 #include <boost/test/unit_test.hpp>
+
+#include <boost/concept/assert.hpp>
 
 #include <ural/algorithm.hpp>
 #include <ural/sequence/all.hpp>
