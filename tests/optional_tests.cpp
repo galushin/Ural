@@ -1,0 +1,1785 @@
+/*  Этот файл --- часть библиотеки URAL
+
+URAL is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+URAL is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with URAL.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/* Основано на
+https://github.com/akrzemi1/Optional/blob/master/test_optional.cpp
+*/
+
+#include <boost/test/unit_test.hpp>
+
+#include <utility>
+#include <string>
+#include <cassert>
+#include <complex>
+#include <vector>
+#include <functional>
+
+#include <ural/optional.hpp>
+
+enum  State
+{
+    sDefaultConstructed,
+    sValueCopyConstructed,
+    sValueMoveConstructed,
+    sCopyConstructed,
+    sMoveConstructed,
+    sMoveAssigned,
+    sCopyAssigned,
+    sValueCopyAssigned,
+    sValueMoveAssigned,
+    sMovedFrom,
+    sValueConstructed
+};
+
+struct OracleVal
+{
+    State s;
+    int i;
+    OracleVal(int i = 0) : s(sValueConstructed), i(i) {}
+};
+
+struct Oracle
+{
+    friend bool operator==( Oracle const& a, Oracle const& b )
+    { return a.val.i == b.val.i; }
+
+    friend bool operator!=( Oracle const& a, Oracle const& b )
+    { return a.val.i != b.val.i; }
+
+    State s;
+    OracleVal val;
+
+    Oracle() : s(sDefaultConstructed) {}
+    Oracle(const OracleVal& v) : s(sValueCopyConstructed), val(v) {}
+    Oracle(OracleVal&& v)
+     : s(sValueMoveConstructed), val(std::move(v)) {v.s = sMovedFrom;}
+    Oracle(const Oracle& o) : s(sCopyConstructed), val(o.val) {}
+    Oracle(Oracle&& o)
+     : s(sMoveConstructed), val(std::move(o.val)) {o.s = sMovedFrom;}
+
+    Oracle& operator=(const OracleVal& v)
+    { s = sValueCopyConstructed; val = v; return *this; }
+    Oracle& operator=(OracleVal&& v)
+    {
+        s = sValueMoveConstructed; val = std::move(v); v.s = sMovedFrom;
+        return *this;
+    }
+    Oracle& operator=(const Oracle& o)
+    { s = sCopyConstructed; val = o.val; return *this; }
+    Oracle& operator=(Oracle&& o)
+    {
+        s = sMoveConstructed; val = std::move(o.val); o.s = sMovedFrom;
+        return *this;
+    }
+};
+
+struct Guard
+{
+    std::string val;
+    Guard() : val{} {}
+    explicit Guard(std::string s, int = 0) : val(s) {}
+    Guard(const Guard&) = delete;
+    Guard(Guard&&) = delete;
+    void operator=(const Guard&) = delete;
+    void operator=(Guard&&) = delete;
+};
+
+struct ExplicitStr
+{
+    std::string s;
+    explicit ExplicitStr(const char* chp) : s(chp) {};
+};
+
+struct Date
+{
+    int i;
+    Date() = delete;
+    Date(int i) : i{i} {};
+    Date(Date&& d) : i(d.i) { d.i = 0; }
+    Date(const Date&) = delete;
+    Date& operator=(const Date&) = delete;
+    Date& operator=(Date&& d) { i = d.i; d.i = 0; return *this;};
+};
+
+namespace tr2 = ural;
+
+BOOST_AUTO_TEST_CASE(disengaged_ctor)
+{
+    tr2::optional<int> o1;
+    assert (!o1);
+
+    tr2::optional<int> o2 = tr2::nullopt;
+    assert (!o2);
+
+    tr2::optional<int> o3 = o2;
+    assert (!o3);
+
+    assert (o1 == tr2::nullopt);
+    assert (o1 == tr2::optional<int>{});
+    assert (!o1);
+    assert (bool(o1) == false);
+
+    assert (o2 == tr2::nullopt);
+    assert (o2 == tr2::optional<int>{});
+    assert (!o2);
+    assert (bool(o2) == false);
+
+    assert (o3 == tr2::nullopt);
+    assert (o3 == tr2::optional<int>{});
+    assert (!o3);
+    assert (bool(o3) == false);
+
+    assert (o1 == o2);
+    assert (o2 == o1);
+    assert (o1 == o3);
+    assert (o3 == o1);
+    assert (o2 == o3);
+    assert (o3 == o2);
+}
+
+BOOST_AUTO_TEST_CASE(value_ctor)
+{
+  OracleVal v;
+  tr2::optional<Oracle> oo1(v);
+  assert (oo1 != tr2::nullopt);
+  assert (oo1 != tr2::optional<Oracle>{});
+  assert (oo1 == tr2::optional<Oracle>{v});
+  assert (!!oo1);
+  assert (bool(oo1));
+  // NA: assert (oo1->s == sValueCopyConstructed);
+  assert (oo1->s == sMoveConstructed);
+  assert (v.s == sValueConstructed);
+
+  tr2::optional<Oracle> oo2(std::move(v));
+  assert (oo2 != tr2::nullopt);
+  assert (oo2 != tr2::optional<Oracle>{});
+  assert (oo2 == oo1);
+  assert (!!oo2);
+  assert (bool(oo2));
+  // NA: assert (oo2->s == sValueMoveConstructed);
+  assert (oo2->s == sMoveConstructed);
+  assert (v.s == sMovedFrom);
+
+  {
+      OracleVal v;
+      tr2::optional<Oracle> oo1{tr2::inplace, v};
+      assert (oo1 != tr2::nullopt);
+      assert (oo1 != tr2::optional<Oracle>{});
+      assert (oo1 == tr2::optional<Oracle>{v});
+      assert (!!oo1);
+      assert (bool(oo1));
+      assert (oo1->s == sValueCopyConstructed);
+      assert (v.s == sValueConstructed);
+
+      tr2::optional<Oracle> oo2{tr2::inplace, std::move(v)};
+      assert (oo2 != tr2::nullopt);
+      assert (oo2 != tr2::optional<Oracle>{});
+      assert (oo2 == oo1);
+      assert (!!oo2);
+      assert (bool(oo2));
+      assert (oo2->s == sValueMoveConstructed);
+      assert (v.s == sMovedFrom);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(assignment)
+{
+    tr2::optional<int> oi;
+    oi = tr2::optional<int>{1};
+    assert (*oi == 1);
+
+    oi = tr2::nullopt;
+    assert (!oi);
+
+    oi = 2;
+    assert (*oi == 2);
+
+//    @todo oi = {};
+//    assert (!oi);
+}
+
+template <class T>
+struct MoveAware
+{
+  T val;
+  bool moved;
+  MoveAware(T val) : val(val), moved(false) {}
+  MoveAware(MoveAware const&) = delete;
+  MoveAware(MoveAware&& rhs) : val(rhs.val), moved(rhs.moved) {
+    rhs.moved = true;
+  }
+  MoveAware& operator=(MoveAware const&) = delete;
+  MoveAware& operator=(MoveAware&& rhs) {
+    val = (rhs.val);
+    moved = (rhs.moved);
+    rhs.moved = true;
+    return *this;
+  }
+};
+
+BOOST_AUTO_TEST_CASE(moved_from_state)
+{
+  // first, test mock:
+  MoveAware<int> i{1}, j{2};
+  assert (i.val == 1);
+  assert (!i.moved);
+  assert (j.val == 2);
+  assert (!j.moved);
+
+  MoveAware<int> k = std::move(i);
+  assert (k.val == 1);
+  assert (!k.moved);
+  assert (i.val == 1);
+  assert (i.moved);
+
+  k = std::move(j);
+  assert (k.val == 2);
+  assert (!k.moved);
+  assert (j.val == 2);
+  assert (j.moved);
+
+  // now, test optional
+  tr2::optional<MoveAware<int>> oi{1}, oj{2};
+  assert (oi);
+  assert (!oi->moved);
+  assert (oj);
+  assert (!oj->moved);
+
+  tr2::optional<MoveAware<int>> ok = std::move(oi);
+  assert (ok);
+  assert (!ok->moved);
+  assert (oi);
+  assert (oi->moved);
+
+  ok = std::move(oj);
+  assert (ok);
+  assert (!ok->moved);
+  assert (oj);
+  assert (oj->moved);
+}
+
+BOOST_AUTO_TEST_CASE(copy_move_ctor_optional_int)
+{
+  tr2::optional<int> oi;
+  tr2::optional<int> oj = oi;
+
+  assert (!oj);
+  assert (oj == oi);
+  assert (oj == tr2::nullopt);
+  assert (!bool(oj));
+
+  oi = 1;
+  tr2::optional<int> ok = oi;
+  assert (!!ok);
+  assert (bool(ok));
+  assert (ok == oi);
+  assert (ok != oj);
+  assert (*ok == 1);
+
+  tr2::optional<int> ol = std::move(oi);
+  assert (!!ol);
+  assert (bool(ol));
+  assert (ol == oi);
+  assert (ol != oj);
+  assert (*ol == 1);
+}
+
+BOOST_AUTO_TEST_CASE(optional_optional)
+{
+  tr2::optional<tr2::optional<int>> oi1 = tr2::nullopt;
+  assert (oi1 == tr2::nullopt);
+  assert (!oi1);
+
+  {
+  tr2::optional<tr2::optional<int>> oi2 {tr2::inplace};
+  assert (oi2 != tr2::nullopt);
+  assert (bool(oi2));
+  assert (*oi2 == tr2::nullopt);
+  //assert (!(*oi2));
+  //std::cout << typeid(**oi2).name() << std::endl;
+  }
+
+  {
+  tr2::optional<tr2::optional<int>> oi2 {tr2::inplace, tr2::nullopt};
+  assert (oi2 != tr2::nullopt);
+  assert (bool(oi2));
+  assert (*oi2 == tr2::nullopt);
+  assert (!*oi2);
+  }
+
+  {
+  tr2::optional<tr2::optional<int>> oi2 {tr2::optional<int>{}};
+  assert (oi2 != tr2::nullopt);
+  assert (bool(oi2));
+  assert (*oi2 == tr2::nullopt);
+  assert (!*oi2);
+  }
+
+  tr2::optional<int> oi;
+  auto ooi = tr2::make_optional(oi);
+  static_assert( std::is_same<tr2::optional<tr2::optional<int>>, decltype(ooi)>::value, "");
+
+}
+
+BOOST_AUTO_TEST_CASE(example_guard)
+{
+  using namespace tr2;
+  //FAILS: optional<Guard> ogx(Guard("res1"));
+  //FAILS: optional<Guard> ogx = "res1";
+  //FAILS: optional<Guard> ogx("res1");
+  optional<Guard> oga;                     // Guard is non-copyable (and non-moveable)
+  optional<Guard> ogb(inplace, "res1");   // initialzes the contained value with "res1"
+  assert (bool(ogb));
+  assert (ogb->val == "res1");
+
+  optional<Guard> ogc(inplace);           // default-constructs the contained value
+  assert (bool(ogc));
+  assert (ogc->val == "");
+
+  oga.emplace("res1");                     // initialzes the contained value with "res1"
+  assert (bool(oga));
+  assert (oga->val == "res1");
+
+  oga.emplace();                           // destroys the contained value and
+                                           // default-constructs the new one
+  assert (bool(oga));
+  assert (oga->val == "");
+
+  oga = nullopt;                        // OK: make disengaged the optional Guard
+  assert (!(oga));
+  //FAILS: ogb = {};                          // ERROR: Guard is not Moveable
+}
+
+struct Process
+{
+    static void process(){}
+    static void process(int){}
+    static void processNil(){}
+};
+
+BOOST_AUTO_TEST_CASE(example1)
+{
+  using namespace tr2;
+  optional<int> oi;                 // create disengaged object
+  optional<int> oj = nullopt;          // alternative syntax
+  oi = oj;                          // assign disengaged object
+  optional<int> ok = oj;            // ok is disengaged
+
+  if (oi)  assert(false);           // 'if oi is engaged...'
+  if (!oi) assert(true);            // 'if oi is disengaged...'
+
+  if (oi != nullopt) assert(false);    // 'if oi is engaged...'
+  if (oi == nullopt) assert(true);     // 'if oi is disengaged...'
+
+  assert(oi == ok);                 // two disengaged optionals compare equal
+
+  ///////////////////////////////////////////////////////////////////////////
+  optional<int> ol{1};              // ol is engaged; its contained value is 1
+  ok = 2;                           // ok becomes engaged; its contained value is 2
+  oj = ol;                          // oj becomes engaged; its contained value is 1
+
+  assert(oi != ol);                 // disengaged != engaged
+  assert(ok != ol);                 // different contained values
+  assert(oj == ol);                 // same contained value
+  assert(oi < ol);                  // disengaged < engaged
+  assert(ol < ok);                  // less by contained value
+
+  /////////////////////////////////////////////////////////////////////////////
+  optional<int> om{1};              // om is engaged; its contained value is 1
+  optional<int> on = om;            // on is engaged; its contained value is 1
+  om = 2;                           // om is engaged; its contained value is 2
+  assert (on != om);                // on still contains 3. They are not pointers
+
+  /////////////////////////////////////////////////////////////////////////////
+  int i = *ol;                      // i obtains the value contained in ol
+  assert (i == 1);
+  *ol = 9;                          // the object contained in ol becomes 9
+  assert(*ol == 9);
+  assert(ol == make_optional(9));
+
+  ///////////////////////////////////
+  int p = 1;
+  optional<int> op = p;
+  assert(*op == 1);
+  p = 2;
+  assert(*op == 1);                 // value contained in op is separated from p
+
+  ////////////////////////////////
+  if (ol)
+    Process::process(*ol);                   // use contained value if present
+  else
+    Process::process();                      // proceed without contained value
+
+  if (!om)
+    Process::processNil();
+  else
+    Process::process(*om);
+
+  /////////////////////////////////////////
+  Process::process(ol.value_or(0));     // use 0 if ol is disengaged
+
+  ////////////////////////////////////////////
+  ok = nullopt;                         // if ok was engaged calls T's dtor
+  oj = {};                           // assigns a temporary disengaged optional
+}
+
+BOOST_AUTO_TEST_CASE(example_const_optional)
+{
+  using tr2::optional;
+  const optional<int> c = 4;
+  int i = *c;                        // i becomes 4
+  assert (i == 4);
+  // FAILS: *c = i;                            // ERROR: cannot assign to const int&
+}
+
+BOOST_AUTO_TEST_CASE(example_ref)
+{
+  using namespace tr2;
+  int i = 1;
+  int j = 2;
+  optional<int&> ora;                 // disengaged optional reference to int
+  optional<int&> orb = i;             // contained reference refers to object i
+
+  *orb = 3;                          // i becomes 3
+  // FAILS: ora = j;                           // ERROR: optional refs do not have assignment from T
+  // FAILS: ora = {j};                         // ERROR: optional refs do not have copy/move assignment
+  // FAILS: ora = orb;                         // ERROR: no copy/move assignment
+  ora.emplace(j);                    // OK: contained reference refers to object j
+  ora.emplace(i);                    // OK: contained reference now refers to object i
+
+  ora = nullopt;                        // OK: ora becomes disengaged
+}
+
+template <typename T>
+T getValue( tr2::optional<T> newVal = tr2::nullopt, tr2::optional<T&> storeHere = tr2::nullopt )
+{
+  T cached{};
+
+  if (newVal) {
+    cached = *newVal;
+
+    if (storeHere) {
+      *storeHere = *newVal; // LEGAL: assigning T to T
+    }
+  }
+  return cached;
+}
+
+BOOST_AUTO_TEST_CASE(example_optional_arg)
+{
+  int iii = 0;
+  iii = getValue<int>(iii, iii);
+  iii = getValue<int>(iii);
+  iii = getValue<int>();
+
+  {
+    using namespace ural;
+    optional<Guard> grd1{inplace, "res1", 1};   // guard 1 initialized
+    optional<Guard> grd2;
+
+    grd2.emplace("res2", 2);                     // guard 2 initialized
+    grd1 = nullopt;                                 // guard 1 released
+
+  }                                              // guard 2 released (in dtor)
+}
+
+std::tuple<Date, Date, Date> getStartMidEnd();
+std::tuple<Date, Date, Date> getStartMidEnd()
+{ return std::tuple<Date, Date, Date>{Date{1}, Date{2}, Date{3}}; }
+
+ural::optional<char> readNextChar();
+ural::optional<char> readNextChar(){ return{}; }
+
+struct Runner
+{
+    static void run(ural::optional<std::string>) {}
+    static void run(std::complex<double>) {}
+    static void run(Date const&, Date const&, Date const&) {}
+};
+
+BOOST_AUTO_TEST_CASE(example_date)
+{
+  using namespace ural;
+  // Date doesn't have default ctor (no good default date)
+  optional<Date> start, mid, end;
+
+  std::tie(start, mid, end) = getStartMidEnd();
+  Runner::run(*start, *mid, *end);
+}
+
+template <class T>
+void assign_norebind(tr2::optional<T&>& optref, T& obj)
+{
+  if (optref) *optref = obj;
+  else        optref.emplace(obj);
+}
+
+BOOST_AUTO_TEST_CASE(example_conceptual_model)
+{
+  using namespace ural;
+
+  optional<int> oi = 0;
+  optional<int> oj = 1;
+  optional<int> ok = nullopt;
+
+  oi = 1;
+  oj = nullopt;
+  ok = 0;
+
+  oi == nullopt;
+  oj == 0;
+  ok == 1;
+}
+
+BOOST_AUTO_TEST_CASE(example_rationale)
+{
+  using namespace ural;
+  if (optional<char> ch = readNextChar()) {
+    // ...
+  }
+
+  //////////////////////////////////
+  optional<int> opt1 = nullopt;
+  optional<int> opt2 = {};
+
+  opt1 = nullopt;
+  opt2 = {};
+
+  if (opt1 == nullopt) {}
+  if (!opt2) {}
+  if (opt2 == optional<int>{}) {}
+
+
+
+  ////////////////////////////////
+    // pick the second overload
+  Runner::run(nullopt);
+  // FAILS: run({});              // ambiguous
+
+  if (opt1 == nullopt) {} // fine
+  // FAILS: if (opt2 == {}) {}   // ilegal
+
+  ////////////////////////////////
+  assert (optional<unsigned>{}  < optional<unsigned>{0});
+  assert (optional<unsigned>{0} < optional<unsigned>{1});
+  assert (!(optional<unsigned>{}  < optional<unsigned>{}) );
+  assert (!(optional<unsigned>{1} < optional<unsigned>{1}));
+
+  assert (optional<unsigned>{}  != optional<unsigned>{0});
+  assert (optional<unsigned>{0} != optional<unsigned>{1});
+  assert (optional<unsigned>{}  == optional<unsigned>{} );
+  assert (optional<unsigned>{0} == optional<unsigned>{0});
+
+  /////////////////////////////////
+  optional<int> o;
+  o = make_optional(1);         // copy/move assignment
+  o = 1;           // assignment from T
+  o.emplace(1);    // emplacement
+
+  ////////////////////////////////////
+  int isas = 0, i = 9;
+  optional<int&> asas = i;
+  assign_norebind(asas, isas);
+
+  /////////////////////////////////////
+  ////tr2::optional<std::vector<int>> ov2 = {2, 3};
+  ////assert (bool(ov2));
+  ////assert ((*ov2)[1] == 3);
+  ////
+  ////////////////////////////////
+  ////std::vector<int> v = {1, 2, 4, 8};
+  ////optional<std::vector<int>> ov = {1, 2, 4, 8};
+
+  ////assert (v == *ov);
+  ////
+  ////ov = {1, 2, 4, 8};
+
+  ////std::allocator<int> a;
+  ////optional<std::vector<int>> ou { emplace, {1, 2, 4, 8}, a };
+
+  ////assert (ou == ov);
+
+  //////////////////////////////
+  // inconvenient syntax:
+  {
+
+      tr2::optional<std::vector<int>> ov2{tr2::inplace, {2, 3}};
+
+      assert (bool(ov2));
+      assert ((*ov2)[1] == 3);
+
+      ////////////////////////////
+
+      std::vector<int> v = {1, 2, 4, 8};
+      optional<std::vector<int>> ov{tr2::inplace, {1, 2, 4, 8}};
+
+      assert (v == *ov);
+
+      ov.emplace({1, 2, 4, 8});
+/*
+      std::allocator<int> a;
+      optional<std::vector<int>> ou { emplace, {1, 2, 4, 8}, a };
+
+      assert (ou == ov);
+*/
+  }
+
+  /////////////////////////////////
+  {
+  typedef int T;
+  optional<optional<T>> ot {inplace};
+  optional<optional<T>> ou {inplace, nullopt};
+  optional<optional<T>> ov {optional<T>{}};
+
+  optional<int> oi;
+  auto ooi = make_optional(oi);
+  static_assert( std::is_same<optional<optional<int>>, decltype(ooi)>::value, "");
+  }
+}
+
+bool fun(std::string , ural::optional<int> oi = ural::nullopt);
+bool fun(std::string , ural::optional<int> oi)
+{
+  return bool(oi);
+}
+
+BOOST_AUTO_TEST_CASE(example_converting_ctor)
+{
+  using namespace ural;
+
+  assert (true == fun("dog", 2));
+  assert (false == fun("dog"));
+  // just to be explicit
+  assert (false == fun("dog", nullopt));
+}
+
+BOOST_AUTO_TEST_CASE(bad_comparison)
+{
+  tr2::optional<int> oi, oj;
+  int i;
+  bool b = (oi == oj);
+  b = (oi >= i);
+  b = (oi == i);
+  b = b;
+}
+
+BOOST_AUTO_TEST_CASE(value_or)
+{
+  tr2::optional<int> oi = 1;
+  int i = oi.value_or(0);
+  assert (i == 1);
+
+  oi = tr2::nullopt;
+  assert (oi.value_or(3) == 3);
+
+  tr2::optional<std::string> os{"AAA"};
+  assert (os.value_or("BBB") == "AAA");
+  // @todo os = {};
+  os = tr2::nullopt;
+  assert (os.value_or("BBB") == "BBB");
+}
+
+BOOST_AUTO_TEST_CASE(mixed_order)
+{
+  using namespace ural;
+
+  optional<int> oN {nullopt};
+  optional<int> o0 {0};
+  optional<int> o1 {1};
+
+  assert ( (oN <   0));
+  assert ( (oN <   1));
+  assert (!(o0 <   0));
+  assert ( (o0 <   1));
+  assert (!(o1 <   0));
+  assert (!(o1 <   1));
+
+  assert (!(oN >=  0));
+  assert (!(oN >=  1));
+  assert ( (o0 >=  0));
+  assert (!(o0 >=  1));
+  assert ( (o1 >=  0));
+  assert ( (o1 >=  1));
+
+  assert (!(oN >   0));
+  assert (!(oN >   1));
+  assert (!(o0 >   0));
+  assert (!(o0 >   1));
+  assert ( (o1 >   0));
+  assert (!(o1 >   1));
+
+  assert ( (oN <=  0));
+  assert ( (oN <=  1));
+  assert ( (o0 <=  0));
+  assert ( (o0 <=  1));
+  assert (!(o1 <=  0));
+  assert ( (o1 <=  1));
+
+  assert ( (0 >  oN));
+  assert ( (1 >  oN));
+  assert (!(0 >  o0));
+  assert ( (1 >  o0));
+  assert (!(0 >  o1));
+  assert (!(1 >  o1));
+
+  assert (!(0 <= oN));
+  assert (!(1 <= oN));
+  assert ( (0 <= o0));
+  assert (!(1 <= o0));
+  assert ( (0 <= o1));
+  assert ( (1 <= o1));
+
+  assert (!(0 <  oN));
+  assert (!(1 <  oN));
+  assert (!(0 <  o0));
+  assert (!(1 <  o0));
+  assert ( (0 <  o1));
+  assert (!(1 <  o1));
+
+  assert ( (0 >= oN));
+  assert ( (1 >= oN));
+  assert ( (0 >= o0));
+  assert ( (1 >= o0));
+  assert (!(0 >= o1));
+  assert ( (1 >= o1));
+}
+
+struct BadRelops
+{
+  int i;
+};
+
+constexpr bool operator<(BadRelops a, BadRelops b) { return a.i < b.i; }
+// intentional error!
+constexpr bool operator>(BadRelops a, BadRelops b) { return a.i < b.i; }
+
+BOOST_AUTO_TEST_CASE(bad_relops)
+{
+  using namespace ural;
+  BadRelops a{1}, b{2};
+  assert (a < b);
+  assert (a > b);
+
+  optional<BadRelops> oa = a, ob = b;
+  assert (oa < ob);
+  assert (!(oa > ob));
+
+  assert (oa < b);
+  assert (oa > b);
+
+  optional<BadRelops&> ra = a, rb = b;
+  assert (ra < rb);
+  assert (!(ra > rb));
+
+  assert (ra < b);
+  assert (ra > b);
+}
+
+BOOST_AUTO_TEST_CASE(mixed_equality)
+{
+  using namespace ural;
+
+  assert (make_optional(0) == 0);
+  assert (make_optional(1) == 1);
+  assert (make_optional(0) != 1);
+  assert (make_optional(1) != 0);
+
+  optional<int> oN {nullopt};
+  optional<int> o0 {0};
+  optional<int> o1 {1};
+
+  assert (o0 ==  0);
+  assert ( 0 == o0);
+  assert (o1 ==  1);
+  assert ( 1 == o1);
+  assert (o1 !=  0);
+  assert ( 0 != o1);
+  assert (o0 !=  1);
+  assert ( 1 != o0);
+
+  assert ( 1 != oN);
+  assert ( 0 != oN);
+  assert (oN !=  1);
+  assert (oN !=  0);
+  assert (!( 1 == oN));
+  assert (!( 0 == oN));
+  assert (!(oN ==  1));
+  assert (!(oN ==  0));
+
+  std::string cat{"cat"}, dog{"dog"};
+  optional<std::string> oNil{}, oDog{"dog"}, oCat{"cat"};
+
+  assert (oCat ==  cat);
+  assert ( cat == oCat);
+  assert (oDog ==  dog);
+  assert ( dog == oDog);
+  assert (oDog !=  cat);
+  assert ( cat != oDog);
+  assert (oCat !=  dog);
+  assert ( dog != oCat);
+
+  assert ( dog != oNil);
+  assert ( cat != oNil);
+  assert (oNil !=  dog);
+  assert (oNil !=  cat);
+  assert (!( dog == oNil));
+  assert (!( cat == oNil));
+  assert (!(oNil ==  dog));
+  assert (!(oNil ==  cat));
+}
+
+BOOST_AUTO_TEST_CASE(const_propagation)
+{
+  using namespace ural;
+
+  optional<int> mmi{0};
+  static_assert(std::is_same<decltype(*mmi), int&>::value, "WTF");
+
+  const optional<int> cmi{0};
+  static_assert(std::is_same<decltype(*cmi), const int&>::value, "WTF");
+
+  optional<const int> mci{0};
+  static_assert(std::is_same<decltype(*mci), const int&>::value, "WTF");
+
+  const optional<const int> cci{0};
+  static_assert(std::is_same<decltype(*cci), const int&>::value, "WTF");
+}
+
+static_assert(std::is_base_of<std::logic_error, ural::bad_optional_access>::value, "");
+
+BOOST_AUTO_TEST_CASE(safe_value)
+{
+  using namespace ural;
+
+  try {
+    optional<int> ovN{}, ov1{1};
+
+    int& r1 = ov1.value();
+    assert (r1 == 1);
+
+    try {
+      ovN.value();
+      assert (false);
+    }
+    catch (bad_optional_access const&) {
+    }
+
+    { // ref variant
+      int i1 = 1;
+      optional<int&> orN{}, or1{i1};
+
+      int& r2 = or1.value();
+      assert (r2 == 1);
+
+      try {
+        orN.value();
+        assert (false);
+      }
+      catch (bad_optional_access const&) {
+      }
+    }
+  }
+  catch(...) {
+    assert (false);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(optional_ref)
+{
+  using namespace tr2;
+  // FAILS: optional<int&&> orr;
+  // FAILS: optional<nullopt_t&> on;
+  int i = 8;
+  optional<int&> ori;
+  assert (!ori);
+  ori.emplace(i);
+  assert (bool(ori));
+  assert (*ori == 8);
+  assert (&*ori == &i);
+  *ori = 9;
+  assert (i == 9);
+
+  // FAILS: int& ir = ori.value_or(i);
+  int ii = ori.value_or(i);
+  assert (ii == 9);
+  ii = 7;
+  assert (*ori == 9);
+
+  int j = 22;
+  auto&& oj = make_optional(std::ref(j));
+  *oj = 23;
+  assert (&*oj == &j);
+  assert (j == 23);
+}
+
+BOOST_AUTO_TEST_CASE(optional_ref_const_propagation)
+{
+  using namespace ural;
+
+  int i = 9;
+  const optional<int&> mi = i;
+  int& r = *mi;
+  optional<const int&> ci = i;
+  static_assert(std::is_same<decltype(*mi), int&>::value, "WTF");
+  static_assert(std::is_same<decltype(*ci), const int&>::value, "WTF");
+
+  r = r;
+}
+
+BOOST_AUTO_TEST_CASE(optional_ref_assign)
+{
+  using namespace ural;
+
+  int i = 9;
+  optional<int&> ori = i;
+
+  int j = 1;
+  ori = optional<int&>{j};
+  ori = {j};
+  // FAILS: ori = j;
+
+  optional<int&> orx = ori;
+  ori = orx;
+
+  optional<int&> orj = j;
+
+  assert (ori);
+  assert (*ori == 1);
+  assert (ori == orj);
+  assert (i == 9);
+
+  *ori = 2;
+  assert (*ori == 2);
+  assert (ori == 2);
+  assert (2 == ori);
+  assert (ori != 3);
+
+  assert (ori == orj);
+  assert (j == 2);
+  assert (i == 9);
+
+  ori = ural::nullopt;
+  assert (!ori);
+  assert (ori != orj);
+  assert (j == 2);
+  assert (i == 9);
+}
+
+BOOST_AUTO_TEST_CASE(optional_ref_swap)
+{
+  using namespace ural;
+  int i = 0;
+  int j = 1;
+  optional<int&> oi = i;
+  optional<int&> oj = j;
+
+  assert (&*oi == &i);
+  assert (&*oj == &j);
+
+  std::swap(oi, oj);
+  assert (&*oi == &j);
+  assert (&*oj == &i);
+}
+
+BOOST_AUTO_TEST_CASE(optional_ref_swap_member)
+{
+  using namespace ural;
+  int i = 0;
+  int j = 1;
+  optional<int&> oi = i;
+  optional<int&> oj = j;
+
+  assert (&*oi == &i);
+  assert (&*oj == &j);
+
+  oi.swap(oj);
+  assert (&*oi == &j);
+  assert (&*oj == &i);
+}
+
+BOOST_AUTO_TEST_CASE(optional_value_swap_member)
+{
+  using namespace ural;
+  int const i = 0;
+  int const j = 1;
+  optional<int> oi = i;
+  optional<int> oj = j;
+
+  BOOST_CHECK_EQUAL(i, *oi);
+  BOOST_CHECK_EQUAL(j, *oj);
+
+  oi.swap(oj);
+  BOOST_CHECK_EQUAL(j, *oi);
+  BOOST_CHECK_EQUAL(i, *oj);
+}
+
+BOOST_AUTO_TEST_CASE(optional_initialization)
+{
+    using namespace tr2;
+    using std::string;
+    string s = "STR";
+
+    optional<string> os{s};
+    optional<string> ot = s;
+    optional<string> ou{"STR"};
+    optional<string> ov = string{"STR"};
+
+    BOOST_CHECK(os == s);
+    BOOST_CHECK(ot == s);
+    BOOST_CHECK(ou == s);
+    BOOST_CHECK(ov == s);
+}
+
+#include <unordered_set>
+
+BOOST_AUTO_TEST_CASE(optional_hashing)
+{
+    using namespace tr2;
+    using std::string;
+
+    std::hash<int> hi;
+    std::hash<optional<int>> hoi;
+    std::hash<string> hs;
+    std::hash<optional<string>> hos;
+
+    assert (hi(0) == hoi(optional<int>{0}));
+    assert (hi(1) == hoi(optional<int>{1}));
+    assert (hi(3198) == hoi(optional<int>{3198}));
+
+    assert (hs("") == hos(optional<string>{""}));
+    assert (hs("0") == hos(optional<string>{"0"}));
+    assert (hs("Qa1#") == hos(optional<string>{"Qa1#"}));
+
+    std::unordered_set<optional<string>> set;
+    assert(set.find({"Qa1#"}) == set.end());
+
+    set.insert({"0"});
+    assert(set.find({"Qa1#"}) == set.end());
+
+    set.insert({"Qa1#"});
+    assert(set.find({"Qa1#"}) != set.end());
+}
+
+// optional_ref_emulation
+template <class T>
+struct generic
+{
+  typedef T type;
+};
+
+template <class U>
+struct generic<U&>
+{
+  typedef std::reference_wrapper<U> type;
+};
+
+template <class X>
+bool generic_fun()
+{
+  ural::optional<typename generic<X>::type> op;
+  return bool(op);
+}
+
+BOOST_AUTO_TEST_CASE(optional_ref_emulation)
+{
+  using namespace ural;
+  optional<generic<int>::type> oi = 1;
+  assert (*oi == 1);
+
+  int i = 8;
+  int j = 4;
+  optional<generic<int&>::type> ori {i};
+  assert (*ori == 8);
+  assert ((void*)&*ori != (void*)&i); // !DIFFERENT THAN optional<T&>
+
+  *ori = j;
+  assert (*ori == 4);
+}
+
+# if OPTIONAL_HAS_THIS_RVALUE_REFS == 1
+BOOST_AUTO_TEST_CASE(moved_on_value_or)
+{
+  using namespace tr2;
+  optional<Oracle> oo{inplace};
+
+  assert (oo);
+  assert (oo->s == sDefaultConstructed);
+
+  Oracle o = std::move(oo).value_or( Oracle{OracleVal{}} );
+  assert (oo);
+  assert (oo->s == sMovedFrom);
+  assert (o.s == sMoveConstructed);
+
+  optional<MoveAware<int>> om {inplace, 1};
+  assert (om);
+  assert (om->moved == false);
+
+  MoveAware<int> m = std::move(om).value_or( MoveAware<int>{1} );
+  assert (om);
+  assert (om->moved == true);
+};
+# endif
+
+
+BOOST_AUTO_TEST_CASE(optional_ref_hashing)
+{
+    using namespace tr2;
+    using std::string;
+
+    std::hash<int> hi;
+    std::hash<optional<int&>> hoi;
+    std::hash<string> hs;
+    std::hash<optional<string&>> hos;
+
+    int i0 = 0;
+    int i1 = 1;
+    assert (hi(0) == hoi(optional<int&>{i0}));
+    assert (hi(1) == hoi(optional<int&>{i1}));
+
+    string s{""};
+    string s0{"0"};
+    string sCAT{"CAT"};
+    assert (hs("") == hos(optional<string&>{s}));
+    assert (hs("0") == hos(optional<string&>{s0}));
+    assert (hs("CAT") == hos(optional<string&>{sCAT}));
+
+    std::unordered_set<optional<string&>> set;
+    assert(set.find({sCAT}) == set.end());
+
+    set.insert({s0});
+    assert(set.find({sCAT}) == set.end());
+
+    set.insert({sCAT});
+    assert(set.find({sCAT}) != set.end());
+}
+
+struct Combined
+{
+  int m;
+  int n;
+
+  constexpr Combined() : m{5}, n{6} {}
+  constexpr Combined(int m, int n) : m{m}, n{n} {}
+};
+
+struct Nasty
+{
+  int m;
+  int n;
+
+  constexpr Nasty() : m{5}, n{6} {}
+  constexpr Nasty(int m, int n) : m{m}, n{n} {}
+
+  int operator&() { return n; }
+  int operator&() const { return n; }
+};
+
+BOOST_AUTO_TEST_CASE(arrow_operator)
+{
+  using namespace ural;
+
+  optional<Combined> oc1{inplace, 1, 2};
+  assert (oc1);
+  assert (oc1->m == 1);
+  assert (oc1->n == 2);
+
+  optional<Nasty> on{inplace, 1, 2};
+  assert (on);
+  assert (on->m == 1);
+  assert (on->n == 2);
+}
+
+BOOST_AUTO_TEST_CASE(arrow_wit_optional_ref)
+{
+  using namespace ural;
+
+  Combined c{1, 2};
+  optional<Combined&> oc = c;
+  assert (oc);
+  assert (oc->m == 1);
+  assert (oc->n == 2);
+
+  Nasty n{1, 2};
+  Nasty m{3, 4};
+  Nasty p{5, 6};
+
+  optional<Nasty&> on{n};
+  assert (on);
+  assert (on->m == 1);
+  assert (on->n == 2);
+
+  on = {m};
+  assert (on);
+  assert (on->m == 3);
+  assert (on->n == 4);
+
+  on.emplace(p);
+  assert (on);
+  assert (on->m == 5);
+  assert (on->n == 6);
+
+  optional<Nasty&> om{inplace, n};
+  assert (om);
+  assert (om->m == 1);
+  assert (om->n == 2);
+}
+
+//// constexpr tests
+
+// these 4 classes have different noexcept signatures in move operations
+struct NothrowBoth {
+  NothrowBoth(NothrowBoth&&) noexcept(true) {};
+  void operator=(NothrowBoth&&) noexcept(true) {};
+};
+struct NothrowCtor {
+  NothrowCtor(NothrowCtor&&) noexcept(true) {};
+  void operator=(NothrowCtor&&) noexcept(false) {};
+};
+struct NothrowAssign {
+  NothrowAssign(NothrowAssign&&) noexcept(false) {};
+  void operator=(NothrowAssign&&) noexcept(true) {};
+};
+struct NothrowNone {
+  NothrowNone(NothrowNone&&) noexcept(false) {};
+  void operator=(NothrowNone&&) noexcept(false) {};
+};
+
+struct Previous_declarator
+{
+    static void test_noexcept()
+    {
+      {
+          static_assert(std::is_nothrow_move_assignable<NothrowBoth>::value, "WTF!");
+          static_assert(std::is_nothrow_move_constructible<NothrowBoth>::value, "WTF!");
+
+        tr2::optional<NothrowBoth> b1, b2;
+        static_assert(noexcept(tr2::optional<NothrowBoth>{std::move(b1)}), "bad noexcept!");
+        static_assert(noexcept(b1 = std::move(b2)), "bad noexcept!");
+      }
+      {
+        tr2::optional<NothrowCtor> c1, c2;
+        static_assert(noexcept(tr2::optional<NothrowCtor>{std::move(c1)}), "bad noexcept!");
+        static_assert(!noexcept(c1 = std::move(c2)), "bad noexcept!");
+      }
+      {
+        tr2::optional<NothrowAssign> a1, a2;
+        static_assert(!noexcept(tr2::optional<NothrowAssign>{std::move(a1)}), "bad noexcept!");
+        static_assert(!noexcept(a1 = std::move(a2)), "bad noexcept!");
+      }
+      {
+        tr2::optional<NothrowNone> n1, n2;
+        static_assert(!noexcept(tr2::optional<NothrowNone>{std::move(n1)}), "bad noexcept!");
+        static_assert(!noexcept(n1 = std::move(n2)), "bad noexcept!");
+      }
+    }
+
+
+    static void constexpr_test_disengaged()
+    {
+        static_assert(std::is_trivially_destructible<int>::value,
+                      "int must have trivial destructor");
+        constexpr ural::optional_base_constexpr<int> ob0{};
+
+      constexpr tr2::optional<int> g0{};
+      constexpr tr2::optional<int> g1{tr2::nullopt};
+      static_assert( !g0, "initialized!" );
+      static_assert( !g1, "initialized!" );
+
+      static_assert( bool(g1) == bool(g0), "ne!" );
+
+      static_assert( g1 == g0, "ne!" );
+      static_assert( !(g1 != g0), "ne!" );
+      static_assert( g1 >= g0, "ne!" );
+      static_assert( !(g1 > g0), "ne!" );
+      static_assert( g1 <= g0, "ne!" );
+      static_assert( !(g1 <g0), "ne!" );
+
+      static_assert( g1 == tr2::nullopt, "!" );
+      static_assert( !(g1 != tr2::nullopt), "!" );
+      static_assert( g1 <= tr2::nullopt, "!" );
+      static_assert( !(g1 < tr2::nullopt), "!" );
+      static_assert( g1 >= tr2::nullopt, "!" );
+      static_assert( !(g1 > tr2::nullopt), "!" );
+
+      static_assert(  (tr2::nullopt == g0), "!" );
+      static_assert( !(tr2::nullopt != g0), "!" );
+      static_assert(  (tr2::nullopt >= g0), "!" );
+      static_assert( !(tr2::nullopt >  g0), "!" );
+      static_assert(  (tr2::nullopt <= g0), "!" );
+      static_assert( !(tr2::nullopt <  g0), "!" );
+
+      static_assert(  (g1 != tr2::optional<int>(1)), "!" );
+      static_assert( !(g1 == tr2::optional<int>(1)), "!" );
+      static_assert(  (g1 <  tr2::optional<int>(1)), "!" );
+      static_assert(  (g1 <= tr2::optional<int>(1)), "!" );
+      static_assert( !(g1 >  tr2::optional<int>(1)), "!" );
+      static_assert( !(g1 >  tr2::optional<int>(1)), "!" );
+    }
+};
+
+constexpr tr2::optional<int> g0{};
+constexpr tr2::optional<int> g2{2};
+static_assert( g2, "not initialized!" );
+static_assert( *g2 == 2, "not 2!" );
+static_assert( g2 == tr2::optional<int>(2), "not 2!" );
+static_assert( g2 != g0, "eq!" );
+
+constexpr tr2::optional<Combined> gc0{tr2::inplace};
+static_assert(gc0->n == 6, "WTF!");
+
+// optional refs
+int gi = 0;
+constexpr tr2::optional<int&> gori = gi;
+constexpr tr2::optional<int&> gorn{};
+constexpr int& gri = *gori;
+static_assert(gori, "WTF");
+static_assert(!gorn, "WTF");
+static_assert(gori != tr2::nullopt, "WTF");
+static_assert(gorn == tr2::nullopt, "WTF");
+static_assert(&gri == &*gori, "WTF");
+
+constexpr int gci = 1;
+constexpr tr2::optional<int const&> gorci = gci;
+constexpr tr2::optional<int const&> gorcn{};
+
+static_assert(gorcn <  gorci, "WTF");
+static_assert(gorcn <= gorci, "WTF");
+static_assert(gorci == gorci, "WTF");
+static_assert(*gorci == 1, "WTF");
+static_assert(gorci == gci, "WTF");
+
+namespace constexpr_optional_ref_and_arrow
+{
+  using namespace ural;
+  constexpr Combined c{1, 2};
+  constexpr optional<Combined const&> oc = c;
+  static_assert(oc, "WTF!");
+  static_assert(oc->m == 1, "WTF!");
+  static_assert(oc->n == 2, "WTF!");
+}
+
+#include <ural/utility/tracers.hpp>
+
+BOOST_AUTO_TEST_CASE(optional_test)
+{
+    typedef int Basic_type;
+    typedef ural::regular_tracer<Basic_type> Type;
+
+    //Конструктор без параметров: конструктор и деструктор объекта не вызывались
+    auto const destroyed_old = Type::destroyed_objects();
+    {
+        ural::optional<Type> x0;
+
+        CHECK(!x0);
+
+        BOOST_CHECK_EQUAL(0, Type::active_objects());
+    }
+    BOOST_CHECK_EQUAL(destroyed_old, Type::destroyed_objects());
+
+    // Конструктор с аргументом: вызываются конструктор и деструктор
+    {
+        ural::optional<Type> x0{ural::inplace, 42};
+
+        CHECK(!!x0);
+
+        BOOST_CHECK_EQUAL(1, Type::active_objects());
+    }
+    BOOST_CHECK_EQUAL(destroyed_old + 1, Type::destroyed_objects());
+}
+
+BOOST_AUTO_TEST_CASE(optional_throw_test)
+{
+    typedef std::vector<std::string> Type;
+    ural::optional<Type> x0{ural::nullopt};
+    CHECK_THROW(x0.value(), std::logic_error);
+
+    ural::optional<Type&> x_def;
+    CHECK_THROW(x_def.value(), std::logic_error);
+}
+
+BOOST_AUTO_TEST_CASE(optional_bad_access_test)
+{
+    ural::optional<int> x;
+    ural::optional<int&> y;
+
+    CHECK_THROW(x.value(), ural::bad_optional_access);
+    CHECK_THROW(y.value(), ural::bad_optional_access);
+}
+
+BOOST_AUTO_TEST_CASE(optional_int_test)
+{
+    typedef int Type;
+
+    BOOST_CONCEPT_ASSERT((ural::Regular_concept<ural::optional<Type>>));
+
+    // Конструктор копирования
+    {
+        ural::optional<Type> x0{ural::nullopt};
+        ural::optional<Type> x1{13};
+        ural::optional<Type> const x2{42};
+
+        CHECK(!x0);
+        CHECK(!!x1);
+        CHECK(!!x2);
+
+        CHECK(nullptr == x0.get_pointer());
+        BOOST_CHECK_EQUAL(13, x1.value());
+        BOOST_CHECK_EQUAL(42, x2.value());
+
+        BOOST_CHECK_EQUAL(x0, x0);
+        BOOST_CHECK_EQUAL(x1, x1);
+        BOOST_CHECK_EQUAL(x2, x2);
+        CHECK(x0 != x1);
+        CHECK(x2 != x1);
+
+        auto x0_c = x0;
+        auto x1_c = x1;
+
+        CHECK(!x0_c);
+        CHECK(!!x1_c);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(optional_none_assign)
+{
+    typedef std::string Type;
+    ural::optional<Type> x0;
+    ural::optional<Type> x1{"42"};
+
+    x0 = ural::nullopt;
+    x1 = ural::nullopt;
+
+    CHECK(!x0);
+    CHECK(!x1);
+}
+
+BOOST_AUTO_TEST_CASE(optional_move_ctor_and_assignment_test)
+{
+    typedef std::string Type;
+
+    std::string const s("hello, world");
+
+    ural::optional<Type> x0;
+    ural::optional<Type> x1(s);
+    ural::optional<Type> x2(std::move(x1));
+    ural::optional<Type> x3(std::move(x0));
+
+    CHECK(!x0);
+    CHECK(!!x1);
+    CHECK(!x3);
+    BOOST_CHECK_EQUAL(s, x2.value());
+
+    x3 = std::string("abc");
+    BOOST_CHECK_EQUAL("abc", x3.value());
+
+    x0 = std::move(x2);
+    x1 = std::move(x3);
+    BOOST_CHECK_EQUAL("hello, world", x0.value());
+    BOOST_CHECK_EQUAL("abc", x1.value());
+    CHECK(!!x2);
+    CHECK(!!x3);
+
+    x2 = x1;
+    x3 = x0;
+    BOOST_CHECK_EQUAL(x2.value(), x1.value());
+    BOOST_CHECK_EQUAL(x3.value(), x0.value());
+}
+
+BOOST_AUTO_TEST_CASE(optional_assign_value_test)
+{
+    typedef std::string Type;
+
+    std::string hw = "Hello, world!";
+    ural::optional<Type> x0;
+    x0 = hw;
+    BOOST_CHECK_EQUAL(hw, x0);
+    BOOST_CHECK_EQUAL(x0, hw);
+
+    hw = "BSHS";
+    x0 = hw;
+    BOOST_CHECK_EQUAL(hw, x0.value());
+}
+
+BOOST_AUTO_TEST_CASE(optional_ostreaming)
+{
+    std::string hw = "Hello, world!";
+    ural::optional<std::string> const x {hw};
+
+    std::ostringstream os;
+    os << x;
+
+    std::ostringstream z;
+    z << "{" << hw << "}";
+
+    BOOST_CHECK_EQUAL(z.str(), os.str());
+}
+
+BOOST_AUTO_TEST_CASE(optional_ostreaming_empty)
+{
+    ural::optional<std::string> const x = ural::nullopt;
+
+    std::ostringstream os;
+    os << x;
+
+    BOOST_CHECK_EQUAL("{}", os.str());
+}
+
+BOOST_AUTO_TEST_CASE(optional_less_operator_test)
+{
+    ural::optional<std::string> x0;
+    ural::optional<std::string> x1("abc");
+    ural::optional<std::string> x2("hellow");
+
+    CHECK(!(x0 < x0));
+    CHECK(!(x1 < x0));
+    CHECK(x0 < x1);
+    CHECK(x0 < x2);
+    CHECK(x1 < x2);
+    CHECK(x0 < x1.value());
+    CHECK(x0 < x2.value());
+    CHECK(x1.value() < x2.value());
+    CHECK(x1 < x2.value());
+    CHECK(x1.value() < x2);
+    CHECK(!(x2 < x1));
+}
+
+BOOST_AUTO_TEST_CASE(optional_less_or_equal_operator_test)
+{
+    ural::optional<std::string> x0;
+    ural::optional<std::string> x1("abc");
+    ural::optional<std::string> x2("hellow");
+
+    CHECK(x0 <= x0);
+    CHECK(!(x1 <= x0));
+    CHECK(x0 <= x1);
+    CHECK(x0 <= x2);
+    CHECK(x1 <= x2);
+    CHECK(x0 <= x1.value());
+    CHECK(x0 <= x2.value());
+    CHECK(x1.value() <= x2.value());
+    CHECK(x1 <= x2.value());
+    CHECK(x1.value() <= x2);
+    CHECK(!(x2 <= x1));
+}
+
+BOOST_AUTO_TEST_CASE(optional_greater_operator_test)
+{
+    ural::optional<std::string> x0;
+    ural::optional<std::string> x1("abc");
+    ural::optional<std::string> x2("hellow");
+
+    CHECK(!(x0 > x0));
+    CHECK(!(x0 > x1));
+    CHECK(x1 > x0);
+    CHECK(x2 > x0);
+    CHECK(x2 > x1);
+    CHECK(x1.value() > x0);
+    CHECK(x2.value() > x0);
+    CHECK(x2.value() > x1.value());
+    CHECK(x2 > x1.value());
+    CHECK(x2.value() > x1);
+    CHECK(x2 > x1);
+}
+
+BOOST_AUTO_TEST_CASE(optional_greater_or_equal_operator_test)
+{
+    ural::optional<std::string> x0;
+    ural::optional<std::string> x1("abc");
+    ural::optional<std::string> x2("hellow");
+
+    CHECK(x0 >= x0);
+    CHECK(!(x0 >= x1));
+    CHECK(x1 >= x0);
+    CHECK(x2 >= x0);
+    CHECK(x2 >= x1);
+    CHECK(x1.value() >= x0);
+    CHECK(x2.value() >= x0);
+    CHECK(x2.value() >= x1.value());
+    CHECK(x2 >= x1.value());
+    CHECK(x2.value() >= x1);
+    CHECK(x2 >= x1);
+}
+
+BOOST_AUTO_TEST_CASE(optional_value_or_test)
+{
+    ural::optional<int> x0;
+    ural::optional<int> x1(42);
+
+    BOOST_CHECK_EQUAL(-1, x0.value_or(-1));
+    BOOST_CHECK_EQUAL(42, x1.value_or(-1));
+}
+
+BOOST_AUTO_TEST_CASE(optional_ref_default_init_test)
+{
+    ural::optional<int&> x0;
+
+    CHECK(x0.empty());
+    CHECK(!x0);
+    CHECK(!x0.get_pointer());
+
+    ural::optional<int&> x1(ural::nullopt);
+
+    CHECK(x1.empty());
+    CHECK(!x1);
+    CHECK(!x1.get_pointer());
+}
+
+BOOST_AUTO_TEST_CASE(optional_ref_value_init_test)
+{
+    typedef int Type;
+    typedef Type & Ref;
+
+    Type value = 42;
+    Ref  r_value = value;
+
+    ural::optional<Ref> x1(value);
+    ural::optional<Ref> x2(r_value);
+
+    CHECK(!x1.empty());
+    CHECK(!!x1);
+    CHECK(!!x1.get_pointer());
+    BOOST_CHECK_EQUAL(&value, x2.get_pointer());
+    BOOST_CHECK_EQUAL(value, x2.value());
+
+    CHECK(!x2.empty());
+    CHECK(!!x2);
+    CHECK(!!x2.get_pointer());
+    BOOST_CHECK_EQUAL(&r_value, x1.get_pointer());
+    BOOST_CHECK_EQUAL(r_value, x1.value());
+}
+
+BOOST_AUTO_TEST_CASE(optional_ref_assign_value_test)
+{
+    typedef ural::optional<int&> Optional;
+    int var = 42;
+
+    Optional x0;
+    x0 = var;
+
+    CHECK(!!x0);
+    BOOST_CHECK_EQUAL(&var, x0.get_pointer());
+    BOOST_CHECK_EQUAL(var, x0.value());
+
+    x0 = ural::nullopt;
+
+    CHECK(!x0);
+    CHECK(nullptr == x0.get_pointer());
+}
+
+BOOST_AUTO_TEST_CASE(optional_ref_assign_test)
+{
+    typedef ural::optional<int&> Optional;
+    int var = 42;
+
+    Optional x0;
+    Optional x0_1;
+    Optional x0_2;
+    Optional x1(var);
+    Optional x1_1(var);
+    Optional x1_2(var);
+
+    x0_1 = x0;
+    x0_2 = x1;
+    x1_1 = x0;
+    x1_2 = x1;
+
+    CHECK(!x0_1);
+    CHECK(!x1_1);
+
+    CHECK(!!x0_2);
+    BOOST_CHECK_EQUAL(&var, x0_2.get_pointer());
+
+    CHECK(!!x1_2);
+    BOOST_CHECK_EQUAL(&var, x1_2.get_pointer());
+}
+
+BOOST_AUTO_TEST_CASE(optional_inplace_ctor)
+{
+    typedef std::vector<int> Type;
+
+    typedef ural::optional<Type> Optional;
+
+    size_t const n = 10;
+    auto const filler = 42;
+
+    Optional const y{ural::inplace, n, filler};
+
+    CHECK(!!y);
+    BOOST_CHECK_EQUAL(n, y.value().size());
+
+    CHECK(std::all_of(y->begin(), y->end(), [=](int x){ return x == filler; }));
+}
+
+BOOST_AUTO_TEST_CASE(optional_emplace_test)
+{
+    typedef std::vector<int> Type;
+
+    typedef ural::optional<Type> Optional;
+
+    Optional x;
+    x.emplace(5, 2);
+
+    Type const z(5, 2);
+
+    CHECK(!!x);
+    URAL_CHECK_SEQ_EQUAL(z, x.value());
+}
+
+/* Основано на github.com/akrzemi1/Optional/blob/master/test_type_traits.cpp
+*/
+
+BOOST_AUTO_TEST_CASE(optional_type_traits_test)
+{
+    struct Val
+    {
+      Val(){}
+      Val( Val const & ){}
+      Val( Val && ) noexcept {}
+
+      Val & operator=( Val const & ) = delete;
+      Val & operator=( Val && ) noexcept = delete;
+    };
+
+    struct Safe
+    {
+        Safe(){}
+        Safe( Safe const & ){}
+        Safe( Safe && ) noexcept {}
+
+        Safe & operator=( Safe const & ){ return *this; }
+        Safe & operator=( Safe && ) noexcept { return *this; }
+    };
+
+    struct Unsafe
+    {
+        Unsafe(){}
+        Unsafe( Unsafe const & ){}
+        Unsafe( Unsafe && ){}
+
+        Unsafe & operator=( Unsafe const & ){ return *this; }
+        Unsafe & operator=( Unsafe && ) { return *this; }
+    };
+
+
+    static_assert(std::is_nothrow_move_constructible<Safe>::value, "WTF!");
+    static_assert(!std::is_nothrow_move_constructible<Unsafe>::value, "WTF!");
+
+    static_assert(std::is_assignable<Safe&, Safe&&>::value, "WTF!");
+    static_assert(!std::is_assignable<Val&, Val&&>::value, "WTF!");
+
+    static_assert(std::is_nothrow_move_assignable<Safe>::value, "WTF!");
+    static_assert(!std::is_nothrow_move_assignable<Unsafe>::value, "WTF!");
+}
+// end constexpr tests
