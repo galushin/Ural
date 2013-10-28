@@ -1,29 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Debug" />
-	<File name="..\roadmap.txt" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="..\ural\algorithm.hpp" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="179" topLine="0" />
+			<Cursor1 position="576" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="..\ural\sequence\iterator_sequence.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="..\ural\numeric\details\num_algo.hpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="797" topLine="18" />
+			<Cursor1 position="907" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="..\ural\sequence\insertion.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="..\tests\numeric_tests.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="575" topLine="8" />
+			<Cursor1 position="1654" topLine="30" />
 		</Cursor>
 	</File>
-	<File name="..\ural\algorithm.hpp" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="..\ural\numeric\partial_sums.hpp" open="1" top="1" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="157" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="..\tests\iterator_sequence_test.cpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="37" topLine="14" />
+			<Cursor1 position="551" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="..\ural\algorithm\details\copy.hpp" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -31,19 +26,9 @@
 			<Cursor1 position="343" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="..\tests\tuple_tests.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="..\ural\placeholders.hpp" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="35" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="..\ural\placeholders.hpp" open="1" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="..\ural\sequence\all.hpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="420" topLine="3" />
+			<Cursor1 position="305" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="..\ural\functional.hpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -51,19 +36,19 @@
 			<Cursor1 position="1123" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="..\ural\numeric.hpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="..\ural\sequence\all.hpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="213" topLine="0" />
+			<Cursor1 position="420" topLine="3" />
 		</Cursor>
 	</File>
-	<File name="..\ural\numeric\details\num_algo.hpp" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="..\ural\sequence\insertion.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1102" topLine="19" />
+			<Cursor1 position="575" topLine="8" />
 		</Cursor>
 	</File>
-	<File name="..\tests\numeric_tests.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="..\ural\sequence\iterator_sequence.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1095" topLine="13" />
+			<Cursor1 position="797" topLine="18" />
 		</Cursor>
 	</File>
 	<File name="..\ural\tuple.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -76,9 +61,24 @@
 			<Cursor1 position="60" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="..\ural\numeric\partial_sums.hpp" open="1" top="1" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="..\roadmap.txt" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="0" topLine="0" />
+			<Cursor1 position="179" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="..\ural\numeric.hpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="213" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="..\tests\tuple_tests.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="35" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="..\tests\iterator_sequence_test.cpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="37" topLine="14" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>
