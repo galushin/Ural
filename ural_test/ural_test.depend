@@ -12,9 +12,9 @@
 
 1382764809 c:\devtools\ural_repo\ural\\ural\placeholders.hpp
 
-1382674876 source:c:\devtools\ural_repo\ural\tests\iterator_sequence_test.cpp
-	<boost/concept/assert.hpp>
+1382920056 source:c:\devtools\ural_repo\ural\tests\iterator_sequence_test.cpp
 	<boost/test/unit_test.hpp>
+	<boost/concept/assert.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/all.hpp>
 
@@ -35,7 +35,7 @@
 
 1382674135 c:\devtools\ural_repo\ural\\ural\sequence\insertion.hpp
 
-1382760459 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
+1382765047 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
 	<numeric>
 	<forward_list>
 	<boost/test/unit_test.hpp>
@@ -200,4 +200,101 @@
 
 1223887188 source:c:\devtools\github\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
 	<boost/test/impl/xml_report_formatter.ipp>
+
+1382666452 c:\devtools\ural_repo\ural\ural\tuple.hpp
+	<tuple>
+	<ural/placeholders.hpp>
+
+1382764809 c:\devtools\ural_repo\ural\ural\placeholders.hpp
+
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\compiler_log_formatter.cpp
+	<boost/test/impl/compiler_log_formatter.ipp>
+
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\debug.cpp
+	<boost/test/impl/debug.ipp>
+
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\execution_monitor.cpp
+	<boost/test/impl/execution_monitor.ipp>
+
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\framework.cpp
+	<boost/test/impl/framework.ipp>
+
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\plain_report_formatter.cpp
+	<boost/test/impl/plain_report_formatter.ipp>
+
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\progress_monitor.cpp
+	<boost/test/impl/progress_monitor.ipp>
+
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\results_collector.cpp
+	<boost/test/impl/results_collector.ipp>
+
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\results_reporter.cpp
+	<boost/test/impl/results_reporter.ipp>
+
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\test_tools.cpp
+	<boost/test/impl/test_tools.ipp>
+
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\unit_test_log.cpp
+	<boost/test/impl/unit_test_log.ipp>
+
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\unit_test_main.cpp
+	<boost/test/impl/unit_test_main.ipp>
+
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\unit_test_monitor.cpp
+	<boost/test/impl/unit_test_monitor.ipp>
+
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\unit_test_parameters.cpp
+	<boost/test/impl/unit_test_parameters.ipp>
+
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\unit_test_suite.cpp
+	<boost/test/impl/unit_test_suite.ipp>
+
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\xml_log_formatter.cpp
+	<boost/test/impl/xml_log_formatter.ipp>
+
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
+	<boost/test/impl/xml_report_formatter.ipp>
+
+1382761504 c:\devtools\ural_repo\ural\ural\algorithm.hpp
+	<ural/sequence/all.hpp>
+	<ural/algorithm/details/copy.hpp>
+
+1382674934 c:\devtools\ural_repo\ural\ural\sequence\all.hpp
+	<iterator>
+	<ural/sequence/iterator_sequence.hpp>
+	<ural/sequence/insertion.hpp>
+
+1382764513 c:\devtools\ural_repo\ural\ural\sequence\iterator_sequence.hpp
+	<ural/tuple.hpp>
+
+1382674135 c:\devtools\ural_repo\ural\ural\sequence\insertion.hpp
+
+1382660262 c:\devtools\ural_repo\ural\ural\algorithm\details\copy.hpp
+	<ural/tuple.hpp>
+
+1382760303 c:\devtools\ural_repo\ural\ural\numeric.hpp
+	<ural/functional.hpp>
+	<ural/sequence/all.hpp>
+	<ural/numeric/details/num_algo.hpp>
+	<ural/numeric/partial_sums.hpp>
+
+1382684311 c:\devtools\ural_repo\ural\ural\functional.hpp
+
+1382685103 c:\devtools\ural_repo\ural\ural\numeric\details\num_algo.hpp
+
+1382765065 c:\devtools\ural_repo\ural\ural\numeric\partial_sums.hpp
+	<ural/functional.hpp>
+
+1377072412 source:c:\devtools\ural_repo\ural\tests\optional_tests.cpp
+	<utility>
+	<string>
+	<cassert>
+	<complex>
+	<vector>
+	<functional>
+	<ural/optional/all.hpp>
+	<ural/unittest++/check_macros.hpp>
+	<UnitTest++.h>
+	<unordered_set>
+	<ural/utility/tracers.hpp>
 

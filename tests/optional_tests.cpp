@@ -18,7 +18,10 @@ https://github.com/akrzemi1/Optional/blob/master/test_optional.cpp
 */
 
 #include <boost/test/unit_test.hpp>
+#include <boost/concept/assert.hpp>
 
+#include <ostream>
+#include <sstream>
 #include <utility>
 #include <string>
 #include <cassert>
@@ -27,6 +30,7 @@ https://github.com/akrzemi1/Optional/blob/master/test_optional.cpp
 #include <functional>
 
 #include <ural/optional.hpp>
+#include <ural/concepts.hpp>
 
 enum  State
 {
@@ -1304,7 +1308,7 @@ struct Previous_declarator
         static_assert( g1 >= g0, "ne!" );
         static_assert( !(g1 > g0), "ne!" );
         static_assert( g1 <= g0, "ne!" );
-        static_assert( !(g1 <g0), "ne!" );
+        static_assert( !(g1 < g0), "ne!" );
 
         static_assert( g1 == tr2::nullopt, "!" );
         static_assert( !(g1 != tr2::nullopt), "!" );
@@ -1382,7 +1386,7 @@ BOOST_AUTO_TEST_CASE(optional_test)
     {
         ural::optional<Type> x0;
 
-        CHECK(!x0);
+        BOOST_CHECK(!x0);
 
         BOOST_CHECK_EQUAL(0, Type::active_objects());
     }
@@ -1392,7 +1396,7 @@ BOOST_AUTO_TEST_CASE(optional_test)
     {
         ural::optional<Type> x0{ural::inplace, 42};
 
-        CHECK(!!x0);
+        BOOST_CHECK(!!x0);
 
         BOOST_CHECK_EQUAL(1, Type::active_objects());
     }
@@ -1403,10 +1407,10 @@ BOOST_AUTO_TEST_CASE(optional_throw_test)
 {
     typedef std::vector<std::string> Type;
     ural::optional<Type> x0{ural::nullopt};
-    CHECK_THROW(x0.value(), std::logic_error);
+    BOOST_CHECK_THROW(x0.value(), std::logic_error);
 
     ural::optional<Type&> x_def;
-    CHECK_THROW(x_def.value(), std::logic_error);
+    BOOST_CHECK_THROW(x_def.value(), std::logic_error);
 }
 
 BOOST_AUTO_TEST_CASE(optional_bad_access_test)
@@ -1414,15 +1418,15 @@ BOOST_AUTO_TEST_CASE(optional_bad_access_test)
     ural::optional<int> x;
     ural::optional<int&> y;
 
-    CHECK_THROW(x.value(), ural::bad_optional_access);
-    CHECK_THROW(y.value(), ural::bad_optional_access);
+    BOOST_CHECK_THROW(x.value(), ural::bad_optional_access);
+    BOOST_CHECK_THROW(y.value(), ural::bad_optional_access);
 }
 
 BOOST_AUTO_TEST_CASE(optional_int_test)
 {
     typedef int Type;
 
-    BOOST_CONCEPT_ASSERT((ural::Regular_concept<ural::optional<Type>>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::Regular<ural::optional<Type>>));
 
     // Конструктор копирования
     {
@@ -1430,25 +1434,25 @@ BOOST_AUTO_TEST_CASE(optional_int_test)
         ural::optional<Type> x1{13};
         ural::optional<Type> const x2{42};
 
-        CHECK(!x0);
-        CHECK(!!x1);
-        CHECK(!!x2);
+        BOOST_CHECK(!x0);
+        BOOST_CHECK(!!x1);
+        BOOST_CHECK(!!x2);
 
-        CHECK(nullptr == x0.get_pointer());
+        BOOST_CHECK(nullptr == x0.get_pointer());
         BOOST_CHECK_EQUAL(13, x1.value());
         BOOST_CHECK_EQUAL(42, x2.value());
 
         BOOST_CHECK_EQUAL(x0, x0);
         BOOST_CHECK_EQUAL(x1, x1);
         BOOST_CHECK_EQUAL(x2, x2);
-        CHECK(x0 != x1);
-        CHECK(x2 != x1);
+        BOOST_CHECK(x0 != x1);
+        BOOST_CHECK(x2 != x1);
 
         auto x0_c = x0;
         auto x1_c = x1;
 
-        CHECK(!x0_c);
-        CHECK(!!x1_c);
+        BOOST_CHECK(!x0_c);
+        BOOST_CHECK(!!x1_c);
     }
 }
 
@@ -1461,8 +1465,8 @@ BOOST_AUTO_TEST_CASE(optional_none_assign)
     x0 = ural::nullopt;
     x1 = ural::nullopt;
 
-    CHECK(!x0);
-    CHECK(!x1);
+    BOOST_CHECK(!x0);
+    BOOST_CHECK(!x1);
 }
 
 BOOST_AUTO_TEST_CASE(optional_move_ctor_and_assignment_test)
@@ -1476,9 +1480,9 @@ BOOST_AUTO_TEST_CASE(optional_move_ctor_and_assignment_test)
     ural::optional<Type> x2(std::move(x1));
     ural::optional<Type> x3(std::move(x0));
 
-    CHECK(!x0);
-    CHECK(!!x1);
-    CHECK(!x3);
+    BOOST_CHECK(!x0);
+    BOOST_CHECK(!!x1);
+    BOOST_CHECK(!x3);
     BOOST_CHECK_EQUAL(s, x2.value());
 
     x3 = std::string("abc");
@@ -1488,8 +1492,8 @@ BOOST_AUTO_TEST_CASE(optional_move_ctor_and_assignment_test)
     x1 = std::move(x3);
     BOOST_CHECK_EQUAL("hello, world", x0.value());
     BOOST_CHECK_EQUAL("abc", x1.value());
-    CHECK(!!x2);
-    CHECK(!!x3);
+    BOOST_CHECK(!!x2);
+    BOOST_CHECK(!!x3);
 
     x2 = x1;
     x3 = x0;
@@ -1542,17 +1546,17 @@ BOOST_AUTO_TEST_CASE(optional_less_operator_test)
     ural::optional<std::string> x1("abc");
     ural::optional<std::string> x2("hellow");
 
-    CHECK(!(x0 < x0));
-    CHECK(!(x1 < x0));
-    CHECK(x0 < x1);
-    CHECK(x0 < x2);
-    CHECK(x1 < x2);
-    CHECK(x0 < x1.value());
-    CHECK(x0 < x2.value());
-    CHECK(x1.value() < x2.value());
-    CHECK(x1 < x2.value());
-    CHECK(x1.value() < x2);
-    CHECK(!(x2 < x1));
+    BOOST_CHECK(!(x0 < x0));
+    BOOST_CHECK(!(x1 < x0));
+    BOOST_CHECK(x0 < x1);
+    BOOST_CHECK(x0 < x2);
+    BOOST_CHECK(x1 < x2);
+    BOOST_CHECK(x0 < x1.value());
+    BOOST_CHECK(x0 < x2.value());
+    BOOST_CHECK(x1.value() < x2.value());
+    BOOST_CHECK(x1 < x2.value());
+    BOOST_CHECK(x1.value() < x2);
+    BOOST_CHECK(!(x2 < x1));
 }
 
 BOOST_AUTO_TEST_CASE(optional_less_or_equal_operator_test)
@@ -1561,17 +1565,17 @@ BOOST_AUTO_TEST_CASE(optional_less_or_equal_operator_test)
     ural::optional<std::string> x1("abc");
     ural::optional<std::string> x2("hellow");
 
-    CHECK(x0 <= x0);
-    CHECK(!(x1 <= x0));
-    CHECK(x0 <= x1);
-    CHECK(x0 <= x2);
-    CHECK(x1 <= x2);
-    CHECK(x0 <= x1.value());
-    CHECK(x0 <= x2.value());
-    CHECK(x1.value() <= x2.value());
-    CHECK(x1 <= x2.value());
-    CHECK(x1.value() <= x2);
-    CHECK(!(x2 <= x1));
+    BOOST_CHECK(x0 <= x0);
+    BOOST_CHECK(!(x1 <= x0));
+    BOOST_CHECK(x0 <= x1);
+    BOOST_CHECK(x0 <= x2);
+    BOOST_CHECK(x1 <= x2);
+    BOOST_CHECK(x0 <= x1.value());
+    BOOST_CHECK(x0 <= x2.value());
+    BOOST_CHECK(x1.value() <= x2.value());
+    BOOST_CHECK(x1 <= x2.value());
+    BOOST_CHECK(x1.value() <= x2);
+    BOOST_CHECK(!(x2 <= x1));
 }
 
 BOOST_AUTO_TEST_CASE(optional_greater_operator_test)
@@ -1580,17 +1584,17 @@ BOOST_AUTO_TEST_CASE(optional_greater_operator_test)
     ural::optional<std::string> x1("abc");
     ural::optional<std::string> x2("hellow");
 
-    CHECK(!(x0 > x0));
-    CHECK(!(x0 > x1));
-    CHECK(x1 > x0);
-    CHECK(x2 > x0);
-    CHECK(x2 > x1);
-    CHECK(x1.value() > x0);
-    CHECK(x2.value() > x0);
-    CHECK(x2.value() > x1.value());
-    CHECK(x2 > x1.value());
-    CHECK(x2.value() > x1);
-    CHECK(x2 > x1);
+    BOOST_CHECK(!(x0 > x0));
+    BOOST_CHECK(!(x0 > x1));
+    BOOST_CHECK(x1 > x0);
+    BOOST_CHECK(x2 > x0);
+    BOOST_CHECK(x2 > x1);
+    BOOST_CHECK(x1.value() > x0);
+    BOOST_CHECK(x2.value() > x0);
+    BOOST_CHECK(x2.value() > x1.value());
+    BOOST_CHECK(x2 > x1.value());
+    BOOST_CHECK(x2.value() > x1);
+    BOOST_CHECK(x2 > x1);
 }
 
 BOOST_AUTO_TEST_CASE(optional_greater_or_equal_operator_test)
@@ -1599,17 +1603,17 @@ BOOST_AUTO_TEST_CASE(optional_greater_or_equal_operator_test)
     ural::optional<std::string> x1("abc");
     ural::optional<std::string> x2("hellow");
 
-    CHECK(x0 >= x0);
-    CHECK(!(x0 >= x1));
-    CHECK(x1 >= x0);
-    CHECK(x2 >= x0);
-    CHECK(x2 >= x1);
-    CHECK(x1.value() >= x0);
-    CHECK(x2.value() >= x0);
-    CHECK(x2.value() >= x1.value());
-    CHECK(x2 >= x1.value());
-    CHECK(x2.value() >= x1);
-    CHECK(x2 >= x1);
+    BOOST_CHECK(x0 >= x0);
+    BOOST_CHECK(!(x0 >= x1));
+    BOOST_CHECK(x1 >= x0);
+    BOOST_CHECK(x2 >= x0);
+    BOOST_CHECK(x2 >= x1);
+    BOOST_CHECK(x1.value() >= x0);
+    BOOST_CHECK(x2.value() >= x0);
+    BOOST_CHECK(x2.value() >= x1.value());
+    BOOST_CHECK(x2 >= x1.value());
+    BOOST_CHECK(x2.value() >= x1);
+    BOOST_CHECK(x2 >= x1);
 }
 
 BOOST_AUTO_TEST_CASE(optional_value_or_test)
@@ -1625,15 +1629,15 @@ BOOST_AUTO_TEST_CASE(optional_ref_default_init_test)
 {
     ural::optional<int&> x0;
 
-    CHECK(x0.empty());
-    CHECK(!x0);
-    CHECK(!x0.get_pointer());
+    BOOST_CHECK(x0.empty());
+    BOOST_CHECK(!x0);
+    BOOST_CHECK(!x0.get_pointer());
 
     ural::optional<int&> x1(ural::nullopt);
 
-    CHECK(x1.empty());
-    CHECK(!x1);
-    CHECK(!x1.get_pointer());
+    BOOST_CHECK(x1.empty());
+    BOOST_CHECK(!x1);
+    BOOST_CHECK(!x1.get_pointer());
 }
 
 BOOST_AUTO_TEST_CASE(optional_ref_value_init_test)
@@ -1647,15 +1651,15 @@ BOOST_AUTO_TEST_CASE(optional_ref_value_init_test)
     ural::optional<Ref> x1(value);
     ural::optional<Ref> x2(r_value);
 
-    CHECK(!x1.empty());
-    CHECK(!!x1);
-    CHECK(!!x1.get_pointer());
+    BOOST_CHECK(!x1.empty());
+    BOOST_CHECK(!!x1);
+    BOOST_CHECK(!!x1.get_pointer());
     BOOST_CHECK_EQUAL(&value, x2.get_pointer());
     BOOST_CHECK_EQUAL(value, x2.value());
 
-    CHECK(!x2.empty());
-    CHECK(!!x2);
-    CHECK(!!x2.get_pointer());
+    BOOST_CHECK(!x2.empty());
+    BOOST_CHECK(!!x2);
+    BOOST_CHECK(!!x2.get_pointer());
     BOOST_CHECK_EQUAL(&r_value, x1.get_pointer());
     BOOST_CHECK_EQUAL(r_value, x1.value());
 }
@@ -1668,14 +1672,14 @@ BOOST_AUTO_TEST_CASE(optional_ref_assign_value_test)
     Optional x0;
     x0 = var;
 
-    CHECK(!!x0);
+    BOOST_CHECK(!!x0);
     BOOST_CHECK_EQUAL(&var, x0.get_pointer());
     BOOST_CHECK_EQUAL(var, x0.value());
 
     x0 = ural::nullopt;
 
-    CHECK(!x0);
-    CHECK(nullptr == x0.get_pointer());
+    BOOST_CHECK(!x0);
+    BOOST_CHECK(nullptr == x0.get_pointer());
 }
 
 BOOST_AUTO_TEST_CASE(optional_ref_assign_test)
@@ -1695,13 +1699,13 @@ BOOST_AUTO_TEST_CASE(optional_ref_assign_test)
     x1_1 = x0;
     x1_2 = x1;
 
-    CHECK(!x0_1);
-    CHECK(!x1_1);
+    BOOST_CHECK(!x0_1);
+    BOOST_CHECK(!x1_1);
 
-    CHECK(!!x0_2);
+    BOOST_CHECK(!!x0_2);
     BOOST_CHECK_EQUAL(&var, x0_2.get_pointer());
 
-    CHECK(!!x1_2);
+    BOOST_CHECK(!!x1_2);
     BOOST_CHECK_EQUAL(&var, x1_2.get_pointer());
 }
 
@@ -1716,10 +1720,10 @@ BOOST_AUTO_TEST_CASE(optional_inplace_ctor)
 
     Optional const y{ural::inplace, n, filler};
 
-    CHECK(!!y);
+    BOOST_CHECK(!!y);
     BOOST_CHECK_EQUAL(n, y.value().size());
 
-    CHECK(std::all_of(y->begin(), y->end(), [=](int x){ return x == filler; }));
+    BOOST_CHECK(std::all_of(y->begin(), y->end(), [=](int x){ return x == filler; }));
 }
 
 BOOST_AUTO_TEST_CASE(optional_emplace_test)
@@ -1733,8 +1737,9 @@ BOOST_AUTO_TEST_CASE(optional_emplace_test)
 
     Type const z(5, 2);
 
-    CHECK(!!x);
-    URAL_CHECK_SEQ_EQUAL(z, x.value());
+    BOOST_CHECK(!!x);
+    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
+                                  x.value().begin(), x.value().end());
 }
 
 /* Основано на github.com/akrzemi1/Optional/blob/master/test_type_traits.cpp

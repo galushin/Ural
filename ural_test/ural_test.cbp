@@ -56,6 +56,7 @@
 		<Unit filename="../tests/tuple_tests.cpp" />
 		<Unit filename="../ural/algorithm.hpp" />
 		<Unit filename="../ural/algorithm/details/copy.hpp" />
+		<Unit filename="../ural/concepts.hpp" />
 		<Unit filename="../ural/functional.hpp" />
 		<Unit filename="../ural/numeric.hpp" />
 		<Unit filename="../ural/numeric/details/num_algo.hpp" />
