@@ -1290,42 +1290,42 @@ struct Previous_declarator
     {
         static_assert(std::is_trivially_destructible<int>::value,
                       "int must have trivial destructor");
-        constexpr ural::optional_base_constexpr<int> ob0{};
+        constexpr ural::details::optional_base_constexpr<int> ob0{};
 
-      constexpr tr2::optional<int> g0{};
-      constexpr tr2::optional<int> g1{tr2::nullopt};
-      static_assert( !g0, "initialized!" );
-      static_assert( !g1, "initialized!" );
+        constexpr tr2::optional<int> g0{};
+        constexpr tr2::optional<int> g1{tr2::nullopt};
+        static_assert( !g0, "initialized!" );
+        static_assert( !g1, "initialized!" );
 
-      static_assert( bool(g1) == bool(g0), "ne!" );
+        static_assert( bool(g1) == bool(g0), "ne!" );
 
-      static_assert( g1 == g0, "ne!" );
-      static_assert( !(g1 != g0), "ne!" );
-      static_assert( g1 >= g0, "ne!" );
-      static_assert( !(g1 > g0), "ne!" );
-      static_assert( g1 <= g0, "ne!" );
-      static_assert( !(g1 <g0), "ne!" );
+        static_assert( g1 == g0, "ne!" );
+        static_assert( !(g1 != g0), "ne!" );
+        static_assert( g1 >= g0, "ne!" );
+        static_assert( !(g1 > g0), "ne!" );
+        static_assert( g1 <= g0, "ne!" );
+        static_assert( !(g1 <g0), "ne!" );
 
-      static_assert( g1 == tr2::nullopt, "!" );
-      static_assert( !(g1 != tr2::nullopt), "!" );
-      static_assert( g1 <= tr2::nullopt, "!" );
-      static_assert( !(g1 < tr2::nullopt), "!" );
-      static_assert( g1 >= tr2::nullopt, "!" );
-      static_assert( !(g1 > tr2::nullopt), "!" );
+        static_assert( g1 == tr2::nullopt, "!" );
+        static_assert( !(g1 != tr2::nullopt), "!" );
+        static_assert( g1 <= tr2::nullopt, "!" );
+        static_assert( !(g1 < tr2::nullopt), "!" );
+        static_assert( g1 >= tr2::nullopt, "!" );
+        static_assert( !(g1 > tr2::nullopt), "!" );
 
-      static_assert(  (tr2::nullopt == g0), "!" );
-      static_assert( !(tr2::nullopt != g0), "!" );
-      static_assert(  (tr2::nullopt >= g0), "!" );
-      static_assert( !(tr2::nullopt >  g0), "!" );
-      static_assert(  (tr2::nullopt <= g0), "!" );
-      static_assert( !(tr2::nullopt <  g0), "!" );
+        static_assert(  (tr2::nullopt == g0), "!" );
+        static_assert( !(tr2::nullopt != g0), "!" );
+        static_assert(  (tr2::nullopt >= g0), "!" );
+        static_assert( !(tr2::nullopt >  g0), "!" );
+        static_assert(  (tr2::nullopt <= g0), "!" );
+        static_assert( !(tr2::nullopt <  g0), "!" );
 
-      static_assert(  (g1 != tr2::optional<int>(1)), "!" );
-      static_assert( !(g1 == tr2::optional<int>(1)), "!" );
-      static_assert(  (g1 <  tr2::optional<int>(1)), "!" );
-      static_assert(  (g1 <= tr2::optional<int>(1)), "!" );
-      static_assert( !(g1 >  tr2::optional<int>(1)), "!" );
-      static_assert( !(g1 >  tr2::optional<int>(1)), "!" );
+        static_assert(  (g1 != tr2::optional<int>(1)), "!" );
+        static_assert( !(g1 == tr2::optional<int>(1)), "!" );
+        static_assert(  (g1 <  tr2::optional<int>(1)), "!" );
+        static_assert(  (g1 <= tr2::optional<int>(1)), "!" );
+        static_assert( !(g1 >  tr2::optional<int>(1)), "!" );
+        static_assert( !(g1 >  tr2::optional<int>(1)), "!" );
     }
 };
 
