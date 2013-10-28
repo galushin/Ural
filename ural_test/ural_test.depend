@@ -55,3 +55,149 @@
 1382764998 c:\devtools\ural_repo\ural\\ural\numeric\partial_sums.hpp
 	<ural/functional.hpp>
 
+1382863906 source:c:\devtools\github\ural\ural_test\main.cpp
+	<boost/test/unit_test.hpp>
+
+1382865774 source:c:\devtools\github\ural\tests\iterator_sequence_test.cpp
+	<boost/test/unit_test.hpp>
+	<boost/concept/assert.hpp>
+	<ural/algorithm.hpp>
+	<ural/sequence/all.hpp>
+
+1382863906 c:\devtools\github\ural\ural\algorithm.hpp
+	<ural/sequence/all.hpp>
+	<ural/algorithm/details/copy.hpp>
+
+1382863906 c:\devtools\github\ural\ural\sequence\all.hpp
+	<iterator>
+	<ural/sequence/iterator_sequence.hpp>
+	<ural/sequence/insertion.hpp>
+
+1382863906 c:\devtools\github\ural\ural\sequence\iterator_sequence.hpp
+	<ural/tuple.hpp>
+
+1382863906 c:\devtools\github\ural\ural\tuple.hpp
+	<tuple>
+	<ural/placeholders.hpp>
+
+1382863906 c:\devtools\github\ural\ural\placeholders.hpp
+
+1382863906 c:\devtools\github\ural\ural\sequence\insertion.hpp
+
+1382863906 c:\devtools\github\ural\ural\algorithm\details\copy.hpp
+	<ural/tuple.hpp>
+
+1382865779 source:c:\devtools\github\ural\tests\numeric_tests.cpp
+	<numeric>
+	<forward_list>
+	<boost/test/unit_test.hpp>
+	<ural/algorithm.hpp>
+	<ural/numeric.hpp>
+
+1382863906 c:\devtools\github\ural\ural\numeric.hpp
+	<ural/functional.hpp>
+	<ural/sequence/all.hpp>
+	<ural/numeric/details/num_algo.hpp>
+	<ural/numeric/partial_sums.hpp>
+
+1382863906 c:\devtools\github\ural\ural\functional.hpp
+
+1382863906 c:\devtools\github\ural\ural\numeric\details\num_algo.hpp
+
+1382863906 c:\devtools\github\ural\ural\numeric\partial_sums.hpp
+	<ural/functional.hpp>
+
+1382865765 source:c:\devtools\github\ural\tests\tuple_tests.cpp
+	<boost/test/unit_test.hpp>
+	<ural/tuple.hpp>
+
+1223887188 source:c:\devtools\boost_1_54_0\libs\test\src\test_tools.cpp
+	<boost/test/impl/test_tools.ipp>
+
+1223887188 source:c:\devtools\boost_1_54_0\libs\test\src\unit_test_log.cpp
+	<boost/test/impl/unit_test_log.ipp>
+
+1223887188 source:c:\devtools\boost_1_54_0\libs\test\src\framework.cpp
+	<boost/test/impl/framework.ipp>
+
+1223887188 source:c:\devtools\boost_1_54_0\libs\test\src\results_reporter.cpp
+	<boost/test/impl/results_reporter.ipp>
+
+1223887188 source:c:\devtools\boost_1_54_0\libs\test\src\unit_test_parameters.cpp
+	<boost/test/impl/unit_test_parameters.ipp>
+
+1223887188 source:c:\devtools\boost_1_54_0\libs\test\src\debug.cpp
+	<boost/test/impl/debug.ipp>
+
+1223887188 source:c:\devtools\boost_1_54_0\libs\test\src\execution_monitor.cpp
+	<boost/test/impl/execution_monitor.ipp>
+
+1223887188 source:c:\devtools\boost_1_54_0\libs\test\src\unit_test_suite.cpp
+	<boost/test/impl/unit_test_suite.ipp>
+
+1223887188 source:c:\devtools\boost_1_54_0\libs\test\src\unit_test_main.cpp
+	<boost/test/impl/unit_test_main.ipp>
+
+1223887188 source:c:\devtools\boost_1_54_0\libs\test\src\results_collector.cpp
+	<boost/test/impl/results_collector.ipp>
+
+1223887188 source:c:\devtools\boost_1_54_0\libs\test\src\progress_monitor.cpp
+	<boost/test/impl/progress_monitor.ipp>
+
+1223887188 source:c:\devtools\boost_1_54_0\libs\test\src\xml_log_formatter.cpp
+	<boost/test/impl/xml_log_formatter.ipp>
+
+1223887188 source:c:\devtools\boost_1_54_0\libs\test\src\xml_report_formatter.cpp
+	<boost/test/impl/xml_report_formatter.ipp>
+
+1223887188 source:c:\devtools\boost_1_54_0\libs\test\src\compiler_log_formatter.cpp
+	<boost/test/impl/compiler_log_formatter.ipp>
+
+1223887188 source:c:\devtools\boost_1_54_0\libs\test\src\plain_report_formatter.cpp
+	<boost/test/impl/plain_report_formatter.ipp>
+
+1223887188 source:c:\devtools\github\ural\boost_1_54\libs\test\src\test_tools.cpp
+	<boost/test/impl/test_tools.ipp>
+
+1223887188 source:c:\devtools\github\ural\boost_1_54\libs\test\src\framework.cpp
+	<boost/test/impl/framework.ipp>
+
+1223887188 source:c:\devtools\github\ural\boost_1_54\libs\test\src\unit_test_log.cpp
+	<boost/test/impl/unit_test_log.ipp>
+
+1223887188 source:c:\devtools\github\ural\boost_1_54\libs\test\src\unit_test_parameters.cpp
+	<boost/test/impl/unit_test_parameters.ipp>
+
+1223887188 source:c:\devtools\github\ural\boost_1_54\libs\test\src\debug.cpp
+	<boost/test/impl/debug.ipp>
+
+1223887188 source:c:\devtools\github\ural\boost_1_54\libs\test\src\results_reporter.cpp
+	<boost/test/impl/results_reporter.ipp>
+
+1223887188 source:c:\devtools\github\ural\boost_1_54\libs\test\src\execution_monitor.cpp
+	<boost/test/impl/execution_monitor.ipp>
+
+1223887188 source:c:\devtools\github\ural\boost_1_54\libs\test\src\unit_test_suite.cpp
+	<boost/test/impl/unit_test_suite.ipp>
+
+1223887188 source:c:\devtools\github\ural\boost_1_54\libs\test\src\results_collector.cpp
+	<boost/test/impl/results_collector.ipp>
+
+1223887188 source:c:\devtools\github\ural\boost_1_54\libs\test\src\unit_test_monitor.cpp
+	<boost/test/impl/unit_test_monitor.ipp>
+
+1223887188 source:c:\devtools\github\ural\boost_1_54\libs\test\src\plain_report_formatter.cpp
+	<boost/test/impl/plain_report_formatter.ipp>
+
+1223887188 source:c:\devtools\github\ural\boost_1_54\libs\test\src\progress_monitor.cpp
+	<boost/test/impl/progress_monitor.ipp>
+
+1223887188 source:c:\devtools\github\ural\boost_1_54\libs\test\src\compiler_log_formatter.cpp
+	<boost/test/impl/compiler_log_formatter.ipp>
+
+1223887188 source:c:\devtools\github\ural\boost_1_54\libs\test\src\xml_log_formatter.cpp
+	<boost/test/impl/xml_log_formatter.ipp>
+
+1223887188 source:c:\devtools\github\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
+	<boost/test/impl/xml_report_formatter.ipp>
+
