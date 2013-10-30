@@ -10,6 +10,9 @@ namespace ural
     class nullopt_t{};
     class in_place_t{};
 
+    constexpr nullopt_t nullopt{};
+    constexpr in_place_t inplace{};
+
 namespace details
 {
     template <class T>
@@ -22,12 +25,17 @@ namespace details
     class optional_base_constexpr
     {
     public:
+        static_assert(std::is_trivially_destructible<T>::value,
+                      "value is not trivially destructible");
+
         explicit constexpr optional_base_constexpr()
-         : has_value_(false), dummy_{}
+         : has_value_(false)
+         , dummy_{}
         {}
 
         explicit constexpr optional_base_constexpr(T value)
-         : has_value_(true), value_(std::move(value))
+         : has_value_(true)
+         , value_(std::move(value))
         {}
 
         template <class... Args>
@@ -35,8 +43,10 @@ namespace details
          : has_value_{true}, value_(std::forward<Args>(args)...)
         {}
 
-        constexpr optional_base_constexpr(optional_base_constexpr const & x);
-        constexpr optional_base_constexpr(optional_base_constexpr && x);
+        optional_base_constexpr & operator=(nullopt_t);
+
+        template <class U>
+        optional_base_constexpr & operator=(U && value);
 
         constexpr bool operator!() const
         {
@@ -53,6 +63,17 @@ namespace details
             return this->value_;
         }
 
+        template <class... Args>
+        void emplace(Args && ... args)
+        {
+            static_assert(std::is_trivially_destructible<dummy_type>::value,
+                          "dummy is not trivially destructible");
+
+            // Деструктор вызывать не нужно
+
+            new(std::addressof(dummy_))T{std::forward<Args>(args)...};
+        }
+
     private:
         bool has_value_;
 
@@ -65,22 +86,80 @@ namespace details
         };
     };
 
+    // @todo Должен отличаться от optional_base_constexpr только отсутствием
+    // constexpr
     template <class T>
     class optional_base
     {
     public:
-        explicit optional_base();
-        explicit optional_base(T value);
+        explicit optional_base()
+         : has_value_{false}
+         , dummy_{}
+        {}
+
+        explicit optional_base(T value)
+         : has_value_{true}
+         , value_(std::move(value))
+        {}
 
         template <class... Args>
-        explicit optional_base(in_place_t, Args && ... args);
+        explicit optional_base(in_place_t, Args && ... args)
+         : has_value_{true}
+         , value_(std::forward<Args>(args)...)
+        {}
 
-        bool operator!() const;
+        ~optional_base()
+        {
+            if(has_value_)
+            {
+                value_.~T();
+            }
+        }
 
-        T const & value_unsafe() const;
-        T & value_unsafe();
+        optional_base & operator=(nullopt_t);
+
+        template <class U>
+        optional_base & operator=(U && value);
+
+        bool operator!() const
+        {
+            return !this->has_value_;
+        }
+
+        T const & value_unsafe() const
+        {
+            return this->value_;
+        }
+
+        T & value_unsafe()
+        {
+            return this->value_;
+        }
+
+        template <class... Args>
+        void emplace(Args && ... args)
+        {
+            static_assert(std::is_trivially_destructible<dummy_type>::value,
+                          "dummy is not trivially destructible");
+
+            if(this->has_value_)
+            {
+                value_.~T();
+            }
+
+            new(std::addressof(dummy_))T{std::forward<Args>(args)...};
+        }
 
     private:
+        bool has_value_;
+
+        struct dummy_type {};
+
+        union
+        {
+            T value_;
+            dummy_type dummy_;
+        };
     };
 }
 // namespace details
@@ -91,8 +170,12 @@ namespace details
         typedef std::logic_error Base;
 
     public:
-        bad_optional_access()
-         : Base{"Access to the value of optional objects without value"}
+        bad_optional_access(std::string const & what_arg)
+         : Base(what_arg)
+        {}
+
+        bad_optional_access(char const * what_arg)
+         : Base(what_arg)
         {}
 
     private:
@@ -120,24 +203,60 @@ namespace details
          : impl_{std::move(value)}
         {}
 
-        constexpr optional(optional const & x);
-
-        constexpr optional(optional && x) noexcept(std::is_nothrow_move_constructible<T>::value);
-
         template <class... Args>
         constexpr explicit optional(in_place_t tag, Args &&... args)
          : impl_(tag, std::forward<Args>(args)...)
         {}
 
         template <class U, class... Args>
-        constexpr explicit optional(in_place_t, std::initializer_list<U> ilist,
-                                    Args&&... args );
+        constexpr explicit optional(in_place_t tag,
+                                    std::initializer_list<U> ilist,
+                                    Args&&... args )
+         : impl_{tag, ilist, std::forward<Args>(args)...}
+        {}
 
-        optional & operator=(optional const & x);
+        constexpr optional(optional const & x);
+
+        constexpr optional(optional && x) noexcept(std::is_nothrow_move_constructible<T>::value);
+
+        optional & operator=(nullopt_t) noexcept
+        {
+            impl_ = nullopt;
+            return *this;
+        }
+
+        template <class U>
+        optional & operator=(U && value)
+        {
+            impl_ = std::forward<U>(value);
+            return *this;
+        }
+
+        optional & operator=(optional const & x)
+        {
+            if(!x)
+            {
+                return *this = nullopt;
+            }
+            else
+            {
+                return *this = x.value_unsafe();
+            }
+        }
 
         optional &
         operator=(optional && x) noexcept(std::is_nothrow_move_constructible<T>::value
-                                          && std::is_nothrow_move_assignable<T>::value);
+                                          && std::is_nothrow_move_assignable<T>::value)
+        {
+            if(!x)
+            {
+                return *this = nullopt;
+            }
+            else
+            {
+                return *this = std::move(x.value_unsafe());
+            }
+        }
 
         constexpr bool operator!() const
         {
@@ -184,14 +303,15 @@ namespace details
 
         constexpr const T & value() const
         {
-            return !*this ? throw bad_optional_access{} : this->value_unsafe();
+            return !!*this ? this->value_unsafe()
+                             : throw bad_optional_access{"optional::value"}, this->value_unsafe();
         }
 
         T& value()
         {
             if(!*this)
             {
-                throw bad_optional_access{};
+                throw bad_optional_access{"optional::value"};
             }
             else
             {
@@ -219,7 +339,10 @@ namespace details
         }
 
         template <class... Args>
-        void emplace(Args&&... args);
+        void emplace(Args&&... args)
+        {
+            return impl_.emplace(std::forward<Args>(args)...);
+        }
 
         template <class U, class... Args>
         void emplace(std::initializer_list<U> ilist, Args &&... args);
@@ -251,7 +374,9 @@ namespace details
          : ptr_(details::constexpr_addressof(x))
         {}
 
-        constexpr optional(in_place_t, T & x);
+        constexpr optional(in_place_t, T & x)
+         : ptr_(details::constexpr_addressof(x))
+        {}
 
         constexpr bool operator!() const
         {
@@ -276,10 +401,13 @@ namespace details
 
         constexpr T * operator->() const
         {
-            return ptr_;
+            return this->get_pointer();
         }
 
-        constexpr T * get_pointer() const;
+        constexpr T * get_pointer() const
+        {
+            return ptr_;
+        }
 
         constexpr T& value() const
         {
@@ -321,9 +449,6 @@ namespace details
     {
         return optional<T &>(value.get());
     }
-
-    constexpr nullopt_t nullopt{};
-    constexpr in_place_t inplace{};
 
     template <class T>
     constexpr bool operator==(nullopt_t, optional<T> const & x)
@@ -518,7 +643,16 @@ namespace details
 
     template <class Char, class Traits, class T>
     std::ostream & operator<<(std::basic_ostream<Char, Traits> & os,
-                              optional<T> const & x);
+                              optional<T> const & x)
+    {
+        os << "{";
+        if(x)
+        {
+            os << x.value_unsafe();
+        }
+        os << "}";
+        return os;
+    }
 }
 // namespace ural
 

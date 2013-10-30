@@ -444,7 +444,8 @@ BOOST_AUTO_TEST_CASE(example1)
 
   ////////////////////////////////////////////
   ok = nullopt;                         // if ok was engaged calls T's dtor
-  oj = {};                           // assigns a temporary disengaged optional
+  // @todo oj = {};                           // assigns a temporary disengaged optional
+  oj = nullopt;
 }
 
 BOOST_AUTO_TEST_CASE(example_const_optional)
@@ -567,7 +568,8 @@ BOOST_AUTO_TEST_CASE(example_rationale)
   optional<int> opt2 = {};
 
   opt1 = nullopt;
-  opt2 = {};
+  // @todo opt2 = {};
+  opt2 = nullopt;
 
   if (opt1 == nullopt) {}
   if (!opt2) {}

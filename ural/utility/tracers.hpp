@@ -3,6 +3,8 @@
 
 namespace ural
 {
+    /** @todo настраиваемый тип счётчика, возможно --- потоково-безопасный
+    */
     template <class T>
     class regular_tracer
     {
@@ -14,7 +16,10 @@ namespace ural
             return constructed_objects() - destroyed_objects();
         }
 
-        static counter_type constructed_objects();
+        static counter_type constructed_objects()
+        {
+            return constructed_ref();
+        }
 
         static counter_type destroyed_objects()
         {
@@ -38,8 +43,17 @@ namespace ural
         }
 
     private:
-        static counter_type & constructed_ref();
-        static counter_type & destroyed_ref();
+        static counter_type & constructed_ref()
+        {
+            static counter_type inst;
+            return inst;
+        }
+
+        static counter_type & destroyed_ref()
+        {
+            static counter_type inst;
+            return inst;
+        }
 
     private:
         T value_;
