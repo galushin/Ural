@@ -119,90 +119,91 @@ struct Date
 
 namespace tr2 = ural;
 
-BOOST_AUTO_TEST_CASE(optional_size_test)
-{
-    typedef int Type;
-    tr2::optional<Type> x;
-
-    BOOST_CHECK_EQUAL(sizeof(Type) + sizeof(bool), sizeof(x));
-}
+// @todo Добавить
+//BOOST_AUTO_TEST_CASE(optional_size_test)
+//{
+//    typedef int Type;
+//    tr2::optional<Type> x;
+//
+//    BOOST_CHECK_EQUAL(sizeof(Type) + sizeof(bool), sizeof(x));
+//}
 
 BOOST_AUTO_TEST_CASE(disengaged_ctor)
 {
     tr2::optional<int> o1;
-    assert (!o1);
+    BOOST_CHECK (!o1);
 
     tr2::optional<int> o2 = tr2::nullopt;
-    assert (!o2);
+    BOOST_CHECK (!o2);
 
     tr2::optional<int> o3 = o2;
-    assert (!o3);
+    BOOST_CHECK (!o3);
 
-    assert (o1 == tr2::nullopt);
-    assert (o1 == tr2::optional<int>{});
-    assert (!o1);
-    assert (bool(o1) == false);
+    BOOST_CHECK (o1 == tr2::nullopt);
+    BOOST_CHECK (o1 == tr2::optional<int>{});
+    BOOST_CHECK (!o1);
+    BOOST_CHECK (bool(o1) == false);
 
-    assert (o2 == tr2::nullopt);
-    assert (o2 == tr2::optional<int>{});
-    assert (!o2);
-    assert (bool(o2) == false);
+    BOOST_CHECK (o2 == tr2::nullopt);
+    BOOST_CHECK (o2 == tr2::optional<int>{});
+    BOOST_CHECK (!o2);
+    BOOST_CHECK (bool(o2) == false);
 
-    assert (o3 == tr2::nullopt);
-    assert (o3 == tr2::optional<int>{});
-    assert (!o3);
-    assert (bool(o3) == false);
+    BOOST_CHECK (o3 == tr2::nullopt);
+    BOOST_CHECK (o3 == tr2::optional<int>{});
+    BOOST_CHECK (!o3);
+    BOOST_CHECK (bool(o3) == false);
 
-    assert (o1 == o2);
-    assert (o2 == o1);
-    assert (o1 == o3);
-    assert (o3 == o1);
-    assert (o2 == o3);
-    assert (o3 == o2);
+    BOOST_CHECK (o1 == o2);
+    BOOST_CHECK (o2 == o1);
+    BOOST_CHECK (o1 == o3);
+    BOOST_CHECK (o3 == o1);
+    BOOST_CHECK (o2 == o3);
+    BOOST_CHECK (o3 == o2);
 }
 
 BOOST_AUTO_TEST_CASE(value_ctor)
 {
   OracleVal v;
   tr2::optional<Oracle> oo1(v);
-  assert (oo1 != tr2::nullopt);
-  assert (oo1 != tr2::optional<Oracle>{});
-  assert (oo1 == tr2::optional<Oracle>{v});
-  assert (!!oo1);
-  assert (bool(oo1));
-  // NA: assert (oo1->s == sValueCopyConstructed);
-  assert (oo1->s == sMoveConstructed);
-  assert (v.s == sValueConstructed);
+  BOOST_CHECK (oo1 != tr2::nullopt);
+  BOOST_CHECK (oo1 != tr2::optional<Oracle>{});
+  BOOST_CHECK (oo1 == tr2::optional<Oracle>{v});
+  BOOST_CHECK (!!oo1);
+  BOOST_CHECK (bool(oo1));
+  // NA: BOOST_CHECK (oo1->s == sValueCopyConstructed);
+  BOOST_CHECK (oo1->s == sMoveConstructed);
+  BOOST_CHECK (v.s == sValueConstructed);
 
   tr2::optional<Oracle> oo2(std::move(v));
-  assert (oo2 != tr2::nullopt);
-  assert (oo2 != tr2::optional<Oracle>{});
-  assert (oo2 == oo1);
-  assert (!!oo2);
-  assert (bool(oo2));
-  // NA: assert (oo2->s == sValueMoveConstructed);
-  assert (oo2->s == sMoveConstructed);
-  assert (v.s == sMovedFrom);
+  BOOST_CHECK (oo2 != tr2::nullopt);
+  BOOST_CHECK (oo2 != tr2::optional<Oracle>{});
+  BOOST_CHECK (oo2 == oo1);
+  BOOST_CHECK (!!oo2);
+  BOOST_CHECK (bool(oo2));
+  // NA: BOOST_CHECK (oo2->s == sValueMoveConstructed);
+  BOOST_CHECK (oo2->s == sMoveConstructed);
+  BOOST_CHECK (v.s == sMovedFrom);
 
   {
       OracleVal v;
       tr2::optional<Oracle> oo1{tr2::inplace, v};
-      assert (oo1 != tr2::nullopt);
-      assert (oo1 != tr2::optional<Oracle>{});
-      assert (oo1 == tr2::optional<Oracle>{v});
-      assert (!!oo1);
-      assert (bool(oo1));
-      assert (oo1->s == sValueCopyConstructed);
-      assert (v.s == sValueConstructed);
+      BOOST_CHECK (oo1 != tr2::nullopt);
+      BOOST_CHECK (oo1 != tr2::optional<Oracle>{});
+      BOOST_CHECK (oo1 == tr2::optional<Oracle>{v});
+      BOOST_CHECK (!!oo1);
+      BOOST_CHECK (bool(oo1));
+      BOOST_CHECK (oo1->s == sValueCopyConstructed);
+      BOOST_CHECK (v.s == sValueConstructed);
 
       tr2::optional<Oracle> oo2{tr2::inplace, std::move(v)};
-      assert (oo2 != tr2::nullopt);
-      assert (oo2 != tr2::optional<Oracle>{});
-      assert (oo2 == oo1);
-      assert (!!oo2);
-      assert (bool(oo2));
-      assert (oo2->s == sValueMoveConstructed);
-      assert (v.s == sMovedFrom);
+      BOOST_CHECK (oo2 != tr2::nullopt);
+      BOOST_CHECK (oo2 != tr2::optional<Oracle>{});
+      BOOST_CHECK (oo2 == oo1);
+      BOOST_CHECK (!!oo2);
+      BOOST_CHECK (bool(oo2));
+      BOOST_CHECK (oo2->s == sValueMoveConstructed);
+      BOOST_CHECK (v.s == sMovedFrom);
   }
 }
 
@@ -210,16 +211,16 @@ BOOST_AUTO_TEST_CASE(assignment)
 {
     tr2::optional<int> oi;
     oi = tr2::optional<int>{1};
-    assert (*oi == 1);
+    BOOST_CHECK (*oi == 1);
 
     oi = tr2::nullopt;
-    assert (!oi);
+    BOOST_CHECK (!oi);
 
     oi = 2;
-    assert (*oi == 2);
+    BOOST_CHECK (*oi == 2);
 
 //    @todo oi = {};
-//    assert (!oi);
+//    BOOST_CHECK (!oi);
 }
 
 template <class T>
@@ -245,41 +246,41 @@ BOOST_AUTO_TEST_CASE(moved_from_state)
 {
   // first, test mock:
   MoveAware<int> i{1}, j{2};
-  assert (i.val == 1);
-  assert (!i.moved);
-  assert (j.val == 2);
-  assert (!j.moved);
+  BOOST_CHECK (i.val == 1);
+  BOOST_CHECK (!i.moved);
+  BOOST_CHECK (j.val == 2);
+  BOOST_CHECK (!j.moved);
 
   MoveAware<int> k = std::move(i);
-  assert (k.val == 1);
-  assert (!k.moved);
-  assert (i.val == 1);
-  assert (i.moved);
+  BOOST_CHECK (k.val == 1);
+  BOOST_CHECK (!k.moved);
+  BOOST_CHECK (i.val == 1);
+  BOOST_CHECK (i.moved);
 
   k = std::move(j);
-  assert (k.val == 2);
-  assert (!k.moved);
-  assert (j.val == 2);
-  assert (j.moved);
+  BOOST_CHECK (k.val == 2);
+  BOOST_CHECK (!k.moved);
+  BOOST_CHECK (j.val == 2);
+  BOOST_CHECK (j.moved);
 
   // now, test optional
   tr2::optional<MoveAware<int>> oi{1}, oj{2};
-  assert (oi);
-  assert (!oi->moved);
-  assert (oj);
-  assert (!oj->moved);
+  BOOST_CHECK (oi);
+  BOOST_CHECK (!oi->moved);
+  BOOST_CHECK (oj);
+  BOOST_CHECK (!oj->moved);
 
   tr2::optional<MoveAware<int>> ok = std::move(oi);
-  assert (ok);
-  assert (!ok->moved);
-  assert (oi);
-  assert (oi->moved);
+  BOOST_CHECK (ok);
+  BOOST_CHECK (!ok->moved);
+  BOOST_CHECK (oi);
+  BOOST_CHECK (oi->moved);
 
   ok = std::move(oj);
-  assert (ok);
-  assert (!ok->moved);
-  assert (oj);
-  assert (oj->moved);
+  BOOST_CHECK (ok);
+  BOOST_CHECK (!ok->moved);
+  BOOST_CHECK (oj);
+  BOOST_CHECK (oj->moved);
 }
 
 BOOST_AUTO_TEST_CASE(copy_move_ctor_optional_int)
@@ -287,56 +288,56 @@ BOOST_AUTO_TEST_CASE(copy_move_ctor_optional_int)
   tr2::optional<int> oi;
   tr2::optional<int> oj = oi;
 
-  assert (!oj);
-  assert (oj == oi);
-  assert (oj == tr2::nullopt);
-  assert (!bool(oj));
+  BOOST_CHECK (!oj);
+  BOOST_CHECK (oj == oi);
+  BOOST_CHECK (oj == tr2::nullopt);
+  BOOST_CHECK (!bool(oj));
 
   oi = 1;
   tr2::optional<int> ok = oi;
-  assert (!!ok);
-  assert (bool(ok));
-  assert (ok == oi);
-  assert (ok != oj);
-  assert (*ok == 1);
+  BOOST_CHECK (!!ok);
+  BOOST_CHECK (bool(ok));
+  BOOST_CHECK (ok == oi);
+  BOOST_CHECK (ok != oj);
+  BOOST_CHECK (*ok == 1);
 
   tr2::optional<int> ol = std::move(oi);
-  assert (!!ol);
-  assert (bool(ol));
-  assert (ol == oi);
-  assert (ol != oj);
-  assert (*ol == 1);
+  BOOST_CHECK (!!ol);
+  BOOST_CHECK (bool(ol));
+  BOOST_CHECK (ol == oi);
+  BOOST_CHECK (ol != oj);
+  BOOST_CHECK (*ol == 1);
 }
 
 BOOST_AUTO_TEST_CASE(optional_optional)
 {
   tr2::optional<tr2::optional<int>> oi1 = tr2::nullopt;
-  assert (oi1 == tr2::nullopt);
-  assert (!oi1);
+  BOOST_CHECK (oi1 == tr2::nullopt);
+  BOOST_CHECK (!oi1);
 
   {
   tr2::optional<tr2::optional<int>> oi2 {tr2::inplace};
-  assert (oi2 != tr2::nullopt);
-  assert (bool(oi2));
-  assert (*oi2 == tr2::nullopt);
-  //assert (!(*oi2));
+  BOOST_CHECK (oi2 != tr2::nullopt);
+  BOOST_CHECK (bool(oi2));
+  BOOST_CHECK (*oi2 == tr2::nullopt);
+  //BOOST_CHECK (!(*oi2));
   //std::cout << typeid(**oi2).name() << std::endl;
   }
 
   {
   tr2::optional<tr2::optional<int>> oi2 {tr2::inplace, tr2::nullopt};
-  assert (oi2 != tr2::nullopt);
-  assert (bool(oi2));
-  assert (*oi2 == tr2::nullopt);
-  assert (!*oi2);
+  BOOST_CHECK (oi2 != tr2::nullopt);
+  BOOST_CHECK (bool(oi2));
+  BOOST_CHECK (*oi2 == tr2::nullopt);
+  BOOST_CHECK (!*oi2);
   }
 
   {
   tr2::optional<tr2::optional<int>> oi2 {tr2::optional<int>{}};
-  assert (oi2 != tr2::nullopt);
-  assert (bool(oi2));
-  assert (*oi2 == tr2::nullopt);
-  assert (!*oi2);
+  BOOST_CHECK (oi2 != tr2::nullopt);
+  BOOST_CHECK (bool(oi2));
+  BOOST_CHECK (*oi2 == tr2::nullopt);
+  BOOST_CHECK (!*oi2);
   }
 
   tr2::optional<int> oi;
@@ -353,24 +354,24 @@ BOOST_AUTO_TEST_CASE(example_guard)
   //FAILS: optional<Guard> ogx("res1");
   optional<Guard> oga;                     // Guard is non-copyable (and non-moveable)
   optional<Guard> ogb(inplace, "res1");   // initialzes the contained value with "res1"
-  assert (bool(ogb));
-  assert (ogb->val == "res1");
+  BOOST_CHECK (bool(ogb));
+  BOOST_CHECK (ogb->val == "res1");
 
   optional<Guard> ogc(inplace);           // default-constructs the contained value
-  assert (bool(ogc));
-  assert (ogc->val == "");
+  BOOST_CHECK (bool(ogc));
+  BOOST_CHECK (ogc->val == "");
 
   oga.emplace("res1");                     // initialzes the contained value with "res1"
-  assert (bool(oga));
-  assert (oga->val == "res1");
+  BOOST_CHECK (bool(oga));
+  BOOST_CHECK (oga->val == "res1");
 
   oga.emplace();                           // destroys the contained value and
                                            // default-constructs the new one
-  assert (bool(oga));
-  assert (oga->val == "");
+  BOOST_CHECK (bool(oga));
+  BOOST_CHECK (oga->val == "");
 
   oga = nullopt;                        // OK: make disengaged the optional Guard
-  assert (!(oga));
+  BOOST_CHECK (!(oga));
   //FAILS: ogb = {};                          // ERROR: Guard is not Moveable
 }
 
@@ -389,44 +390,44 @@ BOOST_AUTO_TEST_CASE(example1)
   oi = oj;                          // assign disengaged object
   optional<int> ok = oj;            // ok is disengaged
 
-  if (oi)  assert(false);           // 'if oi is engaged...'
-  if (!oi) assert(true);            // 'if oi is disengaged...'
+  if (oi)  BOOST_CHECK(false);           // 'if oi is engaged...'
+  if (!oi) BOOST_CHECK(true);            // 'if oi is disengaged...'
 
-  if (oi != nullopt) assert(false);    // 'if oi is engaged...'
-  if (oi == nullopt) assert(true);     // 'if oi is disengaged...'
+  if (oi != nullopt) BOOST_CHECK(false);    // 'if oi is engaged...'
+  if (oi == nullopt) BOOST_CHECK(true);     // 'if oi is disengaged...'
 
-  assert(oi == ok);                 // two disengaged optionals compare equal
+  BOOST_CHECK(oi == ok);                 // two disengaged optionals compare equal
 
   ///////////////////////////////////////////////////////////////////////////
   optional<int> ol{1};              // ol is engaged; its contained value is 1
   ok = 2;                           // ok becomes engaged; its contained value is 2
   oj = ol;                          // oj becomes engaged; its contained value is 1
 
-  assert(oi != ol);                 // disengaged != engaged
-  assert(ok != ol);                 // different contained values
-  assert(oj == ol);                 // same contained value
-  assert(oi < ol);                  // disengaged < engaged
-  assert(ol < ok);                  // less by contained value
+  BOOST_CHECK(oi != ol);                 // disengaged != engaged
+  BOOST_CHECK(ok != ol);                 // different contained values
+  BOOST_CHECK(oj == ol);                 // same contained value
+  BOOST_CHECK(oi < ol);                  // disengaged < engaged
+  BOOST_CHECK(ol < ok);                  // less by contained value
 
   /////////////////////////////////////////////////////////////////////////////
   optional<int> om{1};              // om is engaged; its contained value is 1
   optional<int> on = om;            // on is engaged; its contained value is 1
   om = 2;                           // om is engaged; its contained value is 2
-  assert (on != om);                // on still contains 3. They are not pointers
+  BOOST_CHECK (on != om);                // on still contains 3. They are not pointers
 
   /////////////////////////////////////////////////////////////////////////////
   int i = *ol;                      // i obtains the value contained in ol
-  assert (i == 1);
+  BOOST_CHECK (i == 1);
   *ol = 9;                          // the object contained in ol becomes 9
-  assert(*ol == 9);
-  assert(ol == make_optional(9));
+  BOOST_CHECK(*ol == 9);
+  BOOST_CHECK(ol == make_optional(9));
 
   ///////////////////////////////////
   int p = 1;
   optional<int> op = p;
-  assert(*op == 1);
+  BOOST_CHECK(*op == 1);
   p = 2;
-  assert(*op == 1);                 // value contained in op is separated from p
+  BOOST_CHECK(*op == 1);                 // value contained in op is separated from p
 
   ////////////////////////////////
   if (ol)
@@ -453,7 +454,7 @@ BOOST_AUTO_TEST_CASE(example_const_optional)
   using tr2::optional;
   const optional<int> c = 4;
   int i = *c;                        // i becomes 4
-  assert (i == 4);
+  BOOST_CHECK (i == 4);
   // FAILS: *c = i;                            // ERROR: cannot assign to const int&
 }
 
@@ -586,15 +587,15 @@ BOOST_AUTO_TEST_CASE(example_rationale)
   // FAILS: if (opt2 == {}) {}   // ilegal
 
   ////////////////////////////////
-  assert (optional<unsigned>{}  < optional<unsigned>{0});
-  assert (optional<unsigned>{0} < optional<unsigned>{1});
-  assert (!(optional<unsigned>{}  < optional<unsigned>{}) );
-  assert (!(optional<unsigned>{1} < optional<unsigned>{1}));
+  BOOST_CHECK (optional<unsigned>{}  < optional<unsigned>{0});
+  BOOST_CHECK (optional<unsigned>{0} < optional<unsigned>{1});
+  BOOST_CHECK (!(optional<unsigned>{}  < optional<unsigned>{}) );
+  BOOST_CHECK (!(optional<unsigned>{1} < optional<unsigned>{1}));
 
-  assert (optional<unsigned>{}  != optional<unsigned>{0});
-  assert (optional<unsigned>{0} != optional<unsigned>{1});
-  assert (optional<unsigned>{}  == optional<unsigned>{} );
-  assert (optional<unsigned>{0} == optional<unsigned>{0});
+  BOOST_CHECK (optional<unsigned>{}  != optional<unsigned>{0});
+  BOOST_CHECK (optional<unsigned>{0} != optional<unsigned>{1});
+  BOOST_CHECK (optional<unsigned>{}  == optional<unsigned>{} );
+  BOOST_CHECK (optional<unsigned>{0} == optional<unsigned>{0});
 
   /////////////////////////////////
   optional<int> o;
@@ -609,21 +610,21 @@ BOOST_AUTO_TEST_CASE(example_rationale)
 
   /////////////////////////////////////
   ////tr2::optional<std::vector<int>> ov2 = {2, 3};
-  ////assert (bool(ov2));
-  ////assert ((*ov2)[1] == 3);
+  ////BOOST_CHECK (bool(ov2));
+  ////BOOST_CHECK ((*ov2)[1] == 3);
   ////
   ////////////////////////////////
   ////std::vector<int> v = {1, 2, 4, 8};
   ////optional<std::vector<int>> ov = {1, 2, 4, 8};
 
-  ////assert (v == *ov);
+  ////BOOST_CHECK (v == *ov);
   ////
   ////ov = {1, 2, 4, 8};
 
   ////std::allocator<int> a;
   ////optional<std::vector<int>> ou { emplace, {1, 2, 4, 8}, a };
 
-  ////assert (ou == ov);
+  ////BOOST_CHECK (ou == ov);
 
   //////////////////////////////
   // inconvenient syntax:
@@ -631,22 +632,22 @@ BOOST_AUTO_TEST_CASE(example_rationale)
 
       tr2::optional<std::vector<int>> ov2{tr2::inplace, {2, 3}};
 
-      assert (bool(ov2));
-      assert ((*ov2)[1] == 3);
+      BOOST_CHECK (bool(ov2));
+      BOOST_CHECK ((*ov2)[1] == 3);
 
       ////////////////////////////
 
       std::vector<int> v = {1, 2, 4, 8};
       optional<std::vector<int>> ov{tr2::inplace, {1, 2, 4, 8}};
 
-      assert (v == *ov);
+      BOOST_CHECK (v == *ov);
 
       ov.emplace({1, 2, 4, 8});
 /*
       std::allocator<int> a;
       optional<std::vector<int>> ou { emplace, {1, 2, 4, 8}, a };
 
-      assert (ou == ov);
+      BOOST_CHECK (ou == ov);
 */
   }
 
@@ -673,10 +674,10 @@ BOOST_AUTO_TEST_CASE(example_converting_ctor)
 {
   using namespace ural;
 
-  assert (true == fun("dog", 2));
-  assert (false == fun("dog"));
+  BOOST_CHECK (true == fun("dog", 2));
+  BOOST_CHECK (false == fun("dog"));
   // just to be explicit
-  assert (false == fun("dog", nullopt));
+  BOOST_CHECK (false == fun("dog", nullopt));
 }
 
 BOOST_AUTO_TEST_CASE(bad_comparison)
@@ -693,16 +694,16 @@ BOOST_AUTO_TEST_CASE(value_or)
 {
   tr2::optional<int> oi = 1;
   int i = oi.value_or(0);
-  assert (i == 1);
+  BOOST_CHECK (i == 1);
 
   oi = tr2::nullopt;
-  assert (oi.value_or(3) == 3);
+  BOOST_CHECK (oi.value_or(3) == 3);
 
   tr2::optional<std::string> os{"AAA"};
-  assert (os.value_or("BBB") == "AAA");
+  BOOST_CHECK (os.value_or("BBB") == "AAA");
   // @todo os = {};
   os = tr2::nullopt;
-  assert (os.value_or("BBB") == "BBB");
+  BOOST_CHECK (os.value_or("BBB") == "BBB");
 }
 
 BOOST_AUTO_TEST_CASE(mixed_order)
@@ -713,61 +714,61 @@ BOOST_AUTO_TEST_CASE(mixed_order)
   optional<int> o0 {0};
   optional<int> o1 {1};
 
-  assert ( (oN <   0));
-  assert ( (oN <   1));
-  assert (!(o0 <   0));
-  assert ( (o0 <   1));
-  assert (!(o1 <   0));
-  assert (!(o1 <   1));
+  BOOST_CHECK( (oN <   0));
+  BOOST_CHECK ( (oN <   1));
+  BOOST_CHECK (!(o0 <   0));
+  BOOST_CHECK ( (o0 <   1));
+  BOOST_CHECK (!(o1 <   0));
+  BOOST_CHECK (!(o1 <   1));
 
-  assert (!(oN >=  0));
-  assert (!(oN >=  1));
-  assert ( (o0 >=  0));
-  assert (!(o0 >=  1));
-  assert ( (o1 >=  0));
-  assert ( (o1 >=  1));
+  BOOST_CHECK (!(oN >=  0));
+  BOOST_CHECK (!(oN >=  1));
+  BOOST_CHECK ( (o0 >=  0));
+  BOOST_CHECK (!(o0 >=  1));
+  BOOST_CHECK ( (o1 >=  0));
+  BOOST_CHECK ( (o1 >=  1));
 
-  assert (!(oN >   0));
-  assert (!(oN >   1));
-  assert (!(o0 >   0));
-  assert (!(o0 >   1));
-  assert ( (o1 >   0));
-  assert (!(o1 >   1));
+  BOOST_CHECK (!(oN >   0));
+  BOOST_CHECK (!(oN >   1));
+  BOOST_CHECK (!(o0 >   0));
+  BOOST_CHECK (!(o0 >   1));
+  BOOST_CHECK ( (o1 >   0));
+  BOOST_CHECK (!(o1 >   1));
 
-  assert ( (oN <=  0));
-  assert ( (oN <=  1));
-  assert ( (o0 <=  0));
-  assert ( (o0 <=  1));
-  assert (!(o1 <=  0));
-  assert ( (o1 <=  1));
+  BOOST_CHECK ( (oN <=  0));
+  BOOST_CHECK ( (oN <=  1));
+  BOOST_CHECK ( (o0 <=  0));
+  BOOST_CHECK ( (o0 <=  1));
+  BOOST_CHECK (!(o1 <=  0));
+  BOOST_CHECK ( (o1 <=  1));
 
-  assert ( (0 >  oN));
-  assert ( (1 >  oN));
-  assert (!(0 >  o0));
-  assert ( (1 >  o0));
-  assert (!(0 >  o1));
-  assert (!(1 >  o1));
+  BOOST_CHECK ( (0 >  oN));
+  BOOST_CHECK ( (1 >  oN));
+  BOOST_CHECK (!(0 >  o0));
+  BOOST_CHECK ( (1 >  o0));
+  BOOST_CHECK (!(0 >  o1));
+  BOOST_CHECK (!(1 >  o1));
 
-  assert (!(0 <= oN));
-  assert (!(1 <= oN));
-  assert ( (0 <= o0));
-  assert (!(1 <= o0));
-  assert ( (0 <= o1));
-  assert ( (1 <= o1));
+  BOOST_CHECK (!(0 <= oN));
+  BOOST_CHECK (!(1 <= oN));
+  BOOST_CHECK ( (0 <= o0));
+  BOOST_CHECK (!(1 <= o0));
+  BOOST_CHECK ( (0 <= o1));
+  BOOST_CHECK ( (1 <= o1));
 
-  assert (!(0 <  oN));
-  assert (!(1 <  oN));
-  assert (!(0 <  o0));
-  assert (!(1 <  o0));
-  assert ( (0 <  o1));
-  assert (!(1 <  o1));
+  BOOST_CHECK (!(0 <  oN));
+  BOOST_CHECK (!(1 <  oN));
+  BOOST_CHECK (!(0 <  o0));
+  BOOST_CHECK (!(1 <  o0));
+  BOOST_CHECK ( (0 <  o1));
+  BOOST_CHECK (!(1 <  o1));
 
-  assert ( (0 >= oN));
-  assert ( (1 >= oN));
-  assert ( (0 >= o0));
-  assert ( (1 >= o0));
-  assert (!(0 >= o1));
-  assert ( (1 >= o1));
+  BOOST_CHECK ( (0 >= oN));
+  BOOST_CHECK ( (1 >= oN));
+  BOOST_CHECK ( (0 >= o0));
+  BOOST_CHECK ( (1 >= o0));
+  BOOST_CHECK (!(0 >= o1));
+  BOOST_CHECK ( (1 >= o1));
 }
 
 struct BadRelops
@@ -783,75 +784,75 @@ BOOST_AUTO_TEST_CASE(bad_relops)
 {
   using namespace ural;
   BadRelops a{1}, b{2};
-  assert (a < b);
-  assert (a > b);
+  BOOST_CHECK (a < b);
+  BOOST_CHECK (a > b);
 
   optional<BadRelops> oa = a, ob = b;
-  assert (oa < ob);
-  assert (!(oa > ob));
+  BOOST_CHECK (oa < ob);
+  BOOST_CHECK (!(oa > ob));
 
-  assert (oa < b);
-  assert (oa > b);
+  BOOST_CHECK (oa < b);
+  BOOST_CHECK (oa > b);
 
   optional<BadRelops&> ra = a, rb = b;
-  assert (ra < rb);
-  assert (!(ra > rb));
+  BOOST_CHECK (ra < rb);
+  BOOST_CHECK (!(ra > rb));
 
-  assert (ra < b);
-  assert (ra > b);
+  BOOST_CHECK (ra < b);
+  BOOST_CHECK (ra > b);
 }
 
 BOOST_AUTO_TEST_CASE(mixed_equality)
 {
   using namespace ural;
 
-  assert (make_optional(0) == 0);
-  assert (make_optional(1) == 1);
-  assert (make_optional(0) != 1);
-  assert (make_optional(1) != 0);
+  BOOST_CHECK (make_optional(0) == 0);
+  BOOST_CHECK (make_optional(1) == 1);
+  BOOST_CHECK (make_optional(0) != 1);
+  BOOST_CHECK (make_optional(1) != 0);
 
   optional<int> oN {nullopt};
   optional<int> o0 {0};
   optional<int> o1 {1};
 
-  assert (o0 ==  0);
-  assert ( 0 == o0);
-  assert (o1 ==  1);
-  assert ( 1 == o1);
-  assert (o1 !=  0);
-  assert ( 0 != o1);
-  assert (o0 !=  1);
-  assert ( 1 != o0);
+  BOOST_CHECK (o0 ==  0);
+  BOOST_CHECK ( 0 == o0);
+  BOOST_CHECK (o1 ==  1);
+  BOOST_CHECK ( 1 == o1);
+  BOOST_CHECK (o1 !=  0);
+  BOOST_CHECK ( 0 != o1);
+  BOOST_CHECK (o0 !=  1);
+  BOOST_CHECK ( 1 != o0);
 
-  assert ( 1 != oN);
-  assert ( 0 != oN);
-  assert (oN !=  1);
-  assert (oN !=  0);
-  assert (!( 1 == oN));
-  assert (!( 0 == oN));
-  assert (!(oN ==  1));
-  assert (!(oN ==  0));
+  BOOST_CHECK ( 1 != oN);
+  BOOST_CHECK ( 0 != oN);
+  BOOST_CHECK (oN !=  1);
+  BOOST_CHECK (oN !=  0);
+  BOOST_CHECK (!( 1 == oN));
+  BOOST_CHECK (!( 0 == oN));
+  BOOST_CHECK (!(oN ==  1));
+  BOOST_CHECK (!(oN ==  0));
 
   std::string cat{"cat"}, dog{"dog"};
   optional<std::string> oNil{}, oDog{"dog"}, oCat{"cat"};
 
-  assert (oCat ==  cat);
-  assert ( cat == oCat);
-  assert (oDog ==  dog);
-  assert ( dog == oDog);
-  assert (oDog !=  cat);
-  assert ( cat != oDog);
-  assert (oCat !=  dog);
-  assert ( dog != oCat);
+  BOOST_CHECK (oCat ==  cat);
+  BOOST_CHECK ( cat == oCat);
+  BOOST_CHECK (oDog ==  dog);
+  BOOST_CHECK ( dog == oDog);
+  BOOST_CHECK (oDog !=  cat);
+  BOOST_CHECK ( cat != oDog);
+  BOOST_CHECK (oCat !=  dog);
+  BOOST_CHECK ( dog != oCat);
 
-  assert ( dog != oNil);
-  assert ( cat != oNil);
-  assert (oNil !=  dog);
-  assert (oNil !=  cat);
-  assert (!( dog == oNil));
-  assert (!( cat == oNil));
-  assert (!(oNil ==  dog));
-  assert (!(oNil ==  cat));
+  BOOST_CHECK ( dog != oNil);
+  BOOST_CHECK ( cat != oNil);
+  BOOST_CHECK (oNil !=  dog);
+  BOOST_CHECK (oNil !=  cat);
+  BOOST_CHECK (!( dog == oNil));
+  BOOST_CHECK (!( cat == oNil));
+  BOOST_CHECK (!(oNil ==  dog));
+  BOOST_CHECK (!(oNil ==  cat));
 }
 
 BOOST_AUTO_TEST_CASE(const_propagation)
@@ -881,11 +882,11 @@ BOOST_AUTO_TEST_CASE(safe_value)
     optional<int> ovN{}, ov1{1};
 
     int& r1 = ov1.value();
-    assert (r1 == 1);
+    BOOST_CHECK(r1 == 1);
 
     try {
       ovN.value();
-      assert (false);
+      BOOST_CHECK (false);
     }
     catch (bad_optional_access const&) {
     }
@@ -895,18 +896,18 @@ BOOST_AUTO_TEST_CASE(safe_value)
       optional<int&> orN{}, or1{i1};
 
       int& r2 = or1.value();
-      assert (r2 == 1);
+      BOOST_CHECK (r2 == 1);
 
       try {
         orN.value();
-        assert (false);
+        BOOST_CHECK (false);
       }
       catch (bad_optional_access const&) {
       }
     }
   }
   catch(...) {
-    assert (false);
+    BOOST_CHECK (false);
   }
 }
 
@@ -917,25 +918,25 @@ BOOST_AUTO_TEST_CASE(optional_ref)
   // FAILS: optional<nullopt_t&> on;
   int i = 8;
   optional<int&> ori;
-  assert (!ori);
+  BOOST_CHECK (!ori);
   ori.emplace(i);
-  assert (bool(ori));
-  assert (*ori == 8);
-  assert (&*ori == &i);
+  BOOST_CHECK (bool(ori));
+  BOOST_CHECK (*ori == 8);
+  BOOST_CHECK (&*ori == &i);
   *ori = 9;
-  assert (i == 9);
+  BOOST_CHECK (i == 9);
 
   // FAILS: int& ir = ori.value_or(i);
   int ii = ori.value_or(i);
-  assert (ii == 9);
+  BOOST_CHECK (ii == 9);
   ii = 7;
-  assert (*ori == 9);
+  BOOST_CHECK (*ori == 9);
 
   int j = 22;
   auto&& oj = make_optional(std::ref(j));
   *oj = 23;
-  assert (&*oj == &j);
-  assert (j == 23);
+  BOOST_CHECK (&*oj == &j);
+  BOOST_CHECK (j == 23);
 }
 
 BOOST_AUTO_TEST_CASE(optional_ref_const_propagation)
@@ -969,26 +970,26 @@ BOOST_AUTO_TEST_CASE(optional_ref_assign)
 
   optional<int&> orj = j;
 
-  assert (ori);
-  assert (*ori == 1);
-  assert (ori == orj);
-  assert (i == 9);
+  BOOST_CHECK (ori);
+  BOOST_CHECK (*ori == 1);
+  BOOST_CHECK (ori == orj);
+  BOOST_CHECK (i == 9);
 
   *ori = 2;
-  assert (*ori == 2);
-  assert (ori == 2);
-  assert (2 == ori);
-  assert (ori != 3);
+  BOOST_CHECK (*ori == 2);
+  BOOST_CHECK (ori == 2);
+  BOOST_CHECK (2 == ori);
+  BOOST_CHECK (ori != 3);
 
-  assert (ori == orj);
-  assert (j == 2);
-  assert (i == 9);
+  BOOST_CHECK (ori == orj);
+  BOOST_CHECK (j == 2);
+  BOOST_CHECK (i == 9);
 
   ori = ural::nullopt;
-  assert (!ori);
-  assert (ori != orj);
-  assert (j == 2);
-  assert (i == 9);
+  BOOST_CHECK (!ori);
+  BOOST_CHECK (ori != orj);
+  BOOST_CHECK (j == 2);
+  BOOST_CHECK (i == 9);
 }
 
 BOOST_AUTO_TEST_CASE(optional_ref_swap)
@@ -999,12 +1000,12 @@ BOOST_AUTO_TEST_CASE(optional_ref_swap)
   optional<int&> oi = i;
   optional<int&> oj = j;
 
-  assert (&*oi == &i);
-  assert (&*oj == &j);
+  BOOST_CHECK (&*oi == &i);
+  BOOST_CHECK (&*oj == &j);
 
   std::swap(oi, oj);
-  assert (&*oi == &j);
-  assert (&*oj == &i);
+  BOOST_CHECK (&*oi == &j);
+  BOOST_CHECK (&*oj == &i);
 }
 
 BOOST_AUTO_TEST_CASE(optional_ref_swap_member)
@@ -1015,12 +1016,12 @@ BOOST_AUTO_TEST_CASE(optional_ref_swap_member)
   optional<int&> oi = i;
   optional<int&> oj = j;
 
-  assert (&*oi == &i);
-  assert (&*oj == &j);
+  BOOST_CHECK (&*oi == &i);
+  BOOST_CHECK (&*oj == &j);
 
   oi.swap(oj);
-  assert (&*oi == &j);
-  assert (&*oj == &i);
+  BOOST_CHECK (&*oi == &j);
+  BOOST_CHECK (&*oj == &i);
 }
 
 BOOST_AUTO_TEST_CASE(optional_value_swap_member)
@@ -1068,22 +1069,22 @@ BOOST_AUTO_TEST_CASE(optional_hashing)
     std::hash<string> hs;
     std::hash<optional<string>> hos;
 
-    assert (hi(0) == hoi(optional<int>{0}));
-    assert (hi(1) == hoi(optional<int>{1}));
-    assert (hi(3198) == hoi(optional<int>{3198}));
+    BOOST_CHECK (hi(0) == hoi(optional<int>{0}));
+    BOOST_CHECK (hi(1) == hoi(optional<int>{1}));
+    BOOST_CHECK (hi(3198) == hoi(optional<int>{3198}));
 
-    assert (hs("") == hos(optional<string>{""}));
-    assert (hs("0") == hos(optional<string>{"0"}));
-    assert (hs("Qa1#") == hos(optional<string>{"Qa1#"}));
+    BOOST_CHECK (hs("") == hos(optional<string>{""}));
+    BOOST_CHECK (hs("0") == hos(optional<string>{"0"}));
+    BOOST_CHECK (hs("Qa1#") == hos(optional<string>{"Qa1#"}));
 
     std::unordered_set<optional<string>> set;
-    assert(set.find({"Qa1#"}) == set.end());
+    BOOST_CHECK(set.find({"Qa1#"}) == set.end());
 
     set.insert({"0"});
-    assert(set.find({"Qa1#"}) == set.end());
+    BOOST_CHECK(set.find({"Qa1#"}) == set.end());
 
     set.insert({"Qa1#"});
-    assert(set.find({"Qa1#"}) != set.end());
+    BOOST_CHECK(set.find({"Qa1#"}) != set.end());
 }
 
 // optional_ref_emulation
@@ -1110,16 +1111,16 @@ BOOST_AUTO_TEST_CASE(optional_ref_emulation)
 {
   using namespace ural;
   optional<generic<int>::type> oi = 1;
-  assert (*oi == 1);
+  BOOST_CHECK (*oi == 1);
 
   int i = 8;
   int j = 4;
   optional<generic<int&>::type> ori {i};
-  assert (*ori == 8);
-  assert ((void*)&*ori != (void*)&i); // !DIFFERENT THAN optional<T&>
+  BOOST_CHECK (*ori == 8);
+  BOOST_CHECK ((void*)&*ori != (void*)&i); // !DIFFERENT THAN optional<T&>
 
   *ori = j;
-  assert (*ori == 4);
+  BOOST_CHECK (*ori == 4);
 }
 
 # if OPTIONAL_HAS_THIS_RVALUE_REFS == 1
@@ -1128,21 +1129,21 @@ BOOST_AUTO_TEST_CASE(moved_on_value_or)
   using namespace tr2;
   optional<Oracle> oo{inplace};
 
-  assert (oo);
-  assert (oo->s == sDefaultConstructed);
+  BOOST_CHECK (oo);
+  BOOST_CHECK (oo->s == sDefaultConstructed);
 
   Oracle o = std::move(oo).value_or( Oracle{OracleVal{}} );
-  assert (oo);
-  assert (oo->s == sMovedFrom);
-  assert (o.s == sMoveConstructed);
+  BOOST_CHECK (oo);
+  BOOST_CHECK (oo->s == sMovedFrom);
+  BOOST_CHECK (o.s == sMoveConstructed);
 
   optional<MoveAware<int>> om {inplace, 1};
-  assert (om);
-  assert (om->moved == false);
+  BOOST_CHECK (om);
+  BOOST_CHECK (om->moved == false);
 
   MoveAware<int> m = std::move(om).value_or( MoveAware<int>{1} );
-  assert (om);
-  assert (om->moved == true);
+  BOOST_CHECK (om);
+  BOOST_CHECK (om->moved == true);
 };
 # endif
 
@@ -1159,24 +1160,24 @@ BOOST_AUTO_TEST_CASE(optional_ref_hashing)
 
     int i0 = 0;
     int i1 = 1;
-    assert (hi(0) == hoi(optional<int&>{i0}));
-    assert (hi(1) == hoi(optional<int&>{i1}));
+    BOOST_CHECK (hi(0) == hoi(optional<int&>{i0}));
+    BOOST_CHECK (hi(1) == hoi(optional<int&>{i1}));
 
     string s{""};
     string s0{"0"};
     string sCAT{"CAT"};
-    assert (hs("") == hos(optional<string&>{s}));
-    assert (hs("0") == hos(optional<string&>{s0}));
-    assert (hs("CAT") == hos(optional<string&>{sCAT}));
+    BOOST_CHECK (hs("") == hos(optional<string&>{s}));
+    BOOST_CHECK (hs("0") == hos(optional<string&>{s0}));
+    BOOST_CHECK (hs("CAT") == hos(optional<string&>{sCAT}));
 
     std::unordered_set<optional<string&>> set;
-    assert(set.find({sCAT}) == set.end());
+    BOOST_CHECK(set.find({sCAT}) == set.end());
 
     set.insert({s0});
-    assert(set.find({sCAT}) == set.end());
+    BOOST_CHECK(set.find({sCAT}) == set.end());
 
     set.insert({sCAT});
-    assert(set.find({sCAT}) != set.end());
+    BOOST_CHECK(set.find({sCAT}) != set.end());
 }
 
 struct Combined
@@ -1205,14 +1206,14 @@ BOOST_AUTO_TEST_CASE(arrow_operator)
   using namespace ural;
 
   optional<Combined> oc1{inplace, 1, 2};
-  assert (oc1);
-  assert (oc1->m == 1);
-  assert (oc1->n == 2);
+  BOOST_CHECK (oc1);
+  BOOST_CHECK (oc1->m == 1);
+  BOOST_CHECK (oc1->n == 2);
 
   optional<Nasty> on{inplace, 1, 2};
-  assert (on);
-  assert (on->m == 1);
-  assert (on->n == 2);
+  BOOST_CHECK (on);
+  BOOST_CHECK (on->m == 1);
+  BOOST_CHECK (on->n == 2);
 }
 
 BOOST_AUTO_TEST_CASE(arrow_wit_optional_ref)
@@ -1221,33 +1222,33 @@ BOOST_AUTO_TEST_CASE(arrow_wit_optional_ref)
 
   Combined c{1, 2};
   optional<Combined&> oc = c;
-  assert (oc);
-  assert (oc->m == 1);
-  assert (oc->n == 2);
+  BOOST_CHECK (oc);
+  BOOST_CHECK (oc->m == 1);
+  BOOST_CHECK (oc->n == 2);
 
   Nasty n{1, 2};
   Nasty m{3, 4};
   Nasty p{5, 6};
 
   optional<Nasty&> on{n};
-  assert (on);
-  assert (on->m == 1);
-  assert (on->n == 2);
+  BOOST_CHECK (on);
+  BOOST_CHECK (on->m == 1);
+  BOOST_CHECK (on->n == 2);
 
   on = {m};
-  assert (on);
-  assert (on->m == 3);
-  assert (on->n == 4);
+  BOOST_CHECK (on);
+  BOOST_CHECK (on->m == 3);
+  BOOST_CHECK (on->n == 4);
 
   on.emplace(p);
-  assert (on);
-  assert (on->m == 5);
-  assert (on->n == 6);
+  BOOST_CHECK (on);
+  BOOST_CHECK (on->m == 5);
+  BOOST_CHECK (on->n == 6);
 
   optional<Nasty&> om{inplace, n};
-  assert (om);
-  assert (om->m == 1);
-  assert (om->n == 2);
+  BOOST_CHECK (om);
+  BOOST_CHECK (om->m == 1);
+  BOOST_CHECK (om->n == 2);
 }
 
 //// constexpr tests

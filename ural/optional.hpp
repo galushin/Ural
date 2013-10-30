@@ -92,8 +92,35 @@ namespace details
 
             // Деструктор вызывать не нужно
 
-            new(std::addressof(dummy_))T{std::forward<Args>(args)...};
+            new(std::addressof(value_))T(std::forward<Args>(args)...);
             has_value_ = true;
+        }
+
+        void swap(optional_base_constexpr & that)
+        {
+            if (!*this)
+            {
+                if (!that)
+                {
+                    // Оба пустые - ничего делать не нужно
+                }
+                else
+                {
+                    this->emplace(std::move(that.value_));
+                }
+            }
+            else
+            {
+                if(!that)
+                {
+                    that.emplace(std::move(this->value_));
+                }
+                else
+                {
+                    using std::swap;
+                    swap(this->value_, that.value_);
+                }
+            }
         }
 
     private:
@@ -190,9 +217,11 @@ namespace details
                 has_value_ = false;
             }
 
-            new(std::addressof(dummy_))T{std::forward<Args>(args)...};
+            new(std::addressof(dummy_))T(std::forward<Args>(args)...);
             has_value_ = true;
         }
+
+        void swap(optional_base & other);
 
     private:
         bool has_value_;
@@ -259,9 +288,27 @@ namespace details
          : impl_{tag, ilist, std::forward<Args>(args)...}
         {}
 
-        constexpr optional(optional const & x);
+        optional(optional const & x)
+         : impl_{}
+        {
+            if(!x)
+            {}
+            else
+            {
+                impl_.emplace(x.value_unsafe());
+            }
+        }
 
-        constexpr optional(optional && x) noexcept(std::is_nothrow_move_constructible<T>::value);
+        optional(optional && x) noexcept(std::is_nothrow_move_constructible<T>::value)
+        : impl_{}
+        {
+            if(!x)
+            {}
+            else
+            {
+                impl_.emplace(std::move(x.value_unsafe()));
+            }
+        }
 
         optional & operator=(nullopt_t) noexcept
         {
@@ -399,7 +446,11 @@ namespace details
             return impl_.emplace(ilist, std::forward<Args>(args)...);
         }
 
-        void swap(optional & x);
+        // @todo задать nothrow
+        void swap(optional & x)
+        {
+            impl_.swap(x.impl_);
+        }
 
     private:
         typedef typename std::conditional<std::is_trivially_destructible<T>::value,
@@ -482,11 +533,18 @@ namespace details
             ptr_ = std::addressof(x);
         }
 
-        void swap(optional & x);
+        void swap(optional & that)
+        {
+            using std::swap;
+            swap(this->ptr_, that.ptr_);
+        }
 
     private:
         T * ptr_;
     };
+
+    template <class T>
+    void swap(optional<T> & x, optional<T> & y);
 
     template <class T>
     constexpr optional<typename std::decay<T>::type>
@@ -599,7 +657,7 @@ namespace details
     template <class T1, class T2>
     constexpr bool operator>(optional<T1> const & x, T2 const & a)
     {
-        return !x ? true : x.value_unsafe() > a;
+        return !x ? false : x.value_unsafe() > a;
     }
 
     template <class T1, class T2>
@@ -644,7 +702,7 @@ namespace details
     template <class T1, class T2>
     constexpr bool operator<=(T1 const & a, optional<T2> const & x)
     {
-        return !x ? false : a < x.value_unsafe();
+        return !x ? false : a <= x.value_unsafe();
     }
 
     template <class T>
