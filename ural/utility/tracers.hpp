@@ -9,10 +9,37 @@ namespace ural
     public:
         typedef size_t counter_type;
 
-        static counter_type active_objects();
-        static counter_type destroyed_objects();
+        static counter_type active_objects()
+        {
+            return constructed_objects() - destroyed_objects();
+        }
 
-        explicit regular_tracer(T init_value);
+        static counter_type constructed_objects();
+
+        static counter_type destroyed_objects()
+        {
+            return destroyed_ref();
+        }
+
+        explicit regular_tracer(T init_value)
+         : value_{std::move(init_value)}
+        {
+            ++ constructed_ref();
+        }
+
+        ~regular_tracer()
+        {
+            try
+            {
+                ++ destroyed_ref();
+            }
+            catch(...)
+            {}
+        }
+
+    private:
+        static counter_type & constructed_ref();
+        static counter_type & destroyed_ref();
 
     private:
         T value_;

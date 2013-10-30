@@ -119,6 +119,14 @@ struct Date
 
 namespace tr2 = ural;
 
+BOOST_AUTO_TEST_CASE(optional_size_test)
+{
+    typedef int Type;
+    tr2::optional<Type> x;
+
+    BOOST_CHECK_EQUAL(sizeof(Type) + sizeof(bool), sizeof(x));
+}
+
 BOOST_AUTO_TEST_CASE(disengaged_ctor)
 {
     tr2::optional<int> o1;

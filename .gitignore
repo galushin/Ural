@@ -2,9 +2,5 @@
 *.o
 *.exe
 *.html
-*.depend
 *.layout
-ural_test/ural_test_build_log.html
-*.html
-ural_test/ural_test.layout
 *.orig
