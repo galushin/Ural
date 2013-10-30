@@ -5,6 +5,8 @@
 #include <type_traits>
 #include <ostream>
 
+// @todo Согласованные операторы отношений
+
 namespace ural
 {
     class nullopt_t{};
@@ -514,8 +516,9 @@ namespace details
 
         constexpr T& value() const
         {
-            // @todo Проверка через стратегию
-            return this->value_unsafe();
+            return *this ? this->value_unsafe() :
+                            throw bad_optional_access{"optional::value"},
+                            this->value_unsafe();
         }
 
         constexpr T& value_unsafe() const
@@ -683,7 +686,7 @@ namespace details
     constexpr bool
     operator>(optional<T> const & x, optional<T> const & y)
     {
-        return !x ? nullopt > y : x.value_unsafe() > y;
+        return y < x;
     }
 
     template <class T>
@@ -785,15 +788,16 @@ namespace std
 
     template <class T>
     class hash<ural::optional<T &>>
-     : private std::hash<T*>
+     : private std::hash<T>
     {
-        typedef std::hash<T*> Base;
+        typedef std::hash<T> Base;
     public:
         typedef typename Base::result_type result_type;
 
         constexpr result_type operator()(ural::optional<T &> const & x) const
         {
-            return static_cast<Base const&>(*this)(x.get_pointer());
+            return !x ? result_type{}
+                      : static_cast<Base const&>(*this)(x.value_unsafe());
         }
     };
 }
