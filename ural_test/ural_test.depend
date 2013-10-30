@@ -282,8 +282,9 @@
 
 1382685103 c:\devtools\ural_repo\ural\ural\numeric\details\num_algo.hpp
 
-1382765065 c:\devtools\ural_repo\ural\ural\numeric\partial_sums.hpp
+1383119791 c:\devtools\ural_repo\ural\ural\numeric\partial_sums.hpp
 	<ural/functional.hpp>
+	<ural/optional.hpp>
 
 1383112220 source:c:\devtools\ural_repo\ural\tests\optional_tests.cpp
 	<boost/test/unit_test.hpp>

@@ -2,6 +2,7 @@
 #define Z_URAL_NUMERIC_PARTIAL_SUMS_HPP_INCLUDED
 
 #include <ural/functional.hpp>
+#include <ural/optional.hpp>
 
 namespace ural
 {
@@ -37,7 +38,7 @@ namespace ural
         reference operator*() const
         {
             // @note Проверка того, что последовательность не пуста
-            return members_[ural::_3];
+            return members_[ural::_3].value_unsafe();
         }
 
         partial_sums_sequence & operator++()
@@ -46,8 +47,7 @@ namespace ural
 
             if(!!this->base())
             {
-                members_[ural::_3] = this->operation()(members_[ural::_3],
-                                                       *this->base());
+                members_[ural::_3] = this->operation()(*(*this), *this->base());
             }
 
             return *this;
@@ -64,8 +64,9 @@ namespace ural
         }
 
     private:
-        // @todo Заменить третий элемент на optional<value_type>
-        ural::tuple<Input, BinaryOperation, value_type> members_;
+        typedef ural::optional<value_type> Optional_value;
+
+        ural::tuple<Input, BinaryOperation, Optional_value> members_;
     };
 
     /** @todo Автоматизировать создание таких функций
