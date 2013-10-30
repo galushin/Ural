@@ -43,10 +43,31 @@ namespace details
          : has_value_{true}, value_(std::forward<Args>(args)...)
         {}
 
-        optional_base_constexpr & operator=(nullopt_t);
+        optional_base_constexpr & operator=(nullopt_t)
+        {
+            if(this->has_value_)
+            {
+                has_value_ = false;
+                // Вызывать деструктор значения не нужно
+            }
+
+            return *this;
+        }
 
         template <class U>
-        optional_base_constexpr & operator=(U && value);
+        optional_base_constexpr & operator=(U && value)
+        {
+            if(this->has_value_)
+            {
+                this->value_ = std::forward<U>(value);
+            }
+            else
+            {
+                this->emplace(std::forward<U>(value));
+            }
+
+            return *this;
+        }
 
         constexpr bool operator!() const
         {
@@ -72,6 +93,7 @@ namespace details
             // Деструктор вызывать не нужно
 
             new(std::addressof(dummy_))T{std::forward<Args>(args)...};
+            has_value_ = true;
         }
 
     private:
@@ -116,10 +138,30 @@ namespace details
             }
         }
 
-        optional_base & operator=(nullopt_t);
+        optional_base & operator=(nullopt_t)
+        {
+            if (this->has_value_)
+            {
+                value_.~T();
+                has_value_ = false;
+            }
+            return *this;
+        }
 
         template <class U>
-        optional_base & operator=(U && value);
+        optional_base & operator=(U && value)
+        {
+            if(this->has_value_)
+            {
+                value_ = std::forward<U>(value);
+            }
+            else
+            {
+                new(std::addressof(dummy_))T{std::forward<U>(value)};
+                has_value_ = true;
+            }
+            return *this;
+        }
 
         bool operator!() const
         {
@@ -145,9 +187,11 @@ namespace details
             if(this->has_value_)
             {
                 value_.~T();
+                has_value_ = false;
             }
 
             new(std::addressof(dummy_))T{std::forward<Args>(args)...};
+            has_value_ = true;
         }
 
     private:
@@ -230,6 +274,11 @@ namespace details
         {
             impl_ = std::forward<U>(value);
             return *this;
+        }
+
+        optional & operator=(optional & x)
+        {
+            return *this = static_cast<optional const&>(x);
         }
 
         optional & operator=(optional const & x)
@@ -345,7 +394,10 @@ namespace details
         }
 
         template <class U, class... Args>
-        void emplace(std::initializer_list<U> ilist, Args &&... args);
+        void emplace(std::initializer_list<U> ilist, Args &&... args)
+        {
+            return impl_.emplace(ilist, std::forward<Args>(args)...);
+        }
 
         void swap(optional & x);
 
