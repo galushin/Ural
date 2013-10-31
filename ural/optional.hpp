@@ -23,6 +23,13 @@ namespace details
         return ((T*)&(char&)x);
     }
 
+    using std::swap;
+
+    template <class T>
+    struct has_nothrow_swap
+     : std::integral_constant<bool, noexcept(swap(std::declval<T&>(), std::declval<T&>()))>
+    {};
+
     template <class T>
     class optional_base_constexpr
     {
@@ -31,18 +38,19 @@ namespace details
                       "value is not trivially destructible");
 
         explicit constexpr optional_base_constexpr()
-         : has_value_(false)
-         , dummy_{}
+         : dummy_{}
+         , has_value_{false}
         {}
 
         explicit constexpr optional_base_constexpr(T value)
-         : has_value_(true)
-         , value_(std::move(value))
+         : value_(std::move(value))
+         , has_value_(true)
         {}
 
         template <class... Args>
         explicit constexpr optional_base_constexpr(in_place_t, Args && ... args)
-         : has_value_{true}, value_(std::forward<Args>(args)...)
+         : value_(std::forward<Args>(args)...)
+         , has_value_{true}
         {}
 
         optional_base_constexpr & operator=(nullopt_t)
@@ -126,8 +134,6 @@ namespace details
         }
 
     private:
-        bool has_value_;
-
         struct dummy_type {};
 
         union
@@ -135,6 +141,8 @@ namespace details
             T value_;
             dummy_type dummy_;
         };
+
+        bool has_value_;
     };
 
     // @todo Должен отличаться от optional_base_constexpr только отсутствием
@@ -144,19 +152,19 @@ namespace details
     {
     public:
         explicit optional_base()
-         : has_value_{false}
-         , dummy_{}
+         : dummy_{}
+         , has_value_{false}
         {}
 
         explicit optional_base(T value)
-         : has_value_{true}
-         , value_(std::move(value))
+         : value_(std::move(value))
+         , has_value_{true}
         {}
 
         template <class... Args>
         explicit optional_base(in_place_t, Args && ... args)
-         : has_value_{true}
-         , value_(std::forward<Args>(args)...)
+         : value_(std::forward<Args>(args)...)
+         , has_value_{true}
         {}
 
         ~optional_base()
@@ -226,8 +234,6 @@ namespace details
         void swap(optional_base & other);
 
     private:
-        bool has_value_;
-
         struct dummy_type {};
 
         union
@@ -235,6 +241,8 @@ namespace details
             T value_;
             dummy_type dummy_;
         };
+
+        bool has_value_;
     };
 }
 // namespace details
@@ -449,7 +457,8 @@ namespace details
         }
 
         // @todo задать nothrow
-        void swap(optional & x)
+        void swap(optional & x) noexcept(std::is_nothrow_move_constructible<T>::value
+                                         && details::has_nothrow_swap<T>::value)
         {
             impl_.swap(x.impl_);
         }
@@ -705,20 +714,20 @@ namespace details
     template <class T1, class T2>
     constexpr bool operator<=(T1 const & a, optional<T2> const & x)
     {
-        return !x ? false : a <= x.value_unsafe();
+        return !(x < a);
     }
 
     template <class T>
     constexpr bool operator<=(optional<T> const & x, T const & a)
     {
-        return !x ? true : x.value_unsafe() <= a;
+        return !(a < x);
     }
 
     template <class T>
     constexpr bool
     operator<=(optional<T> const & x, optional<T> const & y)
     {
-        return !x ? nullopt <= y : x.value_unsafe() <= y;
+        return !(y < x);
     }
 
     template <class T>
@@ -737,14 +746,13 @@ namespace details
     template <class T>
     constexpr bool operator>=(optional<T> const & x, T const & a)
     {
-         // nullopt --- наименьшее: меньше любого значения, равно самому себе
-        return !x ? false : x.value_unsafe() >= a;
+        return !(x < a);
     }
 
     template <class T>
     constexpr bool operator>=(T const & a, optional<T> const & x)
     {
-        return !x ? true : a >= x.value_unsafe();
+        return !(a < x);
     }
 
     template <class T>

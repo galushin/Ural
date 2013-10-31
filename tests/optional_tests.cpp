@@ -119,15 +119,6 @@ struct Date
 
 namespace tr2 = ural;
 
-// @todo Добавить
-//BOOST_AUTO_TEST_CASE(optional_size_test)
-//{
-//    typedef int Type;
-//    tr2::optional<Type> x;
-//
-//    BOOST_CHECK_EQUAL(sizeof(Type) + sizeof(bool), sizeof(x));
-//}
-
 BOOST_AUTO_TEST_CASE(disengaged_ctor)
 {
     tr2::optional<int> o1;
@@ -793,6 +784,14 @@ BOOST_AUTO_TEST_CASE(bad_relops)
 
   BOOST_CHECK (oa < b);
   BOOST_CHECK (oa > b);
+
+  BOOST_CHECK(oa <= ob);
+  BOOST_CHECK(oa <= b);
+  BOOST_CHECK(a <= ob);
+
+  BOOST_CHECK(ob >= oa);
+  BOOST_CHECK(ob >= a);
+  BOOST_CHECK(b >= oa);
 
   optional<BadRelops&> ra = a, rb = b;
   BOOST_CHECK (ra < rb);

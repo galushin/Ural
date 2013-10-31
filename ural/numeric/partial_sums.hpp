@@ -37,7 +37,7 @@ namespace ural
 
         reference operator*() const
         {
-            // @note Проверка того, что последовательность не пуста
+            // @note Проверка, что последовательность не пуста - через стратегию
             return members_[ural::_3].value_unsafe();
         }
 
