@@ -991,6 +991,21 @@ BOOST_AUTO_TEST_CASE(optional_ref_assign)
   BOOST_CHECK (i == 9);
 }
 
+BOOST_AUTO_TEST_CASE(optional_vector_swap_member)
+{
+    typedef std::vector<int> Type;
+    std::vector<int> const z1 = {1, 3, 5};
+    std::vector<int> const z2 = {2, 4};
+
+    auto o1 = ural::make_optional(z1);
+    auto o2 = ural::make_optional(z2);
+
+    o1.swap(o2);
+
+    BOOST_CHECK(o1 == z2);
+    BOOST_CHECK(o2 == z1);
+}
+
 BOOST_AUTO_TEST_CASE(optional_ref_swap)
 {
   using namespace ural;

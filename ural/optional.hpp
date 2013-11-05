@@ -5,8 +5,6 @@
 #include <type_traits>
 #include <ostream>
 
-// @todo Согласованные операторы отношений
-
 namespace ural
 {
     class nullopt_t{};
@@ -231,7 +229,30 @@ namespace details
             has_value_ = true;
         }
 
-        void swap(optional_base & other);
+        void swap(optional_base & that)
+        {
+            if(!*this)
+            {
+                if(!that)
+                {}
+                else
+                {
+                    this->emplace(std::move(that.value_));
+                }
+            }
+            else
+            {
+                if (!that)
+                {
+                    that.emplace(std::move(this->value_));
+                }
+                else
+                {
+                    using std::swap;
+                    swap(this->value_, that.value_);
+                }
+            }
+        }
 
     private:
         struct dummy_type {};
@@ -456,7 +477,6 @@ namespace details
             return impl_.emplace(ilist, std::forward<Args>(args)...);
         }
 
-        // @todo задать nothrow
         void swap(optional & x) noexcept(std::is_nothrow_move_constructible<T>::value
                                          && details::has_nothrow_swap<T>::value)
         {
@@ -509,7 +529,7 @@ namespace details
 
         constexpr T & operator*() const
         {
-            // @todo Проверка
+            // @todo Проверка через стратегию
             return this->value_unsafe();
         }
 
