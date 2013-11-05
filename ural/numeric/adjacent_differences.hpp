@@ -15,6 +15,7 @@ namespace ural
             if(!!*this)
             {
                 members_[ural::_3] = *in;
+                members_[ural::_4] = members_[ural::_3];
             }
         }
 
@@ -34,7 +35,15 @@ namespace ural
 
         adjacent_differences_sequence & operator++()
         {
+            auto old_value = std::move(*members_[ural::_4]);
             ++ members_[ural::_1];
+
+            if(!!*this)
+            {
+                members_[ural::_4] = *this->base();
+                members_[ural::_3] = this->operation()(*members_[ural::_4],
+                                                       std::move(old_value));
+            }
 
             return *this;
         }
@@ -44,7 +53,11 @@ namespace ural
             return members_[ural::_1];
         }
 
-    private:
+        BinaryOperation const & operation() const
+        {
+            return members_[ural::_2];
+        }
+
     private:
         typedef ural::optional<value_type> Optional_value;
 

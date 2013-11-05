@@ -33,6 +33,12 @@ namespace ural
     class minus<void, void>
     {
     public:
+        template <class T1, class T2>
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype(std::forward<T1>(x) - std::forward<T2>(y))
+        {
+            return std::forward<T1>(x) - std::forward<T2>(y);
+        }
     };
 
     template <class T1 = void, class T2 = T1>
