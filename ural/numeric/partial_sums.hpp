@@ -4,6 +4,8 @@
 #include <ural/functional.hpp>
 #include <ural/optional.hpp>
 
+#include <ural/sequence/base.hpp>
+
 namespace ural
 {
     /** @todo Реализация для прямых последовательностей
@@ -14,10 +16,12 @@ namespace ural
     */
     template <class Input, class BinaryOperation>
     class partial_sums_sequence
+     : public sequence_base<partial_sums_sequence<Input, BinaryOperation>>
     {
     public:
         /// @todo через класс-характеристику?
         typedef typename Input::value_type value_type;
+
         typedef value_type const & reference;
         typedef BinaryOperation operation_type;
 
@@ -68,15 +72,6 @@ namespace ural
 
         ural::tuple<Input, BinaryOperation, Optional_value> members_;
     };
-
-    /** @todo Автоматизировать создание таких функций
-    */
-    template <class Input, class BinaryOperation>
-    partial_sums_sequence<Input, BinaryOperation>
-    sequence(partial_sums_sequence<Input, BinaryOperation> s)
-    {
-        return s;
-    }
 
     template <class Input, class BinaryOperation>
     auto partial_sums(Input && s, BinaryOperation add)

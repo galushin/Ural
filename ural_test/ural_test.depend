@@ -105,9 +105,10 @@
 
 1382863906 c:\devtools\github\ural\ural\numeric\details\num_algo.hpp
 
-1383650614 c:\devtools\github\ural\ural\numeric\partial_sums.hpp
+1383652532 c:\devtools\github\ural\ural\numeric\partial_sums.hpp
 	<ural/functional.hpp>
 	<ural/optional.hpp>
+	<ural/sequence/base.hpp>
 
 1382865765 source:c:\devtools\github\ural\tests\tuple_tests.cpp
 	<boost/test/unit_test.hpp>
@@ -325,8 +326,9 @@
 	<type_traits>
 	<ostream>
 
-1383651711 c:\devtools\github\ural\ural\numeric\adjacent_differences.hpp
+1383652556 c:\devtools\github\ural\ural\numeric\adjacent_differences.hpp
 	<ural/functional.hpp>
+	<ural/sequence/base.hpp>
 
 1383650614 source:c:\devtools\github\ural\tests\optional_tests.cpp
 	<boost/test/unit_test.hpp>
@@ -346,5 +348,7 @@
 
 1383650614 c:\devtools\github\ural\ural\concepts.hpp
 
-1383650614 c:\devtools\github\ural\ural\utility\tracers.hpp
+1383652191 c:\devtools\github\ural\ural\utility\tracers.hpp
+
+1383652453 c:\devtools\github\ural\ural\sequence\base.hpp
 

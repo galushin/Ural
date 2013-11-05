@@ -2,11 +2,13 @@
 #define Z_URAL_NUMERIC_ADJACENT_DIFFERENCES_HPP_INCLUDED
 
 #include <ural/functional.hpp>
+#include <ural/sequence/base.hpp>
 
 namespace ural
 {
     template <class Input, class BinaryOperation>
     class adjacent_differences_sequence
+     : public sequence_base<adjacent_differences_sequence<Input, BinaryOperation>>
     {
     public:
         explicit adjacent_differences_sequence(Input in, BinaryOperation op)
@@ -63,15 +65,6 @@ namespace ural
 
         ural::tuple<Input, BinaryOperation, Optional_value, Optional_value> members_;
     };
-
-    /** @todo Автоматизировать создание таких функций
-    */
-    template <class Input, class BinaryOperation>
-    adjacent_differences_sequence<Input, BinaryOperation>
-    sequence(adjacent_differences_sequence<Input, BinaryOperation> s)
-    {
-        return s;
-    }
 
     template <class Input, class BinaryOperation>
     auto adjacent_differences(Input && in, BinaryOperation sub)

@@ -65,6 +65,9 @@
 		<Unit filename="../ural/optional.hpp" />
 		<Unit filename="../ural/placeholders.hpp" />
 		<Unit filename="../ural/sequence/all.hpp" />
+		<Unit filename="../ural/sequence/base.hpp">
+			<Option target="Debug" />
+		</Unit>
 		<Unit filename="../ural/sequence/insertion.hpp" />
 		<Unit filename="../ural/sequence/iterator_sequence.hpp" />
 		<Unit filename="../ural/tuple.hpp" />
