@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE(inner_product_test)
     BOOST_CHECK_EQUAL(r_std, r_ural);
 }
 
-BOOST_AUTO_TEST_CASE(partial_sums_sequence)
+BOOST_AUTO_TEST_CASE(partial_sums_sequence_test)
 {
     std::vector<int> const v = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
 
@@ -56,4 +56,18 @@ BOOST_AUTO_TEST_CASE(partial_sums_sequence)
 
     BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
                                   x_ural.begin(), x_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(adjacent_differences_sequence_test)
+{
+     std::vector<int> const xs = {1,2,3,5,9,11,12};
+
+     std::vector<int> r_std;
+     std::adjacent_difference(xs.begin(), xs.end(), std::back_inserter(r_std));
+
+     std::vector<int> r_ural;
+     ural::copy(ural::adjacent_differences(xs), std::back_inserter(r_ural));
+
+     BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
+                                   r_ural.begin(), r_ural.end());
 }

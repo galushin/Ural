@@ -119,6 +119,12 @@ struct Date
 
 namespace tr2 = ural;
 
+BOOST_AUTO_TEST_CASE(empty_init_list_ctor)
+{
+    tr2::optional<int> o1 = {};
+    BOOST_CHECK (!o1);
+}
+
 BOOST_AUTO_TEST_CASE(disengaged_ctor)
 {
     tr2::optional<int> o1;
@@ -211,7 +217,8 @@ BOOST_AUTO_TEST_CASE(assignment)
     BOOST_CHECK (*oi == 2);
 
 //    @todo oi = {};
-//    BOOST_CHECK (!oi);
+    oi = ural::nullopt;
+    BOOST_CHECK (!oi);
 }
 
 template <class T>

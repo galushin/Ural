@@ -17,8 +17,8 @@ namespace ural
     {
     public:
         /// @todo через класс-характеристику?
-        typedef typename Input::reference reference;
         typedef typename Input::value_type value_type;
+        typedef value_type const & reference;
         typedef BinaryOperation operation_type;
 
         explicit partial_sums_sequence(Input in, BinaryOperation add)

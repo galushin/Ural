@@ -27,6 +27,15 @@ namespace ural
     };
 
     template <class T1 = void, class T2 = T1>
+    class minus;
+
+    template <>
+    class minus<void, void>
+    {
+    public:
+    };
+
+    template <class T1 = void, class T2 = T1>
     class multiplies;
 
     template <>

@@ -6,6 +6,7 @@
 
 #include <ural/numeric/details/num_algo.hpp>
 #include <ural/numeric/partial_sums.hpp>
+#include <ural/numeric/adjacent_differences.hpp>
 
 namespace ural
 {
