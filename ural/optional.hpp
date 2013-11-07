@@ -18,6 +18,7 @@ namespace ural
     constexpr nullopt_t nullopt{};
     constexpr in_place_t inplace{};
 
+/// @cond false
 namespace details
 {
     template <class T>
@@ -272,6 +273,7 @@ namespace details
     };
 }
 // namespace details
+/// endcond
 
     class bad_optional_access
      : public std::logic_error

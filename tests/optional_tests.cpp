@@ -32,6 +32,7 @@ https://github.com/akrzemi1/Optional/blob/master/test_optional.cpp
 #include <ural/optional.hpp>
 #include <ural/concepts.hpp>
 
+/// @cond false
 enum  State
 {
     sDefaultConstructed,
@@ -118,6 +119,7 @@ struct Date
 };
 
 namespace tr2 = ural;
+/// @endcond
 
 BOOST_AUTO_TEST_CASE(empty_init_list_ctor)
 {
@@ -221,6 +223,7 @@ BOOST_AUTO_TEST_CASE(assignment)
     BOOST_CHECK (!oi);
 }
 
+/// @cond false
 template <class T>
 struct MoveAware
 {
@@ -239,6 +242,7 @@ struct MoveAware
     return *this;
   }
 };
+/// @endcond
 
 BOOST_AUTO_TEST_CASE(moved_from_state)
 {
@@ -373,12 +377,14 @@ BOOST_AUTO_TEST_CASE(example_guard)
   //FAILS: ogb = {};                          // ERROR: Guard is not Moveable
 }
 
+/// @cond false
 struct Process
 {
     static void process(){}
     static void process(int){}
     static void processNil(){}
 };
+/// @endcond
 
 BOOST_AUTO_TEST_CASE(example1)
 {
@@ -507,6 +513,7 @@ BOOST_AUTO_TEST_CASE(example_optional_arg)
   }                                              // guard 2 released (in dtor)
 }
 
+/// @cond false
 std::tuple<Date, Date, Date> getStartMidEnd();
 std::tuple<Date, Date, Date> getStartMidEnd()
 { return std::tuple<Date, Date, Date>{Date{1}, Date{2}, Date{3}}; }
@@ -520,6 +527,7 @@ struct Runner
     static void run(std::complex<double>) {}
     static void run(Date const&, Date const&, Date const&) {}
 };
+/// @endcond
 
 BOOST_AUTO_TEST_CASE(example_date)
 {
@@ -769,6 +777,7 @@ BOOST_AUTO_TEST_CASE(mixed_order)
   BOOST_CHECK ( (1 >= o1));
 }
 
+/// @cond false
 struct BadRelops
 {
   int i;
@@ -777,6 +786,7 @@ struct BadRelops
 constexpr bool operator<(BadRelops a, BadRelops b) { return a.i < b.i; }
 // intentional error!
 constexpr bool operator>(BadRelops a, BadRelops b) { return a.i < b.i; }
+///  @endcond
 
 BOOST_AUTO_TEST_CASE(bad_relops)
 {
@@ -1108,6 +1118,7 @@ BOOST_AUTO_TEST_CASE(optional_hashing)
     BOOST_CHECK(set.find({"Qa1#"}) != set.end());
 }
 
+/// @cond false
 // optional_ref_emulation
 template <class T>
 struct generic
@@ -1127,6 +1138,7 @@ bool generic_fun()
   ural::optional<typename generic<X>::type> op;
   return bool(op);
 }
+/// @endcond
 
 BOOST_AUTO_TEST_CASE(optional_ref_emulation)
 {
@@ -1201,6 +1213,7 @@ BOOST_AUTO_TEST_CASE(optional_ref_hashing)
     BOOST_CHECK(set.find({sCAT}) != set.end());
 }
 
+/// @cond false
 struct Combined
 {
   int m;
@@ -1221,6 +1234,7 @@ struct Nasty
   int operator&() { return n; }
   int operator&() const { return n; }
 };
+/// @endcond
 
 BOOST_AUTO_TEST_CASE(arrow_operator)
 {
@@ -1274,6 +1288,7 @@ BOOST_AUTO_TEST_CASE(arrow_wit_optional_ref)
 
 //// constexpr tests
 
+/// @cond false
 // these 4 classes have different noexcept signatures in move operations
 struct NothrowBoth {
   NothrowBoth(NothrowBoth&&) noexcept(true) {};
@@ -1820,3 +1835,4 @@ BOOST_AUTO_TEST_CASE(optional_type_traits_test)
     static_assert(!std::is_nothrow_move_assignable<Unsafe>::value, "WTF!");
 }
 // end constexpr tests
+/// @endcond

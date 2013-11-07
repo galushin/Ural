@@ -15,16 +15,25 @@ namespace ural
     public:
         typedef size_t counter_type;
 
+        /** @brief Количество активных объектов
+        @return Количество объектов, которые были созданы, но ещё не уничтожены
+        */
         static counter_type active_objects()
         {
             return constructed_objects() - destroyed_objects();
         }
 
+        /** @brief Количество созданных объектов
+        @return Количество созданных объектов
+        */
         static counter_type constructed_objects()
         {
             return constructed_ref();
         }
 
+        /** @brief Количество вызовов деструктора
+        @return Количество объектов, для которых были вызваны деструкторы
+        */
         static counter_type destroyed_objects()
         {
             return destroyed_ref();
