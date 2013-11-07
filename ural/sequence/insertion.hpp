@@ -1,6 +1,10 @@
 #ifndef Z_URAL_SEQUENCE_INSERTION_HPP_INCLUDED
 #define Z_URAL_SEQUENCE_INSERTION_HPP_INCLUDED
 
+/** @file ural/sequence/insertion.hpp
+ @brief Последовательность на основе итераторов-вставок
+*/
+
 namespace ural
 {
     template <class OutputIterator>

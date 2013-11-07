@@ -1,6 +1,10 @@
 #ifndef Z_URAL_UTILITY_TRACERS_HPP_INCLUDED
 #define Z_URAL_UTILITY_TRACERS_HPP_INCLUDED
 
+/** @file ural/utility/tracers.hpp
+ @brief Классы-обёртки для отслеживания количества выполненных операций и т.д.
+*/
+
 namespace ural
 {
     /** @todo настраиваемый тип счётчика, возможно --- потоково-безопасный

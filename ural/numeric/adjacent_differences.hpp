@@ -1,6 +1,10 @@
 #ifndef Z_URAL_NUMERIC_ADJACENT_DIFFERENCES_HPP_INCLUDED
 #define Z_URAL_NUMERIC_ADJACENT_DIFFERENCES_HPP_INCLUDED
 
+/** @file ural/numeric/adjacent_differences.hpp
+ @brief Последовательность разностей соседних элементов
+*/
+
 #include <ural/functional.hpp>
 #include <ural/sequence/base.hpp>
 

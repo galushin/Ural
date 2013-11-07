@@ -1,6 +1,10 @@
 #ifndef Z_URAL_SEQUENCE_ITERATOR_SEQUENCE_HPP_INCLUDED
 #define Z_URAL_SEQUENCE_ITERATOR_SEQUENCE_HPP_INCLUDED
 
+/** @file ural/sequence/iterator_sequence.hpp
+ @brief Последовательность на основе пары итераторов
+*/
+
 #include <ural/tuple.hpp>
 
 namespace ural

@@ -1,6 +1,10 @@
 #ifndef Z_URAL_NUMERIC_PARTIAL_SUMS_HPP_INCLUDED
 #define Z_URAL_NUMERIC_PARTIAL_SUMS_HPP_INCLUDED
 
+/** @file ural/numeric/partial_sums.hpp
+ @brief Последовательность частных сумм
+*/
+
 #include <ural/functional.hpp>
 #include <ural/optional.hpp>
 

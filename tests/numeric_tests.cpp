@@ -34,7 +34,6 @@ BOOST_AUTO_TEST_CASE(accumulate_test)
 
 BOOST_AUTO_TEST_CASE(inner_product_test)
 {
-
     std::vector<int> a{0, 1, 2, 3, 4};
     std::vector<int> b{5, 4, 2, 3, 1};
 

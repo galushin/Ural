@@ -1,6 +1,10 @@
 #ifndef Z_URAL_NUMERIC_HPP_INCLUDED
 #define Z_URAL_NUMERIC_HPP_INCLUDED
 
+/** @file ural/numeric.hpp
+ @brief Обобщённые численные операции
+*/
+
 #include <ural/functional.hpp>
 #include <ural/sequence/all.hpp>
 

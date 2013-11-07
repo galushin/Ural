@@ -1,6 +1,11 @@
 #ifndef Z_URAL_TUPLE_HPP_INCLUDED
 #define Z_URAL_TUPLE_HPP_INCLUDED
 
+/** @file ural/tuple.hpp
+ @brief Кортежи --- гетерогенный контейнер фиксированного на этапе компиляции
+ размера.
+*/
+
 #include <tuple>
 
 #include <ural/placeholders.hpp>

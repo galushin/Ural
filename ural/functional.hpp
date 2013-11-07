@@ -1,6 +1,10 @@
 #ifndef Z_URAL_FUNCTIONAL_HPP_INCLUDED
 #define Z_URAL_FUNCTIONAL_HPP_INCLUDED
 
+/** @file ural/functional.hpp
+ @brief Функциональные объекты и средства для работы с ними
+*/
+
 namespace ural
 {
     // Преобразование в функциональный объект

@@ -1,6 +1,10 @@
 #ifndef Z_URAL_PLACEHOLDERS_HPP_INCLUDED
 #define Z_URAL_PLACEHOLDERS_HPP_INCLUDED
 
+/** @file ural/placeholders.hpp
+ @brief Статические индексы
+*/
+
 namespace ural
 {
     template <size_t N>

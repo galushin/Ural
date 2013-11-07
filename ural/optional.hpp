@@ -1,6 +1,11 @@
 #ifndef Z_URAL_OPTIONAL_HPP_INCLUDED
 #define Z_URAL_OPTIONAL_HPP_INCLUDED
 
+/** @file ural/optional.hpp
+ @brief Необязательное значение --- обёртка для значения, которое может
+ отсутствовать.
+*/
+
 #include <stdexcept>
 #include <type_traits>
 #include <ostream>
