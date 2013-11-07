@@ -25,24 +25,45 @@ namespace ural
         }
     };
 
+    /** @brief Последовательность на основе пары итераторов
+    @tparam Iterator тип итератора
+    @tparam Policy тип политики обработки ошибок
+    */
     template <class Iterator, class Policy = strict_sequence_policy>
     class iterator_sequence
     {
     public:
+        /// @brief Тип ссылки
         typedef typename std::iterator_traits<Iterator>::reference reference;
+
+        /// @brief Тип значения
         typedef typename std::iterator_traits<Iterator>::value_type value_type;
 
+        /// @brief Тип политики обработки ошибок
         typedef Policy policy_type;
 
+        /** @brief Конструктор
+        @param first итератор, задающий начало интервала
+        @param last итератор, задающий конец интервала
+        @pre <tt> [first; last) </tt> должен быть допустимым интервалом
+        */
         explicit iterator_sequence(Iterator first, Iterator last)
          : iterators_{first, last}
         {}
 
+        /** @brief Проверка исчерпания последовательности
+        @return @b true, если в последовательности больше нет элементов,
+        иначе --- @b false.
+        */
         bool operator!() const
         {
             return this->front_() == this->stop_();
         }
 
+        /** @brief Доступ к текущему (переднему) элементу последовательности
+        @return Ссылка на передний элемент последовательности
+        @pre <tt> bool(*this) != false </tt>
+        */
         reference operator*() const
         {
             policy_type::assert_not_empty(*this);
@@ -50,6 +71,10 @@ namespace ural
             return *(this->front_());
         }
 
+        /** @brief Переход к следующему элементу последовательности
+        @pre <tt> bool(*this) != false </tt>
+        @return <tt> *this </tt>
+        */
         iterator_sequence & operator++()
         {
             policy_type::assert_not_empty(*this);

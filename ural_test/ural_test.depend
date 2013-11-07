@@ -204,11 +204,11 @@
 1223887188 source:c:\devtools\github\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
 	<boost/test/impl/xml_report_formatter.ipp>
 
-1382666452 c:\devtools\ural_repo\ural\ural\tuple.hpp
+1383804011 c:\devtools\ural_repo\ural\ural\tuple.hpp
 	<tuple>
 	<ural/placeholders.hpp>
 
-1382764809 c:\devtools\ural_repo\ural\ural\placeholders.hpp
+1383803957 c:\devtools\ural_repo\ural\ural\placeholders.hpp
 
 1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\compiler_log_formatter.cpp
 	<boost/test/impl/compiler_log_formatter.ipp>
@@ -262,15 +262,16 @@
 	<ural/sequence/all.hpp>
 	<ural/algorithm/details/copy.hpp>
 
-1382674934 c:\devtools\ural_repo\ural\ural\sequence\all.hpp
+1383792473 c:\devtools\ural_repo\ural\ural\sequence\all.hpp
 	<iterator>
+	<ural/sequence/base.hpp>
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/insertion.hpp>
 
-1382764513 c:\devtools\ural_repo\ural\ural\sequence\iterator_sequence.hpp
+1383803666 c:\devtools\ural_repo\ural\ural\sequence\iterator_sequence.hpp
 	<ural/tuple.hpp>
 
-1382674135 c:\devtools\ural_repo\ural\ural\sequence\insertion.hpp
+1383803602 c:\devtools\ural_repo\ural\ural\sequence\insertion.hpp
 
 1382660262 c:\devtools\ural_repo\ural\ural\algorithm\details\copy.hpp
 	<ural/tuple.hpp>
@@ -351,4 +352,6 @@
 1383652191 c:\devtools\github\ural\ural\utility\tracers.hpp
 
 1383652453 c:\devtools\github\ural\ural\sequence\base.hpp
+
+1383792505 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
 

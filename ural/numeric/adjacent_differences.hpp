@@ -10,6 +10,12 @@
 
 namespace ural
 {
+    /** @brief Последовательность разностей соседних элементов базовой
+    последовательности
+    @tparam Input тип базовая последовательнсоть
+    @tparam BinaryOperation тип бинарной операции, определяющей разность между
+    элементами
+    */
     template <class Input, class BinaryOperation>
     class adjacent_differences_sequence
      : public sequence_base<adjacent_differences_sequence<Input, BinaryOperation>>
@@ -28,6 +34,9 @@ namespace ural
         typedef typename Input::value_type value_type;
         typedef value_type const & reference;
 
+        /** @brief Проверка исчерпания последовательности
+        @return <tt> !this->base() </tt>.
+        */
         bool operator!() const
         {
             return !this->base();

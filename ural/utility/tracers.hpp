@@ -8,11 +8,15 @@
 namespace ural
 {
     /** @todo настраиваемый тип счётчика, возможно --- потоково-безопасный
+    @brief Классы-обёртки для отслеживания количества выполненных операций для
+    регулярных объектов
+    @tparam T тип значения
     */
     template <class T>
     class regular_tracer
     {
     public:
+        /// @brief Тип счётчика
         typedef size_t counter_type;
 
         /** @brief Количество активных объектов
@@ -39,13 +43,17 @@ namespace ural
             return destroyed_ref();
         }
 
+        /** @brief Конструктор
+        @param init_value начальное значение
+        */
         explicit regular_tracer(T init_value)
          : value_{std::move(init_value)}
         {
             ++ constructed_ref();
         }
 
-        ~regular_tracer()
+        /// @brief Деструктор
+        ~regular_tracer() noexcept
         {
             try
             {

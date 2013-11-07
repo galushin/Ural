@@ -149,8 +149,8 @@ namespace details
         bool has_value_;
     };
 
-    // @todo Должен отличаться от optional_base_constexpr только отсутствием
-    // constexpr
+    /** @todo Должен отличаться от optional_base_constexpr только отсутствием
+    constexpr */
     template <class T>
     class optional_base
     {
@@ -459,6 +459,7 @@ namespace details
             return !*this ? T{std::forward<U>(value)} : this->value_unsafe();
         }
 
+        /// @todo Покрыть тестами
         template <class U>
         T value_or(U && value) &&;
 
