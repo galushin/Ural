@@ -423,13 +423,12 @@ namespace details
 
         constexpr value_type const & operator*() const
         {
-            // @todo Проверка через стратегию?
             return impl_.value_unsafe();
         }
 
         value_type & operator*()
         {
-            // @todo Проверка через стратегию?
+            assert(bool(*this) != false);
             return impl_.value_unsafe();
         }
 
@@ -525,7 +524,6 @@ namespace details
 
         constexpr T & operator*() const
         {
-            // @todo Проверка через стратегию
             return *this->get_pointer();
         }
 
