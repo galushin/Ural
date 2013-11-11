@@ -273,7 +273,9 @@
 
 1383803602 c:\devtools\ural_repo\ural\ural\sequence\insertion.hpp
 
-1382660262 c:\devtools\ural_repo\ural\ural\algorithm\details\copy.hpp
+1384159638 c:\devtools\ural_repo\ural\ural\algorithm\details\copy.hpp
+	<boost/concept/assert.hpp>
+	<ural/concepts.hpp>
 	<ural/tuple.hpp>
 
 1383803859 c:\devtools\ural_repo\ural\ural\numeric.hpp
@@ -287,7 +289,7 @@
 
 1382685103 c:\devtools\ural_repo\ural\ural\numeric\details\num_algo.hpp
 
-1384155893 c:\devtools\ural_repo\ural\ural\numeric\partial_sums.hpp
+1384157978 c:\devtools\ural_repo\ural\ural\numeric\partial_sums.hpp
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 	<ural/sequence/base.hpp>
@@ -313,7 +315,7 @@
 	<type_traits>
 	<ostream>
 
-1383792537 c:\devtools\ural_repo\ural\ural\concepts.hpp
+1384159662 c:\devtools\ural_repo\ural\ural\concepts.hpp
 
 1384154925 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
 	<ural/thread.hpp>

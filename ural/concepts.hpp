@@ -3,6 +3,7 @@
 
 /** @file ural/concepts.hpp
  @brief Классы для проверки концепций
+ @todo Реализовать
 */
 
 namespace ural
@@ -11,6 +12,19 @@ namespace concepts
 {
     template <class T>
     class Regular
+    {};
+
+    template <class Seq>
+    class SinglePassSequence
+     : Regular<Seq>
+    {};
+
+    template <class Seq>
+    class ReadableSequence
+    {};
+
+    template <class Seq, class T>
+    class WritableSequence
     {};
 }
 // namespace concepts
