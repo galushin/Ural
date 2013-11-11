@@ -23,7 +23,6 @@ namespace ural
      : public sequence_base<partial_sums_sequence<Input, BinaryOperation>>
     {
     public:
-        /// @todo через класс-характеристику?
         typedef typename Input::value_type value_type;
 
         typedef value_type const & reference;
@@ -46,7 +45,7 @@ namespace ural
         reference operator*() const
         {
             // @note Проверка, что последовательность не пуста - через стратегию
-            return members_[ural::_3].value_unsafe();
+            return *(members_[ural::_3]);
         }
 
         partial_sums_sequence & operator++()

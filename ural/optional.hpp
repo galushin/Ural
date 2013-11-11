@@ -149,8 +149,6 @@ namespace details
         bool has_value_;
     };
 
-    /** @todo Должен отличаться от optional_base_constexpr только отсутствием
-    constexpr */
     template <class T>
     class optional_base
     {
@@ -333,7 +331,7 @@ namespace details
             {}
             else
             {
-                impl_.emplace(x.value_unsafe());
+                impl_.emplace(*x);
             }
         }
 
@@ -344,7 +342,7 @@ namespace details
             {}
             else
             {
-                impl_.emplace(std::move(x.value_unsafe()));
+                impl_.emplace(std::move(*x));
             }
         }
 
@@ -374,7 +372,7 @@ namespace details
             }
             else
             {
-                return *this = x.value_unsafe();
+                return *this = *x;
             }
         }
 
@@ -388,7 +386,7 @@ namespace details
             }
             else
             {
-                return *this = std::move(x.value_unsafe());
+                return *this = std::move(*x);
             }
         }
 
@@ -405,12 +403,12 @@ namespace details
         constexpr const value_type * get_pointer() const
         {
             return !*this ? nullptr
-                          : ural::details::constexpr_addressof(this->value_unsafe());
+                          : ural::details::constexpr_addressof(**this);
         }
 
         value_type * get_pointer()
         {
-            return !*this ? nullptr : std::addressof(this->value_unsafe());
+            return !*this ? nullptr : std::addressof(**this);
         }
 
         constexpr const value_type * operator->() const
@@ -437,8 +435,8 @@ namespace details
 
         constexpr const T & value() const
         {
-            return !!*this ? this->value_unsafe()
-                             : throw bad_optional_access{"optional::value"}, this->value_unsafe();
+            return !!*this ? **this
+                             : throw bad_optional_access{"optional::value"}, **this;
         }
 
         T& value()
@@ -449,29 +447,19 @@ namespace details
             }
             else
             {
-                return this->value_unsafe();
+                return **this;
             }
         }
 
         template <class U>
         constexpr T value_or(U && value) const&
         {
-            return !*this ? T{std::forward<U>(value)} : this->value_unsafe();
+            return !*this ? T{std::forward<U>(value)} : *(*this);
         }
 
         /// @todo Покрыть тестами
         template <class U>
         T value_or(U && value) &&;
-
-        T & value_unsafe()
-        {
-            return impl_.value_unsafe();
-        }
-
-        constexpr T const & value_unsafe() const
-        {
-            return impl_.value_unsafe();
-        }
 
         template <class... Args>
         void emplace(Args&&... args)
@@ -538,7 +526,7 @@ namespace details
         constexpr T & operator*() const
         {
             // @todo Проверка через стратегию
-            return this->value_unsafe();
+            return *this->get_pointer();
         }
 
         constexpr T * operator->() const
@@ -551,21 +539,15 @@ namespace details
             return ptr_;
         }
 
-        constexpr T& value() const
+        constexpr T & value() const
         {
-            return *this ? this->value_unsafe() :
-                            throw bad_optional_access{"optional::value"},
-                            this->value_unsafe();
-        }
-
-        constexpr T& value_unsafe() const
-        {
-            return *ptr_;
+            return *this ? **this:
+                            throw bad_optional_access{"optional::value"}, **this;
         }
 
         constexpr T & value_or(T & other) const
         {
-            return !*this ? other : this->value_unsafe();
+            return !*this ? other : **this;
         }
 
         void emplace(T & x)
@@ -615,7 +597,7 @@ namespace details
     template <class T1, class T2>
     constexpr bool operator==(optional<T1> const & x, T2 const & a)
     {
-        return !x ? false : a == x.value_unsafe();
+        return !x ? false : a == *x;
     }
 
     template <class T1, class T2>
@@ -628,19 +610,19 @@ namespace details
     constexpr bool
     operator==(optional<T> const & x, optional<T> const & y)
     {
-        return !x ? nullopt == y : x.value_unsafe() == y;
+        return !x ? nullopt == y : *x == y;
     }
 
     template <class T1, class T2>
     constexpr bool operator<(optional<T1> const & x, T2 const & a)
     {
-        return !x ? true : x.value_unsafe() < a;
+        return !x ? true : *x < a;
     }
 
     template <class T1, class T2>
     constexpr bool operator<(T1 const & a, optional<T2> const & x)
     {
-        return !x ? false : a < x.value_unsafe();
+        return !x ? false : a < *x;
     }
 
     template <class T>
@@ -660,19 +642,19 @@ namespace details
     template <class T>
     constexpr bool operator<(optional<T> const & x, optional<T> const & y)
     {
-        return !x ? nullopt < y : x.value_unsafe() < y;
+        return !x ? nullopt < y : *x < y;
     }
 
     template <class T1, class T2>
     constexpr bool operator!=(optional<T1> const & x, T2 const & a)
     {
-        return !x ? true : x.value_unsafe() != a;
+        return !(x == a);
     }
 
     template <class T1, class T2>
     constexpr bool operator!=(T1 const & a, optional<T2> const & x)
     {
-        return !x ? true : a != x.value_unsafe();
+        return !(a == x);
     }
 
     template <class T>
@@ -697,13 +679,13 @@ namespace details
     template <class T1, class T2>
     constexpr bool operator>(optional<T1> const & x, T2 const & a)
     {
-        return !x ? false : x.value_unsafe() > a;
+        return !x ? false : *x > a;
     }
 
     template <class T1, class T2>
     constexpr bool operator>(T1 const & a, optional<T2> const & x)
     {
-        return !x ? true : a > x.value_unsafe();
+        return !x ? true : a > *x;
     }
 
     template <class T>
@@ -787,7 +769,7 @@ namespace details
     constexpr bool
     operator>=(optional<T> const & x, optional<T> const & y)
     {
-        return !x ? nullopt >= y : x.value_unsafe() >= y;
+        return !x ? nullopt >= y : *x >= y;
     }
 
     template <class Char, class Traits, class T>
@@ -797,7 +779,7 @@ namespace details
         os << "{";
         if(x)
         {
-            os << x.value_unsafe();
+            os << *x;
         }
         os << "}";
         return os;
@@ -817,8 +799,7 @@ namespace std
 
         constexpr result_type operator()(ural::optional<T> const & x) const
         {
-            return !x ? result_type{}
-                      : static_cast<Base const&>(*this)(x.value_unsafe());
+            return !x ? result_type{} : static_cast<Base const&>(*this)(*x);
         }
     };
 
@@ -832,8 +813,7 @@ namespace std
 
         constexpr result_type operator()(ural::optional<T &> const & x) const
         {
-            return !x ? result_type{}
-                      : static_cast<Base const&>(*this)(x.value_unsafe());
+            return !x ? result_type{} : static_cast<Base const&>(*this)(*x);
         }
     };
 }

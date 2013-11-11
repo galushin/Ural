@@ -35,7 +35,7 @@
 
 1382674135 c:\devtools\ural_repo\ural\\ural\sequence\insertion.hpp
 
-1383643191 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
+1383792109 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
 	<numeric>
 	<forward_list>
 	<boost/test/unit_test.hpp>
@@ -204,7 +204,7 @@
 1223887188 source:c:\devtools\github\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
 	<boost/test/impl/xml_report_formatter.ipp>
 
-1383804011 c:\devtools\ural_repo\ural\ural\tuple.hpp
+1383816773 c:\devtools\ural_repo\ural\ural\tuple.hpp
 	<tuple>
 	<ural/placeholders.hpp>
 
@@ -268,7 +268,7 @@
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/insertion.hpp>
 
-1383803666 c:\devtools\ural_repo\ural\ural\sequence\iterator_sequence.hpp
+1383817074 c:\devtools\ural_repo\ural\ural\sequence\iterator_sequence.hpp
 	<ural/tuple.hpp>
 
 1383803602 c:\devtools\ural_repo\ural\ural\sequence\insertion.hpp
@@ -276,22 +276,23 @@
 1382660262 c:\devtools\ural_repo\ural\ural\algorithm\details\copy.hpp
 	<ural/tuple.hpp>
 
-1383641991 c:\devtools\ural_repo\ural\ural\numeric.hpp
+1383803859 c:\devtools\ural_repo\ural\ural\numeric.hpp
 	<ural/functional.hpp>
 	<ural/sequence/all.hpp>
 	<ural/numeric/details/num_algo.hpp>
 	<ural/numeric/partial_sums.hpp>
 	<ural/numeric/adjacent_differences.hpp>
 
-1383642297 c:\devtools\ural_repo\ural\ural\functional.hpp
+1383803780 c:\devtools\ural_repo\ural\ural\functional.hpp
 
 1382685103 c:\devtools\ural_repo\ural\ural\numeric\details\num_algo.hpp
 
-1383642402 c:\devtools\ural_repo\ural\ural\numeric\partial_sums.hpp
+1384155893 c:\devtools\ural_repo\ural\ural\numeric\partial_sums.hpp
 	<ural/functional.hpp>
 	<ural/optional.hpp>
+	<ural/sequence/base.hpp>
 
-1383640919 source:c:\devtools\ural_repo\ural\tests\optional_tests.cpp
+1384154746 source:c:\devtools\ural_repo\ural\tests\optional_tests.cpp
 	<boost/test/unit_test.hpp>
 	<boost/concept/assert.hpp>
 	<ostream>
@@ -307,17 +308,19 @@
 	<unordered_set>
 	<ural/utility/tracers.hpp>
 
-1383639363 c:\devtools\ural_repo\ural\ural\optional.hpp
+1384156177 c:\devtools\ural_repo\ural\ural\optional.hpp
 	<stdexcept>
 	<type_traits>
 	<ostream>
 
-1382949216 c:\devtools\ural_repo\ural\ural\concepts.hpp
+1383792537 c:\devtools\ural_repo\ural\ural\concepts.hpp
 
-1383104661 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
+1384154925 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
+	<ural/thread.hpp>
 
-1383643506 c:\devtools\ural_repo\ural\ural\numeric\adjacent_differences.hpp
+1383817214 c:\devtools\ural_repo\ural\ural\numeric\adjacent_differences.hpp
 	<ural/functional.hpp>
+	<ural/sequence/base.hpp>
 
 1223887188 source:c:\devtools\github\ural\boost_1_54\libs\test\src\unit_test_main.cpp
 	<boost/test/impl/unit_test_main.ipp>
@@ -354,4 +357,6 @@
 1383652453 c:\devtools\github\ural\ural\sequence\base.hpp
 
 1383792505 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
+
+1384154867 c:\devtools\ural_repo\ural\ural\thread.hpp
 
