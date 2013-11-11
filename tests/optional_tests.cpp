@@ -1426,7 +1426,7 @@ namespace constexpr_optional_ref_and_arrow
 BOOST_AUTO_TEST_CASE(optional_test)
 {
     typedef int Basic_type;
-    typedef ural::regular_tracer<Basic_type> Type;
+    typedef ural::regular_tracer<Basic_type, ural::single_thread_policy> Type;
 
     //Конструктор без параметров: конструктор и деструктор объекта не вызывались
     auto const destroyed_old = Type::destroyed_objects();

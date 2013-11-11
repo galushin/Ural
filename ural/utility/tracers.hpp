@@ -5,19 +5,21 @@
  @brief Классы-обёртки для отслеживания количества выполненных операций и т.д.
 */
 
+#include <ural/thread.hpp>
+
 namespace ural
 {
-    /** @todo настраиваемый тип счётчика, возможно --- потоково-безопасный
+    /** @todo Потоковая безопасность
     @brief Классы-обёртки для отслеживания количества выполненных операций для
     регулярных объектов
     @tparam T тип значения
     */
-    template <class T>
+    template <class T, class Threading>
     class regular_tracer
     {
     public:
         /// @brief Тип счётчика
-        typedef size_t counter_type;
+        typedef typename Threading::atomic_counter_type counter_type;
 
         /** @brief Количество активных объектов
         @return Количество объектов, которые были созданы, но ещё не уничтожены
