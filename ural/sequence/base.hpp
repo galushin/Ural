@@ -17,6 +17,14 @@ namespace ural
     {
         return s;
     }
+
+    friend Seq operator++(Seq & seq, int)
+    {
+        Seq seq_old = seq;
+        ++ seq;
+        return seq_old;
+    }
+
     public:
     private:
     };

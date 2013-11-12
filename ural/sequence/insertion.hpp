@@ -6,6 +6,8 @@
  итераторов
 */
 
+#include <ural/sequence/base.hpp>
+
 namespace ural
 {
     /** @brief Последовательности на основе итераторов-вставок и других выходных
@@ -14,6 +16,7 @@ namespace ural
     */
     template <class OutputIterator>
     class output_iterator_sequence
+     : sequence_base<output_iterator_sequence<OutputIterator>>
     {
     public:
         /// @brief Тип возвращаемого значения для оператора *

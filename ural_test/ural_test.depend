@@ -268,10 +268,12 @@
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/insertion.hpp>
 
-1384268059 c:\devtools\ural_repo\ural\ural\sequence\iterator_sequence.hpp
+1384290218 c:\devtools\ural_repo\ural\ural\sequence\iterator_sequence.hpp
+	<ural/sequence/base.hpp>
 	<ural/tuple.hpp>
 
-1384268959 c:\devtools\ural_repo\ural\ural\sequence\insertion.hpp
+1384290212 c:\devtools\ural_repo\ural\ural\sequence\insertion.hpp
+	<ural/sequence/base.hpp>
 
 1384236244 c:\devtools\ural_repo\ural\ural\algorithm\details\copy.hpp
 	<boost/concept/assert.hpp>
@@ -315,7 +317,8 @@
 	<type_traits>
 	<ostream>
 
-1384236244 c:\devtools\ural_repo\ural\ural\concepts.hpp
+1384290027 c:\devtools\ural_repo\ural\ural\concepts.hpp
+	<boost/concept/usage.hpp>
 
 1384236244 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
 	<ural/thread.hpp>
@@ -358,7 +361,7 @@
 
 1383652453 c:\devtools\github\ural\ural\sequence\base.hpp
 
-1384268549 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
+1384290102 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
 
 1384265923 c:\devtools\ural_repo\ural\ural\thread.hpp
 

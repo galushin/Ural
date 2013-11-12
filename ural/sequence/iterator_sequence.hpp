@@ -5,6 +5,7 @@
  @brief Последовательность на основе пары итераторов
 */
 
+#include <ural/sequence/base.hpp>
 #include <ural/tuple.hpp>
 
 namespace ural
@@ -38,6 +39,7 @@ namespace ural
     */
     template <class Iterator, class Policy = strict_sequence_policy>
     class iterator_sequence
+     : public sequence_base<iterator_sequence<Iterator, Policy>>
     {
     public:
         /// @brief Тип ссылки
