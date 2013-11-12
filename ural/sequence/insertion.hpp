@@ -20,11 +20,14 @@ namespace ural
             return false;
         }
 
-        OutputIterator operator*() const
+        decltype(*std::declval<OutputIterator>()) operator*()
         {
-            return this->iter_;
+            return *(this->iter_);
         }
 
+        /** @brief Переход к следующему элементу
+        @return <tt> *this </tt>
+        */
         output_iterator_sequence & operator++()
         {
             ++ iter_;

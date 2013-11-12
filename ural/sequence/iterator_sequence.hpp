@@ -15,6 +15,10 @@ namespace ural
         ~strict_sequence_policy() = default;
 
     public:
+        /** @param seq проверяемая последовательность
+        @brief Проверяет, что последовательность @c seq не пуста, в противном
+        случае возбуждает исключение типа <tt> logic_error </tt>.
+        */
         template <class Seq>
         static void assert_not_empty(Seq const & seq)
         {
