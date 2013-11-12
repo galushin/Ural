@@ -70,3 +70,53 @@ BOOST_AUTO_TEST_CASE(adjacent_differences_sequence_test)
      BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
                                    r_ural.begin(), r_ural.end());
 }
+
+namespace
+{
+    template <class T>
+    class no_default_ctor
+    {
+    public:
+        no_default_ctor(T value)
+         : value_(std::move(value))
+        {}
+
+        operator T const &() const
+        {
+            return this->value_;
+        }
+
+    private:
+        T value_;
+    };
+}
+
+BOOST_AUTO_TEST_CASE(partial_sums_sequence_test_no_default_ctor)
+{
+    typedef no_default_ctor<int> Integer;
+    std::vector<Integer> const v = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
+
+    std::vector<Integer> x_std;
+    std::partial_sum(v.begin(), v.end(), std::back_inserter(x_std));
+
+    std::vector<Integer> x_ural;
+    ural::copy(ural::partial_sums(v), std::back_inserter(x_ural));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(adjacent_differences_sequence_test_no_default_ctor)
+{
+    typedef no_default_ctor<int> Integer;
+     std::vector<Integer> const xs = {1,2,3,5,9,11,12};
+
+     std::vector<Integer> r_std;
+     std::adjacent_difference(xs.begin(), xs.end(), std::back_inserter(r_std));
+
+     std::vector<Integer> r_ural;
+     ural::copy(ural::adjacent_differences(xs), std::back_inserter(r_ural));
+
+     BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
+                                   r_ural.begin(), r_ural.end());
+}
