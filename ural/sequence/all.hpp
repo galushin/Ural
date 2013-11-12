@@ -13,6 +13,10 @@
 
 namespace ural
 {
+    /** @brief Создание последовательности на основе контейнера
+    @param c контейнер
+    @return <tt> iterator_sequence<decltype(c.begin())>{c.begin(), c.end()}</tt>
+    */
     template <class Container>
     auto sequence(Container && c)
     -> iterator_sequence<decltype(c.begin())>
@@ -20,6 +24,10 @@ namespace ural
         return iterator_sequence<decltype(c.begin())>{c.begin(), c.end()};
     }
 
+    /** @brief Создание последовательности на основе итератора вставки в конец
+    контейнера
+    @param i итератор-вставка
+    */
     template <class Container>
     ural::output_iterator_sequence<std::back_insert_iterator<Container>>
     sequence(std::back_insert_iterator<Container> i)

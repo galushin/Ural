@@ -23,6 +23,18 @@ namespace ural
      : public sequence_base<adjacent_differences_sequence<Input, BinaryOperation>>
     {
     public:
+        /// @brief Тип значения
+        typedef typename Input::value_type value_type;
+
+        /// @brief Тип ссылки
+        typedef value_type const & reference;
+
+        /** @brief Конструктор
+        @param in исходная последовательность
+        @param op операция, используемая для вычисления разности
+        @post <tt> this->base() == in </tt>
+        @post <tt> this->operation() == add </tt>
+        */
         explicit adjacent_differences_sequence(Input in, BinaryOperation op)
          : members_{std::move(in), std::move(op), {}, {}}
         {
@@ -32,9 +44,6 @@ namespace ural
                 members_[ural::_4] = members_[ural::_3];
             }
         }
-
-        typedef typename Input::value_type value_type;
-        typedef value_type const & reference;
 
         /** @brief Проверка исчерпания последовательности
         @return <tt> !this->base() </tt>.
@@ -81,6 +90,10 @@ namespace ural
         ural::tuple<Input, BinaryOperation, Optional_value, Optional_value> members_;
     };
 
+    /** @brief Создание последовательности разностей соседних элементов
+    @param in исходная последовательность
+    @param sub операция, определяющая разность
+    */
     template <class Input, class BinaryOperation>
     auto adjacent_differences(Input && in, BinaryOperation sub)
     -> adjacent_differences_sequence<decltype(sequence(std::forward<Input>(in))),
@@ -92,6 +105,11 @@ namespace ural
                       make_functor(std::move(sub))};
     }
 
+    /** @brief Создание последовательности разностей соседних элементов
+    @param in исходная последовательность
+    @return <tt> adjacent_differences(std::forward<Input>(in), ural::minus<>{});
+            </tt>
+    */
     template <class Input>
     auto adjacent_differences(Input && in)
     -> adjacent_differences_sequence<decltype(sequence(std::forward<Input>(in))),

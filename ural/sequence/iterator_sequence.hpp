@@ -9,6 +9,9 @@
 
 namespace ural
 {
+    /** @brief Строгая стратегия проверок для последовательности: возбуждает
+    исключения в случае ошибок
+    */
     class strict_sequence_policy
     {
     protected:

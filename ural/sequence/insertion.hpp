@@ -2,25 +2,42 @@
 #define Z_URAL_SEQUENCE_INSERTION_HPP_INCLUDED
 
 /** @file ural/sequence/insertion.hpp
- @brief Последовательность на основе итераторов-вставок
+ @brief Последовательности на основе итераторов-вставок и других выходных
+ итераторов
 */
 
 namespace ural
 {
+    /** @brief Последовательности на основе итераторов-вставок и других выходных
+    итераторов
+    @tparam OutputIterator тип выходного итератора
+    */
     template <class OutputIterator>
     class output_iterator_sequence
     {
     public:
+        /// @brief Тип возвращаемого значения для оператора *
+        typedef decltype(*std::declval<OutputIterator>())  reference;
+
+        /** @brief Конструктор
+        @param iter итератор, на основе которого будет создана данная
+        последовательность
+        */
         explicit output_iterator_sequence(OutputIterator iter)
-         : iter_(iter)
+         : iter_(std::move(iter))
         {}
 
+        /** @brief Проверка того, что последовательность исчерпана
+        @return @b false
+        */
         bool operator!() const
         {
             return false;
         }
 
-        decltype(*std::declval<OutputIterator>()) operator*()
+        /** @brief Текущий элемент
+        */
+        reference operator*()
         {
             return *(this->iter_);
         }

@@ -10,10 +10,12 @@ namespace ural
     template <size_t N>
     struct placeholder{};
 
+    /// @cond false
     constexpr placeholder<0> _1 {};
     constexpr placeholder<1> _2 {};
     constexpr placeholder<2> _3 {};
     constexpr placeholder<3> _4 {};
+    /// @endcond
 }
 // namespace ural
 

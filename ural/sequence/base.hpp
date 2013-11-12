@@ -7,6 +7,9 @@
 
 namespace ural
 {
+    /** @brief Базовый класс для последовательностей (CRTP)
+    @tparam Seq тип последовательности-наследника
+    */
     template <class Seq>
     class sequence_base
     {

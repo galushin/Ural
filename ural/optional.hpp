@@ -271,7 +271,7 @@ namespace details
     };
 }
 // namespace details
-/// endcond
+/// @endcond
 
     class bad_optional_access
      : public std::logic_error
