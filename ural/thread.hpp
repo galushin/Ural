@@ -1,7 +1,7 @@
 #ifndef Z_URAL_THREAD_HPP_INCLUDED
 #define Z_URAL_THREAD_HPP_INCLUDED
 
-/** @file ural/thread
+/** @file ural/thread.hpp
  @brief Классы и функции для многопточного программирования
 */
 
@@ -11,7 +11,9 @@ namespace ural
     средства стандартной библиотеки C++11
     */
     class cpp11_thread_policy
-    {};
+    {
+    public:
+    };
 
     /// @brief Стратегия многопотоночти: однопоточная программа
     class single_thread_policy

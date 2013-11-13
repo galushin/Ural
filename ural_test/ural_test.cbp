@@ -50,11 +50,13 @@
 		<Unit filename="../boost_1_54/libs/test/src/xml_log_formatter.cpp" />
 		<Unit filename="../boost_1_54/libs/test/src/xml_report_formatter.cpp" />
 		<Unit filename="../roadmap.txt" />
+		<Unit filename="../tests/algo_tests.cpp" />
 		<Unit filename="../tests/iterator_sequence_test.cpp" />
 		<Unit filename="../tests/numeric_tests.cpp" />
 		<Unit filename="../tests/optional_tests.cpp" />
 		<Unit filename="../tests/tuple_tests.cpp" />
 		<Unit filename="../ural/algorithm.hpp" />
+		<Unit filename="../ural/algorithm/details/algo_base.hpp" />
 		<Unit filename="../ural/algorithm/details/copy.hpp" />
 		<Unit filename="../ural/concepts.hpp" />
 		<Unit filename="../ural/functional.hpp" />
@@ -68,6 +70,7 @@
 		<Unit filename="../ural/sequence/base.hpp">
 			<Option target="Debug" />
 		</Unit>
+		<Unit filename="../ural/sequence/function_output.hpp" />
 		<Unit filename="../ural/sequence/insertion.hpp" />
 		<Unit filename="../ural/sequence/iterator_sequence.hpp" />
 		<Unit filename="../ural/thread.hpp" />

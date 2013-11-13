@@ -5,9 +5,11 @@
  @brief Обобщённые алгоритмы
 */
 
+#include <ural/functional.hpp>
 #include <ural/sequence/all.hpp>
 
 #include <ural/algorithm/details/copy.hpp>
+#include <ural/algorithm/details/algo_base.hpp>
 
 namespace ural
 {
@@ -18,6 +20,14 @@ namespace ural
     {
         return ural::details::copy(sequence(std::forward<Input>(in)),
                                    sequence(std::forward<Output>(out)));
+    }
+
+    template <class Input, class UnaryFunction>
+    auto for_each(Input && in, UnaryFunction f)
+    -> decltype(ural::make_functor(std::move(f)))
+    {
+        return ural::details::for_each(ural::sequence(std::forward<Input>(in)),
+                                       ural::make_functor(std::move(f)));
     }
 }
 // namespace ural

@@ -258,9 +258,11 @@
 1384236244 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
 	<boost/test/impl/xml_report_formatter.ipp>
 
-1384236244 c:\devtools\ural_repo\ural\ural\algorithm.hpp
+1384324081 c:\devtools\ural_repo\ural\ural\algorithm.hpp
+	<ural/functional.hpp>
 	<ural/sequence/all.hpp>
 	<ural/algorithm/details/copy.hpp>
+	<ural/algorithm/details/algo_base.hpp>
 
 1384267891 c:\devtools\ural_repo\ural\ural\sequence\all.hpp
 	<iterator>
@@ -312,15 +314,15 @@
 	<unordered_set>
 	<ural/utility/tracers.hpp>
 
-1384265992 c:\devtools\ural_repo\ural\ural\optional.hpp
+1384321512 c:\devtools\ural_repo\ural\ural\optional.hpp
 	<stdexcept>
 	<type_traits>
 	<ostream>
 
-1384290027 c:\devtools\ural_repo\ural\ural\concepts.hpp
+1384321076 c:\devtools\ural_repo\ural\ural\concepts.hpp
 	<boost/concept/usage.hpp>
 
-1384236244 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
+1384321734 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
 	<ural/thread.hpp>
 
 1384269513 c:\devtools\ural_repo\ural\ural\numeric\adjacent_differences.hpp
@@ -363,5 +365,16 @@
 
 1384290102 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
 
-1384265923 c:\devtools\ural_repo\ural\ural\thread.hpp
+1384321181 c:\devtools\ural_repo\ural\ural\thread.hpp
+
+1384324858 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
+	<ural/sequence/function_output.hpp>
+	<ural/algorithm/details/copy.hpp>
+
+1384325949 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
+	<ural/sequence/base.hpp>
+
+1384323054 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
+	<boost/test/unit_test.hpp>
+	<ural/algorithm.hpp>
 
