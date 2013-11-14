@@ -14,6 +14,20 @@ namespace details
         auto r = ural::details::copy(in, ural::make_function_output_sequence(std::move(f)));
         return r[ural::_2].functor();
     }
+
+    template <class Input1, class Input2, class BinaryPredicate>
+    bool equal(Input1 in1, Input2 in2, BinaryPredicate pred)
+    {
+        for(; !!in1 && !!in2; ++ in1, ++ in2)
+        {
+            if(!pred(*in1, *in2))
+            {
+                return false;
+            }
+        }
+
+        return !in1 && !in2;
+    }
 }
 // namespace details
 }

@@ -17,3 +17,27 @@ BOOST_AUTO_TEST_CASE(for_each_test)
     BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
                                   x_ural.begin(), x_ural.end());
 }
+
+BOOST_AUTO_TEST_CASE(equal_test)
+{
+     std::string const x1("radar");
+     std::string const y1("hello");
+
+     auto const x2 = x1;
+     auto const y2 = y1;
+
+     BOOST_CHECK(ural::equal(x1, x1) == true);
+     BOOST_CHECK(ural::equal(x1, x2) == true);
+     BOOST_CHECK(ural::equal(x2, x1) == true);
+     BOOST_CHECK(ural::equal(x2, x2) == true);
+
+     BOOST_CHECK(ural::equal(y1, y1) == true);
+     BOOST_CHECK(ural::equal(y2, y1) == true);
+     BOOST_CHECK(ural::equal(y1, y2) == true);
+     BOOST_CHECK(ural::equal(y2, y2) == true);
+
+     BOOST_CHECK(ural::equal(x1, y1) == false);
+     BOOST_CHECK(ural::equal(x1, y2) == false);
+     BOOST_CHECK(ural::equal(x2, y1) == false);
+     BOOST_CHECK(ural::equal(x2, y2) == false);
+}
