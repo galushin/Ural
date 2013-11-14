@@ -18,6 +18,23 @@ BOOST_AUTO_TEST_CASE(for_each_test)
                                   x_ural.begin(), x_ural.end());
 }
 
+BOOST_AUTO_TEST_CASE(fill_test)
+{
+    std::vector<int> x_std = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    auto x_ural = x_std;
+
+    auto const value = -1;
+    std::vector<int> const z(x_std.size(), value);
+
+    std::fill(x_std.begin(), x_std.end(), value);
+    ural::fill(x_ural, value);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_ural.begin(), x_ural.end(),
+                                  z.begin(), z.end());
+}
+
 BOOST_AUTO_TEST_CASE(equal_test)
 {
      std::string const x1("radar");
