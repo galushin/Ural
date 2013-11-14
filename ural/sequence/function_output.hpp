@@ -6,20 +6,23 @@
 namespace ural
 {
     /** @todo Оптимизация размера
-    @todo Точное задание типов аргументов?
+    @todo Точное задание типа аргумента?
     */
     template <class UnaryFunction>
     class function_output_sequence
-     : private ural::sequence_base<function_output_sequence<UnaryFunction>>
+     : private ural::sequence_base<function_output_sequence<UnaryFunction>,
+                                   UnaryFunction>
     {
+        typedef ural::sequence_base<function_output_sequence<UnaryFunction>,
+                                    UnaryFunction> Base_class;
     public:
         explicit function_output_sequence(UnaryFunction f)
-         : f_{std::move(f)}
+         : Base_class{std::move(f)}
         {}
 
         UnaryFunction const & functor() const
         {
-            return this->f_;
+            return *this;
         }
 
         bool operator!() const
@@ -40,12 +43,15 @@ namespace ural
         template <class Arg>
         function_output_sequence & operator=(Arg && arg)
         {
-            f_(std::forward<Arg>(arg));
+            this->functor_ref()(std::forward<Arg>(arg));
             return *this;
         }
 
     private:
-        UnaryFunction f_;
+        UnaryFunction & functor_ref()
+        {
+            return static_cast<UnaryFunction &>(*this);
+        }
     };
 
     template <class UnaryFunction>

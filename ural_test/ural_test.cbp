@@ -59,6 +59,7 @@
 		<Unit filename="../ural/algorithm/details/algo_base.hpp" />
 		<Unit filename="../ural/algorithm/details/copy.hpp" />
 		<Unit filename="../ural/concepts.hpp" />
+		<Unit filename="../ural/defs.hpp" />
 		<Unit filename="../ural/functional.hpp" />
 		<Unit filename="../ural/numeric.hpp" />
 		<Unit filename="../ural/numeric/adjacent_differences.hpp" />

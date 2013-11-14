@@ -1,8 +1,8 @@
 # depslib dependency file v1.0
-1384236244 source:c:\devtools\ural_repo\ural\ural_test\main.cpp
+1382602060 source:c:\devtools\ural_repo\ural\ural_test\main.cpp
 	<boost/test/unit_test.hpp>
 
-1384236244 source:c:\devtools\ural_repo\ural\tests\tuple_tests.cpp
+1382605123 source:c:\devtools\ural_repo\ural\tests\tuple_tests.cpp
 	<boost/test/unit_test.hpp>
 	<ural/tuple.hpp>
 
@@ -12,7 +12,7 @@
 
 1382764809 c:\devtools\ural_repo\ural\\ural\placeholders.hpp
 
-1384236244 source:c:\devtools\ural_repo\ural\tests\iterator_sequence_test.cpp
+1382920056 source:c:\devtools\ural_repo\ural\tests\iterator_sequence_test.cpp
 	<boost/test/unit_test.hpp>
 	<boost/concept/assert.hpp>
 	<ural/algorithm.hpp>
@@ -35,7 +35,7 @@
 
 1382674135 c:\devtools\ural_repo\ural\\ural\sequence\insertion.hpp
 
-1384264568 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
+1384408805 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
 	<numeric>
 	<forward_list>
 	<boost/test/unit_test.hpp>
@@ -204,101 +204,101 @@
 1223887188 source:c:\devtools\github\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
 	<boost/test/impl/xml_report_formatter.ipp>
 
-1384236244 c:\devtools\ural_repo\ural\ural\tuple.hpp
+1383816773 c:\devtools\ural_repo\ural\ural\tuple.hpp
 	<tuple>
 	<ural/placeholders.hpp>
 
-1384267918 c:\devtools\ural_repo\ural\ural\placeholders.hpp
+1384408805 c:\devtools\ural_repo\ural\ural\placeholders.hpp
 
-1384236243 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\compiler_log_formatter.cpp
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\compiler_log_formatter.cpp
 	<boost/test/impl/compiler_log_formatter.ipp>
 
-1384236243 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\debug.cpp
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\debug.cpp
 	<boost/test/impl/debug.ipp>
 
-1384236243 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\execution_monitor.cpp
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\execution_monitor.cpp
 	<boost/test/impl/execution_monitor.ipp>
 
-1384236243 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\framework.cpp
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\framework.cpp
 	<boost/test/impl/framework.ipp>
 
-1384236243 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\plain_report_formatter.cpp
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\plain_report_formatter.cpp
 	<boost/test/impl/plain_report_formatter.ipp>
 
-1384236243 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\progress_monitor.cpp
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\progress_monitor.cpp
 	<boost/test/impl/progress_monitor.ipp>
 
-1384236243 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\results_collector.cpp
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\results_collector.cpp
 	<boost/test/impl/results_collector.ipp>
 
-1384236243 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\results_reporter.cpp
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\results_reporter.cpp
 	<boost/test/impl/results_reporter.ipp>
 
-1384236243 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\test_tools.cpp
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\test_tools.cpp
 	<boost/test/impl/test_tools.ipp>
 
-1384236243 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\unit_test_log.cpp
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\unit_test_log.cpp
 	<boost/test/impl/unit_test_log.ipp>
 
-1384236243 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\unit_test_main.cpp
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\unit_test_main.cpp
 	<boost/test/impl/unit_test_main.ipp>
 
-1384236243 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\unit_test_monitor.cpp
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\unit_test_monitor.cpp
 	<boost/test/impl/unit_test_monitor.ipp>
 
-1384236243 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\unit_test_parameters.cpp
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\unit_test_parameters.cpp
 	<boost/test/impl/unit_test_parameters.ipp>
 
-1384236243 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\unit_test_suite.cpp
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\unit_test_suite.cpp
 	<boost/test/impl/unit_test_suite.ipp>
 
-1384236244 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\xml_log_formatter.cpp
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\xml_log_formatter.cpp
 	<boost/test/impl/xml_log_formatter.ipp>
 
-1384236244 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
+1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
 	<boost/test/impl/xml_report_formatter.ipp>
 
-1384324081 c:\devtools\ural_repo\ural\ural\algorithm.hpp
+1384408805 c:\devtools\ural_repo\ural\ural\algorithm.hpp
 	<ural/functional.hpp>
 	<ural/sequence/all.hpp>
 	<ural/algorithm/details/copy.hpp>
 	<ural/algorithm/details/algo_base.hpp>
 
-1384267891 c:\devtools\ural_repo\ural\ural\sequence\all.hpp
+1384408805 c:\devtools\ural_repo\ural\ural\sequence\all.hpp
 	<iterator>
 	<ural/sequence/base.hpp>
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/insertion.hpp>
 
-1384290218 c:\devtools\ural_repo\ural\ural\sequence\iterator_sequence.hpp
+1384408805 c:\devtools\ural_repo\ural\ural\sequence\iterator_sequence.hpp
 	<ural/sequence/base.hpp>
 	<ural/tuple.hpp>
 
-1384290212 c:\devtools\ural_repo\ural\ural\sequence\insertion.hpp
+1384408805 c:\devtools\ural_repo\ural\ural\sequence\insertion.hpp
 	<ural/sequence/base.hpp>
 
-1384236244 c:\devtools\ural_repo\ural\ural\algorithm\details\copy.hpp
+1384159638 c:\devtools\ural_repo\ural\ural\algorithm\details\copy.hpp
 	<boost/concept/assert.hpp>
 	<ural/concepts.hpp>
 	<ural/tuple.hpp>
 
-1384236244 c:\devtools\ural_repo\ural\ural\numeric.hpp
+1383803859 c:\devtools\ural_repo\ural\ural\numeric.hpp
 	<ural/functional.hpp>
 	<ural/sequence/all.hpp>
 	<ural/numeric/details/num_algo.hpp>
 	<ural/numeric/partial_sums.hpp>
 	<ural/numeric/adjacent_differences.hpp>
 
-1384268809 c:\devtools\ural_repo\ural\ural\functional.hpp
+1384410623 c:\devtools\ural_repo\ural\ural\functional.hpp
 
-1384236244 c:\devtools\ural_repo\ural\ural\numeric\details\num_algo.hpp
+1382685103 c:\devtools\ural_repo\ural\ural\numeric\details\num_algo.hpp
 
-1384269045 c:\devtools\ural_repo\ural\ural\numeric\partial_sums.hpp
+1384408805 c:\devtools\ural_repo\ural\ural\numeric\partial_sums.hpp
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 	<ural/sequence/base.hpp>
 
-1384236244 source:c:\devtools\ural_repo\ural\tests\optional_tests.cpp
+1384154746 source:c:\devtools\ural_repo\ural\tests\optional_tests.cpp
 	<boost/test/unit_test.hpp>
 	<boost/concept/assert.hpp>
 	<ostream>
@@ -314,18 +314,18 @@
 	<unordered_set>
 	<ural/utility/tracers.hpp>
 
-1384321512 c:\devtools\ural_repo\ural\ural\optional.hpp
+1384408805 c:\devtools\ural_repo\ural\ural\optional.hpp
 	<stdexcept>
 	<type_traits>
 	<ostream>
 
-1384321076 c:\devtools\ural_repo\ural\ural\concepts.hpp
+1384408805 c:\devtools\ural_repo\ural\ural\concepts.hpp
 	<boost/concept/usage.hpp>
 
-1384321734 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
+1384408805 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
 	<ural/thread.hpp>
 
-1384269513 c:\devtools\ural_repo\ural\ural\numeric\adjacent_differences.hpp
+1384408805 c:\devtools\ural_repo\ural\ural\numeric\adjacent_differences.hpp
 	<ural/functional.hpp>
 	<ural/sequence/base.hpp>
 
@@ -363,18 +363,21 @@
 
 1383652453 c:\devtools\github\ural\ural\sequence\base.hpp
 
-1384290102 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
+1384410212 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
+	<ural/defs.hpp>
 
-1384321181 c:\devtools\ural_repo\ural\ural\thread.hpp
+1384408805 c:\devtools\ural_repo\ural\ural\thread.hpp
 
-1384324858 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
+1384408805 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
 	<ural/sequence/function_output.hpp>
 	<ural/algorithm/details/copy.hpp>
 
-1384325949 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
+1384410255 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
 	<ural/sequence/base.hpp>
 
-1384323054 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
+1384410419 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<ural/algorithm.hpp>
+
+1384409131 c:\devtools\ural_repo\ural\ural\defs.hpp
 

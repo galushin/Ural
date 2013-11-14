@@ -20,6 +20,43 @@ namespace ural
         return f;
     }
 
+    template <class Signature>
+    class function_ptr_functor;
+
+    template <class R, class... Args>
+    class function_ptr_functor<R(Args...)>
+    {
+    public:
+        typedef R(*target_type)(Args...);
+
+        function_ptr_functor(target_type f)
+         : target_{f}
+        {}
+
+        /** @todo Оптимальные типы параметров
+        */
+        R operator()(Args... args) const
+        {
+            return this->target()(args...);
+        }
+
+        target_type target() const
+        {
+            return this->target_;
+        }
+
+    private:
+        target_type target_;
+
+    };
+
+    template <class R, class... Args>
+    function_ptr_functor<R(Args...)>
+    make_functor(R(*f)(Args...))
+    {
+        return function_ptr_functor<R(Args...)>{f};
+    }
+
     // Функциональные объекты для операторов
     template <class T1 = void, class T2 = T1>
     class plus;
