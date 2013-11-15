@@ -3,6 +3,7 @@
 
 #include <ural/sequence/function_output.hpp>
 #include <ural/algorithm/details/copy.hpp>
+#include <ural/functional.hpp>
 
 namespace ural
 {
@@ -11,6 +12,7 @@ namespace details
     template <class Input, class UnaryFunction>
     UnaryFunction for_each(Input in, UnaryFunction f)
     {
+        // @todo Проверка концепций
         auto r = ural::details::copy(in, ural::make_function_output_sequence(std::move(f)));
         return r[ural::_2].functor();
     }
@@ -18,6 +20,7 @@ namespace details
     template <class Input1, class Input2, class BinaryPredicate>
     bool equal(Input1 in1, Input2 in2, BinaryPredicate pred)
     {
+        // @todo Проверка концепций
         for(; !!in1 && !!in2; ++ in1, ++ in2)
         {
             if(!pred(*in1, *in2))
@@ -27,6 +30,26 @@ namespace details
         }
 
         return !in1 && !in2;
+    }
+
+    template <class ForwardSequence, class Generator>
+    void generate(ForwardSequence seq, Generator gen)
+    {
+        // @todo Проверка концепций
+        for(; !!seq; ++ seq)
+        {
+            *seq = gen();
+        }
+    }
+
+    template <class ForwardSequence, class T>
+    void fill(ForwardSequence seq, T const & value)
+    {
+        // @todo Проверка концепций
+        BOOST_CONCEPT_ASSERT((::ural::concepts::WritableSequence<ForwardSequence, T>));
+
+        ::ural::details::generate(std::move(seq),
+                                  ural::value_functor<T const &>(value));
     }
 }
 // namespace details

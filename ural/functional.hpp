@@ -3,10 +3,29 @@
 
 /** @file ural/functional.hpp
  @brief Функциональные объекты и средства для работы с ними
+ @todo Разбить на более мелкие файлы
 */
 
 namespace ural
 {
+    template <class T>
+    class value_functor
+    {
+    public:
+        typedef T const & result_type;
+
+        explicit value_functor(T value)
+         : value_(std::move(value))
+        {}
+
+        result_type operator()() const
+        {
+            return this->value_;
+        }
+
+    private:
+        T value_;
+    };
     // Преобразование в функциональный объект
     /** Преобразование в функциональный объект. Перегрузка по умолчанию: просто
     возвращает свой аргумент.

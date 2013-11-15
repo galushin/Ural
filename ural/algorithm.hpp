@@ -44,6 +44,13 @@ namespace ural
         return ural::details::copy(sequence(std::forward<Input>(in)),
                                    sequence(std::forward<Output>(out)));
     }
+
+    template <class ForwardSequence, class T>
+    void fill(ForwardSequence && seq, T const & value)
+    {
+        return ural::details::fill(sequence(std::forward<ForwardSequence>(seq)),
+                                   value);
+    }
 }
 // namespace ural
 
