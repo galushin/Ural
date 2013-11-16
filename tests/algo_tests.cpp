@@ -2,6 +2,9 @@
 
 #include <ural/algorithm.hpp>
 
+// @todo Удалить
+#include <ural/sequence/transform.hpp>
+
 BOOST_AUTO_TEST_CASE(for_each_test)
 {
     std::vector<int> x_std = {1, 2, 3, 4, 5};
@@ -16,23 +19,6 @@ BOOST_AUTO_TEST_CASE(for_each_test)
 
     BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
                                   x_ural.begin(), x_ural.end());
-}
-
-BOOST_AUTO_TEST_CASE(fill_test)
-{
-    std::vector<int> x_std = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-    auto x_ural = x_std;
-
-    auto const value = -1;
-    std::vector<int> const z(x_std.size(), value);
-
-    std::fill(x_std.begin(), x_std.end(), value);
-    ural::fill(x_ural, value);
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_ural.begin(), x_ural.end(),
-                                  z.begin(), z.end());
 }
 
 BOOST_AUTO_TEST_CASE(equal_test)
@@ -57,4 +43,36 @@ BOOST_AUTO_TEST_CASE(equal_test)
      BOOST_CHECK(ural::equal(x1, y2) == false);
      BOOST_CHECK(ural::equal(x2, y1) == false);
      BOOST_CHECK(ural::equal(x2, y2) == false);
+}
+
+BOOST_AUTO_TEST_CASE(fill_test)
+{
+    std::vector<int> x_std = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    auto x_ural = x_std;
+
+    auto const value = -1;
+    std::vector<int> const z(x_std.size(), value);
+
+    std::fill(x_std.begin(), x_std.end(), value);
+    ural::fill(x_ural, value);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_ural.begin(), x_ural.end(),
+                                  z.begin(), z.end());
+}
+
+BOOST_AUTO_TEST_CASE(transform_test)
+{
+    std::string const s("hello");
+    std::string x_std;
+    std::string x_ural;
+
+    std::transform(s.begin(), s.end(), std::back_inserter(x_std),
+                   std::ptr_fun<int, int>(std::toupper));
+    auto seq = ural::transform(s, std::ptr_fun<int, int>(std::toupper));
+    ural::copy(seq, std::back_inserter(x_ural));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
 }

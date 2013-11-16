@@ -376,9 +376,14 @@
 1384410255 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
 	<ural/sequence/base.hpp>
 
-1384422467 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
+1384567536 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<ural/algorithm.hpp>
+	<ural/sequence/transform.hpp>
 
 1384409131 c:\devtools\ural_repo\ural\ural\defs.hpp
+
+1384573945 c:\devtools\ural_repo\ural\ural\sequence\transform.hpp
+	<boost/compressed_pair.hpp>
+	<ural/sequence/base.hpp>
 
