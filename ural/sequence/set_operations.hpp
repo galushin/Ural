@@ -10,6 +10,133 @@
 
 namespace ural
 {
+    enum class set_operations_state
+    {
+        first,
+        second,
+        both,
+    };
+
+    template <class Input1, class Input2, class Compare = ural::less<> >
+    class merge_sequence
+     : private sequence_base<merge_sequence<Input1, Input2, Compare>,
+                             Compare>
+    {
+        typedef sequence_base<merge_sequence, Compare> Base_class;
+    public:
+        typedef typename std::common_type<typename Input1::reference,
+                                          typename Input2::reference>::type reference;
+
+        explicit merge_sequence(Input1 in1, Input2 in2, Compare cmp)
+         : Base_class(std::move(cmp))
+         , in1_{std::move(in1)}
+         , in2_{std::move(in2)}
+        {
+            this->seek();
+        }
+
+        bool operator!() const
+        {
+            return !in1_ && !in2_;
+        }
+
+        reference operator*() const
+        {
+            if(state_.value() == set_operations_state::second)
+            {
+                return *in2_;
+            }
+            else
+            {
+                return *in1_;
+            }
+        }
+
+        merge_sequence & operator++()
+        {
+            auto const state_value = state_.value();
+
+            if(state_value == set_operations_state::first)
+            {
+                ++ in1_;
+            }
+            else if(state_value == set_operations_state::second)
+            {
+                ++ in2_;
+            }
+            else
+            {
+               assert(false);
+            }
+
+            this->seek();
+            return *this;
+        }
+
+        Compare const & functor() const
+        {
+            return static_cast<Compare const &>(*this);
+        }
+
+    private:
+        void seek()
+        {
+            if(!in1_ && !in2_)
+            {
+                state_ = nullopt;
+                return;
+            }
+            if(!in2_)
+            {
+                state_ = set_operations_state::first;
+                return;
+            }
+            if(!in1_)
+            {
+                state_ = set_operations_state::second;
+                return;
+            }
+
+            if(functor()(*in2_, *in1_))
+            {
+                state_ = set_operations_state::second;
+            }
+            else
+            {
+                state_ = set_operations_state::first;
+            }
+        }
+
+    private:
+        Input1 in1_;
+        Input2 in2_;
+        ural::optional<set_operations_state> state_;
+    };
+
+    template <class Input1, class Input2, class Compare>
+    auto merge(Input1 && in1, Input2 && in2, Compare cmp)
+    -> merge_sequence<decltype(sequence(std::forward<Input1>(in1))),
+                                 decltype(sequence(std::forward<Input2>(in2))),
+                                 decltype(ural::make_functor(std::move(cmp)))>
+    {
+        typedef merge_sequence<decltype(sequence(std::forward<Input1>(in1))),
+                                 decltype(sequence(std::forward<Input2>(in2))),
+                                 decltype(ural::make_functor(std::move(cmp)))> Result;
+
+        return Result{sequence(std::forward<Input1>(in1)),
+                      sequence(std::forward<Input2>(in2)),
+                      ural::make_functor(std::move(cmp))};
+    }
+
+    template <class Input1, class Input2>
+    auto merge(Input1 && in1, Input2 && in2)
+    -> merge_sequence<decltype(sequence(std::forward<Input1>(in1))),
+                                 decltype(sequence(std::forward<Input2>(in2)))>
+    {
+        return merge(std::forward<Input1>(in1), std::forward<Input2>(in2),
+                     ural::less<>{});
+    }
+
     template <class Input1, class Input2, class Compare = ural::less<> >
     class set_intersection_sequence
      : private sequence_base<set_intersection_sequence<Input1, Input2, Compare>,
@@ -186,13 +313,6 @@ namespace ural
         return set_difference(std::forward<Input1>(in1),
                               std::forward<Input2>(in2), ural::less<>{});
     }
-
-    enum class set_operations_state
-    {
-        first,
-        second,
-        both,
-    };
 
     template <class Input1, class Input2, class Compare = ural::less<> >
     class set_symmetric_difference_sequence

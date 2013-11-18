@@ -108,6 +108,22 @@ BOOST_AUTO_TEST_CASE(includes_test_custom_compare)
     }
 }
 
+BOOST_AUTO_TEST_CASE(merge_test)
+{
+    std::vector<int> const v1{1,2,3,4,5,6,7,8};
+    std::vector<int> const v2{        5,  7,  9,10};
+
+    std::vector<int> std_merge;
+    std::merge(v1.begin(), v1.end(), v2.begin(), v2.end(),
+               std::back_inserter(std_merge));
+
+    std::vector<int> ural_merge;
+    ural::copy(ural::merge(v1, v2), std::back_inserter(ural_merge));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(std_merge.begin(), std_merge.end(),
+                                  ural_merge.begin(), ural_merge.end());
+}
+
 BOOST_AUTO_TEST_CASE(set_intersection_test)
 {
     std::vector<int> const v1{1,2,3,4,5,6,7,8};
