@@ -4,6 +4,13 @@
 namespace ural
 {
     struct empty_type{};
+    class null_type{};
+    struct use_default{};
+
+    template <class T, class Default>
+    struct default_helper
+     : std::conditional<std::is_same<T, use_default>::value, Default, T>
+    {};
 }
 // namespace ural
 

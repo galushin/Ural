@@ -36,6 +36,7 @@ namespace details
     void generate(ForwardSequence seq, Generator gen)
     {
         // @todo Проверка концепций
+        // @todo через copy, используя generate_sequence?
         for(; !!seq; ++ seq)
         {
             *seq = gen();

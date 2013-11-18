@@ -5,6 +5,7 @@
  @brief Классы-обёртки для отслеживания количества выполненных операций и т.д.
 */
 
+#include <ural/defs.hpp>
 #include <ural/thread.hpp>
 
 namespace ural
@@ -79,6 +80,53 @@ namespace ural
 
     private:
         T value_;
+    };
+
+    /** @todo Подсчитывать число вызовов, завершивхися без исключений
+    */
+    template <class F, class Tag = use_default, class Threading = use_default>
+    class functor_tracer
+    {
+    public:
+        typedef typename default_helper<Threading, single_thread_policy>::type
+            threading_policy;
+
+        /// @brief Тип счётчика
+        typedef typename threading_policy::atomic_counter_type counter_type;
+
+        typedef F target_type;
+
+        explicit functor_tracer(F f)
+         : f_(std::move(f))
+        {}
+
+        template <class... Args>
+        auto operator()(Args && ... args) const
+        -> decltype(std::declval<F>()(std::forward<Args>(args)...))
+        {
+            ++ calls_ref();
+            return f_(std::forward<Args>(args)...);
+        }
+
+        static counter_type calls()
+        {
+            return calls_ref();
+        }
+
+        static void reset_calls()
+        {
+            calls_ref() = 0;
+        }
+
+    private:
+        static counter_type & calls_ref()
+        {
+            static counter_type var{0};
+            return var;
+        }
+
+    private:
+        target_type f_;
     };
 }
 // namespace ural

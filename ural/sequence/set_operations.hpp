@@ -3,6 +3,7 @@
 
 /** @file ural/sequence/set_operations.hpp
  @brief Последовательности для операций над отсортированными множествами
+ @todo Проверка концепций
 */
 
 #include <ural/functional.hpp>
