@@ -51,6 +51,30 @@ namespace details
         ::ural::details::generate(std::move(seq),
                                   ural::value_functor<T const &>(value));
     }
+
+    template <class Input1, class  Input2, class Compare>
+    bool includes(Input1 in1, Input2 in2, Compare cmp)
+    {
+        // @todo Проверка концепций
+        for(; !!in1 && !!in2;)
+        {
+            if(cmp(*in1, *in2))
+            {
+                ++ in1;
+            }
+            else if(cmp(*in2, *in1))
+            {
+                return false;
+            }
+            else
+            {
+                ++ in1;
+                ++ in2;
+            }
+        }
+
+        return !in2;
+    }
 }
 // namespace details
 }

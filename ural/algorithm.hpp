@@ -51,6 +51,21 @@ namespace ural
         return ural::details::fill(sequence(std::forward<ForwardSequence>(seq)),
                                    value);
     }
+
+    template <class Input1, class  Input2, class Compare>
+    bool includes(Input1 && in1, Input2 && in2, Compare cmp)
+    {
+        return ::ural::details::includes(sequence(std::forward<Input1>(in1)),
+                                         sequence(std::forward<Input1>(in2)),
+                                         ural::make_functor(std::move(cmp)));
+    }
+
+    template <class Input1, class  Input2>
+    bool includes(Input1 && in1, Input2 && in2)
+    {
+        return ::ural::includes(std::forward<Input1>(in1),
+                                std::forward<Input1>(in2), ural::less<>());
+    }
 }
 // namespace ural
 

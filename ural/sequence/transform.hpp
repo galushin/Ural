@@ -1,12 +1,19 @@
 #ifndef Z_URAL_TRANSFORM_HPP_INCLUDED
 #define Z_URAL_TRANSFORM_HPP_INCLUDED
 
+/** @file ural/sequence/transform.hpp
+ @todo Параллельная реализация алгоритма
+*/
+
 #include <boost/compressed_pair.hpp>
 
 #include <ural/sequence/base.hpp>
 
 namespace ural
 {
+    /** @brief Реализация для произвольного количества входных
+    последовательнсотей
+    */
     template <class F, class... Inputs>
     class transform_sequence;
 
@@ -20,16 +27,40 @@ namespace ural
         typedef decltype(std::declval<F>()(*std::declval<Input>())) reference;
 
         explicit transform_sequence(F f, Input in)
-         : impl(std::move(f), std::move(in))
+         : impl_(std::move(f), std::move(in))
         {}
 
-        bool operator!() const;
+        bool operator!() const
+        {
+            return !this->base();
+        }
 
-        transform_sequence & operator++();
+        transform_sequence & operator++()
+        {
+            ++ input_ref();
+            return *this;
+        }
 
-        reference operator*();
+        reference operator*()
+        {
+            return this->functor()(*this->input_ref());
+        }
+
+        Input const & base() const
+        {
+            return impl_.second();
+        }
+
+        F const & functor() const
+        {
+            return impl_.first();
+        }
 
     private:
+        Input & input_ref()
+        {
+            return impl_.second();
+        }
 
     private:
         boost::compressed_pair<F, Input> impl_;

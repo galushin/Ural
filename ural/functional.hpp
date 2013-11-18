@@ -154,6 +154,21 @@ namespace ural
             return x == y;
         }
     };
+
+    template <class T1 = void, class T2 = T1>
+    class less;
+
+    template <>
+    class less<void, void>
+    {
+    public:
+        template <class T1, class T2>
+        constexpr auto operator()(T1 const & x, T2 const & y) const
+        -> decltype(x < y)
+        {
+            return x < y;
+        }
+    };
 }
 // namespace ural
 
