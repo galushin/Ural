@@ -142,3 +142,19 @@ BOOST_AUTO_TEST_CASE(set_difference_test)
     BOOST_CHECK_EQUAL_COLLECTIONS(std_diff.begin(), std_diff.end(),
                                   ural_diff.begin(), ural_diff.end());
 }
+
+BOOST_AUTO_TEST_CASE(set_union_test)
+{
+    std::vector<int> v1 = {1, 2, 3, 4, 5};
+    std::vector<int> v2 = {      3, 4, 5, 6, 7};
+
+    std::vector<long> r_std;
+    std::set_union(v1.begin(), v1.end(), v2.begin(), v2.end(),
+                   std::back_inserter(r_std));
+
+    std::vector<int> r_ural;
+    ural::copy(ural::set_union(v1, v2), std::back_inserter(r_ural));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
+                                  r_ural.begin(), r_ural.end());
+}
