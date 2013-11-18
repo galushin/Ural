@@ -143,6 +143,23 @@ BOOST_AUTO_TEST_CASE(set_difference_test)
                                   ural_diff.begin(), ural_diff.end());
 }
 
+BOOST_AUTO_TEST_CASE(set_symmetric_difference_test)
+{
+    std::vector<int> const v1{1,2,3,4,5,6,7,8     };
+    std::vector<int> const v2{        5,  7,  9,10};
+
+    std::vector<int> std_intersection;
+    std::set_symmetric_difference(v1.begin(), v1.end(), v2.begin(), v2.end(),
+                                  std::back_inserter(std_intersection));
+
+    std::vector<int> ural_intersection;
+    ural::copy(ural::set_symmetric_difference(v1, v2),
+               std::back_inserter(ural_intersection));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(std_intersection.begin(), std_intersection.end(),
+                                  ural_intersection.begin(), ural_intersection.end());
+}
+
 BOOST_AUTO_TEST_CASE(set_union_test)
 {
     std::vector<int> v1 = {1, 2, 3, 4, 5};
