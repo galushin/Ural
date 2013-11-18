@@ -127,3 +127,18 @@ BOOST_AUTO_TEST_CASE(set_intersection_test)
                                   ural_intersection.begin(),
                                   ural_intersection.end());
 }
+
+BOOST_AUTO_TEST_CASE(set_difference_test)
+{
+    std::vector<int> v1 {1, 2, 5, 5, 5, 9};
+    std::vector<int> v2 {2, 5, 7};
+
+    std::vector<int> std_diff;
+    std::set_difference(v1.begin(), v1.end(), v2.begin(), v2.end(),
+                        std::back_inserter(std_diff));
+    std::vector<int> ural_diff;
+    ural::copy(ural::set_difference(v1, v2), std::back_inserter(ural_diff));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(std_diff.begin(), std_diff.end(),
+                                  ural_diff.begin(), ural_diff.end());
+}
