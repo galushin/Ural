@@ -5,6 +5,7 @@
 // @todo Удалить
 #include <ural/sequence/transform.hpp>
 #include <ural/sequence/set_operations.hpp>
+#include <ural/utility/tracers.hpp>
 
 BOOST_AUTO_TEST_CASE(for_each_test)
 {
@@ -190,4 +191,18 @@ BOOST_AUTO_TEST_CASE(set_union_test)
 
     BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
                                   r_ural.begin(), r_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(make_heap_test)
+{
+    std::vector<int> v { 3, 1, 4, 1, 5, 9 };
+
+    auto cmp = ural::functor_tracer<ural::less<decltype(v.front())>>{};
+    cmp.reset_calls();
+
+    ural::make_heap(v, cmp);
+
+    BOOST_CHECK(std::is_heap(v.begin(), v.end()));
+
+    BOOST_CHECK_GE(3*v.size(), cmp.calls());
 }

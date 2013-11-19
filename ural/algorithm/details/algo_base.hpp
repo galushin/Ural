@@ -53,6 +53,13 @@ namespace details
                                   ural::value_functor<T const &>(value));
     }
 
+    // Бинарные кучи
+    template <class RandomAccessSequence, class Compare>
+    void make_heap(RandomAccessSequence seq, Compare cmp)
+    {
+    }
+
+    // Операции над множествами
     template <class Input1, class  Input2, class Compare>
     bool includes(Input1 in1, Input2 in2, Compare cmp)
     {

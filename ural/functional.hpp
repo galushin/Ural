@@ -156,7 +156,15 @@ namespace ural
     };
 
     template <class T1 = void, class T2 = T1>
-    class less;
+    class less
+    {
+    public:
+        constexpr auto operator()(T1 const & x, T2 const & y) const
+        -> decltype(x < y)
+        {
+            return x < y;
+        }
+    };
 
     template <>
     class less<void, void>

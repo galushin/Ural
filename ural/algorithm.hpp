@@ -52,6 +52,23 @@ namespace ural
                                    value);
     }
 
+    // Бинарные кучи
+    template <class RandomAccessSequence, class Compare>
+    void make_heap(RandomAccessSequence && seq, Compare cmp)
+    {
+        typedef RandomAccessSequence Seq;
+        return ::ural::details::make_heap(sequence(std::forward<Seq>(seq)),
+                                          make_functor(std::move(cmp)));
+    }
+
+    template <class RandomAccessSequence>
+    void make_heap(RandomAccessSequence && seq)
+    {
+        return ::ural::make_heap(std::forward<RandomAccessSequence>(seq),
+                                 ural::less<>{});
+    }
+
+    // Операции с множествами
     template <class Input1, class  Input2, class Compare>
     bool includes(Input1 && in1, Input2 && in2, Compare cmp)
     {

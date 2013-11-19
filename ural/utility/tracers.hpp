@@ -96,6 +96,10 @@ namespace ural
 
         typedef F target_type;
 
+        explicit functor_tracer()
+         : f_{}
+        {}
+
         explicit functor_tracer(F f)
          : f_(std::move(f))
         {}
