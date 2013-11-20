@@ -206,3 +206,13 @@ BOOST_AUTO_TEST_CASE(make_heap_test)
 
     BOOST_CHECK_GE(3*v.size(), cmp.calls());
 }
+
+BOOST_AUTO_TEST_CASE(sort_heap_test)
+{
+    std::vector<int> v { 3, 1, 4, 1, 5, 9 };
+
+    ural::make_heap(v);
+    ural::sort_heap(v);
+
+    BOOST_CHECK(std::is_sorted(v.begin(), v.end()));
+}

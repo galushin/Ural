@@ -94,6 +94,13 @@ namespace ural
             return *this;
         }
 
+        // Двусторонняя последовательность
+        void pop_back()
+        {
+            policy_type::assert_not_empty(*this);
+            -- this->stop_();
+        }
+
         // Последовательность произвольного доступа
         reference operator[](distance_type index) const
         {

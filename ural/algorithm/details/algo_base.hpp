@@ -69,6 +69,7 @@ namespace details
     template <class RandomAccessSequence, class Size, class Compare>
     void heap_sink(RandomAccessSequence seq, Size first, Size last, Compare cmp)
     {
+        // @todo Проверка концепций
         assert(last <= seq.size());
 
         if(first == last)
@@ -93,19 +94,50 @@ namespace details
         if(largest != first)
         {
             using std::swap;
-            swap(seq[first], seq[c1]);
-            heap_sink(seq, c1, last, cmp);
+            swap(seq[largest], seq[first]);
+            heap_sink(seq, largest, last, cmp);
         }
     }
 
     template <class RandomAccessSequence, class Compare>
     void make_heap(RandomAccessSequence seq, Compare cmp)
     {
+        // @todo Проверка концепций
         // @todo пропустить элементы, у которых заведомо нет дочерних
         for(auto n = seq.size(); n > 0; -- n)
         {
             heap_sink(seq, n - 1, seq.size(), cmp);
         }
+    }
+
+    template <class RandomAccessSequence, class Compare>
+    void pop_heap(RandomAccessSequence seq, Compare cmp)
+    {
+        // @todo assert(ural::is_heap(seq));
+        auto const N = seq.size();
+
+        if(N <= 1)
+        {
+            return;
+        }
+
+        using std::swap;
+        swap(seq[0], seq[N-1]);
+        ::ural::details::heap_sink(seq, 0, N-1, cmp);
+    }
+
+    template <class RandomAccessSequence, class Compare>
+    void sort_heap(RandomAccessSequence seq, Compare cmp)
+    {
+        // @todo Проверка концепций
+        // @todo assert(ural::is_heap(seq));
+        for(auto n = seq.size(); n > 0; --n)
+        {
+            ::ural::details::pop_heap(seq, cmp);
+            seq.pop_back();
+        }
+
+        // @todo assert(ural::is_sorted(seq));
     }
 
     // Операции над множествами
