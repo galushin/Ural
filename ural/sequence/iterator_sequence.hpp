@@ -31,6 +31,17 @@ namespace ural
                 throw std::logic_error("Sequence must be not empty");
             }
         }
+
+        template <class Seq>
+        static void check_index(Seq const & seq,
+                                typename Seq::distance_type index)
+        {
+            if(index >= seq.size())
+            {
+                // @todo Передавать больше информации
+                throw std::logic_error("Invalid index");
+            }
+        }
     };
 
     /** @brief Последовательность на основе пары итераторов
@@ -104,7 +115,7 @@ namespace ural
         // Последовательность произвольного доступа
         reference operator[](distance_type index) const
         {
-            // @todo Проверить индекс через стратегию
+            policy_type::check_index(*this, index);
             return front_()[index];
         }
 

@@ -18,18 +18,28 @@ namespace ural
     class transform_sequence;
 
     /** @todo Оптимизация размера
+    @tparam F тип функционального объекта
+    @tparam Input входная последовательность
     */
     template <class F, class Input>
     class transform_sequence<F, Input>
      : public sequence_base<transform_sequence<F, Input>>
     {
     public:
+        /// @brief Тип ссылки
         typedef decltype(std::declval<F>()(*std::declval<Input>())) reference;
 
+        /** @brief Конструктор
+        @param f функциональный объект, задающий преобразование
+        @param in входная последовательность
+        @post <tt> this->base() == in </tt>
+        @post <tt> this->functor() == f </tt>
+        */
         explicit transform_sequence(F f, Input in)
          : impl_(std::move(f), std::move(in))
         {}
 
+        // Однопроходная последовательность
         bool operator!() const
         {
             return !this->base();
@@ -46,11 +56,17 @@ namespace ural
             return this->functor()(*this->input_ref());
         }
 
+        /** @brief Базовая последовательность
+        @return Базовая последовательность
+        */
         Input const & base() const
         {
             return impl_.second();
         }
 
+        /** @brief Функциональный объект, задающий преобразование
+        @return Функциональный объект, задающий преобразование
+        */
         F const & functor() const
         {
             return impl_.first();

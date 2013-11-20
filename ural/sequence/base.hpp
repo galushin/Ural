@@ -29,6 +29,9 @@ namespace ural
         }
 
     protected:
+        /** @brief Конструктор
+        @param args список аргументов для конструктора базового класса
+        */
         template <class... Args>
         sequence_base(Args && ... args)
          : Base(std::forward<Args>(args)...)

@@ -83,27 +83,42 @@ namespace ural
     };
 
     /** @todo Подсчитывать число вызовов, завершивхися без исключений
+    @tparam F тип функционального объекта
+    @tparam Tag тэг
+    @tparam Threading тип, определяющий стратегию многопоточности
     */
     template <class F, class Tag = use_default, class Threading = use_default>
     class functor_tracer
     {
     public:
+        /// @brief Стратегия многопоточности
         typedef typename default_helper<Threading, single_thread_policy>::type
             threading_policy;
 
         /// @brief Тип счётчика
         typedef typename threading_policy::atomic_counter_type counter_type;
 
+        /// @brief Тип функционального объекта
         typedef F target_type;
 
+        /** @brief Конструктор
+        @post <tt> this->target() == F{} </tt>
+        */
         explicit functor_tracer()
          : f_{}
         {}
 
+        /** @brief Конструктор
+        @param f используемый функтор
+        @post <tt> this->target() == f </tt>
+        */
         explicit functor_tracer(F f)
          : f_(std::move(f))
         {}
 
+        /** @brief Оператор вызова
+        @return this->target()(std::forward<Args>(args)...);
+        */
         template <class... Args>
         auto operator()(Args && ... args) const
         -> decltype(std::declval<F>()(std::forward<Args>(args)...))
@@ -112,14 +127,26 @@ namespace ural
             return f_(std::forward<Args>(args)...);
         }
 
+        /** @brief Количество вызовов
+        @return Количество вызовов оператора () с момента последнего вызова
+        @c reset_calls.
+        */
         static counter_type calls()
         {
             return calls_ref();
         }
 
+        /** @brief Сбросить счётчик количества вызовов
+        @post <tt> this->calls() == 0 </tt>
+        */
         static void reset_calls()
         {
             calls_ref() = 0;
+        }
+
+        target_type const & target() const
+        {
+            return this->f_;
         }
 
     private:
@@ -130,6 +157,7 @@ namespace ural
         }
 
     private:
+        // @todo Оптимизация размера
         target_type f_;
     };
 }
