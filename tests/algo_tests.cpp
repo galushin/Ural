@@ -216,3 +216,15 @@ BOOST_AUTO_TEST_CASE(sort_heap_test)
 
     BOOST_CHECK(std::is_sorted(v.begin(), v.end()));
 }
+
+BOOST_AUTO_TEST_CASE(push_heap_test)
+{
+    std::vector<int> v { 3, 1, 4, 1, 5, 9 };
+
+    for(auto i = 0; i != v.size(); ++ i)
+    {
+        BOOST_CHECK(std::is_heap(v.begin(), v.begin() + i));
+        ural::push_heap(ural::make_iterator_sequence(v.begin(), v.begin() + i+1));
+    }
+    BOOST_CHECK(std::is_heap(v.begin(), v.end()));
+}

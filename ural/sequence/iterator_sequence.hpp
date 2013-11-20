@@ -137,6 +137,13 @@ namespace ural
     private:
         ural::tuple<Iterator, Iterator> iterators_;
     };
+
+    template <class Iterator>
+    ural::iterator_sequence<Iterator>
+    make_iterator_sequence(Iterator first, Iterator last)
+    {
+        return ural::iterator_sequence<Iterator>{first, last};
+    }
 }
 // namespace ural
 

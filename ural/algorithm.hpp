@@ -69,6 +69,21 @@ namespace ural
     }
 
     template <class RandomAccessSequence, class Compare>
+    void push_heap(RandomAccessSequence && seq, Compare cmp)
+    {
+        typedef RandomAccessSequence Seq;
+        return ::ural::details::push_heap(sequence(std::forward<Seq>(seq)),
+                                          make_functor(std::move(cmp)));
+    }
+
+    template <class RandomAccessSequence>
+    void push_heap(RandomAccessSequence && seq)
+    {
+        return ::ural::push_heap(std::forward<RandomAccessSequence>(seq),
+                                 ural::less<>{});
+    }
+
+    template <class RandomAccessSequence, class Compare>
     void sort_heap(RandomAccessSequence && seq, Compare cmp)
     {
         typedef RandomAccessSequence Seq;

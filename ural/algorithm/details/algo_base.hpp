@@ -55,6 +55,12 @@ namespace details
 
     // Бинарные кучи
     template <class Size>
+    Size heap_parent(Size pos)
+    {
+        return (pos - 1) / 2;
+    }
+
+    template <class Size>
     Size heap_child_1(Size pos)
     {
         return 2 * pos + 1;
@@ -64,6 +70,23 @@ namespace details
     Size heap_child_2(Size pos)
     {
         return 2 * pos + 2;
+    }
+
+    template <class RandomAccessSequence, class Size, class Compare>
+    void heap_swim(RandomAccessSequence seq, Size index, Compare cmp)
+    {
+        for(; index > 0;)
+        {
+            auto const parent = heap_parent(index);
+
+            if(cmp(seq[parent], seq[index]))
+            {
+                using std::swap;
+                swap(seq[parent], seq[index]);
+            }
+
+            index = parent;
+        }
     }
 
     template <class RandomAccessSequence, class Size, class Compare>
@@ -124,6 +147,16 @@ namespace details
         using std::swap;
         swap(seq[0], seq[N-1]);
         ::ural::details::heap_sink(seq, 0, N-1, cmp);
+    }
+
+    template <class RandomAccessSequence, class Compare>
+    void push_heap(RandomAccessSequence seq, Compare cmp)
+    {
+        // @todo Проверка концепций
+        if(seq.size() >= 1)
+        {
+            ::ural::details::heap_swim(seq, seq.size() - 1, cmp);
+        }
     }
 
     template <class RandomAccessSequence, class Compare>
