@@ -48,6 +48,9 @@ namespace ural
         /// @brief Тип значения
         typedef typename std::iterator_traits<Iterator>::value_type value_type;
 
+        typedef typename std::iterator_traits<Iterator>::difference_type
+            distance_type;
+
         /// @brief Тип политики обработки ошибок
         typedef Policy policy_type;
 
@@ -89,6 +92,18 @@ namespace ural
             policy_type::assert_not_empty(*this);
             ++ this->front_();
             return *this;
+        }
+
+        // Последовательность произвольного доступа
+        reference operator[](distance_type index) const
+        {
+            // @todo Проверить индекс через стратегию
+            return front_()[index];
+        }
+
+        distance_type size() const
+        {
+            return this->stop_() - this->front_();
         }
 
     private:

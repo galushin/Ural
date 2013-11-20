@@ -54,9 +54,58 @@ namespace details
     }
 
     // Бинарные кучи
+    template <class Size>
+    Size heap_child_1(Size pos)
+    {
+        return 2 * pos + 1;
+    }
+
+    template <class Size>
+    Size heap_child_2(Size pos)
+    {
+        return 2 * pos + 2;
+    }
+
+    template <class RandomAccessSequence, class Size, class Compare>
+    void heap_sink(RandomAccessSequence seq, Size first, Size last, Compare cmp)
+    {
+        assert(last <= seq.size());
+
+        if(first == last)
+        {
+            return;
+        }
+
+        auto const c1 = heap_child_1(first);
+        auto const c2 = heap_child_2(first);
+        auto largest = first;
+
+        if(c1 < last && cmp(seq[largest], seq[c1]))
+        {
+            largest = c1;
+        }
+
+        if (c2 < last && cmp(seq[largest], seq[c2]))
+        {
+            largest = c2;
+        }
+
+        if(largest != first)
+        {
+            using std::swap;
+            swap(seq[first], seq[c1]);
+            heap_sink(seq, c1, last, cmp);
+        }
+    }
+
     template <class RandomAccessSequence, class Compare>
     void make_heap(RandomAccessSequence seq, Compare cmp)
     {
+        // @todo пропустить элементы, у которых заведомо нет дочерних
+        for(auto n = seq.size(); n > 0; -- n)
+        {
+            heap_sink(seq, n - 1, seq.size(), cmp);
+        }
     }
 
     // Операции над множествами
