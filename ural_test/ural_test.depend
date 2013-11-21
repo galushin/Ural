@@ -258,7 +258,7 @@
 1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
 	<boost/test/impl/xml_report_formatter.ipp>
 
-1384929597 c:\devtools\ural_repo\ural\ural\algorithm.hpp
+1384997591 c:\devtools\ural_repo\ural\ural\algorithm.hpp
 	<ural/functional.hpp>
 	<ural/sequence/all.hpp>
 	<ural/algorithm/details/copy.hpp>
@@ -270,7 +270,7 @@
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/insertion.hpp>
 
-1384932093 c:\devtools\ural_repo\ural\ural\sequence\iterator_sequence.hpp
+1384999281 c:\devtools\ural_repo\ural\ural\sequence\iterator_sequence.hpp
 	<ural/sequence/base.hpp>
 	<ural/tuple.hpp>
 
@@ -322,7 +322,7 @@
 1384408805 c:\devtools\ural_repo\ural\ural\concepts.hpp
 	<boost/concept/usage.hpp>
 
-1384852717 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
+1384932529 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
 	<ural/defs.hpp>
 	<ural/thread.hpp>
 
@@ -364,12 +364,12 @@
 
 1383652453 c:\devtools\github\ural\ural\sequence\base.hpp
 
-1384410212 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
+1384932719 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
 	<ural/defs.hpp>
 
 1384408805 c:\devtools\ural_repo\ural\ural\thread.hpp
 
-1384931520 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
+1384999038 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
 	<ural/sequence/function_output.hpp>
 	<ural/algorithm/details/copy.hpp>
 	<ural/functional.hpp>
@@ -377,7 +377,7 @@
 1384410255 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
 	<ural/sequence/base.hpp>
 
-1384931285 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
+1384998195 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/transform.hpp>
@@ -386,7 +386,7 @@
 
 1384757720 c:\devtools\ural_repo\ural\ural\defs.hpp
 
-1384732211 c:\devtools\ural_repo\ural\ural\sequence\transform.hpp
+1384932954 c:\devtools\ural_repo\ural\ural\sequence\transform.hpp
 	<boost/compressed_pair.hpp>
 	<ural/sequence/base.hpp>
 

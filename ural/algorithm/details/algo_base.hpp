@@ -123,6 +123,40 @@ namespace details
     }
 
     template <class RandomAccessSequence, class Compare>
+    RandomAccessSequence
+    is_heap_until(RandomAccessSequence seq, Compare cmp)
+    {
+        // Пустая последовательность - куча
+        if(!seq)
+        {
+            return seq;
+        }
+
+        auto const n = seq.size();
+
+        auto index = 1;
+
+        for(; index != n; ++ index)
+        {
+            auto const p = ural::details::heap_parent(index);
+
+            if(cmp(seq[p], seq[index]))
+            {
+                break;
+            }
+        }
+
+        seq += index;
+        return seq;
+    }
+
+    template <class RandomAccessSequence, class Compare>
+    bool is_heap(RandomAccessSequence seq, Compare cmp)
+    {
+        return !::ural::details::is_heap_until(seq, cmp);
+    }
+
+    template <class RandomAccessSequence, class Compare>
     void make_heap(RandomAccessSequence seq, Compare cmp)
     {
         // @todo Проверка концепций
@@ -163,7 +197,8 @@ namespace details
     void sort_heap(RandomAccessSequence seq, Compare cmp)
     {
         // @todo Проверка концепций
-        // @todo assert(ural::is_heap(seq));
+
+        assert(ural::details::is_heap(seq, cmp));
         for(auto n = seq.size(); n > 0; --n)
         {
             ::ural::details::pop_heap(seq, cmp);

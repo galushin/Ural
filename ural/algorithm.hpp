@@ -54,6 +54,21 @@ namespace ural
 
     // Бинарные кучи
     template <class RandomAccessSequence, class Compare>
+    bool is_heap(RandomAccessSequence && seq, Compare cmp)
+    {
+        typedef RandomAccessSequence Seq;
+        return ::ural::details::is_heap(sequence(std::forward<Seq>(seq)),
+                                        make_functor(std::move(cmp)));
+    }
+
+    template <class RandomAccessSequence>
+    bool is_heap(RandomAccessSequence && seq)
+    {
+        return ::ural::is_heap(std::forward<RandomAccessSequence>(seq),
+                               ural::less<>{});
+    }
+
+    template <class RandomAccessSequence, class Compare>
     void make_heap(RandomAccessSequence && seq, Compare cmp)
     {
         typedef RandomAccessSequence Seq;

@@ -228,3 +228,24 @@ BOOST_AUTO_TEST_CASE(push_heap_test)
     }
     BOOST_CHECK(std::is_heap(v.begin(), v.end()));
 }
+
+BOOST_AUTO_TEST_CASE(is_heap_test)
+{
+    std::vector<int> v {3, 1, 4, 1, 5, 9};
+
+    BOOST_CHECK_EQUAL(std::is_heap(v.begin(), v.end()),
+                      ural::is_heap(v));
+}
+
+BOOST_AUTO_TEST_CASE(is_heap_test_all_permutations)
+{
+    std::vector<int> v {1, 2, 3, 4};
+
+    do
+    {
+        std::ostringstream os;
+        std::copy(v.begin(), v.end(), std::ostream_iterator<int>(os));
+        BOOST_CHECK_EQUAL(std::is_heap(v.begin(), v.end()), ural::is_heap(v));
+    }
+    while(std::next_permutation(v.begin(), v.end()));
+}

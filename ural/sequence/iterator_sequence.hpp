@@ -124,6 +124,13 @@ namespace ural
             return this->stop_() - this->front_();
         }
 
+        iterator_sequence & operator+=(distance_type index)
+        {
+            // @todo Проверка индекса
+            this->front_() += index;
+            return *this;
+        }
+
     private:
         Iterator & front_()
         {
