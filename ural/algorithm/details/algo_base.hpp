@@ -12,7 +12,10 @@ namespace details
     template <class Input, class UnaryFunction>
     UnaryFunction for_each(Input in, UnaryFunction f)
     {
-        // @todo Проверка концепций
+        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<UnaryFunction, void(decltype(*in))>));
+
         auto r = ural::details::copy(in, ural::make_function_output_sequence(std::move(f)));
         return r[ural::_2].functor();
     }
@@ -20,7 +23,13 @@ namespace details
     template <class Input1, class Input2, class BinaryPredicate>
     bool equal(Input1 in1, Input2 in2, BinaryPredicate pred)
     {
-        // @todo Проверка концепций
+        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input1>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input1>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input2>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input2>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate,
+                                                        bool(decltype(*in1), decltype(*in2))>));
+
         for(; !!in1 && !!in2; ++ in1, ++ in2)
         {
             if(!pred(*in1, *in2))
@@ -35,7 +44,11 @@ namespace details
     template <class ForwardSequence, class Generator>
     void generate(ForwardSequence seq, Generator gen)
     {
-        // @todo Проверка концепций
+        typedef decltype(gen()) result_type;
+
+        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<ForwardSequence>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<ForwardSequence, result_type>));
+
         // @todo через copy, используя generate_sequence?
         for(; !!seq; ++ seq)
         {
@@ -46,8 +59,8 @@ namespace details
     template <class ForwardSequence, class T>
     void fill(ForwardSequence seq, T const & value)
     {
-        // @todo Проверка концепций
-        BOOST_CONCEPT_ASSERT((::ural::concepts::WritableSequence<ForwardSequence, T>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<ForwardSequence>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<ForwardSequence, T const &>));
 
         ::ural::details::generate(std::move(seq),
                                   ural::value_functor<T const &>(value));
@@ -92,7 +105,6 @@ namespace details
     template <class RandomAccessSequence, class Size, class Compare>
     void heap_sink(RandomAccessSequence seq, Size first, Size last, Compare cmp)
     {
-        // @todo Проверка концепций
         assert(last <= seq.size());
 
         if(first == last)
@@ -126,6 +138,7 @@ namespace details
     RandomAccessSequence
     is_heap_until(RandomAccessSequence seq, Compare cmp)
     {
+        // @todo Проверка концепций
         // Пустая последовательность - куча
         if(!seq)
         {
@@ -153,6 +166,7 @@ namespace details
     template <class RandomAccessSequence, class Compare>
     bool is_heap(RandomAccessSequence seq, Compare cmp)
     {
+        // @todo Проверка концепций
         return !::ural::details::is_heap_until(seq, cmp);
     }
 
@@ -170,6 +184,7 @@ namespace details
     template <class RandomAccessSequence, class Compare>
     void pop_heap(RandomAccessSequence seq, Compare cmp)
     {
+        // @todo Проверка концепций
         // @todo assert(ural::is_heap(seq));
         auto const N = seq.size();
 
@@ -186,6 +201,7 @@ namespace details
     template <class RandomAccessSequence, class Compare>
     void push_heap(RandomAccessSequence seq, Compare cmp)
     {
+        // @todo Проверка концепций
         // @todo Проверка концепций
         if(seq.size() >= 1)
         {

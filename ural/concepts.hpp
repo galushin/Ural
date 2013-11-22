@@ -74,6 +74,23 @@ namespace concepts
         static Seq seq;
         static T value;
     };
+
+    template <class F, class Signature>
+    class Callable;
+
+    template <class F, class R, class... Args>
+    class Callable<F, R(Args...)>
+    {
+    public:
+        BOOST_CONCEPT_USAGE(Callable)
+        {
+            typedef decltype(static_cast<R>(f_(std::declval<Args>()...)))
+                result_type;
+        }
+
+    private:
+        static F f_;
+    };
 }
 // namespace concepts
 }

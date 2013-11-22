@@ -319,7 +319,7 @@
 	<type_traits>
 	<ostream>
 
-1384408805 c:\devtools\ural_repo\ural\ural\concepts.hpp
+1385103973 c:\devtools\ural_repo\ural\ural\concepts.hpp
 	<boost/concept/usage.hpp>
 
 1384932529 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
@@ -369,7 +369,7 @@
 
 1384408805 c:\devtools\ural_repo\ural\ural\thread.hpp
 
-1384999038 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
+1385105510 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
 	<ural/sequence/function_output.hpp>
 	<ural/algorithm/details/copy.hpp>
 	<ural/functional.hpp>
