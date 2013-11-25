@@ -14,7 +14,7 @@
 
 namespace ural
 {
-    /** @todo Специализированный алгоритм @c copy
+    /** @brief Последовательность частных сумм
     */
     template <class Input, class BinaryOperation>
     class partial_sums_sequence

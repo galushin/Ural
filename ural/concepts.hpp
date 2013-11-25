@@ -37,6 +37,19 @@ namespace concepts
         static Seq seq;
     };
 
+    template <class Seq>
+    class ForwardSequence
+     : SinglePassSequence<Seq>
+    {};
+
+    template <class Seq>
+    class RandomAccessSequence
+     : ForwardSequence<Seq>
+    {
+    public:
+    private:
+    };
+
     /** @brief Концепция последовательности, допускающей чтение
     @tparam Seq тип последовательности, для которого проверяется концепция
     */

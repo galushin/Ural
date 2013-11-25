@@ -138,7 +138,9 @@ namespace details
     RandomAccessSequence
     is_heap_until(RandomAccessSequence seq, Compare cmp)
     {
-        // @todo Проверка концепций
+        BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(seq)>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
+
         // Пустая последовательность - куча
         if(!seq)
         {
@@ -166,14 +168,18 @@ namespace details
     template <class RandomAccessSequence, class Compare>
     bool is_heap(RandomAccessSequence seq, Compare cmp)
     {
-        // @todo Проверка концепций
+        BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(seq)>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
+
         return !::ural::details::is_heap_until(seq, cmp);
     }
 
     template <class RandomAccessSequence, class Compare>
     void make_heap(RandomAccessSequence seq, Compare cmp)
     {
-        // @todo Проверка концепций
+        BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(seq)>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
+
         for(auto n = seq.size() / 2; n > 0; -- n)
         {
             heap_sink(seq, n - 1, seq.size(), cmp);
@@ -185,7 +191,9 @@ namespace details
     template <class RandomAccessSequence, class Compare>
     void pop_heap(RandomAccessSequence seq, Compare cmp)
     {
-        // @todo Проверка концепций
+        BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(seq)>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
+
         assert(ural::details::is_heap(seq, cmp));
         auto const N = seq.size();
 
@@ -202,8 +210,11 @@ namespace details
     template <class RandomAccessSequence, class Compare>
     void push_heap(RandomAccessSequence seq, Compare cmp)
     {
-        // @todo Проверка концепций
-        // @todo Проверка, что начало последовательности - куча
+        BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(seq)>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
+
+        assert(ural::details::is_heap_until(seq, cmp).size() <= 1);
+
         if(seq.size() >= 1)
         {
             ::ural::details::heap_swim(seq, seq.size() - 1, cmp);
@@ -215,7 +226,8 @@ namespace details
     template <class RandomAccessSequence, class Compare>
     void sort_heap(RandomAccessSequence seq, Compare cmp)
     {
-        // @todo Проверка концепций
+        BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(seq)>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
 
         assert(ural::details::is_heap(seq, cmp));
         for(auto n = seq.size(); n > 0; --n)
@@ -224,14 +236,19 @@ namespace details
             seq.pop_back();
         }
 
-        // @todo assert(ural::is_sorted(seq));
+        // @todo assert(ural::is_sorted(seq, cmp));
     }
 
     // Операции над множествами
     template <class Input1, class  Input2, class Compare>
     bool includes(Input1 in1, Input2 in2, Compare cmp)
     {
-        // @todo Проверка концепций
+        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input1>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input2>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input1>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input2>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*in1), decltype(*in2))>));
+
         for(; !!in1 && !!in2;)
         {
             if(cmp(*in1, *in2))
