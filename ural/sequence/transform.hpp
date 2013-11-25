@@ -2,7 +2,7 @@
 #define Z_URAL_TRANSFORM_HPP_INCLUDED
 
 /** @file ural/sequence/transform.hpp
- @todo Параллельная реализация алгоритма
+ @brief Последовательность с преобразованием
 */
 
 #include <boost/compressed_pair.hpp>
@@ -17,7 +17,7 @@ namespace ural
     template <class F, class... Inputs>
     class transform_sequence;
 
-    /** @todo Оптимизация размера
+    /** @brief Последовательность с преобразованием
     @tparam F тип функционального объекта
     @tparam Input входная последовательность
     */

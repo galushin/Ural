@@ -7,6 +7,7 @@
 
 #include <ural/defs.hpp>
 #include <ural/thread.hpp>
+#include <ural/functional.hpp>
 
 namespace ural
 {
@@ -89,7 +90,9 @@ namespace ural
     */
     template <class F, class Tag = use_default, class Threading = use_default>
     class functor_tracer
+     : private decltype(ural::make_functor(std::declval<F>()))
     {
+        typedef decltype(ural::make_functor(std::declval<F>())) Base_class;
     public:
         /// @brief Стратегия многопоточности
         typedef typename default_helper<Threading, single_thread_policy>::type
@@ -105,7 +108,7 @@ namespace ural
         @post <tt> this->target() == F{} </tt>
         */
         explicit functor_tracer()
-         : f_{}
+         : Base_class{}
         {}
 
         /** @brief Конструктор
@@ -113,18 +116,18 @@ namespace ural
         @post <tt> this->target() == f </tt>
         */
         explicit functor_tracer(F f)
-         : f_(std::move(f))
+         : Base_class(std::move(f))
         {}
 
         /** @brief Оператор вызова
-        @return this->target()(std::forward<Args>(args)...);
+        @return this->functor()(std::forward<Args>(args)...);
         */
         template <class... Args>
         auto operator()(Args && ... args) const
         -> decltype(std::declval<F>()(std::forward<Args>(args)...))
         {
             ++ calls_ref();
-            return f_(std::forward<Args>(args)...);
+            return this->functor()(std::forward<Args>(args)...);
         }
 
         /** @brief Количество вызовов
@@ -144,9 +147,9 @@ namespace ural
             calls_ref() = 0;
         }
 
-        target_type const & target() const
+        Base_class const & functor() const
         {
-            return this->f_;
+            return *this;
         }
 
     private:
@@ -155,10 +158,6 @@ namespace ural
             static counter_type var{0};
             return var;
         }
-
-    private:
-        // @todo Оптимизация размера
-        target_type f_;
     };
 }
 // namespace ural

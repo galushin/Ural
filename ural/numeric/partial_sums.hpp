@@ -5,6 +5,8 @@
  @brief Последовательность частных сумм
 */
 
+#include <boost/compressed_pair.hpp>
+
 #include <ural/functional.hpp>
 #include <ural/optional.hpp>
 
@@ -12,13 +14,15 @@
 
 namespace ural
 {
-    /** @todo Оптимизация размера
-    @todo Специализированный алгоритм @c copy
+    /** @todo Специализированный алгоритм @c copy
     */
     template <class Input, class BinaryOperation>
     class partial_sums_sequence
-     : public sequence_base<partial_sums_sequence<Input, BinaryOperation>>
+     : public sequence_base<partial_sums_sequence<Input, BinaryOperation>,
+                            BinaryOperation>
     {
+        typedef sequence_base<partial_sums_sequence, BinaryOperation>
+            Base_class;
     public:
         /// @brief Тип значения
         typedef typename Input::value_type value_type;
@@ -36,11 +40,12 @@ namespace ural
         @post <tt> this->operation() == add </tt>
         */
         explicit partial_sums_sequence(Input in, BinaryOperation add)
-         : members_{std::move(in), std::move(add), {}}
+         : Base_class{std::move(add)}
+         , members_{std::move(in), {}}
         {
             if(!!this->base())
             {
-                members_[ural::_3] = *this->base();
+                current_value_ref() = *this->base();
             }
         }
 
@@ -55,7 +60,7 @@ namespace ural
         reference operator*() const
         {
             // @note Проверка, что последовательность не пуста - через стратегию
-            return *(members_[ural::_3]);
+            return *members_.second();
         }
 
         /** @brief Переход к следующему элементу
@@ -64,11 +69,12 @@ namespace ural
         */
         partial_sums_sequence & operator++()
         {
-            ++ members_[ural::_1];
+            ++ input_ref();
 
             if(!!this->base())
             {
-                members_[ural::_3] = this->operation()(*(*this), *this->base());
+                current_value_ref() = this->operation()(*current_value_ref(),
+                                                        *this->base());
             }
 
             return *this;
@@ -79,7 +85,7 @@ namespace ural
         */
         Input const & base() const
         {
-            return members_[ural::_1];
+            return members_.first();
         }
 
         /** @brief Операция, используемая для вычисления суммы
@@ -87,14 +93,24 @@ namespace ural
         */
         operation_type const & operation() const
         {
-            return members_[ural::_2];
+            return *this;
         }
 
     private:
         typedef ural::optional<value_type> Optional_value;
 
-        /// @brief Кортеж, содержащий все переменные-члены
-        ural::tuple<Input, BinaryOperation, Optional_value> members_;
+        Optional_value & current_value_ref()
+        {
+            return members_.second();
+        }
+
+        Input & input_ref()
+        {
+            return members_.first();
+        }
+
+    private:
+        boost::compressed_pair<Input, Optional_value> members_;
     };
 
     /** @brief Создание последовательности частных сумм

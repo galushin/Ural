@@ -174,18 +174,19 @@ namespace details
     void make_heap(RandomAccessSequence seq, Compare cmp)
     {
         // @todo Проверка концепций
-        // @todo пропустить элементы, у которых заведомо нет дочерних
-        for(auto n = seq.size(); n > 0; -- n)
+        for(auto n = seq.size() / 2; n > 0; -- n)
         {
             heap_sink(seq, n - 1, seq.size(), cmp);
         }
+
+        assert(ural::details::is_heap(seq, cmp));
     }
 
     template <class RandomAccessSequence, class Compare>
     void pop_heap(RandomAccessSequence seq, Compare cmp)
     {
         // @todo Проверка концепций
-        // @todo assert(ural::is_heap(seq));
+        assert(ural::details::is_heap(seq, cmp));
         auto const N = seq.size();
 
         if(N <= 1)
@@ -202,11 +203,13 @@ namespace details
     void push_heap(RandomAccessSequence seq, Compare cmp)
     {
         // @todo Проверка концепций
-        // @todo Проверка концепций
+        // @todo Проверка, что начало последовательности - куча
         if(seq.size() >= 1)
         {
             ::ural::details::heap_swim(seq, seq.size() - 1, cmp);
         }
+
+        assert(ural::details::is_heap(seq, cmp));
     }
 
     template <class RandomAccessSequence, class Compare>

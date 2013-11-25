@@ -207,6 +207,20 @@ BOOST_AUTO_TEST_CASE(make_heap_test)
     BOOST_CHECK_GE(3*v.size(), cmp.calls());
 }
 
+BOOST_AUTO_TEST_CASE(make_heap_odd_size_test)
+{
+    std::vector<int> v { 3, 1, 4, 1, 5, 9, 2};
+
+    auto cmp = ural::functor_tracer<ural::less<decltype(v.front())>>{};
+    cmp.reset_calls();
+
+    ural::make_heap(v, cmp);
+
+    BOOST_CHECK(std::is_heap(v.begin(), v.end()));
+
+    BOOST_CHECK_GE(3*v.size(), cmp.calls());
+}
+
 BOOST_AUTO_TEST_CASE(sort_heap_test)
 {
     std::vector<int> v { 3, 1, 4, 1, 5, 9 };
