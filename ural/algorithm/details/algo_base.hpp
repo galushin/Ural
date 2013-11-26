@@ -9,6 +9,36 @@ namespace ural
 {
 namespace details
 {
+    template <class ForwardSequence, class Compare>
+    ForwardSequence
+    is_sorted_until(ForwardSequence in, Compare cmp)
+    {
+        if(!in)
+        {
+            return in;
+        }
+
+        // @todo Заменить на одну операцию
+        auto in_next = in;
+        ++ in_next;
+
+        for(; !!in_next; ++in_next, ++ in)
+        {
+            if(cmp(*in_next, *in))
+            {
+                break;
+            }
+        }
+
+        return in_next;
+    }
+
+    template <class ForwardSequence, class Compare>
+    bool is_sorted(ForwardSequence in, Compare cmp)
+    {
+        return !::ural::details::is_sorted_until(std::move(in), std::move(cmp));
+    }
+
     template <class Input, class UnaryFunction>
     UnaryFunction for_each(Input in, UnaryFunction f)
     {
@@ -236,8 +266,10 @@ namespace details
             seq.pop_back();
         }
 
-        // @todo assert(ural::is_sorted(seq, cmp));
+        assert(::ural::details::is_sorted(seq, cmp));
     }
+
+    // Сортировка
 
     // Операции над множествами
     template <class Input1, class  Input2, class Compare>

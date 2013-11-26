@@ -6,7 +6,7 @@
 #include <ural/algorithm.hpp>
 #include <ural/numeric.hpp>
 
-// @todo тестировать с минимальными типами
+// @todo тестировать с архетипами
 
 BOOST_AUTO_TEST_CASE(iota_test)
 {

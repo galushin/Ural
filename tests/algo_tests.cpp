@@ -257,9 +257,21 @@ BOOST_AUTO_TEST_CASE(is_heap_test_all_permutations)
 
     do
     {
-        std::ostringstream os;
-        std::copy(v.begin(), v.end(), std::ostream_iterator<int>(os));
         BOOST_CHECK_EQUAL(std::is_heap(v.begin(), v.end()), ural::is_heap(v));
     }
     while(std::next_permutation(v.begin(), v.end()));
+}
+
+BOOST_AUTO_TEST_CASE(is_sorted_test)
+{
+    std::vector<int> digits {3, 1, 4, 1, 5};
+
+    BOOST_CHECK_EQUAL(false, ural::is_sorted(digits));
+    BOOST_CHECK_EQUAL(std::is_sorted(digits.begin(), digits.end()),
+                      ural::is_sorted(digits));
+
+    std::sort(digits.begin(), digits.end());
+
+    BOOST_CHECK_EQUAL(true, std::is_sorted(digits.begin(), digits.end()));
+    BOOST_CHECK_EQUAL(true, ural::is_sorted(digits));
 }

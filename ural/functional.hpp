@@ -26,6 +26,7 @@ namespace ural
     private:
         T value_;
     };
+
     // Преобразование в функциональный объект
     /** Преобразование в функциональный объект. Перегрузка по умолчанию: просто
     возвращает свой аргумент.
@@ -47,14 +48,14 @@ namespace ural
     {
     public:
         typedef R(*target_type)(Args...);
+        typedef R result_type;
 
         function_ptr_functor(target_type f)
          : target_{f}
         {}
 
-        /** @todo Оптимальные типы параметров
-        */
-        R operator()(Args... args) const
+        result_type
+        operator()(typename boost::call_traits<Args>::param_type... args) const
         {
             return this->target()(args...);
         }

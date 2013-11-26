@@ -113,6 +113,21 @@ namespace ural
                                  ural::less<>{});
     }
 
+    // Сортировка
+    template <class ForwardSequence, class Compare>
+    bool is_sorted(ForwardSequence && in, Compare cmp)
+    {
+        return ::ural::details::is_sorted(sequence(std::forward<ForwardSequence>(in)),
+                                          ural::make_functor(std::move(cmp)));
+    }
+
+    template <class ForwardSequence>
+    bool is_sorted(ForwardSequence && in)
+    {
+        return ::ural::is_sorted(sequence(std::forward<ForwardSequence>(in)),
+                                 ural::less<>{});
+    }
+
     // Операции с множествами
     template <class Input1, class  Input2, class Compare>
     bool includes(Input1 && in1, Input2 && in2, Compare cmp)
