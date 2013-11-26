@@ -275,3 +275,16 @@ BOOST_AUTO_TEST_CASE(is_sorted_test)
     BOOST_CHECK_EQUAL(true, std::is_sorted(digits.begin(), digits.end()));
     BOOST_CHECK_EQUAL(true, ural::is_sorted(digits));
 }
+
+BOOST_AUTO_TEST_CASE(is_sorted_until_test)
+{
+    std::vector<int> nums = {1, 1, 3, 4, 5, 9};
+
+    do
+    {
+        auto n_std = nums.end() - std::is_sorted_until(nums.begin(), nums.end());
+        auto n_ural = ural::is_sorted_until(nums).size();
+        BOOST_CHECK_EQUAL(n_std, n_ural);
+    }
+    while(std::next_permutation(nums.begin(), nums.end()));
+}

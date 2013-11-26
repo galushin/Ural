@@ -128,6 +128,22 @@ namespace ural
                                  ural::less<>{});
     }
 
+    template <class ForwardSequence, class Compare>
+    auto is_sorted_until(ForwardSequence && in, Compare cmp)
+    -> decltype(sequence(std::forward<ForwardSequence>(in)))
+    {
+        return ::ural::details::is_sorted_until(sequence(std::forward<ForwardSequence>(in)),
+                                                ural::make_functor(std::move(cmp)));
+    }
+
+    template <class ForwardSequence>
+    auto is_sorted_until(ForwardSequence && in)
+    -> decltype(sequence(std::forward<ForwardSequence>(in)))
+    {
+        return ::ural::is_sorted_until(sequence(std::forward<ForwardSequence>(in)),
+                                       ural::less<>{});
+    }
+
     // Операции с множествами
     template <class Input1, class  Input2, class Compare>
     bool includes(Input1 && in1, Input2 && in2, Compare cmp)
