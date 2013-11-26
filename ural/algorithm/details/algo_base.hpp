@@ -2,6 +2,8 @@
 #define Z_URAL_ALGO_BASE_HPP_INCLUDED
 
 #include <ural/sequence/function_output.hpp>
+#include <ural/sequence/generator.hpp>
+
 #include <ural/algorithm/details/copy.hpp>
 #include <ural/functional.hpp>
 
@@ -79,11 +81,8 @@ namespace details
         BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<ForwardSequence>));
         BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<ForwardSequence, result_type>));
 
-        // @todo через copy, используя generate_sequence?
-        for(; !!seq; ++ seq)
-        {
-            *seq = gen();
-        }
+        ural::details::copy(ural::make_generator_sequence(std::move(gen)),
+                            std::move(seq));
     }
 
     template <class ForwardSequence, class T>

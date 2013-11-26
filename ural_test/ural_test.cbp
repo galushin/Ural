@@ -73,6 +73,7 @@
 			<Option target="Debug" />
 		</Unit>
 		<Unit filename="../ural/sequence/function_output.hpp" />
+		<Unit filename="../ural/sequence/generator.hpp" />
 		<Unit filename="../ural/sequence/insertion.hpp" />
 		<Unit filename="../ural/sequence/iterator_sequence.hpp" />
 		<Unit filename="../ural/sequence/set_operations.hpp" />

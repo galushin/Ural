@@ -371,15 +371,16 @@
 
 1384408805 c:\devtools\ural_repo\ural\ural\thread.hpp
 
-1385436392 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
+1385451752 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
 	<ural/sequence/function_output.hpp>
+	<ural/sequence/generator.hpp>
 	<ural/algorithm/details/copy.hpp>
 	<ural/functional.hpp>
 
 1385361801 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
 	<ural/sequence/base.hpp>
 
-1385450740 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
+1385451157 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/transform.hpp>
@@ -399,4 +400,8 @@
 1384757505 source:c:\devtools\ural_repo\ural\tests\functional_test.cpp
 	<boost/test/unit_test.hpp>
 	<ural/utility/tracers.hpp>
+
+1385456770 c:\devtools\ural_repo\ural\ural\sequence\generator.hpp
+	<ural/functional.hpp>
+	<ural/sequence/base.hpp>
 
