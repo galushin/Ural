@@ -52,6 +52,20 @@ namespace details
         return r[ural::_2].functor();
     }
 
+    template <class Input, class Predicate>
+    Input find_if(Input in, Predicate pred)
+    {
+        for(; !!in; ++ in)
+        {
+            if(pred(*in))
+            {
+                return in;
+            }
+        }
+
+        return in;
+    }
+
     template <class Input1, class Input2, class BinaryPredicate>
     bool equal(Input1 in1, Input2 in2, BinaryPredicate pred)
     {

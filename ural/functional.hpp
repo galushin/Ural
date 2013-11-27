@@ -142,7 +142,17 @@ namespace ural
     };
 
     template <class T1 = void, class T2 = T1>
-    class equal_to;
+    class equal_to
+    {
+    public:
+        /** @todo Оптимальные типы параметров
+        */
+        constexpr auto operator()(T1 const & x, T2 const & y) const
+        -> decltype(x == y)
+        {
+            return x == y;
+        }
+    };
 
     template <>
     class equal_to<void, void>

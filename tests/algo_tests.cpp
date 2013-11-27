@@ -23,6 +23,31 @@ BOOST_AUTO_TEST_CASE(for_each_test)
                                   x_ural.begin(), x_ural.end());
 }
 
+BOOST_AUTO_TEST_CASE(find_fail_test)
+{
+    std::vector<int> v{0, 1, 2, 3, 4};
+
+    auto const value = -1;
+
+    auto s = ural::find(v, value);
+
+    BOOST_CHECK(std::find(v.begin(), v.end(), value) == v.end());
+    BOOST_CHECK(!s);
+}
+
+BOOST_AUTO_TEST_CASE(find_success_test)
+{
+    std::vector<int> v{0, 1, 2, 3, 4};
+
+    auto const value = 2;
+
+    auto s = ural::find(v, value);
+
+    BOOST_CHECK(!!s);
+    BOOST_CHECK_EQUAL(value, *s);
+    BOOST_CHECK(std::find(v.begin(), v.end(), value) == s.front_iterator());
+}
+
 BOOST_AUTO_TEST_CASE(equal_test)
 {
      std::string const x1("radar");

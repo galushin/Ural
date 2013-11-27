@@ -83,6 +83,11 @@ namespace ural
             return this->front_() == this->stop_();
         }
 
+        Iterator const & front_iterator() const
+        {
+            return this->front_();
+        }
+
         /** @brief Доступ к текущему (переднему) элементу последовательности
         @return Ссылка на передний элемент последовательности
         @pre <tt> bool(*this) != false </tt>
