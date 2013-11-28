@@ -29,6 +29,14 @@ namespace ural
                                        ural::make_functor(std::move(pred)));
     }
 
+    template <class Input, class Predicate>
+    auto find_if_not(Input && in, Predicate pred)
+    -> decltype(ural::sequence(std::forward<Input>(in)))
+    {
+        return ::ural::details::find_if(ural::sequence(std::forward<Input>(in)),
+                                        ural::not_fn(std::move(pred)));
+    }
+
     template <class Input, class T, class BinaryPredicate>
     auto find(Input && in, T const & value, BinaryPredicate pred)
     -> decltype(ural::sequence(std::forward<Input>(in)))
@@ -44,6 +52,18 @@ namespace ural
         return ::ural::find(std::forward<Input>(in), value,
                             ural::equal_to<T>{});
     }
+
+    template <class Input, class UnaryPredicate>
+    bool all_of(Input && in, UnaryPredicate pred)
+    {
+        return !::ural::find_if_not(std::forward<Input>(in), pred);
+    }
+
+    template <class Input, class UnaryPredicate>
+    bool any_of(Input && x, UnaryPredicate pred);
+
+    template <class Input, class UnaryPredicate>
+    bool none_of(Input && x, UnaryPredicate pred);
 
     template <class Input1, class Input2, class BinaryPredicate>
     bool equal(Input1 && in1, Input2 && in2, BinaryPredicate pred)

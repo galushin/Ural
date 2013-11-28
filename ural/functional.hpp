@@ -77,6 +77,39 @@ namespace ural
         return function_ptr_functor<R(Args...)>{f};
     }
 
+    // Негатор
+    template <class Predicate>
+    class not_functor
+     : decltype(make_functor(std::declval<Predicate>()))
+    {
+    public:
+        typedef decltype(make_functor(std::declval<Predicate>())) target_type;
+
+        explicit not_functor(Predicate pred)
+         : target_type(std::move(pred))
+        {}
+
+        target_type const & target() const
+        {
+            return *this;
+        }
+
+        template <class... Args>
+        auto operator()(Args && ... args) const
+        -> decltype(!this->target()(std::forward<Args>(args)...))
+        {
+            return !this->target()(std::forward<Args>(args)...);
+        }
+    };
+
+    template <class Predicate>
+    auto not_fn(Predicate pred)
+    -> not_functor<decltype(make_functor(std::move(pred)))>
+    {
+        typedef not_functor<decltype(make_functor(std::move(pred)))> Functor;
+        return Functor{make_functor(std::move(pred))};
+    }
+
     // Функциональные объекты для операторов
     template <class T1 = void, class T2 = T1>
     class plus;

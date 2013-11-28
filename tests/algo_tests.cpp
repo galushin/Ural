@@ -7,6 +7,22 @@
 #include <ural/sequence/set_operations.hpp>
 #include <ural/utility/tracers.hpp>
 
+BOOST_AUTO_TEST_CASE(all_of_test)
+{
+    std::vector<int> v(10, 2);
+    std::partial_sum(v.cbegin(), v.cend(), v.begin());
+
+    auto const pred = [](int i){ return i % 2 == 0; };
+
+    BOOST_CHECK(std::all_of(v.cbegin(), v.cend(), pred));
+    BOOST_CHECK(ural::all_of(v, pred));
+
+    v[1] = 1;
+
+    BOOST_CHECK(!std::all_of(v.cbegin(), v.cend(), pred));
+    BOOST_CHECK(!ural::all_of(v, pred));
+}
+
 BOOST_AUTO_TEST_CASE(for_each_test)
 {
     std::vector<int> x_std = {1, 2, 3, 4, 5};
