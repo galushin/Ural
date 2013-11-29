@@ -23,6 +23,22 @@ BOOST_AUTO_TEST_CASE(all_of_test)
     BOOST_CHECK(!ural::all_of(v, pred));
 }
 
+BOOST_AUTO_TEST_CASE(any_of_test)
+{
+    std::vector<int> v(10, 2);
+    std::partial_sum(v.cbegin(), v.cend(), v.begin());
+
+    auto const pred = [](int i){ return i % 7 == 0; };
+
+    BOOST_CHECK(std::any_of(v.cbegin(), v.cend(), pred));
+    BOOST_CHECK(ural::any_of(v, pred));
+
+    v[6] = 13;
+
+    BOOST_CHECK(!std::any_of(v.cbegin(), v.cend(), pred));
+    BOOST_CHECK(!ural::any_of(v, pred));
+}
+
 BOOST_AUTO_TEST_CASE(for_each_test)
 {
     std::vector<int> x_std = {1, 2, 3, 4, 5};

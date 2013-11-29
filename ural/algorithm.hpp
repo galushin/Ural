@@ -56,14 +56,20 @@ namespace ural
     template <class Input, class UnaryPredicate>
     bool all_of(Input && in, UnaryPredicate pred)
     {
-        return !::ural::find_if_not(std::forward<Input>(in), pred);
+        return !::ural::find_if_not(std::forward<Input>(in), std::move(pred));
     }
 
     template <class Input, class UnaryPredicate>
-    bool any_of(Input && x, UnaryPredicate pred);
+    bool none_of(Input && in, UnaryPredicate pred)
+    {
+        return !::ural::find_if(std::forward<Input>(in), std::move(pred));
+    }
 
     template <class Input, class UnaryPredicate>
-    bool none_of(Input && x, UnaryPredicate pred);
+    bool any_of(Input && in, UnaryPredicate pred)
+    {
+        return !none_of(std::forward<Input>(in), std::move(pred));
+    }
 
     template <class Input1, class Input2, class BinaryPredicate>
     bool equal(Input1 && in1, Input2 && in2, BinaryPredicate pred)
