@@ -178,9 +178,9 @@ namespace ural
     class equal_to
     {
     public:
-        /** @todo Оптимальные типы параметров
-        */
-        constexpr auto operator()(T1 const & x, T2 const & y) const
+        constexpr auto
+        operator()(typename boost::call_traits<T1>::param_type x,
+                   typename boost::call_traits<T1>::param_type y) const
         -> decltype(x == y)
         {
             return x == y;
