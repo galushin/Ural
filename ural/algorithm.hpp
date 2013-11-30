@@ -42,7 +42,9 @@ namespace ural
     -> decltype(ural::sequence(std::forward<Input>(in)))
     {
         return ::ural::find_if(std::forward<Input>(in),
-                               std::bind(std::move(pred), std::placeholders::_1, std::ref(value)));
+                               std::bind(ural::make_functor(std::move(pred)),
+                                         std::placeholders::_1,
+                                         std::ref(value)));
     }
 
     template <class Input, class T>
@@ -51,6 +53,32 @@ namespace ural
     {
         return ::ural::find(std::forward<Input>(in), value,
                             ural::equal_to<T>{});
+    }
+
+    template <class Input, class UnaryPredicate>
+    auto count_if(Input && in, UnaryPredicate pred)
+    -> typename decltype(ural::sequence(std::forward<Input>(in)))::distance_type
+    {
+        return ::ural::details::count_if(ural::sequence(std::forward<Input>(in)),
+                                         ural::make_functor(std::move(pred)));
+    }
+
+    template <class Input, class T, class BinaryPredicate>
+    auto count(Input && in, T const & value, BinaryPredicate pred)
+    -> typename decltype(ural::sequence(std::forward<Input>(in)))::distance_type
+    {
+         return ::ural::count_if(std::forward<Input>(in),
+                                 std::bind(ural::make_functor(std::move(pred)),
+                                           std::placeholders::_1,
+                                           std::ref(value)));
+    }
+
+    template <class Input, class T>
+    auto count(Input && in, T const & value)
+    -> typename decltype(ural::sequence(std::forward<Input>(in)))::distance_type
+    {
+        return ::ural::count(std::forward<Input>(in), value,
+                             ural::equal_to<T>{});
     }
 
     template <class Input, class UnaryPredicate>

@@ -55,6 +55,23 @@ BOOST_AUTO_TEST_CASE(for_each_test)
                                   x_ural.begin(), x_ural.end());
 }
 
+BOOST_AUTO_TEST_CASE(count_test)
+{
+    std::vector<int> v = { 1, 2, 3, 4, 4, 3, 7, 8, 9, 10 };
+
+    int const target1 = 3;
+    int const target2 = 5;
+
+    int const n1_std = std::count(v.begin(), v.end(), target1);
+    int const n2_std = std::count(v.begin(), v.end(), target2);
+
+    int const n1_ural = ural::count(v, target1);
+    int const n2_ural = ural::count(v, target2);
+
+    BOOST_CHECK_EQUAL(n1_std, n1_ural);
+    BOOST_CHECK_EQUAL(n2_std, n2_ural);
+}
+
 BOOST_AUTO_TEST_CASE(find_fail_test)
 {
     std::vector<int> v{0, 1, 2, 3, 4};

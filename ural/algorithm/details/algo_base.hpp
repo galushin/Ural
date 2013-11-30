@@ -52,6 +52,23 @@ namespace details
         return r[ural::_2].functor();
     }
 
+    template <class Input, class UnaryPredicate>
+    typename Input::distance_type
+    count_if(Input in, UnaryPredicate pred)
+    {
+        typename Input::distance_type result{0};
+
+        for(; !!in; ++ in)
+        {
+            if (pred(*in))
+            {
+                ++ result;
+            }
+        }
+
+        return result;
+    }
+
     template <class Input, class Predicate>
     Input find_if(Input in, Predicate pred)
     {
