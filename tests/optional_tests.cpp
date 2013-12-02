@@ -206,6 +206,15 @@ BOOST_AUTO_TEST_CASE(value_ctor)
   }
 }
 
+BOOST_AUTO_TEST_CASE(optional_nullopt_assigment)
+{
+    auto oi = tr2::optional<int>{1};
+    BOOST_CHECK (!!oi);
+
+//    @todo oi = {};
+//    BOOST_CHECK (!oi);
+}
+
 BOOST_AUTO_TEST_CASE(assignment)
 {
     tr2::optional<int> oi;
@@ -218,7 +227,6 @@ BOOST_AUTO_TEST_CASE(assignment)
     oi = 2;
     BOOST_CHECK (*oi == 2);
 
-//    @todo oi = {};
     oi = ural::nullopt;
     BOOST_CHECK (!oi);
 }
@@ -449,8 +457,7 @@ BOOST_AUTO_TEST_CASE(example1)
 
   ////////////////////////////////////////////
   ok = nullopt;                         // if ok was engaged calls T's dtor
-  // @todo oj = {};                           // assigns a temporary disengaged optional
-  oj = nullopt;
+  oj = nullopt;                           // assigns a temporary disengaged optional
 }
 
 BOOST_AUTO_TEST_CASE(example_const_optional)
@@ -575,7 +582,6 @@ BOOST_AUTO_TEST_CASE(example_rationale)
   optional<int> opt2 = {};
 
   opt1 = nullopt;
-  // @todo opt2 = {};
   opt2 = nullopt;
 
   if (opt1 == nullopt) {}
@@ -707,7 +713,6 @@ BOOST_AUTO_TEST_CASE(value_or)
 
   tr2::optional<std::string> os{"AAA"};
   BOOST_CHECK (os.value_or("BBB") == "AAA");
-  // @todo os = {};
   os = tr2::nullopt;
   BOOST_CHECK (os.value_or("BBB") == "BBB");
 }

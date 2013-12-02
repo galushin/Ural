@@ -266,7 +266,7 @@
 1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
 	<boost/test/impl/xml_report_formatter.ipp>
 
-1385683922 c:\devtools\ural_repo\ural\ural\algorithm.hpp
+1385951350 c:\devtools\ural_repo\ural\ural\algorithm.hpp
 	<ural/functional.hpp>
 	<ural/sequence/all.hpp>
 	<ural/algorithm/details/copy.hpp>
@@ -297,7 +297,7 @@
 	<ural/numeric/partial_sums.hpp>
 	<ural/numeric/adjacent_differences.hpp>
 
-1385627696 c:\devtools\ural_repo\ural\ural\functional.hpp
+1385951350 c:\devtools\ural_repo\ural\ural\functional.hpp
 
 1382685103 c:\devtools\ural_repo\ural\ural\numeric\details\num_algo.hpp
 
@@ -384,7 +384,7 @@
 
 1384408805 c:\devtools\ural_repo\ural\ural\thread.hpp
 
-1385539404 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
+1385951350 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
 	<ural/sequence/function_output.hpp>
 	<ural/sequence/generator.hpp>
 	<ural/algorithm/details/copy.hpp>
@@ -393,7 +393,7 @@
 1385361801 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
 	<ural/sequence/base.hpp>
 
-1385683539 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
+1385952966 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/transform.hpp>
