@@ -12,10 +12,11 @@
 
 1382764809 c:\devtools\ural_repo\ural\\ural\placeholders.hpp
 
-1382920056 source:c:\devtools\ural_repo\ural\tests\iterator_sequence_test.cpp
+1386032461 source:c:\devtools\ural_repo\ural\tests\iterator_sequence_test.cpp
 	<boost/test/unit_test.hpp>
 	<boost/concept/assert.hpp>
 	<ural/algorithm.hpp>
+	<ural/numeric.hpp>
 	<ural/sequence/all.hpp>
 
 1382761504 c:\devtools\ural_repo\ural\\ural\algorithm.hpp
@@ -272,7 +273,7 @@
 	<ural/algorithm/details/copy.hpp>
 	<ural/algorithm/details/algo_base.hpp>
 
-1384408805 c:\devtools\ural_repo\ural\ural\sequence\all.hpp
+1386032864 c:\devtools\ural_repo\ural\ural\sequence\all.hpp
 	<iterator>
 	<ural/sequence/base.hpp>
 	<ural/sequence/iterator_sequence.hpp>
@@ -290,7 +291,7 @@
 	<ural/concepts.hpp>
 	<ural/tuple.hpp>
 
-1383803859 c:\devtools\ural_repo\ural\ural\numeric.hpp
+1386032791 c:\devtools\ural_repo\ural\ural\numeric.hpp
 	<ural/functional.hpp>
 	<ural/sequence/all.hpp>
 	<ural/numeric/details/num_algo.hpp>
@@ -307,7 +308,7 @@
 	<ural/optional.hpp>
 	<ural/sequence/base.hpp>
 
-1384154746 source:c:\devtools\ural_repo\ural\tests\optional_tests.cpp
+1385953098 source:c:\devtools\ural_repo\ural\tests\optional_tests.cpp
 	<boost/test/unit_test.hpp>
 	<boost/concept/assert.hpp>
 	<ostream>
@@ -393,7 +394,7 @@
 1385361801 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
 	<ural/sequence/base.hpp>
 
-1385952966 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
+1386031970 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/transform.hpp>

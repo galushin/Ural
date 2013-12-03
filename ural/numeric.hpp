@@ -25,7 +25,7 @@ namespace ural
     template <class Input, class T, class BinaryOperation>
     T accumulate(Input && in, T init_value, BinaryOperation op)
     {
-        return ::ural::details::accumulate(ural::sequence(std::forward<Input>(in)),
+        return ::ural::details::accumulate(sequence(std::forward<Input>(in)),
                                            std::move(init_value),
                                            ural::make_functor(std::move(op)));
     }

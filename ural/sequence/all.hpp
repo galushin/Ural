@@ -24,6 +24,13 @@ namespace ural
         return iterator_sequence<decltype(c.begin())>{c.begin(), c.end()};
     }
 
+    template <class T, size_t N>
+    iterator_sequence<T *>
+    sequence(T (&x)[N])
+    {
+        return iterator_sequence<T *>{x, x + N};
+    }
+
     /** @brief Создание последовательности на основе итератора вставки в конец
     контейнера
     @param i итератор-вставка

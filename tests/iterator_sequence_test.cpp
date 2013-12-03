@@ -3,6 +3,7 @@
 #include <boost/concept/assert.hpp>
 
 #include <ural/algorithm.hpp>
+#include <ural/numeric.hpp>
 #include <ural/sequence/all.hpp>
 
 // @todo Тест возвращаемого значения для copy при копировании разной длины
@@ -41,4 +42,16 @@ BOOST_AUTO_TEST_CASE(copy_to_back_inserter)
     ural::copy(xs, std::back_inserter(x1));
 
     BOOST_CHECK_EQUAL_COLLECTIONS(xs.begin(), xs.end(), x1.begin(), x1.end());
+}
+
+BOOST_AUTO_TEST_CASE(c_array_to_sequence)
+{
+    int xs [] = {1, 2, 3, 4};
+
+    auto s = ural::sequence(xs);
+
+    auto const sum_std = std::accumulate(xs, xs + sizeof(xs) / sizeof(xs[0]), 0.0);
+    auto const sum_ural = ural::accumulate(s, 0.0);
+
+    BOOST_CHECK_EQUAL(sum_std, sum_ural);
 }
