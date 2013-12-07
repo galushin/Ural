@@ -300,6 +300,22 @@ namespace details
     }
 
     // Сортировка
+    template <class Input1, class  Input2, class Compare>
+    bool lexicographical_compare(Input1 in1, Input2 in2, Compare cmp)
+    {
+        for(; !!in1 && !!in2; ++ in1, ++ in2)
+        {
+            if(cmp(*in1, *in2))
+            {
+                return true;
+            }
+            else if(cmp(*in2, *in1))
+            {
+                return false;
+            }
+        }
+        return !in1 && !!in2;
+    }
 
     // Операции над множествами
     template <class Input1, class  Input2, class Compare>

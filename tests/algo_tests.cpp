@@ -362,3 +362,14 @@ BOOST_AUTO_TEST_CASE(is_sorted_until_test)
     }
     while(std::next_permutation(nums.begin(), nums.end()));
 }
+
+BOOST_AUTO_TEST_CASE(lexicographical_compare_test)
+{
+    BOOST_CHECK_EQUAL(false, ural::lexicographical_compare("", ""));
+
+    BOOST_CHECK_EQUAL(true, ural::lexicographical_compare("ab", "abc"));
+    BOOST_CHECK_EQUAL(false, ural::lexicographical_compare("abc", "ab"));
+
+    BOOST_CHECK_EQUAL(true, ural::lexicographical_compare("abcd", "abed"));
+    BOOST_CHECK_EQUAL(false, ural::lexicographical_compare("abed", "abcd"));
+}

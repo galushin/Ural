@@ -222,12 +222,29 @@ namespace ural
                                        ural::less<>{});
     }
 
+    template <class Input1, class  Input2, class Compare>
+    bool lexicographical_compare(Input1 && in1, Input2 && in2, Compare cmp)
+    {
+        return ::ural::details::lexicographical_compare(
+                                         sequence(std::forward<Input1>(in1)),
+                                         sequence(std::forward<Input2>(in2)),
+                                         ural::make_functor(std::move(cmp)));
+    }
+
+    template <class Input1, class  Input2>
+    bool lexicographical_compare(Input1 && in1, Input2 && in2)
+    {
+        return ::ural::lexicographical_compare(std::forward<Input1>(in1),
+                                               std::forward<Input2>(in2),
+                                               ural::less<>());
+    }
+
     // Операции с множествами
     template <class Input1, class  Input2, class Compare>
     bool includes(Input1 && in1, Input2 && in2, Compare cmp)
     {
         return ::ural::details::includes(sequence(std::forward<Input1>(in1)),
-                                         sequence(std::forward<Input1>(in2)),
+                                         sequence(std::forward<Input2>(in2)),
                                          ural::make_functor(std::move(cmp)));
     }
 
@@ -235,7 +252,7 @@ namespace ural
     bool includes(Input1 && in1, Input2 && in2)
     {
         return ::ural::includes(std::forward<Input1>(in1),
-                                std::forward<Input1>(in2), ural::less<>());
+                                std::forward<Input2>(in2), ural::less<>());
     }
 }
 // namespace ural
