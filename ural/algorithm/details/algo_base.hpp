@@ -83,6 +83,12 @@ namespace details
         return in;
     }
 
+    template <class Input, class Predicate>
+    Input find_if_not(Input in, Predicate pred)
+    {
+        return find_if(std::move(in), ural::not_fn(std::move(pred)));
+    }
+
     template <class Input1, class Input2, class BinaryPredicate>
     bool equal(Input1 in1, Input2 in2, BinaryPredicate pred)
     {
@@ -124,6 +130,14 @@ namespace details
 
         ::ural::details::generate(std::move(seq),
                                   ural::value_functor<T const &>(value));
+    }
+
+    // Разделение
+    template <class Input, class UnaryPredicate>
+    bool is_partitioned(Input in, UnaryPredicate pred)
+    {
+        auto tail = ural::details::find_if_not(std::move(in), pred);
+        return !::ural::details::find_if(std::move(tail), std::move(pred));
     }
 
     // Бинарные кучи

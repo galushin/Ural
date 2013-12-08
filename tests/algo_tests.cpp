@@ -153,6 +153,29 @@ BOOST_AUTO_TEST_CASE(transform_test)
                                   x_ural.begin(), x_ural.end());
 }
 
+BOOST_AUTO_TEST_CASE(is_partitioned_test)
+{
+    std::vector<int> v = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+    auto is_even = [](int i){ return i % 2 == 0; };
+
+    BOOST_CHECK_EQUAL(std::is_partitioned(v.begin(), v.end(), is_even),
+                      ural::is_partitioned(v, is_even));
+    BOOST_CHECK_EQUAL(false, ural::is_partitioned(v, is_even));
+
+    std::partition(v.begin(), v.end(), is_even);
+
+    BOOST_CHECK_EQUAL(std::is_partitioned(v.begin(), v.end(), is_even),
+                      ural::is_partitioned(v, is_even));
+    BOOST_CHECK_EQUAL(true, ural::is_partitioned(v, is_even));
+
+    std::reverse(v.begin(), v.end());
+
+    BOOST_CHECK_EQUAL(std::is_partitioned(v.begin(), v.end(), is_even),
+                      ural::is_partitioned(v, is_even));
+    BOOST_CHECK_EQUAL(false, ural::is_partitioned(v, is_even));
+}
+
 BOOST_AUTO_TEST_CASE(includes_test)
 {
     std::vector<std::string> vs{"abcfhx", "abc", "ac", "g", "acg", {}};

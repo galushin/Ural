@@ -130,6 +130,14 @@ namespace ural
                                    value);
     }
 
+    // Разделение
+    template <class Input, class UnaryPredicate>
+    bool is_partitioned(Input && in, UnaryPredicate pred)
+    {
+        return ::ural::details::is_partitioned(sequence(std::forward<Input>(in)),
+                                               make_functor(std::move(pred)));
+    }
+
     // Бинарные кучи
     template <class RandomAccessSequence, class Compare>
     bool is_heap(RandomAccessSequence && seq, Compare cmp)
