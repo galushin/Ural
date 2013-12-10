@@ -279,6 +279,22 @@ namespace ural
         return ::ural::min_element(sequence(std::forward<ForwardSequence>(in)),
                                    ural::less<>{});
     }
+
+    template <class ForwardSequence, class Compare>
+    auto max_element(ForwardSequence && in, Compare cmp)
+    -> decltype(sequence(std::forward<ForwardSequence>(in)))
+    {
+        return ::ural::details::max_element(sequence(std::forward<ForwardSequence>(in)),
+                                            std::move(cmp));
+    }
+
+    template <class ForwardSequence>
+    auto max_element(ForwardSequence && in)
+    -> decltype(sequence(std::forward<ForwardSequence>(in)))
+    {
+        return ::ural::max_element(sequence(std::forward<ForwardSequence>(in)),
+                                   ural::less<>{});
+    }
 }
 // namespace ural
 

@@ -382,6 +382,28 @@ namespace details
         }
         return result;
     }
+
+    template <class ForwardSequence, class Compare>
+    ForwardSequence
+    max_element(ForwardSequence in, Compare cmp)
+    {
+        // @todo Устранить дублирование с min_element
+        if(!in)
+        {
+            return in;
+        }
+
+        auto result = in++;
+
+        for(; !!in; ++ in)
+        {
+            if(cmp(*result, *in))
+            {
+                result = in;
+            }
+        }
+        return result;
+    }
 }
 // namespace details
 }

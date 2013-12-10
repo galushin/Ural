@@ -388,7 +388,7 @@ BOOST_AUTO_TEST_CASE(is_sorted_until_test)
 
 BOOST_AUTO_TEST_CASE(min_element_test)
 {
-    std::vector<int> v{3, 1, 4, 1, 5, 9, 2, 6, 5};
+    std::vector<int> const v{3, 1, 4, 1, 5, 9, 2, 6, 5};
 
     auto std_result = std::min_element(std::begin(v), std::end(v));
     auto ural_result = ural::min_element(v);
@@ -397,6 +397,26 @@ BOOST_AUTO_TEST_CASE(min_element_test)
                       ural_result.size());
     BOOST_CHECK(!!ural_result);
     BOOST_CHECK_EQUAL(*std_result, *ural_result);
+}
+
+BOOST_AUTO_TEST_CASE(max_element_test)
+{
+    std::vector<int> const v{ 3, 1, -14, 1, 5, 9 };
+    auto std_result = std::max_element(v.begin(), v.end());
+    auto ural_result = ural::max_element(v);
+
+    BOOST_CHECK_EQUAL(std::distance(std_result, v.end()), ural_result.size());
+}
+
+BOOST_AUTO_TEST_CASE(max_element_test_custom_compare)
+{
+    auto abs_compare = [](int a, int b) {return (std::abs(a) < std::abs(b));};
+
+    std::vector<int> const v{ 3, 1, -14, 1, 5, 9 };
+    auto std_result = std::max_element(v.begin(), v.end(), abs_compare);
+    auto ural_result = ural::max_element(v, abs_compare);
+
+    BOOST_CHECK_EQUAL(std::distance(std_result, v.end()), ural_result.size());
 }
 
 BOOST_AUTO_TEST_CASE(lexicographical_compare_test)
