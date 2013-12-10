@@ -6,6 +6,8 @@
  @todo Разбить на более мелкие файлы
 */
 
+#include <boost/compressed_pair.hpp>
+
 namespace ural
 {
     template <class T>
@@ -220,6 +222,35 @@ namespace ural
         {
             return x < y;
         }
+    };
+
+    template <class ForwardSequence, class Compare>
+    class min_element_accumulator
+    {
+    public:
+        explicit min_element_accumulator(ForwardSequence s, Compare cmp)
+         : impl_{std::move(s), std::move(cmp)}
+        {}
+
+        min_element_accumulator &
+        operator()(ForwardSequence s)
+        {
+            if(impl_.second()(*s, *this->result()))
+            {
+                impl_.first() = s;
+            }
+
+            return *this;
+        }
+
+        ForwardSequence const & result() const
+        {
+            return impl_.first();
+        }
+
+    private:
+        // @todo Закрытое наследование, а не членство?
+        boost::compressed_pair<ForwardSequence, Compare> impl_;
     };
 }
 // namespace ural

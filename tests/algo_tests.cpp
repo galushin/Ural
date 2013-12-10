@@ -413,8 +413,8 @@ BOOST_AUTO_TEST_CASE(max_element_test_custom_compare)
     auto abs_compare = [](int a, int b) {return (std::abs(a) < std::abs(b));};
 
     std::vector<int> const v{ 3, 1, -14, 1, 5, 9 };
-    auto std_result = std::max_element(v.begin(), v.end(), abs_compare);
-    auto ural_result = ural::max_element(v, abs_compare);
+    auto std_result = std::max_element(v.begin(), v.end(), +abs_compare);
+    auto ural_result = ural::max_element(v, +abs_compare);
 
     BOOST_CHECK_EQUAL(std::distance(std_result, v.end()), ural_result.size());
 }

@@ -371,38 +371,28 @@ namespace details
             return in;
         }
 
-        auto result = in++;
+        ::ural::min_element_accumulator<ForwardSequence, Compare>
+            acc(in++, std::move(cmp));
 
+        /* @todo Избавиться от цикла: нужна последовательность, действующая
+        подобно boost::counted_iterator
+        */
         for(; !!in; ++ in)
         {
-            if(cmp(*in, *result))
-            {
-                result = in;
-            }
+            acc(in);
         }
-        return result;
+
+        return acc.result();
     }
 
     template <class ForwardSequence, class Compare>
     ForwardSequence
     max_element(ForwardSequence in, Compare cmp)
     {
-        // @todo Устранить дублирование с min_element
-        if(!in)
-        {
-            return in;
-        }
-
-        auto result = in++;
-
-        for(; !!in; ++ in)
-        {
-            if(cmp(*result, *in))
-            {
-                result = in;
-            }
-        }
-        return result;
+        auto transposed_cmp = std::bind(std::move(cmp), std::placeholders::_2,
+                                        std::placeholders::_1);
+        return ::ural::details::min_element(std::move(in),
+                                            std::move(transposed_cmp));
     }
 }
 // namespace details
