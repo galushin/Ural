@@ -262,6 +262,23 @@ namespace ural
         return ::ural::includes(std::forward<Input1>(in1),
                                 std::forward<Input2>(in2), ural::less<>());
     }
+
+    // Поиск наибольшего и наименьшего
+    template <class ForwardSequence, class Compare>
+    auto min_element(ForwardSequence && in, Compare cmp)
+    -> decltype(sequence(std::forward<ForwardSequence>(in)))
+    {
+        return ::ural::details::min_element(sequence(std::forward<ForwardSequence>(in)),
+                                            std::move(cmp));
+    }
+
+    template <class ForwardSequence>
+    auto min_element(ForwardSequence && in)
+    -> decltype(sequence(std::forward<ForwardSequence>(in)))
+    {
+        return ::ural::min_element(sequence(std::forward<ForwardSequence>(in)),
+                                   ural::less<>{});
+    }
 }
 // namespace ural
 

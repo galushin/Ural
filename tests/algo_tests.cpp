@@ -386,6 +386,19 @@ BOOST_AUTO_TEST_CASE(is_sorted_until_test)
     while(std::next_permutation(nums.begin(), nums.end()));
 }
 
+BOOST_AUTO_TEST_CASE(min_element_test)
+{
+    std::vector<int> v{3, 1, 4, 1, 5, 9, 2, 6, 5};
+
+    auto std_result = std::min_element(std::begin(v), std::end(v));
+    auto ural_result = ural::min_element(v);
+
+    BOOST_CHECK_EQUAL(std::distance(std_result, v.end()),
+                      ural_result.size());
+    BOOST_CHECK(!!ural_result);
+    BOOST_CHECK_EQUAL(*std_result, *ural_result);
+}
+
 BOOST_AUTO_TEST_CASE(lexicographical_compare_test)
 {
     BOOST_CHECK_EQUAL(false, ural::lexicographical_compare("", ""));

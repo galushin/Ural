@@ -360,6 +360,28 @@ namespace details
 
         return !in2;
     }
+
+    // Поиск наибольшего и наименьшего
+    template <class ForwardSequence, class Compare>
+    ForwardSequence
+    min_element(ForwardSequence in, Compare cmp)
+    {
+        if(!in)
+        {
+            return in;
+        }
+
+        auto result = in++;
+
+        for(; !!in; ++ in)
+        {
+            if(cmp(*in, *result))
+            {
+                result = in;
+            }
+        }
+        return result;
+    }
 }
 // namespace details
 }

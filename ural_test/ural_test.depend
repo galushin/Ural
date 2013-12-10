@@ -66,7 +66,7 @@
 	<ural/numeric.hpp>
 	<ural/sequence/all.hpp>
 
-1386471673 c:\devtools\github\ural\ural\algorithm.hpp
+1386637002 c:\devtools\github\ural\ural\algorithm.hpp
 	<ural/functional.hpp>
 	<ural/sequence/all.hpp>
 	<ural/algorithm/details/copy.hpp>
@@ -428,7 +428,7 @@
 
 1384349800 c:\devtools\github\ural\ural\thread.hpp
 
-1386472191 c:\devtools\github\ural\ural\algorithm\details\algo_base.hpp
+1386637334 c:\devtools\github\ural\ural\algorithm\details\algo_base.hpp
 	<ural/sequence/function_output.hpp>
 	<ural/sequence/generator.hpp>
 	<ural/algorithm/details/copy.hpp>
@@ -441,7 +441,7 @@
 	<ural/functional.hpp>
 	<ural/sequence/base.hpp>
 
-1386409893 source:c:\devtools\github\ural\tests\algo_tests.cpp
+1386636614 source:c:\devtools\github\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/transform.hpp>
