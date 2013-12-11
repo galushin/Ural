@@ -8,6 +8,8 @@
 
 #include <boost/compressed_pair.hpp>
 
+#include <ural/tuple.hpp>
+
 namespace ural
 {
     template <class T>
@@ -251,6 +253,43 @@ namespace ural
     private:
         // @todo Закрытое наследование, а не членство?
         boost::compressed_pair<ForwardSequence, Compare> impl_;
+    };
+
+    /**
+    @todo Настраиваемый предикат
+    */
+    template <class T>
+    class replace_functor
+    {
+    public:
+        explicit replace_functor(T old_value, T new_value)
+         : members_{std::move(old_value), std::move(new_value)}
+        {}
+
+        T const & old_value() const
+        {
+            return members_[ural::_1];
+        }
+
+        T const & new_value() const
+        {
+            return members_[ural::_2];
+        }
+
+        T const & operator()(T const & x) const
+        {
+            if(x == this->old_value())
+            {
+                return this->new_value();
+            }
+            else
+            {
+                return x;
+            }
+        }
+
+    private:
+        ural::tuple<T, T> members_;
     };
 }
 // namespace ural

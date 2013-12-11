@@ -375,7 +375,9 @@ namespace details
             acc(in++, std::move(cmp));
 
         /* @todo Избавиться от цикла: нужна последовательность, действующая
-        подобно boost::counted_iterator
+        подобно boost::counted_iterator и функциональный объект,
+        разыменовывающий свои аргументы перед сравнением - это можно сделать
+        через compare_by и dererference
         */
         for(; !!in; ++ in)
         {
@@ -410,6 +412,10 @@ namespace details
         ForwardSequence max_pos = in;
         ++ in;
 
+        /* @todo Устранить дублирование
+        Проблема в том, что введение двух накопителей приведёт к необходимости
+        копировать функциональный объект
+        */
         for(; !!in; ++ in)
         {
             auto in_next = in;
