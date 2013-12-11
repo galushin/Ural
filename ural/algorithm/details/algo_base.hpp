@@ -394,6 +394,70 @@ namespace details
         return ::ural::details::min_element(std::move(in),
                                             std::move(transposed_cmp));
     }
+
+    template <class ForwardSequence, class Compare>
+    ural::tuple<ForwardSequence, ForwardSequence>
+    minmax_element(ForwardSequence in, Compare cmp)
+    {
+        typedef ural::tuple<ForwardSequence, ForwardSequence> Tuple;
+
+        if(!in)
+        {
+            return Tuple{in, in};
+        }
+
+        ForwardSequence min_pos = in;
+        ForwardSequence max_pos = in;
+        ++ in;
+
+        for(; !!in; ++ in)
+        {
+            auto in_next = in;
+            ++ in_next;
+
+            // остался только один элемент
+            if(!in_next)
+            {
+                if(cmp(*in, *min_pos))
+                {
+                    min_pos = in;
+                }
+                else if(cmp(*max_pos, *in))
+                {
+                    max_pos = in;
+                }
+                break;
+            }
+
+            // осталось как минимум два элемента
+            if(cmp(*in, *in_next))
+            {
+                if(cmp(*in, *min_pos))
+                {
+                    min_pos = in;
+                }
+                if(cmp(*max_pos, *in_next))
+                {
+                    max_pos = in_next;
+                }
+            }
+            else
+            {
+                if(cmp(*in_next, *min_pos))
+                {
+                    min_pos = in_next;
+                }
+                if(cmp(*max_pos, *in))
+                {
+                    max_pos = in;
+                }
+            }
+
+            in = in_next;
+        }
+
+        return Tuple{min_pos, max_pos};
+    }
 }
 // namespace details
 }
