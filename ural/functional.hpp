@@ -255,15 +255,19 @@ namespace ural
         boost::compressed_pair<ForwardSequence, Compare> impl_;
     };
 
-    /**
-    @todo Настраиваемый предикат
-    */
-    template <class T>
+    template <class T, class BinaryPredicate = ural::equal_to<T> >
     class replace_functor
     {
     public:
+        typedef BinaryPredicate predicate_type;
+
         explicit replace_functor(T old_value, T new_value)
-         : members_{std::move(old_value), std::move(new_value)}
+         : members_{std::move(old_value), std::move(new_value),
+                    BinaryPredicate{}}
+        {}
+
+        explicit replace_functor(T old_value, T new_value, BinaryPredicate pred)
+         : members_{std::move(old_value), std::move(new_value), std::move(pred)}
         {}
 
         T const & old_value() const
@@ -276,9 +280,14 @@ namespace ural
             return members_[ural::_2];
         }
 
+        predicate_type const & predicate() const
+        {
+            return members_[ural::_3];
+        }
+
         T const & operator()(T const & x) const
         {
-            if(x == this->old_value())
+            if(this->predicate()(x, this->old_value()))
             {
                 return this->new_value();
             }
@@ -289,7 +298,7 @@ namespace ural
         }
 
     private:
-        ural::tuple<T, T> members_;
+        ural::tuple<T, T, BinaryPredicate> members_;
     };
 }
 // namespace ural
