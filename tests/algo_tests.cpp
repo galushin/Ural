@@ -121,6 +121,18 @@ BOOST_AUTO_TEST_CASE(equal_test)
      BOOST_CHECK(ural::equal(x2, y2) == false);
 }
 
+BOOST_AUTO_TEST_CASE(mismatch_test)
+{
+    std::string const x("abca");
+    std::string const y("aba");
+
+    auto const r_std = std::mismatch(x.begin(), x.end(), y.begin());
+    auto const r_ural = ural::mismatch(x, y);
+
+    BOOST_CHECK_EQUAL(std::distance(r_std.first, x.end()), r_ural[ural::_1].size());
+    BOOST_CHECK_EQUAL(std::distance(r_std.second, y.end()), r_ural[ural::_2].size());
+}
+
 BOOST_AUTO_TEST_CASE(fill_test)
 {
     std::vector<int> x_std = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };

@@ -114,6 +114,25 @@ namespace ural
                              std::forward<Input2>(in2), ural::equal_to<>());
     }
 
+    template <class Input1, class Input2, class BinaryPredicate>
+    auto mismatch(Input1 && in1, Input2 && in2, BinaryPredicate pred)
+    -> tuple<decltype(sequence(std::forward<Input1>(in1))),
+             decltype(sequence(std::forward<Input2>(in2)))>
+    {
+        return ::ural::details::mismatch(sequence(std::forward<Input1>(in1)),
+                                         sequence(std::forward<Input2>(in2)),
+                                         make_functor(std::move(pred)));
+    }
+
+    template <class Input1, class Input2>
+    auto mismatch(Input1 && in1, Input2 && in2)
+    -> tuple<decltype(sequence(std::forward<Input1>(in1))),
+             decltype(sequence(std::forward<Input2>(in2)))>
+    {
+        return ::ural::mismatch(std::forward<Input1>(in1),
+                                std::forward<Input2>(in2), ural::equal_to<>());
+    }
+
     template <class Input, class Output>
     auto copy(Input && in, Output && out)
     -> decltype(ural::details::copy(sequence(std::forward<Input>(in)),

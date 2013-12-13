@@ -90,7 +90,8 @@ namespace details
     }
 
     template <class Input1, class Input2, class BinaryPredicate>
-    bool equal(Input1 in1, Input2 in2, BinaryPredicate pred)
+    tuple<Input1, Input2>
+    mismatch(Input1 in1, Input2 in2, BinaryPredicate pred)
     {
         BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input1>));
         BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input1>));
@@ -99,15 +100,24 @@ namespace details
         BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate,
                                                         bool(decltype(*in1), decltype(*in2))>));
 
+        typedef tuple<Input1, Input2> Tuple;
         for(; !!in1 && !!in2; ++ in1, ++ in2)
         {
             if(!pred(*in1, *in2))
             {
-                return false;
+                break;
             }
         }
 
-        return !in1 && !in2;
+        return Tuple{std::move(in1), std::move(in2)};
+    }
+
+    template <class Input1, class Input2, class BinaryPredicate>
+    bool equal(Input1 in1, Input2 in2, BinaryPredicate pred)
+    {
+        auto const r = ural::details::mismatch(std::move(in1), std::move(in2),
+                                               std::move(pred));
+        return !r[ural::_1] && !r[ural::_2];
     }
 
     template <class ForwardSequence, class Generator>
