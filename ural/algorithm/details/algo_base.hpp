@@ -89,6 +89,59 @@ namespace details
         return find_if(std::move(in), ural::not_fn(std::move(pred)));
     }
 
+    template<class Forward1, class Forward2, class BinaryPredicate>
+    Forward1 search(Forward1 in, Forward2 s, BinaryPredicate p)
+    {
+        for(;; ++ in)
+        {
+            auto i = in;
+            auto i_s = s;
+            for(;; ++ i, ++ i_s)
+            {
+                if(!i_s)
+                {
+                    return in;
+                }
+                if(!i)
+                {
+                    return i;
+                }
+                if(!p(*i, *i_s))
+                {
+                    break;
+                }
+            }
+        }
+    }
+
+    template <class Forward1, class Forward2, class BinaryPredicate>
+    Forward1 find_end(Forward1 in, Forward2 s, BinaryPredicate bin_pred)
+    {
+        if(!s)
+        {
+            return in;
+        }
+
+        auto result = ::ural::details::search(in, s, bin_pred);;
+        auto new_result = result;
+
+        for(;;)
+        {
+            if(!new_result)
+            {
+                return result;
+            }
+            else
+            {
+                result = std::move(new_result);
+                in = result;
+                ++ in;
+                new_result = ::ural::details::search(in, s, bin_pred);
+            }
+        }
+        return result;
+    }
+
     template <class Input1, class Input2, class BinaryPredicate>
     tuple<Input1, Input2>
     mismatch(Input1 in1, Input2 in2, BinaryPredicate pred)
@@ -120,6 +173,7 @@ namespace details
         return !r[ural::_1] && !r[ural::_2];
     }
 
+    // Заполнение и генерация
     template <class ForwardSequence, class Generator>
     void generate(ForwardSequence seq, Generator gen)
     {

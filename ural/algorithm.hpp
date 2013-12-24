@@ -99,6 +99,25 @@ namespace ural
         return !none_of(std::forward<Input>(in), std::move(pred));
     }
 
+    template <class Forward1, class Forward2, class BinaryPredicate>
+    auto find_end(Forward1 && in, Forward2 && s, BinaryPredicate bin_pred)
+    -> decltype(ural::sequence(std::forward<Forward1>(in)))
+    {
+        return ::ural::details::find_end(ural::sequence(std::forward<Forward1>(in)),
+                                         ural::sequence(std::forward<Forward2>(s)),
+                                         ural::make_functor(std::move(bin_pred)));
+    }
+
+    template <class Forward1, class Forward2>
+    auto find_end(Forward1 && in, Forward2 && s)
+    -> decltype(ural::sequence(std::forward<Forward1>(in)))
+    {
+        return ::ural::find_end(std::forward<Forward1>(in),
+                                std::forward<Forward2>(s),
+                                ural::equal_to<>{});
+    }
+
+
     template <class Input1, class Input2, class BinaryPredicate>
     bool equal(Input1 && in1, Input2 && in2, BinaryPredicate pred)
     {

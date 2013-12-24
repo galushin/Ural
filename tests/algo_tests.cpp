@@ -97,6 +97,28 @@ BOOST_AUTO_TEST_CASE(find_success_test)
     BOOST_CHECK(std::find(v.begin(), v.end(), value) == s.front_iterator());
 }
 
+BOOST_AUTO_TEST_CASE(find_end_test_success)
+{
+    std::vector<int> const v{1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4};
+    std::list<int> const t1{1, 2, 3};
+
+    auto r_std = std::find_end(v.begin(), v.end(), t1.begin(), t1.end());
+    auto r_ural = ural::find_end(v, t1);
+
+    BOOST_CHECK_EQUAL(std::distance(r_std, v.end()), r_ural.size());
+}
+
+BOOST_AUTO_TEST_CASE(find_end_test_fail)
+{
+    std::vector<int> const v{1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4};
+    std::list<int> const t2{4, 5, 6};
+
+    auto r_std = std::find_end(v.begin(), v.end(), t2.begin(), t2.end());
+    auto r_ural = ural::find_end(v, t2);
+
+    BOOST_CHECK_EQUAL(std::distance(r_std, v.end()), r_ural.size());
+}
+
 BOOST_AUTO_TEST_CASE(equal_test)
 {
      std::string const x1("radar");
