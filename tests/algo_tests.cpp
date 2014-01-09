@@ -199,6 +199,17 @@ BOOST_AUTO_TEST_CASE(search_test)
     BOOST_CHECK_EQUAL(Inner::in_quote(str, s2), !!ural::search(str, s2));
 }
 
+BOOST_AUTO_TEST_CASE(search_n_test)
+{
+    const std::string xs = "1001010100010101001010101";
+
+    for(size_t i = 0; i < 5; ++ i)
+    {
+        BOOST_CHECK_EQUAL(std::search_n(xs.begin(), xs.end(), i, '0') == xs.end(),
+                          !ural::search_n(xs, i, '0'));
+    }
+}
+
 BOOST_AUTO_TEST_CASE(fill_test)
 {
     std::vector<int> x_std = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };

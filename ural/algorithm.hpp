@@ -169,6 +169,24 @@ namespace ural
                               ural::equal_to<>{});
     }
 
+    template <class Forward, class Size, class T,  class BinaryPredicate>
+    auto search_n(Forward && in, Size count, T const & value,
+                  BinaryPredicate bin_pred)
+    -> decltype(ural::sequence(std::forward<Forward>(in)))
+    {
+        return ::ural::details::search_n(ural::sequence(std::forward<Forward>(in)),
+                                         std::move(count), value,
+                                         ural::make_functor(std::move(bin_pred)));
+    }
+
+    template <class Forward, class Size, class T>
+    auto search_n(Forward && in, Size count, T const & value)
+    -> decltype(ural::sequence(std::forward<Forward>(in)))
+    {
+        return ::ural::search_n(std::forward<Forward>(in), std::move(count),
+                                value, ural::equal_to<>{});
+    }
+
     template <class Input1, class Input2, class BinaryPredicate>
     bool equal(Input1 && in1, Input2 && in2, BinaryPredicate pred)
     {

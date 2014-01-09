@@ -123,6 +123,47 @@ namespace details
         assert(false);
     }
 
+    template <class Forward, class Size, class T,  class BinaryPredicate>
+    Forward search_n(Forward in, Size const n, T const & value,
+                     BinaryPredicate bin_pred)
+    {
+        if(n == 0)
+        {
+            return in;
+        }
+
+
+        for(; !!in; ++ in)
+        {
+            if(!bin_pred(*in, value))
+            {
+                continue;
+            }
+
+            auto candidate = in;
+            Size cur_count = 0;
+
+            while(true)
+            {
+                ++ cur_count;
+                if(cur_count == n)
+                {
+                    return candidate;
+                }
+                ++ in;
+                if(!in)
+                {
+                    return in;
+                }
+                if(!bin_pred(*in, value))
+                {
+                    break;
+                }
+            }
+        }
+        return in;
+    }
+
     template <class Forward1, class Forward2, class BinaryPredicate>
     Forward1 find_end(Forward1 in, Forward2 s, BinaryPredicate bin_pred)
     {
