@@ -83,6 +83,14 @@ namespace details
         return in;
     }
 
+    template <class Input, class T, class BinaryPredicate>
+    Input find(Input in, T const & value, BinaryPredicate bin_pred)
+    {
+        auto pred = std::bind(std::move(bin_pred), std::placeholders::_1,
+                              std::cref(value));
+        return ::ural::details::find_if(std::move(in), std::move(pred));
+    }
+
     template <class Input, class Predicate>
     Input find_if_not(Input in, Predicate pred)
     {
@@ -140,6 +148,21 @@ namespace details
             }
         }
         return result;
+    }
+
+    template <class Input, class Forward, class BinaryPredicate>
+    Input find_first_of(Input in, Forward s, BinaryPredicate bin_pred)
+    {
+        for(; !!in; ++ in)
+        {
+            auto r = ::ural::details::find(s, *in, bin_pred);
+
+            if(!!r)
+            {
+                return in;
+            }
+        }
+        return in;
     }
 
     template <class Input1, class Input2, class BinaryPredicate>

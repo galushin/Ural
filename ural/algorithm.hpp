@@ -117,6 +117,23 @@ namespace ural
                                 ural::equal_to<>{});
     }
 
+    template <class Input, class Forward, class BinaryPredicate>
+    auto find_first_of(Input && in, Forward && s, BinaryPredicate bin_pred)
+    -> decltype(ural::sequence(std::forward<Input>(in)))
+    {
+        return ::ural::details::find_first_of(ural::sequence(std::forward<Input>(in)),
+                                              ural::sequence(std::forward<Forward>(s)),
+                                              ural::make_functor(std::move(bin_pred)));
+    }
+
+    template <class Input, class Forward>
+    auto find_first_of(Input && in, Forward && s)
+    -> decltype(ural::sequence(std::forward<Input>(in)))
+    {
+        return ::ural::find_first_of(std::forward<Input>(in),
+                                     std::forward<Forward>(s),
+                                     ural::equal_to<>{});
+    }
 
     template <class Input1, class Input2, class BinaryPredicate>
     bool equal(Input1 && in1, Input2 && in2, BinaryPredicate pred)
