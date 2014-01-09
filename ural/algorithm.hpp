@@ -135,6 +135,22 @@ namespace ural
                                      ural::equal_to<>{});
     }
 
+    template <class Forward, class BinaryPredicate>
+    auto adjacent_find(Forward && s, BinaryPredicate pred)
+    -> decltype(ural::sequence(std::forward<Forward>(s)))
+    {
+        return ::ural::details::adjacent_find(ural::sequence(std::forward<Forward>(s)),
+                                              ural::make_functor(std::move(pred)));
+    }
+
+    template <class Forward>
+    auto adjacent_find(Forward && s)
+    -> decltype(ural::sequence(std::forward<Forward>(s)))
+    {
+        return ::ural::adjacent_find(std::forward<Forward>(s),
+                                     ::ural::equal_to<>{});
+    }
+
     template <class Input1, class Input2, class BinaryPredicate>
     bool equal(Input1 && in1, Input2 && in2, BinaryPredicate pred)
     {

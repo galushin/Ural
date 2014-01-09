@@ -168,6 +168,18 @@ BOOST_AUTO_TEST_CASE(find_first_of_test)
     BOOST_CHECK_EQUAL(*r_std, *r_ural);
 }
 
+BOOST_AUTO_TEST_CASE(adjacent_find_test)
+{
+    std::vector<int> v1{0, 1, 2, 3, 40, 40, 41, 41, 5};
+
+    auto r_std = std::adjacent_find(v1.begin(), v1.end());
+    auto r_ural = ural::adjacent_find(v1);
+
+    BOOST_CHECK_EQUAL(std::distance(r_std, v1.end()), r_ural.size());
+    BOOST_CHECK(!!r_ural);
+    BOOST_CHECK_EQUAL(*r_std, *r_ural);
+}
+
 BOOST_AUTO_TEST_CASE(fill_test)
 {
     std::vector<int> x_std = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };

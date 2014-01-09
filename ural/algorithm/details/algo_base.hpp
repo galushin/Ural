@@ -196,6 +196,30 @@ namespace details
         return !r[ural::_1] && !r[ural::_2];
     }
 
+    template <class Forward, class BinaryPredicate>
+    Forward adjacent_find(Forward s, BinaryPredicate pred)
+    {
+        if(!s)
+        {
+            return s;
+        }
+
+        // @todo заменить на одну операцию
+        auto s_next = s;
+        ++ s_next;
+
+        // @todo можно ли унифицировать с mismatch?
+        for(; !!s_next; ++ s_next)
+        {
+            if(pred(*s, *s_next))
+            {
+                return s;
+            }
+            s = s_next;
+        }
+        return s_next;
+    }
+
     // Заполнение и генерация
     template <class ForwardSequence, class Generator>
     void generate(ForwardSequence seq, Generator gen)
