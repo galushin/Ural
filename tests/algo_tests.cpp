@@ -180,6 +180,25 @@ BOOST_AUTO_TEST_CASE(adjacent_find_test)
     BOOST_CHECK_EQUAL(*r_std, *r_ural);
 }
 
+BOOST_AUTO_TEST_CASE(search_test)
+{
+    struct Inner
+    {
+        static bool in_quote(const std::string& cont, const std::string& s)
+        {
+            return std::search(cont.begin(), cont.end(), s.begin(), s.end())
+                    != cont.end();
+        }
+    };
+
+    std::string const str
+        = "why waste time learning, when ignorance is instantaneous?";
+    std::string const s1 {"lemming"};
+    std::string const s2 {"learning"};
+    BOOST_CHECK_EQUAL(Inner::in_quote(str, s1), !!ural::search(str, s1));
+    BOOST_CHECK_EQUAL(Inner::in_quote(str, s2), !!ural::search(str, s2));
+}
+
 BOOST_AUTO_TEST_CASE(fill_test)
 {
     std::vector<int> x_std = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };

@@ -120,6 +120,7 @@ namespace details
                 }
             }
         }
+        assert(false);
     }
 
     template <class Forward1, class Forward2, class BinaryPredicate>
