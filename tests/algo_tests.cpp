@@ -229,6 +229,24 @@ BOOST_AUTO_TEST_CASE(search_n_test)
 }
 
 // Модифицирующие последовательность алгоритмы
+// @todo тест copy
+
+BOOST_AUTO_TEST_CASE(copy_if_test)
+{
+    std::vector<int> const xs = {25,15,5,-5,-15};
+    auto const pred = [](int i){return !(i<0);};
+
+    std::vector<int> r_std;
+    std::vector<int> r_ural;
+
+    std::copy_if (xs.begin(), xs.end(), std::back_inserter(r_std) , pred);
+
+    ural::copy(xs | ural::filtered(pred), r_ural | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
+                                  r_ural.begin(), r_ural.end());
+}
+
 BOOST_AUTO_TEST_CASE(fill_test)
 {
     std::vector<int> x_std = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };

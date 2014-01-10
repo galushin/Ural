@@ -57,6 +57,26 @@ namespace ural
     private:
         OutputIterator iter_;
     };
+
+    struct back_inserter_helper
+    {
+    public:
+        template <class Container>
+        constexpr std::back_insert_iterator<Container>
+        operator()(Container & c) const
+        {
+            return std::back_inserter(c);
+        }
+    };
+
+    constexpr auto back_inserter = back_inserter_helper{};
+
+    template <class Container>
+    std::back_insert_iterator<Container>
+    operator|(Container & c, back_inserter_helper helper)
+    {
+        return helper(c);
+    }
 }
 // namespace ural
 
