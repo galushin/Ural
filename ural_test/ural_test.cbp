@@ -55,6 +55,7 @@
 		<Unit filename="../tests/iterator_sequence_test.cpp" />
 		<Unit filename="../tests/numeric_tests.cpp" />
 		<Unit filename="../tests/optional_tests.cpp" />
+		<Unit filename="../tests/sequence_test.cpp" />
 		<Unit filename="../tests/tuple_tests.cpp" />
 		<Unit filename="../ural/algorithm.hpp" />
 		<Unit filename="../ural/algorithm/details/algo_base.hpp" />

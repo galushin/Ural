@@ -39,6 +39,8 @@ BOOST_AUTO_TEST_CASE(any_of_test)
     BOOST_CHECK(!ural::any_of(v, pred));
 }
 
+// @todo тест none_of
+
 BOOST_AUTO_TEST_CASE(for_each_test)
 {
     std::vector<int> x_std = {1, 2, 3, 4, 5};
@@ -72,6 +74,32 @@ BOOST_AUTO_TEST_CASE(count_test)
     BOOST_CHECK_EQUAL(n2_std, n2_ural);
 }
 
+BOOST_AUTO_TEST_CASE(count_if_test)
+{
+    std::vector<int> const data = { 1, 2, 3, 4, 4, 3, 7, 8, 9, 10 };
+
+    auto const pred = [](int i) {return i % 3 == 0;};
+
+    auto const n_std
+        = std::count_if(data.begin(), data.end(), pred);
+
+    auto const n_ural = ural::count_if(data, pred);
+
+    BOOST_CHECK_EQUAL(n_std, n_ural);
+}
+
+BOOST_AUTO_TEST_CASE(mismatch_test)
+{
+    std::string const x("abca");
+    std::string const y("aba");
+
+    auto const r_std = std::mismatch(x.begin(), x.end(), y.begin());
+    auto const r_ural = ural::mismatch(x, y);
+
+    BOOST_CHECK_EQUAL(std::distance(r_std.first, x.end()), r_ural[ural::_1].size());
+    BOOST_CHECK_EQUAL(std::distance(r_std.second, y.end()), r_ural[ural::_2].size());
+}
+
 BOOST_AUTO_TEST_CASE(equal_test)
 {
      std::string const x1("radar");
@@ -94,18 +122,6 @@ BOOST_AUTO_TEST_CASE(equal_test)
      BOOST_CHECK(ural::equal(x1, y2) == false);
      BOOST_CHECK(ural::equal(x2, y1) == false);
      BOOST_CHECK(ural::equal(x2, y2) == false);
-}
-
-BOOST_AUTO_TEST_CASE(mismatch_test)
-{
-    std::string const x("abca");
-    std::string const y("aba");
-
-    auto const r_std = std::mismatch(x.begin(), x.end(), y.begin());
-    auto const r_ural = ural::mismatch(x, y);
-
-    BOOST_CHECK_EQUAL(std::distance(r_std.first, x.end()), r_ural[ural::_1].size());
-    BOOST_CHECK_EQUAL(std::distance(r_std.second, y.end()), r_ural[ural::_2].size());
 }
 
 BOOST_AUTO_TEST_CASE(find_fail_test)
@@ -199,6 +215,8 @@ BOOST_AUTO_TEST_CASE(search_test)
     BOOST_CHECK_EQUAL(Inner::in_quote(str, s2), !!ural::search(str, s2));
 }
 
+// @todo Можно ли (и целесообразно ли) search_n выразить через search и
+// спец-последовательность
 BOOST_AUTO_TEST_CASE(search_n_test)
 {
     const std::string xs = "1001010100010101001010101";
@@ -210,6 +228,7 @@ BOOST_AUTO_TEST_CASE(search_n_test)
     }
 }
 
+// Модифицирующие последовательность алгоритмы
 BOOST_AUTO_TEST_CASE(fill_test)
 {
     std::vector<int> x_std = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -242,6 +261,7 @@ BOOST_AUTO_TEST_CASE(transform_test)
                                   x_ural.begin(), x_ural.end());
 }
 
+// Разделение
 BOOST_AUTO_TEST_CASE(is_partitioned_test)
 {
     std::vector<int> v = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -265,6 +285,7 @@ BOOST_AUTO_TEST_CASE(is_partitioned_test)
     BOOST_CHECK_EQUAL(false, ural::is_partitioned(v, is_even));
 }
 
+// Операции со множествами
 BOOST_AUTO_TEST_CASE(includes_test)
 {
     std::vector<std::string> vs{"abcfhx", "abc", "ac", "g", "acg", {}};
@@ -379,6 +400,7 @@ BOOST_AUTO_TEST_CASE(set_union_test)
                                   r_ural.begin(), r_ural.end());
 }
 
+// Операции с бинарными кучами
 BOOST_AUTO_TEST_CASE(make_heap_test)
 {
     std::vector<int> v { 3, 1, 4, 1, 5, 9 };
@@ -448,6 +470,7 @@ BOOST_AUTO_TEST_CASE(is_heap_test_all_permutations)
     while(std::next_permutation(v.begin(), v.end()));
 }
 
+// Сортировка
 BOOST_AUTO_TEST_CASE(is_sorted_test)
 {
     std::vector<int> digits {3, 1, 4, 1, 5};
@@ -475,6 +498,7 @@ BOOST_AUTO_TEST_CASE(is_sorted_until_test)
     while(std::next_permutation(nums.begin(), nums.end()));
 }
 
+// Минимум и максимум
 BOOST_AUTO_TEST_CASE(min_element_test)
 {
     std::vector<int> const v{3, 1, 4, 1, 5, 9, 2, 6, 5};
