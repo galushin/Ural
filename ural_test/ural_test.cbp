@@ -63,6 +63,7 @@
 		<Unit filename="../ural/concepts.hpp" />
 		<Unit filename="../ural/defs.hpp" />
 		<Unit filename="../ural/functional.hpp" />
+		<Unit filename="../ural/functional/cpp_operators.hpp" />
 		<Unit filename="../ural/functional/replace.hpp" />
 		<Unit filename="../ural/memory.hpp" />
 		<Unit filename="../ural/numeric.hpp" />
@@ -84,6 +85,7 @@
 		<Unit filename="../ural/sequence/moved.hpp" />
 		<Unit filename="../ural/sequence/replace.hpp" />
 		<Unit filename="../ural/sequence/set_operations.hpp" />
+		<Unit filename="../ural/sequence/taken.hpp" />
 		<Unit filename="../ural/sequence/transform.hpp" />
 		<Unit filename="../ural/thread.hpp" />
 		<Unit filename="../ural/tuple.hpp" />

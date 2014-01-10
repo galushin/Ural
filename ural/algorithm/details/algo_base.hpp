@@ -264,25 +264,27 @@ namespace details
 
     // Заполнение и генерация
     template <class ForwardSequence, class Generator>
-    void generate(ForwardSequence seq, Generator gen)
+    ForwardSequence generate(ForwardSequence seq, Generator gen)
     {
         typedef decltype(gen()) result_type;
 
         BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<ForwardSequence>));
         BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<ForwardSequence, result_type>));
 
-        ural::details::copy(ural::make_generator_sequence(std::move(gen)),
-                            std::move(seq));
+        auto r = ural::details::copy(ural::make_generator_sequence(std::move(gen)),
+                                     std::move(seq));
+        return r[ural::_2];
     }
 
     template <class ForwardSequence, class T>
-    void fill(ForwardSequence seq, T const & value)
+    ForwardSequence
+    fill(ForwardSequence seq, T const & value)
     {
         BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<ForwardSequence>));
         BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<ForwardSequence, T const &>));
 
-        ::ural::details::generate(std::move(seq),
-                                  ural::value_functor<T const &>(value));
+        return ::ural::details::generate(std::move(seq),
+                                         ural::value_functor<T const &>(value));
     }
 
     // Разделение

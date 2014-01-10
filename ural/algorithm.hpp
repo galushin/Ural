@@ -231,7 +231,8 @@ namespace ural
     }
 
     template <class ForwardSequence, class T>
-    void fill(ForwardSequence && seq, T const & value)
+    auto fill(ForwardSequence && seq, T const & value)
+    -> decltype(sequence(std::forward<ForwardSequence>(seq)))
     {
         return ural::details::fill(sequence(std::forward<ForwardSequence>(seq)),
                                    value);
