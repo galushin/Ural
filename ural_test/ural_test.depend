@@ -336,7 +336,7 @@
 	<type_traits>
 	<ostream>
 
-1385367008 c:\devtools\ural_repo\ural\ural\concepts.hpp
+1389325303 c:\devtools\ural_repo\ural\ural\concepts.hpp
 	<boost/concept/usage.hpp>
 
 1385361525 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
@@ -401,9 +401,11 @@
 1385361801 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
 	<ural/sequence/base.hpp>
 
-1389317107 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
+1389326306 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<ural/algorithm.hpp>
+	<ural/memory.hpp>
+	<ural/sequence/moved.hpp>
 	<ural/sequence/transform.hpp>
 	<ural/sequence/set_operations.hpp>
 	<ural/utility/tracers.hpp>
@@ -472,4 +474,10 @@
 1389317953 c:\devtools\ural_repo\ural\ural\sequence\make.hpp
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/insertion.hpp>
+
+1389325543 c:\devtools\ural_repo\ural\ural\memory.hpp
+	<memory>
+
+1389325994 c:\devtools\ural_repo\ural\ural\sequence\moved.hpp
+	<ural/sequence/base.hpp>
 

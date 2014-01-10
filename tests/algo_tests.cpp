@@ -1,8 +1,10 @@
 #include <boost/test/unit_test.hpp>
 
 #include <ural/algorithm.hpp>
+#include <ural/memory.hpp>
 
 // @todo Удалить
+#include <ural/sequence/moved.hpp>
 #include <ural/sequence/transform.hpp>
 #include <ural/sequence/set_operations.hpp>
 #include <ural/utility/tracers.hpp>
@@ -233,11 +235,12 @@ BOOST_AUTO_TEST_CASE(search_n_test)
 
 BOOST_AUTO_TEST_CASE(copy_if_test)
 {
-    std::vector<int> const xs = {25,15,5,-5,-15};
-    auto const pred = [](int i){return !(i<0);};
+    typedef int Type;
+    std::vector<Type> const xs = {25, -15, 5, -5, 15};
+    auto const pred = [](Type i){return !(i<0);};
 
-    std::vector<int> r_std;
-    std::vector<int> r_ural;
+    std::vector<Type> r_std;
+    std::vector<Type> r_ural;
 
     std::copy_if (xs.begin(), xs.end(), std::back_inserter(r_std) , pred);
 
@@ -245,6 +248,36 @@ BOOST_AUTO_TEST_CASE(copy_if_test)
 
     BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
                                   r_ural.begin(), r_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(moved_test)
+{
+    typedef std::unique_ptr<int> Type;
+
+    std::vector<int> const ys = {25, -15, 5, -5, 15};
+    std::vector<Type> xs1;
+    std::vector<Type> xs2;
+
+    for(auto & y : ys)
+    {
+        xs1.emplace_back(ural::make_unique<int>(y));
+        xs2.emplace_back(ural::make_unique<int>(y));
+    }
+
+    std::vector<Type> r_std;
+    std::vector<Type> r_ural;
+
+    std::move(xs1.begin(), xs1.end(), std::back_inserter(r_std));
+
+    ural::copy(xs2 | ural::moved, r_ural | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL(r_std.size(), r_ural.size());
+    BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.end(),
+                             [](Type const & x) {return !x;}));
+
+    BOOST_CHECK(ural::equal(r_std, r_ural,
+                           [](Type const & x, Type const & y)
+                                { return *x == *y;}));
 }
 
 BOOST_AUTO_TEST_CASE(fill_test)

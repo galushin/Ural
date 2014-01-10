@@ -80,12 +80,12 @@ namespace concepts
         /// @brief Примеры использования
         BOOST_CONCEPT_USAGE(WritableSequence)
         {
-            *seq = value;
+            *seq = make_value();
         }
 
     private:
         static Seq seq;
-        static T value;
+        static T make_value();
     };
 
     template <class F, class Signature>
