@@ -16,7 +16,8 @@ namespace ural
     {
     public:
         // Типы
-        typedef typename Sequence::value_type && reference;
+        typedef typename Sequence::value_type value_type;
+        typedef value_type && reference;
 
         // Конструирование, копирование, присваивание
         explicit move_sequence(Sequence seq)

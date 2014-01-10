@@ -336,7 +336,7 @@
 	<type_traits>
 	<ostream>
 
-1389325303 c:\devtools\ural_repo\ural\ural\concepts.hpp
+1389328286 c:\devtools\ural_repo\ural\ural\concepts.hpp
 	<boost/concept/usage.hpp>
 
 1385361525 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
@@ -387,7 +387,7 @@
 1385255334 c:\devtools\github\ural\ural\sequence\base.hpp
 	<ural/defs.hpp>
 
-1389317817 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
+1389328755 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
 	<ural/defs.hpp>
 
 1384408805 c:\devtools\ural_repo\ural\ural\thread.hpp
@@ -401,7 +401,7 @@
 1385361801 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
 	<ural/sequence/base.hpp>
 
-1389326306 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
+1389326634 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<ural/algorithm.hpp>
 	<ural/memory.hpp>
@@ -412,11 +412,11 @@
 
 1384757720 c:\devtools\ural_repo\ural\ural\defs.hpp
 
-1385361736 c:\devtools\ural_repo\ural\ural\sequence\transform.hpp
+1389328921 c:\devtools\ural_repo\ural\ural\sequence\transform.hpp
 	<boost/compressed_pair.hpp>
 	<ural/sequence/base.hpp>
 
-1384750711 c:\devtools\ural_repo\ural\ural\sequence\set_operations.hpp
+1389328671 c:\devtools\ural_repo\ural\ural\sequence\set_operations.hpp
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
@@ -425,7 +425,7 @@
 	<ural/utility/tracers.hpp>
 	<ural/functional.hpp>
 
-1385456770 c:\devtools\ural_repo\ural\ural\sequence\generator.hpp
+1389328913 c:\devtools\ural_repo\ural\ural\sequence\generator.hpp
 	<ural/functional.hpp>
 	<ural/sequence/base.hpp>
 
@@ -469,7 +469,7 @@
 1389315980 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
 	<boost/test/unit_test.hpp>
 
-1389322430 c:\devtools\ural_repo\ural\ural\sequence\filtered.hpp
+1389328197 c:\devtools\ural_repo\ural\ural\sequence\filtered.hpp
 
 1389317953 c:\devtools\ural_repo\ural\ural\sequence\make.hpp
 	<ural/sequence/iterator_sequence.hpp>
@@ -478,6 +478,6 @@
 1389325543 c:\devtools\ural_repo\ural\ural\memory.hpp
 	<memory>
 
-1389325994 c:\devtools\ural_repo\ural\ural\sequence\moved.hpp
+1389328414 c:\devtools\ural_repo\ural\ural\sequence\moved.hpp
 	<ural/sequence/base.hpp>
 

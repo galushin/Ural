@@ -25,9 +25,16 @@ namespace ural
     class transform_sequence<F, Input>
      : public sequence_base<transform_sequence<F, Input>>
     {
+    private:
+        template <class T>
+        static T make_value(T);
+
     public:
         /// @brief Тип ссылки
         typedef decltype(std::declval<F>()(*std::declval<Input>())) reference;
+
+        /// @brief Тип значения
+        typedef decltype(make_value(std::declval<reference>())) value_type;
 
         /** @brief Конструктор
         @param f функциональный объект, задающий преобразование

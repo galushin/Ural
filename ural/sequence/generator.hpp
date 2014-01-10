@@ -19,8 +19,12 @@ namespace ural
         typedef sequence_base<generator_sequence, functor_type>
             Base_class;
 
+        template <class T>
+        static T make_value(T);
+
     public:
         typedef decltype(std::declval<functor_type>()()) reference;
+        typedef decltype(make_value(std::declval<reference>())) value_type;
 
         explicit generator_sequence(Generator gen)
          : Base_class{std::move(gen)}

@@ -14,6 +14,7 @@ namespace ural
     public:
         // Типы
         typedef typename Sequence::reference reference;
+        typedef typename Sequence::value_type value_type;
 
         // Конструкторы
         explicit filter_sequence(Sequence seq, Predicate pred)

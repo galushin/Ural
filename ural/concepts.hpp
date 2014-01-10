@@ -61,11 +61,15 @@ namespace concepts
         BOOST_CONCEPT_USAGE(ReadableSequence)
         {
             consume(*seq);
+
+            // @todo Проверки для value_type
         }
 
     private:
         static Seq seq;
         typedef typename Seq::reference reference;
+        typedef typename Seq::value_type value_type;
+
         static void consume(reference ref);
     };
 
