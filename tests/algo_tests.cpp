@@ -5,6 +5,7 @@
 
 // @todo Удалить
 #include <ural/sequence/moved.hpp>
+#include <ural/sequence/replace.hpp>
 #include <ural/sequence/transform.hpp>
 #include <ural/sequence/set_operations.hpp>
 #include <ural/utility/tracers.hpp>
@@ -310,6 +311,21 @@ BOOST_AUTO_TEST_CASE(transform_test)
 
     BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
                                   x_ural.begin(), x_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(replace_if_test)
+{
+    std::vector<int> s_std = {5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
+    std::vector<int> s_ural = s_std;
+
+    auto const old_value = 8;
+    auto const new_value = 88;
+
+    std::replace(s_std.begin(), s_std.end(), old_value, new_value);
+    ural::copy(ural::replace(s_ural, old_value, new_value), s_ural);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(s_std.begin(), s_std.end(),
+                                  s_ural.begin(), s_ural.end());
 }
 
 // Разделение

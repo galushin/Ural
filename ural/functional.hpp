@@ -8,7 +8,8 @@
 
 #include <boost/compressed_pair.hpp>
 
-#include <ural/tuple.hpp>
+#include <ural/functional/replace.hpp>
+#include <ural/functional/cpp_operators.hpp>
 
 namespace ural
 {
@@ -114,118 +115,6 @@ namespace ural
         return Functor{make_functor(std::move(pred))};
     }
 
-    // Функциональные объекты для операторов
-    template <class T1 = void, class T2 = T1>
-    class plus;
-
-    /// @brief Специализация с выводом типов обоих аргументов
-    template <>
-    class plus<void, void>
-    {
-    public:
-        /** @brief Оператор вычисления значения
-        @param x левый операнд
-        @param y правый операнд
-        @return <tt> std::forward<T1>(x) + std::forward<T2>(y) </tt>
-        */
-        template <class T1, class T2>
-        constexpr auto operator()(T1 && x, T2 && y) const
-        -> decltype(std::forward<T1>(x) + std::forward<T2>(y))
-        {
-            return std::forward<T1>(x) + std::forward<T2>(y);
-        }
-    };
-
-    template <class T1 = void, class T2 = T1>
-    class minus;
-
-    /// @brief Специализация с выводом типов обоих аргументов
-    template <>
-    class minus<void, void>
-    {
-    public:
-        /** @brief Оператор вычисления значения
-        @param x левый операнд
-        @param y правый операнд
-        @return <tt> std::forward<T1>(x) - std::forward<T2>(y) </tt>
-        */
-        template <class T1, class T2>
-        constexpr auto operator()(T1 && x, T2 && y) const
-        -> decltype(std::forward<T1>(x) - std::forward<T2>(y))
-        {
-            return std::forward<T1>(x) - std::forward<T2>(y);
-        }
-    };
-
-    template <class T1 = void, class T2 = T1>
-    class multiplies;
-
-    /// @brief Специализация с выводом типов обоих аргументов
-    template <>
-    class multiplies<void, void>
-    {
-    public:
-        /** @brief Оператор вычисления значения
-        @param x левый операнд
-        @param y правый операнд
-        @return <tt> std::forward<T1>(x) * std::forward<T2>(y) </tt>
-        */
-        template <class T1, class T2>
-        constexpr auto operator()(T1 && x, T2 && y) const
-        -> decltype(std::forward<T1>(x) * std::forward<T2>(y))
-        {
-            return std::forward<T1>(x) * std::forward<T2>(y);
-        }
-    };
-
-    template <class T1 = void, class T2 = T1>
-    class equal_to
-    {
-    public:
-        constexpr auto
-        operator()(typename boost::call_traits<T1>::param_type x,
-                   typename boost::call_traits<T1>::param_type y) const
-        -> decltype(x == y)
-        {
-            return x == y;
-        }
-    };
-
-    template <>
-    class equal_to<void, void>
-    {
-    public:
-        template <class T1, class T2>
-        constexpr auto operator()(T1 const & x, T2 const & y) const
-        -> decltype(x == y)
-        {
-            return x == y;
-        }
-    };
-
-    template <class T1 = void, class T2 = T1>
-    class less
-    {
-    public:
-        constexpr auto operator()(T1 const & x, T2 const & y) const
-        -> decltype(x < y)
-        {
-            return x < y;
-        }
-    };
-
-    template <>
-    class less<void, void>
-    {
-    public:
-        template <class T1, class T2>
-        constexpr auto operator()(T1 const & x, T2 const & y) const
-        -> decltype(x < y)
-        {
-            return x < y;
-        }
-    };
-
     template <class ForwardSequence, class Compare>
     class min_element_accumulator
     {
@@ -253,52 +142,6 @@ namespace ural
     private:
         // @todo Закрытое наследование, а не членство?
         boost::compressed_pair<ForwardSequence, Compare> impl_;
-    };
-
-    template <class T, class BinaryPredicate = ural::equal_to<T> >
-    class replace_functor
-    {
-    public:
-        typedef BinaryPredicate predicate_type;
-
-        explicit replace_functor(T old_value, T new_value)
-         : members_{std::move(old_value), std::move(new_value),
-                    BinaryPredicate{}}
-        {}
-
-        explicit replace_functor(T old_value, T new_value, BinaryPredicate pred)
-         : members_{std::move(old_value), std::move(new_value), std::move(pred)}
-        {}
-
-        T const & old_value() const
-        {
-            return members_[ural::_1];
-        }
-
-        T const & new_value() const
-        {
-            return members_[ural::_2];
-        }
-
-        predicate_type const & predicate() const
-        {
-            return members_[ural::_3];
-        }
-
-        T const & operator()(T const & x) const
-        {
-            if(this->predicate()(x, this->old_value()))
-            {
-                return this->new_value();
-            }
-            else
-            {
-                return x;
-            }
-        }
-
-    private:
-        ural::tuple<T, T, BinaryPredicate> members_;
     };
 }
 // namespace ural
