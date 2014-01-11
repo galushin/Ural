@@ -1,4 +1,5 @@
 #include <boost/test/unit_test.hpp>
+#include <boost/mpl/list.hpp>
 
 #include <ural/algorithm.hpp>
 #include <ural/memory.hpp>
@@ -11,17 +12,27 @@
 #include <ural/sequence/set_operations.hpp>
 #include <ural/utility/tracers.hpp>
 
-BOOST_AUTO_TEST_CASE(all_of_test)
+#include <forward_list>
+#include <list>
+#include <vector>
+
+typedef boost::mpl::list<std::forward_list<int>,
+                         std::list<int>,
+                         std::vector<int>> Sources;
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(all_of_test, Source, Sources)
 {
-    std::vector<int> v(10, 2);
+    typedef typename Source::value_type Element;
+
+    Source v(10, 2);
     std::partial_sum(v.cbegin(), v.cend(), v.begin());
 
-    auto const pred = [](int i){ return i % 2 == 0; };
+    auto const pred = [](Element i){ return i % 2 == 0; };
 
     BOOST_CHECK(std::all_of(v.cbegin(), v.cend(), pred));
     BOOST_CHECK(ural::all_of(v, pred));
 
-    v[1] = 1;
+    v.front() = 1;
 
     BOOST_CHECK(!std::all_of(v.cbegin(), v.cend(), pred));
     BOOST_CHECK(!ural::all_of(v, pred));
