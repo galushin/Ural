@@ -71,7 +71,7 @@ namespace ural
         @pre <tt> [first; last) </tt> должен быть допустимым интервалом
         */
         explicit iterator_sequence(Iterator first, Iterator last)
-         : iterators_{first, last}
+         : iterators_{first, first, last}
         {}
 
         /** @brief Проверка исчерпания последовательности
@@ -110,6 +110,12 @@ namespace ural
             return *this;
         }
 
+        // Многопроходная прямая последовательность
+        iterator_sequence traversed_front() const
+        {
+            return iterator_sequence{this->old_front_(), this->front_()};
+        }
+
         // Двусторонняя последовательность
         void pop_back()
         {
@@ -137,28 +143,43 @@ namespace ural
         }
 
     private:
+        static constexpr auto begin_index = ural::_1;
+        static constexpr auto front_index = ural::_2;
+        static constexpr auto stop_index = ural::_3;
+
+        Iterator & old_front_()
+        {
+            return iterators_[begin_index];
+        }
+
+        Iterator const & old_front_() const
+        {
+            return iterators_[begin_index];
+        }
+
         Iterator & front_()
         {
-            return iterators_[ural::_1];
+            return iterators_[front_index];
         }
 
         Iterator const & front_() const
         {
-            return iterators_[ural::_1];
+            return iterators_[front_index];
         }
 
         Iterator & stop_()
         {
-            return iterators_[ural::_2];
+            return iterators_[stop_index];
         }
 
         Iterator const & stop_() const
         {
-            return iterators_[ural::_2];
+            return iterators_[stop_index];
         }
 
     private:
-        ural::tuple<Iterator, Iterator> iterators_;
+        // @todo Настройка структуры в зависимости от категории
+        ural::tuple<Iterator, Iterator, Iterator> iterators_;
     };
 
     template <class Iterator>

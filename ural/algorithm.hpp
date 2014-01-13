@@ -355,6 +355,23 @@ namespace ural
                                                ural::less<>());
     }
 
+    template <class Forward1, class Forward2, class BinaryPredicate>
+    bool is_permutation(Forward1 && s1, Forward2 && s2, BinaryPredicate pred)
+    {
+        return ::ural::details::is_permutation(sequence(std::forward<Forward1>(s1)),
+                                               sequence(std::forward<Forward2>(s2)),
+                                               make_functor(std::move(pred)));
+    }
+
+    template <class Forward1, class Forward2>
+    bool is_permutation(Forward1 && s1, Forward2 && s2)
+    {
+        return ::ural::is_permutation(std::forward<Forward1>(s1),
+                                      std::forward<Forward2>(s2),
+                                      ural::equal_to<>{});
+    }
+
+
     // Операции с множествами
     template <class Input1, class  Input2, class Compare>
     bool includes(Input1 && in1, Input2 && in2, Compare cmp)

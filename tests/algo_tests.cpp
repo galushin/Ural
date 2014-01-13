@@ -380,7 +380,6 @@ BOOST_AUTO_TEST_CASE(replace_test)
 // @todo Аналог rotate
 // @todo Аналог shuffle
 
-// @todo Аналог unique
 BOOST_AUTO_TEST_CASE(unique_test)
 {
     std::forward_list<int> v1{1, 2, 2, 2, 3, 3, 2, 2, 1};
@@ -713,6 +712,20 @@ BOOST_AUTO_TEST_CASE(lexicographical_compare_test)
     BOOST_CHECK_EQUAL(false, ural::lexicographical_compare("abed", "abcd"));
 }
 
-// @todo Аналог is_permutation
+BOOST_AUTO_TEST_CASE(is_permutation_test)
+{
+    std::vector<int> const v1{1,2,3,4,5};
+    std::list<int> const v2{3,5,4,1,2};
+    std::forward_list<int> const v3{3,5,4,1,1};
+
+    BOOST_CHECK(ural::is_permutation(v1, v2));
+    BOOST_CHECK(ural::is_permutation(v2, v1));
+
+    BOOST_CHECK(!ural::is_permutation(v1, v3));
+    BOOST_CHECK(!ural::is_permutation(v3, v1));
+    BOOST_CHECK(!ural::is_permutation(v2, v3));
+    BOOST_CHECK(!ural::is_permutation(v3, v2));
+}
+
 // @todo Аналог next_permutation
 // @todo Аналог prev_permutation

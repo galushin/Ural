@@ -69,6 +69,16 @@ namespace details
         return result;
     }
 
+    template <class Input, class T, class BinaryPredicate>
+    typename Input::distance_type
+    count(Input in, T const & value, BinaryPredicate pred)
+    {
+        return ::ural::details::count_if(std::move(in),
+                                         std::bind(ural::make_functor(std::move(pred)),
+                                                   std::placeholders::_1,
+                                                   std::ref(value)));
+    }
+
     template <class Input, class Predicate>
     Input find_if(Input in, Predicate pred)
     {
@@ -618,6 +628,30 @@ namespace details
         }
 
         return Tuple{min_pos, max_pos};
+    }
+
+    template <class Forward1, class Forward2, class BinaryPredicate>
+    bool is_permutation(Forward1 s1, Forward2 s2, BinaryPredicate pred)
+    {
+        for(; !!s1; ++ s1)
+        {
+            // Пропускаем элементы, которые уже встречались
+            if(!!::ural::details::find(s1.traversed_front(), *s1, pred))
+            {
+                continue;
+            }
+
+            auto s = s1;
+            ++ s;
+            auto const n1 = 1 + ::ural::details::count(s, *s1, pred);
+            auto const n2 = ::ural::details::count(s2, *s1, pred);
+
+            if(n1 != n2)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 }
 // namespace details

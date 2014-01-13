@@ -40,7 +40,14 @@ namespace concepts
     template <class Seq>
     class ForwardSequence
      : SinglePassSequence<Seq>
-    {};
+    {
+    public:
+        BOOST_CONCEPT_USAGE(ForwardSequence)
+        {
+            // @todo traversed_front
+        }
+    private:
+    };
 
     template <class Seq>
     class RandomAccessSequence
