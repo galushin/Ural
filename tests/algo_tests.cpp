@@ -7,9 +7,10 @@
 // @todo Удалить
 #include <ural/sequence/moved.hpp>
 #include <ural/sequence/replace.hpp>
+#include <ural/sequence/set_operations.hpp>
 #include <ural/sequence/taken.hpp>
 #include <ural/sequence/transform.hpp>
-#include <ural/sequence/set_operations.hpp>
+#include <ural/sequence/uniqued.hpp>
 #include <ural/utility/tracers.hpp>
 
 #include <forward_list>
@@ -378,7 +379,26 @@ BOOST_AUTO_TEST_CASE(replace_test)
 // @todo Аналог reverse
 // @todo Аналог rotate
 // @todo Аналог shuffle
+
 // @todo Аналог unique
+BOOST_AUTO_TEST_CASE(unique_test)
+{
+    std::forward_list<int> v1{1, 2, 2, 2, 3, 3, 2, 2, 1};
+    auto v2 = v1;
+
+    auto const last = std::unique(v1.begin(), v1.end());
+    std::forward_list<int> r_std(v1.begin(), last);
+
+    // @todo Заменить на forward_list
+    // @todo В одну инструкцию
+    std::list<int> r_ural;
+    ural::copy(v2 | ural::uniqued, r_ural | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(), r_ural.begin(),
+                                  r_ural.end());
+}
+
+// @todo Аналог unique (c предикатом)
 
 // Разделение
 BOOST_AUTO_TEST_CASE(is_partitioned_test)
