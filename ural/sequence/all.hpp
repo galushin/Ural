@@ -13,5 +13,10 @@
 #include <ural/sequence/iterator_sequence.hpp>
 #include <ural/sequence/insertion.hpp>
 
+namespace ural
+{
+}
+// namespace ural
+
 #endif
 // Z_URAL_SEQUENCE_ALL_HPP_INCLUDED

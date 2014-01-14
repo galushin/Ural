@@ -238,6 +238,13 @@ namespace ural
                                    value);
     }
 
+    template <class ForwardSequence>
+    auto rotate(ForwardSequence && seq)
+    -> decltype(sequence(std::forward<ForwardSequence>(seq)))
+    {
+        return ::ural::details::rotate(sequence(std::forward<ForwardSequence>(seq)));
+    }
+
     // Разделение
     template <class Input, class UnaryPredicate>
     bool is_partitioned(Input && in, UnaryPredicate pred)

@@ -37,6 +37,13 @@ namespace ural
          : Base(std::forward<Args>(args)...)
         {}
     };
+
+    template <class Sequence>
+    Sequence shrink_front(Sequence s)
+    {
+        s.shrink_front();
+        return s;
+    }
 }
 // namespace ural
 

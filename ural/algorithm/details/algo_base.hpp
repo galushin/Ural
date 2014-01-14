@@ -272,6 +272,62 @@ namespace details
         return s_next;
     }
 
+    // Алгоритмы, модифицирующие последовательность
+    template <class Forward1, class Forward2>
+    ural::tuple<Forward1, Forward2>
+    swap_ranges(Forward1 in1, Forward2 in2)
+    {
+        for(; !!in1 && !!in2; ++ in1, ++ in2)
+        {
+            using std::swap;
+            // @todo using ural::swap;
+            swap(*in1, *in2);
+        }
+        return ural::tuple<Forward1, Forward2>{in1, in2};
+    }
+
+    template <class Forward1, class Forward2>
+    ural::tuple<Forward1, Forward2>
+    rotate(Forward1 in1, Forward2 in2)
+    {
+        if(!in1 || !in2)
+        {
+            return ural::tuple<Forward1, Forward2>{std::move(in1),
+                                                   std::move(in2)};
+        }
+
+        // @todo Заменить рекурсию на итерацию
+        // @todo Оптимизация кода
+        auto r = ::ural::details::swap_ranges(in1, in2);
+
+        if(!r[ural::_1] && !r[ural::_2])
+        {
+            return ural::tuple<Forward1, Forward2>{std::move(in1),
+                                                   std::move(in2)};
+        }
+        else if(!r[ural::_1])
+        {
+            assert(!r[ural::_1]);
+            return ::ural::details::rotate(r[ural::_2].traversed_front(),
+                                           ::ural::shrink_front(r[ural::_2]));
+        }
+        else
+        {
+            assert(!r[ural::_2]);
+            return ::ural::details::rotate(::ural::shrink_front(r[ural::_1]),
+                                           in2);
+        }
+
+    }
+
+    template <class ForwardSequence>
+    ForwardSequence rotate(ForwardSequence seq)
+    {
+        auto r = ::ural::details::rotate(seq.traversed_front(),
+                                         ural::shrink_front(seq));
+        return r[ural::_1];
+    }
+
     // Заполнение и генерация
     template <class ForwardSequence, class Generator>
     ForwardSequence generate(ForwardSequence seq, Generator gen)
@@ -633,6 +689,9 @@ namespace details
     template <class Forward1, class Forward2, class BinaryPredicate>
     bool is_permutation(Forward1 s1, Forward2 s2, BinaryPredicate pred)
     {
+        std::tie(s1, s2) = ural::details::mismatch(std::move(s1), std::move(s2),
+                                                   pred);
+
         for(; !!s1; ++ s1)
         {
             // Пропускаем элементы, которые уже встречались

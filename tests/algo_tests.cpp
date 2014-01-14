@@ -330,13 +330,12 @@ BOOST_AUTO_TEST_CASE(fill_n_test)
     auto const n = v_std.size() / 2;
     auto const value = -1;
 
-    auto r_std = std::fill_n(v_std.begin(), n, value);
-    auto r_ural = ural::fill(v_ural | ural::taken(n), value);
+    // @todo Тесты возвращаемых значений
+    std::fill_n(v_std.begin(), n, value);
+    ural::fill(v_ural | ural::taken(n), value);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
                                   v_ural.begin(), v_ural.end());
-
-    // @todo Тесты возвращаемых значений
 }
 
 BOOST_AUTO_TEST_CASE(transform_test)
@@ -377,7 +376,31 @@ BOOST_AUTO_TEST_CASE(replace_test)
 // @todo Аналог replace_if
 // @todo Аналог swap_ranges
 // @todo Аналог reverse
+
 // @todo Аналог rotate
+BOOST_AUTO_TEST_CASE(rotate_test)
+{
+    std::vector<int> const v{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+    for(size_t i = 0; i != v.size(); ++ i)
+    {
+        auto v_std = v;
+        auto v_ural = v;
+
+        std::rotate(v_std.begin(), v_std.begin() + i, v_std.end());
+
+        auto s = ural::sequence(v_ural);
+        s += i;
+        // @todo Проверить возвращаемое значение
+        ural::rotate(s);
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
+                                      v_ural.begin(), v_ural.end());
+    }
+}
+
+// @todo Аналог rotate_copy
+
 // @todo Аналог shuffle
 
 BOOST_AUTO_TEST_CASE(unique_test)
@@ -457,8 +480,10 @@ BOOST_AUTO_TEST_CASE(is_sorted_until_test)
 }
 
 // @todo Аналог sort
+
 // @todo Аналог partial_sort
 // @todo Аналог partial_sort_copy
+
 // @todo Аналог stable_sort
 // @todo Аналог nth_element
 
@@ -724,6 +749,7 @@ BOOST_AUTO_TEST_CASE(is_permutation_test)
     BOOST_CHECK(!ural::is_permutation(v1, v3));
     BOOST_CHECK(!ural::is_permutation(v3, v1));
     BOOST_CHECK(!ural::is_permutation(v2, v3));
+
     BOOST_CHECK(!ural::is_permutation(v3, v2));
 }
 

@@ -116,6 +116,11 @@ namespace ural
             return iterator_sequence{this->old_front_(), this->front_()};
         }
 
+        void shrink_front()
+        {
+            this->old_front_() = this->front_();
+        }
+
         // Двусторонняя последовательность
         void pop_back()
         {
