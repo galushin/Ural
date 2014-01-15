@@ -375,6 +375,21 @@ BOOST_AUTO_TEST_CASE(replace_test)
 
 // @todo Аналог replace_if
 // @todo Аналог swap_ranges
+BOOST_AUTO_TEST_CASE(swap_ranges_test)
+{
+    std::vector<int> const x1 = {1, 2, 3, 4, 5};
+    std::list<int> const x2   = {-1, -2, -3, -4, -5};
+
+    auto y1 = x1;
+    auto y2 = x2;
+
+    // @todo Тест возвращаемых значений
+    ural::swap_ranges(y1, y2);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(y1.begin(), y1.end(), x2.begin(), x2.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(y2.begin(), y2.end(), x1.begin(), x1.end());
+}
+
 // @todo Аналог reverse
 
 // @todo Аналог rotate

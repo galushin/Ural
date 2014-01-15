@@ -221,6 +221,7 @@ namespace ural
                                 std::forward<Input2>(in2), ural::equal_to<>());
     }
 
+    // Модифицирующие последовательность алгоритмы
     template <class Input, class Output>
     auto copy(Input && in, Output && out)
     -> decltype(ural::details::copy(sequence(std::forward<Input>(in)),
@@ -236,6 +237,13 @@ namespace ural
     {
         return ural::details::fill(sequence(std::forward<ForwardSequence>(seq)),
                                    value);
+    }
+
+    template <class Forward1, class Forward2>
+    void swap_ranges(Forward1 && s1, Forward2 && s2)
+    {
+        ::ural::details::swap_ranges(sequence(std::forward<Forward1>(s1)),
+                                     sequence(std::forward<Forward2>(s2)));
     }
 
     template <class ForwardSequence>
