@@ -689,9 +689,6 @@ namespace details
     template <class Forward1, class Forward2, class BinaryPredicate>
     bool is_permutation(Forward1 s1, Forward2 s2, BinaryPredicate pred)
     {
-        std::tie(s1, s2) = ural::details::mismatch(std::move(s1), std::move(s2),
-                                                   pred);
-
         for(; !!s1; ++ s1)
         {
             // Пропускаем элементы, которые уже встречались
