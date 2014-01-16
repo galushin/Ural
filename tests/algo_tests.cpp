@@ -548,7 +548,6 @@ BOOST_AUTO_TEST_CASE(is_sorted_until_test)
 
 // @todo Аналог sort
 
-// @todo Аналог partial_sort
 BOOST_AUTO_TEST_CASE(partial_sort_test)
 {
     std::array<int, 10> const xs {5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
@@ -561,7 +560,32 @@ BOOST_AUTO_TEST_CASE(partial_sort_test)
     BOOST_CHECK(std::all_of(ys.begin() + 3, ys.end(),
                             [=](int x) {return x >= ys[2];}));
 }
+
 // @todo Аналог partial_sort_copy
+BOOST_AUTO_TEST_CASE(partial_sort_copy_test)
+{
+    std::list<int> const v0{4, 2, 5, 1, 3};
+
+    std::vector<int> r1_std{10, 11, 12};
+    std::vector<int> r1_ural{10, 11, 12};
+
+    std::vector<int> r2_std{10, 11, 12, 13, 14, 15, 16};
+    std::vector<int> r2_ural{10, 11, 12, 13, 14, 15, 16};
+
+    // @todo Тест возвращаемых значений
+    std::partial_sort_copy(v0.begin(), v0.end(), r1_std.begin(), r1_std.end());
+    ural::partial_sort_copy(v0, r1_ural);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(r1_std.begin(), r1_std.end(),
+                                  r1_ural.begin(), r1_ural.end());
+
+    std::partial_sort_copy(v0.begin(), v0.end(), r2_std.begin(), r2_std.end(),
+                           std::greater<int>());
+    ural::partial_sort_copy(v0, r2_ural, ural::greater<>());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(r2_std.begin(), r2_std.end(),
+                                  r2_ural.begin(), r2_ural.end());
+}
 
 // @todo Аналог stable_sort
 // @todo Аналог nth_element

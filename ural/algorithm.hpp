@@ -386,6 +386,24 @@ namespace ural
                                     ural::less<>{});
     }
 
+    template <class Input, class RASequence, class Compare>
+    auto partial_sort_copy(Input && in, RASequence && out, Compare cmp)
+    -> decltype(sequence(std::forward<RASequence>(out)))
+    {
+        return ::ural::details::partial_sort_copy(sequence(std::forward<Input>(in)),
+                                                  sequence(std::forward<RASequence>(out)),
+                                                  ural::make_functor(std::move(cmp)));
+    }
+
+    template <class Input, class RASequence>
+    auto partial_sort_copy(Input && in, RASequence && out)
+    -> decltype(sequence(std::forward<RASequence>(out)))
+    {
+        return ::ural::partial_sort_copy(sequence(std::forward<Input>(in)),
+                                         sequence(std::forward<RASequence>(out)),
+                                         ural::less<>{});
+    }
+
     template <class Input1, class  Input2, class Compare>
     bool lexicographical_compare(Input1 && in1, Input2 && in2, Compare cmp)
     {
