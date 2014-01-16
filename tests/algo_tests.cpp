@@ -401,7 +401,6 @@ BOOST_AUTO_TEST_CASE(swap_ranges_test)
 
 // @todo Аналог reverse
 
-// @todo Аналог rotate
 BOOST_AUTO_TEST_CASE(rotate_test)
 {
     std::vector<int> const v{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -424,6 +423,28 @@ BOOST_AUTO_TEST_CASE(rotate_test)
 }
 
 // @todo Аналог rotate_copy
+BOOST_AUTO_TEST_CASE(rotate_copy_test)
+{
+    std::vector<int> const src{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+    for(size_t i = 0; i != src.size(); ++ i)
+    {
+        std::forward_list<int> r_std;
+        std::forward_list<int> r_ural;
+
+        std::rotate_copy(src.begin(), src.begin() + i, src.end(),
+                         r_std | ural::front_inserter);
+
+        auto s = ural::sequence(src);
+        s += i;
+
+        // @todo Проверить возвращаемое значение
+        ural::rotate_copy(s, r_ural | ural::front_inserter);
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
+                                      r_ural.begin(), r_ural.end());
+    }
+}
 
 // @todo Аналог shuffle
 

@@ -77,6 +77,25 @@ namespace ural
     {
         return helper(c);
     }
+
+    struct front_inserter_helper
+    {
+    template <class Container>
+        constexpr std::front_insert_iterator<Container>
+        operator()(Container & c) const
+        {
+            return std::front_inserter(c);
+        }
+    };
+
+    constexpr auto front_inserter = front_inserter_helper{};
+
+    template <class Container>
+    std::front_insert_iterator<Container>
+    operator|(Container & c, front_inserter_helper helper)
+    {
+        return helper(c);
+    }
 }
 // namespace ural
 
