@@ -472,7 +472,7 @@ BOOST_AUTO_TEST_CASE(is_partitioned_test)
 
 BOOST_AUTO_TEST_CASE(partition_test)
 {
-    typedef std::vector<int> Container;
+    typedef std::forward_list<int> Container;
     Container const xs = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
     auto ys = xs;
@@ -494,7 +494,27 @@ BOOST_AUTO_TEST_CASE(partition_test)
     BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.traversed_end(), is_even));
 }
 
-// @todo Аналог partition_copy
+BOOST_AUTO_TEST_CASE(partition_copy_test)
+{
+    std::array<int, 10> const src = {1,2,3,4,5,6,7,8,9,10};
+    std::list<int> true_sink;
+    std::forward_list<int> false_sink;
+
+    auto const pred = [] (int x) {return x % 2 == 0;};
+
+    // @todo Тест возвращаемого значения
+    ural::partition_copy(src, true_sink | ural::back_inserter,
+                         std::front_inserter(false_sink), pred);
+
+    BOOST_CHECK(ural::all_of(true_sink, pred));
+    BOOST_CHECK(ural::none_of(false_sink, pred));
+
+    for(auto const & x : src)
+    {
+        BOOST_CHECK(!!ural::find(true_sink, x) || !!ural::find(false_sink, x));
+    }
+}
+
 // @todo Аналог stable_partition
 // @todo Аналог partition_point
 

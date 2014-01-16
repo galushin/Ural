@@ -365,6 +365,7 @@ namespace details
     ForwardSequence
     partition(ForwardSequence in, UnaryPredicate pred)
     {
+        // @todo Специализации для более сильных категорий итераторов
         // пропускаем ведущие "хорошие" элеменнов
         auto sink = ::ural::details::find_if_not(std::move(in), pred);
 
@@ -383,6 +384,30 @@ namespace details
             }
         }
         return sink;
+    }
+
+    template <class Input, class Output1, class Output2, class UnaryPredicate>
+    ural::tuple<Input, Output1, Output2>
+    partition_copy(Input in, Output1 out_true, Output2 out_false,
+                   UnaryPredicate pred)
+    {
+        // @todo Специальная последовательность?
+        for(; !!in && !!out_true && !!out_false; ++ in)
+        {
+            if(pred(*in))
+            {
+                *out_true = *in;
+                ++ out_true;
+            }
+            else
+            {
+                *out_false = *in;
+                ++ out_false;
+            }
+        }
+
+        typedef ural::tuple<Input, Output1, Output2> Tuple;
+        return Tuple(std::move(in), std::move(out_true), std::move(out_false));
     }
 
     // Бинарные кучи

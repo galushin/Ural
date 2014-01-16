@@ -35,6 +35,14 @@ namespace ural
         typedef std::back_insert_iterator<Container> Iterator;
         return ural::output_iterator_sequence<Iterator>(std::move(i));
     }
+
+    template <class Container>
+    ural::output_iterator_sequence<std::front_insert_iterator<Container>>
+    sequence(std::front_insert_iterator<Container> i)
+    {
+        typedef std::front_insert_iterator<Container> Iterator;
+        return ural::output_iterator_sequence<Iterator>(std::move(i));
+    }
 }
 // namespace ural
 

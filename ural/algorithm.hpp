@@ -269,6 +269,16 @@ namespace ural
                                           make_functor(std::move(pred)));
     }
 
+    template <class Input, class Output1, class Output2, class UnaryPredicate>
+    void partition_copy(Input && in, Output1 && out_true, Output2 && out_false,
+                        UnaryPredicate pred)
+    {
+        ::ural::details::partition_copy(sequence(std::forward<Input>(in)),
+                                               sequence(std::forward<Output1>(out_true)),
+                                               sequence(std::forward<Output2>(out_false)),
+                                               make_functor(std::move(pred)));
+    }
+
     // Бинарные кучи
     template <class RandomAccessSequence, class Compare>
     bool is_heap(RandomAccessSequence && seq, Compare cmp)
