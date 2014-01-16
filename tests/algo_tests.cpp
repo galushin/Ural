@@ -549,6 +549,18 @@ BOOST_AUTO_TEST_CASE(is_sorted_until_test)
 // @todo Аналог sort
 
 // @todo Аналог partial_sort
+BOOST_AUTO_TEST_CASE(partial_sort_test)
+{
+    std::array<int, 10> const xs {5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
+    auto ys = xs;
+
+    ural::partial_sort(ys, 3);
+
+    BOOST_CHECK(std::is_sorted(ys.begin(), ys.begin() + 3));
+    BOOST_CHECK(ural::is_permutation(xs, ys));
+    BOOST_CHECK(std::all_of(ys.begin() + 3, ys.end(),
+                            [=](int x) {return x >= ys[2];}));
+}
 // @todo Аналог partial_sort_copy
 
 // @todo Аналог stable_sort

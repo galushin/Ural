@@ -584,6 +584,29 @@ namespace details
     }
 
     // Сортировка
+    template <class RASequence, class Size, class Compare>
+    void partial_sort(RASequence s, Size const part, Compare cmp)
+    {
+        ::ural::details::make_heap(s, cmp);
+
+        s.shrink_front();
+        auto s_old = s;
+        s += part;
+
+        for(auto i = s; !!i; ++ i)
+        {
+            if(cmp(*i, *s_old))
+            {
+                using ::std::swap;
+                // @todo using ::ural::swap;
+                swap(*s_old, *i);
+                ::ural::details::heap_sink(s.traversed_front(), 0, part, cmp);
+            }
+        }
+
+        ::ural::details::sort_heap(s.traversed_front(), cmp);
+    }
+
     template <class Input1, class  Input2, class Compare>
     bool lexicographical_compare(Input1 in1, Input2 in2, Compare cmp)
     {

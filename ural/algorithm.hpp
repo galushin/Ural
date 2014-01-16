@@ -371,6 +371,21 @@ namespace ural
                                        ural::less<>{});
     }
 
+    template <class RASequence, class Size, class Compare>
+    void partial_sort(RASequence && s, Size part, Compare cmp)
+    {
+        return ::ural::details::partial_sort(sequence(std::forward<RASequence>(s)),
+                                             std::move(part),
+                                             ural::make_functor(std::move(cmp)));
+    }
+
+    template <class RASequence, class Size>
+    void partial_sort(RASequence && s, Size part)
+    {
+        return ::ural::partial_sort(std::forward<RASequence>(s), part,
+                                    ural::less<>{});
+    }
+
     template <class Input1, class  Input2, class Compare>
     bool lexicographical_compare(Input1 && in1, Input2 && in2, Compare cmp)
     {
