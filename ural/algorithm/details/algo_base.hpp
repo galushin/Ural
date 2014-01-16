@@ -104,7 +104,7 @@ namespace details
     template <class Input, class Predicate>
     Input find_if_not(Input in, Predicate pred)
     {
-        return find_if(std::move(in), ural::not_fn(std::move(pred)));
+        return ::ural::details::find_if(std::move(in), ural::not_fn(std::move(pred)));
     }
 
     template<class Forward1, class Forward2, class BinaryPredicate>
@@ -359,6 +359,30 @@ namespace details
     {
         auto tail = ural::details::find_if_not(std::move(in), pred);
         return !::ural::details::find_if(std::move(tail), std::move(pred));
+    }
+
+    template <class ForwardSequence, class UnaryPredicate>
+    ForwardSequence
+    partition(ForwardSequence in, UnaryPredicate pred)
+    {
+        // пропускаем ведущие "хорошие" элеменнов
+        auto sink = ::ural::details::find_if_not(std::move(in), pred);
+
+        in = sink;
+        ++ in;
+        in = ural::details::find_if(std::move(in), pred);
+
+        for(; !!in; ++ in)
+        {
+            if(pred(*in))
+            {
+                using ::std::swap;
+                // @todo using ural::swap;
+                swap(*sink, *in);
+                ++ sink;
+            }
+        }
+        return sink;
     }
 
     // Бинарные кучи
@@ -689,6 +713,8 @@ namespace details
     template <class Forward1, class Forward2, class BinaryPredicate>
     bool is_permutation(Forward1 s1, Forward2 s2, BinaryPredicate pred)
     {
+        // @todo Пропустить общий префикс
+
         for(; !!s1; ++ s1)
         {
             // Пропускаем элементы, которые уже встречались

@@ -1,6 +1,8 @@
 #ifndef Z_URAL_SEQUENCE_UNIQUED_HPP_INCLUDED
 #define Z_URAL_SEQUENCE_UNIQUED_HPP_INCLUDED
 
+#include <ural/algorithm/details/algo_base.hpp>
+
 namespace ural
 {
     template <class Forward, class BinaryPredicate = ural::equal_to<> >

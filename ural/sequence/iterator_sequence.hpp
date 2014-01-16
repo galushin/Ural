@@ -53,6 +53,8 @@ namespace ural
      : public sequence_base<iterator_sequence<Iterator, Policy>>
     {
     public:
+        typedef Iterator iterator;
+
         /// @brief Тип ссылки
         typedef typename std::iterator_traits<Iterator>::reference reference;
 
@@ -147,9 +149,31 @@ namespace ural
             return *this;
         }
 
+        // Итераторы
+        iterator begin() const
+        {
+            return iterators_[front_index];
+        }
+
+        iterator end() const
+        {
+            return iterators_[back_index];
+        }
+
+        iterator traversed_begin() const
+        {
+            return this->old_front_();
+        }
+
+        iterator traversed_end() const
+        {
+            return iterators_[stop_index];
+        }
+
     private:
         static constexpr auto begin_index = ural::_1;
         static constexpr auto front_index = ural::_2;
+        static constexpr auto back_index = ural::_3;
         static constexpr auto stop_index = ural::_3;
 
         Iterator & old_front_()

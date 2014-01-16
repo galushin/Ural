@@ -4,13 +4,8 @@
 #include <ural/algorithm.hpp>
 #include <ural/memory.hpp>
 
-// @todo Удалить
-#include <ural/sequence/moved.hpp>
-#include <ural/sequence/replace.hpp>
-#include <ural/sequence/set_operations.hpp>
-#include <ural/sequence/taken.hpp>
-#include <ural/sequence/transform.hpp>
-#include <ural/sequence/uniqued.hpp>
+// @todo должны требоваться только <ural/algorithms.hpp>
+#include <ural/sequence/all.hpp>
 #include <ural/utility/tracers.hpp>
 
 #include <forward_list>
@@ -388,7 +383,7 @@ BOOST_AUTO_TEST_CASE(replace_test)
 }
 
 // @todo Аналог replace_if
-// @todo Аналог swap_ranges
+
 BOOST_AUTO_TEST_CASE(swap_ranges_test)
 {
     std::vector<int> const x1 = {1, 2, 3, 4, 5};
@@ -475,7 +470,30 @@ BOOST_AUTO_TEST_CASE(is_partitioned_test)
     BOOST_CHECK_EQUAL(false, ural::is_partitioned(v, is_even));
 }
 
-// @todo Аналог partition
+BOOST_AUTO_TEST_CASE(partition_test)
+{
+    typedef std::vector<int> Container;
+    Container const xs = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+    auto ys = xs;
+
+    typedef Container::value_type Element;
+
+    auto const is_even = [](Element x) { return x % 2 == 0;};
+
+    auto r_ural = ural::partition(ys, is_even);
+
+    BOOST_CHECK(ural::is_permutation(ys, xs));
+    BOOST_CHECK(ural::is_partitioned(ys, is_even));
+
+    BOOST_CHECK(::ural::all_of(r_ural.traversed_front(), is_even));
+    BOOST_CHECK(std::all_of(r_ural.traversed_begin(), r_ural.begin(), is_even));
+
+    BOOST_CHECK(::ural::none_of(ural::shrink_front(r_ural), is_even));
+    BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.end(), is_even));
+    BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.traversed_end(), is_even));
+}
+
 // @todo Аналог partition_copy
 // @todo Аналог stable_partition
 // @todo Аналог partition_point

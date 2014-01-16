@@ -261,6 +261,14 @@ namespace ural
                                                make_functor(std::move(pred)));
     }
 
+    template <class ForwardSequence, class UnaryPredicate>
+    auto partition(ForwardSequence && in, UnaryPredicate pred)
+    -> decltype(sequence(std::forward<ForwardSequence>(in)))
+    {
+        return ::ural::details::partition(sequence(std::forward<ForwardSequence>(in)),
+                                          make_functor(std::move(pred)));
+    }
+
     // Бинарные кучи
     template <class RandomAccessSequence, class Compare>
     bool is_heap(RandomAccessSequence && seq, Compare cmp)
