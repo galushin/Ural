@@ -44,6 +44,37 @@ namespace ural
         s.shrink_front();
         return s;
     }
+
+    namespace details
+    {
+    }
+
+    template <class Sequence>
+    typename Sequence::distance_type
+    size(Sequence const & s)
+    {
+        // @todo Диспетчеризация по категориям
+
+        // @todo Через count_if(s, {return true;})?
+        typename Sequence::distance_type n{0};
+
+        for(auto in = s; !!in; ++ in)
+        {
+            ++ n;
+        }
+
+        return n;
+    }
+
+    template <class Sequence>
+    void advance(Sequence & s, typename Sequence::distance_type n)
+    {
+        // @todo Диспетчеризация по категориям
+        for(; n > 0; -- n)
+        {
+            ++ s;
+        }
+    }
 }
 // namespace ural
 

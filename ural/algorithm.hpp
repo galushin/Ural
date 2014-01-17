@@ -280,6 +280,15 @@ namespace ural
                                           make_functor(std::move(pred)));
     }
 
+    template <class ForwardSequence, class UnaryPredicate>
+    auto stable_partition(ForwardSequence && in, UnaryPredicate pred)
+    -> decltype(sequence(std::forward<ForwardSequence>(in)))
+    {
+        auto s = sequence(std::forward<ForwardSequence>(in));
+        return ::ural::details::stable_partition(std::move(s),
+                                                 make_functor(std::move(pred)));
+    }
+
     template <class Input, class Output1, class Output2, class UnaryPredicate>
     void partition_copy(Input && in, Output1 && out_true, Output2 && out_false,
                         UnaryPredicate pred)

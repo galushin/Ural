@@ -386,6 +386,51 @@ namespace details
         return sink;
     }
 
+    template <class ForwardSequence, class UnaryPredicate, class Size>
+    ForwardSequence
+    inplace_stable_partition(ForwardSequence in, UnaryPredicate pred, Size n)
+    {
+        assert(!!in);
+        assert(n > 0);
+        assert(!pred(*in));
+
+        if(n == 1)
+        {
+            return in;
+        }
+
+        // Разделяем левую часть
+        auto const n_left = n / 2;
+        in.shrink_front();
+        ural::advance(in, n_left);
+        auto r_left = inplace_stable_partition(in.traversed_front(), pred, n_left);
+
+        // Разделяем правую часть
+        auto const n_right = n - n_left;
+        auto r_right = inplace_stable_partition(ural::shrink_front(in), pred, n_right);
+
+        // Поворачиваем
+        auto r = ::ural::details::rotate(ural::shrink_front(r_left),
+                                         r_right.traversed_front());
+        return r[ural::_2];
+    }
+
+    template <class ForwardSequence, class UnaryPredicate>
+    ForwardSequence
+    stable_partition(ForwardSequence in, UnaryPredicate pred)
+    {
+        in = ::ural::details::find_if_not(std::move(in), pred);
+
+        if(!in)
+        {
+            return in;
+        }
+
+        auto const n = ural::size(in);
+        // @todo Попробовать получить буфер
+        return ::ural::details::inplace_stable_partition(std::move(in), pred, n);
+    }
+
     template <class Input, class Output1, class Output2, class UnaryPredicate>
     ural::tuple<Input, Output1, Output2>
     partition_copy(Input in, Output1 out_true, Output2 out_false,

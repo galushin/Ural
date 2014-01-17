@@ -364,6 +364,7 @@ BOOST_AUTO_TEST_CASE(transform_test)
 
 // @todo Аналог generate
 // @todo Аналог generate_n
+
 // @todo Аналог remove
 // @todo Аналог remove_if
 
@@ -400,6 +401,7 @@ BOOST_AUTO_TEST_CASE(swap_ranges_test)
 }
 
 // @todo Аналог reverse
+// @todo Аналог reverse_copy
 
 BOOST_AUTO_TEST_CASE(rotate_test)
 {
@@ -422,7 +424,6 @@ BOOST_AUTO_TEST_CASE(rotate_test)
     }
 }
 
-// @todo Аналог rotate_copy
 BOOST_AUTO_TEST_CASE(rotate_copy_test)
 {
     std::vector<int> const src{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -446,6 +447,7 @@ BOOST_AUTO_TEST_CASE(rotate_copy_test)
     }
 }
 
+// @todo Аналог random_shuffle
 // @todo Аналог shuffle
 
 BOOST_AUTO_TEST_CASE(unique_test)
@@ -536,7 +538,29 @@ BOOST_AUTO_TEST_CASE(partition_copy_test)
     }
 }
 
-// @todo Аналог stable_partition
+BOOST_AUTO_TEST_CASE(stable_partition_test)
+{
+    std::vector<int> const src{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    auto v_std = src;
+    auto v_ural = src;
+
+    auto const pred = [](int n){return n % 2 == 0;};
+
+    std::stable_partition(v_std.begin(), v_std.end(), pred);
+    auto r_ural = ural::stable_partition(v_ural, pred);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
+                                  v_ural.begin(), v_ural.end());
+
+    BOOST_CHECK(::ural::all_of(r_ural.traversed_front(), pred));
+    BOOST_CHECK(std::all_of(r_ural.traversed_begin(), r_ural.begin(), pred));
+
+    BOOST_CHECK(::ural::none_of(ural::shrink_front(r_ural), pred));
+    BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.end(), pred));
+    BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.traversed_end(), pred));
+}
+
+
 // @todo Аналог partition_point
 
 // Сортировка
@@ -582,7 +606,6 @@ BOOST_AUTO_TEST_CASE(partial_sort_test)
                             [=](int x) {return x >= ys[2];}));
 }
 
-// @todo Аналог partial_sort_copy
 BOOST_AUTO_TEST_CASE(partial_sort_copy_test)
 {
     std::list<int> const v0{4, 2, 5, 1, 3};
