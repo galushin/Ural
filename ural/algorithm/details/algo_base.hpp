@@ -290,6 +290,8 @@ namespace details
     ural::tuple<Forward1, Forward2>
     rotate(Forward1 in1, Forward2 in2)
     {
+        in1.shrink_front();
+        in2.shrink_front();
         if(!in1 || !in2)
         {
             return ural::tuple<Forward1, Forward2>{std::move(in1),
@@ -386,39 +388,62 @@ namespace details
         return sink;
     }
 
-    template <class ForwardSequence, class UnaryPredicate, class Size>
+    template <class ForwardSequence, class UnaryPredicate>
     ForwardSequence
-    inplace_stable_partition(ForwardSequence in, UnaryPredicate pred, Size n)
+    inplace_stable_partition(ForwardSequence in, UnaryPredicate pred)
     {
+        auto const n = ural::size(in);
+
         assert(!!in);
         assert(n > 0);
         assert(!pred(*in));
+        assert(!in.traversed_front());
+
+        auto const s_orig = ural::shrink_front(in);
 
         if(n == 1)
         {
-            return in;
+            return s_orig;
         }
 
-        // Разделяем левую часть
-        auto const n_left = n / 2;
-        in.shrink_front();
-        ural::advance(in, n_left);
-        auto r_left = inplace_stable_partition(in.traversed_front(), pred, n_left);
+        // Разделяем первую половину
+        auto const n_left = n/2;
+        auto s = s_orig;
+        ural::advance(s, n_left);
 
-        // Разделяем правую часть
+        auto r_left = ::ural::details::inplace_stable_partition(s.traversed_front(), pred);
+
+        // Разделяем вторую половину
         auto const n_right = n - n_left;
-        auto r_right = inplace_stable_partition(ural::shrink_front(in), pred, n_right);
+
+        auto s_right = ::ural::details::find_if_not(ural::shrink_front(s), pred);
+
+        if(!!s_right)
+        {
+            auto r_right = ::ural::details::inplace_stable_partition(ural::shrink_front(s_right), pred);
+            ural::advance(s_right, ural::size(r_right.traversed_front()));
+        }
 
         // Поворачиваем
         auto r = ::ural::details::rotate(ural::shrink_front(r_left),
-                                         r_right.traversed_front());
-        return r[ural::_2];
+                                         s_right.traversed_front());
+
+        // Возвращаем результат
+        auto nt = ::ural::size(r_left.traversed_front());
+        nt += ::ural::size(r[ural::_1].traversed_front());
+        nt += ::ural::size(r[ural::_2].traversed_front());
+        nt += ::ural::size(s_right.traversed_front());
+
+        s = s_orig;
+        ural::advance(s, nt);
+        return s;
     }
 
     template <class ForwardSequence, class UnaryPredicate>
     ForwardSequence
     stable_partition(ForwardSequence in, UnaryPredicate pred)
     {
+        in.shrink_front();
         in = ::ural::details::find_if_not(std::move(in), pred);
 
         if(!in)
@@ -426,9 +451,15 @@ namespace details
             return in;
         }
 
-        auto const n = ural::size(in);
         // @todo Попробовать получить буфер
-        return ::ural::details::inplace_stable_partition(std::move(in), pred, n);
+
+        // Разделяем на месте
+        auto s = ural::shrink_front(std::move(in));
+        auto r =
+            ::ural::details::inplace_stable_partition(std::move(s), pred);
+        auto const nt = ural::size(r.traversed_front());
+        ural::advance(in, nt);
+        return in;
     }
 
     template <class Input, class Output1, class Output2, class UnaryPredicate>

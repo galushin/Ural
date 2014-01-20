@@ -538,9 +538,9 @@ BOOST_AUTO_TEST_CASE(partition_copy_test)
     }
 }
 
-BOOST_AUTO_TEST_CASE(stable_partition_test)
+BOOST_AUTO_TEST_CASE(stable_partition_test_empty)
 {
-    std::vector<int> const src{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    std::vector<int> const src {};
     auto v_std = src;
     auto v_ural = src;
 
@@ -560,6 +560,115 @@ BOOST_AUTO_TEST_CASE(stable_partition_test)
     BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.traversed_end(), pred));
 }
 
+BOOST_AUTO_TEST_CASE(stable_partition_test_1_2)
+{
+    std::vector<int> const src {1, 2};
+    auto v_std = src;
+    auto v_ural = src;
+
+    auto const pred = [](int n){return n % 2 == 0;};
+
+    std::stable_partition(v_std.begin(), v_std.end(), pred);
+    auto r_ural = ural::stable_partition(v_ural, pred);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
+                                  v_ural.begin(), v_ural.end());
+
+    BOOST_CHECK(::ural::all_of(r_ural.traversed_front(), pred));
+    BOOST_CHECK(std::all_of(r_ural.traversed_begin(), r_ural.begin(), pred));
+
+    BOOST_CHECK(::ural::none_of(ural::shrink_front(r_ural), pred));
+    BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.end(), pred));
+    BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.traversed_end(), pred));
+}
+
+BOOST_AUTO_TEST_CASE(stable_partition_test_2_1)
+{
+    std::vector<int> const src {2, 1};
+    auto v_std = src;
+    auto v_ural = src;
+
+    auto const pred = [](int n){return n % 2 == 0;};
+
+    std::stable_partition(v_std.begin(), v_std.end(), pred);
+    auto r_ural = ural::stable_partition(v_ural, pred);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
+                                  v_ural.begin(), v_ural.end());
+
+    BOOST_CHECK(::ural::all_of(r_ural.traversed_front(), pred));
+    BOOST_CHECK(std::all_of(r_ural.traversed_begin(), r_ural.begin(), pred));
+
+    BOOST_CHECK(::ural::none_of(ural::shrink_front(r_ural), pred));
+    BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.end(), pred));
+    BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.traversed_end(), pred));
+}
+
+BOOST_AUTO_TEST_CASE(stable_partition_test_3)
+{
+    std::vector<int> const src {1, 2, 3};
+    auto v_std = src;
+    auto v_ural = src;
+
+    auto const pred = [](int n){return n % 2 == 0;};
+
+    std::stable_partition(v_std.begin(), v_std.end(), pred);
+    auto r_ural = ural::stable_partition(v_ural, pred);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
+                                  v_ural.begin(), v_ural.end());
+
+    BOOST_CHECK(::ural::all_of(r_ural.traversed_front(), pred));
+    BOOST_CHECK(std::all_of(r_ural.traversed_begin(), r_ural.begin(), pred));
+
+    BOOST_CHECK(::ural::none_of(ural::shrink_front(r_ural), pred));
+    BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.end(), pred));
+    BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.traversed_end(), pred));
+}
+
+BOOST_AUTO_TEST_CASE(stable_partition_test_4)
+{
+    std::vector<int> const src {1, 2, 3, 4};
+    auto v_std = src;
+    auto v_ural = src;
+
+    auto const pred = [](int n){return n % 2 == 0;};
+
+    std::stable_partition(v_std.begin(), v_std.end(), pred);
+    auto r_ural = ural::stable_partition(v_ural, pred);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
+                                  v_ural.begin(), v_ural.end());
+
+    BOOST_CHECK(::ural::all_of(r_ural.traversed_front(), pred));
+    BOOST_CHECK(std::all_of(r_ural.traversed_begin(), r_ural.begin(), pred));
+
+    BOOST_CHECK(::ural::none_of(ural::shrink_front(r_ural), pred));
+    BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.end(), pred));
+    BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.traversed_end(), pred));
+}
+
+BOOST_AUTO_TEST_CASE(stable_partition_test_9)
+{
+    std::vector<int> const src {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    auto v_std = src;
+    auto v_ural = src;
+
+    auto const pred = [](int n){return n % 2 == 0;};
+
+    std::stable_partition(v_std.begin(), v_std.end(), pred);
+    auto r_ural = ural::stable_partition(v_ural, pred);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
+                                  v_ural.begin(), v_ural.end());
+
+    BOOST_CHECK(::ural::all_of(r_ural.traversed_front(), pred));
+    BOOST_CHECK(std::all_of(r_ural.traversed_begin(), r_ural.begin(), pred));
+
+    BOOST_CHECK(::ural::none_of(ural::shrink_front(r_ural), pred));
+    BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.end(), pred));
+    BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.traversed_end(), pred));
+}
 
 // @todo Аналог partition_point
 
