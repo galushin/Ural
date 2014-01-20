@@ -467,7 +467,21 @@ BOOST_AUTO_TEST_CASE(unique_test)
                                   r_ural.end());
 }
 
-// @todo Аналог unique (c предикатом)
+BOOST_AUTO_TEST_CASE(unique_test_custom_predicate)
+{
+    std::string const src = "The      string    with many       spaces!";
+
+    auto const pred = [](char c1, char c2){ return c1 == ' ' && c2 == ' '; };
+
+    std::string s_std;
+    std::unique_copy(src.begin(), src.end(), std::back_inserter(s_std), pred);
+
+    std::string s_ural;
+    ural::copy(ural::make_unique_sequence(src, pred),
+               s_ural | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL(s_std, s_ural);
+}
 
 // Разделение
 BOOST_AUTO_TEST_CASE(is_partitioned_test)

@@ -19,6 +19,10 @@ namespace ural
          : data_(std::move(in))
         {}
 
+        explicit unique_sequence(Forward in, BinaryPredicate pred)
+         : data_(std::move(in), std::move(pred))
+        {}
+
         // Адаптор последовательности
         Forward const & base() const
         {
@@ -55,6 +59,16 @@ namespace ural
     private:
         boost::compressed_pair<Forward, BinaryPredicate> data_;
     };
+
+    template <class Forward, class BinaryPredicate>
+    auto make_unique_sequence(Forward && in, BinaryPredicate pred)
+    -> unique_sequence<decltype(sequence(std::forward<Forward>(in))),
+                        decltype(make_functor(std::move(pred)))>
+    {
+        typedef unique_sequence<decltype(sequence(std::forward<Forward>(in))),
+                        decltype(make_functor(std::move(pred)))> Seq;
+        return Seq(sequence(std::forward<Forward>(in)), make_functor(std::move(pred)));
+    }
 
     template <class Forward>
     auto make_unique_sequence(Forward && in)
