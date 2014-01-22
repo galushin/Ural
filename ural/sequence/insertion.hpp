@@ -16,7 +16,7 @@ namespace ural
     */
     template <class OutputIterator>
     class output_iterator_sequence
-     : sequence_base<output_iterator_sequence<OutputIterator>>
+     : public sequence_base<output_iterator_sequence<OutputIterator>>
     {
     public:
         /// @brief Тип возвращаемого значения для оператора *
@@ -48,10 +48,9 @@ namespace ural
         /** @brief Переход к следующему элементу
         @return <tt> *this </tt>
         */
-        output_iterator_sequence & operator++()
+        void pop_front()
         {
             ++ iter_;
-            return *this;
         }
 
     private:

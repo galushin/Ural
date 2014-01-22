@@ -413,7 +413,21 @@ BOOST_AUTO_TEST_CASE(reverse_test)
     BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
                                   x_ural.begin(), x_ural.end());
 }
+
 // @todo Аналог reverse_copy
+BOOST_AUTO_TEST_CASE(reversed_copy_test)
+{
+    std::list<int> const src = {1, 2, 3, 4, 5, 6};
+
+    auto x_std = src;
+    auto x_ural = src;
+
+    std::reverse(x_std.begin(), x_std.end());
+    ural::reverse(x_ural | ural::reversed);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
 
 BOOST_AUTO_TEST_CASE(rotate_test)
 {

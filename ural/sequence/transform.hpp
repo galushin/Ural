@@ -52,15 +52,14 @@ namespace ural
             return !this->base();
         }
 
-        transform_sequence & operator++()
+        void pop_front()
         {
             ++ input_ref();
-            return *this;
         }
 
-        reference operator*()
+        reference front() const
         {
-            return this->functor()(*this->input_ref());
+            return this->functor()(*this->base());
         }
 
         /** @brief Базовая последовательность

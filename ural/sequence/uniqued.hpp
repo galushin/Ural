@@ -7,7 +7,7 @@ namespace ural
 {
     template <class Forward, class BinaryPredicate = ural::equal_to<> >
     class unique_sequence
-     : sequence_base<unique_sequence<Forward, BinaryPredicate>>
+     : public sequence_base<unique_sequence<Forward, BinaryPredicate>>
     {
     public:
         // Типы
@@ -40,20 +40,18 @@ namespace ural
             return !this->base();
         }
 
-        reference operator*() const
+        reference front() const
         {
             return *this->base();
         }
 
-        unique_sequence & operator++()
+        void pop_front()
         {
             auto s = this->base();
             ++ s;
 
             data_.first() = ::ural::details::find(s, *this->base(),
                                                   not_fn(this->predicate()));
-
-            return *this;
         }
 
     private:

@@ -8,8 +8,8 @@ namespace ural
 {
     template <class Generator>
     class generator_sequence
-     : sequence_base<generator_sequence<Generator>,
-                     decltype(make_functor(std::declval<Generator>()))>
+     : public sequence_base<generator_sequence<Generator>,
+                            decltype(make_functor(std::declval<Generator>()))>
     {
     public:
         typedef decltype(make_functor(std::declval<Generator>()))
@@ -35,15 +35,13 @@ namespace ural
             return false;
         }
 
-        reference operator*() const
+        reference front() const
         {
             return this->functor()();
         }
 
-        generator_sequence & operator++()
-        {
-            return *this;
-        }
+        void pop_front()
+        {}
 
         functor_type const & functor() const
         {

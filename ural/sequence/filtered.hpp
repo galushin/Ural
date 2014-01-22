@@ -9,7 +9,7 @@ namespace ural
 {
     template <class Sequence, class Predicate>
     class filter_sequence
-     : sequence_base<filter_sequence<Sequence, Predicate>>
+     : public sequence_base<filter_sequence<Sequence, Predicate>>
     {
     public:
         // Типы
@@ -29,16 +29,15 @@ namespace ural
             return !this->base();
         }
 
-        reference operator*() const
+        reference front() const
         {
             return *data_.first();
         }
 
-        filter_sequence & operator++()
+        void pop_front()
         {
             ++ data_.first();
             this->seek();
-            return *this;
         }
 
         Predicate const & predicate() const

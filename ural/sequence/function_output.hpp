@@ -11,7 +11,7 @@ namespace ural
     */
     template <class UnaryFunction>
     class function_output_sequence
-     : private ural::sequence_base<function_output_sequence<UnaryFunction>,
+     : public ural::sequence_base<function_output_sequence<UnaryFunction>,
                                    UnaryFunction>
     {
         typedef ural::sequence_base<function_output_sequence<UnaryFunction>,
@@ -31,15 +31,13 @@ namespace ural
             return false;
         }
 
-        function_output_sequence & operator++()
-        {
-            return *this;
-        }
-
         function_output_sequence & operator*()
         {
             return *this;
         }
+
+        void pop_front()
+        {}
 
         template <class Arg>
         function_output_sequence & operator=(Arg && arg)

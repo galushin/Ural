@@ -53,13 +53,13 @@ namespace ural
             return !this->base();
         }
 
-        reference operator*() const
+        reference front() const
         {
             // @todo проверка через стратегию?
             return members_[ural::_3].value();
         }
 
-        adjacent_differences_sequence & operator++()
+        void pop_front()
         {
             auto old_value = std::move(*members_[ural::_4]);
             ++ members_[ural::_1];
@@ -70,8 +70,6 @@ namespace ural
                 members_[ural::_3] = this->operation()(*members_[ural::_4],
                                                        std::move(old_value));
             }
-
-            return *this;
         }
 
         Input const & base() const

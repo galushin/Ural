@@ -20,7 +20,7 @@ namespace ural
 
     template <class Input1, class Input2, class Compare = ural::less<> >
     class merge_sequence
-     : private sequence_base<merge_sequence<Input1, Input2, Compare>,
+     : public sequence_base<merge_sequence<Input1, Input2, Compare>,
                              Compare>
     {
         typedef sequence_base<merge_sequence, Compare> Base_class;
@@ -44,7 +44,7 @@ namespace ural
             return !in1_ && !in2_;
         }
 
-        reference operator*() const
+        reference front() const
         {
             if(state_.value() == set_operations_state::second)
             {
@@ -56,7 +56,7 @@ namespace ural
             }
         }
 
-        merge_sequence & operator++()
+        void pop_front()
         {
             auto const state_value = state_.value();
 
@@ -74,7 +74,6 @@ namespace ural
             }
 
             this->seek();
-            return *this;
         }
 
         Compare const & functor() const
@@ -143,8 +142,8 @@ namespace ural
 
     template <class Input1, class Input2, class Compare = ural::less<> >
     class set_intersection_sequence
-     : private sequence_base<set_intersection_sequence<Input1, Input2, Compare>,
-                             Compare>
+     : public sequence_base<set_intersection_sequence<Input1, Input2, Compare>,
+                            Compare>
     {
         typedef sequence_base<set_intersection_sequence, Compare> Base_class;
     public:
@@ -164,16 +163,15 @@ namespace ural
             return !in1_ || !in2_;
         }
 
-        reference operator*() const
+        reference front() const
         {
             return *in1_;
         }
 
-        set_intersection_sequence & operator++()
+        void pop_front()
         {
             ++ in1_;
             this->seek();
-            return *this;
         }
 
         Compare const & functor() const
@@ -232,7 +230,7 @@ namespace ural
 
     template <class Input1, class Input2, class Compare = ural::less<> >
     class set_difference_sequence
-     : private sequence_base<set_difference_sequence<Input1, Input2, Compare>,
+     : public sequence_base<set_difference_sequence<Input1, Input2, Compare>,
                              Compare>
     {
         typedef sequence_base<set_difference_sequence, Compare> Base_class;
@@ -253,16 +251,15 @@ namespace ural
             return !in1_;
         }
 
-        reference operator*() const
+        reference front() const
         {
             return *in1_;
         }
 
-        set_difference_sequence & operator++()
+        void pop_front()
         {
             ++ in1_;
             this->seek();
-            return *this;
         }
 
         Compare const & functor() const
@@ -322,7 +319,7 @@ namespace ural
 
     template <class Input1, class Input2, class Compare = ural::less<> >
     class set_symmetric_difference_sequence
-     : private sequence_base<set_symmetric_difference_sequence<Input1, Input2, Compare>,
+     : public sequence_base<set_symmetric_difference_sequence<Input1, Input2, Compare>,
                              Compare>
     {
         typedef sequence_base<set_symmetric_difference_sequence, Compare> Base_class;
@@ -345,7 +342,7 @@ namespace ural
             return !in1_ && !in2_;
         }
 
-        reference operator*() const
+        reference front() const
         {
             if(state_.value() == set_operations_state::second)
             {
@@ -357,7 +354,7 @@ namespace ural
             }
         }
 
-        set_symmetric_difference_sequence & operator++()
+        void pop_front()
         {
             auto const state_value = state_.value();
 
@@ -375,7 +372,6 @@ namespace ural
             }
 
             this->seek();
-            return *this;
         }
 
         Compare const & functor() const
@@ -451,7 +447,7 @@ namespace ural
 
     template <class Input1, class Input2, class Compare = ural::less<> >
     class set_union_sequence
-     : private sequence_base<set_union_sequence<Input1, Input2, Compare>,
+     : public sequence_base<set_union_sequence<Input1, Input2, Compare>,
                              Compare>
     {
         typedef sequence_base<set_union_sequence, Compare> Base_class;
@@ -474,7 +470,7 @@ namespace ural
             return !in1_ && !in2_;
         }
 
-        reference operator*() const
+        reference front() const
         {
             if(state_.value() == set_operations_state::second)
             {
@@ -486,7 +482,7 @@ namespace ural
             }
         }
 
-        set_union_sequence & operator++()
+        void pop_front()
         {
             auto const state_value = state_.value();
 
@@ -505,7 +501,6 @@ namespace ural
             }
 
             this->seek();
-            return *this;
         }
 
         Compare const & functor() const

@@ -553,7 +553,7 @@
 1390362855 source:c:\pavel\ural_repo\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
 	<boost/test/impl/xml_report_formatter.ipp>
 
-1390392226 source:c:\pavel\ural_repo\ural\tests\algo_tests.cpp
+1390394840 source:c:\pavel\ural_repo\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<boost/mpl/list.hpp>
 	<ural/algorithm.hpp>
@@ -588,7 +588,7 @@
 
 1390362855 c:\pavel\ural_repo\ural\ural\functional\cpp_operators.hpp
 
-1390362855 c:\pavel\ural_repo\ural\ural\sequence\all.hpp
+1390394947 c:\pavel\ural_repo\ural\ural\sequence\all.hpp
 	<iterator>
 	<ural/sequence/base.hpp>
 	<ural/sequence/make.hpp>
@@ -597,12 +597,13 @@
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/insertion.hpp>
 	<ural/sequence/replace.hpp>
+	<ural/sequence/reversed.hpp>
 	<ural/sequence/set_operations.hpp>
 	<ural/sequence/taken.hpp>
 	<ural/sequence/transform.hpp>
 	<ural/sequence/uniqued.hpp>
 
-1390362855 c:\pavel\ural_repo\ural\ural\sequence\base.hpp
+1390398229 c:\pavel\ural_repo\ural\ural\sequence\base.hpp
 	<ural/defs.hpp>
 
 1390362855 c:\pavel\ural_repo\ural\ural\defs.hpp
@@ -611,27 +612,27 @@
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/insertion.hpp>
 
-1390394171 c:\pavel\ural_repo\ural\ural\sequence\iterator_sequence.hpp
+1390396390 c:\pavel\ural_repo\ural\ural\sequence\iterator_sequence.hpp
 	<ural/sequence/base.hpp>
 	<ural/tuple.hpp>
 
-1390362855 c:\pavel\ural_repo\ural\ural\sequence\insertion.hpp
+1390396879 c:\pavel\ural_repo\ural\ural\sequence\insertion.hpp
 	<ural/sequence/base.hpp>
 
-1390362855 c:\pavel\ural_repo\ural\ural\sequence\moved.hpp
+1390397322 c:\pavel\ural_repo\ural\ural\sequence\moved.hpp
 	<ural/sequence/base.hpp>
 
-1390362855 c:\pavel\ural_repo\ural\ural\sequence\filtered.hpp
+1390397269 c:\pavel\ural_repo\ural\ural\sequence\filtered.hpp
 
 1390362855 c:\pavel\ural_repo\ural\ural\sequence\replace.hpp
 	<ural/sequence/transform.hpp>
 	<ural/functional/replace.hpp>
 
-1390362855 c:\pavel\ural_repo\ural\ural\sequence\transform.hpp
+1390398057 c:\pavel\ural_repo\ural\ural\sequence\transform.hpp
 	<boost/compressed_pair.hpp>
 	<ural/sequence/base.hpp>
 
-1390362855 c:\pavel\ural_repo\ural\ural\sequence\set_operations.hpp
+1390397773 c:\pavel\ural_repo\ural\ural\sequence\set_operations.hpp
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
@@ -640,9 +641,9 @@
 	<type_traits>
 	<ostream>
 
-1390362855 c:\pavel\ural_repo\ural\ural\sequence\taken.hpp
+1390397475 c:\pavel\ural_repo\ural\ural\sequence\taken.hpp
 
-1390362855 c:\pavel\ural_repo\ural\ural\sequence\uniqued.hpp
+1390397608 c:\pavel\ural_repo\ural\ural\sequence\uniqued.hpp
 	<ural/algorithm/details/algo_base.hpp>
 
 1390392551 c:\pavel\ural_repo\ural\ural\algorithm\details\algo_base.hpp
@@ -651,10 +652,10 @@
 	<ural/algorithm/details/copy.hpp>
 	<ural/functional.hpp>
 
-1390362855 c:\pavel\ural_repo\ural\ural\sequence\function_output.hpp
+1390397418 c:\pavel\ural_repo\ural\ural\sequence\function_output.hpp
 	<ural/sequence/base.hpp>
 
-1390362855 c:\pavel\ural_repo\ural\ural\sequence\generator.hpp
+1390397254 c:\pavel\ural_repo\ural\ural\sequence\generator.hpp
 	<ural/functional.hpp>
 	<ural/sequence/base.hpp>
 
@@ -663,7 +664,7 @@
 	<ural/concepts.hpp>
 	<ural/tuple.hpp>
 
-1390362855 c:\pavel\ural_repo\ural\ural\concepts.hpp
+1390396337 c:\pavel\ural_repo\ural\ural\concepts.hpp
 	<boost/concept/usage.hpp>
 
 1390362855 c:\pavel\ural_repo\ural\ural\memory.hpp
@@ -697,13 +698,13 @@
 
 1390362855 c:\pavel\ural_repo\ural\ural\numeric\details\num_algo.hpp
 
-1390362855 c:\pavel\ural_repo\ural\ural\numeric\partial_sums.hpp
+1390397135 c:\pavel\ural_repo\ural\ural\numeric\partial_sums.hpp
 	<boost/compressed_pair.hpp>
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 	<ural/sequence/base.hpp>
 
-1390362855 c:\pavel\ural_repo\ural\ural\numeric\adjacent_differences.hpp
+1390397135 c:\pavel\ural_repo\ural\ural\numeric\adjacent_differences.hpp
 	<ural/functional.hpp>
 	<ural/sequence/base.hpp>
 
@@ -739,4 +740,6 @@
 
 1390362855 source:c:\pavel\ural_repo\ural\ural_test\main.cpp
 	<boost/test/unit_test.hpp>
+
+1390398456 c:\pavel\ural_repo\ural\ural\sequence\reversed.hpp
 

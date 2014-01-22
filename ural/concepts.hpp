@@ -32,6 +32,7 @@ namespace concepts
             !seq;
             ++ seq;
             seq ++;
+            seq.pop_front();
         }
     private:
         static Seq seq;
@@ -68,6 +69,7 @@ namespace concepts
         BOOST_CONCEPT_USAGE(ReadableSequence)
         {
             consume(*seq);
+            consume(seq.front());
 
             // @todo Проверки для value_type
         }

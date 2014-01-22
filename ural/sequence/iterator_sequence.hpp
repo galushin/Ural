@@ -113,7 +113,7 @@ namespace ural
         @return Ссылка на передний элемент последовательности
         @pre <tt> bool(*this) != false </tt>
         */
-        reference operator*() const
+        reference front() const
         {
             policy_type::assert_not_empty(*this);
 
@@ -124,11 +124,10 @@ namespace ural
         @pre <tt> bool(*this) != false </tt>
         @return <tt> *this </tt>
         */
-        iterator_sequence & operator++()
+        void pop_front()
         {
             policy_type::assert_not_empty(*this);
             ++ this->front_();
-            return *this;
         }
 
         // Многопроходная прямая последовательность

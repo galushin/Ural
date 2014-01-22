@@ -25,18 +25,16 @@ namespace ural
             return !this->base() || this->count() == 0;
         }
 
-        reference operator*() const
+        reference front() const
         {
             return *this->base();
         }
 
-        take_sequence & operator++()
+        void pop_front()
         {
             // @todo Проверить, что счётчик не исчерпан
             ++ impl_.first();
             -- impl_.second();
-
-            return *this;
         }
 
         // Адаптор последовательности

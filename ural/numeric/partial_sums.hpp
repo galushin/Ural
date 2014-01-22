@@ -57,7 +57,7 @@ namespace ural
         /** @brief Текущий элемент
         @pre <tt> !*this == false </tt>
         */
-        reference operator*() const
+        reference front() const
         {
             // @note Проверка, что последовательность не пуста - через стратегию
             return *members_.second();
@@ -67,7 +67,7 @@ namespace ural
         @pre <tt> bool(*this) != false </tt>
         @return <tt> *this </tt>
         */
-        partial_sums_sequence & operator++()
+        void pop_front()
         {
             ++ input_ref();
 
@@ -76,8 +76,6 @@ namespace ural
                 current_value_ref() = this->operation()(*current_value_ref(),
                                                         *this->base());
             }
-
-            return *this;
         }
 
         /** @brief Исходная последовательность

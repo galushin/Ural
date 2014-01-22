@@ -12,7 +12,7 @@ namespace ural
 {
     template <class Sequence>
     class move_sequence
-     : sequence_base<move_sequence<Sequence>>
+     : public sequence_base<move_sequence<Sequence>>
     {
     public:
         // Типы
@@ -30,15 +30,14 @@ namespace ural
             return !this->base();
         }
 
-        reference operator*() const
+        reference front() const
         {
             return std::move(*this->base());
         }
 
-        move_sequence & operator++()
+        void pop_front()
         {
             ++ base_;
-            return *this;
         }
 
         Sequence const & base() const

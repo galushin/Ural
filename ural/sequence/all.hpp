@@ -14,6 +14,7 @@
 #include <ural/sequence/iterator_sequence.hpp>
 #include <ural/sequence/insertion.hpp>
 #include <ural/sequence/replace.hpp>
+#include <ural/sequence/reversed.hpp>
 #include <ural/sequence/set_operations.hpp>
 #include <ural/sequence/taken.hpp>
 #include <ural/sequence/transform.hpp>
