@@ -505,3 +505,51 @@
 1390207910 c:\devtools\ural_repo\ural\ural\sequence\uniqued.hpp
 	<ural/algorithm/details/algo_base.hpp>
 
+1390362855 source:c:\pavel\ural_repo\ural\boost_1_54\libs\test\src\compiler_log_formatter.cpp
+	<boost/test/impl/compiler_log_formatter.ipp>
+
+1390362855 source:c:\pavel\ural_repo\ural\boost_1_54\libs\test\src\debug.cpp
+	<boost/test/impl/debug.ipp>
+
+1390362855 source:c:\pavel\ural_repo\ural\boost_1_54\libs\test\src\execution_monitor.cpp
+	<boost/test/impl/execution_monitor.ipp>
+
+1390362855 source:c:\pavel\ural_repo\ural\boost_1_54\libs\test\src\framework.cpp
+	<boost/test/impl/framework.ipp>
+
+1390362855 source:c:\pavel\ural_repo\ural\boost_1_54\libs\test\src\plain_report_formatter.cpp
+	<boost/test/impl/plain_report_formatter.ipp>
+
+1390362855 source:c:\pavel\ural_repo\ural\boost_1_54\libs\test\src\progress_monitor.cpp
+	<boost/test/impl/progress_monitor.ipp>
+
+1390362855 source:c:\pavel\ural_repo\ural\boost_1_54\libs\test\src\results_collector.cpp
+	<boost/test/impl/results_collector.ipp>
+
+1390362855 source:c:\pavel\ural_repo\ural\boost_1_54\libs\test\src\results_reporter.cpp
+	<boost/test/impl/results_reporter.ipp>
+
+1390362855 source:c:\pavel\ural_repo\ural\boost_1_54\libs\test\src\test_tools.cpp
+	<boost/test/impl/test_tools.ipp>
+
+1390362855 source:c:\pavel\ural_repo\ural\boost_1_54\libs\test\src\unit_test_log.cpp
+	<boost/test/impl/unit_test_log.ipp>
+
+1390362855 source:c:\pavel\ural_repo\ural\boost_1_54\libs\test\src\unit_test_main.cpp
+	<boost/test/impl/unit_test_main.ipp>
+
+1390362855 source:c:\pavel\ural_repo\ural\boost_1_54\libs\test\src\unit_test_monitor.cpp
+	<boost/test/impl/unit_test_monitor.ipp>
+
+1390362855 source:c:\pavel\ural_repo\ural\boost_1_54\libs\test\src\unit_test_parameters.cpp
+	<boost/test/impl/unit_test_parameters.ipp>
+
+1390362855 source:c:\pavel\ural_repo\ural\boost_1_54\libs\test\src\unit_test_suite.cpp
+	<boost/test/impl/unit_test_suite.ipp>
+
+1390362855 source:c:\pavel\ural_repo\ural\boost_1_54\libs\test\src\xml_log_formatter.cpp
+	<boost/test/impl/xml_log_formatter.ipp>
+
+1390362855 source:c:\pavel\ural_repo\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
+	<boost/test/impl/xml_report_formatter.ipp>
+
