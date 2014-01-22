@@ -9,6 +9,8 @@
 #include <boost/compressed_pair.hpp>
 
 #include <ural/tuple.hpp>
+#include <ural/functional/replace.hpp>
+#include <ural/functional/cpp_operators.hpp>
 
 namespace ural
 {

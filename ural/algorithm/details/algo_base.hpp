@@ -69,6 +69,16 @@ namespace details
         return result;
     }
 
+    template <class Input, class T, class BinaryPredicate>
+    typename Input::distance_type
+    count(Input in, T const & value, BinaryPredicate pred)
+    {
+        return ::ural::details::count_if(std::move(in),
+                                         std::bind(ural::make_functor(std::move(pred)),
+                                                   std::placeholders::_1,
+                                                   std::ref(value)));
+    }
+
     template <class Input, class Predicate>
     Input find_if(Input in, Predicate pred)
     {
@@ -83,14 +93,133 @@ namespace details
         return in;
     }
 
+    template <class Input, class T, class BinaryPredicate>
+    Input find(Input in, T const & value, BinaryPredicate bin_pred)
+    {
+        auto pred = std::bind(std::move(bin_pred), std::placeholders::_1,
+                              std::cref(value));
+        return ::ural::details::find_if(std::move(in), std::move(pred));
+    }
+
     template <class Input, class Predicate>
     Input find_if_not(Input in, Predicate pred)
     {
-        return find_if(std::move(in), ural::not_fn(std::move(pred)));
+        return ::ural::details::find_if(std::move(in), ural::not_fn(std::move(pred)));
+    }
+
+    template<class Forward1, class Forward2, class BinaryPredicate>
+    Forward1 search(Forward1 in, Forward2 s, BinaryPredicate p)
+    {
+        for(;; ++ in)
+        {
+            auto i = in;
+            auto i_s = s;
+            for(;; ++ i, ++ i_s)
+            {
+                if(!i_s)
+                {
+                    return in;
+                }
+                if(!i)
+                {
+                    return i;
+                }
+                if(!p(*i, *i_s))
+                {
+                    break;
+                }
+            }
+        }
+        assert(false);
+    }
+
+    template <class Forward, class Size, class T,  class BinaryPredicate>
+    Forward search_n(Forward in, Size const n, T const & value,
+                     BinaryPredicate bin_pred)
+    {
+        if(n == 0)
+        {
+            return in;
+        }
+
+
+        for(; !!in; ++ in)
+        {
+            if(!bin_pred(*in, value))
+            {
+                continue;
+            }
+
+            auto candidate = in;
+            Size cur_count = 0;
+
+            while(true)
+            {
+                ++ cur_count;
+                if(cur_count == n)
+                {
+                    return candidate;
+                }
+                ++ in;
+                if(!in)
+                {
+                    return in;
+                }
+                if(!bin_pred(*in, value))
+                {
+                    break;
+                }
+            }
+        }
+        return in;
+    }
+
+    template <class Forward1, class Forward2, class BinaryPredicate>
+    Forward1 find_end(Forward1 in, Forward2 s, BinaryPredicate bin_pred)
+    {
+        if(!s)
+        {
+            return in;
+        }
+
+        auto result = ::ural::details::search(in, s, bin_pred);;
+        auto new_result = result;
+
+        for(;;)
+        {
+            if(!new_result)
+            {
+                return result;
+            }
+            else
+            {
+                result = std::move(new_result);
+                in = result;
+                ++ in;
+                new_result = ::ural::details::search(in, s, bin_pred);
+            }
+        }
+        return result;
+    }
+
+    template <class Input, class Forward, class BinaryPredicate>
+    Input find_first_of(Input in, Forward s, BinaryPredicate bin_pred)
+    {
+        for(; !!in; ++ in)
+        {
+            auto r = ::ural::details::find(s, *in, bin_pred);
+
+            if(!!r)
+            {
+                return in;
+            }
+        }
+        return in;
     }
 
     template <class Input1, class Input2, class BinaryPredicate>
-    bool equal(Input1 in1, Input2 in2, BinaryPredicate pred)
+    tuple<Input1, Input2>
+    mismatch(Input1 in1, Input2 in2, BinaryPredicate pred)
     {
         BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input1>));
         BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input1>));
@@ -99,37 +228,131 @@ namespace details
         BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate,
                                                         bool(decltype(*in1), decltype(*in2))>));
 
+        typedef tuple<Input1, Input2> Tuple;
         for(; !!in1 && !!in2; ++ in1, ++ in2)
         {
             if(!pred(*in1, *in2))
             {
-                return false;
+                break;
             }
         }
 
-        return !in1 && !in2;
+        return Tuple{std::move(in1), std::move(in2)};
     }
 
+    template <class Input1, class Input2, class BinaryPredicate>
+    bool equal(Input1 in1, Input2 in2, BinaryPredicate pred)
+    {
+        auto const r = ural::details::mismatch(std::move(in1), std::move(in2),
+                                               std::move(pred));
+        return !r[ural::_1] && !r[ural::_2];
+    }
+
+    template <class Forward, class BinaryPredicate>
+    Forward adjacent_find(Forward s, BinaryPredicate pred)
+    {
+        if(!s)
+        {
+            return s;
+        }
+
+        // @todo заменить на одну операцию
+        auto s_next = s;
+        ++ s_next;
+
+        // @todo можно ли унифицировать с mismatch?
+        for(; !!s_next; ++ s_next)
+        {
+            if(pred(*s, *s_next))
+            {
+                return s;
+            }
+            s = s_next;
+        }
+        return s_next;
+    }
+
+    // Алгоритмы, модифицирующие последовательность
+    template <class Forward1, class Forward2>
+    ural::tuple<Forward1, Forward2>
+    swap_ranges(Forward1 in1, Forward2 in2)
+    {
+        for(; !!in1 && !!in2; ++ in1, ++ in2)
+        {
+            using std::swap;
+            // @todo using ural::swap;
+            swap(*in1, *in2);
+        }
+        return ural::tuple<Forward1, Forward2>{in1, in2};
+    }
+
+    template <class Forward1, class Forward2>
+    ural::tuple<Forward1, Forward2>
+    rotate(Forward1 in1, Forward2 in2)
+    {
+        in1.shrink_front();
+        in2.shrink_front();
+        if(!in1 || !in2)
+        {
+            return ural::tuple<Forward1, Forward2>{std::move(in1),
+                                                   std::move(in2)};
+        }
+
+        // @todo Заменить рекурсию на итерацию
+        // @todo Оптимизация кода
+        auto r = ::ural::details::swap_ranges(in1, in2);
+
+        if(!r[ural::_1] && !r[ural::_2])
+        {
+            return ural::tuple<Forward1, Forward2>{std::move(in1),
+                                                   std::move(in2)};
+        }
+        else if(!r[ural::_1])
+        {
+            assert(!r[ural::_1]);
+            return ::ural::details::rotate(r[ural::_2].traversed_front(),
+                                           ::ural::shrink_front(r[ural::_2]));
+        }
+        else
+        {
+            assert(!r[ural::_2]);
+            return ::ural::details::rotate(::ural::shrink_front(r[ural::_1]),
+                                           in2);
+        }
+
+    }
+
+    template <class ForwardSequence>
+    ForwardSequence rotate(ForwardSequence seq)
+    {
+        auto r = ::ural::details::rotate(seq.traversed_front(),
+                                         ural::shrink_front(seq));
+        return r[ural::_1];
+    }
+
+    // Заполнение и генерация
     template <class ForwardSequence, class Generator>
-    void generate(ForwardSequence seq, Generator gen)
+    ForwardSequence generate(ForwardSequence seq, Generator gen)
     {
         typedef decltype(gen()) result_type;
 
         BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<ForwardSequence>));
         BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<ForwardSequence, result_type>));
 
-        ural::details::copy(ural::make_generator_sequence(std::move(gen)),
-                            std::move(seq));
+        auto r = ural::details::copy(ural::make_generator_sequence(std::move(gen)),
+                                     std::move(seq));
+        return r[ural::_2];
     }
 
     template <class ForwardSequence, class T>
-    void fill(ForwardSequence seq, T const & value)
+    ForwardSequence
+    fill(ForwardSequence seq, T const & value)
     {
         BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<ForwardSequence>));
         BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<ForwardSequence, T const &>));
 
-        ::ural::details::generate(std::move(seq),
-                                  ural::value_functor<T const &>(value));
+        return ::ural::details::generate(std::move(seq),
+                                         ural::value_functor<T const &>(value));
     }
 
     // Разделение
@@ -138,6 +361,129 @@ namespace details
     {
         auto tail = ural::details::find_if_not(std::move(in), pred);
         return !::ural::details::find_if(std::move(tail), std::move(pred));
+    }
+
+    template <class ForwardSequence, class UnaryPredicate>
+    ForwardSequence
+    partition(ForwardSequence in, UnaryPredicate pred)
+    {
+        // @todo Специализации для более сильных категорий итераторов
+        // пропускаем ведущие "хорошие" элеменнов
+        auto sink = ::ural::details::find_if_not(std::move(in), pred);
+
+        in = sink;
+        ++ in;
+        in = ural::details::find_if(std::move(in), pred);
+
+        for(; !!in; ++ in)
+        {
+            if(pred(*in))
+            {
+                using ::std::swap;
+                // @todo using ural::swap;
+                swap(*sink, *in);
+                ++ sink;
+            }
+        }
+        return sink;
+    }
+
+    template <class ForwardSequence, class UnaryPredicate>
+    ForwardSequence
+    inplace_stable_partition(ForwardSequence in, UnaryPredicate pred)
+    {
+        auto const n = ural::size(in);
+
+        assert(!!in);
+        assert(n > 0);
+        assert(!pred(*in));
+        assert(!in.traversed_front());
+
+        auto const s_orig = ural::shrink_front(in);
+
+        if(n == 1)
+        {
+            return s_orig;
+        }
+
+        // Разделяем первую половину
+        auto const n_left = n/2;
+        auto s = s_orig;
+        ural::advance(s, n_left);
+
+        auto r_left = ::ural::details::inplace_stable_partition(s.traversed_front(), pred);
+
+        // Разделяем вторую половину
+        auto const n_right = n - n_left;
+
+        auto s_right = ::ural::details::find_if_not(ural::shrink_front(s), pred);
+
+        if(!!s_right)
+        {
+            auto r_right = ::ural::details::inplace_stable_partition(ural::shrink_front(s_right), pred);
+            ural::advance(s_right, ural::size(r_right.traversed_front()));
+        }
+
+        // Поворачиваем
+        auto r = ::ural::details::rotate(ural::shrink_front(r_left),
+                                         s_right.traversed_front());
+
+        // Возвращаем результат
+        auto nt = ::ural::size(r_left.traversed_front());
+        nt += ::ural::size(r[ural::_1].traversed_front());
+        nt += ::ural::size(r[ural::_2].traversed_front());
+        nt += ::ural::size(s_right.traversed_front());
+
+        s = s_orig;
+        ural::advance(s, nt);
+        return s;
+    }
+
+    template <class ForwardSequence, class UnaryPredicate>
+    ForwardSequence
+    stable_partition(ForwardSequence in, UnaryPredicate pred)
+    {
+        in.shrink_front();
+        in = ::ural::details::find_if_not(std::move(in), pred);
+
+        if(!in)
+        {
+            return in;
+        }
+
+        // @todo Попробовать получить буфер
+
+        // Разделяем на месте
+        auto s = ural::shrink_front(std::move(in));
+        auto r =
+            ::ural::details::inplace_stable_partition(std::move(s), pred);
+        auto const nt = ural::size(r.traversed_front());
+        ural::advance(in, nt);
+        return in;
+    }
+
+    template <class Input, class Output1, class Output2, class UnaryPredicate>
+    ural::tuple<Input, Output1, Output2>
+    partition_copy(Input in, Output1 out_true, Output2 out_false,
+                   UnaryPredicate pred)
+    {
+        // @todo Специальная последовательность?
+        for(; !!in && !!out_true && !!out_false; ++ in)
+        {
+            if(pred(*in))
+            {
+                *out_true = *in;
+                ++ out_true;
+            }
+            else
+            {
+                *out_false = *in;
+                ++ out_false;
+            }
+        }
+
+        typedef ural::tuple<Input, Output1, Output2> Tuple;
+        return Tuple(std::move(in), std::move(out_true), std::move(out_false));
     }
 
     // Бинарные кучи
@@ -314,6 +660,58 @@ namespace details
     }
 
     // Сортировка
+    template <class RASequence, class Size, class Compare>
+    void partial_sort(RASequence s, Size const part, Compare cmp)
+    {
+        ::ural::details::make_heap(s, cmp);
+
+        s.shrink_front();
+        auto s_old = s;
+        s += part;
+
+        for(auto i = s; !!i; ++ i)
+        {
+            if(cmp(*i, *s_old))
+            {
+                using ::std::swap;
+                // @todo using ::ural::swap;
+                swap(*s_old, *i);
+                ::ural::details::heap_sink(s.traversed_front(), 0, part, cmp);
+            }
+        }
+
+        ::ural::details::sort_heap(s.traversed_front(), cmp);
+    }
+
+    template <class Input, class RASequence, class Compare>
+    RASequence
+    partial_sort_copy(Input in, RASequence out, Compare cmp)
+    {
+        out.shrink_front();
+        std::tie(in, out) = ::ural::details::copy(std::move(in), std::move(out));
+
+        auto to_sort = out.traversed_front();
+        auto const part = to_sort.size();
+
+        ::ural::details::make_heap(to_sort, cmp);
+
+        // @todo Устранить дублирование с partial_sort
+        for(; !!in; ++ in)
+        {
+            if(cmp(*in, *to_sort))
+            {
+                using ::std::swap;
+                // @todo using ::ural::swap;
+                *to_sort = *in;
+                ::ural::details::heap_sink(to_sort, 0, part, cmp);
+            }
+        }
+
+        ::ural::details::sort_heap(std::move(to_sort), cmp);
+
+        return out;
+    }
+
     template <class Input1, class  Input2, class Compare>
     bool lexicographical_compare(Input1 in1, Input2 in2, Compare cmp)
     {
@@ -463,6 +861,32 @@ namespace details
         }
 
         return Tuple{min_pos, max_pos};
+    }
+
+    template <class Forward1, class Forward2, class BinaryPredicate>
+    bool is_permutation(Forward1 s1, Forward2 s2, BinaryPredicate pred)
+    {
+        // @todo Пропустить общий префикс
+
+        for(; !!s1; ++ s1)
+        {
+            // Пропускаем элементы, которые уже встречались
+            if(!!::ural::details::find(s1.traversed_front(), *s1, pred))
+            {
+                continue;
+            }
+
+            auto s = s1;
+            ++ s;
+            auto const n1 = 1 + ::ural::details::count(s, *s1, pred);
+            auto const n2 = ::ural::details::count(s2, *s1, pred);
+
+            if(n1 != n2)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 }
 // namespace details

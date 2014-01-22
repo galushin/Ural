@@ -40,7 +40,14 @@ namespace concepts
     template <class Seq>
     class ForwardSequence
      : SinglePassSequence<Seq>
-    {};
+    {
+    public:
+        BOOST_CONCEPT_USAGE(ForwardSequence)
+        {
+            // @todo traversed_front
+        }
+    private:
+    };
 
     template <class Seq>
     class RandomAccessSequence
@@ -61,11 +68,15 @@ namespace concepts
         BOOST_CONCEPT_USAGE(ReadableSequence)
         {
             consume(*seq);
+
+            // @todo Проверки для value_type
         }
 
     private:
         static Seq seq;
         typedef typename Seq::reference reference;
+        typedef typename Seq::value_type value_type;
+
         static void consume(reference ref);
     };
 
@@ -80,12 +91,12 @@ namespace concepts
         /// @brief Примеры использования
         BOOST_CONCEPT_USAGE(WritableSequence)
         {
-            *seq = value;
+            *seq = make_value();
         }
 
     private:
         static Seq seq;
-        static T value;
+        static T make_value();
     };
 
     template <class F, class Signature>

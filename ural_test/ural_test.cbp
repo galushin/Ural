@@ -55,6 +55,7 @@
 		<Unit filename="../tests/iterator_sequence_test.cpp" />
 		<Unit filename="../tests/numeric_tests.cpp" />
 		<Unit filename="../tests/optional_tests.cpp" />
+		<Unit filename="../tests/sequence_test.cpp" />
 		<Unit filename="../tests/tuple_tests.cpp" />
 		<Unit filename="../ural/algorithm.hpp" />
 		<Unit filename="../ural/algorithm/details/algo_base.hpp" />
@@ -62,6 +63,9 @@
 		<Unit filename="../ural/concepts.hpp" />
 		<Unit filename="../ural/defs.hpp" />
 		<Unit filename="../ural/functional.hpp" />
+		<Unit filename="../ural/functional/cpp_operators.hpp" />
+		<Unit filename="../ural/functional/replace.hpp" />
+		<Unit filename="../ural/memory.hpp" />
 		<Unit filename="../ural/numeric.hpp" />
 		<Unit filename="../ural/numeric/adjacent_differences.hpp" />
 		<Unit filename="../ural/numeric/details/num_algo.hpp" />
@@ -72,12 +76,18 @@
 		<Unit filename="../ural/sequence/base.hpp">
 			<Option target="Debug" />
 		</Unit>
+		<Unit filename="../ural/sequence/filtered.hpp" />
 		<Unit filename="../ural/sequence/function_output.hpp" />
 		<Unit filename="../ural/sequence/generator.hpp" />
 		<Unit filename="../ural/sequence/insertion.hpp" />
 		<Unit filename="../ural/sequence/iterator_sequence.hpp" />
+		<Unit filename="../ural/sequence/make.hpp" />
+		<Unit filename="../ural/sequence/moved.hpp" />
+		<Unit filename="../ural/sequence/replace.hpp" />
 		<Unit filename="../ural/sequence/set_operations.hpp" />
+		<Unit filename="../ural/sequence/taken.hpp" />
 		<Unit filename="../ural/sequence/transform.hpp" />
+		<Unit filename="../ural/sequence/uniqued.hpp" />
 		<Unit filename="../ural/thread.hpp" />
 		<Unit filename="../ural/tuple.hpp" />
 		<Unit filename="../ural/utility/tracers.hpp" />

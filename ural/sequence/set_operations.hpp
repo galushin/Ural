@@ -28,6 +28,9 @@ namespace ural
         typedef typename std::common_type<typename Input1::reference,
                                           typename Input2::reference>::type reference;
 
+        typedef typename std::common_type<typename Input1::value_type,
+                                          typename Input2::value_type>::type value_type;
+
         explicit merge_sequence(Input1 in1, Input2 in2, Compare cmp)
          : Base_class(std::move(cmp))
          , in1_{std::move(in1)}
@@ -146,6 +149,7 @@ namespace ural
         typedef sequence_base<set_intersection_sequence, Compare> Base_class;
     public:
         typedef typename Input1::reference reference;
+        typedef typename Input1::value_type value_type;
 
         explicit set_intersection_sequence(Input1 in1, Input2 in2, Compare cmp)
          : Base_class{std::move(cmp)}
@@ -234,6 +238,7 @@ namespace ural
         typedef sequence_base<set_difference_sequence, Compare> Base_class;
     public:
         typedef typename Input1::reference reference;
+        typedef typename Input1::value_type value_type;
 
         explicit set_difference_sequence(Input1 in1, Input2 in2, Compare cmp)
          : Base_class{std::move(cmp)}
@@ -324,6 +329,8 @@ namespace ural
     public:
         typedef typename std::common_type<typename Input1::reference,
                                           typename Input2::reference>::type reference;
+        typedef typename std::common_type<typename Input1::value_type,
+                                          typename Input2::value_type>::type value_type;
 
         explicit set_symmetric_difference_sequence(Input1 in1, Input2 in2, Compare cmp)
          : Base_class(std::move(cmp))
@@ -451,6 +458,8 @@ namespace ural
     public:
         typedef typename std::common_type<typename Input1::reference,
                                           typename Input2::reference>::type reference;
+        typedef typename std::common_type<typename Input1::value_type,
+                                          typename Input2::value_type>::type value_type;
 
         explicit set_union_sequence(Input1 in1, Input2 in2, Compare cmp)
          : Base_class(std::move(cmp))
