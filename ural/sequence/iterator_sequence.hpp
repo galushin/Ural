@@ -87,11 +87,11 @@ namespace ural
         @pre <tt> [first; last) </tt> должен быть допустимым интервалом
         */
         explicit iterator_sequence(Iterator first, Iterator last)
-         : iterators_{first, first, last, last}
+         : iterators_{first, first, last, last, last}
         {
             if(first != last)
             {
-                decrement_if_bidirectional(this->back_());
+                decrement_if_bidirectional(iterators_[back_index]);
             }
         }
 
@@ -101,12 +101,12 @@ namespace ural
         */
         bool operator!() const
         {
-            return this->front_() == this->stop_();
+            return iterators_[front_index] == iterators_[stop_index];
         }
 
         Iterator const & front_iterator() const
         {
-            return this->front_();
+            return iterators_[front_index];
         }
 
         /** @brief Доступ к текущему (переднему) элементу последовательности
@@ -117,7 +117,7 @@ namespace ural
         {
             policy_type::assert_not_empty(*this);
 
-            return *(this->front_());
+            return *(iterators_[front_index]);
         }
 
         /** @brief Переход к следующему элементу последовательности
@@ -127,54 +127,55 @@ namespace ural
         void pop_front()
         {
             policy_type::assert_not_empty(*this);
-            ++ this->front_();
+            ++ iterators_[front_index];
         }
 
         // Многопроходная прямая последовательность
         iterator_sequence traversed_front() const
         {
-            return iterator_sequence{this->old_front_(), this->front_()};
+            return iterator_sequence{iterators_[begin_index],
+                                     iterators_[front_index]};
         }
 
         void shrink_front()
         {
-            this->old_front_() = this->front_();
+            iterators_[begin_index] = iterators_[front_index];
         }
 
         // Двусторонняя последовательность
         void pop_back()
         {
             policy_type::assert_not_empty(*this);
-            -- this->stop_();
+            -- iterators_[stop_index];
 
             if(!!*this)
             {
-                -- this->back_();
+                -- iterators_[back_index];
             }
         }
 
         reference back() const
         {
             policy_type::assert_not_empty(*this);
-            return *this->back_();
+            return *iterators_[back_index];
         }
 
         // Последовательность произвольного доступа
         reference operator[](distance_type index) const
         {
             policy_type::check_index(*this, index);
-            return front_()[index];
+            return iterators_[front_index][index];
         }
 
         distance_type size() const
         {
-            return this->stop_() - this->front_();
+            return iterators_[stop_index] - iterators_[front_index];
         }
 
         iterator_sequence & operator+=(distance_type index)
         {
             // @todo Проверка индекса
-            this->front_() += index;
+            iterators_[front_index] += index;
             return *this;
         }
 
@@ -186,17 +187,17 @@ namespace ural
 
         iterator end() const
         {
-            return iterators_[back_index];
+            return iterators_[stop_index];
         }
 
         iterator traversed_begin() const
         {
-            return this->old_front_();
+            return iterators_[begin_index];
         }
 
         iterator traversed_end() const
         {
-            return iterators_[stop_index];
+            return iterators_[end_index];
         }
 
     private:
@@ -204,50 +205,11 @@ namespace ural
         static constexpr auto front_index = ural::_2;
         static constexpr auto back_index = ural::_3;
         static constexpr auto stop_index = ural::_4;
-
-        Iterator & old_front_()
-        {
-            return iterators_[begin_index];
-        }
-
-        Iterator const & old_front_() const
-        {
-            return iterators_[begin_index];
-        }
-
-        Iterator & front_()
-        {
-            return iterators_[front_index];
-        }
-
-        Iterator const & front_() const
-        {
-            return iterators_[front_index];
-        }
-
-        Iterator & back_()
-        {
-            return iterators_[back_index];
-        }
-
-        Iterator const & back_() const
-        {
-            return iterators_[back_index];
-        }
-
-        Iterator & stop_()
-        {
-            return iterators_[stop_index];
-        }
-
-        Iterator const & stop_() const
-        {
-            return iterators_[stop_index];
-        }
+        static constexpr auto end_index = ural::_5;
 
     private:
         // @todo Настройка структуры в зависимости от категории
-        ural::tuple<Iterator, Iterator, Iterator, Iterator> iterators_;
+        ural::tuple<Iterator, Iterator, Iterator, Iterator, Iterator> iterators_;
     };
 
     template <class Iterator>

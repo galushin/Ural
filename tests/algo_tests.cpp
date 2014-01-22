@@ -724,6 +724,24 @@ BOOST_AUTO_TEST_CASE(stable_partition_test_9)
 }
 
 // @todo Аналог partition_point
+BOOST_AUTO_TEST_CASE(partition_point_test)
+{
+    typedef int Value;
+
+    // @todo Подсчёт числа операций
+    auto pred = [](Value x) { return x < 5; };
+
+    std::vector<Value> const z = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    assert(std::is_partitioned(z.begin(), z.end(), pred));
+
+    auto r_std = std::partition_point(z.begin(), z.end(), pred);
+    auto r_ural = ural::partition_point(z, pred);
+
+    BOOST_CHECK(z.begin() == r_ural.traversed_begin());
+    BOOST_CHECK(z.end() == r_ural.end());
+    BOOST_CHECK(z.end() == r_ural.traversed_end());
+    BOOST_CHECK(r_std == r_ural.begin());
+}
 
 // Сортировка
 BOOST_AUTO_TEST_CASE(is_sorted_test)

@@ -553,7 +553,7 @@
 1390362855 source:c:\pavel\ural_repo\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
 	<boost/test/impl/xml_report_formatter.ipp>
 
-1390394840 source:c:\pavel\ural_repo\ural\tests\algo_tests.cpp
+1390416459 source:c:\pavel\ural_repo\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<boost/mpl/list.hpp>
 	<ural/algorithm.hpp>
@@ -564,7 +564,7 @@
 	<list>
 	<vector>
 
-1390392509 c:\pavel\ural_repo\ural\ural\algorithm.hpp
+1390416373 c:\pavel\ural_repo\ural\ural\algorithm.hpp
 	<ural/functional.hpp>
 	<ural/sequence/all.hpp>
 	<ural/algorithm/details/copy.hpp>
@@ -580,7 +580,7 @@
 	<tuple>
 	<ural/placeholders.hpp>
 
-1390362855 c:\pavel\ural_repo\ural\ural\placeholders.hpp
+1390417503 c:\pavel\ural_repo\ural\ural\placeholders.hpp
 
 1390362855 c:\pavel\ural_repo\ural\ural\functional\replace.hpp
 	<ural/tuple.hpp>
@@ -612,7 +612,7 @@
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/insertion.hpp>
 
-1390396390 c:\pavel\ural_repo\ural\ural\sequence\iterator_sequence.hpp
+1390418250 c:\pavel\ural_repo\ural\ural\sequence\iterator_sequence.hpp
 	<ural/sequence/base.hpp>
 	<ural/tuple.hpp>
 
@@ -646,7 +646,7 @@
 1390397608 c:\pavel\ural_repo\ural\ural\sequence\uniqued.hpp
 	<ural/algorithm/details/algo_base.hpp>
 
-1390392551 c:\pavel\ural_repo\ural\ural\algorithm\details\algo_base.hpp
+1390416524 c:\pavel\ural_repo\ural\ural\algorithm\details\algo_base.hpp
 	<ural/sequence/function_output.hpp>
 	<ural/sequence/generator.hpp>
 	<ural/algorithm/details/copy.hpp>

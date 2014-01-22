@@ -506,6 +506,14 @@ namespace details
         return Tuple(std::move(in), std::move(out_true), std::move(out_false));
     }
 
+    template <class ForwardSequence, class Predicate>
+    ForwardSequence
+    partition_point(ForwardSequence in, Predicate pred)
+    {
+        in.shrink_front();
+        return ::ural::details::find_if_not(std::move(in), std::move(pred));
+    }
+
     // Бинарные кучи
     template <class Size>
     Size heap_parent(Size pos)
