@@ -259,11 +259,12 @@ namespace ural
     class replace_functor
     {
     public:
+        // @todo Преобразование в функциональный объект
         typedef BinaryPredicate predicate_type;
 
         explicit replace_functor(T old_value, T new_value)
          : members_{std::move(old_value), std::move(new_value),
-                    BinaryPredicate{}}
+                    predicate_type{}}
         {}
 
         explicit replace_functor(T old_value, T new_value, BinaryPredicate pred)
@@ -298,7 +299,8 @@ namespace ural
         }
 
     private:
-        ural::tuple<T, T, BinaryPredicate> members_;
+        // @todo Оптимизация размера
+        ural::tuple<T, T, predicate_type> members_;
     };
 }
 // namespace ural
