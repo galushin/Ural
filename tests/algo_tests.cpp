@@ -4,7 +4,7 @@
 #include <ural/algorithm.hpp>
 #include <ural/memory.hpp>
 
-// @todo РґРѕР»Р¶РЅС‹ С‚СЂРµР±РѕРІР°С‚СЊСЃСЏ С‚РѕР»СЊРєРѕ <ural/algorithms.hpp>
+// @todo должны требоваться только <ural/algorithms.hpp>
 #include <ural/sequence/all.hpp>
 #include <ural/utility/tracers.hpp>
 
@@ -240,8 +240,8 @@ BOOST_AUTO_TEST_CASE(search_test)
     BOOST_CHECK_EQUAL(Inner::in_quote(str, s2), !!ural::search(str, s2));
 }
 
-// @todo РњРѕР¶РЅРѕ Р»Рё (Рё С†РµР»РµСЃРѕРѕР±СЂР°Р·РЅРѕ Р»Рё) search_n РІС‹СЂР°Р·РёС‚СЊ С‡РµСЂРµР· search Рё
-// СЃРїРµС†-РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ
+// @todo Можно ли (и целесообразно ли) search_n выразить через search и
+// спец-последовательность
 BOOST_AUTO_TEST_CASE(search_n_test)
 {
     const std::string xs = "1001010100010101001010101";
@@ -253,7 +253,7 @@ BOOST_AUTO_TEST_CASE(search_n_test)
     }
 }
 
-// РњРѕРґРёС„РёС†РёСЂСѓСЋС‰РёРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ Р°Р»РіРѕСЂРёС‚РјС‹
+// Модифицирующие последовательность алгоритмы
 BOOST_AUTO_TEST_CASE(copy_test)
 {
     std::vector<int> const xs = {1, 2, 3, 4};
@@ -282,7 +282,7 @@ BOOST_AUTO_TEST_CASE(copy_if_test)
                                   r_ural.begin(), r_ural.end());
 }
 
-// @copy Р°РЅР°Р»РѕРі copy_backward
+// @copy аналог copy_backward
 
 BOOST_AUTO_TEST_CASE(moved_test)
 {
@@ -339,7 +339,7 @@ BOOST_AUTO_TEST_CASE(fill_n_test)
     auto const n = v_std.size() / 2;
     auto const value = -1;
 
-    // @todo РўРµСЃС‚С‹ РІРѕР·РІСЂР°С‰Р°РµРјС‹С… Р·РЅР°С‡РµРЅРёР№
+    // @todo Тесты возвращаемых значений
     std::fill_n(v_std.begin(), n, value);
     ural::fill(v_ural | ural::taken(n), value);
 
@@ -362,11 +362,11 @@ BOOST_AUTO_TEST_CASE(transform_test)
                                   x_ural.begin(), x_ural.end());
 }
 
-// @todo РђРЅР°Р»РѕРі generate
-// @todo РђРЅР°Р»РѕРі generate_n
+// @todo Аналог generate
+// @todo Аналог generate_n
 
-// @todo РђРЅР°Р»РѕРі remove
-// @todo РђРЅР°Р»РѕРі remove_if
+// @todo Аналог remove
+// @todo Аналог remove_if
 
 BOOST_AUTO_TEST_CASE(replace_test)
 {
@@ -383,7 +383,7 @@ BOOST_AUTO_TEST_CASE(replace_test)
                                   s_ural.begin(), s_ural.end());
 }
 
-// @todo РђРЅР°Р»РѕРі replace_if
+// @todo Аналог replace_if
 
 BOOST_AUTO_TEST_CASE(swap_ranges_test)
 {
@@ -393,15 +393,27 @@ BOOST_AUTO_TEST_CASE(swap_ranges_test)
     auto y1 = x1;
     auto y2 = x2;
 
-    // @todo РўРµСЃС‚ РІРѕР·РІСЂР°С‰Р°РµРјС‹С… Р·РЅР°С‡РµРЅРёР№
+    // @todo Тест возвращаемых значений
     ural::swap_ranges(y1, y2);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(y1.begin(), y1.end(), x2.begin(), x2.end());
     BOOST_CHECK_EQUAL_COLLECTIONS(y2.begin(), y2.end(), x1.begin(), x1.end());
 }
 
-// @todo РђРЅР°Р»РѕРі reverse
-// @todo РђРЅР°Р»РѕРі reverse_copy
+BOOST_AUTO_TEST_CASE(reverse_test)
+{
+    std::list<int> const src = {1, 2, 3, 4, 5, 6};
+
+    auto x_std = src;
+    auto x_ural = src;
+
+    std::reverse(x_std.begin(), x_std.end());
+    ural::reverse(x_ural);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
+// @todo Аналог reverse_copy
 
 BOOST_AUTO_TEST_CASE(rotate_test)
 {
@@ -416,7 +428,7 @@ BOOST_AUTO_TEST_CASE(rotate_test)
 
         auto s = ural::sequence(v_ural);
         s += i;
-        // @todo РџСЂРѕРІРµСЂРёС‚СЊ РІРѕР·РІСЂР°С‰Р°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ
+        // @todo Проверить возвращаемое значение
         ural::rotate(s);
 
         BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
@@ -439,7 +451,7 @@ BOOST_AUTO_TEST_CASE(rotate_copy_test)
         auto s = ural::sequence(src);
         s += i;
 
-        // @todo РџСЂРѕРІРµСЂРёС‚СЊ РІРѕР·РІСЂР°С‰Р°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ
+        // @todo Проверить возвращаемое значение
         ural::rotate_copy(s, r_ural | ural::front_inserter);
 
         BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
@@ -447,8 +459,8 @@ BOOST_AUTO_TEST_CASE(rotate_copy_test)
     }
 }
 
-// @todo РђРЅР°Р»РѕРі random_shuffle
-// @todo РђРЅР°Р»РѕРі shuffle
+// @todo Аналог random_shuffle
+// @todo Аналог shuffle
 
 BOOST_AUTO_TEST_CASE(unique_test)
 {
@@ -458,8 +470,8 @@ BOOST_AUTO_TEST_CASE(unique_test)
     auto const last = std::unique(v1.begin(), v1.end());
     std::forward_list<int> r_std(v1.begin(), last);
 
-    // @todo Р—Р°РјРµРЅРёС‚СЊ РЅР° forward_list
-    // @todo Р’ РѕРґРЅСѓ РёРЅСЃС‚СЂСѓРєС†РёСЋ
+    // @todo Заменить на forward_list
+    // @todo В одну инструкцию
     std::list<int> r_ural;
     ural::copy(v2 | ural::uniqued, r_ural | ural::back_inserter);
 
@@ -483,7 +495,7 @@ BOOST_AUTO_TEST_CASE(unique_test_custom_predicate)
     BOOST_CHECK_EQUAL(s_std, s_ural);
 }
 
-// Р Р°Р·РґРµР»РµРЅРёРµ
+// Разделение
 BOOST_AUTO_TEST_CASE(is_partitioned_test)
 {
     std::vector<int> v = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -539,7 +551,7 @@ BOOST_AUTO_TEST_CASE(partition_copy_test)
 
     auto const pred = [] (int x) {return x % 2 == 0;};
 
-    // @todo РўРµСЃС‚ РІРѕР·РІСЂР°С‰Р°РµРјРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ
+    // @todo Тест возвращаемого значения
     ural::partition_copy(src, true_sink | ural::back_inserter,
                          std::front_inserter(false_sink), pred);
 
@@ -684,9 +696,9 @@ BOOST_AUTO_TEST_CASE(stable_partition_test_9)
     BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.traversed_end(), pred));
 }
 
-// @todo РђРЅР°Р»РѕРі partition_point
+// @todo Аналог partition_point
 
-// РЎРѕСЂС‚РёСЂРѕРІРєР°
+// Сортировка
 BOOST_AUTO_TEST_CASE(is_sorted_test)
 {
     std::vector<int> digits {3, 1, 4, 1, 5};
@@ -714,7 +726,7 @@ BOOST_AUTO_TEST_CASE(is_sorted_until_test)
     while(std::next_permutation(nums.begin(), nums.end()));
 }
 
-// @todo РђРЅР°Р»РѕРі sort
+// @todo Аналог sort
 
 BOOST_AUTO_TEST_CASE(partial_sort_test)
 {
@@ -739,7 +751,7 @@ BOOST_AUTO_TEST_CASE(partial_sort_copy_test)
     std::vector<int> r2_std{10, 11, 12, 13, 14, 15, 16};
     std::vector<int> r2_ural{10, 11, 12, 13, 14, 15, 16};
 
-    // @todo РўРµСЃС‚ РІРѕР·РІСЂР°С‰Р°РµРјС‹С… Р·РЅР°С‡РµРЅРёР№
+    // @todo Тест возвращаемых значений
     std::partial_sort_copy(v0.begin(), v0.end(), r1_std.begin(), r1_std.end());
     ural::partial_sort_copy(v0, r1_ural);
 
@@ -754,16 +766,16 @@ BOOST_AUTO_TEST_CASE(partial_sort_copy_test)
                                   r2_ural.begin(), r2_ural.end());
 }
 
-// @todo РђРЅР°Р»РѕРі stable_sort
-// @todo РђРЅР°Р»РѕРі nth_element
+// @todo Аналог stable_sort
+// @todo Аналог nth_element
 
-// Р‘РёРЅР°СЂРЅС‹Р№ РїРѕРёСЃРє
-// @todo РђРЅР°Р»РѕРі lower_bound
-// @todo РђРЅР°Р»РѕРі upper_bound
-// @todo РђРЅР°Р»РѕРі binary_search
-// @todo РђРЅР°Р»РѕРі equal_range
+// Бинарный поиск
+// @todo Аналог lower_bound
+// @todo Аналог upper_bound
+// @todo Аналог binary_search
+// @todo Аналог equal_range
 
-// РћРїРµСЂР°С†РёРё СЃРѕ РјРЅРѕР¶РµСЃС‚РІР°РјРё
+// Операции со множествами
 BOOST_AUTO_TEST_CASE(includes_test)
 {
     std::vector<std::string> vs{"abcfhx", "abc", "ac", "g", "acg", {}};
@@ -878,7 +890,7 @@ BOOST_AUTO_TEST_CASE(set_union_test)
                                   r_ural.begin(), r_ural.end());
 }
 
-// РћРїРµСЂР°С†РёРё СЃ Р±РёРЅР°СЂРЅС‹РјРё РєСѓС‡Р°РјРё
+// Операции с бинарными кучами
 BOOST_AUTO_TEST_CASE(make_heap_test)
 {
     std::vector<int> v { 3, 1, 4, 1, 5, 9 };
@@ -948,7 +960,7 @@ BOOST_AUTO_TEST_CASE(is_heap_test_all_permutations)
     while(std::next_permutation(v.begin(), v.end()));
 }
 
-// РњРёРЅРёРјСѓРј Рё РјР°РєСЃРёРјСѓРј
+// Минимум и максимум
 BOOST_AUTO_TEST_CASE(min_element_test)
 {
     std::vector<int> const v{3, 1, 4, 1, 5, 9, 2, 6, 5};
@@ -988,7 +1000,7 @@ BOOST_AUTO_TEST_CASE(minmax_element_test)
     auto std_result = std::minmax_element(v.begin(), v.end());
     auto ural_result = ural::minmax_element(v);
 
-    // @todo РџСЂРѕРІРµСЂРёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ РѕРїРµСЂР°С†РёР№
+    // @todo Проверить количество операций
 
     BOOST_CHECK_EQUAL(std::distance(std_result.first, v.end()),
                       ural_result[ural::_1].size());
@@ -1023,5 +1035,5 @@ BOOST_AUTO_TEST_CASE(is_permutation_test)
     BOOST_CHECK(!ural::is_permutation(v3, v2));
 }
 
-// @todo РђРЅР°Р»РѕРі next_permutation
-// @todo РђРЅР°Р»РѕРі prev_permutation
+// @todo Аналог next_permutation
+// @todo Аналог prev_permutation

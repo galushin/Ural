@@ -20,7 +20,7 @@ namespace details
             return in;
         }
 
-        // @todo Р—Р°РјРµРЅРёС‚СЊ РЅР° РѕРґРЅСѓ РѕРїРµСЂР°С†РёСЋ
+        // @todo Заменить на одну операцию
         auto in_next = in;
         ++ in_next;
 
@@ -256,11 +256,11 @@ namespace details
             return s;
         }
 
-        // @todo Р·Р°РјРµРЅРёС‚СЊ РЅР° РѕРґРЅСѓ РѕРїРµСЂР°С†РёСЋ
+        // @todo заменить на одну операцию
         auto s_next = s;
         ++ s_next;
 
-        // @todo РјРѕР¶РЅРѕ Р»Рё СѓРЅРёС„РёС†РёСЂРѕРІР°С‚СЊ СЃ mismatch?
+        // @todo можно ли унифицировать с mismatch?
         for(; !!s_next; ++ s_next)
         {
             if(pred(*s, *s_next))
@@ -272,7 +272,7 @@ namespace details
         return s_next;
     }
 
-    // РђР»РіРѕСЂРёС‚РјС‹, РјРѕРґРёС„РёС†РёСЂСѓСЋС‰РёРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ
+    // Алгоритмы, модифицирующие последовательность
     template <class Forward1, class Forward2>
     ural::tuple<Forward1, Forward2>
     swap_ranges(Forward1 in1, Forward2 in2)
@@ -284,6 +284,28 @@ namespace details
             swap(*in1, *in2);
         }
         return ural::tuple<Forward1, Forward2>{in1, in2};
+    }
+
+    template <class BidirectionalSequence>
+    void reverse(BidirectionalSequence seq)
+    {
+        for(; !!seq; ++seq)
+        {
+            auto seq_next = seq;
+            seq_next.pop_back();
+
+            if(!seq_next)
+            {
+                break;
+            }
+            else
+            {
+                using std::swap;
+                // @todo using ural::swap;
+                swap(*seq, seq.back());
+            }
+            seq = seq_next;
+        }
     }
 
     template <class Forward1, class Forward2>
@@ -298,8 +320,8 @@ namespace details
                                                    std::move(in2)};
         }
 
-        // @todo Р—Р°РјРµРЅРёС‚СЊ СЂРµРєСѓСЂСЃРёСЋ РЅР° РёС‚РµСЂР°С†РёСЋ
-        // @todo РћРїС‚РёРјРёР·Р°С†РёСЏ РєРѕРґР°
+        // @todo Заменить рекурсию на итерацию
+        // @todo Оптимизация кода
         auto r = ::ural::details::swap_ranges(in1, in2);
 
         if(!r[ural::_1] && !r[ural::_2])
@@ -330,7 +352,7 @@ namespace details
         return r[ural::_1];
     }
 
-    // Р—Р°РїРѕР»РЅРµРЅРёРµ Рё РіРµРЅРµСЂР°С†РёСЏ
+    // Заполнение и генерация
     template <class ForwardSequence, class Generator>
     ForwardSequence generate(ForwardSequence seq, Generator gen)
     {
@@ -355,7 +377,7 @@ namespace details
                                          ural::value_functor<T const &>(value));
     }
 
-    // Р Р°Р·РґРµР»РµРЅРёРµ
+    // Разделение
     template <class Input, class UnaryPredicate>
     bool is_partitioned(Input in, UnaryPredicate pred)
     {
@@ -367,8 +389,8 @@ namespace details
     ForwardSequence
     partition(ForwardSequence in, UnaryPredicate pred)
     {
-        // @todo РЎРїРµС†РёР°Р»РёР·Р°С†РёРё РґР»СЏ Р±РѕР»РµРµ СЃРёР»СЊРЅС‹С… РєР°С‚РµРіРѕСЂРёР№ РёС‚РµСЂР°С‚РѕСЂРѕРІ
-        // РїСЂРѕРїСѓСЃРєР°РµРј РІРµРґСѓС‰РёРµ "С…РѕСЂРѕС€РёРµ" СЌР»РµРјРµРЅРЅРѕРІ
+        // @todo Специализации для более сильных категорий итераторов
+        // пропускаем ведущие "хорошие" элеменнов
         auto sink = ::ural::details::find_if_not(std::move(in), pred);
 
         in = sink;
@@ -406,16 +428,14 @@ namespace details
             return s_orig;
         }
 
-        // Р Р°Р·РґРµР»СЏРµРј РїРµСЂРІСѓСЋ РїРѕР»РѕРІРёРЅСѓ
+        // Разделяем первую половину
         auto const n_left = n/2;
         auto s = s_orig;
         ural::advance(s, n_left);
 
         auto r_left = ::ural::details::inplace_stable_partition(s.traversed_front(), pred);
 
-        // Р Р°Р·РґРµР»СЏРµРј РІС‚РѕСЂСѓСЋ РїРѕР»РѕРІРёРЅСѓ
-        auto const n_right = n - n_left;
-
+        // Разделяем вторую половину
         auto s_right = ::ural::details::find_if_not(ural::shrink_front(s), pred);
 
         if(!!s_right)
@@ -424,11 +444,11 @@ namespace details
             ural::advance(s_right, ural::size(r_right.traversed_front()));
         }
 
-        // РџРѕРІРѕСЂР°С‡РёРІР°РµРј
+        // Поворачиваем
         auto r = ::ural::details::rotate(ural::shrink_front(r_left),
                                          s_right.traversed_front());
 
-        // Р’РѕР·РІСЂР°С‰Р°РµРј СЂРµР·СѓР»СЊС‚Р°С‚
+        // Возвращаем результат
         auto nt = ::ural::size(r_left.traversed_front());
         nt += ::ural::size(r[ural::_1].traversed_front());
         nt += ::ural::size(r[ural::_2].traversed_front());
@@ -451,9 +471,9 @@ namespace details
             return in;
         }
 
-        // @todo РџРѕРїСЂРѕР±РѕРІР°С‚СЊ РїРѕР»СѓС‡РёС‚СЊ Р±СѓС„РµСЂ
+        // @todo Попробовать получить буфер
 
-        // Р Р°Р·РґРµР»СЏРµРј РЅР° РјРµСЃС‚Рµ
+        // Разделяем на месте
         auto s = ural::shrink_front(std::move(in));
         auto r =
             ::ural::details::inplace_stable_partition(std::move(s), pred);
@@ -467,7 +487,7 @@ namespace details
     partition_copy(Input in, Output1 out_true, Output2 out_false,
                    UnaryPredicate pred)
     {
-        // @todo РЎРїРµС†РёР°Р»СЊРЅР°СЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ?
+        // @todo Специальная последовательность?
         for(; !!in && !!out_true && !!out_false; ++ in)
         {
             if(pred(*in))
@@ -486,7 +506,7 @@ namespace details
         return Tuple(std::move(in), std::move(out_true), std::move(out_false));
     }
 
-    // Р‘РёРЅР°СЂРЅС‹Рµ РєСѓС‡Рё
+    // Бинарные кучи
     template <class Size>
     Size heap_parent(Size pos)
     {
@@ -561,7 +581,7 @@ namespace details
         BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(seq)>));
         BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
 
-        // РџСѓСЃС‚Р°СЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ - РєСѓС‡Р°
+        // Пустая последовательность - куча
         if(!seq)
         {
             return seq;
@@ -659,7 +679,7 @@ namespace details
         assert(::ural::details::is_sorted(seq, cmp));
     }
 
-    // РЎРѕСЂС‚РёСЂРѕРІРєР°
+    // Сортировка
     template <class RASequence, class Size, class Compare>
     void partial_sort(RASequence s, Size const part, Compare cmp)
     {
@@ -696,7 +716,7 @@ namespace details
 
         ::ural::details::make_heap(to_sort, cmp);
 
-        // @todo РЈСЃС‚СЂР°РЅРёС‚СЊ РґСѓР±Р»РёСЂРѕРІР°РЅРёРµ СЃ partial_sort
+        // @todo Устранить дублирование с partial_sort
         for(; !!in; ++ in)
         {
             if(cmp(*in, *to_sort))
@@ -730,7 +750,7 @@ namespace details
         return !in1 && !!in2;
     }
 
-    // РћРїРµСЂР°С†РёРё РЅР°Рґ РјРЅРѕР¶РµСЃС‚РІР°РјРё
+    // Операции над множествами
     template <class Input1, class  Input2, class Compare>
     bool includes(Input1 in1, Input2 in2, Compare cmp)
     {
@@ -760,7 +780,7 @@ namespace details
         return !in2;
     }
 
-    // РџРѕРёСЃРє РЅР°РёР±РѕР»СЊС€РµРіРѕ Рё РЅР°РёРјРµРЅСЊС€РµРіРѕ
+    // Поиск наибольшего и наименьшего
     template <class ForwardSequence, class Compare>
     ForwardSequence
     min_element(ForwardSequence in, Compare cmp)
@@ -773,10 +793,10 @@ namespace details
         ::ural::min_element_accumulator<ForwardSequence, Compare>
             acc(in++, std::move(cmp));
 
-        /* @todo РР·Р±Р°РІРёС‚СЊСЃСЏ РѕС‚ С†РёРєР»Р°: РЅСѓР¶РЅР° РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ, РґРµР№СЃС‚РІСѓСЋС‰Р°СЏ
-        РїРѕРґРѕР±РЅРѕ boost::counted_iterator Рё С„СѓРЅРєС†РёРѕРЅР°Р»СЊРЅС‹Р№ РѕР±СЉРµРєС‚,
-        СЂР°Р·С‹РјРµРЅРѕРІС‹РІР°СЋС‰РёР№ СЃРІРѕРё Р°СЂРіСѓРјРµРЅС‚С‹ РїРµСЂРµРґ СЃСЂР°РІРЅРµРЅРёРµРј - СЌС‚Рѕ РјРѕР¶РЅРѕ СЃРґРµР»Р°С‚СЊ
-        С‡РµСЂРµР· compare_by Рё dererference
+        /* @todo Избавиться от цикла: нужна последовательность, действующая
+        подобно boost::counted_iterator и функциональный объект,
+        разыменовывающий свои аргументы перед сравнением - это можно сделать
+        через compare_by и dererference
         */
         for(; !!in; ++ in)
         {
@@ -811,16 +831,16 @@ namespace details
         ForwardSequence max_pos = in;
         ++ in;
 
-        /* @todo РЈСЃС‚СЂР°РЅРёС‚СЊ РґСѓР±Р»РёСЂРѕРІР°РЅРёРµ
-        РџСЂРѕР±Р»РµРјР° РІ С‚РѕРј, С‡С‚Рѕ РІРІРµРґРµРЅРёРµ РґРІСѓС… РЅР°РєРѕРїРёС‚РµР»РµР№ РїСЂРёРІРµРґС‘С‚ Рє РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё
-        РєРѕРїРёСЂРѕРІР°С‚СЊ С„СѓРЅРєС†РёРѕРЅР°Р»СЊРЅС‹Р№ РѕР±СЉРµРєС‚
+        /* @todo Устранить дублирование
+        Проблема в том, что введение двух накопителей приведёт к необходимости
+        копировать функциональный объект
         */
         for(; !!in; ++ in)
         {
             auto in_next = in;
             ++ in_next;
 
-            // РѕСЃС‚Р°Р»СЃСЏ С‚РѕР»СЊРєРѕ РѕРґРёРЅ СЌР»РµРјРµРЅС‚
+            // остался только один элемент
             if(!in_next)
             {
                 if(cmp(*in, *min_pos))
@@ -834,7 +854,7 @@ namespace details
                 break;
             }
 
-            // РѕСЃС‚Р°Р»РѕСЃСЊ РєР°Рє РјРёРЅРёРјСѓРј РґРІР° СЌР»РµРјРµРЅС‚Р°
+            // осталось как минимум два элемента
             if(cmp(*in, *in_next))
             {
                 if(cmp(*in, *min_pos))
@@ -867,11 +887,11 @@ namespace details
     template <class Forward1, class Forward2, class BinaryPredicate>
     bool is_permutation(Forward1 s1, Forward2 s2, BinaryPredicate pred)
     {
-        // @todo РџСЂРѕРїСѓСЃС‚РёС‚СЊ РѕР±С‰РёР№ РїСЂРµС„РёРєСЃ
+        // @todo Пропустить общий префикс
 
         for(; !!s1; ++ s1)
         {
-            // РџСЂРѕРїСѓСЃРєР°РµРј СЌР»РµРјРµРЅС‚С‹, РєРѕС‚РѕСЂС‹Рµ СѓР¶Рµ РІСЃС‚СЂРµС‡Р°Р»РёСЃСЊ
+            // Пропускаем элементы, которые уже встречались
             if(!!::ural::details::find(s1.traversed_front(), *s1, pred))
             {
                 continue;

@@ -52,6 +52,20 @@ namespace ural
     class iterator_sequence
      : public sequence_base<iterator_sequence<Iterator, Policy>>
     {
+        static void decrement_if_bidirectional(Iterator & s)
+        {
+            typename std::iterator_traits<Iterator>::iterator_category helper{};
+            return decrement_if_bidirectional(s, helper);
+        }
+
+        static void decrement_if_bidirectional(Iterator &, std::input_iterator_tag)
+        {}
+
+        static void decrement_if_bidirectional(Iterator & s, std::bidirectional_iterator_tag)
+        {
+            -- s;
+        }
+
     public:
         typedef Iterator iterator;
 
@@ -73,8 +87,13 @@ namespace ural
         @pre <tt> [first; last) </tt> должен быть допустимым интервалом
         */
         explicit iterator_sequence(Iterator first, Iterator last)
-         : iterators_{first, first, last}
-        {}
+         : iterators_{first, first, last, last}
+        {
+            if(first != last)
+            {
+                decrement_if_bidirectional(this->back_());
+            }
+        }
 
         /** @brief Проверка исчерпания последовательности
         @return @b true, если в последовательности больше нет элементов,
@@ -128,6 +147,17 @@ namespace ural
         {
             policy_type::assert_not_empty(*this);
             -- this->stop_();
+
+            if(!!*this)
+            {
+                -- this->back_();
+            }
+        }
+
+        reference back() const
+        {
+            policy_type::assert_not_empty(*this);
+            return *this->back_();
         }
 
         // Последовательность произвольного доступа
@@ -174,7 +204,7 @@ namespace ural
         static constexpr auto begin_index = ural::_1;
         static constexpr auto front_index = ural::_2;
         static constexpr auto back_index = ural::_3;
-        static constexpr auto stop_index = ural::_3;
+        static constexpr auto stop_index = ural::_4;
 
         Iterator & old_front_()
         {
@@ -196,6 +226,16 @@ namespace ural
             return iterators_[front_index];
         }
 
+        Iterator & back_()
+        {
+            return iterators_[back_index];
+        }
+
+        Iterator const & back_() const
+        {
+            return iterators_[back_index];
+        }
+
         Iterator & stop_()
         {
             return iterators_[stop_index];
@@ -208,7 +248,7 @@ namespace ural
 
     private:
         // @todo Настройка структуры в зависимости от категории
-        ural::tuple<Iterator, Iterator, Iterator> iterators_;
+        ural::tuple<Iterator, Iterator, Iterator, Iterator> iterators_;
     };
 
     template <class Iterator>

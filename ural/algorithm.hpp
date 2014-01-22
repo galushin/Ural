@@ -2,7 +2,7 @@
 #define Z_URAL_ALGORITHM_HPP_INCLUDED
 
 /** @file ural/algorithm.hpp
- @brief РћР±РѕР±С‰С‘РЅРЅС‹Рµ Р°Р»РіРѕСЂРёС‚РјС‹
+ @brief Обобщённые алгоритмы
 */
 
 #include <ural/functional.hpp>
@@ -221,7 +221,7 @@ namespace ural
                                 std::forward<Input2>(in2), ural::equal_to<>());
     }
 
-    // РњРѕРґРёС„РёС†РёСЂСѓСЋС‰РёРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ Р°Р»РіРѕСЂРёС‚РјС‹
+    // Модифицирующие последовательность алгоритмы
     template <class Input, class Output>
     auto copy(Input && in, Output && out)
     -> decltype(ural::details::copy(sequence(std::forward<Input>(in)),
@@ -246,6 +246,12 @@ namespace ural
                                      sequence(std::forward<Forward2>(s2)));
     }
 
+    template <class BidirectionalSequence>
+    void reverse(BidirectionalSequence && seq)
+    {
+        return ::ural::details::reverse(sequence(std::forward<BidirectionalSequence>(seq)));
+    }
+
     template <class ForwardSequence>
     auto rotate(ForwardSequence && seq)
     -> decltype(sequence(std::forward<ForwardSequence>(seq)))
@@ -264,7 +270,7 @@ namespace ural
         return ural::copy(s_in.traversed_front(), s_out);
     }
 
-    // Р Р°Р·РґРµР»РµРЅРёРµ
+    // Разделение
     template <class Input, class UnaryPredicate>
     bool is_partitioned(Input && in, UnaryPredicate pred)
     {
@@ -299,7 +305,7 @@ namespace ural
                                                make_functor(std::move(pred)));
     }
 
-    // Р‘РёРЅР°СЂРЅС‹Рµ РєСѓС‡Рё
+    // Бинарные кучи
     template <class RandomAccessSequence, class Compare>
     bool is_heap(RandomAccessSequence && seq, Compare cmp)
     {
@@ -360,7 +366,7 @@ namespace ural
                                  ural::less<>{});
     }
 
-    // РЎРѕСЂС‚РёСЂРѕРІРєР°
+    // Сортировка
     template <class ForwardSequence, class Compare>
     bool is_sorted(ForwardSequence && in, Compare cmp)
     {
@@ -458,7 +464,7 @@ namespace ural
     }
 
 
-    // РћРїРµСЂР°С†РёРё СЃ РјРЅРѕР¶РµСЃС‚РІР°РјРё
+    // Операции с множествами
     template <class Input1, class  Input2, class Compare>
     bool includes(Input1 && in1, Input2 && in2, Compare cmp)
     {
@@ -474,7 +480,7 @@ namespace ural
                                 std::forward<Input2>(in2), ural::less<>());
     }
 
-    // РџРѕРёСЃРє РЅР°РёР±РѕР»СЊС€РµРіРѕ Рё РЅР°РёРјРµРЅСЊС€РµРіРѕ
+    // Поиск наибольшего и наименьшего
     template <class ForwardSequence, class Compare>
     auto min_element(ForwardSequence && in, Compare cmp)
     -> decltype(sequence(std::forward<ForwardSequence>(in)))
