@@ -5,6 +5,8 @@
  @todo Более подробные тесты
 */
 
+#include <boost/compressed_pair.hpp>
+
 namespace ural
 {
     template <class Sequence, class Predicate>

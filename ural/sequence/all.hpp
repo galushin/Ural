@@ -21,6 +21,29 @@
 
 namespace ural
 {
+    template <class T, class IStream>
+    class istream_sequence
+     : public sequence_base<istream_sequence<T, IStream>>
+    {
+    public:
+        // Типы
+        typedef T value_type;
+        typedef T const & reference;
+
+        // Конструкторы
+
+        // Однопроходная последовательность
+        bool operator!() const;
+
+    private:
+        // @todo Поддерживать ли типы без конструктора без параметров
+        std::reference_wrapper<IStream> is_;
+        T value_;
+    };
+
+    template <class T, class IStream>
+    istream_sequence<T, IStream>
+    make_istream_sequence(IStream & is);
 }
 // namespace ural
 

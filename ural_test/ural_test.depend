@@ -216,7 +216,7 @@
 1223887188 source:c:\devtools\github\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
 	<boost/test/impl/xml_report_formatter.ipp>
 
-1389856045 c:\devtools\ural_repo\ural\ural\tuple.hpp
+1390535962 c:\devtools\ural_repo\ural\ural\tuple.hpp
 	<tuple>
 	<ural/placeholders.hpp>
 
@@ -276,7 +276,7 @@
 	<ural/algorithm/details/copy.hpp>
 	<ural/algorithm/details/algo_base.hpp>
 
-1389940820 c:\devtools\ural_repo\ural\ural\sequence\all.hpp
+1390549460 c:\devtools\ural_repo\ural\ural\sequence\all.hpp
 	<iterator>
 	<ural/sequence/base.hpp>
 	<ural/sequence/make.hpp>
@@ -400,7 +400,7 @@
 
 1384408805 c:\devtools\ural_repo\ural\ural\thread.hpp
 
-1390534671 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
+1390535973 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
 	<ural/sequence/function_output.hpp>
 	<ural/sequence/generator.hpp>
 	<ural/algorithm/details/copy.hpp>
@@ -422,8 +422,9 @@
 
 1384757720 c:\devtools\ural_repo\ural\ural\defs.hpp
 
-1389328921 c:\devtools\ural_repo\ural\ural\sequence\transform.hpp
+1390549166 c:\devtools\ural_repo\ural\ural\sequence\transform.hpp
 	<boost/compressed_pair.hpp>
+	<ural/functional.hpp>
 	<ural/sequence/base.hpp>
 
 1389328671 c:\devtools\ural_repo\ural\ural\sequence\set_operations.hpp
@@ -479,7 +480,8 @@
 1389315980 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
 	<boost/test/unit_test.hpp>
 
-1389328197 c:\devtools\ural_repo\ural\ural\sequence\filtered.hpp
+1390549149 c:\devtools\ural_repo\ural\ural\sequence\filtered.hpp
+	<boost/compressed_pair.hpp>
 
 1389852625 c:\devtools\ural_repo\ural\ural\sequence\make.hpp
 	<ural/sequence/iterator_sequence.hpp>
