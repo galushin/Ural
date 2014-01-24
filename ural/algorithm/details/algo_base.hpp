@@ -622,7 +622,7 @@ namespace details
 
         using std::swap;
         swap(seq[0], seq[N-1]);
-        ::ural::details::heap_sink(seq, 0, N-1, cmp);
+        ::ural::details::heap_sink(seq, static_cast<decltype(N)>(0), N-1, cmp);
     }
 
     template <class RandomAccessSequence, class Compare>
@@ -690,6 +690,7 @@ namespace details
 
         auto to_sort = out.traversed_front();
         auto const part = to_sort.size();
+        decltype(part) const zero = 0;
 
         ::ural::details::make_heap(to_sort, cmp);
 
@@ -701,7 +702,7 @@ namespace details
                 using ::std::swap;
                 // @todo using ::ural::swap;
                 *to_sort = *in;
-                ::ural::details::heap_sink(to_sort, 0, part, cmp);
+                ::ural::details::heap_sink(to_sort, zero, part, cmp);
             }
         }
 
