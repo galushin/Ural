@@ -895,7 +895,9 @@ namespace details
     template <class Forward1, class Forward2, class BinaryPredicate>
     bool is_permutation(Forward1 s1, Forward2 s2, BinaryPredicate pred)
     {
-        // @todo Пропустить общий префикс
+        // Пропустить общий префикс
+        s1.shrink_front();
+        s2.shrink_front();
 
         for(; !!s1; ++ s1)
         {

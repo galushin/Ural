@@ -7,6 +7,7 @@
 
 #include <boost/compressed_pair.hpp>
 
+#include <ural/functional.hpp>
 #include <ural/sequence/base.hpp>
 
 namespace ural

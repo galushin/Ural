@@ -67,6 +67,10 @@ namespace ural
         }
     };
 
+    // @todo divides
+    // @todo modulus
+    // @todo negate
+
     template <class T1 = void, class T2 = T1>
     class equal_to
     {
@@ -91,6 +95,8 @@ namespace ural
             return x == y;
         }
     };
+
+    // @todo not_equal_to
 
     template <class T1 = void, class T2 = T1>
     class less
@@ -129,6 +135,18 @@ namespace ural
             return x > y;
         }
     };
+
+    // @todo greater_equal
+    // @todo less_equal
+
+    // @todo logical_and
+    // @todo logical_or
+    // @todo logical_not
+
+    // @todo bit_and
+    // @todo bit_or
+    // @todo bit_xor
+    // @todo bit_not
 }
 // namespace ural
 
