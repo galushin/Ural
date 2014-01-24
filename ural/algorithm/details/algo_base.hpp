@@ -414,8 +414,6 @@ namespace details
         auto r_left = ::ural::details::inplace_stable_partition(s.traversed_front(), pred);
 
         // Разделяем вторую половину
-        auto const n_right = n - n_left;
-
         auto s_right = ::ural::details::find_if_not(ural::shrink_front(s), pred);
 
         if(!!s_right)
