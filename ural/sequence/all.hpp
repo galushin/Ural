@@ -32,9 +32,32 @@ namespace ural
         typedef T const & reference;
 
         // Конструкторы
+        explicit istream_sequence(IStream & is)
+         : is_(is)
+         , value_{}
+        {
+            if(is_.get())
+            {
+                is_.get() >> value_;
+            }
+        }
 
         // Однопроходная последовательность
-        bool operator!() const;
+        bool operator!() const
+        {
+            return !is_.get();
+        }
+
+        reference front() const
+        {
+            return value_;
+        }
+
+        void pop_front()
+        {
+            assert(is_.get());
+            is_.get() >> value_;
+        }
 
     private:
         // @todo Поддерживать ли типы без конструктора без параметров
@@ -44,7 +67,10 @@ namespace ural
 
     template <class T, class IStream>
     istream_sequence<T, IStream>
-    make_istream_sequence(IStream & is);
+    make_istream_sequence(IStream & is)
+    {
+        return istream_sequence<T, IStream>(is);
+    }
 }
 // namespace ural
 

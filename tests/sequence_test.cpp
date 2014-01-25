@@ -10,12 +10,12 @@ BOOST_AUTO_TEST_CASE(istream_sequence_test)
     std::istringstream str1("0.1 0.2 0.3 0.4");
     std::istringstream str2("0.1 0.2 0.3 0.4");
 
-    std::vector<int> r_std;
+    std::vector<double> r_std;
     std::copy(std::istream_iterator<double>(str1),
               std::istream_iterator<double>(),
               r_std | ural::back_inserter);
 
-    std::vector<int> r_ural;
+    std::vector<double> r_ural;
     ural::copy(ural::make_istream_sequence<double>(str2),
                r_ural | ural::back_inserter);
 
