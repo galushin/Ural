@@ -723,7 +723,6 @@ BOOST_AUTO_TEST_CASE(stable_partition_test_9)
     BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.traversed_end(), pred));
 }
 
-// @todo Аналог partition_point
 BOOST_AUTO_TEST_CASE(partition_point_test)
 {
     typedef int Value;
@@ -815,7 +814,23 @@ BOOST_AUTO_TEST_CASE(partial_sort_copy_test)
 // @todo Аналог nth_element
 
 // Бинарный поиск
-// @todo Аналог lower_bound
+BOOST_AUTO_TEST_CASE(lower_bound_test)
+{
+    std::vector<int> const data = { 1, 1, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5, 6 };
+    auto const value = 4;
+
+    auto r_std = std::lower_bound(data.begin(), data.end(), value);
+    auto r_ural = ural::lower_bound(data, value);
+
+    BOOST_CHECK(!!r_ural);
+    BOOST_CHECK_EQUAL(*r_std, *r_ural);
+
+    BOOST_CHECK(data.begin() == r_ural.traversed_begin());
+    BOOST_CHECK(r_std == r_ural.begin());
+    BOOST_CHECK(data.end() == r_ural.end());
+    BOOST_CHECK(data.end() == r_ural.traversed_end());
+}
+
 // @todo Аналог upper_bound
 // @todo Аналог binary_search
 // @todo Аналог equal_range
