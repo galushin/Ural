@@ -391,6 +391,22 @@ namespace ural
                                    ural::less<>{});
     }
 
+    template <class RASequence, class T, class Compare>
+    auto upper_bound(RASequence && in, T const & value, Compare cmp)
+    -> decltype(sequence(std::forward<RASequence>(in)))
+    {
+        return ::ural::details::upper_bound(sequence(std::forward<RASequence>(in)),
+                                            value, make_functor(std::move(cmp)));
+    }
+
+    template <class RASequence, class T>
+    auto upper_bound(RASequence && in, T const & value)
+    -> decltype(sequence(std::forward<RASequence>(in)))
+    {
+        return ::ural::upper_bound(std::forward<RASequence>(in), value,
+                                   ural::less<>{});
+    }
+
     template <class ForwardSequence, class Compare>
     bool is_sorted(ForwardSequence && in, Compare cmp)
     {

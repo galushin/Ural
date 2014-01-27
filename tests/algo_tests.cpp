@@ -831,7 +831,23 @@ BOOST_AUTO_TEST_CASE(lower_bound_test)
     BOOST_CHECK(data.end() == r_ural.traversed_end());
 }
 
-// @todo Аналог upper_bound
+BOOST_AUTO_TEST_CASE(upper_bound_test)
+{
+    std::vector<int> const data = { 1, 1, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5, 6 };
+    auto const value = 4;
+
+    auto r_std = std::upper_bound(data.begin(), data.end(), value);
+    auto r_ural = ural::upper_bound(data, value);
+
+    BOOST_CHECK(!!r_ural);
+    BOOST_CHECK_EQUAL(*r_std, *r_ural);
+
+    BOOST_CHECK(data.begin() == r_ural.traversed_begin());
+    BOOST_CHECK(r_std == r_ural.begin());
+    BOOST_CHECK(data.end() == r_ural.end());
+    BOOST_CHECK(data.end() == r_ural.traversed_end());
+}
+
 // @todo Аналог binary_search
 // @todo Аналог equal_range
 

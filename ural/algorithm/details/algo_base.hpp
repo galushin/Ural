@@ -523,6 +523,14 @@ namespace details
         return ::ural::details::partition_point(std::move(in), std::move(pred));
     }
 
+    template <class RASequence, class T, class Compare>
+    RASequence
+    upper_bound(RASequence in, T const & value, Compare cmp)
+    {
+        auto pred = ural::not_fn(std::bind(std::move(cmp), std::cref(value), std::placeholders::_1));
+        return ::ural::details::partition_point(std::move(in), std::move(pred));
+    }
+
     // Бинарные кучи
     template <class Size>
     Size heap_parent(Size pos)
