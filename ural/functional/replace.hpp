@@ -1,17 +1,67 @@
 #ifndef Z_URAL_FUNCTIONAL_REPLACE_HPP_INCLUDED
 #define Z_URAL_FUNCTIONAL_REPLACE_HPP_INCLUDED
 
+/** @file ural/functional/replace.hpp
+ @brief Функциональные объекты, заменяющие значения, удовлетворяющие
+ определённым условиям.
+ @todo Сохранять ссылки, а не значения
+*/
+
 #include <ural/tuple.hpp>
 
 #include <ural/functional/cpp_operators.hpp>
 
 namespace ural
 {
+    template <class Predicate, class T>
+    class replace_if_functor
+    {
+    public:
+        typedef T const & result_type;
+
+        replace_if_functor(Predicate pred, T const & new_value)
+         : members_{std::move(pred), new_value}
+        {}
+
+        result_type operator()(T const & x) const
+        {
+            if(this->predicate()(x))
+            {
+                return this->new_value();
+            }
+            else
+            {
+                return x;
+            }
+        }
+
+        Predicate const & predicate() const
+        {
+            return members_.first();
+        }
+
+        result_type new_value() const
+        {
+            return members_.second();
+        }
+
+    private:
+        boost::compressed_pair<Predicate, T> members_;
+    };
+
+    template <class Predicate, class T>
+    replace_if_functor<Predicate, T>
+    make_replace_if_functor(Predicate pred, T const & new_value)
+    {
+        return replace_if_functor<Predicate, T>(std::move(pred), new_value);
+    }
+
     template <class T, class BinaryPredicate = ural::equal_to<T> >
     class replace_functor
     {
     public:
         typedef BinaryPredicate predicate_type;
+        typedef T const & result_type;
 
         explicit replace_functor(T old_value, T new_value)
          : members_{std::move(old_value), std::move(new_value),
@@ -37,7 +87,7 @@ namespace ural
             return members_[ural::_3];
         }
 
-        T const & operator()(T const & x) const
+        result_type operator()(T const & x) const
         {
             if(this->predicate()(x, this->old_value()))
             {

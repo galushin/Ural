@@ -14,6 +14,15 @@ namespace ural
         return ::ural::transform(std::forward<Sequence>(seq),
                                   make_replace_functor(old_value, new_value));
     }
+
+    template <class Sequence, class Predicate, class T>
+    auto replace_if(Sequence && seq, Predicate pred, T const & new_value)
+    -> decltype(::ural::transform(std::forward<Sequence>(seq),
+                                  make_replace_if_functor(std::move(pred), new_value)))
+    {
+        return ::ural::transform(std::forward<Sequence>(seq),
+                                  make_replace_if_functor(std::move(pred), new_value));
+    }
 }
 // namespace ural
 

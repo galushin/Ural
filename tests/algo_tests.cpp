@@ -383,7 +383,22 @@ BOOST_AUTO_TEST_CASE(replace_test)
                                   s_ural.begin(), s_ural.end());
 }
 
-// @todo Аналог replace_if
+BOOST_AUTO_TEST_CASE(replace_if_test)
+{
+    std::array<int, 10> const s{5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
+
+    auto x_std = s;
+    std::vector<int> x_ural;
+
+    auto pred = [](int x) {return x < 5;};
+    auto const new_value = 55;
+
+    std::replace_if(x_std.begin(), x_std.end(), pred, new_value);
+    ural::copy(ural::replace_if(s, pred, new_value), x_ural | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
 
 BOOST_AUTO_TEST_CASE(swap_ranges_test)
 {
