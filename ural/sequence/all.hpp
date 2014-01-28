@@ -22,6 +22,9 @@
 
 namespace ural
 {
+    /**
+    @todo параметр по умолчанию IStream
+    */
     template <class T, class IStream>
     class istream_sequence
      : public sequence_base<istream_sequence<T, IStream>>
@@ -70,6 +73,91 @@ namespace ural
     make_istream_sequence(IStream & is)
     {
         return istream_sequence<T, IStream>(is);
+    }
+
+    /**
+    @todo параметр по умолчанию OStream
+    @todo параметр по умолчанию T
+    */
+    template <class OStream, class T>
+    class ostream_sequence
+     : public sequence_base<ostream_sequence<OStream, T>>
+    {
+    public:
+        // Конструктор
+        explicit ostream_sequence(OStream & is)
+         : is_{is}
+        {}
+
+        // Однопроходная последовательность
+        bool operator!() const
+        {
+            return false;
+        }
+
+        ostream_sequence const & operator*() const
+        {
+            return *this;
+        }
+
+        void operator=(T const & x) const
+        {
+            is_.get() << x;
+        }
+
+        void pop_front()
+        {}
+
+    private:
+        std::reference_wrapper<OStream> is_;
+    };
+
+    template <class OStream>
+    class ostream_sequence<OStream, auto_tag>
+     : public sequence_base<ostream_sequence<OStream, auto_tag>>
+    {
+    public:
+        // Конструктор
+        explicit ostream_sequence(OStream & is)
+         : is_{is}
+        {}
+
+        // Однопроходная последовательность
+        bool operator!() const
+        {
+            return false;
+        }
+
+        ostream_sequence const & operator*() const
+        {
+            return *this;
+        }
+
+        template <class T>
+        void operator=(T const & x) const
+        {
+            is_.get() << x;
+        }
+
+        void pop_front()
+        {}
+
+    private:
+        std::reference_wrapper<OStream> is_;
+    };
+
+    template <class T, class OStream>
+    ostream_sequence<OStream, T>
+    make_ostream_sequence(OStream & is)
+    {
+        return ostream_sequence<OStream, T>(is);
+    }
+
+    template <class OStream>
+    ostream_sequence<OStream, auto_tag>
+    make_ostream_sequence(OStream & is)
+    {
+        return ostream_sequence<OStream, auto_tag>(is);
     }
 }
 // namespace ural

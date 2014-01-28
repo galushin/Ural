@@ -22,3 +22,25 @@ BOOST_AUTO_TEST_CASE(istream_sequence_test)
     BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
                                   r_ural.begin(), r_ural.end());
 }
+
+BOOST_AUTO_TEST_CASE(ostream_sequence_test)
+{
+    std::vector<int> const xs = {1, 2, 3, 4, 5};
+
+    std::ostringstream os_std;
+    std::ostringstream os_ural;
+
+    std::copy(xs.begin(), xs.end(), std::ostream_iterator<int>(os_std, " "));
+    ural::copy(xs, ural::make_ostream_sequence<int>(os_ural));
+}
+
+BOOST_AUTO_TEST_CASE(ostream_sequence_test_auto)
+{
+    std::vector<int> const xs = {1, 2, 3, 4, 5};
+
+    std::ostringstream os_std;
+    std::ostringstream os_ural;
+
+    std::copy(xs.begin(), xs.end(), std::ostream_iterator<int>(os_std, " "));
+    ural::copy(xs, ural::make_ostream_sequence(os_ural));
+}

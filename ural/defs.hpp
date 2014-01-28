@@ -6,6 +6,7 @@ namespace ural
     struct empty_type{};
     class null_type{};
     struct use_default{};
+    struct auto_tag{};
 
     template <class T, class Default>
     struct default_helper
