@@ -386,6 +386,21 @@ BOOST_AUTO_TEST_CASE(remove_sequence_test)
 }
 
 // @todo Аналог remove_copy_if
+BOOST_AUTO_TEST_CASE(remove_if_sequence_test)
+{
+    std::string s_std = "Text\n with\tsome \t  whitespaces\n\n";
+    auto s_ural = s_std;
+
+    auto pred = [](char x){return std::isspace(x);};
+
+    s_std.erase(std::remove_if(s_std.begin(), s_std.end(), pred), s_std.end());
+
+    auto s = ural::make_remove_if_sequence(s_ural, pred);
+    auto r = ural::copy(s, s_ural)[ural::_2];
+    s_ural.erase(r.begin(), r.end());
+
+    BOOST_CHECK_EQUAL(s_std, s_ural);
+}
 
 BOOST_AUTO_TEST_CASE(replace_test)
 {

@@ -160,6 +160,74 @@ namespace ural
         return ostream_sequence<OStream, auto_tag>(is);
     }
 
+    template <class Input, class Predicate>
+    class remove_if_sequence
+     : public sequence_base<remove_if_sequence<Input, Predicate>>
+    {
+    public:
+        // Типы
+        typedef typename Input::reference reference;
+        typedef typename Input::value_type value_type;
+
+        // Конструкторы
+        remove_if_sequence(Input input, Predicate pred)
+         : members_{std::move(input), std::move(pred)}
+        {
+            this->seek();
+        }
+
+        // Однопроходная последовательность
+        bool operator!() const
+        {
+            return !this->base();
+        }
+
+        reference front() const
+        {
+            return this->base().front();
+        }
+
+        void pop_front()
+        {
+            members_.first().pop_front();
+            this->seek();
+        }
+
+        // Адаптор последовательности
+        Input const & base() const
+        {
+            return members_.first();
+        }
+
+        Predicate const & predicate() const
+        {
+            return members_.second();
+        }
+
+    private:
+        void seek()
+        {
+            members_.first()
+                =  ::ural::details::find_if_not(this->base(), this->predicate());
+        }
+
+    private:
+        boost::compressed_pair<Input, Predicate> members_;
+    };
+
+    template <class Input, class Predicate>
+    auto make_remove_if_sequence(Input && in, Predicate pred)
+    -> remove_if_sequence<decltype(sequence(std::forward<Input>(in))),
+                          decltype(make_functor(std::move(pred)))>
+    {
+        typedef remove_if_sequence<decltype(sequence(std::forward<Input>(in))),
+                                   decltype(make_functor(std::move(pred)))> Sequence;
+        return Sequence(sequence(std::forward<Input>(in)), make_functor(std::move(pred)));
+    }
+
+    /**
+    @todo Выразить через remove_if_sequence
+    */
     template <class Input, class T, class BinaryPredicate>
     class remove_sequence
      : public sequence_base<remove_sequence<Input, T, BinaryPredicate>>
@@ -193,6 +261,7 @@ namespace ural
             this->seek();
         }
 
+        // Адаптор последовательности
         T const & removed_value() const
         {
             return members_[ural::_2];
@@ -206,6 +275,7 @@ namespace ural
     private:
         void seek()
         {
+            // @todo Заменить на алгоритм
             for(; !!members_[ural::_1]; ++ members_[ural::_1])
             {
                 if(!this->predicate()(*members_[ural::_1], this->removed_value()))
@@ -236,7 +306,6 @@ namespace ural
     {
         return make_remove_sequence(std::forward<Input>(in), value, ural::equal_to<>{});
     }
-
 }
 // namespace ural
 
