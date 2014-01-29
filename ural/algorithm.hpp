@@ -411,13 +411,29 @@ namespace ural
     bool binary_search(RASequence && in, T const & value, Compare cmp)
     {
         return ::ural::details::binary_search(sequence(std::forward<RASequence>(in)),
-                                              value, std::move(cmp));
+                                              value, make_functor(std::move(cmp)));
     }
 
     template <class RASequence, class T>
     bool binary_search(RASequence && in, T const & value)
     {
         return ::ural::binary_search(std::forward<RASequence>(in), value, ural::less<>{});
+    }
+
+    template <class RASequence, class T, class Compare>
+    auto equal_range(RASequence && in, T const & value, Compare cmp)
+    -> decltype(sequence(std::forward<RASequence>(in)))
+    {
+        return ::ural::details::equal_range(sequence(std::forward<RASequence>(in)),
+                                            value, make_functor(std::move(cmp)));
+    }
+
+    template <class RASequence, class T>
+    auto equal_range(RASequence && in, T const & value)
+    -> decltype(sequence(std::forward<RASequence>(in)))
+    {
+        return ::ural::equal_range(std::forward<RASequence>(in), value,
+                                   ural::less<>{});
     }
 
     template <class ForwardSequence, class Compare>

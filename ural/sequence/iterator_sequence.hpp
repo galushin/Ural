@@ -3,6 +3,7 @@
 
 /** @file ural/sequence/iterator_sequence.hpp
  @brief Последовательность на основе пары итераторов
+ @todo Хранить reverse_iterator для конца интервала
 */
 
 #include <ural/sequence/base.hpp>
@@ -160,6 +161,12 @@ namespace ural
             return *iterators_[back_index];
         }
 
+        iterator_sequence traversed_back() const
+        {
+            return iterator_sequence(iterators_[stop_index],
+                                     iterators_[end_index]);
+        }
+
         // Последовательность произвольного доступа
         reference operator[](distance_type index) const
         {
@@ -172,11 +179,28 @@ namespace ural
             return iterators_[stop_index] - iterators_[front_index];
         }
 
-        iterator_sequence & operator+=(distance_type index)
+        iterator_sequence & operator+=(distance_type n)
         {
             // @todo Проверка индекса
-            iterators_[front_index] += index;
+            iterators_[front_index] += n;
             return *this;
+        }
+
+        void pop_back(distance_type n)
+        {
+            // @todo Проверка индекса
+            assert(n >= 0);
+
+            iterators_[stop_index] -= n;
+
+            if(iterators_[stop_index] == iterators_[front_index])
+            {
+                iterators_[back_index] = iterators_[stop_index];
+            }
+            else
+            {
+                iterators_[back_index] -= n;
+            }
         }
 
         // Итераторы

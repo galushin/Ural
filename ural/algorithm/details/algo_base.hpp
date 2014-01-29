@@ -539,6 +539,21 @@ namespace details
         return !!in && !cmp(value, *in);
     }
 
+    template <class RASequence, class T, class Compare>
+    RASequence equal_range(RASequence in, T const & value, Compare cmp)
+    {
+        // @todo Оптимизация
+        auto lower = ::ural::details::lower_bound(std::move(in), value, cmp);
+        auto upper = ::ural::details::upper_bound(std::move(in), value, cmp);
+
+        auto n_lower = lower.traversed_front().size();
+        auto n_upper = upper.traversed_back().size();
+
+        in += n_lower;
+        in.pop_back(n_upper);
+        return in;
+    }
+
     // Бинарные кучи
     template <class Size>
     Size heap_parent(Size pos)

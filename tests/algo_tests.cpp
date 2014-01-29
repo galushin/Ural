@@ -912,6 +912,25 @@ BOOST_AUTO_TEST_CASE(binary_search_test)
 }
 
 // @todo Аналог equal_range
+BOOST_AUTO_TEST_CASE(equal_range_test)
+{
+    auto const src = []()
+    {
+        std::vector<int> v = {10,20,30,30,20,10,10,20};
+        std::sort (v.begin(), v.end());
+        return v;
+    }();
+
+    auto const value = 20;
+
+    auto r_std = std::equal_range (src.begin(), src.end(), value);
+    auto r_ural = ural::equal_range(src, value);
+
+    BOOST_CHECK(r_std.first == r_ural.begin());
+    BOOST_CHECK(r_std.second == r_ural.end());
+    BOOST_CHECK(src.begin() == r_ural.traversed_begin());
+    BOOST_CHECK(src.end() == r_ural.traversed_end());
+}
 // @todo equal_range - тест количества операций
 
 // Операции со множествами
