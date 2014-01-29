@@ -407,6 +407,19 @@ namespace ural
                                    ural::less<>{});
     }
 
+    template <class RASequence, class T, class Compare>
+    bool binary_search(RASequence && in, T const & value, Compare cmp)
+    {
+        return ::ural::details::binary_search(sequence(std::forward<RASequence>(in)),
+                                              value, std::move(cmp));
+    }
+
+    template <class RASequence, class T>
+    bool binary_search(RASequence && in, T const & value)
+    {
+        return ::ural::binary_search(std::forward<RASequence>(in), value, ural::less<>{});
+    }
+
     template <class ForwardSequence, class Compare>
     bool is_sorted(ForwardSequence && in, Compare cmp)
     {
