@@ -70,3 +70,31 @@ BOOST_AUTO_TEST_CASE(replace_functor_test_custom_predicate)
     BOOST_CHECK(eq(new_value, f(new_value)));
     BOOST_CHECK(eq(other_value, f(other_value)));
 }
+
+BOOST_AUTO_TEST_CASE(compare_by_test)
+{
+    auto tr = [](int a) { return std::abs(a); };
+    auto cmp1 = [=](int a, int b) {return tr(a) < tr(b);};
+    auto cmp2 = ural::compare_by(tr);
+
+    for(int a = -10; a <= 10; ++ a)
+    for(int b = -10; b <= 10; ++ b)
+    {
+        BOOST_CHECK_EQUAL(cmp1(a, b), cmp2(a, b));
+    }
+}
+
+BOOST_AUTO_TEST_CASE(compare_by_test_custom_compare)
+{
+    auto tr = [](int a) { return std::abs(a); };
+    auto cmp_base = ural::greater<>{};
+
+    auto cmp1 = [=](int a, int b) {return cmp_base(tr(a), tr(b));};
+    auto cmp2 = ural::compare_by(tr, cmp_base);
+
+    for(int a = -10; a <= 10; ++ a)
+    for(int b = -10; b <= 10; ++ b)
+    {
+        BOOST_CHECK_EQUAL(cmp1(a, b), cmp2(a, b));
+    }
+}

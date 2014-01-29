@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE(mismatch_test)
 BOOST_AUTO_TEST_CASE(equal_test)
 {
      std::string const x1("radar");
-     std::string const y1("hello");
+     std::string const y1("rocket");
 
      auto const x2 = x1;
      auto const y2 = y1;

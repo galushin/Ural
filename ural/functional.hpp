@@ -144,6 +144,57 @@ namespace ural
         // @todo Закрытое наследование, а не членство?
         boost::compressed_pair<ForwardSequence, Compare> impl_;
     };
+
+    template <class UnaryFunction, class Compare = ural::less<> >
+    class comparer_by
+    {
+    public:
+        explicit comparer_by(UnaryFunction f)
+         : members_{std::move(f)}
+        {}
+
+        explicit comparer_by(UnaryFunction f, Compare cmp)
+         : members_{std::move(f), std::move(cmp)}
+        {}
+
+        template <class T1, class T2>
+        bool operator()(T1 const & x, T2 const & y) const
+        {
+            return this->compare()(this->transformation()(x),
+                                   this->transformation()(y));
+        }
+
+        UnaryFunction const & transformation() const
+        {
+            return members_.first();
+        }
+
+        Compare const & compare() const
+        {
+            return members_.second();
+        }
+
+    private:
+        boost::compressed_pair<UnaryFunction, Compare> members_;
+    };
+
+    template <class UnaryFunction, class Compare>
+    auto compare_by(UnaryFunction f, Compare cmp)
+    -> comparer_by<decltype(make_functor(std::move(f))),
+                   decltype(make_functor(std::move(cmp)))>
+    {
+        typedef comparer_by<decltype(make_functor(std::move(f))),
+                   decltype(make_functor(std::move(cmp)))> Functor;
+        return Functor(make_functor(std::move(f)), make_functor(std::move(cmp)));
+    }
+
+    template <class UnaryFunction>
+    auto compare_by(UnaryFunction f)
+    -> comparer_by<decltype(make_functor(std::move(f)))>
+    {
+        typedef comparer_by<decltype(make_functor(std::move(f)))> Functor;
+        return Functor(make_functor(std::move(f)));
+    }
 }
 // namespace ural
 
