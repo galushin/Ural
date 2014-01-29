@@ -1,6 +1,10 @@
 #ifndef Z_URAL_SEQUENCE_MAKE_HPP_INCLUDED
 #define Z_URAL_SEQUENCE_MAKE_HPP_INCLUDED
 
+/** @file ural/sequence/make.hpp
+ @brief Функции создания последовательностей
+*/
+
 #include <ural/sequence/iterator_sequence.hpp>
 #include <ural/sequence/insertion.hpp>
 

@@ -1,6 +1,10 @@
 #ifndef Z_URAL_MEMORY_HPP_INCLUDED
 #define Z_URAL_MEMORY_HPP_INCLUDED
 
+/** @file ural/memory.hpp
+ @brief Средства для работы с динамической памятью
+*/
+
 #include <memory>
 
 namespace ural

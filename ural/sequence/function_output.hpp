@@ -1,6 +1,11 @@
 #ifndef Z_URAL_SEQUENCE_FUNCTION_OUTPUT_HPP_INCLUDED
 #define Z_URAL_SEQUENCE_FUNCTION_OUTPUT_HPP_INCLUDED
 
+/** @file ural/sequence/function_output.hpp
+ @brief Выходная последовательность, передающая записываемое значение как
+ аргумент заданной функции.
+*/
+
 #include <ural/sequence/base.hpp>
 
 namespace ural

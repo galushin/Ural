@@ -1,6 +1,10 @@
 #ifndef Z_URAL_SEQUENCE_UNIQUED_HPP_INCLUDED
 #define Z_URAL_SEQUENCE_UNIQUED_HPP_INCLUDED
 
+/** @file ural/sequence/uniqued.hpp
+ @brief Последовательность неповторяющихся соседних элементов
+*/
+
 #include <ural/algorithm/details/algo_base.hpp>
 
 namespace ural

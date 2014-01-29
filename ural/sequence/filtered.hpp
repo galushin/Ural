@@ -2,6 +2,8 @@
 #define Z_URAL_SEQUENCE_FILTERED_HPP_INCLUDED
 
 /** @file ural/sequence/filtered.hpp
+ @brief Последовательность элементов базовой последовательности, удовлетворяющих
+ заданному предикату.
  @todo Более подробные тесты
 */
 

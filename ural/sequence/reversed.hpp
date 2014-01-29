@@ -1,7 +1,11 @@
 #ifndef REVERSED_HPP_INCLUDED
 #define REVERSED_HPP_INCLUDED
 
-// @todo seq | reversed | reversed == seq
+/** @file ural/sequence/reversed.hpp
+ @brief Адаптер последовательности, проходящий элементы исходной последовательности
+ в обратном порядке.
+ @todo seq | reversed | reversed == seq
+*/
 
 namespace ural
 {

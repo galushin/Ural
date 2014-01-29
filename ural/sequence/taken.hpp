@@ -1,6 +1,11 @@
 #ifndef Z_URAL_SEQUENCE_TAKEN_HPP_INCLUDED
 #define Z_URAL_SEQUENCE_TAKEN_HPP_INCLUDED
 
+/** @file ural/sequence/taken.hpp
+ @brief Адаптер последовательности, ограничивающий базовую последовательность
+ заданным числом элементов
+*/
+
 namespace ural
 {
     /** @note Длина последовательности меньше заданной --- это ошибка или

@@ -1,6 +1,10 @@
 #ifndef Z_URAL_FUNCTIONAL_CPP_OPERATORS_HPP_INCLUDED
 #define Z_URAL_FUNCTIONAL_CPP_OPERATORS_HPP_INCLUDED
 
+/** @file ural/functional/cpp_operators.hpp
+ @brief Функциональные объекты, аналогичные определённым в <functional>
+*/
+
 namespace ural
 {
 // Функциональные объекты для операторов

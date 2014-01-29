@@ -1,6 +1,10 @@
 #ifndef Z_URAL_SEQUENCE_GENERATOR_HPP_INCLUDED
 #define Z_URAL_SEQUENCE_GENERATOR_HPP_INCLUDED
 
+/** @file ural/sequence/generator.hpp
+ @brief Последовательность значений генератора (функции без аргументов).
+*/
+
 #include <ural/functional.hpp>
 #include <ural/sequence/base.hpp>
 

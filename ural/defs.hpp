@@ -1,6 +1,10 @@
 #ifndef Z_URAL_DEFS_HPP_INCLUDED
 #define Z_URAL_DEFS_HPP_INCLUDED
 
+/** @file ural/defs.hpp
+ @brief Определения основных типов, используемых библиотекой
+*/
+
 namespace ural
 {
     struct empty_type{};

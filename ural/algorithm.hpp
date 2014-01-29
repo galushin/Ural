@@ -2,7 +2,7 @@
 #define Z_URAL_ALGORITHM_HPP_INCLUDED
 
 /** @file ural/algorithm.hpp
- @brief Обобщённые алгоритмы
+ @brief РћР±РѕР±С‰С‘РЅРЅС‹Рµ Р°Р»РіРѕСЂРёС‚РјС‹
 */
 
 #include <ural/functional.hpp>
@@ -221,7 +221,7 @@ namespace ural
                                 std::forward<Input2>(in2), ural::equal_to<>());
     }
 
-    // Модифицирующие последовательность алгоритмы
+    // РњРѕРґРёС„РёС†РёСЂСѓСЋС‰РёРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ Р°Р»РіРѕСЂРёС‚РјС‹
     template <class Input, class Output>
     auto copy(Input && in, Output && out)
     -> decltype(ural::details::copy(sequence(std::forward<Input>(in)),
@@ -270,7 +270,7 @@ namespace ural
         return ural::copy(s_in.traversed_front(), s_out);
     }
 
-    // Разделение
+    // Р Р°Р·РґРµР»РµРЅРёРµ
     template <class Input, class UnaryPredicate>
     bool is_partitioned(Input && in, UnaryPredicate pred)
     {
@@ -313,7 +313,7 @@ namespace ural
                                                 ural::make_functor(std::move(pred)));
     }
 
-    // Бинарные кучи
+    // Р‘РёРЅР°СЂРЅС‹Рµ РєСѓС‡Рё
     template <class RandomAccessSequence, class Compare>
     bool is_heap(RandomAccessSequence && seq, Compare cmp)
     {
@@ -374,7 +374,7 @@ namespace ural
                                  ural::less<>{});
     }
 
-    // Сортировка
+    // РЎРѕСЂС‚РёСЂРѕРІРєР°
     template <class RASequence, class T, class Compare>
     auto lower_bound(RASequence && in, T const & value, Compare cmp)
     -> decltype(sequence(std::forward<RASequence>(in)))
@@ -504,7 +504,7 @@ namespace ural
     }
 
 
-    // Операции с множествами
+    // РћРїРµСЂР°С†РёРё СЃ РјРЅРѕР¶РµСЃС‚РІР°РјРё
     template <class Input1, class  Input2, class Compare>
     bool includes(Input1 && in1, Input2 && in2, Compare cmp)
     {
@@ -520,7 +520,7 @@ namespace ural
                                 std::forward<Input2>(in2), ural::less<>());
     }
 
-    // Поиск наибольшего и наименьшего
+    // РџРѕРёСЃРє РЅР°РёР±РѕР»СЊС€РµРіРѕ Рё РЅР°РёРјРµРЅСЊС€РµРіРѕ
     template <class ForwardSequence, class Compare>
     auto min_element(ForwardSequence && in, Compare cmp)
     -> decltype(sequence(std::forward<ForwardSequence>(in)))
