@@ -368,6 +368,25 @@ BOOST_AUTO_TEST_CASE(transform_test)
 // @todo Аналог remove
 // @todo Аналог remove_if
 
+BOOST_AUTO_TEST_CASE(remove_sequence_test)
+{
+    std::string s_std = "Text with some   spaces";
+    auto s_ural = s_std;
+
+    auto const to_remove = ' ';
+
+    s_std.erase(std::remove(s_std.begin(), s_std.end(), to_remove),
+                s_std.end());
+
+    auto s = ural::make_remove_sequence(s_ural, to_remove);
+    auto r = ural::copy(s, s_ural)[ural::_2];
+    s_ural.erase(r.begin(), r.end());
+
+    BOOST_CHECK_EQUAL(s_std, s_ural);
+}
+
+// @todo Аналог remove_copy_if
+
 BOOST_AUTO_TEST_CASE(replace_test)
 {
     std::vector<int> s_std = {5, 7, 4, 2, 8, 6, 1, 9, 0, 3};

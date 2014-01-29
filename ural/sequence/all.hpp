@@ -159,6 +159,84 @@ namespace ural
     {
         return ostream_sequence<OStream, auto_tag>(is);
     }
+
+    template <class Input, class T, class BinaryPredicate>
+    class remove_sequence
+     : public sequence_base<remove_sequence<Input, T, BinaryPredicate>>
+    {
+    public:
+        // Типы
+        typedef typename Input::reference reference;
+        typedef typename Input::value_type value_type;
+
+        // Конструкторы
+        explicit remove_sequence(Input in, T const & value, BinaryPredicate pred)
+         : members_{std::move(in), value, std::move(pred)}
+        {
+            this->seek();
+        }
+
+        // Однопроходная последовательность
+        bool operator!() const
+        {
+            return !members_[ural::_1];
+        }
+
+        reference front() const
+        {
+            return members_[ural::_1].front();
+        }
+
+        void pop_front()
+        {
+            ++ members_[ural::_1];
+            this->seek();
+        }
+
+        T const & removed_value() const
+        {
+            return members_[ural::_2];
+        }
+
+        BinaryPredicate const & predicate() const
+        {
+            return members_[ural::_3];
+        }
+
+    private:
+        void seek()
+        {
+            for(; !!members_[ural::_1]; ++ members_[ural::_1])
+            {
+                if(!this->predicate()(*members_[ural::_1], this->removed_value()))
+                {
+                    return;
+                }
+            }
+        }
+
+    private:
+        ural::tuple<Input, T, BinaryPredicate> members_;
+    };
+
+    template <class Input, class T, class BinaryPredicate>
+    auto make_remove_sequence(Input && in, T const & value, BinaryPredicate pred)
+    -> remove_sequence<decltype(sequence(std::forward<Input>(in))), T,
+                       decltype(make_functor(std::move(pred)))>
+    {
+        typedef remove_sequence<decltype(sequence(std::forward<Input>(in))), T,
+                       decltype(make_functor(std::move(pred)))> Sequence;
+        return Sequence(sequence(std::forward<Input>(in)), value,
+                        make_functor(std::move(pred)));
+    }
+
+    template <class Input, class T>
+    auto make_remove_sequence(Input && in, T const & value)
+    -> decltype(make_remove_sequence(std::forward<Input>(in), value, ural::equal_to<>{}))
+    {
+        return make_remove_sequence(std::forward<Input>(in), value, ural::equal_to<>{});
+    }
+
 }
 // namespace ural
 
