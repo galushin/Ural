@@ -927,7 +927,8 @@ BOOST_AUTO_TEST_CASE(equal_range_test)
     auto r_ural = ural::equal_range(src, value);
 
     BOOST_CHECK(r_std.first == r_ural.begin());
-    BOOST_CHECK(r_std.second == r_ural.end());
+    BOOST_CHECK_EQUAL(r_std.second - r_std.first,
+                      r_ural.end() - r_ural.begin());
     BOOST_CHECK(src.begin() == r_ural.traversed_begin());
     BOOST_CHECK(src.end() == r_ural.traversed_end());
 }

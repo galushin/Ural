@@ -543,11 +543,11 @@ namespace details
     RASequence equal_range(RASequence in, T const & value, Compare cmp)
     {
         // @todo Оптимизация
-        auto lower = ::ural::details::lower_bound(std::move(in), value, cmp);
-        auto upper = ::ural::details::upper_bound(std::move(in), value, cmp);
+        auto lower = ::ural::details::lower_bound(in, value, cmp);
+        auto upper = ::ural::details::upper_bound(in, value, cmp);
 
         auto n_lower = lower.traversed_front().size();
-        auto n_upper = upper.traversed_back().size();
+        auto n_upper = in.size() - upper.traversed_front().size();
 
         in += n_lower;
         in.pop_back(n_upper);
