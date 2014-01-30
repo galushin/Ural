@@ -16,6 +16,8 @@ typedef boost::mpl::list<std::forward_list<int>,
                          std::list<int>,
                          std::vector<int>> Sources;
 
+// 25.2 Алгоритмы, не модифицирующие последовательность
+// 25.2.1
 BOOST_AUTO_TEST_CASE_TEMPLATE(all_of_test, Source, Sources)
 {
     typedef typename Source::value_type Element;
@@ -34,6 +36,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(all_of_test, Source, Sources)
     BOOST_CHECK(!ural::all_of(v, pred));
 }
 
+// 25.2.2
 BOOST_AUTO_TEST_CASE(any_of_test)
 {
     std::vector<int> v(10, 2);
@@ -50,6 +53,7 @@ BOOST_AUTO_TEST_CASE(any_of_test)
     BOOST_CHECK(!ural::any_of(v, pred));
 }
 
+// 25.2.3
 BOOST_AUTO_TEST_CASE(none_of_test)
 {
     std::vector<int> v(10, 2);
@@ -66,6 +70,7 @@ BOOST_AUTO_TEST_CASE(none_of_test)
     BOOST_CHECK(ural::none_of(v, pred));
 }
 
+// 25.2.4
 BOOST_AUTO_TEST_CASE(for_each_test)
 {
     std::vector<int> x_std = {1, 2, 3, 4, 5};
@@ -82,6 +87,83 @@ BOOST_AUTO_TEST_CASE(for_each_test)
                                   x_ural.begin(), x_ural.end());
 }
 
+// 25.2.5
+BOOST_AUTO_TEST_CASE(find_fail_test)
+{
+    std::vector<int> v{0, 1, 2, 3, 4};
+
+    auto const value = -1;
+
+    auto s = ural::find(v, value);
+
+    BOOST_CHECK(std::find(v.begin(), v.end(), value) == v.end());
+    BOOST_CHECK(!s);
+}
+
+BOOST_AUTO_TEST_CASE(find_success_test)
+{
+    std::vector<int> v{0, 1, 2, 3, 4};
+
+    auto const value = 2;
+
+    auto s = ural::find(v, value);
+
+    BOOST_CHECK(!!s);
+    BOOST_CHECK_EQUAL(value, *s);
+    BOOST_CHECK(std::find(v.begin(), v.end(), value) == s.front_iterator());
+}
+
+// 25.2.6
+BOOST_AUTO_TEST_CASE(find_end_test_success)
+{
+    std::vector<int> const v{1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4};
+    std::list<int> const t1{1, 2, 3};
+
+    auto r_std = std::find_end(v.begin(), v.end(), t1.begin(), t1.end());
+    auto r_ural = ural::find_end(v, t1);
+
+    BOOST_CHECK_EQUAL(std::distance(r_std, v.end()), r_ural.size());
+}
+
+BOOST_AUTO_TEST_CASE(find_end_test_fail)
+{
+    std::vector<int> const v{1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4};
+    std::list<int> const t2{4, 5, 6};
+
+    auto r_std = std::find_end(v.begin(), v.end(), t2.begin(), t2.end());
+    auto r_ural = ural::find_end(v, t2);
+
+    BOOST_CHECK_EQUAL(std::distance(r_std, v.end()), r_ural.size());
+}
+
+// 25.2.7
+BOOST_AUTO_TEST_CASE(find_first_of_test)
+{
+    std::vector<int> const v{0, 2, 3, 25, 5};
+    std::vector<int> const t{3, 19, 10, 2};
+
+    auto r_std = std::find_first_of(v.begin(), v.end(), t.begin(), t.end());
+    auto r_ural = ural::find_first_of(v, t);
+
+    BOOST_CHECK_EQUAL(std::distance(r_std, v.end()), r_ural.size());
+    BOOST_CHECK(!!r_ural);
+    BOOST_CHECK_EQUAL(*r_std, *r_ural);
+}
+
+// 25.2.8
+BOOST_AUTO_TEST_CASE(adjacent_find_test)
+{
+    std::vector<int> v1{0, 1, 2, 3, 40, 40, 41, 41, 5};
+
+    auto r_std = std::adjacent_find(v1.begin(), v1.end());
+    auto r_ural = ural::adjacent_find(v1);
+
+    BOOST_CHECK_EQUAL(std::distance(r_std, v1.end()), r_ural.size());
+    BOOST_CHECK(!!r_ural);
+    BOOST_CHECK_EQUAL(*r_std, *r_ural);
+}
+
+// 25.2.9
 BOOST_AUTO_TEST_CASE(count_test)
 {
     std::vector<int> v = { 1, 2, 3, 4, 4, 3, 7, 8, 9, 10 };
@@ -113,6 +195,7 @@ BOOST_AUTO_TEST_CASE(count_if_test)
     BOOST_CHECK_EQUAL(n_std, n_ural);
 }
 
+// 25.2.10
 BOOST_AUTO_TEST_CASE(mismatch_test)
 {
     std::string const x("abca");
@@ -125,6 +208,7 @@ BOOST_AUTO_TEST_CASE(mismatch_test)
     BOOST_CHECK_EQUAL(std::distance(r_std.second, y.end()), r_ural[ural::_2].size());
 }
 
+// 25.2.11
 BOOST_AUTO_TEST_CASE(equal_test)
 {
      std::string const x1("radar");
@@ -149,78 +233,24 @@ BOOST_AUTO_TEST_CASE(equal_test)
      BOOST_CHECK(ural::equal(x2, y2) == false);
 }
 
-BOOST_AUTO_TEST_CASE(find_fail_test)
+// 25.2.12
+BOOST_AUTO_TEST_CASE(is_permutation_test)
 {
-    std::vector<int> v{0, 1, 2, 3, 4};
+    std::vector<int> const v1{1,2,3,4,5};
+    std::list<int> const v2{3,5,4,1,2};
+    std::forward_list<int> const v3{3,5,4,1,1};
 
-    auto const value = -1;
+    BOOST_CHECK(ural::is_permutation(v1, v2));
+    BOOST_CHECK(ural::is_permutation(v2, v1));
 
-    auto s = ural::find(v, value);
+    BOOST_CHECK(!ural::is_permutation(v1, v3));
+    BOOST_CHECK(!ural::is_permutation(v3, v1));
+    BOOST_CHECK(!ural::is_permutation(v2, v3));
 
-    BOOST_CHECK(std::find(v.begin(), v.end(), value) == v.end());
-    BOOST_CHECK(!s);
+    BOOST_CHECK(!ural::is_permutation(v3, v2));
 }
 
-BOOST_AUTO_TEST_CASE(find_success_test)
-{
-    std::vector<int> v{0, 1, 2, 3, 4};
-
-    auto const value = 2;
-
-    auto s = ural::find(v, value);
-
-    BOOST_CHECK(!!s);
-    BOOST_CHECK_EQUAL(value, *s);
-    BOOST_CHECK(std::find(v.begin(), v.end(), value) == s.front_iterator());
-}
-
-BOOST_AUTO_TEST_CASE(find_end_test_success)
-{
-    std::vector<int> const v{1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4};
-    std::list<int> const t1{1, 2, 3};
-
-    auto r_std = std::find_end(v.begin(), v.end(), t1.begin(), t1.end());
-    auto r_ural = ural::find_end(v, t1);
-
-    BOOST_CHECK_EQUAL(std::distance(r_std, v.end()), r_ural.size());
-}
-
-BOOST_AUTO_TEST_CASE(find_end_test_fail)
-{
-    std::vector<int> const v{1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4};
-    std::list<int> const t2{4, 5, 6};
-
-    auto r_std = std::find_end(v.begin(), v.end(), t2.begin(), t2.end());
-    auto r_ural = ural::find_end(v, t2);
-
-    BOOST_CHECK_EQUAL(std::distance(r_std, v.end()), r_ural.size());
-}
-
-BOOST_AUTO_TEST_CASE(find_first_of_test)
-{
-    std::vector<int> const v{0, 2, 3, 25, 5};
-    std::vector<int> const t{3, 19, 10, 2};
-
-    auto r_std = std::find_first_of(v.begin(), v.end(), t.begin(), t.end());
-    auto r_ural = ural::find_first_of(v, t);
-
-    BOOST_CHECK_EQUAL(std::distance(r_std, v.end()), r_ural.size());
-    BOOST_CHECK(!!r_ural);
-    BOOST_CHECK_EQUAL(*r_std, *r_ural);
-}
-
-BOOST_AUTO_TEST_CASE(adjacent_find_test)
-{
-    std::vector<int> v1{0, 1, 2, 3, 40, 40, 41, 41, 5};
-
-    auto r_std = std::adjacent_find(v1.begin(), v1.end());
-    auto r_ural = ural::adjacent_find(v1);
-
-    BOOST_CHECK_EQUAL(std::distance(r_std, v1.end()), r_ural.size());
-    BOOST_CHECK(!!r_ural);
-    BOOST_CHECK_EQUAL(*r_std, *r_ural);
-}
-
+// 25.2.13
 BOOST_AUTO_TEST_CASE(search_test)
 {
     struct Inner
@@ -253,7 +283,8 @@ BOOST_AUTO_TEST_CASE(search_n_test)
     }
 }
 
-// Модифицирующие последовательность алгоритмы
+// 25.3 Модифицирующие последовательность алгоритмы
+// 25.3.1
 BOOST_AUTO_TEST_CASE(copy_test)
 {
     std::vector<int> const xs = {1, 2, 3, 4};
@@ -264,6 +295,8 @@ BOOST_AUTO_TEST_CASE(copy_test)
 
     BOOST_CHECK_EQUAL_COLLECTIONS(xs.begin(), xs.end(), x1.begin(), x1.end());
 }
+
+// @todo Аналог copy_n
 
 BOOST_AUTO_TEST_CASE(copy_if_test)
 {
@@ -282,8 +315,9 @@ BOOST_AUTO_TEST_CASE(copy_if_test)
                                   r_ural.begin(), r_ural.end());
 }
 
-// @copy аналог copy_backward
+// @todo аналог copy_backward
 
+// 25.3.2
 BOOST_AUTO_TEST_CASE(moved_test)
 {
     typedef std::unique_ptr<int> Type;
@@ -314,6 +348,81 @@ BOOST_AUTO_TEST_CASE(moved_test)
                                 { return *x == *y;}));
 }
 
+// @todo аналог move_backward
+
+// 25.3.3
+BOOST_AUTO_TEST_CASE(swap_ranges_test)
+{
+    std::vector<int> const x1 = {1, 2, 3, 4, 5};
+    std::list<int> const x2   = {-1, -2, -3, -4, -5};
+
+    auto y1 = x1;
+    auto y2 = x2;
+
+    // @todo Тест возвращаемых значений
+    ural::swap_ranges(y1, y2);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(y1.begin(), y1.end(), x2.begin(), x2.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(y2.begin(), y2.end(), x1.begin(), x1.end());
+}
+
+// @todo swap
+// @todo iter_swap
+
+// 25.3.4
+BOOST_AUTO_TEST_CASE(transform_test)
+{
+    std::string const s("hello");
+    std::string x_std;
+    std::string x_ural;
+
+    std::transform(s.begin(), s.end(), std::back_inserter(x_std),
+                   std::ptr_fun<int, int>(std::toupper));
+    auto seq = ural::transform(s, std::ptr_fun<int, int>(std::toupper));
+    ural::copy(seq, std::back_inserter(x_ural));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
+
+// @todo transform с двумя (и более?) аргументами
+
+// 25.3.5
+BOOST_AUTO_TEST_CASE(replace_sequence_test)
+{
+    std::vector<int> s_std = {5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
+    std::vector<int> s_ural = s_std;
+
+    auto const old_value = 8;
+    auto const new_value = 88;
+
+    std::replace(s_std.begin(), s_std.end(), old_value, new_value);
+    ural::copy(ural::replace(s_ural, old_value, new_value), s_ural);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(s_std.begin(), s_std.end(),
+                                  s_ural.begin(), s_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(replace_sequence_if_test)
+{
+    std::array<int, 10> const s{5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
+
+    auto x_std = s;
+    std::vector<int> x_ural;
+
+    auto pred = [](int x) {return x < 5;};
+    auto const new_value = 55;
+
+    std::replace_if(x_std.begin(), x_std.end(), pred, new_value);
+    ural::copy(ural::replace_if(s, pred, new_value), x_ural | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
+
+// @note нужны ли версии replace, работающие на месте?
+
+// 25.3.6
 BOOST_AUTO_TEST_CASE(fill_test)
 {
     std::vector<int> x_std = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -347,21 +456,7 @@ BOOST_AUTO_TEST_CASE(fill_n_test)
                                   v_ural.begin(), v_ural.end());
 }
 
-BOOST_AUTO_TEST_CASE(transform_test)
-{
-    std::string const s("hello");
-    std::string x_std;
-    std::string x_ural;
-
-    std::transform(s.begin(), s.end(), std::back_inserter(x_std),
-                   std::ptr_fun<int, int>(std::toupper));
-    auto seq = ural::transform(s, std::ptr_fun<int, int>(std::toupper));
-    ural::copy(seq, std::back_inserter(x_ural));
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
-}
-
+// 25.3.7
 BOOST_AUTO_TEST_CASE(generate_test)
 {
     std::vector<int> r_std(5);
@@ -397,9 +492,7 @@ BOOST_AUTO_TEST_CASE(generate_n_test)
                                   r_ural.begin(), r_ural.end());
 }
 
-// @todo Аналог remove
-// @todo Аналог remove_if
-
+// 25.3.8
 BOOST_AUTO_TEST_CASE(remove_sequence_test)
 {
     std::string s_std = "Text with some   spaces";
@@ -417,8 +510,6 @@ BOOST_AUTO_TEST_CASE(remove_sequence_test)
     BOOST_CHECK_EQUAL(s_std, s_ural);
 }
 
-// @todo Аналог remove_copy_if
-
 BOOST_AUTO_TEST_CASE(remove_if_sequence_test)
 {
     std::string s_std = "Text\n with\tsome \t  whitespaces\n\n";
@@ -435,53 +526,44 @@ BOOST_AUTO_TEST_CASE(remove_if_sequence_test)
     BOOST_CHECK_EQUAL(s_std, s_ural);
 }
 
-BOOST_AUTO_TEST_CASE(replace_test)
+// @todo Аналог remove
+// @todo Аналог remove_if
+
+// 25.3.9
+BOOST_AUTO_TEST_CASE(unique_test)
 {
-    std::vector<int> s_std = {5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
-    std::vector<int> s_ural = s_std;
+    std::forward_list<int> v1{1, 2, 2, 2, 3, 3, 2, 2, 1};
+    auto v2 = v1;
 
-    auto const old_value = 8;
-    auto const new_value = 88;
+    auto const last = std::unique(v1.begin(), v1.end());
+    std::forward_list<int> r_std(v1.begin(), last);
 
-    std::replace(s_std.begin(), s_std.end(), old_value, new_value);
-    ural::copy(ural::replace(s_ural, old_value, new_value), s_ural);
+    // @todo Заменить на forward_list
+    // @todo В одну инструкцию
+    std::list<int> r_ural;
+    ural::copy(v2 | ural::uniqued, r_ural | ural::back_inserter);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(s_std.begin(), s_std.end(),
-                                  s_ural.begin(), s_ural.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(), r_ural.begin(),
+                                  r_ural.end());
 }
 
-BOOST_AUTO_TEST_CASE(replace_if_test)
+BOOST_AUTO_TEST_CASE(unique_test_custom_predicate)
 {
-    std::array<int, 10> const s{5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
+    std::string const src = "The      string    with many       spaces!";
 
-    auto x_std = s;
-    std::vector<int> x_ural;
+    auto const pred = [](char c1, char c2){ return c1 == ' ' && c2 == ' '; };
 
-    auto pred = [](int x) {return x < 5;};
-    auto const new_value = 55;
+    std::string s_std;
+    std::unique_copy(src.begin(), src.end(), std::back_inserter(s_std), pred);
 
-    std::replace_if(x_std.begin(), x_std.end(), pred, new_value);
-    ural::copy(ural::replace_if(s, pred, new_value), x_ural | ural::back_inserter);
+    std::string s_ural;
+    ural::copy(ural::make_unique_sequence(src, pred),
+               s_ural | ural::back_inserter);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    BOOST_CHECK_EQUAL(s_std, s_ural);
 }
 
-BOOST_AUTO_TEST_CASE(swap_ranges_test)
-{
-    std::vector<int> const x1 = {1, 2, 3, 4, 5};
-    std::list<int> const x2   = {-1, -2, -3, -4, -5};
-
-    auto y1 = x1;
-    auto y2 = x2;
-
-    // @todo Тест возвращаемых значений
-    ural::swap_ranges(y1, y2);
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(y1.begin(), y1.end(), x2.begin(), x2.end());
-    BOOST_CHECK_EQUAL_COLLECTIONS(y2.begin(), y2.end(), x1.begin(), x1.end());
-}
-
+// 25.3.10
 BOOST_AUTO_TEST_CASE(reverse_test)
 {
     std::list<int> const src = {1, 2, 3, 4, 5, 6};
@@ -524,6 +606,7 @@ BOOST_AUTO_TEST_CASE(reversed_copy_test)
                                   r_ural.begin(), r_ural.end());
 }
 
+// 25.3.11
 BOOST_AUTO_TEST_CASE(rotate_test)
 {
     std::vector<int> const v{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -568,43 +651,11 @@ BOOST_AUTO_TEST_CASE(rotate_copy_test)
     }
 }
 
+// 25.3.12
 // @todo Аналог random_shuffle
 // @todo Аналог shuffle
 
-BOOST_AUTO_TEST_CASE(unique_test)
-{
-    std::forward_list<int> v1{1, 2, 2, 2, 3, 3, 2, 2, 1};
-    auto v2 = v1;
-
-    auto const last = std::unique(v1.begin(), v1.end());
-    std::forward_list<int> r_std(v1.begin(), last);
-
-    // @todo Заменить на forward_list
-    // @todo В одну инструкцию
-    std::list<int> r_ural;
-    ural::copy(v2 | ural::uniqued, r_ural | ural::back_inserter);
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(), r_ural.begin(),
-                                  r_ural.end());
-}
-
-BOOST_AUTO_TEST_CASE(unique_test_custom_predicate)
-{
-    std::string const src = "The      string    with many       spaces!";
-
-    auto const pred = [](char c1, char c2){ return c1 == ' ' && c2 == ' '; };
-
-    std::string s_std;
-    std::unique_copy(src.begin(), src.end(), std::back_inserter(s_std), pred);
-
-    std::string s_ural;
-    ural::copy(ural::make_unique_sequence(src, pred),
-               s_ural | ural::back_inserter);
-
-    BOOST_CHECK_EQUAL(s_std, s_ural);
-}
-
-// Разделение
+// 25.3.13 Разделение
 BOOST_AUTO_TEST_CASE(is_partitioned_test)
 {
     std::vector<int> v = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -650,27 +701,6 @@ BOOST_AUTO_TEST_CASE(partition_test)
     BOOST_CHECK(::ural::none_of(ural::shrink_front(r_ural), is_even));
     BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.end(), is_even));
     BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.traversed_end(), is_even));
-}
-
-BOOST_AUTO_TEST_CASE(partition_copy_test)
-{
-    std::array<int, 10> const src = {1,2,3,4,5,6,7,8,9,10};
-    std::list<int> true_sink;
-    std::forward_list<int> false_sink;
-
-    auto const pred = [] (int x) {return x % 2 == 0;};
-
-    // @todo Тест возвращаемого значения
-    ural::partition_copy(src, true_sink | ural::back_inserter,
-                         std::front_inserter(false_sink), pred);
-
-    BOOST_CHECK(ural::all_of(true_sink, pred));
-    BOOST_CHECK(ural::none_of(false_sink, pred));
-
-    for(auto const & x : src)
-    {
-        BOOST_CHECK(!!ural::find(true_sink, x) || !!ural::find(false_sink, x));
-    }
 }
 
 BOOST_AUTO_TEST_CASE(stable_partition_test_empty)
@@ -805,6 +835,27 @@ BOOST_AUTO_TEST_CASE(stable_partition_test_9)
     BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.traversed_end(), pred));
 }
 
+BOOST_AUTO_TEST_CASE(partition_copy_test)
+{
+    std::array<int, 10> const src = {1,2,3,4,5,6,7,8,9,10};
+    std::list<int> true_sink;
+    std::forward_list<int> false_sink;
+
+    auto const pred = [] (int x) {return x % 2 == 0;};
+
+    // @todo Тест возвращаемого значения
+    ural::partition_copy(src, true_sink | ural::back_inserter,
+                         std::front_inserter(false_sink), pred);
+
+    BOOST_CHECK(ural::all_of(true_sink, pred));
+    BOOST_CHECK(ural::none_of(false_sink, pred));
+
+    for(auto const & x : src)
+    {
+        BOOST_CHECK(!!ural::find(true_sink, x) || !!ural::find(false_sink, x));
+    }
+}
+
 BOOST_AUTO_TEST_CASE(partition_point_test)
 {
     typedef int Value;
@@ -824,35 +875,10 @@ BOOST_AUTO_TEST_CASE(partition_point_test)
     BOOST_CHECK(r_std == r_ural.begin());
 }
 
-// Сортировка
-BOOST_AUTO_TEST_CASE(is_sorted_test)
-{
-    std::vector<int> digits {3, 1, 4, 1, 5};
-
-    BOOST_CHECK_EQUAL(false, ural::is_sorted(digits));
-    BOOST_CHECK_EQUAL(std::is_sorted(digits.begin(), digits.end()),
-                      ural::is_sorted(digits));
-
-    std::sort(digits.begin(), digits.end());
-
-    BOOST_CHECK_EQUAL(true, std::is_sorted(digits.begin(), digits.end()));
-    BOOST_CHECK_EQUAL(true, ural::is_sorted(digits));
-}
-
-BOOST_AUTO_TEST_CASE(is_sorted_until_test)
-{
-    std::vector<int> nums = {1, 3, 4, 5, 9};
-
-    do
-    {
-        auto n_std = nums.end() - std::is_sorted_until(nums.begin(), nums.end());
-        auto n_ural = ural::is_sorted_until(nums).size();
-        BOOST_CHECK_EQUAL(n_std, n_ural);
-    }
-    while(std::next_permutation(nums.begin(), nums.end()));
-}
-
+// 25.4 Сортировка и связанные с ней операции
+// 25.4.1 Сортировка
 // @todo Аналог sort
+// @todo Аналог stable_sort
 
 BOOST_AUTO_TEST_CASE(partial_sort_test)
 {
@@ -892,10 +918,35 @@ BOOST_AUTO_TEST_CASE(partial_sort_copy_test)
                                   r2_ural.begin(), r2_ural.end());
 }
 
-// @todo Аналог stable_sort
+BOOST_AUTO_TEST_CASE(is_sorted_test)
+{
+    std::vector<int> digits {3, 1, 4, 1, 5};
+
+    BOOST_CHECK_EQUAL(false, ural::is_sorted(digits));
+    BOOST_CHECK_EQUAL(std::is_sorted(digits.begin(), digits.end()),
+                      ural::is_sorted(digits));
+
+    std::sort(digits.begin(), digits.end());
+
+    BOOST_CHECK_EQUAL(true, std::is_sorted(digits.begin(), digits.end()));
+    BOOST_CHECK_EQUAL(true, ural::is_sorted(digits));
+}
+
+BOOST_AUTO_TEST_CASE(is_sorted_until_test)
+{
+    std::vector<int> nums = {1, 3, 4, 5, 9};
+
+    do
+    {
+        auto n_std = nums.end() - std::is_sorted_until(nums.begin(), nums.end());
+        auto n_ural = ural::is_sorted_until(nums).size();
+        BOOST_CHECK_EQUAL(n_std, n_ural);
+    }
+    while(std::next_permutation(nums.begin(), nums.end()));
+}
 // @todo Аналог nth_element
 
-// Бинарный поиск
+// 25.4.3 Бинарный поиск
 BOOST_AUTO_TEST_CASE(lower_bound_test)
 {
     std::vector<int> const data = { 1, 1, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5, 6 };
@@ -930,20 +981,6 @@ BOOST_AUTO_TEST_CASE(upper_bound_test)
     BOOST_CHECK(data.end() == r_ural.traversed_end());
 }
 
-BOOST_AUTO_TEST_CASE(binary_search_test)
-{
-    std::vector<int> const haystack {1, 3, 4, 5, 9};
-    std::vector<int> const needles {1, 2, 3, 10};
-
-    for (auto needle : needles)
-    {
-        auto r_std = std::binary_search(haystack.begin(), haystack.end(), needle);
-        auto r_ural = ural::binary_search(haystack, needle);
-
-        BOOST_CHECK_EQUAL(r_std, r_ural);
-    }
-}
-
 BOOST_AUTO_TEST_CASE(equal_range_test)
 {
     auto const src = []()
@@ -966,7 +1003,40 @@ BOOST_AUTO_TEST_CASE(equal_range_test)
 }
 // @todo equal_range - тест количества операций
 
-// Операции со множествами
+BOOST_AUTO_TEST_CASE(binary_search_test)
+{
+    std::vector<int> const haystack {1, 3, 4, 5, 9};
+    std::vector<int> const needles {1, 2, 3, 10};
+
+    for (auto needle : needles)
+    {
+        auto r_std = std::binary_search(haystack.begin(), haystack.end(), needle);
+        auto r_ural = ural::binary_search(haystack, needle);
+
+        BOOST_CHECK_EQUAL(r_std, r_ural);
+    }
+}
+
+// 25.4.4 Слияние
+BOOST_AUTO_TEST_CASE(merge_test)
+{
+    std::vector<int> const v1{1,2,3,4,5,6,7,8};
+    std::vector<int> const v2{        5,  7,  9,10};
+
+    std::vector<int> std_merge;
+    std::merge(v1.begin(), v1.end(), v2.begin(), v2.end(),
+               std::back_inserter(std_merge));
+
+    std::vector<int> ural_merge;
+    ural::copy(ural::merge(v1, v2), std::back_inserter(ural_merge));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(std_merge.begin(), std_merge.end(),
+                                  ural_merge.begin(), ural_merge.end());
+}
+
+// @todo inplace_merge
+
+// 25.4.5 Операции со множествами на сортированных структурах
 BOOST_AUTO_TEST_CASE(includes_test)
 {
     std::vector<std::string> vs{"abcfhx", "abc", "ac", "g", "acg", {}};
@@ -997,20 +1067,20 @@ BOOST_AUTO_TEST_CASE(includes_test_custom_compare)
     }
 }
 
-BOOST_AUTO_TEST_CASE(merge_test)
+BOOST_AUTO_TEST_CASE(set_union_test)
 {
-    std::vector<int> const v1{1,2,3,4,5,6,7,8};
-    std::vector<int> const v2{        5,  7,  9,10};
+    std::vector<int> v1 = {1, 2, 3, 4, 5};
+    std::vector<int> v2 = {      3, 4, 5, 6, 7};
 
-    std::vector<int> std_merge;
-    std::merge(v1.begin(), v1.end(), v2.begin(), v2.end(),
-               std::back_inserter(std_merge));
+    std::vector<long> r_std;
+    std::set_union(v1.begin(), v1.end(), v2.begin(), v2.end(),
+                   std::back_inserter(r_std));
 
-    std::vector<int> ural_merge;
-    ural::copy(ural::merge(v1, v2), std::back_inserter(ural_merge));
+    std::vector<int> r_ural;
+    ural::copy(ural::set_union(v1, v2), std::back_inserter(r_ural));
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(std_merge.begin(), std_merge.end(),
-                                  ural_merge.begin(), ural_merge.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
+                                  r_ural.begin(), r_ural.end());
 }
 
 BOOST_AUTO_TEST_CASE(set_intersection_test)
@@ -1065,23 +1135,21 @@ BOOST_AUTO_TEST_CASE(set_symmetric_difference_test)
                                   ural_intersection.begin(), ural_intersection.end());
 }
 
-BOOST_AUTO_TEST_CASE(set_union_test)
+// 25.4.6 Операции с бинарными кучами
+BOOST_AUTO_TEST_CASE(push_heap_test)
 {
-    std::vector<int> v1 = {1, 2, 3, 4, 5};
-    std::vector<int> v2 = {      3, 4, 5, 6, 7};
+    std::vector<int> v { 3, 1, 4, 1, 5, 9 };
 
-    std::vector<long> r_std;
-    std::set_union(v1.begin(), v1.end(), v2.begin(), v2.end(),
-                   std::back_inserter(r_std));
-
-    std::vector<int> r_ural;
-    ural::copy(ural::set_union(v1, v2), std::back_inserter(r_ural));
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
-                                  r_ural.begin(), r_ural.end());
+    for(size_t i = 0; i != v.size(); ++ i)
+    {
+        BOOST_CHECK(std::is_heap(v.begin(), v.begin() + i));
+        ural::push_heap(ural::make_iterator_sequence(v.begin(), v.begin()+i+1));
+    }
+    BOOST_CHECK(std::is_heap(v.begin(), v.end()));
 }
 
-// Операции с бинарными кучами
+// @todo тест pop_heap
+
 BOOST_AUTO_TEST_CASE(make_heap_test)
 {
     std::vector<int> v { 3, 1, 4, 1, 5, 9 };
@@ -1120,18 +1188,6 @@ BOOST_AUTO_TEST_CASE(sort_heap_test)
     BOOST_CHECK(std::is_sorted(v.begin(), v.end()));
 }
 
-BOOST_AUTO_TEST_CASE(push_heap_test)
-{
-    std::vector<int> v { 3, 1, 4, 1, 5, 9 };
-
-    for(size_t i = 0; i != v.size(); ++ i)
-    {
-        BOOST_CHECK(std::is_heap(v.begin(), v.begin() + i));
-        ural::push_heap(ural::make_iterator_sequence(v.begin(), v.begin()+i+1));
-    }
-    BOOST_CHECK(std::is_heap(v.begin(), v.end()));
-}
-
 BOOST_AUTO_TEST_CASE(is_heap_test)
 {
     std::vector<int> v {3, 1, 4, 1, 5, 9};
@@ -1151,7 +1207,9 @@ BOOST_AUTO_TEST_CASE(is_heap_test_all_permutations)
     while(std::next_permutation(v.begin(), v.end()));
 }
 
-// Минимум и максимум
+// 25.4.7 Минимум и максимум
+// @todo min, max, minmax
+
 BOOST_AUTO_TEST_CASE(min_element_test)
 {
     std::vector<int> const v{3, 1, 4, 1, 5, 9, 2, 6, 5};
@@ -1199,6 +1257,7 @@ BOOST_AUTO_TEST_CASE(minmax_element_test)
                       ural_result[ural::_2].size());
 }
 
+// 25.4.8 Лексикографическое сравнение
 BOOST_AUTO_TEST_CASE(lexicographical_compare_test)
 {
     BOOST_CHECK_EQUAL(false, ural::lexicographical_compare("", ""));
@@ -1210,22 +1269,7 @@ BOOST_AUTO_TEST_CASE(lexicographical_compare_test)
     BOOST_CHECK_EQUAL(false, ural::lexicographical_compare("abed", "abcd"));
 }
 
-BOOST_AUTO_TEST_CASE(is_permutation_test)
-{
-    std::vector<int> const v1{1,2,3,4,5};
-    std::list<int> const v2{3,5,4,1,2};
-    std::forward_list<int> const v3{3,5,4,1,1};
-
-    BOOST_CHECK(ural::is_permutation(v1, v2));
-    BOOST_CHECK(ural::is_permutation(v2, v1));
-
-    BOOST_CHECK(!ural::is_permutation(v1, v3));
-    BOOST_CHECK(!ural::is_permutation(v3, v1));
-    BOOST_CHECK(!ural::is_permutation(v2, v3));
-
-    BOOST_CHECK(!ural::is_permutation(v3, v2));
-}
-
+// 25.4.9 Порождение перестановок
 BOOST_AUTO_TEST_CASE(next_permutation_test)
 {
     typedef std::string String;
@@ -1250,7 +1294,6 @@ BOOST_AUTO_TEST_CASE(next_permutation_test)
                                   r_ural.begin(), r_ural.end());
 }
 
-// @todo Аналог prev_permutation
 BOOST_AUTO_TEST_CASE(prev_permutation_test)
 {
     typedef std::string String;
