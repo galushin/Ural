@@ -362,8 +362,40 @@ BOOST_AUTO_TEST_CASE(transform_test)
                                   x_ural.begin(), x_ural.end());
 }
 
-// @todo Аналог generate
-// @todo Аналог generate_n
+BOOST_AUTO_TEST_CASE(generate_test)
+{
+    std::vector<int> r_std(5);
+    auto r_ural = r_std;
+
+    auto counter = int{0};
+    auto gen = [&]{ return counter++; };
+    std::generate(r_std.begin(), r_std.end(), gen);
+
+    counter = 0;
+    ural::copy(ural::make_generator_sequence(gen), r_ural);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
+                                  r_ural.begin(), r_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(generate_n_test)
+{
+    auto const n = int{5};
+
+    std::vector<int> r_std;
+    auto r_ural = r_std;
+
+    auto counter = int{0};
+    auto gen = [&]{ return counter++; };
+    std::generate_n(r_std | ural::back_inserter, n, gen);
+
+    counter = 0;
+    ural::copy(ural::make_generator_sequence(gen) | ural::taken(n),
+               r_ural | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
+                                  r_ural.begin(), r_ural.end());
+}
 
 // @todo Аналог remove
 // @todo Аналог remove_if
@@ -386,6 +418,7 @@ BOOST_AUTO_TEST_CASE(remove_sequence_test)
 }
 
 // @todo Аналог remove_copy_if
+
 BOOST_AUTO_TEST_CASE(remove_if_sequence_test)
 {
     std::string s_std = "Text\n with\tsome \t  whitespaces\n\n";
@@ -911,7 +944,6 @@ BOOST_AUTO_TEST_CASE(binary_search_test)
     }
 }
 
-// @todo Аналог equal_range
 BOOST_AUTO_TEST_CASE(equal_range_test)
 {
     auto const src = []()

@@ -51,11 +51,30 @@ namespace concepts
     };
 
     template <class Seq>
+    class BidirectionalSequence
+     : ForwardSequence<Seq>
+    {
+    public:
+        BOOST_CONCEPT_USAGE(BidirectionalSequence)
+        {
+            seq.pop_back();
+            // @todo Что с back
+        }
+
+    private:
+        static Seq seq;
+    };
+
+    template <class Seq>
     class RandomAccessSequence
      : ForwardSequence<Seq>
     {
     public:
+        BOOST_CONCEPT_USAGE(RandomAccessSequence)
+        {}
+
     private:
+        static Seq seq;
     };
 
     /** @brief Концепция последовательности, допускающей чтение

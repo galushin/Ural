@@ -15,6 +15,10 @@ namespace details
     ForwardSequence
     is_sorted_until(ForwardSequence in, Compare cmp)
     {
+        BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<decltype(in)>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<decltype(in)>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*in), decltype(*in))>));
+
         if(!in)
         {
             return in;
@@ -38,6 +42,10 @@ namespace details
     template <class ForwardSequence, class Compare>
     bool is_sorted(ForwardSequence in, Compare cmp)
     {
+        BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<decltype(in)>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<decltype(in)>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*in), decltype(*in))>));
+
         return !::ural::details::is_sorted_until(std::move(in), std::move(cmp));
     }
 
@@ -56,6 +64,10 @@ namespace details
     typename Input::distance_type
     count_if(Input in, UnaryPredicate pred)
     {
+        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<UnaryPredicate, bool(decltype(*in))>));
+
         typename Input::distance_type result{0};
 
         for(; !!in; ++ in)
@@ -73,6 +85,11 @@ namespace details
     typename Input::distance_type
     count(Input in, T const & value, BinaryPredicate pred)
     {
+        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate,
+                                                       bool(decltype(*in), T const &)>));
+
         return ::ural::details::count_if(std::move(in),
                                          std::bind(ural::make_functor(std::move(pred)),
                                                    std::placeholders::_1,
@@ -82,6 +99,10 @@ namespace details
     template <class Input, class Predicate>
     Input find_if(Input in, Predicate pred)
     {
+        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Predicate, bool(decltype(*in))>));
+
         for(; !!in; ++ in)
         {
             if(pred(*in))
@@ -96,6 +117,11 @@ namespace details
     template <class Input, class T, class BinaryPredicate>
     Input find(Input in, T const & value, BinaryPredicate bin_pred)
     {
+        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate,
+                                                       bool(decltype(*in), T const &)>));
+
         auto pred = std::bind(std::move(bin_pred), std::placeholders::_1,
                               std::cref(value));
         return ::ural::details::find_if(std::move(in), std::move(pred));
@@ -104,12 +130,25 @@ namespace details
     template <class Input, class Predicate>
     Input find_if_not(Input in, Predicate pred)
     {
+        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Predicate, bool(decltype(*in))>));
+
         return ::ural::details::find_if(std::move(in), ural::not_fn(std::move(pred)));
     }
 
     template<class Forward1, class Forward2, class BinaryPredicate>
     Forward1 search(Forward1 in, Forward2 s, BinaryPredicate p)
     {
+        BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<Forward1>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Forward1>));
+
+        BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<Forward2>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Forward2>));
+
+        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate,
+                                                       bool(decltype(*in), decltype(*s))>));
+
         for(;; ++ in)
         {
             auto i = in;
@@ -177,6 +216,14 @@ namespace details
     template <class Forward1, class Forward2, class BinaryPredicate>
     Forward1 find_end(Forward1 in, Forward2 s, BinaryPredicate bin_pred)
     {
+        BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<Forward1>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Forward1>));
+
+        BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<Forward2>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Forward2>));
+
+        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate,
+                                                       bool(decltype(*in), decltype(*s))>));
         if(!s)
         {
             return in;
@@ -243,6 +290,13 @@ namespace details
     template <class Input1, class Input2, class BinaryPredicate>
     bool equal(Input1 in1, Input2 in2, BinaryPredicate pred)
     {
+        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input1>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input1>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input2>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input2>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate,
+                                                       bool(decltype(*in1), decltype(*in2))>));
+
         auto const r = ural::details::mismatch(std::move(in1), std::move(in2),
                                                std::move(pred));
         return !r[ural::_1] && !r[ural::_2];
@@ -784,6 +838,12 @@ namespace details
     template <class Input1, class  Input2, class Compare>
     bool lexicographical_compare(Input1 in1, Input2 in2, Compare cmp)
     {
+        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input1>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input1>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input2>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input2>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*in1), decltype(*in2))>));
+
         for(; !!in1 && !!in2; ++ in1, ++ in2)
         {
             if(cmp(*in1, *in2))

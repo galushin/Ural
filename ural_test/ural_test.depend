@@ -356,7 +356,7 @@
 	<type_traits>
 	<ostream>
 
-1390870496 c:\devtools\ural_repo\ural\ural\concepts.hpp
+1391051350 c:\devtools\ural_repo\ural\ural\concepts.hpp
 	<boost/concept/usage.hpp>
 
 1385361525 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
@@ -412,7 +412,7 @@
 
 1384408805 c:\devtools\ural_repo\ural\ural\thread.hpp
 
-1391042559 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
+1391050466 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
 	<ural/sequence/function_output.hpp>
 	<ural/sequence/generator.hpp>
 	<ural/algorithm/details/copy.hpp>
@@ -421,7 +421,7 @@
 1390967638 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
 	<ural/sequence/base.hpp>
 
-1391041693 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
+1391049368 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<boost/mpl/list.hpp>
 	<ural/algorithm.hpp>
@@ -523,7 +523,7 @@
 
 1390967406 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
 
-1390967959 c:\devtools\ural_repo\ural\ural\sequence\taken.hpp
+1391049251 c:\devtools\ural_repo\ural\ural\sequence\taken.hpp
 
 1390968004 c:\devtools\ural_repo\ural\ural\sequence\uniqued.hpp
 	<ural/algorithm/details/algo_base.hpp>

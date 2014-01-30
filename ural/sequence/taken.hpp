@@ -18,6 +18,7 @@ namespace ural
     public:
         // Типы
         typedef typename Sequence::reference reference;
+        typedef typename Sequence::value_type value_type;
 
         // Создание, копирование
         explicit take_sequence(Sequence seq, Size count)
