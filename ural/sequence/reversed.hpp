@@ -39,6 +39,12 @@ namespace ural
             return base_.pop_back();
         }
 
+        // Прямая многопроходная последовательность
+        reverse_sequence traversed_front() const
+        {
+            return reverse_sequence{this->base().traversed_back()};
+        }
+
         // Двусторонняя последовательность
         reference back() const
         {

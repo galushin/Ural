@@ -555,7 +555,7 @@ namespace ural
     -> decltype(sequence(std::forward<ForwardSequence>(in)))
     {
         return ::ural::details::min_element(sequence(std::forward<ForwardSequence>(in)),
-                                            std::move(cmp));
+                                            ural::make_functor(std::move(cmp)));
     }
 
     template <class ForwardSequence>
@@ -571,7 +571,7 @@ namespace ural
     -> decltype(sequence(std::forward<ForwardSequence>(in)))
     {
         return ::ural::details::max_element(sequence(std::forward<ForwardSequence>(in)),
-                                            std::move(cmp));
+                                            ural::make_functor(std::move(cmp)));
     }
 
     template <class ForwardSequence>
@@ -588,7 +588,7 @@ namespace ural
                    decltype(sequence(std::forward<ForwardSequence>(in)))>
     {
         return ::ural::details::minmax_element(sequence(std::forward<ForwardSequence>(in)),
-                                               std::move(cmp));
+                                               ural::make_functor(std::move(cmp)));
     }
 
     template <class ForwardSequence>
@@ -598,6 +598,20 @@ namespace ural
     {
         return ::ural::minmax_element(sequence(std::forward<ForwardSequence>(in)),
                                       ural::less<>{});
+    }
+
+    template <class BiSequence, class Compare>
+    bool next_permutation(BiSequence && s, Compare cmp)
+    {
+        return ::ural::details::next_permutation(sequence(std::forward<BiSequence>(s)),
+                                                 ural::make_functor(std::move(cmp)));
+
+    }
+
+    template <class BiSequence>
+    bool next_permutation(BiSequence && s)
+    {
+        return ural::next_permutation(std::forward<BiSequence>(s), ural::less<>{});
     }
 }
 // namespace ural

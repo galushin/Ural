@@ -1019,6 +1019,46 @@ namespace details
         }
         return true;
     }
+
+    template <class BiSequence, class Compare>
+    bool next_permutation(BiSequence s, Compare cmp)
+    {
+        if(!s)
+        {
+            return false;
+        }
+
+        auto s1 = s;
+        ++ s1;
+
+        if(!s1)
+        {
+            return false;
+        }
+
+        auto r = ::ural::details::is_sorted_until(s | ural::reversed, cmp);
+
+        if(!r)
+        {
+            ::ural::details::reverse(std::move(s));
+            return false;
+        }
+        else
+        {
+            auto r1 = r;
+            auto r2 = s | ural::reversed;
+
+            for(; cmp(*r2, *r1); ++r2)
+            {}
+
+            using std::swap;
+            // @todo using ural::swap;
+            swap(*r1, *r2);
+            ural::details::reverse(r1.traversed_front().base());
+
+            return true;
+        }
+    }
 }
 // namespace details
 }

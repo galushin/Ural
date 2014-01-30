@@ -841,7 +841,7 @@ BOOST_AUTO_TEST_CASE(is_sorted_test)
 
 BOOST_AUTO_TEST_CASE(is_sorted_until_test)
 {
-    std::vector<int> nums = {1, 1, 3, 4, 5, 9};
+    std::vector<int> nums = {1, 3, 4, 5, 9};
 
     do
     {
@@ -1227,4 +1227,27 @@ BOOST_AUTO_TEST_CASE(is_permutation_test)
 }
 
 // @todo Аналог next_permutation
+BOOST_AUTO_TEST_CASE(next_permutation_test)
+{
+    typedef std::string String;
+    String x {"12345"};
+    std::vector<String> r_std;
+
+    do
+    {
+        r_std.push_back(x);
+    }
+    while(std::next_permutation(x.begin(), x.end()));
+
+    std::vector<String> r_ural;
+
+    do
+    {
+        r_ural.push_back(x);
+    }
+    while(ural::next_permutation(x));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
+                                  r_ural.begin(), r_ural.end());
+}
 // @todo Аналог prev_permutation
