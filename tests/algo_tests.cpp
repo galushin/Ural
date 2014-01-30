@@ -1226,11 +1226,10 @@ BOOST_AUTO_TEST_CASE(is_permutation_test)
     BOOST_CHECK(!ural::is_permutation(v3, v2));
 }
 
-// @todo Аналог next_permutation
 BOOST_AUTO_TEST_CASE(next_permutation_test)
 {
     typedef std::string String;
-    String x {"12345"};
+    String x {"1234"};
     std::vector<String> r_std;
 
     do
@@ -1250,4 +1249,28 @@ BOOST_AUTO_TEST_CASE(next_permutation_test)
     BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
                                   r_ural.begin(), r_ural.end());
 }
+
 // @todo Аналог prev_permutation
+BOOST_AUTO_TEST_CASE(prev_permutation_test)
+{
+    typedef std::string String;
+    String x {"4321"};
+    std::vector<String> r_std;
+
+    do
+    {
+        r_std.push_back(x);
+    }
+    while(std::prev_permutation(x.begin(), x.end()));
+
+    std::vector<String> r_ural;
+
+    do
+    {
+        r_ural.push_back(x);
+    }
+    while(ural::prev_permutation(x));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
+                                  r_ural.begin(), r_ural.end());
+}

@@ -613,6 +613,20 @@ namespace ural
     {
         return ural::next_permutation(std::forward<BiSequence>(s), ural::less<>{});
     }
+
+    template <class BiSequence, class Compare>
+    bool prev_permutation(BiSequence && s, Compare cmp)
+    {
+        return ::ural::details::prev_permutation(sequence(std::forward<BiSequence>(s)),
+                                                 ural::make_functor(std::move(cmp)));
+
+    }
+
+    template <class BiSequence>
+    bool prev_permutation(BiSequence && s)
+    {
+        return ural::prev_permutation(std::forward<BiSequence>(s), ural::less<>{});
+    }
 }
 // namespace ural
 

@@ -1059,6 +1059,12 @@ namespace details
             return true;
         }
     }
+
+    template <class BiSequence, class Compare>
+    bool prev_permutation(BiSequence s, Compare cmp)
+    {
+        return ::ural::details::next_permutation(std::move(s), ::ural::not_fn(std::move(cmp)));
+    }
 }
 // namespace details
 }
