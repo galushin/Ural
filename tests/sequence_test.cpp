@@ -2,6 +2,7 @@
 
 #include <iterator>
 
+#include <ural/abi.hpp>
 #include <ural/algorithm.hpp>
 #include <ural/sequence/all.hpp>
 
@@ -43,4 +44,14 @@ BOOST_AUTO_TEST_CASE(ostream_sequence_test_auto)
 
     std::copy(xs.begin(), xs.end(), std::ostream_iterator<int>(os_std, " "));
     ural::copy(xs, ural::make_ostream_sequence(os_ural));
+}
+
+BOOST_AUTO_TEST_CASE(reversed_reversed_test)
+{
+    std::vector<int> const xs = {1, 2, 3, 4, 5};
+    auto s = ural::sequence(xs);
+    auto rr = s | ural::reversed | ural::reversed;
+
+    BOOST_CHECK_EQUAL(ural::abi::demangle_name(typeid(s).name()),
+                      ural::abi::demangle_name(typeid(rr).name()));
 }

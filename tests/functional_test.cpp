@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(replace_functor_test_custom_predicate)
     No_equal_op const new_value = {1};
     No_equal_op const other_value = {42};
 
-    auto const eq = [](No_equal_op const & x, No_equal_op const & y)
+    auto const eq = +[](No_equal_op const & x, No_equal_op const & y)
                     { return x.value == y.value; };
 
     BOOST_CHECK(!eq(other_value, old_value));
@@ -64,7 +64,8 @@ BOOST_AUTO_TEST_CASE(replace_functor_test_custom_predicate)
 
     BOOST_CHECK(eq(old_value, f.old_value()));
     BOOST_CHECK(eq(new_value, f.new_value()));
-    // @todo Проверить предикат
+
+    BOOST_CHECK_EQUAL(eq, f.predicate());
 
     BOOST_CHECK(eq(new_value, f(old_value)));
     BOOST_CHECK(eq(new_value, f(new_value)));

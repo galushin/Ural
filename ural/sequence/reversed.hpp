@@ -4,7 +4,6 @@
 /** @file ural/sequence/reversed.hpp
  @brief Адаптер последовательности, проходящий элементы исходной последовательности
  в обратном порядке.
- @todo seq | reversed | reversed == seq
 */
 
 namespace ural
@@ -76,9 +75,18 @@ namespace ural
         return Seq{sequence(std::forward<BidirectionalSequence>(seq))};
     }
 
+    /**
+    @todo Оптимизация
+    */
+    template <class Sequence>
+    Sequence make_reverse_sequence(reverse_sequence<Sequence> seq)
+    {
+        return seq.base();
+    }
+
     template <class BidirectionalSequence>
     auto operator|(BidirectionalSequence && seq, reversed_helper)
-    -> reverse_sequence<decltype(sequence(std::forward<BidirectionalSequence>(seq)))>
+    -> decltype(make_reverse_sequence(std::forward<BidirectionalSequence>(seq)))
     {
         return ural::make_reverse_sequence(std::forward<BidirectionalSequence>(seq));
     }
