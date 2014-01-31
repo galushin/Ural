@@ -652,7 +652,18 @@ BOOST_AUTO_TEST_CASE(rotate_copy_test)
 }
 
 // 25.3.12
-// @todo Аналог random_shuffle
+BOOST_AUTO_TEST_CASE(random_shuffle_test)
+{
+    std::vector<int> const src = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    auto x = src;
+
+    ural::random_shuffle(x);
+
+    BOOST_CHECK(ural::is_permutation(x, src));
+
+    // @todo Тест случайности
+}
+
 // @todo Аналог shuffle
 
 // 25.3.13 Разделение

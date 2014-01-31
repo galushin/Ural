@@ -5,6 +5,8 @@
  @brief Определения основных типов, используемых библиотекой
 */
 
+#define URAL_PREVENT_MACRO_SUBSTITUTION
+
 namespace ural
 {
     struct empty_type{};

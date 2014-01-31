@@ -6,6 +6,7 @@
 */
 
 #include <ural/functional.hpp>
+#include <ural/random.hpp>
 #include <ural/sequence/all.hpp>
 
 #include <ural/algorithm/details/copy.hpp>
@@ -268,6 +269,21 @@ namespace ural
         auto s_out = sequence(std::forward<Output>(out));
         std::tie(std::ignore, s_out) = ::ural::copy(ural::shrink_front(s_in), s_out);
         return ural::copy(s_in.traversed_front(), s_out);
+    }
+
+    // Тусовка
+    template <class RASequence, class URNG>
+    void shuffle(RASequence && s, URNG && g)
+    {
+        return ::ural::details::shuffle(sequence(std::forward<RASequence>(s)),
+                                        std::forward<URNG>(g));
+    }
+
+    template <class RASequence>
+    void random_shuffle(RASequence && s)
+    {
+        ural::c_rand_engine rnd;
+        return ::ural::shuffle(std::forward<RASequence>(s), rnd);
     }
 
     // Разделение

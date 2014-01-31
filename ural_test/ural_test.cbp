@@ -73,6 +73,7 @@
 		<Unit filename="../ural/numeric/partial_sums.hpp" />
 		<Unit filename="../ural/optional.hpp" />
 		<Unit filename="../ural/placeholders.hpp" />
+		<Unit filename="../ural/random.hpp" />
 		<Unit filename="../ural/sequence/all.hpp" />
 		<Unit filename="../ural/sequence/base.hpp">
 			<Option target="Debug" />

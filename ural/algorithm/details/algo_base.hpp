@@ -406,6 +406,25 @@ namespace details
         return r[ural::_1];
     }
 
+    template <class RASequence, class URNG>
+    void shuffle(RASequence s, URNG && g)
+    {
+        if(!s)
+        {
+            return;
+        }
+
+        for(; !!s; s.pop_back())
+        {
+            std::uniform_int_distribution<decltype(s.size())>
+                d(0, s.size() - 1);
+            auto index = d(g);
+            using std::swap;
+            // @todo using std::swap;
+            swap(s[index], s.back());
+        }
+    }
+
     // Заполнение и генерация
     template <class ForwardSequence, class Generator>
     ForwardSequence generate(ForwardSequence seq, Generator gen)
