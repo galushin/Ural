@@ -888,8 +888,6 @@ BOOST_AUTO_TEST_CASE(partition_point_test)
 
 // 25.4 Сортировка и связанные с ней операции
 // 25.4.1 Сортировка
-
-// @todo Аналог sort
 BOOST_AUTO_TEST_CASE(sort_test)
 {
     std::vector<int> x_std = {5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
@@ -903,6 +901,45 @@ BOOST_AUTO_TEST_CASE(sort_test)
 }
 
 // @todo Аналог stable_sort
+namespace
+{
+    struct Double_compared_by_integral_part
+    {
+        double value;
+
+        Double_compared_by_integral_part(double x)
+         : value{x}
+        {}
+
+        bool operator<(Double_compared_by_integral_part const & that) const
+        {
+            return int(this->value) < int(that.value);
+        }
+
+        bool operator!=(Double_compared_by_integral_part const & that) const
+        {
+            return this->value != that.value;
+        }
+
+    friend std::ostream & operator<<(std::ostream & os, Double_compared_by_integral_part x)
+    {
+        return os << x.value;
+    }
+    };
+}
+
+BOOST_AUTO_TEST_CASE(stable_sort_test)
+{
+    std::vector<Double_compared_by_integral_part> x_std
+        = {3.14, 1.41, 2.72, 4.67, 1.73, 1.32, 1.62, 2.58};
+    auto x_ural = x_std;
+
+    std::stable_sort(x_std.begin(), x_std.end());
+    ural::stable_sort(x_ural);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
 
 BOOST_AUTO_TEST_CASE(partial_sort_test)
 {

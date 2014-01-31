@@ -81,6 +81,12 @@ namespace details
         return ::ural::details::insertion_sort(std::move(s), std::move(cmp));
     }
 
+    template <class RASequence, class Compare>
+    void stable_sort(RASequence s, Compare cmp)
+    {
+        return ::ural::details::insertion_sort(std::move(s), std::move(cmp));
+    }
+
     template <class Input, class UnaryFunction>
     UnaryFunction for_each(Input in, UnaryFunction f)
     {
