@@ -49,6 +49,38 @@ namespace details
         return !::ural::details::is_sorted_until(std::move(in), std::move(cmp));
     }
 
+    template <class RASequence, class Compare>
+    void insertion_sort(RASequence s, Compare cmp)
+    {
+        if(!s)
+        {
+            return;
+        }
+
+        typedef decltype(s.size()) Index;
+
+        for(Index i = 1; i != s.size(); ++ i)
+        for(Index j = i; j > 0; -- j)
+        {
+            if(cmp(s[j], s[j-1]))
+            {
+                using std::swap;
+                // @todo using ural::swap;
+                swap(s[j], s[j-1]);
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+
+    template <class RASequence, class Compare>
+    void sort(RASequence s, Compare cmp)
+    {
+        return ::ural::details::insertion_sort(std::move(s), std::move(cmp));
+    }
+
     template <class Input, class UnaryFunction>
     UnaryFunction for_each(Input in, UnaryFunction f)
     {

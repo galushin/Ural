@@ -482,6 +482,19 @@ namespace ural
                                        ural::less<>{});
     }
 
+    template <class RASequence, class Compare>
+    void sort(RASequence && s, Compare cmp)
+    {
+        return ::ural::details::sort(sequence(std::forward<RASequence>(s)),
+                                     ural::make_functor(std::move(cmp)));
+    }
+
+    template <class RASequence>
+    void sort(RASequence && s)
+    {
+        return ::ural::sort(std::forward<RASequence>(s), ural::less<>{});
+    }
+
     template <class RASequence, class Size, class Compare>
     void partial_sort(RASequence && s, Size part, Compare cmp)
     {

@@ -888,7 +888,20 @@ BOOST_AUTO_TEST_CASE(partition_point_test)
 
 // 25.4 Сортировка и связанные с ней операции
 // 25.4.1 Сортировка
+
 // @todo Аналог sort
+BOOST_AUTO_TEST_CASE(sort_test)
+{
+    std::vector<int> x_std = {5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
+    auto x_ural = x_std;
+
+    std::sort(x_std.begin(), x_std.end());
+    ural::sort(x_ural);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
+
 // @todo Аналог stable_sort
 
 BOOST_AUTO_TEST_CASE(partial_sort_test)
