@@ -900,7 +900,6 @@ BOOST_AUTO_TEST_CASE(sort_test)
                                   x_ural.begin(), x_ural.end());
 }
 
-// @todo Аналог stable_sort
 namespace
 {
     struct Double_compared_by_integral_part
