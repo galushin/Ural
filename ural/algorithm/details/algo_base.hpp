@@ -704,7 +704,6 @@ namespace details
         auto n11 = ural::size(s1_cut.traversed_front());
         auto n12 = ural::size(s1_cut);
         auto n21 = ural::size(s2_cut.traversed_front());
-        auto n22 = ural::size(s2_cut);
 
         ural::advance(s_new, n11 + n21);
 

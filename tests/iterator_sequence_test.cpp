@@ -1,5 +1,9 @@
 #include <boost/test/unit_test.hpp>
 
+#include <forward_list>
+#include <list>
+#include <vector>
+
 #include <boost/concept/assert.hpp>
 
 #include <ural/algorithm.hpp>
@@ -65,4 +69,20 @@ BOOST_AUTO_TEST_CASE(plus_assign_test)
 
     BOOST_CHECK_EQUAL(n, s.traversed_front().size());
     BOOST_CHECK_EQUAL(n, ural::size(s.traversed_front()));
+}
+
+BOOST_AUTO_TEST_CASE(iterator_sequence_size_test)
+{
+    // @todo Добавить проверку для итератора ввода
+    std::forward_list<int> fwd;
+    std::list<int> bi;
+    std::vector<int> ra;
+
+    auto s_fwd = ::ural::sequence(fwd);
+    auto s_bi = ::ural::sequence(bi);
+    auto s_ra = ::ural::sequence(ra);
+
+    BOOST_CHECK_EQUAL(3*sizeof(fwd.begin()), sizeof(s_fwd));
+    BOOST_CHECK_EQUAL(5*sizeof(bi.begin()), sizeof(s_bi));
+    BOOST_CHECK_EQUAL(5*sizeof(ra.begin()), sizeof(s_ra));
 }

@@ -45,6 +45,74 @@ namespace ural
         }
     };
 
+    template <class Iterator, bool is_forward>
+    class iterator_sequence_base;
+
+    template <class Iterator>
+    class iterator_sequence_base<Iterator, true>
+    {
+    public:
+        explicit iterator_sequence_base(Iterator first, Iterator last)
+         : data_{first, first, last}
+        {}
+
+        template <size_t index>
+        Iterator & operator[](placeholder<index> p)
+        {
+            return data_[p];
+        }
+
+        template <size_t index>
+        Iterator const & operator[](placeholder<index> p) const
+        {
+            return data_[p];
+        }
+
+        Iterator const & traversed_end() const
+        {
+            // @todo Сделать более устойчивым к модификациям
+            return data_[ural::_3];
+        }
+
+    private:
+        ural::tuple<Iterator, Iterator, Iterator> data_;
+    };
+
+    template <class Iterator>
+    class iterator_sequence_base<Iterator, false>
+    {
+    public:
+        explicit iterator_sequence_base(Iterator first, Iterator last)
+         : data_{first, first, last, last, last}
+        {
+            if(first != last)
+            {
+                -- data_[ural::_4];
+            }
+        }
+
+        template <size_t index>
+        Iterator & operator[](placeholder<index> p)
+        {
+            return data_[p];
+        }
+
+        template <size_t index>
+        Iterator const & operator[](placeholder<index> p) const
+        {
+            return data_[p];
+        }
+
+        Iterator const & traversed_end() const
+        {
+            // @todo Сделать более устойчивым к модификациям
+            return data_[ural::_5];
+        }
+
+    private:
+        ural::tuple<Iterator, Iterator, Iterator, Iterator, Iterator> data_;
+    };
+
     /** @brief Последовательность на основе пары итераторов
     @tparam Iterator тип итератора
     @tparam Policy тип политики обработки ошибок
@@ -53,20 +121,6 @@ namespace ural
     class iterator_sequence
      : public sequence_base<iterator_sequence<Iterator, Policy>>
     {
-        static void decrement_if_bidirectional(Iterator & s)
-        {
-            typename std::iterator_traits<Iterator>::iterator_category helper{};
-            return decrement_if_bidirectional(s, helper);
-        }
-
-        static void decrement_if_bidirectional(Iterator &, std::input_iterator_tag)
-        {}
-
-        static void decrement_if_bidirectional(Iterator & s, std::bidirectional_iterator_tag)
-        {
-            -- s;
-        }
-
     public:
         typedef Iterator iterator;
 
@@ -76,8 +130,12 @@ namespace ural
         /// @brief Тип значения
         typedef typename std::iterator_traits<Iterator>::value_type value_type;
 
+        /// @brief Тип расстояния
         typedef typename std::iterator_traits<Iterator>::difference_type
             distance_type;
+
+        typedef typename std::iterator_traits<Iterator>::iterator_category
+            iterator_category;
 
         /// @brief Тип политики обработки ошибок
         typedef Policy policy_type;
@@ -88,13 +146,8 @@ namespace ural
         @pre <tt> [first; last) </tt> должен быть допустимым интервалом
         */
         explicit iterator_sequence(Iterator first, Iterator last)
-         : iterators_{first, first, last, last, last}
-        {
-            if(first != last)
-            {
-                decrement_if_bidirectional(iterators_[back_index]);
-            }
-        }
+         : iterators_{std::move(first), std::move(last)}
+        {}
 
         /** @brief Проверка исчерпания последовательности
         @return @b true, если в последовательности больше нет элементов,
@@ -227,19 +280,20 @@ namespace ural
 
         iterator traversed_end() const
         {
-            return iterators_[end_index];
+            return iterators_.traversed_end();
         }
 
     private:
         static constexpr auto begin_index = ural::_1;
         static constexpr auto front_index = ural::_2;
-        static constexpr auto back_index = ural::_3;
-        static constexpr auto stop_index = ural::_4;
+        static constexpr auto stop_index = ural::_3;
+        static constexpr auto back_index = ural::_4;
         static constexpr auto end_index = ural::_5;
 
+
     private:
-        // @todo Настройка структуры в зависимости от категории
-        ural::tuple<Iterator, Iterator, Iterator, Iterator, Iterator> iterators_;
+        iterator_sequence_base<Iterator, std::is_same<iterator_category, std::forward_iterator_tag>::value>
+            iterators_;
     };
 
     template <class Iterator>

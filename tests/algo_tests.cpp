@@ -1,4 +1,9 @@
 #include <boost/test/unit_test.hpp>
+
+#include <forward_list>
+#include <list>
+#include <vector>
+
 #include <boost/mpl/list.hpp>
 
 #include <ural/algorithm.hpp>
@@ -7,10 +12,6 @@
 // @todo должны требоваться только <ural/algorithms.hpp>
 #include <ural/sequence/all.hpp>
 #include <ural/utility/tracers.hpp>
-
-#include <forward_list>
-#include <list>
-#include <vector>
 
 typedef boost::mpl::list<std::forward_list<int>,
                          std::list<int>,
@@ -574,6 +575,8 @@ BOOST_AUTO_TEST_CASE(reverse_test)
     std::reverse(x_std.begin(), x_std.end());
     ural::reverse(x_ural);
 
+    BOOST_CHECK(x_std == x_ural);
+
     BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
                                   x_ural.begin(), x_ural.end());
 }
@@ -1094,7 +1097,6 @@ BOOST_AUTO_TEST_CASE(merge_test)
                                   ural_merge.begin(), ural_merge.end());
 }
 
-// @todo inplace_merge
 BOOST_AUTO_TEST_CASE(inplace_merge_test_empty)
 {
     std::vector<int> x_std{};

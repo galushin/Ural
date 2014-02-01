@@ -12,11 +12,16 @@ namespace ural
 {
 namespace concepts
 {
+    template <class T>
+    class SemiRegular
+    {};
+
     /** @brief Концепция регулярного типа
     @tparam T тип, для которого проверяется концепция
     */
     template <class T>
     class Regular
+     : SemiRegular<T>
     {};
 
     /** @brief Концепция однопроходной последовательности
@@ -30,6 +35,7 @@ namespace concepts
         BOOST_CONCEPT_USAGE(SinglePassSequence)
         {
             !seq;
+            // @todo +seq <=> !!seq ?
             ++ seq;
             seq ++;
             seq.pop_front();
@@ -113,6 +119,7 @@ namespace concepts
         BOOST_CONCEPT_USAGE(WritableSequence)
         {
             *seq = make_value();
+            // @todo seq << make_value() ?
         }
 
     private:
