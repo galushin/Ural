@@ -650,6 +650,73 @@ namespace details
         return !!in && !cmp(value, *in);
     }
 
+    template <class BidirectionalSequence, class Compare>
+    void inplace_merge(BidirectionalSequence s, Compare cmp)
+    {
+        auto s1 = s.traversed_front();
+        auto s2 = ural::shrink_front(s);
+
+        // @todo Попытаться получить буфер
+        // @todo Оптимизация
+
+        auto n1 = ural::size(s1);
+        auto n2 = ural::size(s2);
+
+        if(!s1 || !s2)
+        {
+            return;
+        }
+
+        assert(::ural::details::is_sorted(s1, cmp));
+        assert(::ural::details::is_sorted(s2, cmp));
+
+        if(n1 + n2 == 2)
+        {
+            if(cmp(*s2, *s1))
+            {
+                using std::swap;
+                // @todo using ural::swap;
+                swap(*s1, *s2);
+            }
+            return;
+        }
+
+        auto s1_cut = s1;
+        auto s2_cut = s2;
+
+        if(n1 > n2)
+        {
+            auto n11 = n1 / 2;
+            s1_cut += n11;
+            s2_cut = ural::details::lower_bound(s2, *s1_cut, cmp);
+        }
+        else
+        {
+            auto n21 = n2 / 2;
+            s2_cut += n21;
+            s1_cut = ural::details::upper_bound(s1, *s2_cut, cmp);
+        }
+
+        ::ural::details::rotate(s1_cut, s2_cut.traversed_front());
+
+        auto s_new = s.original();
+
+        auto n11 = ural::size(s1_cut.traversed_front());
+        auto n12 = ural::size(s1_cut);
+        auto n21 = ural::size(s2_cut.traversed_front());
+        auto n22 = ural::size(s2_cut);
+
+        ural::advance(s_new, n11 + n21);
+
+        auto s1_new = s_new.traversed_front();
+        auto s2_new = ural::shrink_front(s_new);
+
+        ural::advance(s1_new, n11);
+        ural::advance(s2_new, n12);
+        ural::details::inplace_merge(s1_new, cmp);
+        ural::details::inplace_merge(s2_new, cmp);
+    }
+
     template <class RASequence, class T, class Compare>
     RASequence equal_range(RASequence in, T const & value, Compare cmp)
     {

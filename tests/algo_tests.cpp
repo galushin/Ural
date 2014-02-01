@@ -1095,6 +1095,124 @@ BOOST_AUTO_TEST_CASE(merge_test)
 }
 
 // @todo inplace_merge
+BOOST_AUTO_TEST_CASE(inplace_merge_test_empty)
+{
+    std::vector<int> x_std{};
+    auto x_ural = x_std;
+
+    auto pos = x_std.size() / 2;
+
+    std::inplace_merge(x_std.begin(), x_std.begin() + pos,
+                       x_std.end());
+    auto s = ::ural::sequence(x_ural);
+    s += pos;
+    ural::inplace_merge(s);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(inplace_merge_test_1)
+{
+    std::vector<int> x_std{1};
+    auto x_ural = x_std;
+
+    auto pos = x_std.size() / 2;
+
+    std::inplace_merge(x_std.begin(), x_std.begin() + pos,
+                       x_std.end());
+    auto s = ::ural::sequence(x_ural);
+    s += pos;
+    ural::inplace_merge(s);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(inplace_merge_test_1_2)
+{
+    std::vector<int> x_std{1, 2};
+    auto x_ural = x_std;
+
+    auto pos = x_std.size() / 2;
+
+    std::inplace_merge(x_std.begin(), x_std.begin() + pos,
+                       x_std.end());
+    auto s = ::ural::sequence(x_ural);
+    s += pos;
+    ural::inplace_merge(s);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(inplace_merge_test_2_1)
+{
+    std::vector<int> x_std{2, 1};
+    auto x_ural = x_std;
+
+    auto pos = x_std.size() / 2;
+
+    std::inplace_merge(x_std.begin(), x_std.begin() + pos,
+                       x_std.end());
+    auto s = ::ural::sequence(x_ural);
+    s += pos;
+    ural::inplace_merge(s);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(inplace_merge_test_2_1_3)
+{
+    std::vector<int> x_std{3, 1, 2};
+    auto x_ural = x_std;
+
+    auto pos = x_std.size() / 2;
+
+    std::inplace_merge(x_std.begin(), x_std.begin() + pos,
+                       x_std.end());
+    auto s = ::ural::sequence(x_ural);
+    s += pos;
+    ural::inplace_merge(s);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(inplace_merge_test_4)
+{
+    std::vector<int> x_std{1, 2, 0, 4};
+    auto x_ural = x_std;
+
+    auto pos = x_std.size() / 2;
+
+    std::inplace_merge(x_std.begin(), x_std.begin() + pos,
+                       x_std.end());
+    auto s = ::ural::sequence(x_ural);
+    s += pos;
+    ural::inplace_merge(s);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(inplace_merge_test_10)
+{
+    std::vector<int> x_std{1, 2, 3, 5, 8, 0, 4, 6, 7, 9};
+    auto x_ural = x_std;
+
+    auto pos = x_std.size() / 2;
+
+    std::inplace_merge(x_std.begin(), x_std.begin() + pos,
+                       x_std.end());
+    auto s = ::ural::sequence(x_ural);
+    s += pos;
+    ural::inplace_merge(s);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
 
 // 25.4.5 Операции со множествами на сортированных структурах
 BOOST_AUTO_TEST_CASE(includes_test)

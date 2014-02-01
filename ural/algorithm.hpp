@@ -541,6 +541,20 @@ namespace ural
                                          ural::less<>{});
     }
 
+    template <class BidirectionalSequence, class Compare>
+    void inplace_merge(BidirectionalSequence && s, Compare cmp)
+    {
+        return ::ural::details::inplace_merge(sequence(std::forward<BidirectionalSequence>(s)),
+                                              ural::make_functor(std::move(cmp)));
+    }
+
+    template <class BidirectionalSequence>
+    void inplace_merge(BidirectionalSequence && s)
+    {
+        return ::ural::inplace_merge(std::forward<BidirectionalSequence>(s),
+                                     ural::less<>{});
+    }
+
     template <class Input1, class  Input2, class Compare>
     bool lexicographical_compare(Input1 && in1, Input2 && in2, Compare cmp)
     {

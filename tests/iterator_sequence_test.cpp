@@ -55,3 +55,14 @@ BOOST_AUTO_TEST_CASE(c_array_to_sequence)
 
     BOOST_CHECK_EQUAL(sum_std, sum_ural);
 }
+
+BOOST_AUTO_TEST_CASE(plus_assign_test)
+{
+    std::vector<int> const xs = {1, 2, 3, 4};
+    auto s = ural::sequence(xs);
+    auto const n = 1;
+    s += n;
+
+    BOOST_CHECK_EQUAL(n, s.traversed_front().size());
+    BOOST_CHECK_EQUAL(n, ural::size(s.traversed_front()));
+}

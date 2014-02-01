@@ -143,6 +143,12 @@ namespace ural
             iterators_[begin_index] = iterators_[front_index];
         }
 
+        iterator_sequence original() const
+        {
+            return iterator_sequence(this->traversed_begin(),
+                                     this->traversed_end());
+        }
+
         // Двусторонняя последовательность
         void pop_back()
         {
