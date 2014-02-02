@@ -51,6 +51,7 @@
 		<Unit filename="../boost_1_54/libs/test/src/xml_report_formatter.cpp" />
 		<Unit filename="../roadmap.txt" />
 		<Unit filename="../tests/algo_tests.cpp" />
+		<Unit filename="../tests/concepts_checks.cpp" />
 		<Unit filename="../tests/functional_test.cpp" />
 		<Unit filename="../tests/iterator_sequence_test.cpp" />
 		<Unit filename="../tests/numeric_tests.cpp" />
@@ -61,10 +62,12 @@
 		<Unit filename="../ural/algorithm.hpp" />
 		<Unit filename="../ural/algorithm/details/algo_base.hpp" />
 		<Unit filename="../ural/algorithm/details/copy.hpp" />
+		<Unit filename="../ural/archetypes.hpp" />
 		<Unit filename="../ural/concepts.hpp" />
 		<Unit filename="../ural/defs.hpp" />
 		<Unit filename="../ural/functional.hpp" />
 		<Unit filename="../ural/functional/cpp_operators.hpp" />
+		<Unit filename="../ural/functional/make_functor.hpp" />
 		<Unit filename="../ural/functional/replace.hpp" />
 		<Unit filename="../ural/memory.hpp" />
 		<Unit filename="../ural/numeric.hpp" />

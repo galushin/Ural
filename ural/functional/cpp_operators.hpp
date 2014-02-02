@@ -151,9 +151,11 @@ namespace ural
 
     template <class T1 = void, class T2 = T1>
     class not_equal_to
+    // @todo Или использовать != ?
      : public not_functor<equal_to<T1, T2>>
     {};
 
+    // @todo Может быть проблема с указателями
     template <class T1 = void, class T2 = T1>
     class less
     {

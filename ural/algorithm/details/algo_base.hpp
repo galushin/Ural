@@ -458,7 +458,7 @@ namespace details
                 d(0, s.size() - 1);
             auto index = d(g);
             using std::swap;
-            // @todo using std::swap;
+            // @todo using ural::swap;
             swap(s[index], s.back());
         }
     }
