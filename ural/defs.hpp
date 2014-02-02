@@ -18,6 +18,19 @@ namespace ural
     struct default_helper
      : std::conditional<std::is_same<T, use_default>::value, Default, T>
     {};
+
+    template <class T>
+    constexpr typename std::enable_if<std::is_empty<T>::value, bool>::type
+    operator==(T const &, T const &)
+    {
+        return true;
+    }
+
+    template <class T1, class T2>
+    constexpr bool operator!=(T1 const & x, T2 const & y)
+    {
+        return !(x == y);
+    }
 }
 // namespace ural
 

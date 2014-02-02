@@ -118,3 +118,32 @@ BOOST_AUTO_TEST_CASE(not_equal_to_test)
     BOOST_CHECK_EQUAL(false, neq(2, 2));
     BOOST_CHECK_EQUAL(false, neq(1, 1));
 }
+
+// @todo Тест для tribool
+BOOST_AUTO_TEST_CASE(logical_not_test_bool)
+{
+    constexpr ural::logical_not<bool> not_;
+
+    static_assert(not_ == not_, "");
+    static_assert(!(not_ != not_), "");
+
+    static_assert(true == not_(false), "");
+    static_assert(false == not_(true), "");
+
+    BOOST_CHECK_EQUAL(true, not_(false));
+    BOOST_CHECK_EQUAL(false, not_(true));
+}
+
+BOOST_AUTO_TEST_CASE(logical_not_test_auto)
+{
+    constexpr ural::logical_not<> not_;
+
+    static_assert(not_ == not_, "");
+    static_assert(!(not_ != not_), "");
+
+    static_assert(true == not_(false), "");
+    static_assert(false == not_(true), "");
+
+    BOOST_CHECK_EQUAL(true, not_(false));
+    BOOST_CHECK_EQUAL(false, not_(true));
+}

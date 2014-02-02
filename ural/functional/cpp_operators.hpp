@@ -3,6 +3,7 @@
 
 /** @file ural/functional/cpp_operators.hpp
  @brief Функциональные объекты, аналогичные определённым в <functional>
+ @todo Оптимальные типы параметров
 */
 
 #include <ural/functional/make_functor.hpp>
@@ -21,13 +22,6 @@ namespace ural
     operator==(not_functor const & x, not_functor const & y)
     {
         return x.target() == y.target();
-    }
-
-    // @todo Автоматизировать создание таких функций
-    friend constexpr bool
-    operator!=(not_functor const & x, not_functor const & y)
-    {
-        return !(x == y);
     }
 
     public:
@@ -155,14 +149,6 @@ namespace ural
         }
     };
 
-    // @todo Синтез оператора "равно" для пустых классов
-    template <class T1, class T2>
-    constexpr bool
-    operator==(equal_to<T1, T2> const &, equal_to<T1, T2> const &)
-    {
-        return true;
-    }
-
     template <class T1 = void, class T2 = T1>
     class not_equal_to
      : public not_functor<equal_to<T1, T2>>
@@ -212,7 +198,29 @@ namespace ural
 
     // @todo logical_and
     // @todo logical_or
-    // @todo logical_not
+
+    template <class T = void>
+    class logical_not
+    {
+    public:
+        constexpr auto operator()(T const & x) const
+        -> decltype(!x)
+        {
+            return !x;
+        }
+    };
+
+    template <>
+    class logical_not<void>
+    {
+    public:
+        template <class T>
+        constexpr auto operator()(T const & x) const
+        -> decltype(!x)
+        {
+            return !x;
+        }
+    };
 
     // @todo bit_and
     // @todo bit_or
