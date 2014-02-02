@@ -99,3 +99,22 @@ BOOST_AUTO_TEST_CASE(compare_by_test_custom_compare)
         BOOST_CHECK_EQUAL(cmp1(a, b), cmp2(a, b));
     }
 }
+
+BOOST_AUTO_TEST_CASE(not_equal_to_test)
+{
+    // @todo Тесты с выводом типов аргументов и разными типами аргументов
+    constexpr ural::not_equal_to<int> neq {};
+
+    static_assert(neq == neq, "");
+    static_assert(!(neq != neq), "");
+
+    static_assert(true == neq(1, 2), "");
+    static_assert(true == neq(2, 1), "");
+    static_assert(false == neq(2, 2), "");
+    static_assert(false == neq(1, 1), "");
+
+    BOOST_CHECK_EQUAL(true, neq(1, 2));
+    BOOST_CHECK_EQUAL(true, neq(2, 1));
+    BOOST_CHECK_EQUAL(false, neq(2, 2));
+    BOOST_CHECK_EQUAL(false, neq(1, 1));
+}

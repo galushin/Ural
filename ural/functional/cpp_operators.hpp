@@ -5,8 +5,63 @@
  @brief Функциональные объекты, аналогичные определённым в <functional>
 */
 
+#include <ural/functional/make_functor.hpp>
+
 namespace ural
 {
+    // Негатор
+    /**
+    @todo Выразить через logical_not и combine
+    */
+    template <class Predicate>
+    class not_functor
+     : decltype(make_functor(std::declval<Predicate>()))
+    {
+    friend constexpr bool
+    operator==(not_functor const & x, not_functor const & y)
+    {
+        return x.target() == y.target();
+    }
+
+    // @todo Автоматизировать создание таких функций
+    friend constexpr bool
+    operator!=(not_functor const & x, not_functor const & y)
+    {
+        return !(x == y);
+    }
+
+    public:
+        typedef decltype(make_functor(std::declval<Predicate>())) target_type;
+
+        constexpr not_functor()
+         : target_type{}
+        {}
+
+        explicit not_functor(Predicate pred)
+         : target_type(std::move(pred))
+        {}
+
+        constexpr target_type const & target() const
+        {
+            return *this;
+        }
+
+        template <class... Args>
+        constexpr auto operator()(Args && ... args) const
+        -> decltype(!this->target()(std::forward<Args>(args)...))
+        {
+            return !this->target()(std::forward<Args>(args)...);
+        }
+    };
+
+    template <class Predicate>
+    auto not_fn(Predicate pred)
+    -> not_functor<decltype(make_functor(std::move(pred)))>
+    {
+        typedef not_functor<decltype(make_functor(std::move(pred)))> Functor;
+        return Functor{make_functor(std::move(pred))};
+    }
+
 // Функциональные объекты для операторов
     template <class T1 = void, class T2 = T1>
     class plus;
@@ -100,7 +155,18 @@ namespace ural
         }
     };
 
-    // @todo not_equal_to
+    // @todo Синтез оператора "равно" для пустых классов
+    template <class T1, class T2>
+    constexpr bool
+    operator==(equal_to<T1, T2> const &, equal_to<T1, T2> const &)
+    {
+        return true;
+    }
+
+    template <class T1 = void, class T2 = T1>
+    class not_equal_to
+     : public not_functor<equal_to<T1, T2>>
+    {};
 
     template <class T1 = void, class T2 = T1>
     class less
@@ -125,6 +191,7 @@ namespace ural
         }
     };
 
+    // @todo выразить через less и некоторые другие примитивы
     template <class T1 = void, class T2 = T1>
     class greater;
 

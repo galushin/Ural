@@ -596,11 +596,12 @@
 	<ural/algorithm/details/copy.hpp>
 	<ural/algorithm/details/algo_base.hpp>
 
-1391229894 c:\pavel\ural_repo\ural\ural\functional.hpp
+1391323766 c:\pavel\ural_repo\ural\ural\functional.hpp
 	<boost/compressed_pair.hpp>
 	<ural/tuple.hpp>
 	<ural/functional/replace.hpp>
 	<ural/functional/cpp_operators.hpp>
+	<ural/functional/make_functor.hpp>
 
 1390362855 c:\pavel\ural_repo\ural\ural\tuple.hpp
 	<tuple>
@@ -612,7 +613,8 @@
 	<ural/tuple.hpp>
 	<ural/functional/cpp_operators.hpp>
 
-1391229894 c:\pavel\ural_repo\ural\ural\functional\cpp_operators.hpp
+1391326859 c:\pavel\ural_repo\ural\ural\functional\cpp_operators.hpp
+	<ural/functional/make_functor.hpp>
 
 1391229894 c:\pavel\ural_repo\ural\ural\sequence\all.hpp
 	<iterator>
@@ -692,20 +694,20 @@
 	<ural/concepts.hpp>
 	<ural/tuple.hpp>
 
-1391287194 c:\pavel\ural_repo\ural\ural\concepts.hpp
+1391321895 c:\pavel\ural_repo\ural\ural\concepts.hpp
 	<boost/concept/usage.hpp>
 
 1391229894 c:\pavel\ural_repo\ural\ural\memory.hpp
 	<memory>
 
-1390362855 c:\pavel\ural_repo\ural\ural\utility\tracers.hpp
+1391322174 c:\pavel\ural_repo\ural\ural\utility\tracers.hpp
 	<ural/defs.hpp>
 	<ural/thread.hpp>
 	<ural/functional.hpp>
 
 1390362855 c:\pavel\ural_repo\ural\ural\thread.hpp
 
-1391229894 source:c:\pavel\ural_repo\ural\tests\functional_test.cpp
+1391323030 source:c:\pavel\ural_repo\ural\tests\functional_test.cpp
 	<boost/test/unit_test.hpp>
 	<ural/utility/tracers.hpp>
 	<ural/functional.hpp>
@@ -827,6 +829,11 @@
 	<cstdlib>
 	<ural/defs.hpp>
 
-1391229894 c:\pavel\ural_repo\ural\ural\abi.hpp
+1391321595 c:\pavel\ural_repo\ural\ural\abi.hpp
 	<cxxabi.h>
+
+1391322600 source:c:\pavel\ural_repo\ural\tests\concepts_checks.cpp
+	<boost/test/unit_test.hpp>
+
+1391323763 c:\pavel\ural_repo\ural\ural\functional\make_functor.hpp
 

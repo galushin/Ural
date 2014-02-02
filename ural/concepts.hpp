@@ -36,6 +36,7 @@ namespace concepts
         {
             !seq;
             // @todo +seq <=> !!seq ?
+            // @todo seq.has_more() как в Java ?
             ++ seq;
             seq ++;
             seq.pop_front();
