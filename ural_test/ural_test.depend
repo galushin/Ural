@@ -325,7 +325,7 @@
 	<ural/numeric/partial_sums.hpp>
 	<ural/numeric/adjacent_differences.hpp>
 
-1391473783 c:\devtools\ural_repo\ural\ural\functional.hpp
+1391492846 c:\devtools\ural_repo\ural\ural\functional.hpp
 	<boost/compressed_pair.hpp>
 	<ural/tuple.hpp>
 	<ural/functional/replace.hpp>
@@ -417,7 +417,7 @@
 
 1384408805 c:\devtools\ural_repo\ural\ural\thread.hpp
 
-1391473783 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
+1391494298 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
 	<ural/sequence/function_output.hpp>
 	<ural/sequence/generator.hpp>
 	<ural/algorithm/details/copy.hpp>
@@ -426,7 +426,7 @@
 1390967638 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
 	<ural/sequence/base.hpp>
 
-1391477423 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
+1391492669 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<forward_list>
 	<list>

@@ -34,6 +34,7 @@ namespace ural
         T value_;
     };
 
+    // @note Подлежит переработке
     template <class ForwardSequence, class Compare>
     class min_element_accumulator
     {
@@ -59,7 +60,6 @@ namespace ural
         }
 
     private:
-        // @todo Закрытое наследование, а не членство?
         boost::compressed_pair<ForwardSequence, Compare> impl_;
     };
 

@@ -1118,7 +1118,9 @@ namespace details
     template <class Forward1, class Forward2, class BinaryPredicate>
     bool is_permutation(Forward1 s1, Forward2 s2, BinaryPredicate pred)
     {
-        // Пропустить общий префикс
+        std::tie(s1, s2) = ural::details::mismatch(std::move(s1), std::move(s2),
+                                                   pred);
+
         s1.shrink_front();
         s2.shrink_front();
 

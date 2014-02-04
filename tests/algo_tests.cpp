@@ -552,10 +552,9 @@ BOOST_AUTO_TEST_CASE(unique_test)
     auto const last = std::unique(v1.begin(), v1.end());
     std::forward_list<int> r_std(v1.begin(), last);
 
-    // @todo Заменить на forward_list
     // @todo В одну инструкцию
-    std::list<int> r_ural;
-    ural::copy(v2 | ural::uniqued, r_ural | ural::back_inserter);
+    std::forward_list<int> r_ural;
+    ural::copy(v2 | ural::uniqued, r_ural | ural::front_inserter);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(), r_ural.begin(),
                                   r_ural.end());

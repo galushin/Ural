@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE(iteretor_sequence_plus_assign_test)
 
 BOOST_AUTO_TEST_CASE(iterator_sequence_size_test)
 {
-    // @todo Добавить проверку для итератора ввода
+    // @todo Добавить проверку для итераторов ввода и вывода
     std::forward_list<int> fwd;
     std::list<int> bi;
     std::vector<int> ra;
