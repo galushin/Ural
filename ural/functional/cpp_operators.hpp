@@ -217,8 +217,99 @@ namespace ural
     // @todo greater_equal
     // @todo less_equal
 
-    // @todo logical_and
-    // @todo logical_or
+    template <class T1 = void, class T2 = T1>
+    class logical_and
+    {
+    public:
+        constexpr auto operator()(T1 const & x, T2 const & y) const
+        -> decltype(x && y)
+        {
+            return x && y;
+        }
+    };
+
+    template <>
+    class logical_and<void, void>
+    {
+    public:
+        template <class T1, class T2>
+        constexpr auto operator()(T1 const & x, T2 const & y) const
+        -> decltype(x && y)
+        {
+            return x && y;
+        }
+    };
+
+    template <class T1>
+    class logical_and<T1, void>
+    {
+    public:
+        template <class T2>
+        constexpr auto operator()(T1 const & x, T2 const & y) const
+        -> decltype(x && y)
+        {
+            return x && y;
+        }
+    };
+
+    template <class T2>
+    class logical_and<void, T2>
+    {
+    public:
+        template <class T1>
+        constexpr auto operator()(T1 const & x, T2 const & y) const
+        -> decltype(x && y)
+        {
+            return x && y;
+        }
+    };
+
+    template <class T1 = void, class T2 = T1>
+    class logical_or
+    {
+    public:
+        constexpr auto operator()(T1 const & x, T2 const & y) const
+        -> decltype(x || y)
+        {
+            return x || y;
+        }
+    };
+
+    template <>
+    class logical_or<void, void>
+    {
+    public:
+        template <class T1, class T2>
+        constexpr auto operator()(T1 const & x, T2 const & y) const
+        -> decltype(x || y)
+        {
+            return x || y;
+        }
+    };
+
+    template <class T1>
+    class logical_or<T1, void>
+    {
+    public:
+        template <class T2>
+        constexpr auto operator()(T1 const & x, T2 const & y) const
+        -> decltype(x || y)
+        {
+            return x || y;
+        }
+    };
+
+    template <class T2>
+    class logical_or<void, T2>
+    {
+    public:
+        template <class T1>
+        constexpr auto operator()(T1 const & x, T2 const & y) const
+        -> decltype(x || y)
+        {
+            return x || y;
+        }
+    };
 
     template <class T = void>
     class logical_not

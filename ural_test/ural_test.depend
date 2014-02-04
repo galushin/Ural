@@ -12,7 +12,7 @@
 
 1382764809 c:\devtools\ural_repo\ural\\ural\placeholders.hpp
 
-1391473783 source:c:\devtools\ural_repo\ural\tests\iterator_sequence_test.cpp
+1391485487 source:c:\devtools\ural_repo\ural\tests\iterator_sequence_test.cpp
 	<boost/test/unit_test.hpp>
 	<forward_list>
 	<list>
@@ -527,7 +527,7 @@
 	<ural/tuple.hpp>
 	<ural/functional/cpp_operators.hpp>
 
-1391484035 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
+1391488811 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
 	<ural/functional/make_functor.hpp>
 
 1391049251 c:\devtools\ural_repo\ural\ural\sequence\taken.hpp

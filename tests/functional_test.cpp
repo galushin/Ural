@@ -119,10 +119,15 @@ BOOST_AUTO_TEST_CASE(not_equal_to_test)
     BOOST_CHECK_EQUAL(false, neq(1, 1));
 }
 
-// @todo Тест для tribool
-BOOST_AUTO_TEST_CASE(logical_not_test_bool)
+// @todo Тесты для tribool
+#include <boost/mpl/list.hpp>
+
+typedef boost::mpl::list<ural::logical_not<bool>, ural::logical_not<>>
+    Not_functors;
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(logical_not_test, Functor, Not_functors)
 {
-    constexpr ural::logical_not<bool> not_;
+    constexpr Functor not_;
 
     static_assert(not_ == not_, "");
     static_assert(!(not_ != not_), "");
@@ -134,16 +139,50 @@ BOOST_AUTO_TEST_CASE(logical_not_test_bool)
     BOOST_CHECK_EQUAL(false, not_(true));
 }
 
-BOOST_AUTO_TEST_CASE(logical_not_test_auto)
+typedef boost::mpl::list<ural::logical_and<bool>,
+                         ural::logical_and<>,
+                         ural::logical_and<bool, void>,
+                         ural::logical_and<void, bool>>
+    And_functors;
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(logical_and_test, Functor, And_functors)
 {
-    constexpr ural::logical_not<> not_;
+    constexpr Functor and_;
 
-    static_assert(not_ == not_, "");
-    static_assert(!(not_ != not_), "");
+    static_assert(and_ == and_, "");
+    static_assert(!(and_ != and_), "");
 
-    static_assert(true == not_(false), "");
-    static_assert(false == not_(true), "");
+    static_assert(false == and_(false, false), "");
+    static_assert(false == and_(true, false), "");
+    static_assert(false == and_(false, true), "");
+    static_assert(true == and_(true, true), "");
 
-    BOOST_CHECK_EQUAL(true, not_(false));
-    BOOST_CHECK_EQUAL(false, not_(true));
+    BOOST_CHECK_EQUAL(false, and_(false, false));
+    BOOST_CHECK_EQUAL(false, and_(false, true));
+    BOOST_CHECK_EQUAL(false, and_(true, false));
+    BOOST_CHECK_EQUAL(true, and_(true, true));
+}
+
+typedef boost::mpl::list<ural::logical_or<bool>,
+                         ural::logical_or<>,
+                         ural::logical_or<bool, void>,
+                         ural::logical_or<void, bool>>
+    Or_functors;
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(logical_or_test, Functor, Or_functors)
+{
+    constexpr Functor or_;
+
+    static_assert(or_ == or_, "");
+    static_assert(!(or_ != or_), "");
+
+    static_assert(false == or_(false, false), "");
+    static_assert(true == or_(true, false), "");
+    static_assert(true == or_(false, true), "");
+    static_assert(true == or_(true, true), "");
+
+    BOOST_CHECK_EQUAL(false, or_(false, false));
+    BOOST_CHECK_EQUAL(true, or_(false, true));
+    BOOST_CHECK_EQUAL(true, or_(true, false));
+    BOOST_CHECK_EQUAL(true, or_(true, true));
 }
