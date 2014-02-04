@@ -1328,7 +1328,21 @@ BOOST_AUTO_TEST_CASE(push_heap_test)
     BOOST_CHECK(std::is_heap(v.begin(), v.end()));
 }
 
-// @todo тест pop_heap
+BOOST_AUTO_TEST_CASE(pop_heap_test)
+{
+    std::vector<int> v { 3, 1, 4, 1, 5, 9 };
+    ural::make_heap(v);
+
+    while(v.empty() == false)
+    {
+        auto const old_top = v.front();
+        ural::pop_heap(v);
+
+        BOOST_CHECK_EQUAL(old_top, v.back());
+        v.pop_back();
+        BOOST_CHECK(std::is_heap(v.begin(), v.end()));
+    }
+}
 
 BOOST_AUTO_TEST_CASE(make_heap_test)
 {
