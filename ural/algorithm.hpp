@@ -18,29 +18,29 @@ namespace ural
     auto for_each(Input && in, UnaryFunction f)
     -> decltype(ural::make_functor(std::move(f)))
     {
-        return ural::details::for_each(ural::sequence(std::forward<Input>(in)),
+        return ural::details::for_each(sequence(std::forward<Input>(in)),
                                        ural::make_functor(std::move(f)));
     }
 
     template <class Input, class Predicate>
     auto find_if(Input && in, Predicate pred)
-    -> decltype(ural::sequence(std::forward<Input>(in)))
+    -> decltype(sequence(std::forward<Input>(in)))
     {
-        return ::ural::details::find_if(ural::sequence(std::forward<Input>(in)),
+        return ::ural::details::find_if(sequence(std::forward<Input>(in)),
                                        ural::make_functor(std::move(pred)));
     }
 
     template <class Input, class Predicate>
     auto find_if_not(Input && in, Predicate pred)
-    -> decltype(ural::sequence(std::forward<Input>(in)))
+    -> decltype(sequence(std::forward<Input>(in)))
     {
-        return ::ural::details::find_if(ural::sequence(std::forward<Input>(in)),
+        return ::ural::details::find_if(sequence(std::forward<Input>(in)),
                                         ural::not_fn(std::move(pred)));
     }
 
     template <class Input, class T, class BinaryPredicate>
     auto find(Input && in, T const & value, BinaryPredicate pred)
-    -> decltype(ural::sequence(std::forward<Input>(in)))
+    -> decltype(sequence(std::forward<Input>(in)))
     {
         return ::ural::find_if(std::forward<Input>(in),
                                std::bind(ural::make_functor(std::move(pred)),
@@ -50,7 +50,7 @@ namespace ural
 
     template <class Input, class T>
     auto find(Input && in, T const & value)
-    -> decltype(ural::sequence(std::forward<Input>(in)))
+    -> decltype(sequence(std::forward<Input>(in)))
     {
         return ::ural::find(std::forward<Input>(in), value,
                             ural::equal_to<T>{});

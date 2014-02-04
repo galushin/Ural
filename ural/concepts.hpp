@@ -43,6 +43,7 @@ namespace concepts
         }
     private:
         static Seq seq;
+        // @todo Категория обхода
     };
 
     template <class Seq>
@@ -94,8 +95,8 @@ namespace concepts
         /// @brief Примеры использования
         BOOST_CONCEPT_USAGE(ReadableSequence)
         {
-            consume(*seq);
-            consume(seq.front());
+            decltype(consume(*seq));
+            decltype(consume(seq.front()));
 
             // @todo Проверки для value_type
         }
@@ -105,7 +106,7 @@ namespace concepts
         typedef typename Seq::reference reference;
         typedef typename Seq::value_type value_type;
 
-        static void consume(reference ref);
+        static void consume(reference);
     };
 
     /** @brief Конпцепция последовательности, допускающей запись
@@ -119,7 +120,7 @@ namespace concepts
         /// @brief Примеры использования
         BOOST_CONCEPT_USAGE(WritableSequence)
         {
-            *seq = make_value();
+            decltype(*seq = make_value());
             // @todo seq << make_value() ?
         }
 

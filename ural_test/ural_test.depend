@@ -284,7 +284,7 @@
 1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
 	<boost/test/impl/xml_report_formatter.ipp>
 
-1391474339 c:\devtools\ural_repo\ural\ural\algorithm.hpp
+1391481381 c:\devtools\ural_repo\ural\ural\algorithm.hpp
 	<ural/functional.hpp>
 	<ural/random.hpp>
 	<ural/sequence/all.hpp>
@@ -361,7 +361,7 @@
 	<type_traits>
 	<ostream>
 
-1391473783 c:\devtools\ural_repo\ural\ural\concepts.hpp
+1391481179 c:\devtools\ural_repo\ural\ural\concepts.hpp
 	<boost/concept/usage.hpp>
 
 1391473783 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
@@ -426,7 +426,7 @@
 1390967638 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
 	<ural/sequence/base.hpp>
 
-1391474402 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
+1391477423 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<forward_list>
 	<list>
@@ -844,6 +844,11 @@
 
 1391473783 c:\devtools\ural_repo\ural\ural\functional\make_functor.hpp
 
-1391473783 source:c:\devtools\ural_repo\ural\tests\concepts_checks.cpp
+1391480162 source:c:\devtools\ural_repo\ural\tests\concepts_checks.cpp
 	<boost/test/unit_test.hpp>
+	<ural/archetypes.hpp>
+	<ural/algorithm.hpp>
+
+1391480502 c:\devtools\ural_repo\ural\ural\archetypes.hpp
+	<ural/sequence/base.hpp>
 
