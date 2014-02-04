@@ -49,6 +49,7 @@ namespace archetypes
     public:
         typedef Value value_type;
         typedef value_type & reference;
+        typedef size_t distance_type;
 
         bool operator!() const
         {

@@ -151,9 +151,28 @@ namespace ural
 
     template <class T1 = void, class T2 = T1>
     class not_equal_to
-    // @todo Или использовать != ?
-     : public not_functor<equal_to<T1, T2>>
-    {};
+    {
+    public:
+        constexpr auto
+        operator()(typename boost::call_traits<T1>::param_type x,
+                   typename boost::call_traits<T1>::param_type y) const
+        -> decltype(x != y)
+        {
+            return x != y;
+        }
+    };
+
+    template <>
+    class not_equal_to<void, void>
+    {
+    public:
+        template <class T1, class T2>
+        constexpr auto operator()(T1 const & x, T2 const & y) const
+        -> decltype(x != y)
+        {
+            return x != y;
+        }
+    };
 
     // @todo Может быть проблема с указателями
     template <class T1 = void, class T2 = T1>
