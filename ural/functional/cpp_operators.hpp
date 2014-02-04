@@ -12,7 +12,7 @@ namespace ural
 {
     // Негатор
     /**
-    @todo Выразить через logical_not и combine
+    @todo Выразить через logical_not и pipe (compose)
     */
     template <class Predicate>
     class not_functor
