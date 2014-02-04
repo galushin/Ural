@@ -412,7 +412,7 @@
 1390617337 c:\devtools\github\ural\ural\sequence\base.hpp
 	<ural/defs.hpp>
 
-1390870496 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
+1391490964 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
 	<ural/defs.hpp>
 
 1384408805 c:\devtools\ural_repo\ural\ural\thread.hpp
@@ -448,10 +448,11 @@
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
-1391473783 source:c:\devtools\ural_repo\ural\tests\functional_test.cpp
+1391488042 source:c:\devtools\ural_repo\ural\tests\functional_test.cpp
 	<boost/test/unit_test.hpp>
 	<ural/utility/tracers.hpp>
 	<ural/functional.hpp>
+	<boost/mpl/list.hpp>
 
 1390967713 c:\devtools\ural_repo\ural\ural\sequence\generator.hpp
 	<ural/functional.hpp>
@@ -516,10 +517,10 @@
 1390968127 c:\devtools\ural_repo\ural\ural\memory.hpp
 	<memory>
 
-1390870496 c:\devtools\ural_repo\ural\ural\sequence\moved.hpp
+1391491146 c:\devtools\ural_repo\ural\ural\sequence\moved.hpp
 	<ural/sequence/base.hpp>
 
-1390967843 c:\devtools\ural_repo\ural\ural\sequence\replace.hpp
+1391491262 c:\devtools\ural_repo\ural\ural\sequence\replace.hpp
 	<ural/sequence/transform.hpp>
 	<ural/functional/replace.hpp>
 
@@ -527,7 +528,7 @@
 	<ural/tuple.hpp>
 	<ural/functional/cpp_operators.hpp>
 
-1391488811 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
+1391488884 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
 	<ural/functional/make_functor.hpp>
 
 1391049251 c:\devtools\ural_repo\ural\ural\sequence\taken.hpp
@@ -821,12 +822,12 @@
 	<ural/algorithm.hpp>
 	<ural/sequence/all.hpp>
 
-1391131333 c:\devtools\ural_repo\ural\ural\sequence\reversed.hpp
+1391491694 c:\devtools\ural_repo\ural\ural\sequence\reversed.hpp
 
-1391131067 c:\devtools\ural_repo\ural\ural\abi.hpp
+1391491726 c:\devtools\ural_repo\ural\ural\abi.hpp
 	<cxxabi.h>
 
-1391138330 c:\devtools\ural_repo\ural\ural\random.hpp
+1391491763 c:\devtools\ural_repo\ural\ural\random.hpp
 	<cstdlib>
 	<ural/defs.hpp>
 
@@ -842,13 +843,13 @@
 
 1391323763 c:\pavel\ural_repo\ural\ural\functional\make_functor.hpp
 
-1391473783 c:\devtools\ural_repo\ural\ural\functional\make_functor.hpp
+1391492009 c:\devtools\ural_repo\ural\ural\functional\make_functor.hpp
 
 1391482302 source:c:\devtools\ural_repo\ural\tests\concepts_checks.cpp
 	<boost/test/unit_test.hpp>
 	<ural/archetypes.hpp>
 	<ural/algorithm.hpp>
 
-1391482316 c:\devtools\ural_repo\ural\ural\archetypes.hpp
+1391491787 c:\devtools\ural_repo\ural\ural\archetypes.hpp
 	<ural/sequence/base.hpp>
 

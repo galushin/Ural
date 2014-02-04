@@ -1,6 +1,10 @@
 #ifndef Z_URAL_ARCHETYPES_HPP_INCLUDED
 #define Z_URAL_ARCHETYPES_HPP_INCLUDED
 
+/** @file ural/archetypes.hpp
+ @brief Архетипы
+*/
+
 #include <ural/sequence/base.hpp>
 
 namespace ural

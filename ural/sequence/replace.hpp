@@ -1,7 +1,7 @@
 #ifndef Z_URAL_SEQUENCE_REPLACE_HPP_INCLUDED
 #define Z_URAL_SEQUENCE_REPLACE_HPP_INCLUDED
 
-/** @brief ural/sequence/replace.hpp
+/** @file ural/sequence/replace.hpp
  @brief Создание последовательностей, в которых элементы, удовлетворяющие
  определённым условиям, заменены заданным значением.
 */

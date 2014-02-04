@@ -2,8 +2,8 @@
 #define REVERSED_HPP_INCLUDED
 
 /** @file ural/sequence/reversed.hpp
- @brief Адаптер последовательности, проходящий элементы исходной последовательности
- в обратном порядке.
+ @brief РђРґР°РїС‚РµСЂ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё, РїСЂРѕС…РѕРґСЏС‰РёР№ СЌР»РµРјРµРЅС‚С‹ РёСЃС…РѕРґРЅРѕР№ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё
+ РІ РѕР±СЂР°С‚РЅРѕРј РїРѕСЂСЏРґРєРµ.
 */
 
 namespace ural
@@ -13,16 +13,16 @@ namespace ural
      : public sequence_base<reverse_sequence<BidirectionalSequence>>
     {
     public:
-        // Типы
+        // РўРёРїС‹
         typedef typename BidirectionalSequence::reference reference;
         typedef typename BidirectionalSequence::value_type value_type;
 
-        // Конструкторы
+        // РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂС‹
         explicit reverse_sequence(BidirectionalSequence seq)
          : base_(std::move(seq))
         {}
 
-        // Однопроходная последовательность
+        // РћРґРЅРѕРїСЂРѕС…РѕРґРЅР°СЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ
         bool operator!() const
         {
             return !this->base();
@@ -38,13 +38,13 @@ namespace ural
             return base_.pop_back();
         }
 
-        // Прямая многопроходная последовательность
+        // РџСЂСЏРјР°СЏ РјРЅРѕРіРѕРїСЂРѕС…РѕРґРЅР°СЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ
         reverse_sequence traversed_front() const
         {
             return reverse_sequence{this->base().traversed_back()};
         }
 
-        // Двусторонняя последовательность
+        // Р”РІСѓСЃС‚РѕСЂРѕРЅРЅСЏСЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ
         reference back() const
         {
             return base_.front();
@@ -55,7 +55,7 @@ namespace ural
             return base_.pop_front();
         }
 
-        // Адаптор последовательности
+        // РђРґР°РїС‚РѕСЂ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё
         BidirectionalSequence const & base() const
         {
             return this->base_;
@@ -76,7 +76,7 @@ namespace ural
     }
 
     /**
-    @todo Оптимизация
+    @todo РћРїС‚РёРјРёР·Р°С†РёСЏ
     */
     template <class Sequence>
     Sequence make_reverse_sequence(reverse_sequence<Sequence> seq)

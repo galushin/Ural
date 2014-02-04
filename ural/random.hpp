@@ -1,6 +1,10 @@
 #ifndef Z_URAL_RANDOM_HPP_INCLUDED
 #define Z_URAL_RANDOM_HPP_INCLUDED
 
+/** @file ural/random.hpp
+ @brief Средства генерации случайных чисел
+*/
+
 #include <cstdlib>
 
 #include <ural/defs.hpp>

@@ -1,6 +1,10 @@
 #ifndef Z_URAL_ABI_HPP_INCLUDED
 #define Z_URAL_ABI_HPP_INCLUDED
 
+/** @file ural/abi.hpp
+ @brief Бинарный интерфейс компилятора
+*/
+
 #include <cxxabi.h>
 
 namespace ural

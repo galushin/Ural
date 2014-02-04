@@ -2,6 +2,8 @@
 #define Z_URAL_SEQUENCE_MOVED_HPP_INCLUDED
 
 /** @file ural/sequence/moved.hpp
+ @brief Адаптор последовательности, преобразующий ссылки на элементы в
+ rvalue-ссылки
  @todo Выразить через transform?
  @todo Больше тестов
 */
