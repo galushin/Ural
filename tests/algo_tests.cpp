@@ -1020,6 +1020,27 @@ BOOST_AUTO_TEST_CASE(is_sorted_until_test)
     while(std::next_permutation(nums.begin(), nums.end()));
 }
 // @todo Аналог nth_element
+BOOST_AUTO_TEST_CASE(nth_element_test)
+{
+    std::vector<int> x_std{5, 6, 4, 3, 2, 6, 7, 9, 3};
+    auto x_ural = x_std;
+
+    auto const pos_1 = x_std.size() / 2;
+
+    std::nth_element(x_std.begin(), x_std.begin() + pos_1, x_std.end());
+
+    auto s_std = ural::sequence(x_std) + pos_1;
+    auto s_ural = ural::sequence(x_ural) + pos_1;
+
+    ural::nth_element(s_ural);
+
+    BOOST_CHECK(ural::is_permutation(x_std, x_ural));
+    BOOST_CHECK_EQUAL(x_std[pos_1], x_ural[pos_1]);
+
+    BOOST_CHECK(ural::is_permutation(s_std, s_ural));
+    BOOST_CHECK(ural::is_permutation(s_std.traversed_front(),
+                                     s_ural.traversed_front()));
+}
 
 // 25.4.3 Бинарный поиск
 BOOST_AUTO_TEST_CASE(lower_bound_test)

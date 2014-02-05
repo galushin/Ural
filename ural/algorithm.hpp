@@ -556,6 +556,19 @@ namespace ural
                                          ural::less<>{});
     }
 
+    template <class RASequence, class Compare>
+    void nth_element(RASequence && s, Compare cmp)
+    {
+        return ::ural::details::nth_element(sequence(std::forward<RASequence>(s)),
+                                            ural::make_functor(std::move(cmp)));
+    }
+
+    template <class RASequence>
+    void nth_element(RASequence && s)
+    {
+        return ::ural::nth_element(std::forward<RASequence>(s), ural::less<>{});
+    }
+
     template <class BidirectionalSequence, class Compare>
     void inplace_merge(BidirectionalSequence && s, Compare cmp)
     {

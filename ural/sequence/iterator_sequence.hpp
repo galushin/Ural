@@ -297,11 +297,21 @@ namespace ural
     };
 
     template <class Iterator>
-    ural::iterator_sequence<Iterator>
+    iterator_sequence<Iterator>
     make_iterator_sequence(Iterator first, Iterator last)
     {
-        return ural::iterator_sequence<Iterator>{first, last};
+        return iterator_sequence<Iterator>{first, last};
     }
+
+    template <class Iterator, class Policy>
+    iterator_sequence<Iterator, Policy>
+    operator+(iterator_sequence<Iterator, Policy> i,
+              typename iterator_sequence<Iterator, Policy>::distance_type n)
+    {
+        i += n;
+        return i;
+    }
+
 }
 // namespace ural
 

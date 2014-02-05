@@ -958,6 +958,43 @@ namespace details
         return out;
     }
 
+    template <class RASequence, class Compare>
+    void heap_select(RASequence s, Compare cmp)
+    {
+        if(!s)
+        {
+            return;
+        }
+
+        ++ s;
+        auto s1 = s.traversed_front();
+
+        if(!s1 || !s)
+        {
+            return;
+        }
+
+        ::ural::details::make_heap(s1, cmp);
+
+        for(; !!s; ++ s)
+        {
+            if(cmp(*s, *s1))
+            {
+                using std::swap;
+                swap(*s, *s1);
+                ::ural::details::heap_sink(s1, 0, s1.size(), cmp);
+            }
+        }
+        ::ural::details::pop_heap(s1, cmp);
+    }
+
+    template <class RASequence, class Compare>
+    void nth_element(RASequence s, Compare cmp)
+    {
+        // @todo Оптимизация
+        return ::ural::details::heap_select(std::move(s), std::move(cmp));
+    }
+
     template <class Input1, class  Input2, class Compare>
     bool lexicographical_compare(Input1 in1, Input2 in2, Compare cmp)
     {
