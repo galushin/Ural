@@ -8,13 +8,23 @@
 
 #include <boost/concept/usage.hpp>
 
+#include <ural/defs.hpp>
+
 namespace ural
 {
 namespace concepts
 {
     template <class T>
     class SemiRegular
-    {};
+    {
+    public:
+        BOOST_CONCEPT_USAGE(SemiRegular)
+        {}
+
+    private:
+        static T make();
+        static T value;
+    };
 
     /** @brief Концепция регулярного типа
     @tparam T тип, для которого проверяется концепция
@@ -24,11 +34,28 @@ namespace concepts
      : SemiRegular<T>
     {};
 
+    template <class T>
+    class EqualityComparable
+    {
+    public:
+        BOOST_CONCEPT_USAGE(EqualityComparable)
+        {
+            value_consumer<bool>() = (x == y);
+            value_consumer<bool>() = (x != y);
+        }
+
+    private:
+        static T const & make();
+        static T const x;
+        static T const y;
+    };
+
     /** @brief Концепция однопроходной последовательности
     @tparam тип последовательности, для которого проверяется концепция
     */
     template <class Seq>
     class SinglePassSequence
+    // @todo : EqualityComparable<Seq>
     {
     public:
         /// @brief Примеры использования

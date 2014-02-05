@@ -78,6 +78,9 @@ BOOST_AUTO_TEST_CASE(compare_by_test)
     auto cmp1 = [=](int a, int b) {return tr(a) < tr(b);};
     auto cmp2 = ural::compare_by(tr);
 
+    BOOST_CHECK(cmp2 == cmp2);
+    BOOST_CHECK(!(cmp2 != cmp2));
+
     for(int a = -10; a <= 10; ++ a)
     for(int b = -10; b <= 10; ++ b)
     {
@@ -92,6 +95,9 @@ BOOST_AUTO_TEST_CASE(compare_by_test_custom_compare)
 
     auto cmp1 = [=](int a, int b) {return cmp_base(tr(a), tr(b));};
     auto cmp2 = ural::compare_by(tr, cmp_base);
+
+    BOOST_CHECK(cmp2 == cmp2);
+    BOOST_CHECK(!(cmp2 != cmp2));
 
     for(int a = -10; a <= 10; ++ a)
     for(int b = -10; b <= 10; ++ b)

@@ -31,6 +31,13 @@ namespace ural
     {
         return !(x == y);
     }
+
+    template <class T>
+    struct value_consumer
+    {
+        void operator=(T const &)
+        {}
+    };
 }
 // namespace ural
 

@@ -20,6 +20,11 @@ BOOST_AUTO_TEST_CASE(copy_sequence_test_via_details)
 
     ural::details::copy(ural::sequence(xs), ural::sequence(x1));
 
+    BOOST_CHECK(ural::sequence(xs) == ural::sequence(xs));
+    BOOST_CHECK(ural::sequence(x1) == ural::sequence(x1));
+    BOOST_CHECK(ural::sequence(x1) != ural::sequence(xs));
+    BOOST_CHECK(ural::sequence(xs) != ural::sequence(x1));
+
     BOOST_CHECK_EQUAL_COLLECTIONS(x1.begin(), x1.end(), xs.begin(), xs.end());
 }
 

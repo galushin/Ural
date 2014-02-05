@@ -8,8 +8,6 @@
 
 #include <ural/algorithm.hpp>
 #include <ural/memory.hpp>
-
-// @todo должны требоваться только <ural/algorithms.hpp>
 #include <ural/sequence/all.hpp>
 #include <ural/utility/tracers.hpp>
 
@@ -271,8 +269,6 @@ BOOST_AUTO_TEST_CASE(search_test)
     BOOST_CHECK_EQUAL(Inner::in_quote(str, s2), !!ural::search(str, s2));
 }
 
-// @todo Можно ли (и целесообразно ли) search_n выразить через search и
-// спец-последовательность
 BOOST_AUTO_TEST_CASE(search_n_test)
 {
     const std::string xs = "1001010100010101001010101";
@@ -373,14 +369,15 @@ BOOST_AUTO_TEST_CASE(swap_ranges_test)
     auto y1 = x1;
     auto y2 = x2;
 
-    // @todo Тест возвращаемых значений
-    ural::swap_ranges(y1, y2);
+    auto r = ural::swap_ranges(y1, y2);
+
+    BOOST_CHECK(!r[ural::_1] || !r[ural::_2]);
+    BOOST_CHECK_EQUAL(ural::size(r[ural::_1]), ural::size(r[ural::_2]));
 
     BOOST_CHECK_EQUAL_COLLECTIONS(y1.begin(), y1.end(), x2.begin(), x2.end());
     BOOST_CHECK_EQUAL_COLLECTIONS(y2.begin(), y2.end(), x1.begin(), x1.end());
 }
 
-// @todo swap
 // @todo iter_swap
 
 // 25.3.4
@@ -433,8 +430,6 @@ BOOST_AUTO_TEST_CASE(replace_sequence_if_test)
     BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
                                   x_ural.begin(), x_ural.end());
 }
-
-// @note нужны ли версии replace, работающие на месте?
 
 // 25.3.6
 BOOST_AUTO_TEST_CASE(fill_test)
@@ -886,7 +881,6 @@ BOOST_AUTO_TEST_CASE(partition_point_test)
 {
     typedef int Value;
 
-    // @todo Подсчёт числа операций
     auto pred = [](Value x) { return x < 5; };
 
     std::vector<Value> const z = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -978,16 +972,23 @@ BOOST_AUTO_TEST_CASE(partial_sort_copy_test)
     std::vector<int> r2_std{10, 11, 12, 13, 14, 15, 16};
     std::vector<int> r2_ural{10, 11, 12, 13, 14, 15, 16};
 
-    // @todo Тест возвращаемых значений
-    std::partial_sort_copy(v0.begin(), v0.end(), r1_std.begin(), r1_std.end());
-    ural::partial_sort_copy(v0, r1_ural);
+    auto pos_std = std::partial_sort_copy(v0.begin(), v0.end(),
+                                          r1_std.begin(), r1_std.end());
+    auto pos_ural = ural::partial_sort_copy(v0, r1_ural);
+
+    BOOST_CHECK_EQUAL(r1_std.end() - pos_std, pos_ural.size());
+    BOOST_CHECK_EQUAL(pos_std - r1_std.begin(), pos_ural.traversed_front().size());
 
     BOOST_CHECK_EQUAL_COLLECTIONS(r1_std.begin(), r1_std.end(),
                                   r1_ural.begin(), r1_ural.end());
 
-    std::partial_sort_copy(v0.begin(), v0.end(), r2_std.begin(), r2_std.end(),
-                           std::greater<int>());
-    ural::partial_sort_copy(v0, r2_ural, ural::greater<>());
+    pos_std = std::partial_sort_copy(v0.begin(), v0.end(),
+                                     r2_std.begin(), r2_std.end(),
+                                     std::greater<int>());
+    pos_ural = ural::partial_sort_copy(v0, r2_ural, ural::greater<>());
+
+    BOOST_CHECK_EQUAL(r2_std.end() - pos_std, pos_ural.size());
+    BOOST_CHECK_EQUAL(pos_std - r2_std.begin(), pos_ural.traversed_front().size());
 
     BOOST_CHECK_EQUAL_COLLECTIONS(r2_std.begin(), r2_std.end(),
                                   r2_ural.begin(), r2_ural.end());
@@ -1019,7 +1020,7 @@ BOOST_AUTO_TEST_CASE(is_sorted_until_test)
     }
     while(std::next_permutation(nums.begin(), nums.end()));
 }
-// @todo Аналог nth_element
+
 BOOST_AUTO_TEST_CASE(nth_element_test)
 {
     std::vector<int> x_std{5, 6, 4, 3, 2, 6, 7, 9, 3};
@@ -1097,7 +1098,6 @@ BOOST_AUTO_TEST_CASE(equal_range_test)
     BOOST_CHECK(src.begin() == r_ural.traversed_begin());
     BOOST_CHECK(src.end() == r_ural.traversed_end());
 }
-// @todo equal_range - тест количества операций
 
 BOOST_AUTO_TEST_CASE(binary_search_test)
 {
@@ -1435,8 +1435,6 @@ BOOST_AUTO_TEST_CASE(is_heap_test_all_permutations)
 }
 
 // 25.4.7 Минимум и максимум
-// @todo min, max, minmax
-
 BOOST_AUTO_TEST_CASE(min_element_test)
 {
     std::vector<int> const v{3, 1, 4, 1, 5, 9, 2, 6, 5};
@@ -1475,8 +1473,6 @@ BOOST_AUTO_TEST_CASE(minmax_element_test)
     std::vector<int> const v{ 3, 1, -14, 1, 5, 9 };
     auto std_result = std::minmax_element(v.begin(), v.end());
     auto ural_result = ural::minmax_element(v);
-
-    // @todo Проверить количество операций
 
     BOOST_CHECK_EQUAL(std::distance(std_result.first, v.end()),
                       ural_result[ural::_1].size());

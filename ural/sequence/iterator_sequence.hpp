@@ -74,8 +74,15 @@ namespace ural
             return data_[ural::_3];
         }
 
+        typedef ural::tuple<Iterator, Iterator, Iterator> iterators_tuple;
+
+        iterators_tuple const & iterators() const
+        {
+            return data_;
+        }
+
     private:
-        ural::tuple<Iterator, Iterator, Iterator> data_;
+        iterators_tuple data_;
     };
 
     template <class Iterator>
@@ -109,8 +116,16 @@ namespace ural
             return data_[ural::_5];
         }
 
+        typedef ural::tuple<Iterator, Iterator, Iterator, Iterator, Iterator>
+            iterators_tuple;
+
+        iterators_tuple const & iterators() const
+        {
+            return data_;
+        }
+
     private:
-        ural::tuple<Iterator, Iterator, Iterator, Iterator, Iterator> data_;
+        iterators_tuple data_;
     };
 
     /** @brief Последовательность на основе пары итераторов
@@ -284,6 +299,18 @@ namespace ural
         }
 
     private:
+        typedef iterator_sequence_base<Iterator, std::is_same<iterator_category, std::forward_iterator_tag>::value>
+            Base;
+
+    public:
+        typedef typename Base::iterators_tuple iterators_tuple;
+
+        iterators_tuple const & iterators() const
+        {
+            return iterators_.iterators();
+        }
+
+    private:
         static constexpr auto begin_index = ural::_1;
         static constexpr auto front_index = ural::_2;
         static constexpr auto stop_index = ural::_3;
@@ -295,6 +322,13 @@ namespace ural
         iterator_sequence_base<Iterator, std::is_same<iterator_category, std::forward_iterator_tag>::value>
             iterators_;
     };
+
+    template <class Iterator1, class P1, class Iterator2, class P2>
+    bool operator==(iterator_sequence<Iterator1, P1> const & x,
+                    iterator_sequence<Iterator2, P2> const & y)
+    {
+        return x.iterators() == y.iterators();
+    }
 
     template <class Iterator>
     iterator_sequence<Iterator>

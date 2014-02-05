@@ -65,14 +65,17 @@ namespace ural
 
     template <class UnaryFunction, class Compare = ural::less<> >
     class comparer_by
+     : boost::compressed_pair<UnaryFunction, Compare>
     {
+        typedef boost::compressed_pair<UnaryFunction, Compare> Base;
+
     public:
         explicit comparer_by(UnaryFunction f)
-         : members_{std::move(f)}
+         : Base{std::move(f)}
         {}
 
         explicit comparer_by(UnaryFunction f, Compare cmp)
-         : members_{std::move(f), std::move(cmp)}
+         : Base{std::move(f), std::move(cmp)}
         {}
 
         template <class T1, class T2>
@@ -84,17 +87,21 @@ namespace ural
 
         UnaryFunction const & transformation() const
         {
-            return members_.first();
+            return Base::first();
         }
 
         Compare const & compare() const
         {
-            return members_.second();
+            return Base::second();
         }
-
-    private:
-        boost::compressed_pair<UnaryFunction, Compare> members_;
     };
+
+    template <class F, class Tr>
+    bool operator==(comparer_by<F, Tr> const & x, comparer_by<F, Tr> const & y)
+    {
+        return x.compare() == y.compare()
+            && x.transformation() == y.transformation();
+    }
 
     template <class UnaryFunction, class Compare>
     auto compare_by(UnaryFunction f, Compare cmp)

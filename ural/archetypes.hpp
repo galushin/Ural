@@ -9,13 +9,6 @@
 
 namespace ural
 {
-    template <class T>
-    struct value_consumer
-    {
-        void operator=(T const &)
-        {}
-    };
-
 namespace archetypes
 {
     template <class Signature>

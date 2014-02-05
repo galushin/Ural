@@ -241,10 +241,12 @@ namespace ural
     }
 
     template <class Forward1, class Forward2>
-    void swap_ranges(Forward1 && s1, Forward2 && s2)
+    auto swap_ranges(Forward1 && s1, Forward2 && s2)
+    -> ural::tuple<decltype(sequence(std::forward<Forward1>(s1))),
+                   decltype(sequence(std::forward<Forward2>(s2)))>
     {
-        ::ural::details::swap_ranges(sequence(std::forward<Forward1>(s1)),
-                                     sequence(std::forward<Forward2>(s2)));
+        return ::ural::details::swap_ranges(sequence(std::forward<Forward1>(s1)),
+                                            sequence(std::forward<Forward2>(s2)));
     }
 
     template <class BidirectionalSequence>
