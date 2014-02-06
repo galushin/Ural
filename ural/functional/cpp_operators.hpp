@@ -155,7 +155,35 @@ namespace ural
     public:
         constexpr auto
         operator()(typename boost::call_traits<T1>::param_type x,
-                   typename boost::call_traits<T1>::param_type y) const
+                   typename boost::call_traits<T2>::param_type y) const
+        -> decltype(x != y)
+        {
+            return x != y;
+        }
+    };
+
+    template <class T1>
+    class not_equal_to<T1, void>
+    {
+    public:
+        template <class T2>
+        constexpr auto
+        operator()(typename boost::call_traits<T1>::param_type x,
+                   T2 const & y) const
+        -> decltype(x != y)
+        {
+            return x != y;
+        }
+    };
+
+    template <class T2>
+    class not_equal_to<void, T2>
+    {
+    public:
+        template <class T1>
+        constexpr auto
+        operator()(T1 const & x,
+                   typename boost::call_traits<T2>::param_type y) const
         -> decltype(x != y)
         {
             return x != y;

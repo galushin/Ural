@@ -106,10 +106,17 @@ BOOST_AUTO_TEST_CASE(compare_by_test_custom_compare)
     }
 }
 
-BOOST_AUTO_TEST_CASE(not_equal_to_test)
+#include <boost/mpl/list.hpp>
+
+typedef boost::mpl::list<ural::not_equal_to<int>,
+                         ural::not_equal_to<>,
+                         ural::not_equal_to<int, void>,
+                         ural::not_equal_to<void, int>>
+    Neq_functors;
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(not_equal_to_test, Functor, Neq_functors)
 {
-    // @todo Тесты с выводом типов аргументов и разными типами аргументов
-    constexpr ural::not_equal_to<int> neq {};
+    constexpr Functor neq {};
 
     static_assert(neq == neq, "");
     static_assert(!(neq != neq), "");
@@ -126,8 +133,6 @@ BOOST_AUTO_TEST_CASE(not_equal_to_test)
 }
 
 // @todo Тесты для tribool
-#include <boost/mpl/list.hpp>
-
 typedef boost::mpl::list<ural::logical_not<bool>, ural::logical_not<>>
     Not_functors;
 
