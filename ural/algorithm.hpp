@@ -8,6 +8,7 @@
 #include <ural/functional.hpp>
 #include <ural/random.hpp>
 #include <ural/sequence/all.hpp>
+#include <ural/functional/make_functor.hpp>
 
 #include <ural/algorithm/details/copy.hpp>
 #include <ural/algorithm/details/algo_base.hpp>
@@ -271,6 +272,30 @@ namespace ural
         auto s_out = sequence(std::forward<Output>(out));
         std::tie(std::ignore, s_out) = ::ural::copy(ural::shrink_front(s_in), s_out);
         return ural::copy(s_in.traversed_front(), s_out);
+    }
+
+    template <class ForwardSequence, class T, class BinaryPredicate>
+    void replace(ForwardSequence && seq, T const & old_value, T const & new_value,
+                 BinaryPredicate bin_pred)
+    {
+        return ::ural::details::replace(sequence(std::forward<ForwardSequence>(seq)),
+                                        old_value, new_value,
+                                        make_functor(std::move(bin_pred)));
+    }
+
+    template <class ForwardSequence, class T>
+    void replace(ForwardSequence && seq, T const & old_value, T const & new_value)
+    {
+        return ::ural::replace(std::forward<ForwardSequence>(seq),
+                               old_value, new_value, ural::equal_to<>{});
+    }
+
+    template <class ForwardSequence, class Predicate, class T>
+    void replace_if(ForwardSequence && seq, Predicate pred, T const & new_value)
+    {
+        return ::ural::details::replace_if(sequence(std::forward<ForwardSequence>(seq)),
+                                           make_functor(std::move(pred)),
+                                           new_value);
     }
 
     // Тусовка

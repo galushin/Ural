@@ -12,7 +12,7 @@
 namespace ural
 {
     template <class Sequence, class T>
-    auto replace(Sequence && seq, T const & old_value, T const & new_value)
+    auto make_replace_sequence(Sequence && seq, T const & old_value, T const & new_value)
     -> decltype(::ural::transform(std::forward<Sequence>(seq),
                                   make_replace_functor(old_value, new_value)))
     {
@@ -21,7 +21,7 @@ namespace ural
     }
 
     template <class Sequence, class Predicate, class T>
-    auto replace_if(Sequence && seq, Predicate pred, T const & new_value)
+    auto make_replace_if_sequence(Sequence && seq, Predicate pred, T const & new_value)
     -> decltype(::ural::transform(std::forward<Sequence>(seq),
                                   make_replace_if_functor(std::move(pred), new_value)))
     {

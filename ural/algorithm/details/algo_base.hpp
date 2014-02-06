@@ -378,6 +378,31 @@ namespace details
         return ural::tuple<Forward1, Forward2>{in1, in2};
     }
 
+    template <class ForwardSequence, class T, class BinaryPredicate>
+    void replace(ForwardSequence seq, T const & old_value, T const & new_value,
+                 BinaryPredicate bin_pred)
+    {
+        for(; !!seq; ++ seq)
+        {
+            if(bin_pred(*seq, old_value))
+            {
+                *seq = new_value;
+            }
+        }
+    }
+
+    template <class ForwardSequence, class Predicate, class T>
+    void replace_if(ForwardSequence seq, Predicate pred, T const & new_value)
+    {
+        for(; !!seq; ++ seq)
+        {
+            if(pred(*seq))
+            {
+                *seq = new_value;
+            }
+        }
+    }
+
     template <class BidirectionalSequence>
     void reverse(BidirectionalSequence seq)
     {

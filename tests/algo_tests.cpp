@@ -399,6 +399,38 @@ BOOST_AUTO_TEST_CASE(transform_test)
 // @todo transform с двумя (и более?) аргументами
 
 // 25.3.5
+BOOST_AUTO_TEST_CASE(replace_test)
+{
+    std::vector<int> s_std = {5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
+    std::vector<int> s_ural = s_std;
+
+    auto const old_value = 8;
+    auto const new_value = 88;
+
+    std::replace(s_std.begin(), s_std.end(), old_value, new_value);
+    ural::replace(s_ural, old_value, new_value);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(s_std.begin(), s_std.end(),
+                                  s_ural.begin(), s_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(replace_if_test)
+{
+    std::array<int, 10> const s{5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
+
+    auto x_std = s;
+    auto x_ural = s;
+
+    auto pred = [](int x) {return x < 5;};
+    auto const new_value = 55;
+
+    std::replace_if(x_std.begin(), x_std.end(), pred, new_value);
+    ural::replace_if(x_ural, pred, new_value);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
+
 BOOST_AUTO_TEST_CASE(replace_sequence_test)
 {
     std::vector<int> s_std = {5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
@@ -408,7 +440,7 @@ BOOST_AUTO_TEST_CASE(replace_sequence_test)
     auto const new_value = 88;
 
     std::replace(s_std.begin(), s_std.end(), old_value, new_value);
-    ural::copy(ural::replace(s_ural, old_value, new_value), s_ural);
+    ural::copy(ural::make_replace_sequence(s_ural, old_value, new_value), s_ural);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(s_std.begin(), s_std.end(),
                                   s_ural.begin(), s_ural.end());
@@ -425,7 +457,8 @@ BOOST_AUTO_TEST_CASE(replace_sequence_if_test)
     auto const new_value = 55;
 
     std::replace_if(x_std.begin(), x_std.end(), pred, new_value);
-    ural::copy(ural::replace_if(s, pred, new_value), x_ural | ural::back_inserter);
+    ural::copy(ural::make_replace_if_sequence(s, pred, new_value),
+               x_ural | ural::back_inserter);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
                                   x_ural.begin(), x_ural.end());
