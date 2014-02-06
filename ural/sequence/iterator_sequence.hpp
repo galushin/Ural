@@ -45,11 +45,48 @@ namespace ural
         }
     };
 
-    template <class Iterator, bool is_forward>
+    template <class Iterator, class Category>
     class iterator_sequence_base;
 
     template <class Iterator>
-    class iterator_sequence_base<Iterator, true>
+    class iterator_sequence_base<Iterator, std::input_iterator_tag>
+    {
+    public:
+        explicit iterator_sequence_base(Iterator first, Iterator last)
+         : data_{first, last}
+        {}
+
+        template <size_t index>
+        Iterator & operator[](placeholder<index> p)
+        {
+            return data_[p];
+        }
+
+        template <size_t index>
+        Iterator const & operator[](placeholder<index> p) const
+        {
+            return data_[p];
+        }
+
+        Iterator const & traversed_end() const
+        {
+            // @todo Сделать более устойчивым к модификациям
+            return data_[ural::_3];
+        }
+
+        typedef ural::tuple<Iterator, Iterator> iterators_tuple;
+
+        iterators_tuple const & iterators() const
+        {
+            return data_;
+        }
+
+    private:
+        iterators_tuple data_;
+    };
+
+    template <class Iterator>
+    class iterator_sequence_base<Iterator, std::forward_iterator_tag>
     {
     public:
         explicit iterator_sequence_base(Iterator first, Iterator last)
@@ -86,9 +123,53 @@ namespace ural
     };
 
     template <class Iterator>
-    class iterator_sequence_base<Iterator, false>
+    class iterator_sequence_base<Iterator, std::bidirectional_iterator_tag>
     {
     public:
+        explicit iterator_sequence_base(Iterator first, Iterator last)
+         : data_{first, first, last, last, last}
+        {
+            if(first != last)
+            {
+                -- data_[ural::_4];
+            }
+        }
+
+        template <size_t index>
+        Iterator & operator[](placeholder<index> p)
+        {
+            return data_[p];
+        }
+
+        template <size_t index>
+        Iterator const & operator[](placeholder<index> p) const
+        {
+            return data_[p];
+        }
+
+        Iterator const & traversed_end() const
+        {
+            // @todo Сделать более устойчивым к модификациям
+            return data_[ural::_5];
+        }
+
+        typedef ural::tuple<Iterator, Iterator, Iterator, Iterator, Iterator>
+            iterators_tuple;
+
+        iterators_tuple const & iterators() const
+        {
+            return data_;
+        }
+
+    private:
+        iterators_tuple data_;
+    };
+
+    template <class Iterator>
+    class iterator_sequence_base<Iterator, std::random_access_iterator_tag>
+    {
+    public:
+        // @todo Либо оптимизировать, либо унаследовать от версии для двунаправленных
         explicit iterator_sequence_base(Iterator first, Iterator last)
          : data_{first, first, last, last, last}
         {
@@ -299,8 +380,7 @@ namespace ural
         }
 
     private:
-        typedef iterator_sequence_base<Iterator, std::is_same<iterator_category, std::forward_iterator_tag>::value>
-            Base;
+        typedef iterator_sequence_base<Iterator, iterator_category> Base;
 
     public:
         typedef typename Base::iterators_tuple iterators_tuple;
@@ -317,10 +397,8 @@ namespace ural
         static constexpr auto back_index = ural::_4;
         static constexpr auto end_index = ural::_5;
 
-
     private:
-        iterator_sequence_base<Iterator, std::is_same<iterator_category, std::forward_iterator_tag>::value>
-            iterators_;
+        Base iterators_;
     };
 
     template <class Iterator1, class P1, class Iterator2, class P2>

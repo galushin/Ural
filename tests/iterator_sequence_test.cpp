@@ -79,14 +79,18 @@ BOOST_AUTO_TEST_CASE(iteretor_sequence_plus_assign_test)
 BOOST_AUTO_TEST_CASE(iterator_sequence_size_test)
 {
     // @todo Добавить проверку для итераторов ввода и вывода
+    std::istringstream is;
     std::forward_list<int> fwd;
     std::list<int> bi;
     std::vector<int> ra;
 
+    auto s_in = ::ural::make_iterator_sequence(std::istream_iterator<int>(is),
+                                                std::istream_iterator<int>());
     auto s_fwd = ::ural::sequence(fwd);
     auto s_bi = ::ural::sequence(bi);
     auto s_ra = ::ural::sequence(ra);
 
+    BOOST_CHECK_EQUAL(2*sizeof(std::istream_iterator<int>{}), sizeof(s_in));
     BOOST_CHECK_EQUAL(3*sizeof(fwd.begin()), sizeof(s_fwd));
     BOOST_CHECK_EQUAL(5*sizeof(bi.begin()), sizeof(s_bi));
     BOOST_CHECK_EQUAL(5*sizeof(ra.begin()), sizeof(s_ra));

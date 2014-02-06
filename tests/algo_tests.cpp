@@ -747,6 +747,7 @@ BOOST_AUTO_TEST_CASE(random_shuffle_test)
     BOOST_CHECK(ural::is_permutation(x, src));
 
     // @todo Тест случайности
+    // @todo Тест равномерности
 }
 
 // @todo Аналог shuffle
