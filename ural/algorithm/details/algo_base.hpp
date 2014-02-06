@@ -1,6 +1,7 @@
 #ifndef Z_URAL_ALGO_BASE_HPP_INCLUDED
 #define Z_URAL_ALGO_BASE_HPP_INCLUDED
 
+#include <ural/sequence/base.hpp>
 #include <ural/sequence/function_output.hpp>
 #include <ural/sequence/generator.hpp>
 
@@ -443,8 +444,7 @@ namespace details
 
         if(!r[ural::_1] && !r[ural::_2])
         {
-            return ural::tuple<Forward1, Forward2>{std::move(in1),
-                                                   std::move(in2)};
+            return r;
         }
         else if(!r[ural::_1])
         {
@@ -464,9 +464,22 @@ namespace details
     template <class ForwardSequence>
     ForwardSequence rotate(ForwardSequence seq)
     {
-        auto r = ::ural::details::rotate(seq.traversed_front(),
-                                         ural::shrink_front(seq));
-        return r[ural::_1];
+        auto seq_old = seq.original();
+
+        ::ural::details::rotate(seq.traversed_front(), ural::shrink_front(seq));
+
+        ural::advance(seq_old, seq.size());
+        return seq_old;
+    }
+
+    template <class Forward, class Output>
+    ural::tuple<Forward, Output>
+    rotate_copy(Forward in, Output out)
+    {
+        auto in_1 = in.traversed_front();
+        auto r1 = ::ural::details::copy(std::move(in), std::move(out));
+        auto r2 = ::ural::details::copy(in_1, std::move(r1[ural::_2]));
+        return r2;
     }
 
     template <class RASequence, class URNG>
@@ -566,8 +579,7 @@ namespace details
 
         // Разделяем первую половину
         auto const n_left = n/2;
-        auto s = s_orig;
-        ural::advance(s, n_left);
+        auto s = ural::next(s_orig, n_left);
 
         auto r_left = ::ural::details::inplace_stable_partition(s.traversed_front(), pred);
 
@@ -587,12 +599,8 @@ namespace details
         // Возвращаем результат
         auto nt = ::ural::size(r_left.traversed_front());
         nt += ::ural::size(r[ural::_1].traversed_front());
-        nt += ::ural::size(r[ural::_2].traversed_front());
-        nt += ::ural::size(s_right.traversed_front());
 
-        s = s_orig;
-        ural::advance(s, nt);
-        return s;
+        return ural::next(s_orig, nt);
     }
 
     template <class ForwardSequence, class UnaryPredicate>

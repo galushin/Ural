@@ -490,9 +490,11 @@ BOOST_AUTO_TEST_CASE(fill_n_test)
     auto const n = v_std.size() / 2;
     auto const value = -1;
 
-    // @todo Тесты возвращаемых значений
     std::fill_n(v_std.begin(), n, value);
-    ural::fill(v_ural | ural::taken(n), value);
+    auto r = ural::fill(v_ural | ural::taken(n), value);
+
+    BOOST_CHECK_EQUAL(n, r.base().traversed_front().size());
+    BOOST_CHECK_EQUAL(v_std.size() - n, r.base().size());
 
     BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
                                   v_ural.begin(), v_ural.end());
@@ -663,10 +665,26 @@ BOOST_AUTO_TEST_CASE(rotate_test)
 
         auto s = ural::sequence(v_ural);
         s += i;
-        // @todo Проверить возвращаемое значение
-        ural::rotate(s);
+
+        auto r_ural = ural::rotate(s);
+
+        if(i == 0)
+        {
+            size_t const n = ural::size(r_ural);
+            BOOST_CHECK(0U == n || v.size() == n);
+            BOOST_CHECK_EQUAL(v.size(), n + ural::size(r_ural.traversed_front()));
+        }
+        else
+        {
+            BOOST_CHECK_EQUAL(i, ural::size(r_ural));
+            BOOST_CHECK_EQUAL(v.size() - i, ural::size(r_ural.traversed_front()));
+        }
 
         BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
+                                      v_ural.begin(), v_ural.end());
+        ural::rotate(r_ural);
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(v.begin(), v.end(),
                                       v_ural.begin(), v_ural.end());
     }
 }
@@ -686,11 +704,35 @@ BOOST_AUTO_TEST_CASE(rotate_copy_test)
         auto s = ural::sequence(src);
         s += i;
 
-        // @todo Проверить возвращаемое значение
         ural::rotate_copy(s, r_ural | ural::front_inserter);
 
         BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
                                       r_ural.begin(), r_ural.end());
+    }
+}
+
+BOOST_AUTO_TEST_CASE(rotate_copy_return_test)
+{
+    std::vector<int> const src{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+    for(size_t i = 0; i != src.size(); ++ i)
+    {
+        std::vector<int> d_std(src.size() + 5);
+        std::vector<int> d_ural(src.size() + 5);
+
+        std::rotate_copy(src.begin(), src.begin() + i, src.end(), d_std.begin());
+
+        auto s = ural::sequence(src);
+        s += i;
+
+        // @todo Проверить возвращаемое значение (первый компонент)
+        auto r_ural = ural::rotate_copy(s, d_ural);
+
+        BOOST_CHECK_EQUAL(src.size(), r_ural[ural::_2].traversed_front().size());
+        BOOST_CHECK_EQUAL(d_ural.size() - src.size(), r_ural[ural::_2].size());
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(d_std.begin(), d_std.end(),
+                                      d_ural.begin(), d_ural.end());
     }
 }
 

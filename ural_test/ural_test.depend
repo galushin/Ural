@@ -284,7 +284,7 @@
 1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
 	<boost/test/impl/xml_report_formatter.ipp>
 
-1391648790 c:\devtools\ural_repo\ural\ural\algorithm.hpp
+1391652678 c:\devtools\ural_repo\ural\ural\algorithm.hpp
 	<ural/functional.hpp>
 	<ural/random.hpp>
 	<ural/sequence/all.hpp>
@@ -414,12 +414,13 @@
 1390617337 c:\devtools\github\ural\ural\sequence\base.hpp
 	<ural/defs.hpp>
 
-1391490964 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
+1391656509 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
 	<ural/defs.hpp>
 
 1384408805 c:\devtools\ural_repo\ural\ural\thread.hpp
 
-1391648978 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
+1391660469 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
+	<ural/sequence/base.hpp>
 	<ural/sequence/function_output.hpp>
 	<ural/sequence/generator.hpp>
 	<ural/algorithm/details/copy.hpp>
@@ -428,7 +429,7 @@
 1390967638 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
 	<ural/sequence/base.hpp>
 
-1391649008 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
+1391659983 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<forward_list>
 	<list>
@@ -456,7 +457,7 @@
 	<ural/functional.hpp>
 	<boost/mpl/list.hpp>
 
-1390967713 c:\devtools\ural_repo\ural\ural\sequence\generator.hpp
+1391650738 c:\devtools\ural_repo\ural\ural\sequence\generator.hpp
 	<ural/functional.hpp>
 	<ural/sequence/base.hpp>
 
@@ -533,7 +534,7 @@
 1391488884 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
 	<ural/functional/make_functor.hpp>
 
-1391049251 c:\devtools\ural_repo\ural\ural\sequence\taken.hpp
+1391650887 c:\devtools\ural_repo\ural\ural\sequence\taken.hpp
 
 1390968004 c:\devtools\ural_repo\ural\ural\sequence\uniqued.hpp
 	<ural/algorithm/details/algo_base.hpp>

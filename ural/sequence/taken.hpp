@@ -19,6 +19,7 @@ namespace ural
         // Типы
         typedef typename Sequence::reference reference;
         typedef typename Sequence::value_type value_type;
+        typedef typename Sequence::distance_type distance_type;
 
         // Создание, копирование
         explicit take_sequence(Sequence seq, Size count)
@@ -42,6 +43,8 @@ namespace ural
             ++ impl_.first();
             -- impl_.second();
         }
+
+        // Последовательность производного доступа
 
         // Адаптор последовательности
         Sequence const & base() const

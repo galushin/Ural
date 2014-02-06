@@ -92,6 +92,13 @@ namespace ural
             ++ s;
         }
     }
+
+    template <class Sequence>
+    Sequence next(Sequence s, typename Sequence::distance_type n)
+    {
+        ::ural::advance(s, n);
+        return s;
+    }
 }
 // namespace ural
 

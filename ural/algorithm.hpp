@@ -268,10 +268,8 @@ namespace ural
     -> ural::tuple<decltype(sequence(std::forward<Forward>(in))),
                    decltype(sequence(std::forward<Output>(out)))>
     {
-        auto s_in = sequence(std::forward<Forward>(in));
-        auto s_out = sequence(std::forward<Output>(out));
-        std::tie(std::ignore, s_out) = ::ural::copy(ural::shrink_front(s_in), s_out);
-        return ural::copy(s_in.traversed_front(), s_out);
+        return ::ural::details::rotate_copy(sequence(std::forward<Forward>(in)),
+                                            sequence(std::forward<Output>(out)));
     }
 
     template <class ForwardSequence, class T, class BinaryPredicate>
