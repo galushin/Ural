@@ -241,3 +241,53 @@ BOOST_AUTO_TEST_CASE(make_functor_for_member_var_test)
     BOOST_CHECK_EQUAL(x.first, f(p_x_v));
     BOOST_CHECK_EQUAL(x.first, f(p_x_cv));
 }
+
+BOOST_AUTO_TEST_CASE(make_functor_for_member_function_test)
+{
+    struct Inner
+    {
+    public:
+        int value;
+
+        int get_something() const
+        {
+            return value;
+        }
+
+        int get_something_threadsafe() const volatile
+        {
+            return value;
+        }
+
+        void do_something()
+        {
+            value = 0;
+        }
+
+        void do_something_threadsafe() volatile
+        {
+            value = 0;
+        }
+    };
+
+    auto f = ural::make_functor(&Inner::do_something);
+    auto f_v = ural::make_functor(&Inner::do_something_threadsafe);
+    auto f_c = ural::make_functor(&Inner::get_something);
+    auto f_cv = ural::make_functor(&Inner::get_something_threadsafe);
+
+    Inner x = {42};
+    Inner const x_c = x;
+    Inner volatile x_v = x;
+    Inner const volatile x_cv = x;
+
+    BOOST_CHECK_EQUAL(x.value, f_c(x_c));
+    BOOST_CHECK_EQUAL(x.value, f_cv(x_cv));
+
+    f(x);
+    f_v(x_v);
+
+    BOOST_CHECK_EQUAL(0, x.value);
+    BOOST_CHECK_EQUAL(0, x_v.value);
+
+    // @todo Тесты с (умными) указателями и reference_wrapper
+}

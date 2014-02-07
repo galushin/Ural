@@ -51,6 +51,7 @@ namespace ural
 
     };
 
+    // @todo Доступ к указателю на переменную
     template <class T, class R>
     class function_ptr_functor<R(T::*)>
     {
@@ -90,6 +91,93 @@ namespace ural
 
     private:
         target_type mv_;
+    };
+
+    // @todo Оптимальные типы параметров
+    // @todo Доступ к указателю на функцию
+    // @todo Унифицировать
+    template <class T, class R, class... Args>
+    class function_ptr_functor<R(T::*)(Args...)>
+    {
+    public:
+        typedef R(T::*target_type)(Args...);
+
+        typedef R result_type;
+
+        explicit function_ptr_functor(target_type mf)
+         : mf_{mf}
+        {}
+
+        result_type operator()(T & obj, Args... args) const
+        {
+            return (obj.*mf_)(args...);
+        }
+
+    private:
+        target_type mf_;
+    };
+
+    template <class T, class R, class... Args>
+    class function_ptr_functor<R(T::*)(Args...) const>
+    {
+    public:
+        typedef R(T::*target_type)(Args...) const;
+
+        typedef R result_type;
+
+        explicit function_ptr_functor(target_type mf)
+         : mf_{mf}
+        {}
+
+        result_type operator()(T const & obj, Args... args) const
+        {
+            return (obj.*mf_)(args...);
+        }
+
+    private:
+        target_type mf_;
+    };
+
+    template <class T, class R, class... Args>
+    class function_ptr_functor<R(T::*)(Args...) volatile>
+    {
+    public:
+        typedef R(T::*target_type)(Args...) volatile;
+
+        typedef R result_type;
+
+        explicit function_ptr_functor(target_type mf)
+         : mf_{mf}
+        {}
+
+        result_type operator()(T volatile & obj, Args... args) const
+        {
+            return (obj.*mf_)(args...);
+        }
+
+    private:
+        target_type mf_;
+    };
+
+    template <class T, class R, class... Args>
+    class function_ptr_functor<R(T::*)(Args...) const volatile>
+    {
+    public:
+        typedef R(T::*target_type)(Args...) const volatile;
+
+        typedef R result_type;
+
+        explicit function_ptr_functor(target_type mf)
+         : mf_{mf}
+        {}
+
+        result_type operator()(T const volatile & obj, Args... args) const
+        {
+            return (obj.*mf_)(args...);
+        }
+
+    private:
+        target_type mf_;
     };
 
     template <class T, class R>
