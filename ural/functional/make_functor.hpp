@@ -51,6 +51,54 @@ namespace ural
 
     };
 
+    template <class T, class R>
+    class function_ptr_functor<R(T::*)>
+    {
+    public:
+        typedef R (T::*target_type);
+
+        explicit function_ptr_functor(target_type mv)
+         : mv_(mv)
+        {}
+
+        R & operator()(T & obj) const
+        {
+            return obj.*mv_;
+        }
+
+        R const & operator()(T const & obj) const
+        {
+            return obj.*mv_;
+        }
+
+        R volatile & operator()(T volatile & obj) const
+        {
+            return obj.*mv_;
+        }
+
+        R const volatile & operator()(T const volatile & obj) const
+        {
+            return obj.*mv_;
+        }
+
+        template <class U>
+        auto operator()(U * obj) const
+        -> decltype(std::declval<function_ptr_functor>()(*obj))
+        {
+            return (*this)(*obj);
+        }
+
+    private:
+        target_type mv_;
+    };
+
+    template <class T, class R>
+    function_ptr_functor<R(T::*)>
+    make_functor(R(T::*mv))
+    {
+        return function_ptr_functor<R(T::*)>(mv);
+    }
+
     template <class R, class... Args>
     function_ptr_functor<R(Args...)>
     make_functor(R(*f)(Args...))

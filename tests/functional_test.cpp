@@ -197,3 +197,47 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(logical_or_test, Functor, Or_functors)
     BOOST_CHECK_EQUAL(true, or_(true, false));
     BOOST_CHECK_EQUAL(true, or_(true, true));
 }
+
+BOOST_AUTO_TEST_CASE(make_functor_for_member_var_test)
+{
+    typedef std::pair<int, std::string> Type;
+
+    Type x{42, "abc"};
+    Type const x_c = x;
+    Type volatile x_v = x;
+    Type volatile const x_cv = x;
+
+    auto p_x = &x;
+    auto p_x_c = &x_c;
+    auto p_x_v = &x_v;
+    auto p_x_cv = &x_cv;
+
+    auto f = ural::make_functor(&Type::first);
+
+    typedef decltype(f(x)) R;
+    typedef decltype(f(x_c)) R_c;
+    typedef decltype(f(x_v)) R_v;
+    typedef decltype(f(x_cv)) R_cv;
+
+    static_assert(std::is_same<int &, R>::value, "");
+    static_assert(std::is_same<int const &, R_c>::value, "");
+    static_assert(std::is_same<int volatile &, R_v>::value, "");
+    static_assert(std::is_same<int const volatile &, R_cv>::value, "");
+
+    static_assert(std::is_same<int &, decltype(f(p_x))>::value, "");
+    static_assert(std::is_same<int const &, decltype(f(p_x_c))>::value, "");
+    static_assert(std::is_same<int volatile &, decltype(f(p_x_v))>::value, "");
+    static_assert(std::is_same<int const volatile &, decltype(f(p_x_cv))>::value, "");
+
+    // @todo Тесты с умными указателями и reference_wrapper
+
+    BOOST_CHECK_EQUAL(x.first, f(x));
+    BOOST_CHECK_EQUAL(x.first, f(x_c));
+    BOOST_CHECK_EQUAL(x.first, f(x_v));
+    BOOST_CHECK_EQUAL(x.first, f(x_cv));
+
+    BOOST_CHECK_EQUAL(x.first, f(p_x));
+    BOOST_CHECK_EQUAL(x.first, f(p_x_c));
+    BOOST_CHECK_EQUAL(x.first, f(p_x_v));
+    BOOST_CHECK_EQUAL(x.first, f(p_x_cv));
+}
