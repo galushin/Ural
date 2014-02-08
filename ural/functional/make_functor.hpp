@@ -51,7 +51,6 @@ namespace ural
 
     };
 
-    // @todo Доступ к указателю на переменную
     template <class T, class R>
     class function_ptr_functor<R(T::*)>
     {
@@ -87,6 +86,11 @@ namespace ural
         -> decltype(std::declval<function_ptr_functor>()(*obj))
         {
             return (*this)(*obj);
+        }
+
+        target_type target() const
+        {
+            return mv_;
         }
 
     private:

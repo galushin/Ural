@@ -214,6 +214,8 @@ BOOST_AUTO_TEST_CASE(make_functor_for_member_var_test)
 
     auto f = ural::make_functor(&Type::first);
 
+    BOOST_CHECK_EQUAL(&Type::first, f.target());
+
     typedef decltype(f(x)) R;
     typedef decltype(f(x_c)) R_c;
     typedef decltype(f(x_v)) R_v;
