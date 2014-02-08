@@ -16,6 +16,7 @@ namespace ural
         // Типы
         typedef typename BidirectionalSequence::reference reference;
         typedef typename BidirectionalSequence::value_type value_type;
+        typedef typename BidirectionalSequence::distance_type distance_type;
 
         // Конструкторы
         explicit reverse_sequence(BidirectionalSequence seq)

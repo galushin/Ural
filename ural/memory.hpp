@@ -10,12 +10,29 @@
 namespace ural
 {
     /** @todo Перегрузки для встроенных массивов
+    @todo Убедится, что запрещена перегрузка для встроенных массивов с известным
+    размером
     */
     template <class T, class... Args>
-    std::unique_ptr<T> make_unique(Args &&... args)
+    typename std::enable_if<!std::is_array<T>::value, std::unique_ptr<T>>::type
+    make_unique(Args &&... args)
     {
         return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
     }
+
+    template <class T>
+    typename std::enable_if<std::is_array<T>::value && std::extent<T>::value == 0,
+                            std::unique_ptr<T>>::type
+    make_unique(size_t size)
+    {
+        typedef typename std::remove_all_extents<T>::type Elem;
+        return std::unique_ptr<T>(new Elem[size]);
+    }
+
+    template <class T>
+    typename std::enable_if<std::is_array<T>::value && std::extent<T>::value != 0,
+                            std::unique_ptr<T>>::type
+    make_unique(size_t size) = delete;
 }
 // namespace ural
 

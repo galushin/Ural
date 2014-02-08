@@ -25,9 +25,7 @@ namespace details
             return in;
         }
 
-        // @todo Заменить на одну операцию
-        auto in_next = in;
-        ++ in_next;
+        auto in_next = ural::next(in);
 
         for(; !!in_next; ++in_next, ++ in)
         {

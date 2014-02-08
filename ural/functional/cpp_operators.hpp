@@ -226,7 +226,6 @@ namespace ural
         }
     };
 
-    // @todo выразить через less и некоторые другие примитивы
     template <class T1 = void, class T2 = T1>
     class greater;
 

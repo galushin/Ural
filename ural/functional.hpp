@@ -3,7 +3,6 @@
 
 /** @file ural/functional.hpp
  @brief Функциональные объекты и средства для работы с ними
- @todo Разбить на более мелкие файлы
 */
 
 #include <boost/compressed_pair.hpp>

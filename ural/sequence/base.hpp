@@ -94,7 +94,7 @@ namespace ural
     }
 
     template <class Sequence>
-    Sequence next(Sequence s, typename Sequence::distance_type n)
+    Sequence next(Sequence s, typename Sequence::distance_type n = 1)
     {
         ::ural::advance(s, n);
         return s;
