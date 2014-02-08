@@ -138,7 +138,7 @@ typedef boost::mpl::list<ural::logical_not<bool>, ural::logical_not<>>
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(logical_not_test, Functor, Not_functors)
 {
-    constexpr Functor not_;
+    constexpr Functor not_ {};
 
     static_assert(not_ == not_, "");
     static_assert(!(not_ != not_), "");
@@ -158,7 +158,7 @@ typedef boost::mpl::list<ural::logical_and<bool>,
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(logical_and_test, Functor, And_functors)
 {
-    constexpr Functor and_;
+    constexpr Functor and_ {};
 
     static_assert(and_ == and_, "");
     static_assert(!(and_ != and_), "");
@@ -182,7 +182,7 @@ typedef boost::mpl::list<ural::logical_or<bool>,
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(logical_or_test, Functor, Or_functors)
 {
-    constexpr Functor or_;
+    constexpr Functor or_ {};
 
     static_assert(or_ == or_, "");
     static_assert(!(or_ != or_), "");

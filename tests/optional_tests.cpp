@@ -565,9 +565,9 @@ BOOST_AUTO_TEST_CASE(example_conceptual_model)
   oj = nullopt;
   ok = 0;
 
-  oi == nullopt;
-  oj == 0;
-  ok == 1;
+  BOOST_CHECK_EQUAL(false, oi == nullopt);
+  BOOST_CHECK_EQUAL(false, oj == 0);
+  BOOST_CHECK_EQUAL(false, ok == 1);
 }
 
 BOOST_AUTO_TEST_CASE(example_rationale)

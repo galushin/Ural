@@ -37,7 +37,7 @@ namespace ural
 
         constexpr target_type const & target() const
         {
-            return *this;
+            return static_cast<target_type const &>(*this);
         }
 
         template <class... Args>
