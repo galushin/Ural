@@ -2,6 +2,7 @@
 
 #include <ural/utility/tracers.hpp>
 #include <ural/functional.hpp>
+#include <ural/memory.hpp>
 
 BOOST_AUTO_TEST_CASE(functor_tracer_test)
 {
@@ -249,6 +250,10 @@ BOOST_AUTO_TEST_CASE(make_functor_for_member_function_test)
     struct Inner
     {
     public:
+        Inner(int x)
+         : value{x}
+        {}
+
         int value;
 
         int get_something() const
@@ -282,14 +287,25 @@ BOOST_AUTO_TEST_CASE(make_functor_for_member_function_test)
     Inner volatile x_v = x;
     Inner const volatile x_cv = x;
 
+    auto p = ural::make_unique<Inner>(42);
+    auto p_c = ural::make_unique<Inner const>(42);
+    auto p_v = ural::make_unique<Inner volatile>(42);
+    auto p_cv = ural::make_unique<Inner const volatile>(42);
+
     BOOST_CHECK_EQUAL(x.value, f_c(x_c));
     BOOST_CHECK_EQUAL(x.value, f_cv(x_cv));
+    BOOST_CHECK_EQUAL(x.value, f_c(p_c));
+    BOOST_CHECK_EQUAL(x.value, f_cv(p_cv));
 
     f(x);
     f_v(x_v);
+    f(p);
+    f_v(p_v);
 
     BOOST_CHECK_EQUAL(0, x.value);
     BOOST_CHECK_EQUAL(0, x_v.value);
+    BOOST_CHECK_EQUAL(0, p->value);
+    BOOST_CHECK_EQUAL(0, p_v->value);
 
-    // @todo Тесты с (умными) указателями и reference_wrapper
+    // @todo Тесты с reference_wrapper
 }

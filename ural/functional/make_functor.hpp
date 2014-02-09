@@ -117,6 +117,12 @@ namespace ural
             return (obj.*mf_)(args...);
         }
 
+        template <class Ptr>
+        result_type operator()(Ptr const & p, Args... args) const
+        {
+            return (*this)(*p, args...);
+        }
+
     private:
         target_type mf_;
     };
@@ -136,6 +142,12 @@ namespace ural
         result_type operator()(T const & obj, Args... args) const
         {
             return (obj.*mf_)(args...);
+        }
+
+        template <class Ptr>
+        result_type operator()(Ptr const & p, Args... args) const
+        {
+            return (*this)(*p, args...);
         }
 
     private:
@@ -159,6 +171,12 @@ namespace ural
             return (obj.*mf_)(args...);
         }
 
+        template <class Ptr>
+        result_type operator()(Ptr const & p, Args... args) const
+        {
+            return (*this)(*p, args...);
+        }
+
     private:
         target_type mf_;
     };
@@ -178,6 +196,12 @@ namespace ural
         result_type operator()(T const volatile & obj, Args... args) const
         {
             return (obj.*mf_)(args...);
+        }
+
+        template <class Ptr>
+        result_type operator()(Ptr const & p, Args... args) const
+        {
+            return (*this)(*p, args...);
         }
 
     private:

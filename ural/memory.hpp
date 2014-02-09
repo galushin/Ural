@@ -21,8 +21,8 @@ namespace ural
                             std::unique_ptr<T>>::type
     make_unique(size_t size)
     {
-        typedef typename std::remove_all_extents<T>::type Elem;
-        return std::unique_ptr<T>(new Elem[size]);
+        typedef typename std::remove_extent<T>::type Elem;
+        return std::unique_ptr<T>(new Elem[size]());
     }
 
     template <class T>
