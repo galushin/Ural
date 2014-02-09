@@ -9,10 +9,6 @@
 
 namespace ural
 {
-    /** @todo Перегрузки для встроенных массивов
-    @todo Убедится, что запрещена перегрузка для встроенных массивов с известным
-    размером
-    */
     template <class T, class... Args>
     typename std::enable_if<!std::is_array<T>::value, std::unique_ptr<T>>::type
     make_unique(Args &&... args)

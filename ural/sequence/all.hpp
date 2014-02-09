@@ -78,7 +78,6 @@ namespace ural
     /**
     @todo параметр по умолчанию OStream
     @todo параметр по умолчанию T
-    @todo Конструктор без аргумента, задающего разделитель
     */
     template <class OStream, class T, class Delimeter>
     class ostream_sequence
@@ -86,9 +85,12 @@ namespace ural
     {
     public:
         // Конструктор
-        explicit ostream_sequence(OStream & is, Delimeter delim)
-         : is_{is}
-         , delim_{std::move(delim)}
+        explicit ostream_sequence(OStream & os)
+         : data_{os}
+        {}
+
+        explicit ostream_sequence(OStream & os, Delimeter delim)
+         : data_{os, std::move(delim)}
         {}
 
         // Однопроходная последовательность
@@ -104,15 +106,14 @@ namespace ural
 
         void operator=(T const & x) const
         {
-            is_.get() << x << delim_;
+            data_.first().get() << x << data_.second();
         }
 
         void pop_front()
         {}
 
     private:
-        std::reference_wrapper<OStream> is_;
-        Delimeter delim_;
+        boost::compressed_pair<std::reference_wrapper<OStream>, Delimeter> data_;
     };
 
     template <class OStream, class Delimeter>
@@ -121,9 +122,12 @@ namespace ural
     {
     public:
         // Конструктор
-        explicit ostream_sequence(OStream & is, Delimeter delim)
-         : is_{is}
-         , delim_{std::move(delim)}
+        explicit ostream_sequence(OStream & os)
+         : data_{os}
+        {}
+
+        explicit ostream_sequence(OStream & os, Delimeter delim)
+         : data_{os, std::move(delim)}
         {}
 
         // Однопроходная последовательность
@@ -140,29 +144,51 @@ namespace ural
         template <class T>
         void operator=(T const & x) const
         {
-            is_.get() << x << delim_;
+            data_.first().get() << x << data_.second();
         }
 
         void pop_front()
         {}
 
     private:
-        std::reference_wrapper<OStream> is_;
-        Delimeter delim_;
+        boost::compressed_pair<std::reference_wrapper<OStream>, Delimeter> data_;
     };
+
+    struct no_delimeter
+    {};
+
+    template <class OStream>
+    OStream & operator<<(OStream & os, no_delimeter)
+    {
+        return os;
+    }
 
     template <class T, class OStream, class Delimeter>
     ostream_sequence<OStream, T, Delimeter>
-    make_ostream_sequence(OStream & is, Delimeter delim)
+    make_ostream_sequence(OStream & os, Delimeter delim)
     {
-        return ostream_sequence<OStream, T, Delimeter>(is, std::move(delim));
+        return ostream_sequence<OStream, T, Delimeter>(os, std::move(delim));
     }
 
     template <class OStream, class Delimeter>
     ostream_sequence<OStream, auto_tag, Delimeter>
-    make_ostream_sequence(OStream & is, Delimeter delim)
+    make_ostream_sequence(OStream & os, Delimeter delim)
     {
-        return ostream_sequence<OStream, auto_tag, Delimeter>(is, std::move(delim));
+        return ostream_sequence<OStream, auto_tag, Delimeter>(os, std::move(delim));
+    }
+
+    template <class T, class OStream>
+    ostream_sequence<OStream, T, no_delimeter>
+    make_ostream_sequence(OStream & os)
+    {
+        return ostream_sequence<OStream, T, no_delimeter>(os);
+    }
+
+    template <class OStream>
+    ostream_sequence<OStream, auto_tag, no_delimeter>
+    make_ostream_sequence(OStream & os)
+    {
+        return ostream_sequence<OStream, auto_tag, no_delimeter>(os);
     }
 
     template <class Input, class Predicate>

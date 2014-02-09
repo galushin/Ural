@@ -50,6 +50,32 @@ BOOST_AUTO_TEST_CASE(ostream_sequence_test_auto)
     BOOST_CHECK_EQUAL(os_std.str(), os_ural.str());
 }
 
+BOOST_AUTO_TEST_CASE(ostream_sequence_test_no_delim)
+{
+    std::vector<int> const xs = {1, 2, 3, 4, 5};
+
+    std::ostringstream os_std;
+    std::ostringstream os_ural;
+
+    std::copy(xs.begin(), xs.end(), std::ostream_iterator<int>(os_std));
+    ural::copy(xs, ural::make_ostream_sequence<int>(os_ural));
+
+    BOOST_CHECK_EQUAL(os_std.str(), os_ural.str());
+}
+
+BOOST_AUTO_TEST_CASE(ostream_sequence_test_auto_no_delim)
+{
+    std::vector<int> const xs = {1, 2, 3, 4, 5};
+
+    std::ostringstream os_std;
+    std::ostringstream os_ural;
+
+    std::copy(xs.begin(), xs.end(), std::ostream_iterator<int>(os_std));
+    ural::copy(xs, ural::make_ostream_sequence(os_ural));
+
+    BOOST_CHECK_EQUAL(os_std.str(), os_ural.str());
+}
+
 BOOST_AUTO_TEST_CASE(reversed_reversed_test)
 {
     std::vector<int> const xs = {1, 2, 3, 4, 5};

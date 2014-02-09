@@ -80,7 +80,7 @@
 	<ural/algorithm/details/copy.hpp>
 	<ural/algorithm/details/algo_base.hpp>
 
-1391776207 c:\devtools\github\ural\ural\sequence\all.hpp
+1391922906 c:\devtools\github\ural\ural\sequence\all.hpp
 	<iterator>
 	<ural/sequence/base.hpp>
 	<ural/sequence/make.hpp>
@@ -826,10 +826,10 @@
 1391776207 c:\devtools\github\ural\ural\sequence\uniqued.hpp
 	<ural/algorithm/details/algo_base.hpp>
 
-1391872166 c:\devtools\github\ural\ural\memory.hpp
+1391872704 c:\devtools\github\ural\ural\memory.hpp
 	<memory>
 
-1391776207 source:c:\devtools\github\ural\tests\sequence_test.cpp
+1391914620 source:c:\devtools\github\ural\tests\sequence_test.cpp
 	<boost/test/unit_test.hpp>
 	<iterator>
 	<ural/abi.hpp>
@@ -6104,7 +6104,7 @@
 	<map>
 	<list>
 
-1391871966 source:c:\devtools\github\ural\tests\memory_test.cpp
+1391872262 source:c:\devtools\github\ural\tests\memory_test.cpp
 	<string>
 	<memory>
 	<boost/test/unit_test.hpp>
