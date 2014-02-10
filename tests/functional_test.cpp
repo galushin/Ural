@@ -213,6 +213,11 @@ BOOST_AUTO_TEST_CASE(make_functor_for_member_var_test)
     auto p_x_v = &x_v;
     auto p_x_cv = &x_cv;
 
+    auto r = std::ref(x);
+    auto r_c = std::ref(x_c);
+    auto r_v = std::ref(x_v);
+    auto r_cv = std::ref(x_cv);
+
     auto f = ural::make_functor(&Type::first);
 
     BOOST_CHECK_EQUAL(&Type::first, f.target());
@@ -232,12 +237,20 @@ BOOST_AUTO_TEST_CASE(make_functor_for_member_var_test)
     static_assert(std::is_same<int volatile &, decltype(f(p_x_v))>::value, "");
     static_assert(std::is_same<int const volatile &, decltype(f(p_x_cv))>::value, "");
 
-    // @todo Тесты с умными указателями и reference_wrapper
+    static_assert(std::is_same<int &, decltype(f(r))>::value, "");
+    static_assert(std::is_same<int const &, decltype(f(r_c))>::value, "");
+    static_assert(std::is_same<int volatile &, decltype(f(r_v))>::value, "");
+    static_assert(std::is_same<int const volatile &, decltype(f(r_cv))>::value, "");
 
     BOOST_CHECK_EQUAL(x.first, f(x));
     BOOST_CHECK_EQUAL(x.first, f(x_c));
     BOOST_CHECK_EQUAL(x.first, f(x_v));
     BOOST_CHECK_EQUAL(x.first, f(x_cv));
+
+    BOOST_CHECK_EQUAL(x.first, f(r));
+    BOOST_CHECK_EQUAL(x.first, f(r_c));
+    BOOST_CHECK_EQUAL(x.first, f(r_v));
+    BOOST_CHECK_EQUAL(x.first, f(r_cv));
 
     BOOST_CHECK_EQUAL(x.first, f(p_x));
     BOOST_CHECK_EQUAL(x.first, f(p_x_c));

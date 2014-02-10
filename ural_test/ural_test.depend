@@ -12,11 +12,12 @@
 
 1382764809 c:\devtools\ural_repo\ural\\ural\placeholders.hpp
 
-1391994565 source:c:\devtools\ural_repo\ural\tests\iterator_sequence_test.cpp
+1392020279 source:c:\devtools\ural_repo\ural\tests\iterator_sequence_test.cpp
 	<boost/test/unit_test.hpp>
 	<forward_list>
 	<list>
 	<vector>
+	<valarray>
 	<boost/concept/assert.hpp>
 	<ural/algorithm.hpp>
 	<ural/numeric.hpp>
@@ -313,7 +314,7 @@
 	<ural/sequence/transform.hpp>
 	<ural/sequence/uniqued.hpp>
 
-1391663232 c:\devtools\ural_repo\ural\ural\sequence\iterator_sequence.hpp
+1392014052 c:\devtools\ural_repo\ural\ural\sequence\iterator_sequence.hpp
 	<ural/sequence/base.hpp>
 	<ural/tuple.hpp>
 
@@ -421,22 +422,22 @@
 1391869995 c:\devtools\github\ural\ural\sequence\base.hpp
 	<ural/defs.hpp>
 
-1391989088 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
+1392014796 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
 	<ural/defs.hpp>
 
 1384408805 c:\devtools\ural_repo\ural\ural\thread.hpp
 
-1391993382 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
+1392008774 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
 	<ural/sequence/base.hpp>
 	<ural/sequence/function_output.hpp>
 	<ural/sequence/generator.hpp>
 	<ural/algorithm/details/copy.hpp>
 	<ural/functional.hpp>
 
-1390967638 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
+1392013943 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
 	<ural/sequence/base.hpp>
 
-1391993369 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
+1392003298 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<forward_list>
 	<list>
@@ -458,7 +459,7 @@
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
-1391995487 source:c:\devtools\ural_repo\ural\tests\functional_test.cpp
+1392012016 source:c:\devtools\ural_repo\ural\tests\functional_test.cpp
 	<boost/test/unit_test.hpp>
 	<ural/utility/tracers.hpp>
 	<ural/functional.hpp>
@@ -524,7 +525,8 @@
 1390967534 c:\devtools\ural_repo\ural\ural\sequence\filtered.hpp
 	<boost/compressed_pair.hpp>
 
-1390967776 c:\devtools\ural_repo\ural\ural\sequence\make.hpp
+1392015655 c:\devtools\ural_repo\ural\ural\sequence\make.hpp
+	<valarray>
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/insertion.hpp>
 
@@ -840,7 +842,7 @@
 
 1391994184 c:\devtools\ural_repo\ural\ural\sequence\reversed.hpp
 
-1391491726 c:\devtools\ural_repo\ural\ural\abi.hpp
+1392008474 c:\devtools\ural_repo\ural\ural\abi.hpp
 	<cxxabi.h>
 
 1391491763 c:\devtools\ural_repo\ural\ural\random.hpp
@@ -859,7 +861,7 @@
 
 1391323763 c:\pavel\ural_repo\ural\ural\functional\make_functor.hpp
 
-1392001882 c:\devtools\ural_repo\ural\ural\functional\make_functor.hpp
+1392008426 c:\devtools\ural_repo\ural\ural\functional\make_functor.hpp
 	<ural/defs.hpp>
 
 1391482302 source:c:\devtools\ural_repo\ural\tests\concepts_checks.cpp

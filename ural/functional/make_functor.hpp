@@ -10,7 +10,6 @@
 
 namespace ural
 {
-    // Преобразование в функциональный объект
     /** Преобразование в функциональный объект. Перегрузка по умолчанию: просто
     возвращает свой аргумент.
     @brief Преобразование в функциональный объект
@@ -54,7 +53,6 @@ namespace ural
 
     };
 
-    // @todo Унифицировать
     template <class T, class R>
     class function_ptr_functor<R(T::*)>
     {
@@ -86,10 +84,17 @@ namespace ural
         }
 
         template <class U>
-        auto operator()(U * obj) const
-        -> decltype(std::declval<function_ptr_functor>()(*obj))
+        auto operator()(std::reference_wrapper<U> r) const
+        -> decltype(std::declval<function_ptr_functor>()(r.get()))
         {
-            return (*this)(*obj);
+            return (*this)(r.get());
+        }
+
+        template <class U>
+        auto operator()(U * p) const
+        -> decltype(std::declval<function_ptr_functor>()(*p))
+        {
+            return (*this)(*p);
         }
 
         target_type target() const
@@ -122,7 +127,6 @@ namespace ural
      : declare_type<R(T::*)(Args...) const volatile>
     {};
 
-    // @todo Оптимальные типы параметров
     template <class R, class T, class... Args>
     class mem_fn_functor
     {
@@ -136,19 +140,24 @@ namespace ural
          : mf_{mf}
         {}
 
-        result_type operator()(T & obj, Args... args) const
+        result_type
+        operator()(T & obj,
+                   typename boost::call_traits<Args>::param_type... args) const
         {
             return (obj.*mf_)(args...);
         }
 
         result_type
-        operator()(std::reference_wrapper<T> r, Args... args) const
+        operator()(std::reference_wrapper<T> r,
+                   typename boost::call_traits<Args>::param_type... args) const
         {
             return (*this)(r.get(), args...);
         }
 
         template <class Ptr>
-        result_type operator()(Ptr const & p, Args... args) const
+        result_type
+        operator()(Ptr const & p,
+                   typename boost::call_traits<Args>::param_type... args) const
         {
             return (*this)(*p, args...);
         }

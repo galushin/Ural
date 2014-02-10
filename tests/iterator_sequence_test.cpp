@@ -3,6 +3,7 @@
 #include <forward_list>
 #include <list>
 #include <vector>
+#include <valarray>
 
 #include <boost/concept/assert.hpp>
 
@@ -93,4 +94,51 @@ BOOST_AUTO_TEST_CASE(iterator_sequence_size_test)
     BOOST_CHECK_EQUAL(3*sizeof(fwd.begin()), sizeof(s_fwd));
     BOOST_CHECK_EQUAL(5*sizeof(bi.begin()), sizeof(s_bi));
     BOOST_CHECK_EQUAL(5*sizeof(ra.begin()), sizeof(s_ra));
+}
+
+BOOST_AUTO_TEST_CASE(valarray_to_sequence_test)
+{
+    std::valarray<int> x0;
+    std::valarray<int> x = {1, 2, 3};
+
+    std::valarray<int> const &r0 = x0;
+    std::valarray<int> const &r = x;
+
+    auto s0 = ural::sequence(x0);
+    auto s = ural::sequence(x);
+    auto sc0 = ural::sequence(r0);
+    auto sc = ural::sequence(r);
+
+    BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(s0)>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(s)>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(sc0)>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(sc)>));
+
+    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<decltype(s0)>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<decltype(s)>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<decltype(sc0)>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<decltype(sc)>));
+
+    BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<decltype(s), int>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<decltype(sc), int>));
+
+    BOOST_CHECK(s0.traversed_begin() == nullptr);
+    BOOST_CHECK(s0.begin() == nullptr);
+    BOOST_CHECK(s0.end() == nullptr);
+    BOOST_CHECK(s0.traversed_end() == nullptr);
+
+    BOOST_CHECK(sc0.traversed_begin() == nullptr);
+    BOOST_CHECK(sc0.begin() == nullptr);
+    BOOST_CHECK(sc0.end() == nullptr);
+    BOOST_CHECK(sc0.traversed_end() == nullptr);
+
+    BOOST_CHECK(s.traversed_begin() == &x[0]);
+    BOOST_CHECK(s.begin() == &x[0]);
+    BOOST_CHECK(s.end() == &x[0] + x.size());
+    BOOST_CHECK(s.traversed_end() == &x[0] + x.size());
+
+    BOOST_CHECK(sc.traversed_begin() == &x[0]);
+    BOOST_CHECK(sc.begin() == &x[0]);
+    BOOST_CHECK(sc.end() == &x[0] + x.size());
+    BOOST_CHECK(sc.traversed_end() == &x[0] + x.size());
 }

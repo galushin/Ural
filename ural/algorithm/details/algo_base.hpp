@@ -354,9 +354,7 @@ namespace details
             return s;
         }
 
-        // @todo заменить на одну операцию
-        auto s_next = s;
-        ++ s_next;
+        auto s_next = ural::next(s);
 
         // @todo можно ли унифицировать с mismatch?
         for(; !!s_next; ++ s_next)
@@ -439,8 +437,6 @@ namespace details
                                                    std::move(in2)};
         }
 
-        // @todo Заменить рекурсию на итерацию
-        // @todo Оптимизация кода
         auto r = ::ural::details::swap_ranges(in1, in2);
 
         if(!r[ural::_1] && !r[ural::_2])
@@ -477,10 +473,15 @@ namespace details
     ural::tuple<Forward, Output>
     rotate_copy(Forward in, Output out)
     {
+        auto const n = ural::size(in);
+        auto in_orig = ural::next(in.original(), n);
+
         auto in_1 = in.traversed_front();
         auto r1 = ::ural::details::copy(std::move(in), std::move(out));
         auto r2 = ::ural::details::copy(in_1, std::move(r1[ural::_2]));
-        return r2;
+
+        return ural::tuple<Forward, Output>{std::move(in_orig),
+                                            std::move(r2[ural::_2])};
     }
 
     template <class RASequence, class URNG>
@@ -537,7 +538,6 @@ namespace details
     ForwardSequence
     partition(ForwardSequence in, UnaryPredicate pred)
     {
-        // @todo Специализации для более сильных категорий итераторов
         // пропускаем ведущие "хорошие" элеменнов
         auto sink = ::ural::details::find_if_not(std::move(in), pred);
 
@@ -612,8 +612,6 @@ namespace details
             return in;
         }
 
-        // @todo Попробовать получить буфер
-
         // Разделяем на месте
         auto s = ural::shrink_front(std::move(in));
         auto r =
@@ -686,9 +684,6 @@ namespace details
         auto s1 = s.traversed_front();
         auto s2 = ural::shrink_front(s);
 
-        // @todo Попытаться получить буфер
-        // @todo Оптимизация
-
         auto n1 = ural::size(s1);
         auto n2 = ural::size(s2);
 
@@ -747,7 +742,6 @@ namespace details
     template <class RASequence, class T, class Compare>
     RASequence equal_range(RASequence in, T const & value, Compare cmp)
     {
-        // @todo Оптимизация
         auto lower = ::ural::details::lower_bound(in, value, cmp);
         auto upper = ::ural::details::upper_bound(in, value, cmp);
 
@@ -1011,7 +1005,6 @@ namespace details
     template <class RASequence, class Compare>
     void nth_element(RASequence s, Compare cmp)
     {
-        // @todo Оптимизация
         return ::ural::details::heap_select(std::move(s), std::move(cmp));
     }
 

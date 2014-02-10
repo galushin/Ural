@@ -5,6 +5,8 @@
  @brief Функции создания последовательностей
 */
 
+#include <valarray>
+
 #include <ural/sequence/iterator_sequence.hpp>
 #include <ural/sequence/insertion.hpp>
 
@@ -46,6 +48,36 @@ namespace ural
     {
         typedef std::front_insert_iterator<Container> Iterator;
         return ural::output_iterator_sequence<Iterator>(std::move(i));
+    }
+
+    template <class T>
+    iterator_sequence<T*>
+    sequence(std::valarray<T> & c)
+    {
+        if(c.size() == 0)
+        {
+            return iterator_sequence<T*>(nullptr, nullptr);
+        }
+        else
+        {
+            auto first = std::addressof(c[0]);
+            return iterator_sequence<T*>(first, first + c.size());
+        }
+    }
+
+    template <class T>
+    iterator_sequence<T const*>
+    sequence(std::valarray<T> const & c)
+    {
+        if(c.size() == 0)
+        {
+            return iterator_sequence<const T*>(nullptr, nullptr);
+        }
+        else
+        {
+            auto first = std::addressof(c[0]);
+            return iterator_sequence<const T*>(first, first + c.size());
+        }
     }
 }
 // namespace ural

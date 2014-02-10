@@ -738,11 +738,13 @@ BOOST_AUTO_TEST_CASE(rotate_copy_return_test)
         auto s = ural::sequence(src);
         s += i;
 
-        // @todo Проверить возвращаемое значение (первый компонент)
         auto r_ural = ural::rotate_copy(s, d_ural);
 
         BOOST_CHECK_EQUAL(src.size(), r_ural[ural::_2].traversed_front().size());
         BOOST_CHECK_EQUAL(d_ural.size() - src.size(), r_ural[ural::_2].size());
+
+        BOOST_CHECK_EQUAL(s.size(), r_ural[ural::_1].traversed_front().size());
+        BOOST_CHECK_EQUAL(s.traversed_front().size(), r_ural[ural::_1].size());
 
         BOOST_CHECK_EQUAL_COLLECTIONS(d_std.begin(), d_std.end(),
                                       d_ural.begin(), d_ural.end());

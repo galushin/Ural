@@ -12,7 +12,6 @@ namespace ural
 {
     /** @brief Выходная последовательность, выполняющая вызов функции для
     каждого "записываемого элемента"
-    @todo Точное задание типа аргумента?
     */
     template <class UnaryFunction>
     class function_output_sequence

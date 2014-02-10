@@ -13,7 +13,6 @@ namespace abi
 {
     inline std::string demangle_name(char const * name)
     {
-        // @todo Поддержка разных компиляторов
         int status = 0;
         auto realname = ::__cxxabiv1::__cxa_demangle(name, nullptr, nullptr, &status);
         std::string result(realname);
