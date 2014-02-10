@@ -1,6 +1,8 @@
 #ifndef Z_URAL_FUNCTIONAL_MAKE_FUNCTOR_HPP_INCLUDED
 #define Z_URAL_FUNCTIONAL_MAKE_FUNCTOR_HPP_INCLUDED
 
+#include <ural/defs.hpp>
+
 /** @file ural/functional/make_functor.hpp
  @brief Классы и функции для преобразования указателей на функции, функции-члены
  и переменные члены.
@@ -16,7 +18,8 @@ namespace ural
     @return f
     */
     template <class F>
-    F make_functor(F f)
+    typename std::enable_if<std::is_member_pointer<F>::value == false, F>::type
+    make_functor(F f)
     {
         return f;
     }
@@ -51,6 +54,7 @@ namespace ural
 
     };
 
+    // @todo Унифицировать
     template <class T, class R>
     class function_ptr_functor<R(T::*)>
     {
@@ -97,18 +101,38 @@ namespace ural
         target_type mv_;
     };
 
+    // @todo Без специлазаций
+    template <class R, class T, class... Args>
+    struct declare_mem_fn_ptr_type
+     : declare_type<R(T::*)(Args...)>
+    {};
+
+    template <class R, class T, class... Args>
+    struct declare_mem_fn_ptr_type<R, T const, Args...>
+     : declare_type<R(T::*)(Args...) const>
+    {};
+
+    template <class R, class T, class... Args>
+    struct declare_mem_fn_ptr_type<R, T volatile, Args...>
+     : declare_type<R(T::*)(Args...) volatile>
+    {};
+
+    template <class R, class T, class... Args>
+    struct declare_mem_fn_ptr_type<R, T const volatile, Args...>
+     : declare_type<R(T::*)(Args...) const volatile>
+    {};
+
     // @todo Оптимальные типы параметров
-    // @todo Доступ к указателю на функцию
-    // @todo Унифицировать
-    template <class T, class R, class... Args>
-    class function_ptr_functor<R(T::*)(Args...)>
+    template <class R, class T, class... Args>
+    class mem_fn_functor
     {
     public:
-        typedef R(T::*target_type)(Args...);
+        typedef typename declare_mem_fn_ptr_type<R, T, Args...>::type
+            target_type;
 
         typedef R result_type;
 
-        explicit function_ptr_functor(target_type mf)
+        explicit mem_fn_functor(target_type mf)
          : mf_{mf}
         {}
 
@@ -117,102 +141,64 @@ namespace ural
             return (obj.*mf_)(args...);
         }
 
+        result_type
+        operator()(std::reference_wrapper<T> r, Args... args) const
+        {
+            return (*this)(r.get(), args...);
+        }
+
         template <class Ptr>
         result_type operator()(Ptr const & p, Args... args) const
         {
             return (*this)(*p, args...);
         }
 
+        target_type target() const
+        {
+            return mf_;
+        }
+
     private:
         target_type mf_;
     };
+
+    template <class F>
+    struct mem_fn_functor_type;
 
     template <class T, class R, class... Args>
-    class function_ptr_functor<R(T::*)(Args...) const>
-    {
-    public:
-        typedef R(T::*target_type)(Args...) const;
-
-        typedef R result_type;
-
-        explicit function_ptr_functor(target_type mf)
-         : mf_{mf}
-        {}
-
-        result_type operator()(T const & obj, Args... args) const
-        {
-            return (obj.*mf_)(args...);
-        }
-
-        template <class Ptr>
-        result_type operator()(Ptr const & p, Args... args) const
-        {
-            return (*this)(*p, args...);
-        }
-
-    private:
-        target_type mf_;
-    };
+    struct mem_fn_functor_type<R(T::*)(Args...)>
+     : ural::declare_type<mem_fn_functor<R, T, Args...>>
+    {};
 
     template <class T, class R, class... Args>
-    class function_ptr_functor<R(T::*)(Args...) volatile>
-    {
-    public:
-        typedef R(T::*target_type)(Args...) volatile;
-
-        typedef R result_type;
-
-        explicit function_ptr_functor(target_type mf)
-         : mf_{mf}
-        {}
-
-        result_type operator()(T volatile & obj, Args... args) const
-        {
-            return (obj.*mf_)(args...);
-        }
-
-        template <class Ptr>
-        result_type operator()(Ptr const & p, Args... args) const
-        {
-            return (*this)(*p, args...);
-        }
-
-    private:
-        target_type mf_;
-    };
+    struct mem_fn_functor_type<R(T::*)(Args...) const>
+     : ural::declare_type<mem_fn_functor<R, T const, Args...>>
+    {};
 
     template <class T, class R, class... Args>
-    class function_ptr_functor<R(T::*)(Args...) const volatile>
+    struct mem_fn_functor_type<R(T::*)(Args...) volatile>
+     : ural::declare_type<mem_fn_functor<R, T volatile, Args...>>
+    {};
+
+    template <class T, class R, class... Args>
+    struct mem_fn_functor_type<R(T::*)(Args...) const volatile>
+     : ural::declare_type<mem_fn_functor<R, T const volatile, Args...>>
+    {};
+
+    template <class F>
+    typename std::enable_if<std::is_member_function_pointer<F>::value,
+                            typename mem_fn_functor_type<F>::type>::type
+    make_functor(F mf)
     {
-    public:
-        typedef R(T::*target_type)(Args...) const volatile;
+        return typename mem_fn_functor_type<F>::type(mf);
+    }
 
-        typedef R result_type;
-
-        explicit function_ptr_functor(target_type mf)
-         : mf_{mf}
-        {}
-
-        result_type operator()(T const volatile & obj, Args... args) const
-        {
-            return (obj.*mf_)(args...);
-        }
-
-        template <class Ptr>
-        result_type operator()(Ptr const & p, Args... args) const
-        {
-            return (*this)(*p, args...);
-        }
-
-    private:
-        target_type mf_;
-    };
-
-    template <class T, class R>
-    function_ptr_functor<R(T::*)>
-    make_functor(R(T::*mv))
+    template <class T>
+    typename std::enable_if<std::is_member_object_pointer<T>::value,
+                            function_ptr_functor<T>>::type
+    make_functor(T mv)
     {
-        return function_ptr_functor<R(T::*)>(mv);
+        return function_ptr_functor<T>(mv);
     }
 
     template <class R, class... Args>

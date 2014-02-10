@@ -14,6 +14,12 @@ namespace ural
     struct use_default{};
     struct auto_tag{};
 
+    template <class T>
+    struct declare_type
+    {
+        typedef T type;
+    };
+
     template <class T, class Default>
     struct default_helper
      : std::conditional<std::is_same<T, use_default>::value, Default, T>

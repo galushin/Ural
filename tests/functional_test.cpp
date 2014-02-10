@@ -282,6 +282,11 @@ BOOST_AUTO_TEST_CASE(make_functor_for_member_function_test)
     auto f_c = ural::make_functor(&Inner::get_something);
     auto f_cv = ural::make_functor(&Inner::get_something_threadsafe);
 
+    BOOST_CHECK(f.target() == &Inner::do_something);
+    BOOST_CHECK(f_v.target() == &Inner::do_something_threadsafe);
+    BOOST_CHECK(f_c.target() == &Inner::get_something);
+    BOOST_CHECK(f_cv.target() == &Inner::get_something_threadsafe);
+
     Inner x = {42};
     Inner const x_c = x;
     Inner volatile x_v = x;
@@ -292,20 +297,29 @@ BOOST_AUTO_TEST_CASE(make_functor_for_member_function_test)
     auto p_v = ural::make_unique<Inner volatile>(42);
     auto p_cv = ural::make_unique<Inner const volatile>(42);
 
+    auto r = std::ref(x);
+    auto r_c = std::ref(x_c);
+    auto r_v = std::ref(x_v);
+    auto r_cv = std::ref(x_cv);
+
     BOOST_CHECK_EQUAL(x.value, f_c(x_c));
     BOOST_CHECK_EQUAL(x.value, f_cv(x_cv));
     BOOST_CHECK_EQUAL(x.value, f_c(p_c));
     BOOST_CHECK_EQUAL(x.value, f_cv(p_cv));
+    BOOST_CHECK_EQUAL(x.value, f_c(r_c));
+    BOOST_CHECK_EQUAL(x.value, f_cv(r_cv));
 
     f(x);
     f_v(x_v);
     f(p);
     f_v(p_v);
+    f(r);
+    f_v(r_v);
 
     BOOST_CHECK_EQUAL(0, x.value);
     BOOST_CHECK_EQUAL(0, x_v.value);
     BOOST_CHECK_EQUAL(0, p->value);
     BOOST_CHECK_EQUAL(0, p_v->value);
-
-    // @todo Тесты с reference_wrapper
+    BOOST_CHECK_EQUAL(0, r.get().value);
+    BOOST_CHECK_EQUAL(0, r_v.get().value);
 }

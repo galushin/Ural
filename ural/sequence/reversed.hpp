@@ -66,6 +66,10 @@ namespace ural
         BidirectionalSequence base_;
     };
 
+    template <class Sequence>
+    bool operator==(reverse_sequence<Sequence> const & x,
+                    reverse_sequence<Sequence> const & y);
+
     struct reversed_helper{};
 
     template <class BidirectionalSequence>

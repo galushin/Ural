@@ -293,7 +293,20 @@ BOOST_AUTO_TEST_CASE(copy_test)
     BOOST_CHECK_EQUAL_COLLECTIONS(xs.begin(), xs.end(), x1.begin(), x1.end());
 }
 
-// @todo Аналог copy_n
+BOOST_AUTO_TEST_CASE(copy_n_test)
+{
+    std::string const src = "1234567890";
+    std::string r_std;
+    std::string r_ural;
+
+    auto const n = 4;
+
+    std::copy_n(src.begin(), n, std::back_inserter(r_std));
+
+    ural::copy(src | ural::taken(n), std::back_inserter(r_ural));
+
+    BOOST_CHECK_EQUAL(r_std, r_ural);
+}
 
 BOOST_AUTO_TEST_CASE(copy_if_test)
 {

@@ -12,6 +12,15 @@ namespace ural
 {
 namespace details
 {
+    template <class T>
+    void do_swap(T & x, T & y)
+    {
+        using std::swap;
+        using ural::swap;
+        using boost::swap;
+        return swap(x, y);
+    }
+
     template <class ForwardSequence, class Compare>
     ForwardSequence
     is_sorted_until(ForwardSequence in, Compare cmp)
@@ -63,9 +72,7 @@ namespace details
         {
             if(cmp(s[j], s[j-1]))
             {
-                using std::swap;
-                // @todo using ural::swap;
-                swap(s[j], s[j-1]);
+                ::ural::details::do_swap(s[j], s[j-1]);
             }
             else
             {
@@ -370,9 +377,7 @@ namespace details
     {
         for(; !!in1 && !!in2; ++ in1, ++ in2)
         {
-            using std::swap;
-            // @todo using ural::swap;
-            swap(*in1, *in2);
+            ::ural::details::do_swap(*in1, *in2);
         }
         return ural::tuple<Forward1, Forward2>{in1, in2};
     }
@@ -416,9 +421,7 @@ namespace details
             }
             else
             {
-                using std::swap;
-                // @todo using ural::swap;
-                swap(*seq, seq.back());
+               ::ural::details::do_swap(*seq, seq.back());
             }
             seq = seq_next;
         }
@@ -493,9 +496,7 @@ namespace details
             std::uniform_int_distribution<decltype(s.size())>
                 d(0, s.size() - 1);
             auto index = d(g);
-            using std::swap;
-            // @todo using ural::swap;
-            swap(s[index], s.back());
+            ::ural::details::do_swap(s[index], s.back());
         }
     }
 
@@ -548,9 +549,7 @@ namespace details
         {
             if(pred(*in))
             {
-                using ::std::swap;
-                // @todo using ural::swap;
-                swap(*sink, *in);
+                ::ural::details::do_swap(*sink, *in);
                 ++ sink;
             }
         }
@@ -705,9 +704,7 @@ namespace details
         {
             if(cmp(*s2, *s1))
             {
-                using std::swap;
-                // @todo using ural::swap;
-                swap(*s1, *s2);
+                ::ural::details::do_swap(*s1, *s2);
             }
             return;
         }
@@ -790,8 +787,7 @@ namespace details
 
             if(cmp(seq[parent], seq[index]))
             {
-                using std::swap;
-                swap(seq[parent], seq[index]);
+                ::ural::details::do_swap(seq[parent], seq[index]);
             }
 
             index = parent;
@@ -824,8 +820,7 @@ namespace details
 
         if(largest != first)
         {
-            using std::swap;
-            swap(seq[largest], seq[first]);
+            ::ural::details::do_swap(seq[largest], seq[first]);
             heap_sink(seq, largest, last, cmp);
         }
     }
@@ -898,8 +893,7 @@ namespace details
             return;
         }
 
-        using std::swap;
-        swap(seq[0], seq[N-1]);
+        ::ural::details::do_swap(seq[0], seq[N-1]);
         ::ural::details::heap_sink(seq, static_cast<decltype(N)>(0), N-1, cmp);
     }
 
@@ -949,9 +943,7 @@ namespace details
         {
             if(cmp(*i, *s_old))
             {
-                using ::std::swap;
-                // @todo using ::ural::swap;
-                swap(*s_old, *i);
+                ::ural::details::do_swap(*s_old, *i);
                 ::ural::details::heap_sink(s.traversed_front(), 0, part, cmp);
             }
         }
@@ -977,8 +969,6 @@ namespace details
         {
             if(cmp(*in, *to_sort))
             {
-                using ::std::swap;
-                // @todo using ::ural::swap;
                 *to_sort = *in;
                 ::ural::details::heap_sink(to_sort, zero, part, cmp);
             }
@@ -1011,8 +1001,7 @@ namespace details
         {
             if(cmp(*s, *s1))
             {
-                using std::swap;
-                swap(*s, *s1);
+                ::ural::details::do_swap(*s, *s1);
                 ::ural::details::heap_sink(s1, 0, s1.size(), cmp);
             }
         }
@@ -1221,8 +1210,7 @@ namespace details
             return false;
         }
 
-        auto s1 = s;
-        ++ s1;
+        auto s1 = ural::next(s);
 
         if(!s1)
         {
@@ -1244,9 +1232,7 @@ namespace details
             for(; cmp(*r2, *r1); ++r2)
             {}
 
-            using std::swap;
-            // @todo using ural::swap;
-            swap(*r1, *r2);
+            ::ural::details::do_swap(*r1, *r2);
             ural::details::reverse(r1.traversed_front().base());
 
             return true;

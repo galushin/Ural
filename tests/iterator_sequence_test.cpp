@@ -78,8 +78,6 @@ BOOST_AUTO_TEST_CASE(iteretor_sequence_plus_assign_test)
 
 BOOST_AUTO_TEST_CASE(iterator_sequence_size_test)
 {
-    // @todo Добавить проверку для итераторов вывода
-    // Проблема в том, что требуется одельная реализация для operator!
     std::istringstream is;
     std::forward_list<int> fwd;
     std::list<int> bi;

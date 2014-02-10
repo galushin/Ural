@@ -52,10 +52,10 @@ namespace concepts
 
     /** @brief Концепция однопроходной последовательности
     @tparam тип последовательности, для которого проверяется концепция
+    @todo Должен ли быть EqualityComparable?
     */
     template <class Seq>
     class SinglePassSequence
-    // @todo : EqualityComparable<Seq>
     {
     public:
         /// @brief Примеры использования
@@ -76,6 +76,7 @@ namespace concepts
     template <class Seq>
     class ForwardSequence
      : SinglePassSequence<Seq>
+     , EqualityComparable<Seq>
     {
     public:
         BOOST_CONCEPT_USAGE(ForwardSequence)
@@ -125,7 +126,7 @@ namespace concepts
             decltype(consume(*seq));
             decltype(consume(seq.front()));
 
-            // @todo Проверки для value_type
+            // @todo проверки value_type
         }
 
     private:
