@@ -30,6 +30,7 @@ namespace ural
         typedef decltype(std::declval<functor_type>()()) reference;
         typedef decltype(make_value(std::declval<reference>())) value_type;
         typedef size_t distance_type;
+        typedef single_pass_traversal_tag traversal_tag;
 
         explicit generator_sequence(Generator gen)
          : Base_class{std::move(gen)}

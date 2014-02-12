@@ -17,6 +17,7 @@ namespace ural
         // Типы
         typedef typename Forward::reference reference;
         typedef typename Forward::value_type value_type;
+        typedef ural::forward_traversal_tag traversal_tag;
 
         // Конструкторы
         explicit unique_sequence(Forward in)

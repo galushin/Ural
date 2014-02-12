@@ -209,6 +209,29 @@ namespace ural
         iterators_tuple data_;
     };
 
+    template <class Iterator>
+    struct iterator_tag_to_traversal_tag;
+
+    template <>
+    struct iterator_tag_to_traversal_tag<std::input_iterator_tag>
+     : declare_type<single_pass_traversal_tag>
+    {};
+
+    template <>
+    struct iterator_tag_to_traversal_tag<std::forward_iterator_tag>
+     : declare_type<forward_traversal_tag>
+    {};
+
+    template <>
+    struct iterator_tag_to_traversal_tag<std::bidirectional_iterator_tag>
+     : declare_type<bidirectional_traversal_tag>
+    {};
+
+    template <>
+    struct iterator_tag_to_traversal_tag<std::random_access_iterator_tag>
+     : declare_type<random_access_traversal_tag>
+    {};
+
     /** @brief Последовательность на основе пары итераторов
     @tparam Iterator тип итератора
     @tparam Policy тип политики обработки ошибок
@@ -232,6 +255,9 @@ namespace ural
 
         typedef typename std::iterator_traits<Iterator>::iterator_category
             iterator_category;
+
+        typedef typename iterator_tag_to_traversal_tag<iterator_category>::type
+            traversal_tag;
 
         /// @brief Тип политики обработки ошибок
         typedef Policy policy_type;

@@ -29,6 +29,8 @@ namespace ural
         /// @brief Тип ссылки
         typedef value_type const & reference;
 
+        typedef forward_traversal_tag traversal_tag;
+
         /** @brief Конструктор
         @param in исходная последовательность
         @param op операция, используемая для вычисления разности

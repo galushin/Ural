@@ -612,9 +612,6 @@ BOOST_AUTO_TEST_CASE(remove_if_sequence_test)
     BOOST_CHECK_EQUAL(s_std, s_ural);
 }
 
-// @todo Аналог remove
-// @todo Аналог remove_if
-
 // 25.3.9
 BOOST_AUTO_TEST_CASE(unique_test)
 {

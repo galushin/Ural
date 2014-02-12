@@ -9,6 +9,21 @@
 
 namespace ural
 {
+    struct single_pass_traversal_tag
+    {};
+
+    struct forward_traversal_tag
+     : single_pass_traversal_tag
+    {};
+
+    struct bidirectional_traversal_tag
+     : forward_traversal_tag
+    {};
+
+    struct random_access_traversal_tag
+     : forward_traversal_tag
+    {};
+
     /** @brief Базовый класс для последовательностей (CRTP)
     @tparam Seq тип последовательности-наследника
     */

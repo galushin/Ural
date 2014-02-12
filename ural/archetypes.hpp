@@ -47,6 +47,7 @@ namespace archetypes
         typedef Value value_type;
         typedef value_type & reference;
         typedef size_t distance_type;
+        typedef single_pass_traversal_tag traversal_tag;
 
         bool operator!() const
         {

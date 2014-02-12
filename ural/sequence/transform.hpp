@@ -37,6 +37,8 @@ namespace ural
         /// @brief Тип значения
         typedef decltype(make_value(std::declval<reference>())) value_type;
 
+        typedef typename Input::traversal_tag traversal_tag;
+
         /** @brief Конструктор
         @param f функциональный объект, задающий преобразование
         @param in входная последовательность

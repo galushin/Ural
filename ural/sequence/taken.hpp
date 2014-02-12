@@ -20,6 +20,7 @@ namespace ural
         typedef typename Sequence::reference reference;
         typedef typename Sequence::value_type value_type;
         typedef typename Sequence::distance_type distance_type;
+        typedef typename Sequence::traversal_tag traversal_tag;
 
         // Создание, копирование
         explicit take_sequence(Sequence seq, Size count)

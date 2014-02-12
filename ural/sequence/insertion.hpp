@@ -22,6 +22,8 @@ namespace ural
         /// @brief Тип возвращаемого значения для оператора *
         typedef decltype(*std::declval<OutputIterator>())  reference;
 
+        typedef single_pass_traversal_tag traversal_tag;
+
         /** @brief Конструктор
         @param iter итератор, на основе которого будет создана данная
         последовательность

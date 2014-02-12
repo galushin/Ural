@@ -52,7 +52,6 @@ namespace concepts
 
     /** @brief Концепция однопроходной последовательности
     @tparam тип последовательности, для которого проверяется концепция
-    @todo Должен ли быть EqualityComparable?
     */
     template <class Seq>
     class SinglePassSequence
@@ -70,6 +69,8 @@ namespace concepts
         }
     private:
         static Seq seq;
+        typedef typename Seq::traversal_tag traversal_tag;
+
         // @todo Категория обхода
     };
 

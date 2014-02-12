@@ -30,6 +30,8 @@ namespace ural
         /// @brief Тип ссылки
         typedef value_type const & reference;
 
+        typedef forward_traversal_tag traversal_tag;
+
         /// @brief Тип операции, используемой для вычисления суммы
         typedef BinaryOperation operation_type;
 

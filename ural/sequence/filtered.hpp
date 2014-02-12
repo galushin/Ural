@@ -20,6 +20,11 @@ namespace ural
         typedef typename Sequence::reference reference;
         typedef typename Sequence::value_type value_type;
 
+        // @todo Усилить категорию обхода
+        typedef typename std::common_type<typename Sequence::traversal_tag,
+                                          forward_traversal_tag>::type
+            traversal_tag;
+
         // Конструкторы
         explicit filter_sequence(Sequence seq, Predicate pred)
          : data_{std::move(seq), std::move(pred)}

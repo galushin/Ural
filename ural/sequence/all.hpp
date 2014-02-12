@@ -39,6 +39,7 @@ namespace ural
         // Типы
         typedef T value_type;
         typedef T const & reference;
+        typedef single_pass_traversal_tag traversal_tag;
 
         // Конструкторы
         explicit istream_sequence(IStream & is)
@@ -89,6 +90,9 @@ namespace ural
      : public sequence_base<ostream_sequence<OStream, T, Delimeter>>
     {
     public:
+        // Типы
+        typedef single_pass_traversal_tag traversal_tag;
+
         // Конструктор
         explicit ostream_sequence(OStream & os)
          : data_{os}
@@ -126,6 +130,9 @@ namespace ural
      : public sequence_base<ostream_sequence<OStream, auto_tag, Delimeter>>
     {
     public:
+        // Типы
+        typedef single_pass_traversal_tag traversal_tag;
+
         // Конструктор
         explicit ostream_sequence(OStream & os)
          : data_{os}
@@ -205,6 +212,11 @@ namespace ural
         typedef typename Input::reference reference;
         typedef typename Input::value_type value_type;
 
+        // @todo Усилить категорию обхода
+        typedef typename std::common_type<typename Input::traversal_tag,
+                                          forward_traversal_tag>::type
+            traversal_tag;
+
         // Конструкторы
         remove_if_sequence(Input input, Predicate pred)
          : members_{std::move(input), std::move(pred)}
@@ -273,6 +285,11 @@ namespace ural
         // Типы
         typedef typename Input::reference reference;
         typedef typename Input::value_type value_type;
+
+        // @todo Усилить категорию обхода
+        typedef typename std::common_type<typename Input::traversal_tag,
+                                          forward_traversal_tag>::type
+            traversal_tag;
 
         // Конструкторы
         explicit remove_sequence(Input in, T const & value, BinaryPredicate pred)
