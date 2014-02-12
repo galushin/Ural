@@ -20,6 +20,7 @@ namespace ural
         // Типы
         typedef typename Sequence::value_type value_type;
         typedef value_type && reference;
+        typedef typename Sequence::distance_type distance_type;
 
         // Конструирование, копирование, присваивание
         explicit move_sequence(Sequence seq)
@@ -34,7 +35,7 @@ namespace ural
 
         reference front() const
         {
-            return std::move(*this->base());
+            return std::move(this->base().front());
         }
 
         void pop_front()
@@ -42,6 +43,18 @@ namespace ural
             ++ base_;
         }
 
+        // Двусторонняя последовательность
+        reference back() const
+        {
+            return std::move(this->base().back());
+        }
+
+        void pop_back()
+        {
+            this->base_.pop_back();
+        }
+
+        // Адаптор последовательности
         Sequence const & base() const
         {
             return this->base_;

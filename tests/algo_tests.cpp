@@ -371,7 +371,35 @@ BOOST_AUTO_TEST_CASE(moved_test)
                                 { return *x == *y;}));
 }
 
-// @todo аналог move_backward
+BOOST_AUTO_TEST_CASE(moved_backward_test_unique_ptr)
+{
+    typedef std::unique_ptr<int> Type;
+
+    std::vector<int> const ys = {25, -15, 5, -5, 15};
+    std::vector<Type> xs1;
+    std::vector<Type> xs2;
+
+    for(auto & y : ys)
+    {
+        xs1.emplace_back(ural::make_unique<int>(y));
+        xs2.emplace_back(ural::make_unique<int>(y));
+    }
+
+    std::move_backward(xs1.begin(), xs1.end() - 1, xs1.end());
+
+    auto src = ural::make_iterator_sequence(xs2.begin(), xs2.end() - 1);
+    ural::copy(src | ural::moved | ural::reversed, xs2 | ural::reversed);
+
+    for(size_t i = 0; i < xs1.size(); ++ i)
+    {
+        BOOST_CHECK(!xs1.at(i) == !xs2.at(i));
+
+        if(!!xs1.at(i))
+        {
+            BOOST_CHECK_EQUAL(*xs1.at(i), *xs2.at(i));
+        }
+    }
+}
 
 // 25.3.3
 BOOST_AUTO_TEST_CASE(swap_ranges_test)
@@ -400,10 +428,11 @@ BOOST_AUTO_TEST_CASE(transform_test)
     std::string x_std;
     std::string x_ural;
 
-    std::transform(s.begin(), s.end(), std::back_inserter(x_std),
-                   std::ptr_fun<int, int>(std::toupper));
-    auto seq = ural::transform(s, std::ptr_fun<int, int>(std::toupper));
-    ural::copy(seq, std::back_inserter(x_ural));
+    auto f = std::ptr_fun<int, int>(std::toupper);
+
+    std::transform(s.begin(), s.end(), std::back_inserter(x_std), f);
+
+    ural::copy(ural::transform(s, f), std::back_inserter(x_ural));
 
     BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
                                   x_ural.begin(), x_ural.end());

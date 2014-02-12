@@ -24,6 +24,12 @@ namespace ural
 {
     /**
     @todo параметр по умолчанию IStream
+    @todo Возможность задавать начальное значение: для типов без конструктора
+    без параметров
+    К сожалению, поддерживать типы без конструктора без параметров, в общем
+    случае, нельзя. Дело в том, что не существует стандартного механизма
+    инициализации из потока ввода. Лучшее, что мы можем сделать --- это
+    предоставить возможность задавать начальное значение.
     */
     template <class T, class IStream>
     class istream_sequence
@@ -63,7 +69,6 @@ namespace ural
         }
 
     private:
-        // @todo Поддерживать ли типы без конструктора без параметров
         std::reference_wrapper<IStream> is_;
         T value_;
     };
@@ -258,6 +263,7 @@ namespace ural
 
     /**
     @todo Выразить через remove_if_sequence
+    @todo Вынести в отдельный файл
     */
     template <class Input, class T, class BinaryPredicate>
     class remove_sequence
