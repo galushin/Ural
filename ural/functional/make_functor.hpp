@@ -106,26 +106,25 @@ namespace ural
         target_type mv_;
     };
 
-    // @todo Без специлазаций
     template <class R, class T, class... Args>
     struct declare_mem_fn_ptr_type
-     : declare_type<R(T::*)(Args...)>
-    {};
+    {
+    private:
+        typedef typename std::remove_cv<T>::type Class_type;
+        static constexpr bool is_c = std::is_const<T>::value;
+        static constexpr bool is_v = std::is_volatile<T>::value;
 
-    template <class R, class T, class... Args>
-    struct declare_mem_fn_ptr_type<R, T const, Args...>
-     : declare_type<R(T::*)(Args...) const>
-    {};
+        typedef R(Class_type::*Sig)(Args...);
+        typedef R(Class_type::*Sig_c)(Args...) const;
+        typedef R(Class_type::*Sig_v)(Args...) volatile;
+        typedef R(Class_type::*Sig_cv)(Args...) const volatile;
 
-    template <class R, class T, class... Args>
-    struct declare_mem_fn_ptr_type<R, T volatile, Args...>
-     : declare_type<R(T::*)(Args...) volatile>
-    {};
+        typedef typename std::conditional<is_c, Sig_c, Sig>::type Res;
+        typedef typename std::conditional<is_c, Sig_cv, Sig_v>::type Res_v;
 
-    template <class R, class T, class... Args>
-    struct declare_mem_fn_ptr_type<R, T const volatile, Args...>
-     : declare_type<R(T::*)(Args...) const volatile>
-    {};
+    public:
+        typedef typename std::conditional<is_v, Res_v, Res>::type type;
+    };
 
     template <class R, class T, class... Args>
     class mem_fn_functor
