@@ -57,6 +57,13 @@ namespace ural
             return base_.pop_front();
         }
 
+        // Последовательность произвольного доступа
+        reverse_sequence & operator+=(distance_type n)
+        {
+            base_.pop_back(n);
+            return *this;
+        }
+
         // Адаптор последовательности
         BidirectionalSequence const & base() const
         {

@@ -23,7 +23,7 @@
 namespace ural
 {
     /**
-    @todo параметр по умолчанию IStream
+    @brief Последовательность, записывающая элементы в поток вывода
     @todo Возможность задавать начальное значение: для типов без конструктора
     без параметров
     К сожалению, поддерживать типы без конструктора без параметров, в общем
@@ -31,7 +31,7 @@ namespace ural
     инициализации из потока ввода. Лучшее, что мы можем сделать --- это
     предоставить возможность задавать начальное значение.
     */
-    template <class T, class IStream>
+    template <class T, class IStream = std::istream>
     class istream_sequence
      : public sequence_base<istream_sequence<T, IStream>>
     {

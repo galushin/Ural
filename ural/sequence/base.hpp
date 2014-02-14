@@ -24,6 +24,13 @@ namespace ural
      : forward_traversal_tag
     {};
 
+    template <class S>
+    typename S::traversal_tag
+    make_traversal_tag(S const & )
+    {
+        return typename S::traversal_tag{};
+    }
+
     /** @brief Базовый класс для последовательностей (CRTP)
     @tparam Seq тип последовательности-наследника
     */
@@ -79,33 +86,58 @@ namespace ural
 
     namespace details
     {
+        template <class Sequence>
+        typename Sequence::distance_type
+        size(Sequence const & s, single_pass_traversal_tag)
+        {
+            // @todo Через count_if(s, {return true;})?
+            typename Sequence::distance_type n{0};
+
+            for(auto in = s; !!in; ++ in)
+            {
+                ++ n;
+            }
+
+            return n;
+        }
+
+        template <class Sequence>
+        typename Sequence::distance_type
+        size(Sequence const & s, random_access_traversal_tag)
+        {
+            return s.size();
+        }
+
+        template <class Sequence>
+        void advance(Sequence & s, typename Sequence::distance_type n,
+                     single_pass_traversal_tag)
+        {
+            for(; n > 0; -- n)
+            {
+                ++ s;
+            }
+        }
+
+        template <class Sequence>
+        void advance(Sequence & s, typename Sequence::distance_type n,
+                     random_access_traversal_tag)
+        {
+            s += n;
+        }
     }
 
     template <class Sequence>
     typename Sequence::distance_type
     size(Sequence const & s)
     {
-        // @todo Диспетчеризация по категориям
-
-        // @todo Через count_if(s, {return true;})?
-        typename Sequence::distance_type n{0};
-
-        for(auto in = s; !!in; ++ in)
-        {
-            ++ n;
-        }
-
-        return n;
+        return ::ural::details::size(s, ural::make_traversal_tag(s));
     }
 
     template <class Sequence>
     void advance(Sequence & s, typename Sequence::distance_type n)
     {
-        // @todo Диспетчеризация по категориям
-        for(; n > 0; -- n)
-        {
-            ++ s;
-        }
+        return ::ural::details::advance(s, std::move(n),
+                                        ural::make_traversal_tag(s));
     }
 
     template <class Sequence>
