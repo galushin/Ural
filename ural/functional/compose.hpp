@@ -1,6 +1,11 @@
 #ifndef Z_URAL_FUNCTIONAL_COMPOSE_HPP_INCLUDED
 #define Z_URAL_FUNCTIONAL_COMPOSE_HPP_INCLUDED
 
+/** @file ural/functional/compose.hpp
+ @brief Функциональный объект, реализующий композицию двух функциональных
+ объектов
+*/
+
 namespace ural
 {
     // Композиция функциональных объектов
