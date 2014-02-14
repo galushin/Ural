@@ -1071,8 +1071,10 @@ namespace details
             return in;
         }
 
-        ::ural::min_element_accumulator<ForwardSequence, Compare>
-            acc(in++, std::move(cmp));
+        auto cmp_s = ural::compare_by(ural::dereference<>{}, std::move(cmp));
+
+        ::ural::min_element_accumulator<ForwardSequence, decltype(cmp_s)>
+            acc(in++, cmp_s);
 
         /* @todo Избавиться от цикла: нужна последовательность, действующая
         подобно boost::counted_iterator и функциональный объект,

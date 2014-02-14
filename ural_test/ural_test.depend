@@ -333,7 +333,7 @@
 	<ural/numeric/partial_sums.hpp>
 	<ural/numeric/adjacent_differences.hpp>
 
-1391989088 c:\devtools\ural_repo\ural\ural\functional.hpp
+1392360276 c:\devtools\ural_repo\ural\ural\functional.hpp
 	<boost/compressed_pair.hpp>
 	<ural/tuple.hpp>
 	<ural/functional/replace.hpp>
@@ -369,9 +369,10 @@
 	<type_traits>
 	<ostream>
 
-1392192477 c:\devtools\ural_repo\ural\ural\concepts.hpp
+1392360510 c:\devtools\ural_repo\ural\ural\concepts.hpp
 	<boost/concept/usage.hpp>
 	<ural/defs.hpp>
+	<ural/sequence/base.hpp>
 
 1392345777 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
 	<ural/defs.hpp>
@@ -427,7 +428,7 @@
 
 1384408805 c:\devtools\ural_repo\ural\ural\thread.hpp
 
-1392008774 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
+1392360174 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
 	<ural/sequence/base.hpp>
 	<ural/sequence/function_output.hpp>
 	<ural/sequence/generator.hpp>
@@ -437,7 +438,7 @@
 1392192892 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
 	<ural/sequence/base.hpp>
 
-1392192311 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
+1392359086 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<forward_list>
 	<list>
@@ -459,7 +460,7 @@
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
-1392166149 source:c:\devtools\ural_repo\ural\tests\functional_test.cpp
+1392353099 source:c:\devtools\ural_repo\ural\tests\functional_test.cpp
 	<boost/test/unit_test.hpp>
 	<ural/utility/tracers.hpp>
 	<ural/functional.hpp>
@@ -544,8 +545,9 @@
 	<ural/tuple.hpp>
 	<ural/functional/cpp_operators.hpp>
 
-1392352912 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
+1392361126 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
 	<ural/functional/make_functor.hpp>
+	<ural/functional/compose.hpp>
 
 1392193252 c:\devtools\ural_repo\ural\ural\sequence\taken.hpp
 
@@ -6121,7 +6123,9 @@
 	<boost/test/unit_test.hpp>
 	<ural/memory.hpp>
 
-1392345245 source:c:\devtools\ural_repo\ural\tests\tracers_tests.cpp
+1392345611 source:c:\devtools\ural_repo\ural\tests\tracers_tests.cpp
 	<boost/test/unit_test.hpp>
 	<ural/utility/tracers.hpp>
+
+1392361155 c:\devtools\ural_repo\ural\ural\functional\compose.hpp
 

@@ -7,55 +7,10 @@
 */
 
 #include <ural/functional/make_functor.hpp>
+#include <ural/functional/compose.hpp>
 
 namespace ural
 {
-    // Негатор
-    /**
-    @todo Выразить через logical_not и pipe (compose)
-    */
-    template <class Predicate>
-    class not_functor
-     : decltype(make_functor(std::declval<Predicate>()))
-    {
-    friend constexpr bool
-    operator==(not_functor const & x, not_functor const & y)
-    {
-        return x.target() == y.target();
-    }
-
-    public:
-        typedef decltype(make_functor(std::declval<Predicate>())) target_type;
-
-        constexpr not_functor()
-         : target_type{}
-        {}
-
-        explicit not_functor(Predicate pred)
-         : target_type(std::move(pred))
-        {}
-
-        constexpr target_type const & target() const
-        {
-            return static_cast<target_type const &>(*this);
-        }
-
-        template <class... Args>
-        constexpr auto operator()(Args && ... args) const
-        -> decltype(!this->target()(std::forward<Args>(args)...))
-        {
-            return !this->target()(std::forward<Args>(args)...);
-        }
-    };
-
-    template <class Predicate>
-    auto not_fn(Predicate pred)
-    -> not_functor<decltype(make_functor(std::move(pred)))>
-    {
-        typedef not_functor<decltype(make_functor(std::move(pred)))> Functor;
-        return Functor{make_functor(std::move(pred))};
-    }
-
 // Функциональные объекты для операторов
     template <class T1 = void, class T2 = T1>
     class plus;
@@ -387,6 +342,52 @@ namespace ural
     // @todo bit_or
     // @todo bit_xor
     // @todo bit_not
+
+    // Негатор
+    template <class Predicate>
+    class not_functor
+     : private compose_functor<ural::logical_not<>, Predicate>
+    {
+    friend constexpr bool
+    operator==(not_functor const & x, not_functor const & y)
+    {
+        return static_cast<Base const &>(x) ==
+                static_cast<Base const &>(y);
+    }
+
+        typedef compose_functor<ural::logical_not<>, Predicate> Base;
+
+    public:
+        typedef decltype(make_functor(std::declval<Predicate>())) target_type;
+
+        constexpr not_functor()
+         : Base{}
+        {}
+
+        explicit not_functor(Predicate pred)
+         : Base(ural::logical_not<>{}, std::move(pred))
+        {}
+
+        constexpr target_type const & target() const
+        {
+            return Base::second_functor();
+        }
+
+        template <class... Args>
+        constexpr auto operator()(Args && ... args) const
+        -> decltype(std::declval<Base>()(std::forward<Args>(args)...))
+        {
+            return Base::operator()(std::forward<Args>(args)...);
+        }
+    };
+
+    template <class Predicate>
+    auto not_fn(Predicate pred)
+    -> not_functor<decltype(make_functor(std::move(pred)))>
+    {
+        typedef not_functor<decltype(make_functor(std::move(pred)))> Functor;
+        return Functor{make_functor(std::move(pred))};
+    }
 }
 // namespace ural
 

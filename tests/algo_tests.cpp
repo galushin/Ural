@@ -419,8 +419,6 @@ BOOST_AUTO_TEST_CASE(swap_ranges_test)
     BOOST_CHECK_EQUAL_COLLECTIONS(y2.begin(), y2.end(), x1.begin(), x1.end());
 }
 
-// @todo iter_swap
-
 // 25.3.4
 BOOST_AUTO_TEST_CASE(transform_test)
 {
@@ -621,7 +619,6 @@ BOOST_AUTO_TEST_CASE(unique_test)
     auto const last = std::unique(v1.begin(), v1.end());
     std::forward_list<int> r_std(v1.begin(), last);
 
-    // @todo В одну инструкцию
     std::forward_list<int> r_ural;
     ural::copy(v2 | ural::uniqued, r_ural | ural::front_inserter);
 
@@ -777,21 +774,7 @@ BOOST_AUTO_TEST_CASE(rotate_copy_return_test)
     }
 }
 
-// 25.3.12
-BOOST_AUTO_TEST_CASE(random_shuffle_test)
-{
-    std::vector<int> const src = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    auto x = src;
-
-    ural::random_shuffle(x);
-
-    BOOST_CHECK(ural::is_permutation(x, src));
-
-    // @todo Тест случайности
-    // @todo Тест равномерности
-}
-
-// @todo Аналог shuffle
+// 25.3.12 Тусовка
 
 // 25.3.13 Разделение
 BOOST_AUTO_TEST_CASE(is_partitioned_test)

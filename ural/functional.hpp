@@ -45,7 +45,7 @@ namespace ural
         min_element_accumulator &
         operator()(ForwardSequence s)
         {
-            if(impl_.second()(*s, *this->result()))
+            if(impl_.second()(s, this->result()))
             {
                 impl_.first() = s;
             }
@@ -119,6 +119,29 @@ namespace ural
         typedef comparer_by<decltype(make_functor(std::move(f)))> Functor;
         return Functor(make_functor(std::move(f)));
     }
+
+    template <class T = void>
+    class dereference
+    {
+    public:
+        auto operator()(T const & x)
+        -> decltype(*x)
+        {
+            return *x;
+        }
+    };
+
+    template <>
+    class dereference<void>
+    {
+    public:
+        template <class T>
+        constexpr auto operator()(T && x) const
+        -> decltype(*x)
+        {
+            return *x;
+        }
+    };
 }
 // namespace ural
 

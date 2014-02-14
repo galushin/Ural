@@ -9,6 +9,7 @@
 #include <boost/concept/usage.hpp>
 
 #include <ural/defs.hpp>
+#include <ural/sequence/base.hpp>
 
 namespace ural
 {
@@ -66,12 +67,12 @@ namespace concepts
             ++ seq;
             seq ++;
             seq.pop_front();
+
+            value_consumer<ural::single_pass_traversal_tag>() = traversal_tag{};
         }
     private:
         static Seq seq;
         typedef typename Seq::traversal_tag traversal_tag;
-
-        // @todo Категория обхода
     };
 
     template <class Seq>
@@ -95,7 +96,7 @@ namespace concepts
         BOOST_CONCEPT_USAGE(BidirectionalSequence)
         {
             seq.pop_back();
-            // @todo Что с back
+            // @todo Что с back?
         }
 
     private:
