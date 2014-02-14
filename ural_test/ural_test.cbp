@@ -58,6 +58,7 @@
 		<Unit filename="../tests/numeric_tests.cpp" />
 		<Unit filename="../tests/optional_tests.cpp" />
 		<Unit filename="../tests/sequence_test.cpp" />
+		<Unit filename="../tests/tracers_tests.cpp" />
 		<Unit filename="../tests/tuple_tests.cpp" />
 		<Unit filename="../ural/abi.hpp" />
 		<Unit filename="../ural/algorithm.hpp" />

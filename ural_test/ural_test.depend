@@ -348,7 +348,7 @@
 	<ural/optional.hpp>
 	<ural/sequence/base.hpp>
 
-1391989088 source:c:\devtools\ural_repo\ural\tests\optional_tests.cpp
+1392344896 source:c:\devtools\ural_repo\ural\tests\optional_tests.cpp
 	<boost/test/unit_test.hpp>
 	<boost/concept/assert.hpp>
 	<ostream>
@@ -373,7 +373,7 @@
 	<boost/concept/usage.hpp>
 	<ural/defs.hpp>
 
-1392340051 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
+1392345777 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
 	<ural/defs.hpp>
 	<ural/thread.hpp>
 	<ural/functional.hpp>
@@ -422,7 +422,7 @@
 1391869995 c:\devtools\github\ural\ural\sequence\base.hpp
 	<ural/defs.hpp>
 
-1392341514 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
+1392343338 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
 	<ural/defs.hpp>
 
 1384408805 c:\devtools\ural_repo\ural\ural\thread.hpp
@@ -544,7 +544,7 @@
 	<ural/tuple.hpp>
 	<ural/functional/cpp_operators.hpp>
 
-1391989088 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
+1392352912 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
 	<ural/functional/make_functor.hpp>
 
 1392193252 c:\devtools\ural_repo\ural\ural\sequence\taken.hpp
@@ -6120,4 +6120,8 @@
 	<memory>
 	<boost/test/unit_test.hpp>
 	<ural/memory.hpp>
+
+1392345245 source:c:\devtools\ural_repo\ural\tests\tracers_tests.cpp
+	<boost/test/unit_test.hpp>
+	<ural/utility/tracers.hpp>
 

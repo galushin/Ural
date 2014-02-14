@@ -199,6 +199,28 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(logical_or_test, Functor, Or_functors)
     BOOST_CHECK_EQUAL(true, or_(true, true));
 }
 
+BOOST_AUTO_TEST_CASE(negate_test)
+{
+    const auto value = 42;
+
+    constexpr auto f = ural::negate<decltype(value)>{};
+
+    constexpr auto r = f(value);
+
+    BOOST_CHECK_EQUAL(-value, r);
+}
+
+BOOST_AUTO_TEST_CASE(negate_test_auto)
+{
+    const auto value = 42;
+
+    constexpr auto f = ural::negate<>{};
+
+    constexpr auto r = f(value);
+
+    BOOST_CHECK_EQUAL(-value, r);
+}
+
 BOOST_AUTO_TEST_CASE(make_functor_for_member_var_test)
 {
     typedef std::pair<int, std::string> Type;

@@ -14,16 +14,18 @@ namespace ural
     /** @brief Класс-обёртка для отслеживания количества выполненных операций
     для регулярных объектов
     @tparam T тип значения
-    @todo Подсчитывать количество вызовов всех функций, требуемых концепцией
-    регулярного типа
+    @tparam Threading тип стратегии работы с многопоточностью
+    @todo Подсчитывать количество вызовов: конструктор копий,
+    конструктор перемещения, оператор "равно", оператор "меньше"
     */
-    template <class T, class Threading>
+    template <class T, class Threading = single_thread_policy>
     class regular_tracer
     {
     public:
         /// @brief Тип счётчика
         typedef typename Threading::atomic_counter_type counter_type;
 
+        // Статистики
         /** @brief Количество активных объектов
         @return Количество объектов, которые были созданы, но ещё не уничтожены
         */
@@ -48,6 +50,17 @@ namespace ural
             return destroyed_ref();
         }
 
+        static counter_type copy_assignments_count()
+        {
+            return copy_assign_ref();
+        }
+
+        static counter_type move_assignments_count()
+        {
+            return move_assign_ref();
+        }
+
+        // Регулярный объект
         /** @brief Конструктор
         @param init_value начальное значение
         */
@@ -68,6 +81,20 @@ namespace ural
             {}
         }
 
+        regular_tracer & operator=(regular_tracer const & x)
+        {
+            this->value_ = x.value_;
+            ++ copy_assign_ref();
+            return *this;
+        }
+
+        regular_tracer & operator=(regular_tracer && x)
+        {
+            this->value_ = std::move(x.value_);
+            ++ move_assign_ref();
+            return *this;
+        }
+
     private:
         static counter_type & constructed_ref()
         {
@@ -76,6 +103,18 @@ namespace ural
         }
 
         static counter_type & destroyed_ref()
+        {
+            static counter_type inst;
+            return inst;
+        }
+
+        static counter_type & copy_assign_ref()
+        {
+            static counter_type inst;
+            return inst;
+        }
+
+        static counter_type & move_assign_ref()
         {
             static counter_type inst;
             return inst;

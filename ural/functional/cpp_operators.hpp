@@ -122,7 +122,29 @@ namespace ural
 
     // @todo divides
     // @todo modulus
-    // @todo negate
+
+    template <class T = void>
+    class negate
+    {
+    public:
+        constexpr auto operator()(T const & x) const
+        -> decltype(-x)
+        {
+            return -x;
+        }
+    };
+
+    template <>
+    class negate<>
+    {
+    public:
+        template <class T>
+        constexpr auto operator()(T const & x) const
+        -> decltype(-x)
+        {
+            return -x;
+        }
+    };
 
     template <class T1 = void, class T2 = T1>
     class equal_to
