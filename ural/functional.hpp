@@ -45,7 +45,7 @@ namespace ural
         min_element_accumulator &
         operator()(ForwardSequence s)
         {
-            if(impl_.second()(s, this->result()))
+            if(this->compare()(s, this->result()))
             {
                 impl_.first() = s;
             }
@@ -56,6 +56,11 @@ namespace ural
         ForwardSequence const & result() const
         {
             return impl_.first();
+        }
+
+        Compare const & compare() const
+        {
+            return impl_.second();
         }
 
     private:
