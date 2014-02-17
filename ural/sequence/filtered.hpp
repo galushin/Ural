@@ -49,6 +49,7 @@ namespace ural
             this->seek();
         }
 
+        // Адаптор последовательности
         Predicate const & predicate() const
         {
             return data_.second();

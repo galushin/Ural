@@ -60,6 +60,11 @@ namespace ural
             return move_assign_ref();
         }
 
+        static counter_type equality_count()
+        {
+            return equality_ref();
+        }
+
         // Регулярный объект
         /** @brief Конструктор
         @param init_value начальное значение
@@ -95,6 +100,17 @@ namespace ural
             return *this;
         }
 
+    friend bool operator==(regular_tracer const & x, regular_tracer const & y)
+    {
+        ++ regular_tracer::equality_ref();
+        return x.value() == y.value();
+    }
+
+        T const & value() const
+        {
+            return this->value_;
+        }
+
     private:
         static counter_type & constructed_ref()
         {
@@ -115,6 +131,12 @@ namespace ural
         }
 
         static counter_type & move_assign_ref()
+        {
+            static counter_type inst;
+            return inst;
+        }
+
+        static counter_type & equality_ref()
         {
             static counter_type inst;
             return inst;
