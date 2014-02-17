@@ -84,6 +84,7 @@ namespace ural
 
     /**
     @todo параметр по умолчанию OStream
+    @todo параметр по умолчанию Delimeter
     @todo параметр по умолчанию T
     */
     template <class OStream, class T, class Delimeter>

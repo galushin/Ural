@@ -5,6 +5,7 @@
 #include <ural/sequence/function_output.hpp>
 #include <ural/sequence/generator.hpp>
 #include <ural/sequence/reversed.hpp>
+#include <ural/sequence/partition.hpp>
 
 #include <ural/algorithm/details/copy.hpp>
 #include <ural/functional.hpp>
@@ -627,23 +628,14 @@ namespace details
     partition_copy(Input in, Output1 out_true, Output2 out_false,
                    UnaryPredicate pred)
     {
-        // @todo Специальная последовательность?
-        for(; !!in && !!out_true && !!out_false; ++ in)
-        {
-            if(pred(*in))
-            {
-                *out_true = *in;
-                ++ out_true;
-            }
-            else
-            {
-                *out_false = *in;
-                ++ out_false;
-            }
-        }
+        auto out = ural::make_partition_sequence(std::move(out_true),
+                                                 std::move(out_false),
+                                                 std::move(pred));
+        auto r = ::ural::details::copy(std::move(in), std::move(out));
 
         typedef ural::tuple<Input, Output1, Output2> Tuple;
-        return Tuple(std::move(in), std::move(out_true), std::move(out_false));
+        return Tuple(r[ural::_1], r[ural::_2].true_sequence(),
+                     r[ural::_2].false_sequence());
     }
 
     template <class ForwardSequence, class Predicate>

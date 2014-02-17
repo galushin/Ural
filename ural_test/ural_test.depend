@@ -300,7 +300,7 @@
 	<ural/algorithm/details/copy.hpp>
 	<ural/algorithm/details/algo_base.hpp>
 
-1392596765 c:\devtools\ural_repo\ural\ural\sequence\all.hpp
+1392613072 c:\devtools\ural_repo\ural\ural\sequence\all.hpp
 	<iterator>
 	<ural/sequence/base.hpp>
 	<ural/sequence/make.hpp>
@@ -431,11 +431,12 @@
 
 1384408805 c:\devtools\ural_repo\ural\ural\thread.hpp
 
-1392604473 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
+1392613318 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
 	<ural/sequence/base.hpp>
 	<ural/sequence/function_output.hpp>
 	<ural/sequence/generator.hpp>
 	<ural/sequence/reversed.hpp>
+	<ural/sequence/partition.hpp>
 	<ural/algorithm/details/copy.hpp>
 	<ural/functional.hpp>
 
@@ -520,7 +521,7 @@
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
-1392606390 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
+1392607213 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
 	<boost/test/unit_test.hpp>
 	<iterator>
 	<ural/abi.hpp>
@@ -6146,5 +6147,7 @@
 1392602689 c:\devtools\ural_repo\ural\ural\sequence\remove.hpp
 	<ural/algorithm/details/algo_base.hpp>
 
-1392606885 c:\devtools\ural_repo\ural\ural\sequence\sink.hpp
+1392607369 c:\devtools\ural_repo\ural\ural\sequence\sink.hpp
+
+1392621703 c:\devtools\ural_repo\ural\ural\sequence\partition.hpp
 

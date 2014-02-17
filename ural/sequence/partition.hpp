@@ -1,0 +1,87 @@
+#ifndef Z_URAL_SEQUENCE_PARTITION_HPP_INCLUDED
+#define Z_URAL_SEQUENCE_PARTITION_HPP_INCLUDED
+
+namespace ural
+{
+    template <class Output1, class Output2, class Predicate>
+    class partition_sequence
+     : public sequence_base<partition_sequence<Output1, Output2, Predicate>>
+    {
+    public:
+        typedef single_pass_traversal_tag traversal_tag;
+
+        // Конструкторы
+        explicit partition_sequence(Output1 out_true, Output2 out_false,
+                                    Predicate pred)
+         : data_{std::move(out_true), std::move(out_false), std::move(pred)}
+        {}
+
+        // Однопроходная последовательность
+        bool operator!() const
+        {
+            return !this->true_sequence() && !this->false_sequence();
+        }
+
+        partition_sequence & operator*()
+        {
+            return *this;
+        }
+
+        template <class T>
+        void operator=(T && x)
+        {
+            if(this->predicate()(x))
+            {
+                *data_[ural::_1] = std::forward<T>(x);
+                ++ data_[ural::_1];
+            }
+            else
+            {
+                *data_[ural::_2] = std::forward<T>(x);
+                ++ data_[ural::_2];
+            }
+        }
+
+        void pop_front()
+        {}
+
+        // Адаптор последовательности
+        Output1 const & true_sequence() const
+        {
+            return data_[ural::_1];
+        }
+
+        Output2 const & false_sequence() const
+        {
+            return data_[ural::_2];
+        }
+
+        Predicate const & predicate() const
+        {
+            return data_[ural::_3];
+        }
+
+    private:
+        // @todo Оптимизация размера
+        ural::tuple<Output1, Output2, Predicate> data_;
+    };
+
+    template <class Output1, class Output2, class Predicate>
+    auto make_partition_sequence(Output1 && out_true, Output2 && out_false,
+                                 Predicate pred)
+    -> partition_sequence<decltype(sequence(std::forward<Output1>(out_true))),
+                          decltype(sequence(std::forward<Output2>(out_false))),
+                          decltype(make_functor(std::move(pred)))>
+    {
+        typedef partition_sequence<decltype(sequence(std::forward<Output1>(out_true))),
+                          decltype(sequence(std::forward<Output2>(out_false))),
+                          decltype(make_functor(std::move(pred)))> Result;
+        return Result(sequence(std::forward<Output1>(out_true)),
+                      sequence(std::forward<Output2>(out_false)),
+                      make_functor(std::move(pred)));
+    }
+}
+// namespace ural
+
+#endif
+// Z_URAL_SEQUENCE_PARTITION_HPP_INCLUDED
