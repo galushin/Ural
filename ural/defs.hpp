@@ -38,6 +38,24 @@ namespace ural
         return !(x == y);
     }
 
+    template <class T1, class T2>
+    constexpr bool operator>(T1 const & x, T2 const & y)
+    {
+        return y < x;
+    }
+
+    template <class T1, class T2>
+    constexpr bool operator<=(T1 const & x, T2 const & y)
+    {
+        return !(x > y);
+    }
+
+    template <class T1, class T2>
+    constexpr bool operator>=(T1 const & x, T2 const & y)
+    {
+        return !(x < y);
+    }
+
     template <class T>
     struct value_consumer
     {

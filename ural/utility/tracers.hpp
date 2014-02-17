@@ -15,12 +15,24 @@ namespace ural
     для регулярных объектов
     @tparam T тип значения
     @tparam Threading тип стратегии работы с многопоточностью
-    @todo Подсчитывать количество вызовов: конструктор копий,
-    конструктор перемещения, оператор "равно", оператор "меньше"
+    @todo Подсчитывать количество вызовов: конструктор копий, конструктор
+    перемещения
     */
     template <class T, class Threading = single_thread_policy>
     class regular_tracer
     {
+    friend bool operator==(regular_tracer const & x, regular_tracer const & y)
+    {
+        ++ regular_tracer::equality_ref();
+        return x.value() == y.value();
+    }
+
+    friend bool operator<(regular_tracer const & x, regular_tracer const & y)
+    {
+        ++ regular_tracer::less_ref();
+        return x.value() < y.value();
+    }
+
     public:
         /// @brief Тип счётчика
         typedef typename Threading::atomic_counter_type counter_type;
@@ -65,6 +77,11 @@ namespace ural
             return equality_ref();
         }
 
+        static counter_type less_count()
+        {
+            return less_ref();
+        }
+
         // Регулярный объект
         /** @brief Конструктор
         @param init_value начальное значение
@@ -100,12 +117,6 @@ namespace ural
             return *this;
         }
 
-    friend bool operator==(regular_tracer const & x, regular_tracer const & y)
-    {
-        ++ regular_tracer::equality_ref();
-        return x.value() == y.value();
-    }
-
         T const & value() const
         {
             return this->value_;
@@ -137,6 +148,12 @@ namespace ural
         }
 
         static counter_type & equality_ref()
+        {
+            static counter_type inst;
+            return inst;
+        }
+
+        static counter_type & less_ref()
         {
             static counter_type inst;
             return inst;
