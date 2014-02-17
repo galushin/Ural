@@ -179,7 +179,8 @@ namespace ural
         }
     };
 
-    // @todo Может быть проблема с указателями
+    // @todo Специализации для указателей
+
     template <class T1 = void, class T2 = T1>
     class less
     {

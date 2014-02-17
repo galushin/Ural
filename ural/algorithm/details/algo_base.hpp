@@ -4,6 +4,7 @@
 #include <ural/sequence/base.hpp>
 #include <ural/sequence/function_output.hpp>
 #include <ural/sequence/generator.hpp>
+#include <ural/sequence/reversed.hpp>
 
 #include <ural/algorithm/details/copy.hpp>
 #include <ural/functional.hpp>
@@ -16,7 +17,7 @@ namespace details
     void do_swap(T & x, T & y)
     {
         using std::swap;
-        using ural::swap;
+        // @todo using ural::swap;
         using boost::swap;
         return swap(x, y);
     }

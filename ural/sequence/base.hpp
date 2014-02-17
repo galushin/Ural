@@ -90,7 +90,6 @@ namespace ural
         typename Sequence::distance_type
         size(Sequence const & s, single_pass_traversal_tag)
         {
-            // @todo Через count_if(s, {return true;})?
             typename Sequence::distance_type n{0};
 
             for(auto in = s; !!in; ++ in)

@@ -91,6 +91,7 @@
 		<Unit filename="../ural/sequence/iterator_sequence.hpp" />
 		<Unit filename="../ural/sequence/make.hpp" />
 		<Unit filename="../ural/sequence/moved.hpp" />
+		<Unit filename="../ural/sequence/remove.hpp" />
 		<Unit filename="../ural/sequence/replace.hpp" />
 		<Unit filename="../ural/sequence/reversed.hpp" />
 		<Unit filename="../ural/sequence/set_operations.hpp" />
