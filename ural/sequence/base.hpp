@@ -59,6 +59,8 @@ namespace ural
          : Base(std::forward<Args>(args)...)
         {}
 
+        sequence_base() = default;
+
         ~ sequence_base() = default;
     };
 

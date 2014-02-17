@@ -5,6 +5,7 @@
 #include <ural/abi.hpp>
 #include <ural/algorithm.hpp>
 #include <ural/sequence/all.hpp>
+#include <ural/sequence/sink.hpp>
 
 BOOST_AUTO_TEST_CASE(istream_sequence_test)
 {
@@ -85,4 +86,27 @@ BOOST_AUTO_TEST_CASE(reversed_reversed_test)
     BOOST_CHECK_EQUAL(ural::abi::demangle_name(typeid(s).name()),
                       ural::abi::demangle_name(typeid(rr).name()));
     BOOST_CHECK(typeid(s).name() == typeid(rr).name());
+}
+
+BOOST_AUTO_TEST_CASE(sink_output_sequence_test_auto)
+{
+    ural::sink_sequence<> sink {};
+
+    static_assert(std::is_empty<decltype(sink)>::value, "too big");
+    BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<decltype(sink)>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<decltype(sink), int>));
+
+    *sink = 42;
+}
+
+ BOOST_AUTO_TEST_CASE(sink_output_sequence_test)
+{
+    ural::sink_sequence<int> sink;
+
+    static_assert(std::is_empty<decltype(sink)>::value, "too big");
+
+    BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<decltype(sink)>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<decltype(sink), int>));
+
+    *sink = 42;
 }

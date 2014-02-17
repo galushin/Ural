@@ -23,6 +23,10 @@ namespace ural
     public:
         typedef single_pass_traversal_tag traversal_tag;
 
+        function_output_sequence()
+         : Base_class()
+        {}
+
         explicit function_output_sequence(UnaryFunction f)
          : Base_class{std::move(f)}
         {}
