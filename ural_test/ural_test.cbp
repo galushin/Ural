@@ -75,9 +75,7 @@
 		<Unit filename="../ural/functional/make_functor.hpp" />
 		<Unit filename="../ural/functional/replace.hpp" />
 		<Unit filename="../ural/math/common_factor.hpp" />
-		<Unit filename="../ural/math/rational.hpp">
-			<Option compile="1" />
-		</Unit>
+		<Unit filename="../ural/math/rational.hpp" />
 		<Unit filename="../ural/memory.hpp" />
 		<Unit filename="../ural/numeric.hpp" />
 		<Unit filename="../ural/numeric/adjacent_differences.hpp" />

@@ -1,4 +1,5 @@
 // Основано на boost_1_54_0\libs\rational\test\rational_test.cpp
+#include <ostream>
 
 #include <boost/test/unit_test.hpp>
 #include <boost/mpl/list.hpp>
@@ -470,5 +471,64 @@ BOOST_AUTO_TEST_SUITE_END()
 
 // The rational arithmetic operations suite
 BOOST_AUTO_TEST_SUITE( rational_arithmetic_suite )
+
+#define URAL_STATIC_ASSERT_EQUAL(E, G) static_assert( ((E) == (G)) , "");
+
+// Addition & subtraction tests
+BOOST_AUTO_TEST_CASE_TEMPLATE( rational_additive_test, T,
+ all_signed_test_types )
+{
+    typedef ural::rational<T>  rational_type;
+
+    URAL_STATIC_ASSERT_EQUAL( rational_type( 1, 2) + rational_type(1, 2),
+     static_cast<T>(1) );
+    URAL_STATIC_ASSERT_EQUAL( rational_type(11, 3) + rational_type(1, 2),
+     rational_type( 25,  6) );
+    URAL_STATIC_ASSERT_EQUAL( rational_type(-8, 3) + rational_type(1, 5),
+     rational_type(-37, 15) );
+    URAL_STATIC_ASSERT_EQUAL( rational_type(-7, 6) + rational_type(1, 7),
+     rational_type(  1,  7) - rational_type(7, 6) );
+    URAL_STATIC_ASSERT_EQUAL( rational_type(13, 5) - rational_type(1, 2),
+     rational_type( 21, 10) );
+    URAL_STATIC_ASSERT_EQUAL( rational_type(22, 3) + static_cast<T>(1),
+     rational_type( 25,  3) );
+    URAL_STATIC_ASSERT_EQUAL( rational_type(12, 7) - static_cast<T>(2),
+     rational_type( -2,  7) );
+    URAL_STATIC_ASSERT_EQUAL(    static_cast<T>(3) + rational_type(4, 5),
+     rational_type( 19,  5) );
+    URAL_STATIC_ASSERT_EQUAL(    static_cast<T>(4) - rational_type(9, 2),
+     rational_type( -1,  2) );
+
+    rational_type  r( 11 );
+
+    r -= rational_type( 20, 3 );
+    BOOST_CHECK_EQUAL( r, rational_type(13,  3) );
+
+    r += rational_type( 1, 2 );
+    BOOST_CHECK_EQUAL( r, rational_type(29,  6) );
+
+    r -= static_cast<T>( 5 );
+    BOOST_CHECK_EQUAL( r, rational_type( 1, -6) );
+
+    r += rational_type( 1, 5 );
+    BOOST_CHECK_EQUAL( r, rational_type( 1, 30) );
+
+    r += static_cast<T>( 2 );
+    BOOST_CHECK_EQUAL( r, rational_type(61, 30) );
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE( rational_assignment_test, T,
+ all_signed_test_types )
+{
+    typedef ural::rational<T>  rational_type;
+
+    rational_type  r;
+
+    r = rational_type( 1, 10 );
+    BOOST_CHECK_EQUAL( r, rational_type( 1, 10) );
+
+    r = static_cast<T>( -9 );
+    BOOST_CHECK_EQUAL( r, rational_type(-9,  1) );
+}
 
 BOOST_AUTO_TEST_SUITE_END()

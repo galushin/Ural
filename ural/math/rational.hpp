@@ -40,7 +40,7 @@ namespace ural
          : Base(IntegerType{0})
         {}
 
-        constexpr rational(IntegerType x)
+        explicit constexpr rational(IntegerType x)
          : Base{std::move(x)}
         {}
 
@@ -49,6 +49,13 @@ namespace ural
                 denom != 0 ? absolute_value(denom) : throw bad_rational{},
                 ural::gcd(num, denom))
         {}
+
+        rational & operator=(IntegerType x)
+        {
+            Base::numerator = std::move(x);
+            Base::denominator = IntegerType{1};
+            return *this;
+        }
 
         void assign(IntegerType num, IntegerType denom)
         {
@@ -99,7 +106,27 @@ namespace ural
             return !!*this;
         }
 
-    private:
+        rational & operator+=(rational const & x)
+        {
+            return *this = *this + x;
+        }
+
+        rational & operator+=(IntegerType const & x)
+        {
+            Base::numerator += x * this->denominator();
+            return *this;
+        }
+
+        rational & operator-=(rational const & x)
+        {
+            return *this = *this - x;
+        }
+
+        rational & operator-=(IntegerType const & x)
+        {
+            Base::numerator -= x * this->denominator();
+            return *this;
+        }
     };
 
     template <class T>
@@ -165,6 +192,65 @@ namespace ural
     constexpr bool operator<(rational<T> const & x, T const & y)
     {
         return x.numerator() < y * x.denominator();
+    }
+
+    // Арифметические операторы
+    template <class T>
+    constexpr rational<T>
+    operator+(rational<T> const & x, rational<T> const & y)
+    {
+        return rational<T>(x.numerator() * y.denominator()
+                           + y.numerator() * x.denominator(),
+                           x.denominator() * y.denominator());
+    }
+
+    template <class T>
+    constexpr rational<T>
+    operator+(rational<T> const & x, T const & y)
+    {
+        return rational<T>(x.numerator() + y * x.denominator(),
+                           x.denominator());
+    }
+
+    template <class T>
+    constexpr rational<T>
+    operator+(T const & x, rational<T> const & y)
+    {
+        return rational<T>(x * y.denominator() + y.numerator(),
+                           y.denominator());
+    }
+
+    template <class T>
+    constexpr rational<T>
+    operator-(rational<T> const & x, rational<T> const & y)
+    {
+        return rational<T>(x.numerator() * y.denominator()
+                           - y.numerator() * x.denominator(),
+                           x.denominator() * y.denominator());
+    }
+
+    template <class T>
+    constexpr rational<T>
+    operator-(rational<T> const & x, T const & y)
+    {
+        return rational<T>(x.numerator() - y * x.denominator(),
+                           x.denominator());
+    }
+
+    template <class T>
+    constexpr rational<T>
+    operator-(T const & x, rational<T> const & y)
+    {
+        return rational<T>(x * y.denominator() - y.numerator(),
+                           y.denominator());
+    }
+
+    // Ввод/Вывод
+    template <class Char, class Tr, class T>
+    std::basic_ostream<Char, Tr> &
+    operator<<(std::basic_ostream<Char, Tr> & os, rational<T> const & x)
+    {
+        return os << x.numerator() << "/" << x.denominator();
     }
 }
 // namespace ural
