@@ -6157,5 +6157,22 @@
 	<boost/operators.hpp>
 	<ural/math/common_factor.hpp>
 
-1392688267 c:\devtools\ural_repo\ural\ural\math\common_factor.hpp
+1392696293 c:\devtools\ural_repo\ural\ural\math\common_factor.hpp
+	<cmath>
+
+1392698475 source:c:\devtools\ural_repo\ural\ural\math\rational.hpp
+	<utility>
+	<ural/math/common_factor.hpp>
+	<ural/defs.hpp>
+
+1392698929 source:c:\devtools\ural_repo\ural\tests\rational_tests.cpp
+	<boost/test/unit_test.hpp>
+	<boost/mpl/list.hpp>
+	<boost/operators.hpp>
+	<ural/math/rational.hpp>
+
+1392699171 c:\devtools\ural_repo\ural\ural\math\rational.hpp
+	<utility>
+	<ural/math/common_factor.hpp>
+	<ural/defs.hpp>
 

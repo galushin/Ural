@@ -1,8 +1,17 @@
 #ifndef Z_URAL_MATH_COMMON_FACTOR_HPP_INCLUDED
 #define Z_URAL_MATH_COMMON_FACTOR_HPP_INCLUDED
 
+#include <cmath>
+
 namespace ural
 {
+    template <class IntegerType>
+    constexpr IntegerType absolute_value(IntegerType x)
+    {
+        return (x < IntegerType(0)) ? -std::move(x) : x;
+    }
+
+
     template <typename IntegerType>
     class gcd_evaluator
     {
@@ -15,8 +24,7 @@ namespace ural
     public:
         constexpr IntegerType operator()(IntegerType x, IntegerType y) const
         {
-            using std::abs;
-            return abs(euclidean(x, y));
+            return absolute_value(euclidean(x, y));
         }
     };
 
@@ -32,8 +40,7 @@ namespace ural
     public:
         constexpr IntegerType operator()(IntegerType x, IntegerType y) const
         {
-            using std::abs;
-            return abs(impl(x, y));
+            return absolute_value(impl(x, y));
         }
     };
 
