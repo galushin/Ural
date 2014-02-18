@@ -6132,7 +6132,7 @@
 	<boost/test/unit_test.hpp>
 	<ural/memory.hpp>
 
-1392626690 source:c:\devtools\ural_repo\ural\tests\tracers_tests.cpp
+1392627622 source:c:\devtools\ural_repo\ural\tests\tracers_tests.cpp
 	<boost/test/unit_test.hpp>
 	<ural/utility/tracers.hpp>
 
@@ -6150,4 +6150,12 @@
 1392607369 c:\devtools\ural_repo\ural\ural\sequence\sink.hpp
 
 1392621703 c:\devtools\ural_repo\ural\ural\sequence\partition.hpp
+
+1392688303 source:c:\devtools\ural_repo\ural\tests\math_tests.cpp
+	<boost/test/unit_test.hpp>
+	<boost/mpl/list.hpp>
+	<boost/operators.hpp>
+	<ural/math/common_factor.hpp>
+
+1392688267 c:\devtools\ural_repo\ural\ural\math\common_factor.hpp
 

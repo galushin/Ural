@@ -54,6 +54,7 @@
 		<Unit filename="../tests/concepts_checks.cpp" />
 		<Unit filename="../tests/functional_test.cpp" />
 		<Unit filename="../tests/iterator_sequence_test.cpp" />
+		<Unit filename="../tests/math_tests.cpp" />
 		<Unit filename="../tests/memory_test.cpp" />
 		<Unit filename="../tests/numeric_tests.cpp" />
 		<Unit filename="../tests/optional_tests.cpp" />
@@ -72,6 +73,7 @@
 		<Unit filename="../ural/functional/cpp_operators.hpp" />
 		<Unit filename="../ural/functional/make_functor.hpp" />
 		<Unit filename="../ural/functional/replace.hpp" />
+		<Unit filename="../ural/math/common_factor.hpp" />
 		<Unit filename="../ural/memory.hpp" />
 		<Unit filename="../ural/numeric.hpp" />
 		<Unit filename="../ural/numeric/adjacent_differences.hpp" />
