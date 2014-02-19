@@ -585,4 +585,41 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_division_test, T,
                              rational_type(1, 3) );
 }
 
+// Tests for operations on self
+BOOST_AUTO_TEST_CASE_TEMPLATE( rational_self_operations_test, T,
+ all_signed_test_types )
+{
+    typedef ural::rational<T>  rational_type;
+
+    rational_type  r = rational_type( 4, 3 );
+
+    r += r;
+    BOOST_CHECK_EQUAL( r, rational_type( 8, 3) );
+
+    r *= r;
+    BOOST_CHECK_EQUAL( r, rational_type(64, 9) );
+
+    r /= r;
+    BOOST_CHECK_EQUAL( r, rational_type( 1, 1) );
+
+    r -= r;
+    BOOST_CHECK_EQUAL( r, rational_type( 0, 1) );
+
+    BOOST_CHECK_THROW( r /= r, ural::bad_rational );
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+// The non-basic rational operations suite
+BOOST_AUTO_TEST_SUITE( rational_extras_suite )
+
+// Output test
+BOOST_AUTO_TEST_CASE_TEMPLATE( rational_output_test, T, all_signed_test_types )
+{
+    std::ostringstream  oss;
+
+    oss << ural::rational<T>( 44, 14 );
+    BOOST_CHECK_EQUAL( oss.str(), "22/7" );
+}
+
 BOOST_AUTO_TEST_SUITE_END()
