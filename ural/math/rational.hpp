@@ -1,6 +1,10 @@
 #ifndef Z_URAL_MATH_RATIONAL_CPP_INCLUDED
 #define Z_URAL_MATH_RATIONAL_CPP_INCLUDED
 
+/**
+ @todo Оптимизация
+*/
+
 #include <utility>
 
 #include <ural/math/common_factor.hpp>
@@ -117,6 +121,16 @@ namespace ural
             return *this;
         }
 
+        rational & operator*=(rational const & x)
+        {
+            return *this = *this * x;
+        }
+
+        rational & operator*=(IntegerType const & x)
+        {
+            return *this *= rational{x};
+        }
+
         rational & operator-=(rational const & x)
         {
             return *this = *this - x;
@@ -218,6 +232,28 @@ namespace ural
     {
         return rational<T>(x * y.denominator() + y.numerator(),
                            y.denominator());
+    }
+
+    template <class T>
+    constexpr rational<T>
+    operator*(rational<T> const & x, rational<T> const & y)
+    {
+        return rational<T>(x.numerator() * y.numerator(),
+                           x.denominator() * y.denominator());
+    }
+
+    template <class T>
+    constexpr rational<T>
+    operator*(rational<T> const & x, T const & y)
+    {
+        return rational<T>(x.numerator() * y, x.denominator());
+    }
+
+    template <class T>
+    constexpr rational<T>
+    operator*(T const & x, rational<T> const & y)
+    {
+        return rational<T>(x * y.numerator(), y.denominator());
     }
 
     template <class T>

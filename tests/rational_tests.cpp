@@ -531,4 +531,26 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_assignment_test, T,
     BOOST_CHECK_EQUAL( r, rational_type(-9,  1) );
 }
 
+// Multiplication tests
+BOOST_AUTO_TEST_CASE_TEMPLATE( rational_multiplication_test, T,
+ all_signed_test_types )
+{
+    typedef ural::rational<T>  rational_type;
+
+    URAL_STATIC_ASSERT_EQUAL(rational_type(1, 3) * rational_type(-3, 4),
+                             rational_type(-1, 4) );
+    URAL_STATIC_ASSERT_EQUAL( rational_type(2, 5) * static_cast<T>(7),
+                             rational_type(14, 5) );
+    URAL_STATIC_ASSERT_EQUAL(  static_cast<T>(-2) * rational_type(1, 6),
+                             rational_type(-1, 3) );
+
+    rational_type  r = rational_type( 3, 7 );
+
+    r *= static_cast<T>( 14 );
+    BOOST_CHECK_EQUAL( r, static_cast<T>(6) );
+
+    r *= rational_type( 3, 8 );
+    BOOST_CHECK_EQUAL( r, rational_type(9, 4) );
+}
+
 BOOST_AUTO_TEST_SUITE_END()
