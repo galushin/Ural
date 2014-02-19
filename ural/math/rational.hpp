@@ -38,6 +38,45 @@ namespace ural
      : private rational_base<IntegerType>
     {
         typedef rational_base<IntegerType> Base;
+
+    template <class Char, class Tr>
+    friend std::basic_istream<Char, Tr> &
+    operator>>(std::basic_istream<Char, Tr> & is, rational & x)
+    {
+        rational t;
+        auto & base = static_cast<Base &>(t);
+
+        is >> base.numerator;
+
+        if(!is)
+        {
+            return is;
+        }
+
+        char reader = is.get();
+
+        if(reader != '/')
+        {
+            is.setstate(std::ios::failbit);
+            return is;
+        }
+
+        reader = is.get();
+        if(std::isspace(reader))
+        {
+            is.setstate(std::ios::failbit);
+            return is;
+        }
+        else
+        {
+            is.putback(reader);
+        }
+
+        is >> base.denominator;
+        x.assign(t.numerator(), t.denominator());
+        return is;
+    }
+
     public:
         // Конструкторы и присваивание
         constexpr rational()

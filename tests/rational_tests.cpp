@@ -622,4 +622,88 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_output_test, T, all_signed_test_types )
     BOOST_CHECK_EQUAL( oss.str(), "22/7" );
 }
 
+// Input test, failing
+BOOST_AUTO_TEST_CASE_TEMPLATE( rational_input_failing_test, T,
+ all_signed_test_types )
+{
+    std::istringstream  iss( "" );
+    ural::rational<T>  r;
+
+    iss >> r;
+    BOOST_CHECK( !iss );
+
+    iss.clear();
+    iss.str( "42" );
+    iss >> r;
+    BOOST_CHECK( !iss );
+
+    iss.clear();
+    iss.str( "57A" );
+    iss >> r;
+    BOOST_CHECK( !iss );
+
+    iss.clear();
+    iss.str( "20-20" );
+    iss >> r;
+    BOOST_CHECK( !iss );
+
+    iss.clear();
+    iss.str( "1/" );
+    iss >> r;
+    BOOST_CHECK( !iss );
+
+    iss.clear();
+    iss.str( "1/ 2" );
+    iss >> r;
+    BOOST_CHECK( !iss );
+
+    iss.clear();
+    iss.str( "1 /2" );
+    iss >> r;
+    BOOST_CHECK( !iss );
+}
+
+// Input test, passing
+BOOST_AUTO_TEST_CASE_TEMPLATE( rational_input_passing_test, T,
+ all_signed_test_types )
+{
+    typedef ural::rational<T>  rational_type;
+
+    std::istringstream  iss( "1/2 12" );
+    rational_type       r;
+    int                 n = 0;
+
+    BOOST_CHECK( iss >> r >> n );
+    BOOST_CHECK_EQUAL( r, rational_type(1, 2) );
+    BOOST_CHECK_EQUAL( n, 12 );
+
+    iss.clear();
+    iss.str( "34/67" );
+    BOOST_CHECK( iss >> r );
+    BOOST_CHECK_EQUAL( r, rational_type(34, 67) );
+
+    iss.clear();
+    iss.str( "-3/-6" );
+    BOOST_CHECK( iss >> r );
+    BOOST_CHECK_EQUAL( r, rational_type(1, 2) );
+}
+
+// Dice tests (a non-main test)
+BOOST_AUTO_TEST_CASE_TEMPLATE( dice_roll_test, T, all_signed_test_types )
+{
+    typedef ural::rational<T>  rational_type;
+
+    // Determine the mean number of times a fair six-sided die
+    // must be thrown until each side has appeared at least once.
+    rational_type  r {T( 0 )};
+
+    for ( int  i = 1 ; i <= 6 ; ++i )
+    {
+        r += rational_type( 1, i );
+    }
+    r *= static_cast<T>( 6 );
+
+    BOOST_CHECK_EQUAL( r, rational_type(147, 10) );
+}
+
 BOOST_AUTO_TEST_SUITE_END()
