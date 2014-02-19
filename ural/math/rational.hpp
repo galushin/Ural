@@ -121,6 +121,17 @@ namespace ural
             return *this;
         }
 
+        rational & operator-=(rational const & x)
+        {
+            return *this = *this - x;
+        }
+
+        rational & operator-=(IntegerType const & x)
+        {
+            Base::numerator -= x * this->denominator();
+            return *this;
+        }
+
         rational & operator*=(rational const & x)
         {
             return *this = *this * x;
@@ -131,15 +142,14 @@ namespace ural
             return *this *= rational{x};
         }
 
-        rational & operator-=(rational const & x)
+        rational & operator/=(rational const & x)
         {
-            return *this = *this - x;
+            return *this = *this / x;
         }
 
-        rational & operator-=(IntegerType const & x)
+        rational & operator/=(IntegerType const & x)
         {
-            Base::numerator -= x * this->denominator();
-            return *this;
+            return *this /= rational{x};
         }
     };
 
@@ -236,6 +246,31 @@ namespace ural
 
     template <class T>
     constexpr rational<T>
+    operator-(rational<T> const & x, rational<T> const & y)
+    {
+        return rational<T>(x.numerator() * y.denominator()
+                           - y.numerator() * x.denominator(),
+                           x.denominator() * y.denominator());
+    }
+
+    template <class T>
+    constexpr rational<T>
+    operator-(rational<T> const & x, T const & y)
+    {
+        return rational<T>(x.numerator() - y * x.denominator(),
+                           x.denominator());
+    }
+
+    template <class T>
+    constexpr rational<T>
+    operator-(T const & x, rational<T> const & y)
+    {
+        return rational<T>(x * y.denominator() - y.numerator(),
+                           y.denominator());
+    }
+
+    template <class T>
+    constexpr rational<T>
     operator*(rational<T> const & x, rational<T> const & y)
     {
         return rational<T>(x.numerator() * y.numerator(),
@@ -258,27 +293,24 @@ namespace ural
 
     template <class T>
     constexpr rational<T>
-    operator-(rational<T> const & x, rational<T> const & y)
+    operator/(rational<T> const & x, rational<T> const & y)
     {
-        return rational<T>(x.numerator() * y.denominator()
-                           - y.numerator() * x.denominator(),
-                           x.denominator() * y.denominator());
+        return rational<T>(x.numerator() * y.denominator(),
+                           x.denominator() * y.numerator());
     }
 
     template <class T>
     constexpr rational<T>
-    operator-(rational<T> const & x, T const & y)
+    operator/(rational<T> const & x, T const & y)
     {
-        return rational<T>(x.numerator() - y * x.denominator(),
-                           x.denominator());
+        return rational<T>(x.numerator(), x.denominator() * y);
     }
 
     template <class T>
     constexpr rational<T>
-    operator-(T const & x, rational<T> const & y)
+    operator/(T const & x, rational<T> const & y)
     {
-        return rational<T>(x * y.denominator() - y.numerator(),
-                           y.denominator());
+        return rational<T>(x * y.denominator(), y.numerator());
     }
 
     // Ввод/Вывод

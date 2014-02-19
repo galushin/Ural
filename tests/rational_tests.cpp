@@ -553,4 +553,36 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_multiplication_test, T,
     BOOST_CHECK_EQUAL( r, rational_type(9, 4) );
 }
 
+BOOST_AUTO_TEST_CASE_TEMPLATE( rational_division_test, T,
+ all_signed_test_types )
+{
+    typedef ural::rational<T>  rational_type;
+
+    URAL_STATIC_ASSERT_EQUAL( rational_type(-1, 20) / rational_type(4, 5),
+                             rational_type(-1, 16) );
+    URAL_STATIC_ASSERT_EQUAL( rational_type( 5,  6) / static_cast<T>(7),
+                             rational_type( 5, 42) );
+    URAL_STATIC_ASSERT_EQUAL( static_cast<T>(8) / rational_type(2, 7),
+                             static_cast<T>(28) );
+
+    BOOST_CHECK_THROW( rational_type(23, 17) / rational_type(),
+     ural::bad_rational );
+    BOOST_CHECK_THROW( rational_type( 4, 15) / static_cast<T>(0),
+     ural::bad_rational );
+
+    rational_type  r = rational_type( 4, 3 );
+
+    r /= rational_type( 5, 4 );
+    BOOST_CHECK_EQUAL( r, rational_type(16, 15) );
+
+    r /= static_cast<T>( 4 );
+    BOOST_CHECK_EQUAL( r, rational_type( 4, 15) );
+
+    BOOST_CHECK_THROW( r /= rational_type(), ural::bad_rational );
+    BOOST_CHECK_THROW( r /= static_cast<T>(0), ural::bad_rational );
+
+    URAL_STATIC_ASSERT_EQUAL( rational_type(-1) / rational_type(-3),
+                             rational_type(1, 3) );
+}
+
 BOOST_AUTO_TEST_SUITE_END()
