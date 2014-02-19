@@ -737,4 +737,6 @@ BOOST_AUTO_TEST_SUITE_END()
 // The bugs, patches, and requests checking suite
 BOOST_AUTO_TEST_SUITE( bug_patch_request_suite )
 
+// @todo Тесты багов
+
 BOOST_AUTO_TEST_SUITE_END()

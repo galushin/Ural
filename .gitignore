@@ -5,3 +5,4 @@
 *.layout
 *.orig
 */docs/*
+ural_test/CppCheckResults.xml
