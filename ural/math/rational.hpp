@@ -359,6 +359,14 @@ namespace ural
     {
         return os << x.numerator() << "/" << x.denominator();
     }
+
+    // Преобразование
+    template <class To, class IntegerType>
+    To rational_cast(rational<IntegerType> const & x)
+    {
+        return static_cast<To>(x.numerator()) / static_cast<To>(x.denominator());
+    }
+
 }
 // namespace ural
 

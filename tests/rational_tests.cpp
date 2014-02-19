@@ -688,6 +688,31 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_input_passing_test, T,
     BOOST_CHECK_EQUAL( r, rational_type(1, 2) );
 }
 
+// Conversion test
+BOOST_AUTO_TEST_CASE( rational_cast_test )
+{
+    // @todo constexpr
+    // Note that these are not generic.  The problem is that rational_cast<T>
+    // requires a conversion from IntType to T.  However, for a user-defined
+    // IntType, it is not possible to define such a conversion except as an
+    // "operator T()".  This causes problems with overloading resolution.
+    ural::rational<int> const  half( 1, 2 );
+
+    BOOST_CHECK_CLOSE(ural::rational_cast<double>(half), 0.5, 0.01 );
+    BOOST_CHECK_EQUAL(ural::rational_cast<int>(half), 0 );
+    BOOST_CHECK_EQUAL(ural::rational_cast<MyInt>(half), MyInt() );
+    BOOST_CHECK_EQUAL(ural::rational_cast<ural::rational<MyInt> >(half),
+                      ural::rational<MyInt>(1, 2) );
+
+    // Conversions via explicit-marked constructors
+    // (Note that the "explicit" mark prevents conversion to
+    // ural::rational<MyOverflowingUnsigned>.)
+    ural::rational<MyInt> const  threehalves( 3, 2 );
+
+    BOOST_CHECK_EQUAL(ural::rational_cast<MyOverflowingUnsigned>(threehalves),
+                      MyOverflowingUnsigned(1u));
+}
+
 // Dice tests (a non-main test)
 BOOST_AUTO_TEST_CASE_TEMPLATE( dice_roll_test, T, all_signed_test_types )
 {
@@ -705,5 +730,11 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( dice_roll_test, T, all_signed_test_types )
 
     BOOST_CHECK_EQUAL( r, rational_type(147, 10) );
 }
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+// The bugs, patches, and requests checking suite
+BOOST_AUTO_TEST_SUITE( bug_patch_request_suite )
 
 BOOST_AUTO_TEST_SUITE_END()
