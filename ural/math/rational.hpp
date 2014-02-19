@@ -260,11 +260,17 @@ namespace ural
     // Арифметические операторы
     template <class T>
     constexpr rational<T>
+    sum_helper(rational<T> const & x, rational<T> const & y, T const & d)
+    {
+        return rational<T>(x.numerator() * (d / x.denominator())
+                           + y.numerator() * (d / y.denominator()), d);
+    }
+
+    template <class T>
+    constexpr rational<T>
     operator+(rational<T> const & x, rational<T> const & y)
     {
-        return rational<T>(x.numerator() * y.denominator()
-                           + y.numerator() * x.denominator(),
-                           x.denominator() * y.denominator());
+        return sum_helper(x, y, ural::lcm(x.denominator(), y.denominator()));
     }
 
     template <class T>
