@@ -1,4 +1,5 @@
 // Основано на boost_1_54_0\libs\rational\test\rational_test.cpp
+// @todo Проверки переполнения
 #include <ostream>
 
 #include <boost/test/unit_test.hpp>
@@ -733,10 +734,43 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( dice_roll_test, T, all_signed_test_types )
 
 BOOST_AUTO_TEST_SUITE_END()
 
-
 // The bugs, patches, and requests checking suite
 BOOST_AUTO_TEST_SUITE( bug_patch_request_suite )
 
-// @todo Тесты багов
+// "rational::operator< fails for unsigned value types"
+BOOST_AUTO_TEST_CASE(zero_lesser_than_one_unsigned_test )
+{
+    // If a zero-rational v. positive-integer comparison involves negation, then
+    // it may fail with unsigned types, which wrap around (for built-ins) or
+    // throw/be-undefined (for user-defined types).
+    ural::rational<unsigned> const  r( 0u );
+
+    BOOST_CHECK( r < 1u );
+}
+
+// "rational.hpp::gcd returns a negative value sometimes"
+BOOST_AUTO_TEST_CASE( negative_gcd_test )
+{
+    // The issue only manifests with 2's-complement integers that use their
+    // entire range of bits.  [This means that ln(-INT_MIN)/ln(2) is an integer
+    // and INT_MAX + INT_MIN == -1.]  The common computer platforms match this.
+#if (INT_MAX + INT_MIN == -1) && ((INT_MAX ^ INT_MIN) == -1)
+    // If a GCD routine takes the absolute value of an argument only before
+    // processing, it won't realize that -INT_MIN -> INT_MIN (i.e. no change
+    // from negation) and will propagate a negative sign to its result.
+    BOOST_REQUIRE_EQUAL( ural::gcd(INT_MIN, 6), 2 );
+
+    // That is bad if the rational number type does not check for that
+    // possibility during normalization.
+    ural::rational<int> const  r1( INT_MIN / 2 + 3, 6 );
+    ural::rational<int> const  r2( INT_MIN / 2 - 3, 6 );
+    ural::rational<int> const  r3 = r1 + r2;
+
+    // If the error happens, the signs of the components will be switched.
+    // (The numerators' sum is INT_MIN, and its GCD with 6 would be negated.)
+    BOOST_CHECK_EQUAL( r3.numerator(), INT_MIN / 2 );
+    BOOST_CHECK_EQUAL( r3.denominator(), 3 );
+#endif
+}
 
 BOOST_AUTO_TEST_SUITE_END()
