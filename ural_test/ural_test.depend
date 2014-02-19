@@ -2,9 +2,10 @@
 1382602060 source:c:\devtools\ural_repo\ural\ural_test\main.cpp
 	<boost/test/unit_test.hpp>
 
-1382605123 source:c:\devtools\ural_repo\ural\tests\tuple_tests.cpp
+1392801205 source:c:\devtools\ural_repo\ural\tests\tuple_tests.cpp
 	<boost/test/unit_test.hpp>
 	<ural/tuple.hpp>
+	<ural/utility.hpp>
 
 1382666452 c:\devtools\ural_repo\ural\\ural\tuple.hpp
 	<tuple>
@@ -6176,4 +6177,11 @@
 	<utility>
 	<ural/math/common_factor.hpp>
 	<ural/defs.hpp>
+
+1392801751 c:\devtools\ural_repo\ural\ural\utility.hpp
+	<ural/defs.hpp>
+	<ural/type_traits.hpp>
+
+1392801743 c:\devtools\ural_repo\ural\ural\type_traits.hpp
+	<type_traits>
 

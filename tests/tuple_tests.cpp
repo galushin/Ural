@@ -80,3 +80,22 @@ BOOST_AUTO_TEST_CASE(integer_sequence_test)
 
     BOOST_CHECK_EQUAL(std::string("(1, 2, 3, 4)"), os.str());
 }
+
+namespace
+{
+    std::string print_123(int n, double x, std::string const & s)
+    {
+        std::ostringstream os;
+        os << n << " " << x  << " " << s;
+        return os.str();
+    }
+}
+
+BOOST_AUTO_TEST_CASE(apply_function_to_tuple)
+{
+    auto const xs = std::make_tuple(42, 4.2, std::string("abs"));
+
+    auto r = ural::apply(print_123, xs);
+
+    BOOST_CHECK_EQUAL("42 4.2 abs", r);
+}
