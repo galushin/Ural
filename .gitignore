@@ -6,3 +6,4 @@
 *.orig
 */docs/*
 ural_test/CppCheckResults.xml
+doxygen_log.txt

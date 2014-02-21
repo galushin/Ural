@@ -2,7 +2,7 @@
 #define Z_URAL_FUNCTIONAL_CPP_OPERATORS_HPP_INCLUDED
 
 /** @file ural/functional/cpp_operators.hpp
- @brief Функциональные объекты, аналогичные определённым в <functional>
+ @brief Функциональные объекты, аналогичные определённым в @< functional @>
  @todo Оптимальные типы параметров
 */
 
@@ -126,6 +126,12 @@ namespace ural
         }
     };
 
+    /** @brief Функциональный объект для оператора "не равно"
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    Если один из типов аргумента равен @b void, то его тип будет выводится
+    по типу фактического параметра
+    */
     template <class T1 = void, class T2 = T1>
     class not_equal_to
     {
@@ -292,6 +298,9 @@ namespace ural
         }
     };
 
+    /** @brief Специаилизация с выводом типа второго аргумента
+    @tparam T1 тип первого аргумента
+    */
     template <class T1>
     class logical_or<T1, void>
     {
@@ -304,6 +313,9 @@ namespace ural
         }
     };
 
+    /** @brief Специаилизация с выводом типа первого аргумента
+    @tparam T1 тип второго аргумента
+    */
     template <class T2>
     class logical_or<void, T2>
     {

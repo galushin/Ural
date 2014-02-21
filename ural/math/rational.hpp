@@ -15,6 +15,7 @@ namespace ural
     class bad_rational
     {};
 
+    /// @cond false
     template <class IntegerType>
     class rational_base
     {
@@ -32,7 +33,11 @@ namespace ural
         IntegerType numerator;
         IntegerType denominator;
     };
+    /// @endcond
 
+    /** @brief Класс для представления рациональных чисел
+    @tparam IntegerType Целочисленный тип
+    */
     template <class IntegerType>
     class rational
      : private rational_base<IntegerType>

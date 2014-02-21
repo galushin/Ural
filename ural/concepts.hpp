@@ -19,6 +19,7 @@ namespace concepts
     class SemiRegular
     {
     public:
+        /// @brief Проверка неявных интерфейсов
         BOOST_CONCEPT_USAGE(SemiRegular)
         {}
 
@@ -39,6 +40,7 @@ namespace concepts
     class EqualityComparable
     {
     public:
+        /// @brief Проверка неявных интерфейсов
         BOOST_CONCEPT_USAGE(EqualityComparable)
         {
             value_consumer<bool>() = (x == y);
@@ -75,12 +77,16 @@ namespace concepts
         typedef typename Seq::traversal_tag traversal_tag;
     };
 
+    /** @brief Концепция прямой последовательности
+    @tparam тип последовательности, для которого проверяется концепция
+    */
     template <class Seq>
     class ForwardSequence
      : SinglePassSequence<Seq>
      , EqualityComparable<Seq>
     {
     public:
+        /// @brief Проверка неявных интерфейсов
         BOOST_CONCEPT_USAGE(ForwardSequence)
         {
             // @todo traversed_front
@@ -88,11 +94,15 @@ namespace concepts
     private:
     };
 
+    /** @brief Концепция двустороннней последовательности
+    @tparam тип последовательности, для которого проверяется концепция
+    */
     template <class Seq>
     class BidirectionalSequence
      : ForwardSequence<Seq>
     {
     public:
+        /// @brief Проверка неявных интерфейсов
         BOOST_CONCEPT_USAGE(BidirectionalSequence)
         {
             seq.pop_back();
@@ -103,11 +113,15 @@ namespace concepts
         static Seq seq;
     };
 
+    /** @brief Концепция последовательности произвольного доступа
+    @tparam Seq тип последовательности, для которого проверяется концепция
+    */
     template <class Seq>
     class RandomAccessSequence
      : ForwardSequence<Seq>
     {
     public:
+        /// @brief Проверка неявных интерфейсов
         BOOST_CONCEPT_USAGE(RandomAccessSequence)
         {}
 
@@ -159,13 +173,23 @@ namespace concepts
         static T make_value();
     };
 
+    /** @brief Концепция вызываемого объекта
+    @tparam F тип объекта, для которого проверяется концепция
+    @tparam Signature сигнатура
+    */
     template <class F, class Signature>
     class Callable;
 
+    /** @brief Специалиазация
+    @tparam F тип объекта, для которого проверяется концепция
+    @tparam R тип возвращаемого значения
+    @tparam Args типы аргументов
+    */
     template <class F, class R, class... Args>
     class Callable<F, R(Args...)>
     {
     public:
+        /// @brief Примеры использования
         BOOST_CONCEPT_USAGE(Callable)
         {
             typedef decltype(static_cast<R>(f_(std::declval<Args>()...)))

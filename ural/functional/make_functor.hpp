@@ -126,6 +126,12 @@ namespace ural
         typedef typename std::conditional<is_v, Res_v, Res>::type type;
     };
 
+    /** @brief Функциональный объект для указателей на функции-члены
+    @tparam R тип возвращаемого значения
+    @tparam T тип класса, которому принадлежит функция член, возможно, с
+    квалификаторами @b const и @b volatile
+    @tparam Args список типов аргументов
+    */
     template <class R, class T, class... Args>
     class mem_fn_functor
     {

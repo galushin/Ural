@@ -45,6 +45,7 @@ namespace ural
         }
     };
 
+    /// @cond false
     template <class Iterator, class Category>
     class iterator_sequence_base;
 
@@ -231,6 +232,7 @@ namespace ural
     struct iterator_tag_to_traversal_tag<std::random_access_iterator_tag>
      : declare_type<random_access_traversal_tag>
     {};
+    /// @endcond
 
     /** @brief Последовательность на основе пары итераторов
     @tparam Iterator тип итератора

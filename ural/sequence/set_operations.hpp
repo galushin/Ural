@@ -19,6 +19,12 @@ namespace ural
         both,
     };
 
+    /** @brief Последовательность элементов, полученная в результате слияния
+    элементов двух базовых последовательностей
+    @tparam Input1 первая входная последовательность
+    @tparam Input2 вторая входная последовательность
+    @tparam Compare функция сравнения
+    */
     template <class Input1, class Input2, class Compare = ural::less<> >
     class merge_sequence
      : public sequence_base<merge_sequence<Input1, Input2, Compare>,
@@ -143,6 +149,12 @@ namespace ural
                      ural::less<>{});
     }
 
+    /** @brief Последовательность элементов, полученная в результате пересечения
+    множеств элементов двух базовых последовательностей
+    @tparam Input1 первая входная последовательность
+    @tparam Input2 вторая входная последовательность
+    @tparam Compare функция сравнения
+    */
     template <class Input1, class Input2, class Compare = ural::less<> >
     class set_intersection_sequence
      : public sequence_base<set_intersection_sequence<Input1, Input2, Compare>,
@@ -232,6 +244,12 @@ namespace ural
                                 std::forward<Input2>(in2), ural::less<>{});
     }
 
+    /** @brief Последовательность элементов, полученная в результате взятия
+    разности множеств элементов двух базовых последовательностей
+    @tparam Input1 первая входная последовательность
+    @tparam Input2 вторая входная последовательность
+    @tparam Compare функция сравнения
+    */
     template <class Input1, class Input2, class Compare = ural::less<> >
     class set_difference_sequence
      : public sequence_base<set_difference_sequence<Input1, Input2, Compare>,
@@ -322,6 +340,12 @@ namespace ural
                               std::forward<Input2>(in2), ural::less<>{});
     }
 
+    /** @brief Последовательность элементов, полученная в результате взятия
+    симметрической разности множеств элементов двух базовых последовательностей
+    @tparam Input1 первая входная последовательность
+    @tparam Input2 вторая входная последовательность
+    @tparam Compare функция сравнения
+    */
     template <class Input1, class Input2, class Compare = ural::less<> >
     class set_symmetric_difference_sequence
      : public sequence_base<set_symmetric_difference_sequence<Input1, Input2, Compare>,
@@ -451,6 +475,12 @@ namespace ural
                                         ural::less<>{});
     }
 
+    /** @brief Последовательность элементов, полученная в результате объединения
+    множеств элементов двух базовых последовательностей
+    @tparam Input1 первая входная последовательность
+    @tparam Input2 вторая входная последовательность
+    @tparam Compare функция сравнения
+    */
     template <class Input1, class Input2, class Compare = ural::less<> >
     class set_union_sequence
      : public sequence_base<set_union_sequence<Input1, Input2, Compare>,

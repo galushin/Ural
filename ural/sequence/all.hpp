@@ -3,6 +3,7 @@
 
 /** @file ural/sequence/all.hpp
  @brief Все последовательности
+ @todo Разбить на более мелкие файлы
 */
 
 #include <iterator>
@@ -83,6 +84,10 @@ namespace ural
     }
 
     /**
+    @brief Последовательность для потока вывода
+    @tparam OStream Тип потока вывода
+    @tparam T тип выводимых объектов
+    @tparam Delimeter тип разделителя
     @todo параметр по умолчанию OStream
     @todo параметр по умолчанию Delimeter
     @todo параметр по умолчанию T
@@ -127,6 +132,10 @@ namespace ural
         boost::compressed_pair<std::reference_wrapper<OStream>, Delimeter> data_;
     };
 
+    /** @brief Специализация с выводом типа выводимых объектов
+    @tparam OStream Тип потока вывода
+    @tparam Delimeter тип разделителя
+    */
     template <class OStream, class Delimeter>
     class ostream_sequence<OStream, auto_tag, Delimeter>
      : public sequence_base<ostream_sequence<OStream, auto_tag, Delimeter>>

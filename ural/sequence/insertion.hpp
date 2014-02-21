@@ -59,6 +59,9 @@ namespace ural
         OutputIterator iter_;
     };
 
+    /** @brief Вспомогательный класс для создания
+    <tt> std::back_insert_iterator </tt>
+    */
     struct back_inserter_helper
     {
     public:

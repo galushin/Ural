@@ -9,6 +9,12 @@
 
 namespace ural
 {
+    /** @brief Последовательность неповторяющихся соседних элементов базовой
+    последовательности
+    @tparam Forward Тип базовой последовательности
+    @tparam BinaryPredicat бинарный предикат, определяющий, совпадают ли два
+    последовательных элемента.
+    */
     template <class Forward, class BinaryPredicate = ural::equal_to<> >
     class unique_sequence
      : public sequence_base<unique_sequence<Forward, BinaryPredicate>>

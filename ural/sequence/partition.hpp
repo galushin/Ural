@@ -1,8 +1,21 @@
 #ifndef Z_URAL_SEQUENCE_PARTITION_HPP_INCLUDED
 #define Z_URAL_SEQUENCE_PARTITION_HPP_INCLUDED
 
+/** @file ural/sequence/partition.hpp
+ @brief Последовательность вывода, записывающая значения в одну из двух базовых
+ последовательностей, в зависимости от значения предиката
+*/
+
 namespace ural
 {
+    /** @brief Последовательность вывода, записывающая значения в одну из двух
+    базовых последовательностей, в зависимости от значения предиката
+    @tparam Ouput1 тип последовательности для элементов, удовлетворяющих
+    предикату
+    @tparam Ouput2 тип последовательности для элементов, не удовлетворяющих
+    предикату
+    @tparam Predicate тип предикат
+    */
     template <class Output1, class Output2, class Predicate>
     class partition_sequence
      : public sequence_base<partition_sequence<Output1, Output2, Predicate>>

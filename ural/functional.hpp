@@ -136,6 +136,7 @@ namespace ural
         }
     };
 
+    /// @brief Специализация с выводом типа аргумента
     template <>
     class dereference<void>
     {

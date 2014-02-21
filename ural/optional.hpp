@@ -273,6 +273,7 @@ namespace details
 // namespace details
 /// @endcond
 
+    /// @brief Тип исключения "доступ к значению пустого @c optional"
     class bad_optional_access
      : public std::logic_error
     {
