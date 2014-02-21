@@ -455,7 +455,7 @@
 	<ural/sequence/all.hpp>
 	<ural/utility/tracers.hpp>
 
-1392627736 c:\devtools\ural_repo\ural\ural\defs.hpp
+1392967512 c:\devtools\ural_repo\ural\ural\defs.hpp
 
 1392193762 c:\devtools\ural_repo\ural\ural\sequence\transform.hpp
 	<boost/compressed_pair.hpp>
@@ -880,7 +880,7 @@
 	<ural/archetypes.hpp>
 	<ural/algorithm.hpp>
 
-1392192859 c:\devtools\ural_repo\ural\ural\archetypes.hpp
+1392966966 c:\devtools\ural_repo\ural\ural\archetypes.hpp
 	<ural/sequence/base.hpp>
 
 1392452679 c:\devtools\github\ural\ural\functional\make_functor.hpp
