@@ -102,8 +102,26 @@ namespace ural
 
         void assign(IntegerType num, IntegerType denom)
         {
-            // @todo Оптимизировать?
-            *this = rational(std::move(num), std::move(denom));
+            // @todo Можно ли устранить дублирование с конструктором?
+            static auto const zero = IntegerType(0);
+
+            if(denom == zero)
+            {
+                throw bad_rational{};
+            }
+
+            auto g = ural::gcd(num, denom);
+            num /= g;
+            denom /= g;
+
+            if(denom < zero)
+            {
+                num = - num;
+                denom = - denom;
+            }
+
+            Base::numerator = std::move(num);
+            Base::denominator = std::move(denom);
         }
 
         // Инкремент и декремент

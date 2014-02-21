@@ -106,6 +106,7 @@
 		<Unit filename="../ural/sequence/uniqued.hpp" />
 		<Unit filename="../ural/thread.hpp" />
 		<Unit filename="../ural/tuple.hpp" />
+		<Unit filename="../ural/type_traits.hpp" />
 		<Unit filename="../ural/utility.hpp" />
 		<Unit filename="../ural/utility/tracers.hpp" />
 		<Unit filename="main.cpp" />
