@@ -76,7 +76,7 @@ namespace ural
     template <class T1, class T2>
     constexpr bool operator<=(T1 const & x, T2 const & y)
     {
-        return !(x > y);
+        return !(y < x);
     }
 
     /** @brief Естественное определение оператора "больше либо равно"

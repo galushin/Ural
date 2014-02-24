@@ -455,7 +455,7 @@
 	<ural/sequence/all.hpp>
 	<ural/utility/tracers.hpp>
 
-1392967512 c:\devtools\ural_repo\ural\ural\defs.hpp
+1393210711 c:\devtools\ural_repo\ural\ural\defs.hpp
 
 1392193762 c:\devtools\ural_repo\ural\ural\sequence\transform.hpp
 	<boost/compressed_pair.hpp>
@@ -6166,14 +6166,14 @@
 	<ural/math/common_factor.hpp>
 	<ural/defs.hpp>
 
-1392797941 source:c:\devtools\ural_repo\ural\tests\rational_tests.cpp
+1393209377 source:c:\devtools\ural_repo\ural\tests\rational_tests.cpp
 	<ostream>
 	<boost/test/unit_test.hpp>
 	<boost/mpl/list.hpp>
 	<boost/operators.hpp>
 	<ural/math/rational.hpp>
 
-1392954187 c:\devtools\ural_repo\ural\ural\math\rational.hpp
+1393212962 c:\devtools\ural_repo\ural\ural\math\rational.hpp
 	<utility>
 	<ural/math/common_factor.hpp>
 	<ural/defs.hpp>

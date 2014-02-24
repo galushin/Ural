@@ -1,4 +1,20 @@
 // Основано на boost_1_54_0\libs\rational\test\rational_test.cpp
+
+/*
+ *  A test program for boost/rational.hpp.
+ *  Change the typedef at the beginning of run_tests() to try out different
+ *  integer types.  (These tests are designed only for signed integer
+ *  types.  They should work for short, int and long.)
+ *
+ *  (C) Copyright Stephen Silver, 2001. Permission to copy, use, modify, sell
+ *  and distribute this software is granted provided this copyright notice
+ *  appears in all copies. This software is provided "as is" without express or
+ *  implied warranty, and with no claim as to its suitability for any purpose.
+ *
+ *  Incorporated into the boost rational number library, and modified and
+ *  extended, by Paul Moore, with permission.
+ */
+
 // @todo Проверки переполнения
 #include <ostream>
 
@@ -736,6 +752,26 @@ BOOST_AUTO_TEST_SUITE_END()
 
 // The bugs, patches, and requests checking suite
 BOOST_AUTO_TEST_SUITE( bug_patch_request_suite )
+
+// "rational operator< can overflow"
+BOOST_AUTO_TEST_CASE( rational_less_overflow_test )
+{
+    // Choose values such that rational-number comparisons will overflow if
+    // the multiplication method (n1/d1 ? n2/d2 == n1*d2 ? n2*d1) is used.
+    // (And make sure that the large components are relatively prime, so they
+    // won't partially cancel to make smaller, more reasonable, values.)
+    unsigned const  n1 = UINT_MAX - 2u, d1 = UINT_MAX - 1u;
+    unsigned const  n2 = d1, d2 = UINT_MAX;
+    ural::rational<MyOverflowingUnsigned> const  r1( n1, d1 ), r2( n2, d2 );
+
+    BOOST_REQUIRE_EQUAL( ural::gcd(n1, d1), 1u );
+    BOOST_REQUIRE_EQUAL( ural::gcd(n2, d2), 1u );
+    BOOST_REQUIRE( n1 > UINT_MAX / d2 );
+    BOOST_REQUIRE( n2 > UINT_MAX / d1 );
+    BOOST_CHECK( r1 < r2 );
+    BOOST_CHECK( !(r1 < r1) );
+    BOOST_CHECK( !(r2 < r1) );
+}
 
 // "rational::operator< fails for unsigned value types"
 BOOST_AUTO_TEST_CASE(zero_lesser_than_one_unsigned_test )

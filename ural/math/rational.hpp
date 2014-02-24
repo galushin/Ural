@@ -262,10 +262,44 @@ namespace ural
     }
 
     template <class T>
+    struct mixed_fraction
+    {
+        constexpr mixed_fraction(rational<T> const & x)
+         : whole(x.numerator() / x.denominator())
+         , num(x.numerator() % x.denominator())
+         , denom(x.denominator())
+        {}
+
+        constexpr mixed_fraction(T numerator, T denominator)
+         : whole(numerator / denominator)
+         , num(numerator % denominator)
+         , denom(denominator)
+        {}
+
+        constexpr mixed_fraction next() const
+        {
+            return mixed_fraction(denom, num);
+        }
+
+        T whole;
+        T num;
+        T denom;
+    };
+
+    template <class T>
+    constexpr bool
+    operator<(mixed_fraction<T> const & x, mixed_fraction<T> const & y)
+    {
+        return x.whole == y.whole
+               ? (x.num == T(0) ? T(0) < y.num : y.next() < x.next())
+               : x.whole < y.whole;
+    }
+
+    template <class T>
     constexpr bool operator<(rational<T> const & x, rational<T> const & y)
     {
         // @todo Устойчивость к переполнениям (при умножении)
-        return x.numerator() * y.denominator() < y.numerator() * x.denominator();
+        return mixed_fraction<T>(x) < mixed_fraction<T>(y);
     }
 
     template <class T>
