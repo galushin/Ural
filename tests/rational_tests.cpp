@@ -15,7 +15,6 @@
  *  extended, by Paul Moore, with permission.
  */
 
-// @todo Проверки переполнения
 #include <ostream>
 
 #include <boost/test/unit_test.hpp>

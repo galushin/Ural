@@ -15,8 +15,6 @@ namespace ural
     для регулярных объектов
     @tparam T тип значения
     @tparam Threading тип стратегии работы с многопоточностью
-    @todo Подсчитывать количество вызовов: конструктор копий, конструктор
-    перемещения
     */
     template <class T, class Threading = single_thread_policy>
     class regular_tracer
@@ -62,6 +60,16 @@ namespace ural
             return destroyed_ref();
         }
 
+        static counter_type copy_ctor_count()
+        {
+            return copy_ctor_ref();
+        }
+
+        static counter_type move_ctor_count()
+        {
+            return move_ctor_ref();
+        }
+
         static counter_type copy_assignments_count()
         {
             return copy_assign_ref();
@@ -90,6 +98,22 @@ namespace ural
          : value_{std::move(init_value)}
         {
             ++ constructed_ref();
+        }
+
+        /** @brief Конструктор копий
+        */
+        regular_tracer(regular_tracer const & x)
+         : value_{x.value_}
+        {
+            ++ constructed_ref();
+            ++ copy_ctor_ref();
+        }
+
+        regular_tracer(regular_tracer && x)
+         : value_{std::move(x.value_)}
+        {
+            ++ constructed_ref();
+            ++ move_ctor_ref();
         }
 
         /// @brief Деструктор
@@ -124,6 +148,18 @@ namespace ural
 
     private:
         static counter_type & constructed_ref()
+        {
+            static counter_type inst;
+            return inst;
+        }
+
+        static counter_type & copy_ctor_ref()
+        {
+            static counter_type inst;
+            return inst;
+        }
+
+        static counter_type & move_ctor_ref()
         {
             static counter_type inst;
             return inst;

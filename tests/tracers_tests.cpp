@@ -2,6 +2,27 @@
 
 #include <ural/utility/tracers.hpp>
 
+BOOST_AUTO_TEST_CASE(regular_tracer_copy_ctor_test)
+{
+    typedef ural::regular_tracer<int> Type;
+
+    Type x {0};
+
+    auto const old_copy_ctor_count = Type::copy_ctor_count();
+    auto const old_move_ctor_count = Type::move_ctor_count();
+    auto const old_ctor_count = Type::constructed_objects();
+
+    Type x1{x};
+
+    BOOST_CHECK_EQUAL(old_copy_ctor_count + 1, Type::copy_ctor_count());
+    BOOST_CHECK_EQUAL(old_ctor_count + 1, Type::constructed_objects());
+
+    Type x2{std::move(x1)};
+
+    BOOST_CHECK_EQUAL(old_move_ctor_count + 1, Type::move_ctor_count());
+    BOOST_CHECK_EQUAL(old_ctor_count + 2, Type::constructed_objects());
+}
+
 BOOST_AUTO_TEST_CASE(regular_tracer_assign_test)
 {
     typedef ural::regular_tracer<int> Type;
