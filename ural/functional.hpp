@@ -148,6 +148,39 @@ namespace ural
             return *x;
         }
     };
+
+    template <class BinaryFunctor>
+    class binary_reverse_args_functor
+     : private BinaryFunctor
+    {
+        typedef BinaryFunctor Base;
+
+    public:
+        explicit binary_reverse_args_functor(BinaryFunctor f)
+         : Base(std::move(f))
+        {}
+
+        template <class T1, class T2>
+        auto operator()(T1 && x, T2 && y) const
+        -> decltype(std::declval<BinaryFunctor>()(std::forward<T2>(y), std::forward<T1>(x)))
+        {
+            return this->functor()(std::forward<T2>(y), std::forward<T1>(x));
+        }
+
+        BinaryFunctor const & functor() const
+        {
+            return static_cast<BinaryFunctor const &>(*this);
+        }
+    };
+
+    template <class BinaryFunctor>
+    auto make_binary_reverse_args(BinaryFunctor f)
+    -> binary_reverse_args_functor<decltype(make_functor(std::move(f)))>
+    {
+        typedef binary_reverse_args_functor<decltype(make_functor(std::move(f)))>
+            Functor;
+        return Functor{make_functor(std::move(f))};
+    }
 }
 // namespace ural
 

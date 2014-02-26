@@ -336,7 +336,7 @@
 	<ural/numeric/partial_sums.hpp>
 	<ural/numeric/adjacent_differences.hpp>
 
-1392952711 c:\devtools\ural_repo\ural\ural\functional.hpp
+1393383461 c:\devtools\ural_repo\ural\ural\functional.hpp
 	<boost/compressed_pair.hpp>
 	<ural/tuple.hpp>
 	<ural/functional/replace.hpp>
@@ -432,10 +432,11 @@
 
 1384408805 c:\devtools\ural_repo\ural\ural\thread.hpp
 
-1392613318 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
+1393382944 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
 	<ural/sequence/base.hpp>
 	<ural/sequence/function_output.hpp>
 	<ural/sequence/generator.hpp>
+	<ural/sequence/iota.hpp>
 	<ural/sequence/reversed.hpp>
 	<ural/sequence/partition.hpp>
 	<ural/algorithm/details/copy.hpp>
@@ -6166,14 +6167,14 @@
 	<ural/math/common_factor.hpp>
 	<ural/defs.hpp>
 
-1393214573 source:c:\devtools\ural_repo\ural\tests\rational_tests.cpp
+1393378346 source:c:\devtools\ural_repo\ural\tests\rational_tests.cpp
 	<ostream>
 	<boost/test/unit_test.hpp>
 	<boost/mpl/list.hpp>
 	<boost/operators.hpp>
 	<ural/math/rational.hpp>
 
-1393212962 c:\devtools\ural_repo\ural\ural\math\rational.hpp
+1393378268 c:\devtools\ural_repo\ural\ural\math\rational.hpp
 	<utility>
 	<ural/math/common_factor.hpp>
 	<ural/defs.hpp>
@@ -6184,4 +6185,6 @@
 
 1392801743 c:\devtools\ural_repo\ural\ural\type_traits.hpp
 	<type_traits>
+
+1393382227 c:\devtools\ural_repo\ural\ural\sequence\iota.hpp
 
