@@ -707,13 +707,15 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_input_passing_test, T,
 // Conversion test
 BOOST_AUTO_TEST_CASE( rational_cast_test )
 {
-    // @todo constexpr
     // Note that these are not generic.  The problem is that rational_cast<T>
     // requires a conversion from IntType to T.  However, for a user-defined
     // IntType, it is not possible to define such a conversion except as an
     // "operator T()".  This causes problems with overloading resolution.
-    ural::rational<int> const  half( 1, 2 );
+    constexpr ural::rational<int> const  half( 1, 2 );
 
+    constexpr auto x = ural::rational_cast<double>(half);
+
+    BOOST_CHECK_CLOSE(x, 0.5, 0.01 );
     BOOST_CHECK_CLOSE(ural::rational_cast<double>(half), 0.5, 0.01 );
     BOOST_CHECK_EQUAL(ural::rational_cast<int>(half), 0 );
     BOOST_CHECK_EQUAL(ural::rational_cast<MyInt>(half), MyInt() );

@@ -425,7 +425,7 @@ namespace ural
 
     // Преобразование
     template <class To, class IntegerType>
-    To rational_cast(rational<IntegerType> const & x)
+    constexpr To rational_cast(rational<IntegerType> const & x)
     {
         return static_cast<To>(x.numerator()) / static_cast<To>(x.denominator());
     }
