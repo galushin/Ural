@@ -4,6 +4,7 @@
 #include <ural/sequence/base.hpp>
 #include <ural/sequence/function_output.hpp>
 #include <ural/sequence/generator.hpp>
+#include <ural/sequence/iota.hpp>
 #include <ural/sequence/reversed.hpp>
 #include <ural/sequence/partition.hpp>
 
@@ -62,6 +63,11 @@ namespace details
     template <class RASequence, class Compare>
     void insertion_sort(RASequence s, Compare cmp)
     {
+        BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(s)>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<decltype(s)>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<decltype(s), decltype(*s)>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*s), decltype(*s))>));
+
         if(!s)
         {
             return;
@@ -222,6 +228,10 @@ namespace details
     Forward search_n(Forward in, Size const n, T const & value,
                      BinaryPredicate bin_pred)
     {
+        BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<Forward>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Forward>));
+        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate, bool(decltype(*in), T)>));
+
         if(n == 0)
         {
             return in;
@@ -1065,19 +1075,11 @@ namespace details
         }
 
         auto cmp_s = ural::compare_by(ural::dereference<>{}, std::move(cmp));
-
         ::ural::min_element_accumulator<ForwardSequence, decltype(cmp_s)>
             acc(in++, cmp_s);
+        auto seq = ural::make_iota_sequence(in);
 
-        /* @todo Избавиться от цикла: нужна последовательность, действующая
-        подобно boost::counted_iterator и функциональный объект,
-        разыменовывающий свои аргументы перед сравнением - это можно сделать
-        через compare_by и dererference
-        */
-        for(; !!in; ++ in)
-        {
-            acc(in);
-        }
+        acc = ::ural::details::for_each(seq, std::move(acc));
 
         return acc.result();
     }
@@ -1086,8 +1088,8 @@ namespace details
     ForwardSequence
     max_element(ForwardSequence in, Compare cmp)
     {
-        auto transposed_cmp = std::bind(std::move(cmp), std::placeholders::_2,
-                                        std::placeholders::_1);
+        auto transposed_cmp = ural::make_binary_reverse_args(std::move(cmp));
+
         return ::ural::details::min_element(std::move(in),
                                             std::move(transposed_cmp));
     }
