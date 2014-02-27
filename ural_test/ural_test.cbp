@@ -53,6 +53,7 @@
 		<Unit filename="../tests/algo_tests.cpp" />
 		<Unit filename="../tests/concepts_checks.cpp" />
 		<Unit filename="../tests/functional_test.cpp" />
+		<Unit filename="../tests/io_tests.cpp" />
 		<Unit filename="../tests/iterator_sequence_test.cpp" />
 		<Unit filename="../tests/math_tests.cpp" />
 		<Unit filename="../tests/memory_test.cpp" />
@@ -88,6 +89,7 @@
 		<Unit filename="../ural/sequence/base.hpp">
 			<Option target="Debug" />
 		</Unit>
+		<Unit filename="../ural/sequence/by_line.hpp" />
 		<Unit filename="../ural/sequence/filtered.hpp" />
 		<Unit filename="../ural/sequence/function_output.hpp" />
 		<Unit filename="../ural/sequence/generator.hpp" />

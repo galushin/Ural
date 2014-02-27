@@ -301,7 +301,7 @@
 	<ural/algorithm/details/copy.hpp>
 	<ural/algorithm/details/algo_base.hpp>
 
-1392953054 c:\devtools\ural_repo\ural\ural\sequence\all.hpp
+1393471943 c:\devtools\ural_repo\ural\ural\sequence\all.hpp
 	<iterator>
 	<ural/sequence/base.hpp>
 	<ural/sequence/make.hpp>
@@ -377,7 +377,7 @@
 	<ural/defs.hpp>
 	<ural/sequence/base.hpp>
 
-1393301126 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
+1393472046 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
 	<ural/defs.hpp>
 	<ural/thread.hpp>
 	<ural/functional.hpp>
@@ -427,12 +427,13 @@
 1392452679 c:\devtools\github\ural\ural\sequence\base.hpp
 	<ural/defs.hpp>
 
-1392607091 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
+1393472111 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
 	<ural/defs.hpp>
+	<utility>
 
 1384408805 c:\devtools\ural_repo\ural\ural\thread.hpp
 
-1393463347 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
+1393472124 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
 	<ural/sequence/base.hpp>
 	<ural/sequence/function_output.hpp>
 	<ural/sequence/generator.hpp>
@@ -441,6 +442,7 @@
 	<ural/sequence/partition.hpp>
 	<ural/algorithm/details/copy.hpp>
 	<ural/functional.hpp>
+	<cassert>
 
 1392607292 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
 	<ural/sequence/base.hpp>
@@ -456,7 +458,8 @@
 	<ural/sequence/all.hpp>
 	<ural/utility/tracers.hpp>
 
-1393210711 c:\devtools\ural_repo\ural\ural\defs.hpp
+1393472070 c:\devtools\ural_repo\ural\ural\defs.hpp
+	<ural/type_traits.hpp>
 
 1392193762 c:\devtools\ural_repo\ural\ural\sequence\transform.hpp
 	<boost/compressed_pair.hpp>
@@ -6183,8 +6186,18 @@
 	<ural/defs.hpp>
 	<ural/type_traits.hpp>
 
-1392801743 c:\devtools\ural_repo\ural\ural\type_traits.hpp
+1393472051 c:\devtools\ural_repo\ural\ural\type_traits.hpp
 	<type_traits>
 
 1393382227 c:\devtools\ural_repo\ural\ural\sequence\iota.hpp
+
+1393473935 source:c:\devtools\ural_repo\ural\tests\io_tests.cpp
+	<ural/sequence/by_line.hpp>
+	<ural/algorithm.hpp>
+	<boost/test/unit_test.hpp>
+	<sstream>
+
+1393474013 c:\devtools\ural_repo\ural\ural\sequence\by_line.hpp
+	<ural/sequence/base.hpp>
+	<string>
 

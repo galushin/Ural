@@ -11,6 +11,8 @@
 #include <ural/algorithm/details/copy.hpp>
 #include <ural/functional.hpp>
 
+#include <cassert>
+
 namespace ural
 {
 namespace details

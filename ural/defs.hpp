@@ -5,6 +5,8 @@
  @brief Определения основных типов, используемых библиотекой
 */
 
+#include <ural/type_traits.hpp>
+
 #define URAL_PREVENT_MACRO_SUBSTITUTION
 
 namespace ural
