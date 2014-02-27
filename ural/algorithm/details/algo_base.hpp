@@ -1075,11 +1075,13 @@ namespace details
         }
 
         auto cmp_s = ural::compare_by(ural::dereference<>{}, std::move(cmp));
+
         ::ural::min_element_accumulator<ForwardSequence, decltype(cmp_s)>
             acc(in++, cmp_s);
+
         auto seq = ural::make_iota_sequence(in);
 
-        acc = ::ural::details::for_each(seq, std::move(acc));
+        acc = ::ural::details::for_each(std::move(seq), std::move(acc));
 
         return acc.result();
     }

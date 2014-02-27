@@ -2,6 +2,7 @@
 #define Z_URAL_MATH_RATIONAL_CPP_INCLUDED
 
 /**
+ @file ural/math/rational.hpp
  @todo Оптимизация
 */
 
@@ -92,7 +93,7 @@ namespace ural
          : Base{std::move(x)}
         {}
 
-        constexpr rational(IntegerType num, IntegerType denom)
+        explicit constexpr rational(IntegerType num, IntegerType denom)
          : Base(denom < 0 ? - std::move(num) : std::move(num),
                 denom != 0 ? absolute_value(denom) : throw bad_rational{},
                 ural::gcd(num, denom))
@@ -107,7 +108,9 @@ namespace ural
 
         void assign(IntegerType num, IntegerType denom)
         {
-            // @todo Можно ли устранить дублирование с конструктором?
+            /* Устранить дублирование с конструктором без создания временного
+            объекта невозможно, так как конструктор должен быть constexpr
+            */
             static auto const zero = IntegerType(0);
 
             if(denom == zero)
@@ -296,22 +299,35 @@ namespace ural
     }
 
     template <class T>
+    constexpr bool
+    operator<(T const & x, mixed_fraction<T> const & y)
+    {
+        return x < y.whole || (x == y.whole && y.num != 0);
+    }
+
+    template <class T>
+    constexpr bool
+    operator<(mixed_fraction<T> const & x, T const & y)
+    {
+        return x.whole < y;
+    }
+
+    template <class T>
     constexpr bool operator<(rational<T> const & x, rational<T> const & y)
     {
-        // @todo Устойчивость к переполнениям (при умножении)
         return mixed_fraction<T>(x) < mixed_fraction<T>(y);
     }
 
     template <class T>
     constexpr bool operator<(T const & x, rational<T> const & y)
     {
-        return x * y.denominator() < y.numerator();
+        return x < mixed_fraction<T>(y);
     }
 
     template <class T>
     constexpr bool operator<(rational<T> const & x, T const & y)
     {
-        return x.numerator() < y * x.denominator();
+        return mixed_fraction<T>(x) < y;
     }
 
     // Арифметические операторы

@@ -77,7 +77,6 @@ namespace ural
 
     /**
     @todo Выразить через remove_if_sequence
-    @todo Вынести в отдельный файл
     */
     template <class Input, class T, class BinaryPredicate>
     class remove_sequence
