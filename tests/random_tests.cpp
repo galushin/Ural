@@ -375,6 +375,7 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_eval_test)
 {
     typedef ural::discrete_distribution<> D;
     typedef std::minstd_rand G;
+
     {
         G g;
         D d;
@@ -485,7 +486,7 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_eval_test)
         std::vector<double> prob = d.probabilities();
         for (int i = 0; i <= d.max(); ++i)
             if (prob[i] != 0)
-                BOOST_CHECK(std::abs((double)u[i]/N - prob[i]) / prob[i] < 0.001);
+                BOOST_CHECK(std::abs((double)u[i]/N - prob[i]) / prob[i] < 0.002);
             else
                 BOOST_CHECK(u[i] == 0);
     }
@@ -504,7 +505,7 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_eval_test)
         std::vector<double> prob = d.probabilities();
         for (int i = 0; i <= d.max(); ++i)
             if (prob[i] != 0)
-                BOOST_CHECK(std::abs((double)u[i]/N - prob[i]) / prob[i] < 0.001);
+                BOOST_CHECK(std::abs((double)u[i]/N - prob[i]) / prob[i] < 0.002);
             else
                 BOOST_CHECK(u[i] == 0);
     }
@@ -523,7 +524,7 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_eval_test)
         std::vector<double> prob = d.probabilities();
         for (int i = 0; i <= d.max(); ++i)
             if (prob[i] != 0)
-                BOOST_CHECK(std::abs((double)u[i]/N - prob[i]) / prob[i] < 0.001);
+                BOOST_CHECK(std::abs((double)u[i]/N - prob[i]) / prob[i] < 0.002);
             else
                 BOOST_CHECK(u[i] == 0);
     }
