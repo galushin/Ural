@@ -860,11 +860,13 @@
 1392008474 c:\devtools\ural_repo\ural\ural\abi.hpp
 	<cxxabi.h>
 
-1393819527 c:\devtools\ural_repo\ural\ural\random.hpp
+1393826603 c:\devtools\ural_repo\ural\ural\random.hpp
 	<ural/numeric.hpp>
 	<ural/defs.hpp>
 	<cstdlib>
 	<vector>
+	<ostream>
+	<istream>
 
 1391229894 c:\pavel\ural_repo\ural\ural\random.hpp
 	<cstdlib>
@@ -6203,7 +6205,8 @@
 	<ural/sequence/base.hpp>
 	<string>
 
-1393819626 source:c:\devtools\ural_repo\ural\tests\random_tests.cpp
+1393826330 source:c:\devtools\ural_repo\ural\tests\random_tests.cpp
 	<ural/random.hpp>
 	<boost/test/unit_test.hpp>
+	<sstream>
 

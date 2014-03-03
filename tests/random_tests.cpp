@@ -78,6 +78,8 @@ md5 contributions   llvm/lib/Support/MD5.cpp llvm/include/llvm/Support/MD5.h
 
 #include <boost/test/unit_test.hpp>
 
+#include <sstream>
+
 // Типы
 BOOST_AUTO_TEST_CASE(discrete_distribution_types_test)
 {
@@ -294,6 +296,30 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_ctor_init_list_test)
     }
 }
 
+// Свойства
+BOOST_AUTO_TEST_CASE(discrete_distribution_min_test)
+{
+    typedef ural::discrete_distribution<> D;
+    double p0[] = {.3, .1, .6};
+    D d(p0, p0+3);
+    BOOST_CHECK_EQUAL(d.min(), 0);
+}
+
+BOOST_AUTO_TEST_CASE(discrete_distribution_max_test)
+{
+    typedef ural::discrete_distribution<> D;
+    {
+        double p0[] = {.3, .1, .6};
+        D d(p0, p0+3);
+        BOOST_CHECK_EQUAL(d.max(), 2);
+    }
+    {
+        double p0[] = {.3, .1, .6, .2};
+        D d(p0, p0+4);
+        BOOST_CHECK_EQUAL(d.max(), 3);
+    }
+}
+
 // Присваивание
 BOOST_AUTO_TEST_CASE(discrete_distribution_assign_test)
 {
@@ -309,7 +335,7 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_assign_test)
 // Проверка на равенство
 BOOST_AUTO_TEST_CASE(discrete_distribution_equality)
 {
-    typedef std::discrete_distribution<> D;
+    typedef ural::discrete_distribution<> D;
     {
 
         D d1;
@@ -328,6 +354,20 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_equality)
         D d2;
         BOOST_CHECK(d1 != d2);
     }
+}
+
+// Ввод/вывод
+BOOST_AUTO_TEST_CASE(discrete_distribution_io_test)
+{
+    typedef ural::discrete_distribution<> D;
+    double p0[] = {.3, .1, .6};
+    D d1(p0, p0+3);
+    std::ostringstream os;
+    os << d1;
+    std::istringstream is(os.str());
+    D d2;
+    is >> d2;
+    BOOST_CHECK(d1 == d2);
 }
 
 // Генерация значений
@@ -350,7 +390,7 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_eval_test)
         for (int i = 0; i <= d.max(); ++i)
             BOOST_CHECK_EQUAL((double)u[i]/N, prob[i]);
     }
-    {\
+    {
         G g;
         std::vector<double> const p0 = {.3};
         D d(p0.begin(), p0.end());
@@ -562,5 +602,258 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_eval_test)
                 BOOST_CHECK(std::abs((double)u[i]/N - prob[i]) / prob[i] < 0.001);
             else
                 BOOST_CHECK(u[i] == 0);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(discrete_distribution_param_eval_test)
+{
+    typedef ural::discrete_distribution<> D;
+    typedef D::param_type P;
+    typedef std::minstd_rand G;
+    G g;
+    D d;
+    double p0[] = {.3, .1, .6};
+    P p(p0, p0+3);
+    const int N = 10000000;
+    std::vector<D::result_type> u(3);
+    for (int i = 0; i < N; ++i)
+    {
+        D::result_type v = d(g, p);
+        BOOST_CHECK(0 <= v && v <= 2);
+        u[v]++;
+    }
+    std::vector<double> prob = p.probabilities();
+    for (int i = 0; i <= 2; ++i)
+        BOOST_CHECK(std::abs((double)u[i]/N - prob[i]) / prob[i] < 0.001);
+}
+
+// Параметр
+BOOST_AUTO_TEST_CASE(discrete_distribution_get_param_test)
+{
+    typedef ural::discrete_distribution<> D;
+    typedef D::param_type P;
+    double p0[] = {.3, .1, .6};
+    P p(p0, p0+3);
+    D d(p);
+    BOOST_CHECK(d.param() == p);
+}
+
+BOOST_AUTO_TEST_CASE(discrete_distribution_set_param_test)
+{
+    typedef ural::discrete_distribution<> D;
+    typedef D::param_type P;
+    std::vector<double> d0 = {.3, .1, .6};
+    P p(d0.begin(), d0.end());
+    D d;
+    d.param(p);
+    BOOST_CHECK(d.param() == p);
+}
+
+BOOST_AUTO_TEST_CASE(discrete_distribution_param_assign_test)
+{
+    typedef ural::discrete_distribution<> D;
+    typedef D::param_type param_type;
+    double d0[] = {.3, .1, .6};
+    param_type p0(d0, d0+3);
+    param_type p;
+    p = p0;
+    BOOST_CHECK(p == p0);
+}
+
+BOOST_AUTO_TEST_CASE(discrete_distribution_param_copy_test)
+{
+    typedef ural::discrete_distribution<> D;
+    typedef D::param_type param_type;
+    double d0[] = {.3, .1, .6};
+    param_type p0(d0, d0+3);
+    param_type p = p0;
+    BOOST_CHECK(p == p0);
+}
+
+BOOST_AUTO_TEST_CASE(discrete_distribution_param_ctor_init)
+{
+    typedef ural::discrete_distribution<> D;
+
+    {
+        typedef D::param_type P;
+        P pa = {};
+        std::vector<double> p = pa.probabilities();
+        BOOST_CHECK(p.size() == 1);
+        BOOST_CHECK(p[0] == 1);
+    }
+    {
+        typedef D::param_type P;
+        P pa = {10};
+        std::vector<double> p = pa.probabilities();
+        BOOST_CHECK(p.size() == 1);
+        BOOST_CHECK(p[0] == 1);
+    }
+    {
+        typedef D::param_type P;
+        P pa = {10, 30};
+        std::vector<double> p = pa.probabilities();
+        BOOST_CHECK(p.size() == 2);
+        BOOST_CHECK(p[0] == 0.25);
+        BOOST_CHECK(p[1] == 0.75);
+    }
+    {
+        typedef D::param_type P;
+        P pa = {30, 10};
+        std::vector<double> p = pa.probabilities();
+        BOOST_CHECK(p.size() == 2);
+        BOOST_CHECK(p[0] == 0.75);
+        BOOST_CHECK(p[1] == 0.25);
+    }
+    {
+        typedef D::param_type P;
+        P pa = {30, 0, 10};
+        std::vector<double> p = pa.probabilities();
+        BOOST_CHECK(p.size() == 3);
+        BOOST_CHECK(p[0] == 0.75);
+        BOOST_CHECK(p[1] == 0);
+        BOOST_CHECK(p[2] == 0.25);
+    }
+    {
+        typedef D::param_type P;
+        P pa = {0, 30, 10};
+        std::vector<double> p = pa.probabilities();
+        BOOST_CHECK(p.size() == 3);
+        BOOST_CHECK(p[0] == 0);
+        BOOST_CHECK(p[1] == 0.75);
+        BOOST_CHECK(p[2] == 0.25);
+    }
+    {
+        typedef D::param_type P;
+        P pa = {0, 0, 10};
+        std::vector<double> p = pa.probabilities();
+        BOOST_CHECK(p.size() == 3);
+        BOOST_CHECK(p[0] == 0);
+        BOOST_CHECK(p[1] == 0);
+        BOOST_CHECK(p[2] == 1);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(discrete_distribution_param_ctor_func)
+{
+    typedef ural::discrete_distribution<> D;
+    auto fw = +[](double x) { return x+1; };
+
+    {
+        typedef D::param_type P;
+        P pa(0, 0, 1, fw);
+        std::vector<double> p = pa.probabilities();
+        BOOST_CHECK(p.size() == 1);
+        BOOST_CHECK(p[0] == 1);
+    }
+    {
+        typedef D::param_type P;
+        P pa(1, 0, 1, fw);
+        std::vector<double> p = pa.probabilities();
+        BOOST_CHECK(p.size() == 1);
+        BOOST_CHECK(p[0] == 1);
+    }
+    {
+        typedef D::param_type P;
+        P pa(2, 0.5, 1.5, fw);
+        std::vector<double> p = pa.probabilities();
+        BOOST_CHECK(p.size() == 2);
+        BOOST_CHECK(p[0] == .4375);
+        BOOST_CHECK(p[1] == .5625);
+    }
+    {
+        typedef D::param_type P;
+        P pa(4, 0, 2, fw);
+        std::vector<double> p = pa.probabilities();
+        BOOST_CHECK(p.size() == 4);
+        BOOST_CHECK(p[0] == .15625);
+        BOOST_CHECK(p[1] == .21875);
+        BOOST_CHECK(p[2] == .28125);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(discrete_distribution_param_ctor_iter_test)
+{
+    typedef ural::discrete_distribution<> D;
+    {
+        typedef D::param_type P;
+        double p0[] = {1};
+        P pa(p0, p0);
+        std::vector<double> p = pa.probabilities();
+        BOOST_CHECK(p.size() == 1);
+        BOOST_CHECK(p[0] == 1);
+    }
+    {
+        typedef D::param_type P;
+        double p0[] = {10};
+        P pa(p0, p0+1);
+        std::vector<double> p = pa.probabilities();
+        BOOST_CHECK(p.size() == 1);
+        BOOST_CHECK(p[0] == 1);
+    }
+    {
+        typedef D::param_type P;
+        double p0[] = {10, 30};
+        P pa(p0, p0+2);
+        std::vector<double> p = pa.probabilities();
+        BOOST_CHECK(p.size() == 2);
+        BOOST_CHECK(p[0] == 0.25);
+        BOOST_CHECK(p[1] == 0.75);
+    }
+    {
+        typedef D::param_type P;
+        double p0[] = {30, 10};
+        P pa(p0, p0+2);
+        std::vector<double> p = pa.probabilities();
+        BOOST_CHECK(p.size() == 2);
+        BOOST_CHECK(p[0] == 0.75);
+        BOOST_CHECK(p[1] == 0.25);
+    }
+    {
+        typedef D::param_type P;
+        double p0[] = {30, 0, 10};
+        P pa(p0, p0+3);
+        std::vector<double> p = pa.probabilities();
+        BOOST_CHECK(p.size() == 3);
+        BOOST_CHECK(p[0] == 0.75);
+        BOOST_CHECK(p[1] == 0);
+        BOOST_CHECK(p[2] == 0.25);
+    }
+    {
+        typedef D::param_type P;
+        double p0[] = {0, 30, 10};
+        P pa(p0, p0+3);
+        std::vector<double> p = pa.probabilities();
+        BOOST_CHECK(p.size() == 3);
+        BOOST_CHECK(p[0] == 0);
+        BOOST_CHECK(p[1] == 0.75);
+        BOOST_CHECK(p[2] == 0.25);
+    }
+    {
+        typedef D::param_type P;
+        double p0[] = {0, 0, 10};
+        P pa(p0, p0+3);
+        std::vector<double> p = pa.probabilities();
+        BOOST_CHECK(p.size() == 3);
+        BOOST_CHECK(p[0] == 0);
+        BOOST_CHECK(p[1] == 0);
+        BOOST_CHECK(p[2] == 1);
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(discrete_distribution_param_eq_test)
+{
+    typedef ural::discrete_distribution<> D;
+    typedef D::param_type param_type;
+    std::vector<double> p0 = {30, 10};
+    {
+        param_type p1(p0.begin(), p0.end());
+        param_type p2(p0.begin(), p0.end());
+        BOOST_CHECK(p1 == p2);
+    }
+    {
+        param_type p1(p0.begin(), p0.end());
+        param_type p2;
+        BOOST_CHECK(p1 != p2);
     }
 }

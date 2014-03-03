@@ -3,6 +3,7 @@
 
 /** @file ural/random.hpp
  @brief Средства генерации случайных чисел
+ @todo Пересмотр и оптимизация средств ввода/вывода
 */
 
 #include <ural/numeric.hpp>
@@ -10,6 +11,8 @@
 
 #include <cstdlib>
 #include <vector>
+#include <ostream>
+#include <istream>
 
 namespace ural
 {
@@ -61,9 +64,16 @@ namespace ural
             template <class Iterator>
             param_type(Iterator first, Iterator last)
             {
-                // @todo Тест с first == last
-                std::vector<weight_type> ws(first, last);
-                this->init(std::move(ws));
+                if(first == last)
+                {
+                    data_.resize(1, std::pair<weight_type, size_t>(1.0, 0));
+                    ps_.resize(1, 1.0);
+                }
+                else
+                {
+                    std::vector<weight_type> ws(first, last);
+                    this->init(std::move(ws));
+                }
             }
 
             param_type(std::initializer_list<weight_type> ws)
@@ -213,6 +223,12 @@ namespace ural
             return parm(g);
         }
 
+        // Изменение свойств
+        void param(param_type const & parm)
+        {
+            this->param_ = parm;
+        }
+
         // Свойства
         std::vector<weight_type> probabilities() const
         {
@@ -243,6 +259,47 @@ namespace ural
                     discrete_distribution<IntType> const & y)
     {
         return x.param() == y.param();
+    }
+
+    template <class Ch, class Tr, class IntType>
+    std::basic_ostream<Ch, Tr> &
+    operator<<(std::basic_ostream<Ch, Tr> & os,
+               discrete_distribution<IntType> const & d)
+    {
+        auto ps = d.probabilities();
+
+        os << ps.size();
+
+        for(auto const & p : ps)
+        {
+            os << ' ' << p;
+        }
+
+        return os;
+    }
+
+    template <class Ch, class Tr, class IntType>
+    std::basic_istream<Ch, Tr> &
+    operator>>(std::basic_istream<Ch, Tr> & is,
+               discrete_distribution<IntType> & d)
+    {
+        typename discrete_distribution<IntType>::result_type n;
+        is >> n;
+        std::vector<double> ps;
+        ps.reserve(n);
+
+        for(; n > 0; -- n)
+        {
+            double reader;
+            is >> reader;
+            ps.push_back(reader);
+        }
+
+        if(!is.fail())
+        {
+            d = discrete_distribution<IntType>(ps.begin(), ps.end());
+        }
+        return is;
     }
 }
 // namespace ural
