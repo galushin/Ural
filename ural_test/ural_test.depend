@@ -860,9 +860,11 @@
 1392008474 c:\devtools\ural_repo\ural\ural\abi.hpp
 	<cxxabi.h>
 
-1391491763 c:\devtools\ural_repo\ural\ural\random.hpp
-	<cstdlib>
+1393819527 c:\devtools\ural_repo\ural\ural\random.hpp
+	<ural/numeric.hpp>
 	<ural/defs.hpp>
+	<cstdlib>
+	<vector>
 
 1391229894 c:\pavel\ural_repo\ural\ural\random.hpp
 	<cstdlib>
@@ -6191,7 +6193,7 @@
 
 1393382227 c:\devtools\ural_repo\ural\ural\sequence\iota.hpp
 
-1393473935 source:c:\devtools\ural_repo\ural\tests\io_tests.cpp
+1393480627 source:c:\devtools\ural_repo\ural\tests\io_tests.cpp
 	<ural/sequence/by_line.hpp>
 	<ural/algorithm.hpp>
 	<boost/test/unit_test.hpp>
@@ -6200,4 +6202,8 @@
 1393474013 c:\devtools\ural_repo\ural\ural\sequence\by_line.hpp
 	<ural/sequence/base.hpp>
 	<string>
+
+1393819626 source:c:\devtools\ural_repo\ural\tests\random_tests.cpp
+	<ural/random.hpp>
+	<boost/test/unit_test.hpp>
 

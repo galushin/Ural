@@ -59,6 +59,7 @@
 		<Unit filename="../tests/memory_test.cpp" />
 		<Unit filename="../tests/numeric_tests.cpp" />
 		<Unit filename="../tests/optional_tests.cpp" />
+		<Unit filename="../tests/random_tests.cpp" />
 		<Unit filename="../tests/rational_tests.cpp" />
 		<Unit filename="../tests/sequence_test.cpp" />
 		<Unit filename="../tests/tracers_tests.cpp" />
