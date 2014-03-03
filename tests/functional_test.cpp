@@ -133,7 +133,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(not_equal_to_test, Functor, Neq_functors)
     BOOST_CHECK_EQUAL(false, neq(1, 1));
 }
 
-// @todo Тесты для tribool
 typedef boost::mpl::list<ural::logical_not<bool>, ural::logical_not<>>
     Not_functors;
 
@@ -219,6 +218,28 @@ BOOST_AUTO_TEST_CASE(negate_test_auto)
     constexpr auto r = f(value);
 
     BOOST_CHECK_EQUAL(-value, r);
+}
+
+typedef boost::mpl::list<ural::modulus<int>,
+                         ural::modulus<>,
+                         ural::modulus<int, void>,
+                         ural::modulus<void, int>>
+    Modulus_functors;
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(modulus_test, Modulus, Modulus_functors)
+{
+    constexpr Modulus mod {};
+
+    auto const n = 10;
+
+    constexpr auto r = mod(2 * n, n);
+
+    static_assert(r == 0, "");
+
+    for(auto x = -2 * n; x < 2 * n; ++ x)
+    {
+        BOOST_CHECK_EQUAL(x % n, mod(x, n));
+    }
 }
 
 BOOST_AUTO_TEST_CASE(make_functor_for_member_var_test)
