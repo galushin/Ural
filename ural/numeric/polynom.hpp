@@ -19,7 +19,7 @@
 
 /** @file ural/numeric/polynom.hpp
  @todo Вариант с выводом типов
- @todo Многочлены с коэффициентами-векторами
+ @todo Тест многочленов с коэффициентами-векторами
  @todo Проверять, что для типа аргумента выполняется decltype(x*x) == X
  @todo Вся арифметика многочленов: разделить, вычесть, вычислить остаток от
  деления
@@ -54,6 +54,7 @@ namespace ural
     @tparam A тип коэффициентов
     @tparam X тип аргументов
     @todo Alloc тип распределителя памяти
+    @todo Ослабить требование к типу множителя
     */
     template <class A, class X>
     class polynomial
@@ -81,11 +82,9 @@ namespace ural
         polynomial(std::initializer_list<coefficient_type> cs)
          : cs_{}
         {
-            auto seq = sequence(cs);
-
             auto const zero = coefficient_type{0};
 
-            seq = find(std::move(seq), zero, not_equal_to<>{});
+            auto seq = find(cs, zero, not_equal_to<>{});
 
             if (!seq)
             {
@@ -112,7 +111,6 @@ namespace ural
             if(p.degree() > this->degree())
             {
                 cs_.reserve(p.degree());
-
                 cs_.insert(cs_.end(), p.cs_.begin() + old_size, p.cs_.end());
             }
 

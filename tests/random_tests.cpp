@@ -339,7 +339,6 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_equality)
 {
     typedef ural::discrete_distribution<> D;
     {
-
         D d1;
         D d2;
         BOOST_CHECK(d1 == d2);
@@ -373,239 +372,78 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_io_test)
 }
 
 // Генерация значений
+namespace
+{
+    template <class Distribution>
+    void test_discrete_distribution_exact(Distribution d, size_t N)
+    {
+        typedef std::minstd_rand G;
+        G g;
+
+        std::vector<typename Distribution::result_type> u(d.max()+1);
+
+        for (int i = 0; i < N; ++i)
+        {
+            typename Distribution::result_type v = d(g);
+            BOOST_CHECK(d.min() <= v && v <= d.max());
+            u[v]++;
+        }
+
+        std::vector<double> prob = d.probabilities();
+        for (int i = 0; i <= d.max(); ++i)
+            BOOST_CHECK_EQUAL((double)u[i]/N, prob[i]);
+    }
+
+    template <class Weights>
+    void test_discrete_distribution_approx(Weights && ws, size_t N, double eps)
+    {
+        typedef ural::discrete_distribution<> D;
+        typedef std::minstd_rand G;
+
+        G g;
+        D d(ws.begin(), ws.end());
+
+        std::vector<D::result_type> u(d.max()+1);
+        for (int i = 0; i < N; ++i)
+        {
+            D::result_type v = d(g);
+            BOOST_CHECK(d.min() <= v && v <= d.max());
+            u[v]++;
+        }
+        std::vector<double> prob = d.probabilities();
+
+        for (int i = 0; i <= d.max(); ++i)
+            if (prob[i] != 0)
+                BOOST_CHECK_CLOSE((double)u[i]/N, prob[i], eps * 100);
+            else
+                BOOST_CHECK(u[i] == 0);
+    }
+}
+
 BOOST_AUTO_TEST_CASE(discrete_distribution_eval_test)
 {
     typedef ural::discrete_distribution<> D;
     typedef std::minstd_rand G;
 
-    {
-        G g;
-        D d;
-        const int N = 100;
-        std::vector<D::result_type> u(d.max()+1);
-        for (int i = 0; i < N; ++i)
-        {
-            D::result_type v = d(g);
-            BOOST_CHECK(d.min() <= v && v <= d.max());
-            u[v]++;
-        }
-        std::vector<double> prob = d.probabilities();
-        for (int i = 0; i <= d.max(); ++i)
-            BOOST_CHECK_EQUAL((double)u[i]/N, prob[i]);
-    }
-    {
-        G g;
-        std::vector<double> const p0 = {.3};
-        D d(p0.begin(), p0.end());
-        const int N = 100;
-        std::vector<D::result_type> u(d.max()+1);
-        for (int i = 0; i < N; ++i)
-        {
-            D::result_type v = d(g);
-            BOOST_CHECK(d.min() <= v && v <= d.max());
-            u[v]++;
-        }
-        std::vector<double> prob = d.probabilities();
-        for (int i = 0; i <= d.max(); ++i)
-            BOOST_CHECK_EQUAL((double)u[i]/N, prob[i]);
-    }
-    {
-        G g;
-        std::vector<double> const p0 = {.75, .25};
-        D d(p0.begin(), p0.end());
-        const int N = 1000000;
-        std::vector<D::result_type> u(d.max()+1);
-        for (int i = 0; i < N; ++i)
-        {
-            D::result_type v = d(g);
-            BOOST_CHECK(d.min() <= v && v <= d.max());
-            u[v]++;
-        }
-        std::vector<double> prob = d.probabilities();
-        for (int i = 0; i <= d.max(); ++i)
-            BOOST_CHECK(std::abs((double)u[i]/N - prob[i]) / prob[i] < 0.001);
-    }
-    {
-        G g;
-        std::vector<double> const p0 = {0, 1};
-        D d(p0.begin(), p0.end());
-        const int N = 1000000;
-        std::vector<D::result_type> u(d.max()+1);
-        for (int i = 0; i < N; ++i)
-        {
-            D::result_type v = d(g);
-            BOOST_CHECK(d.min() <= v && v <= d.max());
-            u[v]++;
-        }
-        std::vector<double> prob = d.probabilities();
-        BOOST_CHECK((double)u[0]/N == prob[0]);
-        BOOST_CHECK((double)u[1]/N == prob[1]);
-    }
-    {
-        G g;
-        std::vector<double> const p0 = {1, 0};
-        D d(p0.begin(), p0.end());
-        const int N = 1000000;
-        std::vector<D::result_type> u(d.max()+1);
-        for (int i = 0; i < N; ++i)
-        {
-            D::result_type v = d(g);
-            BOOST_CHECK(d.min() <= v && v <= d.max());
-            u[v]++;
-        }
-        std::vector<double> prob = d.probabilities();
-        BOOST_CHECK((double)u[0]/N == prob[0]);
-        BOOST_CHECK((double)u[1]/N == prob[1]);
-    }
-    {
-        G g;
-        std::vector<double> const p0 = {.3, .1, .6};
-        D d(p0.begin(), p0.end());
-        const int N = 10000000;
-        std::vector<D::result_type> u(d.max()+1);
-        for (int i = 0; i < N; ++i)
-        {
-            D::result_type v = d(g);
-            BOOST_CHECK(d.min() <= v && v <= d.max());
-            u[v]++;
-        }
-        std::vector<double> prob = d.probabilities();
-        for (int i = 0; i <= d.max(); ++i)
-            BOOST_CHECK(std::abs((double)u[i]/N - prob[i]) / prob[i] < 0.001);
-    }
-    {
-        G g;
-        std::vector<double> const p0 = {0, 25, 75};
-        D d(p0.begin(), p0.end());
-        const int N = 1000000;
-        std::vector<D::result_type> u(d.max()+1);
-        for (int i = 0; i < N; ++i)
-        {
-            D::result_type v = d(g);
-            BOOST_CHECK(d.min() <= v && v <= d.max());
-            u[v]++;
-        }
-        std::vector<double> prob = d.probabilities();
-        for (int i = 0; i <= d.max(); ++i)
-            if (prob[i] != 0)
-                BOOST_CHECK(std::abs((double)u[i]/N - prob[i]) / prob[i] < 0.002);
-            else
-                BOOST_CHECK(u[i] == 0);
-    }
-    {
-        G g;
-        std::vector<double> const p0 = {25, 0, 75};
-        D d(p0.begin(), p0.end());
-        const int N = 1000000;
-        std::vector<D::result_type> u(d.max()+1);
-        for (int i = 0; i < N; ++i)
-        {
-            D::result_type v = d(g);
-            BOOST_CHECK(d.min() <= v && v <= d.max());
-            u[v]++;
-        }
-        std::vector<double> prob = d.probabilities();
-        for (int i = 0; i <= d.max(); ++i)
-            if (prob[i] != 0)
-                BOOST_CHECK(std::abs((double)u[i]/N - prob[i]) / prob[i] < 0.002);
-            else
-                BOOST_CHECK(u[i] == 0);
-    }
-    {
-        G g;
-        std::vector<double> const p0 = {25, 75, 0};
-        D d(p0.begin(), p0.end());
-        const int N = 1000000;
-        std::vector<D::result_type> u(d.max()+1);
-        for (int i = 0; i < N; ++i)
-        {
-            D::result_type v = d(g);
-            BOOST_CHECK(d.min() <= v && v <= d.max());
-            u[v]++;
-        }
-        std::vector<double> prob = d.probabilities();
-        for (int i = 0; i <= d.max(); ++i)
-            if (prob[i] != 0)
-                BOOST_CHECK(std::abs((double)u[i]/N - prob[i]) / prob[i] < 0.002);
-            else
-                BOOST_CHECK(u[i] == 0);
-    }
-    {
-        G g;
-        std::vector<double> const p0 = {0, 0, 1};
-        D d(p0.begin(), p0.end());
-        const int N = 100;
-        std::vector<D::result_type> u(d.max()+1);
-        for (int i = 0; i < N; ++i)
-        {
-            D::result_type v = d(g);
-            BOOST_CHECK(d.min() <= v && v <= d.max());
-            u[v]++;
-        }
-        std::vector<double> prob = d.probabilities();
-        for (int i = 0; i <= d.max(); ++i)
-            if (prob[i] != 0)
-                BOOST_CHECK(std::abs((double)u[i]/N - prob[i]) / prob[i] < 0.001);
-            else
-                BOOST_CHECK(u[i] == 0);
-    }
-    {
-        G g;
-        std::vector<double> const p0 = {0, 1, 0};
-        D d(p0.begin(), p0.end());
-        const int N = 100;
-        std::vector<D::result_type> u(d.max()+1);
-        for (int i = 0; i < N; ++i)
-        {
-            D::result_type v = d(g);
-            BOOST_CHECK(d.min() <= v && v <= d.max());
-            u[v]++;
-        }
-        std::vector<double> prob = d.probabilities();
-        for (int i = 0; i <= d.max(); ++i)
-            if (prob[i] != 0)
-                BOOST_CHECK(std::abs((double)u[i]/N - prob[i]) / prob[i] < 0.001);
-            else
-                BOOST_CHECK(u[i] == 0);
-    }
-    {
-        G g;
-        std::vector<double> const p0 = {1, 0, 0};
-        D d(p0.begin(), p0.end());
-        const int N = 100;
-        std::vector<D::result_type> u(d.max()+1);
-        for (int i = 0; i < N; ++i)
-        {
-            D::result_type v = d(g);
-            BOOST_CHECK(d.min() <= v && v <= d.max());
-            u[v]++;
-        }
-        std::vector<double> prob = d.probabilities();
-        for (int i = 0; i <= d.max(); ++i)
-            if (prob[i] != 0)
-                BOOST_CHECK(std::abs((double)u[i]/N - prob[i]) / prob[i] < 0.001);
-            else
-                BOOST_CHECK(u[i] == 0);
-    }
-    {
-        G g;
-        std::vector<double> const p0 = {33, 0, 0, 67};
-        D d(p0.begin(), p0.end());
-        const int N = 1000000;
-        std::vector<D::result_type> u(d.max()+1);
-        for (int i = 0; i < N; ++i)
-        {
-            D::result_type v = d(g);
-            BOOST_CHECK(d.min() <= v && v <= d.max());
-            u[v]++;
-        }
-        std::vector<double> prob = d.probabilities();
-        for (int i = 0; i <= d.max(); ++i)
-            if (prob[i] != 0)
-                BOOST_CHECK(std::abs((double)u[i]/N - prob[i]) / prob[i] < 0.001);
-            else
-                BOOST_CHECK(u[i] == 0);
-    }
+    test_discrete_distribution_exact(D{}, 100);
+    test_discrete_distribution_exact(D{.3}, 100);
+
+    const int N = 100000;
+    const double eps = 0.01;
+    typedef std::vector<double> Weights;
+    test_discrete_distribution_approx(Weights{.75, .25}, N, eps);
+
+    test_discrete_distribution_exact(D{0, 1}, N);
+    test_discrete_distribution_exact(D{1, 0}, N);
+
+    test_discrete_distribution_approx(Weights{.3, .1, .6}, N, eps);
+    test_discrete_distribution_approx(Weights{0, 25, 75}, N, eps);
+    test_discrete_distribution_approx(Weights{25, 0, 75}, N, eps);
+    test_discrete_distribution_approx(Weights{25, 75, 0}, N, eps);
+    test_discrete_distribution_approx(Weights{0, 0, 1}, N, eps);
+    test_discrete_distribution_approx(Weights{0, 1, 0}, N, eps);
+    test_discrete_distribution_approx(Weights{1, 0, 0}, N, eps);
+    test_discrete_distribution_approx(Weights{33, 0, 0, 67}, N, eps);
 }
 
 BOOST_AUTO_TEST_CASE(discrete_distribution_param_eval_test)
