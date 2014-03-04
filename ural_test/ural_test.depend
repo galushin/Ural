@@ -794,13 +794,14 @@
 	<ural/functional.hpp>
 	<ural/sequence/base.hpp>
 
-1393972247 source:c:\pavel\ural_repo\ural\tests\numeric_tests.cpp
+1393973789 source:c:\pavel\ural_repo\ural\tests\numeric_tests.cpp
 	<numeric>
 	<forward_list>
 	<boost/test/unit_test.hpp>
 	<ural/algorithm.hpp>
 	<ural/numeric.hpp>
 	<ural/numeric/polynom.hpp>
+	<boost/mpl/list.hpp>
 
 1393903293 source:c:\pavel\ural_repo\ural\tests\optional_tests.cpp
 	<boost/test/unit_test.hpp>
@@ -6311,6 +6312,6 @@
 	<ural/utility.hpp>
 	<ural/functional/make_functor.hpp>
 
-1393972453 c:\pavel\ural_repo\ural\ural\numeric\polynom.hpp
+1393976438 c:\pavel\ural_repo\ural\ural\numeric\polynom.hpp
 	<boost/operators.hpp>
 

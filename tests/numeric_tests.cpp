@@ -138,6 +138,10 @@ BOOST_AUTO_TEST_CASE(adjacent_differences_sequence_test_no_default_ctor)
 }
 
 #include <ural/numeric/polynom.hpp>
+#include <boost/mpl/list.hpp>
+
+typedef boost::mpl::list<ural::polynomial<int, double>, ural::polynomial<int>>
+    Polynom_types;
 
 BOOST_AUTO_TEST_CASE(polynomial_types_test)
 {
@@ -154,9 +158,8 @@ BOOST_AUTO_TEST_CASE(polynomial_types_test)
                       sizeof(typename Polynom::coefficients_container));
 }
 
-BOOST_AUTO_TEST_CASE(polynomial_default_ctor_test)
+BOOST_AUTO_TEST_CASE_TEMPLATE(polynomial_default_ctor_test, Polynom, Polynom_types)
 {
-    typedef ural::polynomial<int, double> Polynom;
     auto const p0 = Polynom{};
 
     BOOST_CHECK_EQUAL(0U, p0.degree());

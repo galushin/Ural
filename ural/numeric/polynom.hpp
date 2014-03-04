@@ -50,16 +50,55 @@ namespace ural
         return r;
     }
 
+    template <class A, class X, class Alloc>
+    class polynomial;
+
+    template <class A, class X, class Alloc>
+    class polynomial_base
+    {
+    public:
+        typedef X argument_type;
+        typedef decltype(std::declval<A>() * std::declval<X>()) result_type;
+
+        result_type operator()(argument_type const & x) const
+        {
+            auto const & r = static_cast<polynomial<A, X, Alloc> const &>(*this);
+
+            return polynom(r.coefficients() | ural::reversed, x);
+        }
+
+    protected:
+        ~polynomial_base() = default;
+    };
+
+    template <class A, class Alloc>
+    class polynomial_base<A, void, Alloc>
+    {
+    public:
+        template <class X>
+        auto operator()(X && x) const
+        -> decltype(std::declval<A>() * x)
+        {
+            auto const & r = static_cast<polynomial<A, void, Alloc> const &>(*this);
+
+            return polynom(r.coefficients() | ural::reversed, x);
+        }
+
+    protected:
+        ~polynomial_base() = default;
+    };
+
     /** @brief Класс многочлена
     @tparam A тип коэффициентов
     @tparam X тип аргументов
-    @todo Alloc тип распределителя памяти
+    @tparam Alloc тип распределителя памяти
     @todo Ослабить требование к типу множителя
     */
-    template <class A, class X>
+    template <class A, class X = void, class Alloc = std::allocator<A> >
     class polynomial
-     : boost::additive<polynomial<A, X>>
-     , boost::multiplicative<polynomial<A, X>, X>
+     : boost::additive<polynomial<A, X, Alloc>>
+     , boost::multiplicative<polynomial<A, X, Alloc>, A>
+     , public polynomial_base<A, X, Alloc>
     {
         friend bool operator==(polynomial const & x, polynomial const & y)
         {
@@ -69,9 +108,7 @@ namespace ural
     public:
         // Типы
         typedef A coefficient_type;
-        typedef std::vector<coefficient_type> coefficients_container;
-        typedef X argument_type;
-        typedef decltype(std::declval<A>() * std::declval<X>()) result_type;
+        typedef std::vector<coefficient_type, Alloc> coefficients_container;
         typedef typename coefficients_container::size_type size_type;
 
         // Конструкторы
@@ -95,12 +132,6 @@ namespace ural
                 cs_.assign(seq.begin(), seq.end());
                 ural::reverse(cs_);
             }
-        }
-
-        // Вычисление значений
-        result_type operator()(argument_type const & x) const
-        {
-            return polynom(cs_ | ural::reversed, x);
         }
 
         // Линейное пространство
@@ -156,7 +187,7 @@ namespace ural
             return *this;
         }
 
-        polynomial & operator*=(X const & a)
+        polynomial & operator*=(coefficient_type const & a)
         {
             for(auto & c : cs_)
             {
@@ -165,7 +196,7 @@ namespace ural
             return *this;
         }
 
-        polynomial & operator/=(X const & a)
+        polynomial & operator/=(coefficient_type const & a)
         {
             assert(a != coefficient_type{0});
 
