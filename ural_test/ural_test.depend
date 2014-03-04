@@ -649,7 +649,7 @@
 	<ural/tuple.hpp>
 	<ural/functional/cpp_operators.hpp>
 
-1393903293 c:\pavel\ural_repo\ural\ural\functional\cpp_operators.hpp
+1393934024 c:\pavel\ural_repo\ural\ural\functional\cpp_operators.hpp
 	<ural/functional/make_functor.hpp>
 	<ural/functional/compose.hpp>
 
@@ -741,7 +741,7 @@
 	<ural/concepts.hpp>
 	<ural/tuple.hpp>
 
-1393931537 c:\pavel\ural_repo\ural\ural\concepts.hpp
+1393934152 c:\pavel\ural_repo\ural\ural\concepts.hpp
 	<boost/concept/usage.hpp>
 	<ural/defs.hpp>
 	<ural/sequence/base.hpp>
@@ -816,7 +816,7 @@
 	<unordered_set>
 	<ural/utility/tracers.hpp>
 
-1393903293 source:c:\pavel\ural_repo\ural\tests\sequence_test.cpp
+1393932481 source:c:\pavel\ural_repo\ural\tests\sequence_test.cpp
 	<boost/test/unit_test.hpp>
 	<iterator>
 	<ural/abi.hpp>
@@ -6244,9 +6244,9 @@
 1393903294 c:\pavel\ural_repo\ural\ural\sequence\remove.hpp
 	<ural/algorithm/details/algo_base.hpp>
 
-1393903294 c:\pavel\ural_repo\ural\ural\sequence\iota.hpp
+1393933852 c:\pavel\ural_repo\ural\ural\sequence\iota.hpp
 
-1393903294 c:\pavel\ural_repo\ural\ural\sequence\partition.hpp
+1393932862 c:\pavel\ural_repo\ural\ural\sequence\partition.hpp
 
 1393903293 c:\pavel\ural_repo\ural\ural\archetypes.hpp
 	<ural/sequence/base.hpp>

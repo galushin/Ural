@@ -120,10 +120,11 @@ namespace concepts
         BOOST_CONCEPT_USAGE(BidirectionalSequence)
         {
             seq.pop_back();
-            // @todo Что с back?
+            value_consumer<reference>() = seq.back();
         }
 
     private:
+        typedef typename Seq::reference reference;
         static Seq seq;
     };
 

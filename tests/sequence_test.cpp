@@ -86,6 +86,7 @@ BOOST_AUTO_TEST_CASE(reversed_reversed_test)
     BOOST_CHECK_EQUAL(ural::abi::demangle_name(typeid(s).name()),
                       ural::abi::demangle_name(typeid(rr).name()));
     BOOST_CHECK(typeid(s).name() == typeid(rr).name());
+    BOOST_CHECK(typeid(s) == typeid(rr));
 }
 
 BOOST_AUTO_TEST_CASE(sink_output_sequence_test_auto)

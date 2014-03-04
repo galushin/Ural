@@ -77,7 +77,6 @@ namespace ural
         }
     };
 
-    // @todo divides
     template <class T1 = void, class T2 = T1>
     class modulus
     {
@@ -232,8 +231,6 @@ namespace ural
         }
     };
 
-    // @todo Специализации для указателей
-
     template <class T1 = void, class T2 = T1>
     class less
     {
@@ -271,9 +268,6 @@ namespace ural
             return x > y;
         }
     };
-
-    // @todo greater_equal
-    // @todo less_equal
 
     template <class T1 = void, class T2 = T1>
     class logical_and
@@ -397,11 +391,6 @@ namespace ural
             return !x;
         }
     };
-
-    // @todo bit_and
-    // @todo bit_or
-    // @todo bit_xor
-    // @todo bit_not
 
     // Негатор
     template <class Predicate>

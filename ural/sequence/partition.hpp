@@ -26,7 +26,8 @@ namespace ural
         // Конструкторы
         explicit partition_sequence(Output1 out_true, Output2 out_false,
                                     Predicate pred)
-         : data_{std::move(out_true), std::move(out_false), std::move(pred)}
+         : data_{Bases{std::move(out_true), std::move(out_false)},
+                 std::move(pred)}
         {}
 
         // Однопроходная последовательность
@@ -45,13 +46,13 @@ namespace ural
         {
             if(this->predicate()(x))
             {
-                *data_[ural::_1] = std::forward<T>(x);
-                ++ data_[ural::_1];
+                *data_.first()[ural::_1] = std::forward<T>(x);
+                ++ data_.first()[ural::_1];
             }
             else
             {
-                *data_[ural::_2] = std::forward<T>(x);
-                ++ data_[ural::_2];
+                *data_.first()[ural::_2] = std::forward<T>(x);
+                ++ data_.first()[ural::_2];
             }
         }
 
@@ -61,22 +62,22 @@ namespace ural
         // Адаптор последовательности
         Output1 const & true_sequence() const
         {
-            return data_[ural::_1];
+            return data_.first()[ural::_1];
         }
 
         Output2 const & false_sequence() const
         {
-            return data_[ural::_2];
+            return data_.first()[ural::_2];
         }
 
         Predicate const & predicate() const
         {
-            return data_[ural::_3];
+            return data_.second();
         }
 
     private:
-        // @todo Оптимизация размера
-        ural::tuple<Output1, Output2, Predicate> data_;
+        typedef ural::tuple<Output1, Output2> Bases;
+        boost::compressed_pair<Bases, Predicate> data_;
     };
 
     template <class Output1, class Output2, class Predicate>

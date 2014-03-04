@@ -4,7 +4,6 @@
 /** @file ural/sequence/iota.hpp
  @brief Адаптор последовательности, возвращающий в качестве значения исходную
  последовательность
- @todo Усилить категорию обхода, если это возможно
 */
 
 namespace ural
@@ -14,7 +13,7 @@ namespace ural
      : public sequence_base<iota_sequence<Incrementable>>
     {
     public:
-        typedef single_pass_traversal_tag traversal_tag;
+        typedef typename Incrementable::traversal_tag traversal_tag;
         typedef Incrementable value_type;
         typedef value_type const & reference;
 
