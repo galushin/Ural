@@ -632,9 +632,10 @@
 	<ural/algorithm/details/copy.hpp>
 	<ural/algorithm/details/algo_base.hpp>
 
-1393903293 c:\pavel\ural_repo\ural\ural\functional.hpp
+1393934904 c:\pavel\ural_repo\ural\ural\functional.hpp
 	<boost/compressed_pair.hpp>
 	<ural/tuple.hpp>
+	<ural/functional/adjoin.hpp>
 	<ural/functional/replace.hpp>
 	<ural/functional/cpp_operators.hpp>
 	<ural/functional/make_functor.hpp>
@@ -756,7 +757,7 @@
 
 1393903294 c:\pavel\ural_repo\ural\ural\thread.hpp
 
-1393903293 source:c:\pavel\ural_repo\ural\tests\functional_test.cpp
+1393935613 source:c:\pavel\ural_repo\ural\tests\functional_test.cpp
 	<boost/test/unit_test.hpp>
 	<ural/utility/tracers.hpp>
 	<ural/functional.hpp>
@@ -816,7 +817,7 @@
 	<unordered_set>
 	<ural/utility/tracers.hpp>
 
-1393932481 source:c:\pavel\ural_repo\ural\tests\sequence_test.cpp
+1393933531 source:c:\pavel\ural_repo\ural\tests\sequence_test.cpp
 	<boost/test/unit_test.hpp>
 	<iterator>
 	<ural/abi.hpp>
@@ -6304,4 +6305,8 @@
 	<ural/type_traits.hpp>
 
 1393931855 c:\pavel\ural_repo\ural\ural\sequence\iostream.hpp
+
+1393937239 c:\pavel\ural_repo\ural\ural\functional\adjoin.hpp
+	<ural/utility.hpp>
+	<ural/functional/make_functor.hpp>
 

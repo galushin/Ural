@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(partial_sums_sequence_test_no_default_ctor)
 
 BOOST_AUTO_TEST_CASE(adjacent_differences_sequence_test_no_default_ctor)
 {
-    typedef no_default_ctor<int> Integer;
+     typedef no_default_ctor<int> Integer;
      std::vector<Integer> const xs = {1,2,3,5,9,11,12};
 
      std::vector<Integer> r_std;
