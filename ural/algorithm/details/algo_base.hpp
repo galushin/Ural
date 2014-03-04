@@ -959,7 +959,6 @@ namespace details
 
         auto to_sort = out.traversed_front();
         auto const part = to_sort.size();
-        decltype(part) const zero = 0;
 
         ::ural::details::make_heap(to_sort, cmp);
 
@@ -969,6 +968,7 @@ namespace details
             if(cmp(*in, *to_sort))
             {
                 *to_sort = *in;
+                decltype(part) constexpr zero = 0;
                 ::ural::details::heap_sink(to_sort, zero, part, cmp);
             }
         }
@@ -1001,7 +1001,9 @@ namespace details
             if(cmp(*s, *s1))
             {
                 ::ural::details::do_swap(*s, *s1);
-                ::ural::details::heap_sink(s1, 0, s1.size(), cmp);
+                auto const n = s1.size();
+                decltype(n) constexpr zero = 0;
+                ::ural::details::heap_sink(s1, zero, n, cmp);
             }
         }
         ::ural::details::pop_heap(s1, cmp);
