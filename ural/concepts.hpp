@@ -80,8 +80,6 @@ namespace concepts
         BOOST_CONCEPT_USAGE(SinglePassSequence)
         {
             !seq;
-            // @todo +seq <=> !!seq ?
-            // @todo seq.has_more() как в Java ?
             ++ seq;
             seq ++;
             seq.pop_front();
@@ -181,7 +179,6 @@ namespace concepts
         BOOST_CONCEPT_USAGE(WritableSequence)
         {
             decltype(*seq = make_value());
-            // @todo seq << make_value() ?
         }
 
     private:

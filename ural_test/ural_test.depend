@@ -653,12 +653,13 @@
 	<ural/functional/make_functor.hpp>
 	<ural/functional/compose.hpp>
 
-1393903294 c:\pavel\ural_repo\ural\ural\sequence\all.hpp
+1393931869 c:\pavel\ural_repo\ural\ural\sequence\all.hpp
 	<iterator>
 	<ural/sequence/base.hpp>
 	<ural/sequence/make.hpp>
 	<ural/sequence/moved.hpp>
 	<ural/sequence/filtered.hpp>
+	<ural/sequence/iostream.hpp>
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/insertion.hpp>
 	<ural/sequence/remove.hpp>
@@ -740,7 +741,7 @@
 	<ural/concepts.hpp>
 	<ural/tuple.hpp>
 
-1393903293 c:\pavel\ural_repo\ural\ural\concepts.hpp
+1393931537 c:\pavel\ural_repo\ural\ural\concepts.hpp
 	<boost/concept/usage.hpp>
 	<ural/defs.hpp>
 	<ural/sequence/base.hpp>
@@ -6301,4 +6302,6 @@
 1393903294 c:\pavel\ural_repo\ural\ural\utility.hpp
 	<ural/defs.hpp>
 	<ural/type_traits.hpp>
+
+1393931855 c:\pavel\ural_repo\ural\ural\sequence\iostream.hpp
 
