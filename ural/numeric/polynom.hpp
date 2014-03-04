@@ -21,8 +21,8 @@
  @todo Вариант с выводом типов
  @todo Многочлены с коэффициентами-векторами
  @todo Проверять, что для типа аргумента выполняется decltype(x*x) == X
- @todo Отбрасывать ведущие коэффициенты
- @todo Вся арифметика многочленов
+ @todo Вся арифметика многочленов: разделить, вычесть, вычислить остаток от
+ деления
 */
 
 #include <boost/operators.hpp>
@@ -79,9 +79,23 @@ namespace ural
         {}
 
         polynomial(std::initializer_list<coefficient_type> cs)
-         : cs_{cs.begin(), cs.end()}
+         : cs_{}
         {
-            std::reverse(cs_.begin(), cs_.end());
+            auto seq = sequence(cs);
+
+            auto const zero = coefficient_type{0};
+
+            seq = find(std::move(seq), zero, not_equal_to<>{});
+
+            if (!seq)
+            {
+                cs_.assign(1, coefficient_type{0});
+            }
+            else
+            {
+                cs_.assign(seq.begin(), seq.end());
+                ural::reverse(cs_);
+            }
         }
 
         // Вычисление значений
@@ -119,6 +133,24 @@ namespace ural
                 c *= a;
             }
             return *this;
+        }
+
+        // Унарные плюс и минус
+        polynomial operator+() const
+        {
+            return *this;
+        }
+
+        polynomial operator-() const
+        {
+            polynomial r = *this;
+
+            for(auto & c : r.cs_)
+            {
+                c = -c;
+            }
+
+            return r;
         }
 
         // Свойства

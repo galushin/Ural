@@ -192,6 +192,16 @@ BOOST_AUTO_TEST_CASE(polynomial_init_ctor_test)
     }
 }
 
+BOOST_AUTO_TEST_CASE(polynomial_init_test_leading_zeros)
+{
+    typedef ural::polynomial<int, double> Polynom;
+    auto const P = Polynom{0, 1, 2};
+
+    BOOST_CHECK_EQUAL(1, P.degree());
+    BOOST_CHECK_EQUAL(2, P[0]);
+    BOOST_CHECK_EQUAL(1, P[1]);
+}
+
 BOOST_AUTO_TEST_CASE(polynomial_equality_test)
 {
     typedef ural::polynomial<int, double> Polynom;
@@ -257,4 +267,31 @@ BOOST_AUTO_TEST_CASE(polynomial_scalar_mult_test)
         BOOST_CHECK_CLOSE(P(x) * a, aP(x), 1e-10);
         BOOST_CHECK_CLOSE(P(x) * a, Pa(x), 1e-10);
     }
+}
+
+BOOST_AUTO_TEST_CASE(polynomial_unary_plus_test)
+{
+    typedef ural::polynomial<int, double> Polynom;
+
+    auto const P = Polynom{2, 4};
+
+    auto const P1 = +P;
+
+    BOOST_CHECK(P1 == P);
+}
+
+BOOST_AUTO_TEST_CASE(polynomial_unary_minus_test)
+{
+    typedef ural::polynomial<int, double> Polynom;
+
+    auto const P = Polynom{2, 4};
+
+    auto const P1 = -P;
+
+    BOOST_CHECK(P1 != P);
+
+    BOOST_CHECK_EQUAL(P1.degree(), P.degree());
+    BOOST_CHECK_EQUAL(P1.degree(), 1);
+    BOOST_CHECK_EQUAL(P1[0], -P[0]);
+    BOOST_CHECK_EQUAL(P1[1], -P[1]);
 }
