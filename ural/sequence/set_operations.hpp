@@ -4,7 +4,6 @@
 /** @file ural/sequence/set_operations.hpp
  @brief Последовательности для операций над отсортированными множествами
  @todo Проверка концепций
- @todo Усилить категории обхода?
 */
 
 #include <ural/functional.hpp>
@@ -38,7 +37,9 @@ namespace ural
         typedef typename std::common_type<typename Input1::value_type,
                                           typename Input2::value_type>::type value_type;
 
-        typedef single_pass_traversal_tag traversal_tag;
+        typedef typename common_tag<typename Input1::traversal_tag,
+                                    typename Input2::traversal_tag,
+                                    forward_traversal_tag>::type traversal_tag;
 
         explicit merge_sequence(Input1 in1, Input2 in2, Compare cmp)
          : Base_class(std::move(cmp))
@@ -164,7 +165,10 @@ namespace ural
     public:
         typedef typename Input1::reference reference;
         typedef typename Input1::value_type value_type;
-        typedef single_pass_traversal_tag traversal_tag;
+
+        typedef typename common_tag<typename Input1::traversal_tag,
+                                    typename Input2::traversal_tag,
+                                    forward_traversal_tag>::type traversal_tag;
 
         explicit set_intersection_sequence(Input1 in1, Input2 in2, Compare cmp)
          : Base_class{std::move(cmp)}
@@ -259,7 +263,10 @@ namespace ural
     public:
         typedef typename Input1::reference reference;
         typedef typename Input1::value_type value_type;
-        typedef single_pass_traversal_tag traversal_tag;
+
+        typedef typename common_tag<typename Input1::traversal_tag,
+                                    typename Input2::traversal_tag,
+                                    forward_traversal_tag>::type traversal_tag;
 
         explicit set_difference_sequence(Input1 in1, Input2 in2, Compare cmp)
          : Base_class{std::move(cmp)}
@@ -357,7 +364,10 @@ namespace ural
                                           typename Input2::reference>::type reference;
         typedef typename std::common_type<typename Input1::value_type,
                                           typename Input2::value_type>::type value_type;
-        typedef single_pass_traversal_tag traversal_tag;
+
+        typedef typename common_tag<typename Input1::traversal_tag,
+                                    typename Input2::traversal_tag,
+                                    forward_traversal_tag>::type traversal_tag;
 
         explicit set_symmetric_difference_sequence(Input1 in1, Input2 in2, Compare cmp)
          : Base_class(std::move(cmp))
@@ -492,7 +502,10 @@ namespace ural
                                           typename Input2::reference>::type reference;
         typedef typename std::common_type<typename Input1::value_type,
                                           typename Input2::value_type>::type value_type;
-        typedef single_pass_traversal_tag traversal_tag;
+
+        typedef typename common_tag<typename Input1::traversal_tag,
+                                    typename Input2::traversal_tag,
+                                    forward_traversal_tag>::type traversal_tag;
 
         explicit set_union_sequence(Input1 in1, Input2 in2, Compare cmp)
          : Base_class(std::move(cmp))

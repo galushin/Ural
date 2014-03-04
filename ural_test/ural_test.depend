@@ -613,7 +613,7 @@
 1390362855 source:c:\pavel\ural_repo\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
 	<boost/test/impl/xml_report_formatter.ipp>
 
-1391292010 source:c:\pavel\ural_repo\ural\tests\algo_tests.cpp
+1393903293 source:c:\pavel\ural_repo\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<forward_list>
 	<list>
@@ -669,7 +669,7 @@
 	<ural/sequence/transform.hpp>
 	<ural/sequence/uniqued.hpp>
 
-1393903294 c:\pavel\ural_repo\ural\ural\sequence\base.hpp
+1393930181 c:\pavel\ural_repo\ural\ural\sequence\base.hpp
 	<ural/defs.hpp>
 	<utility>
 
@@ -703,7 +703,7 @@
 	<ural/functional.hpp>
 	<ural/sequence/base.hpp>
 
-1393903294 c:\pavel\ural_repo\ural\ural\sequence\set_operations.hpp
+1393931156 c:\pavel\ural_repo\ural\ural\sequence\set_operations.hpp
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
@@ -6275,7 +6275,7 @@
 	<boost/test/unit_test.hpp>
 	<ural/memory.hpp>
 
-1393903293 source:c:\pavel\ural_repo\ural\tests\random_tests.cpp
+1393930369 source:c:\pavel\ural_repo\ural\tests\random_tests.cpp
 	<ural/random.hpp>
 	<boost/test/unit_test.hpp>
 	<sstream>

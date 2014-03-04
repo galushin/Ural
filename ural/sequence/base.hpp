@@ -25,6 +25,41 @@ namespace ural
      : forward_traversal_tag
     {};
 
+    single_pass_traversal_tag
+    decl_common_type(single_pass_traversal_tag, single_pass_traversal_tag);
+
+    forward_traversal_tag
+    decl_common_type(forward_traversal_tag, forward_traversal_tag);
+
+    bidirectional_traversal_tag
+    decl_common_type(bidirectional_traversal_tag, bidirectional_traversal_tag);
+
+    random_access_traversal_tag
+    decl_common_type(random_access_traversal_tag, random_access_traversal_tag);
+
+    template <class... Types>
+    struct common_tag;
+
+    template <class T>
+    struct common_tag<T>
+     : declare_type<T>
+    {};
+
+    template <class T1, class T2>
+    struct common_tag<T1, T2>
+     : declare_type<decltype(decl_common_type(std::declval<T1>(), std::declval<T2>()))>
+    {};
+
+    template <class Head, class... Tail>
+    struct common_tag<Head, Tail...>
+    {
+    private:
+        typedef typename common_tag<Tail...>::type tail_common_type;
+
+    public:
+        typedef typename common_tag<Head, tail_common_type>::type type;
+    };
+
     template <class S>
     typename S::traversal_tag
     make_traversal_tag(S const & )
