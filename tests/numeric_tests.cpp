@@ -220,7 +220,7 @@ BOOST_AUTO_TEST_CASE(polynomial_add_test)
 {
     typedef ural::polynomial<int, double> Polynom;
 
-    auto const p1 = Polynom{1, 1};
+    auto const p1 = Polynom{1, 1, 1};
     auto const p2 = Polynom{2, 4};
 
     auto const p = p1 + p2;
@@ -229,6 +229,13 @@ BOOST_AUTO_TEST_CASE(polynomial_add_test)
 
     BOOST_CHECK_EQUAL(p[0], p1[0] + p2[0]);
     BOOST_CHECK_EQUAL(p[1], p1[1] + p2[1]);
+    BOOST_CHECK_EQUAL(p[2], p1[2]);
+
+    auto const p1_new = p - p2;
+    auto const p2_new = p - p1;
+
+    BOOST_CHECK(p1 == p1_new);
+    BOOST_CHECK(p2 == p2_new);
 }
 
 BOOST_AUTO_TEST_CASE(polynomial_add_different_degree_test)
@@ -245,6 +252,18 @@ BOOST_AUTO_TEST_CASE(polynomial_add_different_degree_test)
     BOOST_CHECK_EQUAL(p[0], p1[0] + p2[0]);
     BOOST_CHECK_EQUAL(p[1], p1[1] + p2[1]);
     BOOST_CHECK_EQUAL(p[2], p2[2]);
+
+    auto const p1_new = p - p2;
+    auto const p2_new = p - p1;
+
+    BOOST_CHECK(p1 == p1_new);
+    BOOST_CHECK(p2 == p2_new);
+
+    BOOST_CHECK_EQUAL(p2.degree(), p2_new.degree());
+    for(size_t i = 0; i != p2.degree() + 1; ++ i)
+    {
+        BOOST_CHECK_EQUAL(p2[i], p2_new[i]);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(polynomial_scalar_mult_test)
@@ -267,6 +286,12 @@ BOOST_AUTO_TEST_CASE(polynomial_scalar_mult_test)
         BOOST_CHECK_CLOSE(P(x) * a, aP(x), 1e-10);
         BOOST_CHECK_CLOSE(P(x) * a, Pa(x), 1e-10);
     }
+
+    auto const P1 = aP / a;
+    auto const P2 = Pa / a;
+
+    BOOST_CHECK(P == P1);
+    BOOST_CHECK(P == P2);
 }
 
 BOOST_AUTO_TEST_CASE(polynomial_unary_plus_test)

@@ -59,7 +59,7 @@ namespace ural
     template <class A, class X>
     class polynomial
      : boost::additive<polynomial<A, X>>
-     , boost::multipliable<polynomial<A, X>, X>
+     , boost::multiplicative<polynomial<A, X>, X>
     {
         friend bool operator==(polynomial const & x, polynomial const & y)
         {
@@ -110,16 +110,48 @@ namespace ural
 
             if(p.degree() > this->degree())
             {
-                cs_.reserve(p.degree());
+                cs_.reserve(p.cs_.size());
                 cs_.insert(cs_.end(), p.cs_.begin() + old_size, p.cs_.end());
             }
 
             assert(cs_.size() >= old_size);
 
-            for(size_type i = 0; i != old_size; ++ i)
+            auto const n = std::min(old_size, p.cs_.size());
+
+            for(size_type i = 0; i != n; ++ i)
             {
                 cs_[i] += p.cs_[i];
             }
+
+            this->drop_leading_zeros();
+
+            return *this;
+        }
+
+        polynomial & operator-=(polynomial const & p)
+        {
+            auto const old_size = cs_.size();
+
+            if(p.degree() > this->degree())
+            {
+                cs_.reserve(p.cs_.size());
+
+                for(size_t i = old_size; i != p.cs_.size(); ++ i)
+                {
+                    cs_.push_back(-p.cs_[i]);
+                }
+            }
+
+            assert(cs_.size() >= old_size);
+
+            auto const n = std::min(old_size, p.cs_.size());
+
+            for(size_type i = 0; i != n; ++ i)
+            {
+                cs_[i] -= p.cs_[i];
+            }
+
+            this->drop_leading_zeros();
 
             return *this;
         }
@@ -130,6 +162,18 @@ namespace ural
             {
                 c *= a;
             }
+            return *this;
+        }
+
+        polynomial & operator/=(X const & a)
+        {
+            assert(a != coefficient_type{0});
+
+            for(auto & c : cs_)
+            {
+                c /= a;
+            }
+
             return *this;
         }
 
@@ -168,6 +212,16 @@ namespace ural
         coefficients_container const & coefficients() const
         {
             return this->cs_;
+        }
+
+    private:
+        void drop_leading_zeros()
+        {
+            static const auto zero = coefficient_type{0};
+            for(; cs_.size() > 1 && cs_.back() == zero;)
+            {
+                cs_.pop_back();
+            }
         }
 
     private:
