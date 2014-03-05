@@ -1,10 +1,10 @@
+// Основано на
+// http://www.boost.org/doc/libs/1_55_0/libs/math/test/common_factor_test.cpp
+
 #include <boost/test/unit_test.hpp>
 
 // TODO: add polynominal/non-real type; especially after any switch to the
 // binary-GCD algorithm for built-in types
-
-// Основано на
-// http://www.boost.org/doc/libs/1_55_0/libs/math/test/common_factor_test.cpp
 
 #include <boost/mpl/list.hpp>
 #include <boost/operators.hpp>
