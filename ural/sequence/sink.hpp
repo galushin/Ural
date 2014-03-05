@@ -37,7 +37,7 @@ namespace ural
     {
     public:
         template <class T>
-        void operator()(T const &) const
+        void operator()(T &&) const
         {}
     };
 

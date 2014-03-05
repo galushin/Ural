@@ -500,6 +500,35 @@ namespace ural
         typedef not_functor<decltype(make_functor(std::move(pred)))> Functor;
         return Functor{make_functor(std::move(pred))};
     }
+
+    // Составные операторы присваивания
+    template <class T1 = void, class T2 = T1>
+    class plus_assign;
+
+    template <>
+    class plus_assign<>
+    {
+    public:
+        template <class T1, class T2>
+        constexpr T1 & operator()(T1 & x, T2 && y) const
+        {
+            return x += std::forward<T2>(y);
+        }
+    };
+
+    template <class T1 = void, class T2 = T1>
+    class minus_assign;
+
+    template <>
+    class minus_assign<>
+    {
+    public:
+        template <class T1, class T2>
+        constexpr T1 & operator()(T1 & x, T2 && y) const
+        {
+            return x -= std::forward<T2>(y);
+        }
+    };
 }
 // namespace ural
 

@@ -24,6 +24,8 @@
  деления
 */
 
+#include <ural/sequence/sink.hpp>
+
 #include <boost/operators.hpp>
 
 namespace ural
@@ -148,10 +150,10 @@ namespace ural
 
             auto const n = std::min(old_size, p.cs_.size());
 
-            for(size_type i = 0; i != n; ++ i)
-            {
-                cs_[i] += p.cs_[i];
-            }
+
+            std::transform(cs_.begin(), cs_.begin() + n, p.cs_.begin(),
+                           sink_sequence<>{},
+                           ural::plus_assign<>{});
 
             this->drop_leading_zeros();
 
@@ -177,10 +179,9 @@ namespace ural
 
             auto const n = std::min(old_size, p.cs_.size());
 
-            for(size_type i = 0; i != n; ++ i)
-            {
-                cs_[i] -= p.cs_[i];
-            }
+            std::transform(cs_.begin(), cs_.begin() + n, p.cs_.begin(),
+                           sink_sequence<>{},
+                           ural::minus_assign<>{});
 
             this->drop_leading_zeros();
 
