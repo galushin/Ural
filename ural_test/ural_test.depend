@@ -747,8 +747,9 @@
 	<ural/defs.hpp>
 	<ural/sequence/base.hpp>
 
-1393903294 c:\pavel\ural_repo\ural\ural\memory.hpp
+1394010182 c:\pavel\ural_repo\ural\ural\memory.hpp
 	<memory>
+	<ural/defs.hpp>
 
 1394005858 c:\pavel\ural_repo\ural\ural\utility\tracers.hpp
 	<ural/defs.hpp>

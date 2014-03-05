@@ -21,7 +21,8 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-O2" />
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-O3" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -72,6 +73,7 @@
 		<Unit filename="../ural/concepts.hpp" />
 		<Unit filename="../ural/defs.hpp" />
 		<Unit filename="../ural/functional.hpp" />
+		<Unit filename="../ural/functional/adjoin.hpp" />
 		<Unit filename="../ural/functional/compose.hpp" />
 		<Unit filename="../ural/functional/cpp_operators.hpp" />
 		<Unit filename="../ural/functional/make_functor.hpp" />
@@ -83,6 +85,7 @@
 		<Unit filename="../ural/numeric/adjacent_differences.hpp" />
 		<Unit filename="../ural/numeric/details/num_algo.hpp" />
 		<Unit filename="../ural/numeric/partial_sums.hpp" />
+		<Unit filename="../ural/numeric/polynom.hpp" />
 		<Unit filename="../ural/optional.hpp" />
 		<Unit filename="../ural/placeholders.hpp" />
 		<Unit filename="../ural/random.hpp" />
@@ -95,6 +98,7 @@
 		<Unit filename="../ural/sequence/function_output.hpp" />
 		<Unit filename="../ural/sequence/generator.hpp" />
 		<Unit filename="../ural/sequence/insertion.hpp" />
+		<Unit filename="../ural/sequence/iostream.hpp" />
 		<Unit filename="../ural/sequence/iota.hpp" />
 		<Unit filename="../ural/sequence/iterator_sequence.hpp" />
 		<Unit filename="../ural/sequence/make.hpp" />

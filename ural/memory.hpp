@@ -22,6 +22,7 @@
 */
 
 #include <memory>
+#include <ural/defs.hpp>
 
 namespace ural
 {
@@ -45,6 +46,59 @@ namespace ural
     typename std::enable_if<std::is_array<T>::value && std::extent<T>::value != 0,
                             std::unique_ptr<T>>::type
     make_unique(size_t size) = delete;
+
+    template <class T>
+    class copy_ptr
+    {
+        friend bool operator==(copy_ptr const & x, copy_ptr const & y)
+        {
+            return x.get() == y.get();
+        }
+
+        typedef std::unique_ptr<T> Holder;
+    public:
+        // Типы
+        typedef typename Holder::pointer pointer;
+        typedef typename Holder::element_type element_type;
+        typedef typename Holder::deleter_type deleter_type;
+        typedef typename std::add_lvalue_reference<T>::type reference;
+
+        // Конструкторы
+        constexpr copy_ptr() noexcept = default;
+
+        explicit copy_ptr(pointer ptr) noexcept
+         : holder_{std::move(ptr)}
+        {}
+
+        copy_ptr(copy_ptr const & x)
+         : holder_{!x ? nullptr : new element_type{*x}, x.get_deleter()}
+        {}
+
+        // Свойства
+        deleter_type const & get_deleter() const
+        {
+            return holder_.get_deleter();
+        }
+
+        explicit operator bool() const
+        {
+            return static_cast<bool>(holder_);
+        }
+
+        pointer get() const
+        {
+            return holder_.get();
+        }
+
+        reference operator*() const
+        {
+            // @todo Проверка?
+            return *holder_;
+        }
+
+    private:
+        Holder holder_;
+    };
 }
 // namespace ural
 
