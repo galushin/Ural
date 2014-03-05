@@ -78,6 +78,53 @@ namespace ural
     };
 
     template <class T1 = void, class T2 = T1>
+    class divides
+    {
+    public:
+        constexpr auto operator()(T1 const & x, T2 const & y) const
+        -> decltype(x / y)
+        {
+            return x / y;
+        }
+    };
+
+    template <class T1>
+    class divides<T1, void>
+    {
+    public:
+        template <class T2>
+        constexpr auto operator()(T1 const & x, T2 && y) const
+        -> decltype(x / std::forward<T2>(y))
+        {
+            return x / std::forward<T2>(y);
+        }
+    };
+
+    template <class T2>
+    class divides<void, T2>
+    {
+    public:
+        template <class T1>
+        constexpr auto operator()(T1 && x, T2 const & y) const
+        -> decltype(std::forward<T1>(x) / y)
+        {
+            return std::forward<T1>(x) / y;
+        }
+    };
+
+    template <>
+    class divides<void, void>
+    {
+    public:
+        template <class T1, class T2>
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype(std::forward<T1>(x) / std::forward<T2>(y))
+        {
+            return std::forward<T1>(x) / std::forward<T2>(y);
+        }
+    };
+
+    template <class T1 = void, class T2 = T1>
     class modulus
     {
     public:

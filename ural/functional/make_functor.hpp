@@ -17,6 +17,7 @@ namespace ural
     @return f
     */
     template <class F>
+    constexpr
     typename std::enable_if<std::is_member_pointer<F>::value == false, F>::type
     make_functor(F f)
     {

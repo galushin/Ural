@@ -392,3 +392,20 @@ BOOST_AUTO_TEST_CASE(make_adjoin_functor_test)
     BOOST_CHECK_EQUAL(true, std::get<0>(x));
     BOOST_CHECK_EQUAL(1, std::get<1>(x));
 }
+
+BOOST_AUTO_TEST_CASE(make_adjoint_functor_constexpr_test)
+{
+    auto constexpr f1 = ural::divides<>{};
+    auto constexpr f2 = ural::divides<int, void>{};
+    auto constexpr f3 = ural::divides<void, int>{};
+    auto constexpr f4 = ural::divides<int, int>{};
+
+    auto constexpr f = ural::adjoin_functors(f1, f2, f3, f4);
+
+    std::tuple<int, int, int, int> constexpr x = f(5, 2);
+
+    BOOST_CHECK_EQUAL(2, std::get<0>(x));
+    BOOST_CHECK_EQUAL(2, std::get<1>(x));
+    BOOST_CHECK_EQUAL(2, std::get<2>(x));
+    BOOST_CHECK_EQUAL(2, std::get<3>(x));
+}

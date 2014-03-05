@@ -18,7 +18,6 @@
 */
 
 /** @file ural/numeric/polynom.hpp
- @todo Вариант с выводом типов
  @todo Тест многочленов с коэффициентами-векторами
  @todo Проверять, что для типа аргумента выполняется decltype(x*x) == X
  @todo Вся арифметика многочленов: разделить, вычесть, вычислить остаток от
@@ -161,6 +160,7 @@ namespace ural
 
         polynomial & operator-=(polynomial const & p)
         {
+            // @todo Устранить дублирование с +=
             auto const old_size = cs_.size();
 
             if(p.degree() > this->degree())
@@ -218,10 +218,8 @@ namespace ural
         {
             polynomial r = *this;
 
-            for(auto & c : r.cs_)
-            {
-                c = -c;
-            }
+            std::transform(r.cs_.begin(), r.cs_.end(), r.cs_.begin(),
+                           ural::negate<coefficient_type>{});
 
             return r;
         }

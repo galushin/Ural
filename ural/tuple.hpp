@@ -54,6 +54,11 @@ namespace ural
          : Base(args...)
         {}
 
+        template <class... Us>
+        constexpr explicit tuple(Us &&... args)
+         : Base(std::forward<Us>(args)...)
+        {}
+
         //@{
         /** @brief Доступ к элементам по "статическому индексу"
         @tparam Index номер элемента
@@ -74,8 +79,24 @@ namespace ural
         }
         //@}
     };
+
+    template <class... Args>
+    constexpr tuple<Args && ...>
+    forward_as_tuple(Args &&... args) noexcept
+    {
+        return tuple<Args && ...>(std::forward<Args>(args)...);
+    }
 }
 // namespace ural
+
+namespace std
+{
+    template <class... Ts>
+    struct tuple_size<ural::tuple<Ts...>>
+     : tuple_size<std::tuple<Ts...>>
+    {};
+}
+// namespace std
 
 #endif
 // Z_URAL_TUPLE_HPP_INCLUDED

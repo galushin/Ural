@@ -56,14 +56,14 @@ namespace ural
     using index_sequence_for = make_index_sequence<sizeof...(T)>;
 
     template <typename F, typename Tuple, size_t... I>
-    auto apply_impl(F&& f, Tuple&& t, index_sequence<I...>)
+    constexpr auto apply_impl(F&& f, Tuple&& t, index_sequence<I...>)
         -> decltype(std::forward<F>(f)(std::get<I>(std::forward<Tuple>(t))...))
     {
         return std::forward<F>(f)(std::get<I>(std::forward<Tuple>(t))...);
     }
 
     template <typename F, typename Tuple>
-    auto apply(F&& f, Tuple&& t)
+    constexpr auto apply(F&& f, Tuple&& t)
     -> decltype(apply_impl(std::forward<F>(f), std::forward<Tuple>(t),
                            make_index_sequence<std::tuple_size<decay_t<Tuple>>::value>{}))
     {
