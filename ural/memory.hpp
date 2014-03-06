@@ -47,6 +47,25 @@ namespace ural
                             std::unique_ptr<T>>::type
     make_unique(size_t size) = delete;
 
+    /**
+    @todo Тесты с полиморфными типами (стратегии копирования и удаления)
+    @todo По аналогии с 20.7.1
+    @todo По аналогии с 20.7.2
+    @todo Стратегия копирования
+    @todo Стратегия многопоточности
+    @todo Стратегия проверок
+    @todo Функция создания
+    @todo Интеграция с unique_ptr и shared_ptr
+    @todo Все функции должны быть noexcept?
+    @todo Специализация для массивов
+    @todo Сравнение с другими указателями
+    @todo Защита от срезки
+
+    Обоснование.
+
+    Конструктор копий не является noexcept, так как копирование указываемого
+    объекта может приводить к исключениям
+    */
     template <class T>
     class copy_ptr
     {
@@ -70,9 +89,26 @@ namespace ural
          : holder_{std::move(ptr)}
         {}
 
+        template <class U>
+        explicit copy_ptr(std::unique_ptr<U> && p)
+         : holder_{std::move(p)}
+        {}
+
         copy_ptr(copy_ptr const & x)
          : holder_{!x ? nullptr : new element_type{*x}, x.get_deleter()}
         {}
+
+        copy_ptr(copy_ptr &&) = default;
+
+        // Присваивание
+        copy_ptr & operator=(copy_ptr const & x)
+        {
+            *this = std::move(copy_ptr(x));
+
+            return *this;
+        }
+
+        copy_ptr & operator=(copy_ptr &&) = default;
 
         // Свойства
         deleter_type const & get_deleter() const
@@ -94,6 +130,12 @@ namespace ural
         {
             // @todo Проверка?
             return *holder_;
+        }
+
+        // Модификаторы
+        pointer release()
+        {
+            return holder_.release();
         }
 
     private:

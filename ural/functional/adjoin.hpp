@@ -46,7 +46,7 @@ namespace ural
     private:
         template <class R, class Tuple, size_t last, class... Rs>
         constexpr
-        R call_impl(declare_type<R> rd, Tuple && t,
+        R call_impl(declare_type<R>, Tuple &&,
                     placeholder<last>, placeholder<last>, Rs && ... rs) const
         {
             return R(std::forward<Rs>(rs)...);
