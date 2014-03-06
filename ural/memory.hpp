@@ -95,10 +95,14 @@ namespace ural
         {}
 
         copy_ptr(copy_ptr const & x)
-         : holder_{!x ? nullptr : new element_type{*x}, x.get_deleter()}
+         : holder_{x.make_copy().release(), x.get_deleter()}
         {}
 
         copy_ptr(copy_ptr &&) = default;
+
+        copy_ptr(nullptr_t) noexcept
+         : copy_ptr{}
+        {}
 
         // Присваивание
         copy_ptr & operator=(copy_ptr const & x)
@@ -132,15 +136,31 @@ namespace ural
             return *holder_;
         }
 
+        std::unique_ptr<T> make_copy() const
+        {
+            return !*this ? std::unique_ptr<T>{} : ural::make_unique<T>(**this);
+        }
+
         // Модификаторы
         pointer release()
         {
             return holder_.release();
         }
 
+        void swap(copy_ptr & x) noexcept
+        {
+            holder_.swap(x.holder_);
+        }
+
     private:
         Holder holder_;
     };
+
+    template <class T>
+    void swap(copy_ptr<T> & x, copy_ptr<T> & y) noexcept
+    {
+        return x.swap(y);
+    }
 }
 // namespace ural
 

@@ -51,6 +51,28 @@ namespace
     private:
         virtual Base * clone_impl() const = 0;
     };
+
+    class Derived
+     : public Base
+    {
+    public:
+        Derived(int val)
+         : value{val}
+        {}
+
+        int value;
+    };
+
+    class MoreDerived
+     : public Derived
+    {
+    public:
+        MoreDerived(int val)
+         : Derived{val}
+        {}
+
+        int value;
+    };
 }
 
 BOOST_AUTO_TEST_CASE(copy_ptr_types)
@@ -123,7 +145,20 @@ BOOST_AUTO_TEST_CASE(copy_ptr_move_ctor_test)
     BOOST_CHECK_EQUAL(static_cast<Type*>(nullptr), p1.get());
 }
 
-// @todo Конструктор на основе nullptr
+BOOST_AUTO_TEST_CASE(copy_ptr_nullptr_ctor_test)
+{
+    typedef int Type;
+
+    ural::copy_ptr<Type> const p{nullptr};
+
+    static_assert(noexcept(ural::copy_ptr<Type>{nullptr}),
+                  "default ctor must be noexcept");
+
+    BOOST_CHECK(static_cast<bool>(p) == false);
+    BOOST_CHECK(!p);
+    BOOST_CHECK(nullptr == p.get());
+}
+
 // @todo Конструктор на основе copy_ptr<U>
 
 BOOST_AUTO_TEST_CASE(copy_ptr_ctor_from_unique_ptr)
@@ -153,6 +188,19 @@ BOOST_AUTO_TEST_CASE(copy_ptr_copy_ctor_test)
 
     BOOST_CHECK(*p1 == *p2);
     BOOST_CHECK(p1 != p2);
+}
+
+BOOST_AUTO_TEST_CASE(copy_ptr_nullptr_assign_test)
+{
+    typedef int Type;
+
+    ural::copy_ptr<Type> p{new Type{42}};
+
+    p = nullptr;
+
+    BOOST_CHECK(static_cast<bool>(p) == false);
+    BOOST_CHECK(!p);
+    BOOST_CHECK(nullptr == p.get());
 }
 
 BOOST_AUTO_TEST_CASE(copy_ptr_copy_asign_test)
@@ -194,6 +242,32 @@ BOOST_AUTO_TEST_CASE(copy_ptr_release_test)
 
     BOOST_CHECK_EQUAL(p_u.get(), ptr_old);
     BOOST_CHECK(p.get() == nullptr);
+}
+
+BOOST_AUTO_TEST_CASE(copy_pyt_swap_test)
+{
+    typedef int Type;
+    typedef ural::copy_ptr<Type> Pointer;
+
+    Pointer p1(new Type{42});
+    Pointer p2(new Type{13});
+
+    auto p1_old = p1.get();
+    auto p2_old = p2.get();
+
+    p1.swap(p2);
+    static_assert(noexcept(p1.swap(p2)), "swap must be noexcept");
+
+    BOOST_CHECK_EQUAL(p1_old, p2.get());
+    BOOST_CHECK_EQUAL(p2_old, p1.get());
+
+    void(*swap_ptr)(Pointer &, Pointer &) = &ural::swap;
+
+    swap_ptr(p1, p2);
+    static_assert(noexcept(ural::swap(p1, p2)), "swap must be noexcept");
+
+    BOOST_CHECK_EQUAL(p1_old, p1.get());
+    BOOST_CHECK_EQUAL(p2_old, p2.get());
 }
 
 BOOST_AUTO_TEST_CASE(copy_ptr_equality_test)
