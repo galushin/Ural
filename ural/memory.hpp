@@ -49,7 +49,24 @@ namespace ural
     make_unique(size_t size) = delete;
 
     template <class T>
-    class default_copy;
+    class default_copy
+    {
+    public:
+        static std::unique_ptr<T> make_copy(T const & x)
+        {
+            return ural::make_unique<T>(std::move(x));
+        }
+    };
+
+    template <class T, std::unique_ptr<T>(T::*clone_fn)() const = &T::clone>
+    class member_function_copy
+    {
+    public:
+        static std::unique_ptr<T> make_copy(T const & x)
+        {
+            return (x.*clone_fn)();
+        }
+    };
 
     template <class Pointer>
     class default_ptr_checker
@@ -70,9 +87,6 @@ namespace ural
     @todo По аналогии с 20.7.1
     @todo По аналогии с 20.7.2
 
-    @todo Стратегия копирования
-    @todo Стратегия многопоточности
-    @todo Стратегия проверок
     @todo Произвольный порядок следования стратегий
 
     @todo Функция создания
@@ -209,8 +223,7 @@ namespace ural
 
         std::unique_ptr<T> make_copy() const
         {
-            // @todo Убедиться, что нет срезки
-            return !*this ? std::unique_ptr<T>{} : ural::make_unique<T>(**this);
+            return !*this ? std::unique_ptr<T>{} : cloner_type::make_copy(**this);
         }
 
         // Модификаторы

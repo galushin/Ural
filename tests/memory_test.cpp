@@ -44,7 +44,10 @@ namespace
     class Base
     {
     public:
-        std::unique_ptr<Base> clone() const;
+        std::unique_ptr<Base> clone() const
+        {
+            return std::unique_ptr<Base>{this->clone_impl()};
+        }
 
         virtual ~ Base(){};
 
@@ -65,6 +68,7 @@ namespace
     private:
         virtual Base * clone_impl() const override
         {
+            // @todo Выделить фукнцию (чтобы не указывать тип явно)
             return new Derived{*this};
         }
     };
@@ -76,6 +80,8 @@ namespace
         MoreDerived(int val)
          : Derived{val}
         {}
+
+    private:
     };
 }
 
@@ -172,8 +178,6 @@ BOOST_AUTO_TEST_CASE(copy_ptr_nullptr_ctor_test)
     BOOST_CHECK(nullptr == p.get());
 }
 
-// @todo Конструктор на основе copy_ptr<U>
-
 BOOST_AUTO_TEST_CASE(copy_ptr_ctor_from_unique_ptr)
 {
     typedef int Type;
@@ -235,7 +239,60 @@ BOOST_AUTO_TEST_CASE(copy_ptr_compatible_copy_test)
 
     BOOST_CHECK(p1.get() != p2.get());
     BOOST_CHECK_EQUAL(p1->value, p2->value);
+
+    BOOST_CHECK(typeid(*p1) == typeid(MoreDerived));
+    BOOST_CHECK(typeid(*p2) == typeid(MoreDerived));
+    BOOST_CHECK(typeid(*p1) == typeid(*p2));
+    BOOST_CHECK_EQUAL(typeid(*p1).name(), typeid(*p2).name());
 }
+
+BOOST_AUTO_TEST_CASE(copy_ptr_copy_polymorhic_test)
+{
+    typedef ural::copy_ptr<Base, ural::member_function_copy<Base>> Pointer;
+
+    Pointer p1{new Derived{42}};
+    Pointer p2{p1};
+
+    BOOST_CHECK(p1.get() != p2.get());
+
+    BOOST_CHECK(typeid(*p1) == typeid(Derived));
+    BOOST_CHECK(typeid(*p2) == typeid(Derived));
+    BOOST_CHECK(typeid(*p1) == typeid(*p2));
+    BOOST_CHECK_EQUAL(typeid(*p1).name(), typeid(*p2).name());
+}
+
+BOOST_AUTO_TEST_CASE(copy_ptr_assign_polymorhic_test)
+{
+    typedef ural::copy_ptr<Base, ural::member_function_copy<Base>> Pointer;
+
+    Pointer p1{new Derived{42}};
+    Pointer p2{p1};
+    p2 = p1;
+
+    BOOST_CHECK(p1.get() != p2.get());
+
+    BOOST_CHECK(typeid(*p1) == typeid(Derived));
+    BOOST_CHECK(typeid(*p2) == typeid(Derived));
+    BOOST_CHECK(typeid(*p1) == typeid(*p2));
+    BOOST_CHECK_EQUAL(typeid(*p1).name(), typeid(*p2).name());
+}
+
+BOOST_AUTO_TEST_CASE(copy_ptr_compatible_copy_assign)
+{
+    ural::copy_ptr<MoreDerived> p1{new MoreDerived{42}};
+    ural::copy_ptr<Derived> p2;
+    p2 = p1;
+
+    BOOST_CHECK(p1.get() != p2.get());
+    BOOST_CHECK_EQUAL(p1->value, p2->value);
+
+    BOOST_CHECK(typeid(*p1) == typeid(MoreDerived));
+    BOOST_CHECK(typeid(*p2) == typeid(MoreDerived));
+    BOOST_CHECK(typeid(*p1) == typeid(*p2));
+    BOOST_CHECK_EQUAL(typeid(*p1).name(), typeid(*p2).name());
+}
+
+// @todo Присваивание и конструктор с перемещением copy_ptr<U>
 
 BOOST_AUTO_TEST_CASE(copy_ptr_move_assign_test)
 {

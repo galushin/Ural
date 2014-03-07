@@ -558,7 +558,7 @@
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/insertion.hpp>
 
-1394164569 c:\devtools\ural_repo\ural\ural\memory.hpp
+1394172519 c:\devtools\ural_repo\ural\ural\memory.hpp
 	<ural/defs.hpp>
 	<ural/thread.hpp>
 	<memory>
@@ -6189,7 +6189,7 @@
 	<boost/test/unit_test.hpp>
 	<ural/memory.hpp>
 
-1394157761 source:c:\devtools\ural_repo\ural\tests\memory_test.cpp
+1394172631 source:c:\devtools\ural_repo\ural\tests\memory_test.cpp
 	<string>
 	<memory>
 	<boost/test/unit_test.hpp>
