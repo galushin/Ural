@@ -21,8 +21,9 @@
  @brief Средства для работы с динамической памятью
 */
 
-#include <memory>
 #include <ural/defs.hpp>
+#include <ural/thread.hpp>
+#include <memory>
 
 namespace ural
 {
@@ -47,26 +48,54 @@ namespace ural
                             std::unique_ptr<T>>::type
     make_unique(size_t size) = delete;
 
+    template <class T>
+    class default_copy;
+
+    template <class Pointer>
+    class default_ptr_checker
+    {
+    public:
+        static void assert_not_null(Pointer p)
+        {
+            assert(p != nullptr);
+        }
+
+    protected:
+        ~default_ptr_checker() = default;
+    };
+
     /**
+    @todo Учесть N3339
     @todo Тесты с полиморфными типами (стратегии копирования и удаления)
     @todo По аналогии с 20.7.1
     @todo По аналогии с 20.7.2
+
     @todo Стратегия копирования
     @todo Стратегия многопоточности
     @todo Стратегия проверок
+    @todo Произвольный порядок следования стратегий
+
     @todo Функция создания
     @todo Интеграция с unique_ptr и shared_ptr
     @todo Все функции должны быть noexcept?
     @todo Специализация для массивов
     @todo Сравнение с другими указателями
-    @todo Защита от срезки
+    @todo Защита от срезки: как на этапе компиляции (см. shared_ptr), так и во
+    время выполнения программы.
 
     Обоснование.
 
     Конструктор копий не является noexcept, так как копирование указываемого
-    объекта может приводить к исключениям
+    объекта может приводить к исключениям.
+
+    Сравнение @c copy_ptr с параметрами разных типов может давать истину только
+    если оба они указывают на ноль.
     */
-    template <class T>
+    template <class T,
+              class Cloner = use_default,
+              class Deleter = use_default,
+              class Checker = use_default,
+              class Threading = use_default>
     class copy_ptr
     {
         friend bool operator==(copy_ptr const & x, copy_ptr const & y)
@@ -74,13 +103,44 @@ namespace ural
             return x.get() == y.get();
         }
 
-        typedef std::unique_ptr<T> Holder;
+        friend bool operator==(copy_ptr const & x, std::nullptr_t)
+        {
+            return !x;
+        }
+
+        friend bool operator==(std::nullptr_t, copy_ptr const & x)
+        {
+            return !x;
+        }
+
+        friend bool operator==(copy_ptr const & x, T const * p)
+        {
+            return x.get() == p;
+        }
+
+        friend bool operator==(T const * p, copy_ptr const & x)
+        {
+            return p == x.get();
+        }
+
     public:
         // Типы
-        typedef typename Holder::pointer pointer;
-        typedef typename Holder::element_type element_type;
-        typedef typename Holder::deleter_type deleter_type;
+        typedef T element_type;
         typedef typename std::add_lvalue_reference<T>::type reference;
+
+        typedef typename default_helper<Cloner, default_copy<element_type>>::type
+            cloner_type;
+        typedef typename default_helper<Deleter, std::default_delete<element_type>>::type
+            deleter_type;
+
+        typedef std::unique_ptr<T, deleter_type> Holder;
+
+        typedef typename Holder::pointer pointer;
+
+        typedef typename default_helper<Checker, default_ptr_checker<pointer>>::type checker_type;
+
+        typedef typename default_helper<Threading, single_thread_policy>::type
+            threading_policy;
 
         // Конструкторы
         constexpr copy_ptr() noexcept = default;
@@ -100,7 +160,12 @@ namespace ural
 
         copy_ptr(copy_ptr &&) = default;
 
-        copy_ptr(nullptr_t) noexcept
+        template <class T1, class C1, class D1, class Ch1, class Tr1>
+        copy_ptr(copy_ptr<T1, C1, D1, Ch1, Tr1> const & x)
+         : holder_{x.make_copy().release(), x.get_deleter()}
+        {}
+
+        constexpr copy_ptr(nullptr_t) noexcept
          : copy_ptr{}
         {}
 
@@ -132,12 +197,19 @@ namespace ural
 
         reference operator*() const
         {
-            // @todo Проверка?
+            checker_type::assert_not_null(this->get());
             return *holder_;
+        }
+
+        pointer operator->() const
+        {
+            checker_type::assert_not_null(this->get());
+            return holder_.operator->();
         }
 
         std::unique_ptr<T> make_copy() const
         {
+            // @todo Убедиться, что нет срезки
             return !*this ? std::unique_ptr<T>{} : ural::make_unique<T>(**this);
         }
 
@@ -155,6 +227,15 @@ namespace ural
     private:
         Holder holder_;
     };
+
+    template <class T1, class C1, class D1, class Ch1, class Tr1,
+              class T2, class C2, class D2, class Ch2, class Tr2>
+    bool operator==(copy_ptr<T1, C1, D1, Ch1, Tr1> const & x,
+                    copy_ptr<T2, C2, D2, Ch2, Tr2> const & y)
+    {
+        return static_cast<void const volatile*>(x.get())
+                == static_cast<void const volatile*>(y.get());
+    }
 
     template <class T>
     void swap(copy_ptr<T> & x, copy_ptr<T> & y) noexcept

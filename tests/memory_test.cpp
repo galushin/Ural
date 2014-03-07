@@ -61,6 +61,12 @@ namespace
         {}
 
         int value;
+
+    private:
+        virtual Base * clone_impl() const override
+        {
+            return new Derived{*this};
+        }
     };
 
     class MoreDerived
@@ -70,8 +76,6 @@ namespace
         MoreDerived(int val)
          : Derived{val}
         {}
-
-        int value;
     };
 }
 
@@ -87,6 +91,15 @@ BOOST_AUTO_TEST_CASE(copy_ptr_types)
                                typename Unique_ptr::element_type>::value, "");
     static_assert(std::is_same<typename Copy_ptr::deleter_type,
                                typename Unique_ptr::deleter_type>::value, "");
+    static_assert(std::is_same<typename Copy_ptr::cloner_type,
+                               ural::default_copy<Type>>::value, "");
+    static_assert(std::is_same<typename Copy_ptr::checker_type,
+                               ural::default_ptr_checker<Type*>>::value, "");
+    static_assert(std::is_same<typename Copy_ptr::threading_policy,
+                               ural::single_thread_policy>::value, "");
+
+    static_assert(sizeof(Copy_ptr) == sizeof(Unique_ptr),
+                  "Copy ptr with default policies must be lean!");
 
     BOOST_CHECK(true);
 }
@@ -203,7 +216,7 @@ BOOST_AUTO_TEST_CASE(copy_ptr_nullptr_assign_test)
     BOOST_CHECK(nullptr == p.get());
 }
 
-BOOST_AUTO_TEST_CASE(copy_ptr_copy_asign_test)
+BOOST_AUTO_TEST_CASE(copy_ptr_copy_assign_test)
 {
     typedef int Type;
 
@@ -213,6 +226,15 @@ BOOST_AUTO_TEST_CASE(copy_ptr_copy_asign_test)
 
     BOOST_CHECK(p1.get() != p2.get());
     BOOST_CHECK_EQUAL(*p1, *p2);
+}
+
+BOOST_AUTO_TEST_CASE(copy_ptr_compatible_copy_test)
+{
+    ural::copy_ptr<MoreDerived> p1{new MoreDerived{42}};
+    ural::copy_ptr<Derived> p2{p1};
+
+    BOOST_CHECK(p1.get() != p2.get());
+    BOOST_CHECK_EQUAL(p1->value, p2->value);
 }
 
 BOOST_AUTO_TEST_CASE(copy_ptr_move_assign_test)
@@ -230,6 +252,17 @@ BOOST_AUTO_TEST_CASE(copy_ptr_move_assign_test)
     BOOST_CHECK(nullptr == p2.get());
 }
 
+BOOST_AUTO_TEST_CASE(copy_ptr_member_access_test)
+{
+    typedef Derived Type;
+
+    auto const value = 42;
+
+    ural::copy_ptr<Derived const> p_c(new Type{value});
+
+    BOOST_CHECK_EQUAL(value, p_c->value);
+}
+
 BOOST_AUTO_TEST_CASE(copy_ptr_release_test)
 {
     typedef int Type;
@@ -244,7 +277,7 @@ BOOST_AUTO_TEST_CASE(copy_ptr_release_test)
     BOOST_CHECK(p.get() == nullptr);
 }
 
-BOOST_AUTO_TEST_CASE(copy_pyt_swap_test)
+BOOST_AUTO_TEST_CASE(copy_ptr_swap_test)
 {
     typedef int Type;
     typedef ural::copy_ptr<Type> Pointer;
@@ -284,4 +317,30 @@ BOOST_AUTO_TEST_CASE(copy_ptr_equality_test)
 
     BOOST_CHECK(p != p0);
     BOOST_CHECK(p != pn);
+
+    BOOST_CHECK(p0 == nullptr);
+    BOOST_CHECK(nullptr == p0);
+
+    BOOST_CHECK(pn == nullptr);
+    BOOST_CHECK(nullptr == pn);
+
+    BOOST_CHECK(p != nullptr);
+    BOOST_CHECK(nullptr != p);
+
+    auto * const ptr = p.get();
+
+    BOOST_CHECK(p0 != ptr);
+    BOOST_CHECK(ptr != p0);
+
+    BOOST_CHECK(pn != ptr);
+    BOOST_CHECK(ptr != pn);
+
+    BOOST_CHECK(p == ptr);
+    BOOST_CHECK(ptr == p);
+
+    ural::copy_ptr<long> const p0_long{};
+    ural::copy_ptr<long> const p1_long{new long{42}};
+
+    BOOST_CHECK(p0_long == p0);
+    BOOST_CHECK(p1_long != p);
 }
