@@ -102,6 +102,12 @@ namespace ural
             return seq_old;
         }
 
+        friend Seq & operator++(Seq & s)
+        {
+            s.pop_front();
+            return s;
+        }
+
     protected:
         /** @brief Конструктор
         @param args список аргументов для конструктора базового класса
@@ -116,14 +122,7 @@ namespace ural
         ~ sequence_base() = default;
     };
 
-    template <class Seq, class Base>
-    Seq & operator++(sequence_base<Seq, Base> & s)
-    {
-        auto & r = static_cast<Seq&>(s);
-        r.pop_front();
-        return r;
-    }
-
+    // @todo Можно ли объявить эту функцию в sequence_base?
     template <class Seq, class Base>
     typename Seq::reference
     operator*(sequence_base<Seq, Base> const & s)
