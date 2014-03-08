@@ -27,6 +27,7 @@
 
 namespace ural
 {
+    // Создание объектов в динамической памяти, обёрнутых в unique_ptr
     template <class T, class... Args>
     typename std::enable_if<!std::is_array<T>::value, std::unique_ptr<T>>::type
     make_unique(Args &&... args)
@@ -48,6 +49,7 @@ namespace ural
                             std::unique_ptr<T>>::type
     make_unique(size_t size) = delete;
 
+    // Умный указатель с глубоким копированием
     template <class T>
     class default_copy
     {
@@ -86,16 +88,13 @@ namespace ural
     @todo Тесты с полиморфными типами (стратегии копирования и удаления)
     @todo По аналогии с 20.7.1
     @todo По аналогии с 20.7.2
-
-    @todo Произвольный порядок следования стратегий
-
     @todo Функция создания
     @todo Интеграция с unique_ptr и shared_ptr
     @todo Все функции должны быть noexcept?
     @todo Специализация для массивов
-    @todo Сравнение с другими указателями
     @todo Защита от срезки: как на этапе компиляции (см. shared_ptr), так и во
     время выполнения программы.
+    @todo Произвольный порядок следования стратегий
 
     Обоснование.
 
@@ -250,8 +249,9 @@ namespace ural
                 == static_cast<void const volatile*>(y.get());
     }
 
-    template <class T>
-    void swap(copy_ptr<T> & x, copy_ptr<T> & y) noexcept
+    template <class T, class C, class D, class Ch, class Tr>
+    void swap(copy_ptr<T, C, D, Ch, Tr> & x,
+              copy_ptr<T, C, D, Ch, Tr> & y) noexcept
     {
         return x.swap(y);
     }

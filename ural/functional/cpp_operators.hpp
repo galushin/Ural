@@ -455,6 +455,32 @@ namespace ural
         }
     };
 
+    // Побитовые операции
+    template <class T = void>
+    class bit_not
+    {
+    public:
+        typedef T argument_type;
+        typedef T result_type;
+
+        constexpr result_type operator()(T const & arg) const
+        {
+            return ~arg;
+        }
+    };
+
+    template <>
+    class bit_not<void>
+    {
+    public:
+        template <class T>
+        constexpr auto operator()(T && arg) const
+        -> decltype(~std::forward<T>(arg))
+        {
+            return ~std::forward<T>(arg);
+        }
+    };
+
     // Негатор
     template <class Predicate>
     class not_functor

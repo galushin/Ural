@@ -85,7 +85,7 @@
 	<ural/algorithm/details/copy.hpp>
 	<ural/algorithm/details/algo_base.hpp>
 
-1394084578 c:\devtools\github\ural\ural\sequence\all.hpp
+1394259592 c:\devtools\github\ural\ural\sequence\all.hpp
 	<iterator>
 	<ural/sequence/base.hpp>
 	<ural/sequence/make.hpp>
@@ -492,7 +492,7 @@
 	<ural/functional.hpp>
 	<ural/sequence/base.hpp>
 
-1394084578 source:c:\devtools\github\ural\tests\functional_test.cpp
+1394259127 source:c:\devtools\github\ural\tests\functional_test.cpp
 	<boost/test/unit_test.hpp>
 	<ural/utility/tracers.hpp>
 	<ural/functional.hpp>
@@ -860,7 +860,7 @@
 	<ural/tuple.hpp>
 	<ural/functional/cpp_operators.hpp>
 
-1394084578 c:\devtools\github\ural\ural\functional\cpp_operators.hpp
+1394259348 c:\devtools\github\ural\ural\functional\cpp_operators.hpp
 	<ural/functional/make_functor.hpp>
 	<ural/functional/compose.hpp>
 
@@ -886,7 +886,7 @@
 1394084578 c:\devtools\github\ural\ural\sequence\uniqued.hpp
 	<ural/algorithm/details/algo_base.hpp>
 
-1394198134 c:\devtools\github\ural\ural\memory.hpp
+1394257838 c:\devtools\github\ural\ural\memory.hpp
 	<ural/defs.hpp>
 	<ural/thread.hpp>
 	<memory>

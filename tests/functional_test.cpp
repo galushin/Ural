@@ -257,6 +257,25 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(modulus_test, Modulus, Modulus_functors)
     }
 }
 
+BOOST_AUTO_TEST_CASE(bit_not_test)
+{
+    typedef int Type;
+
+    ural::bit_not<Type> constexpr f{};
+    ural::bit_not<> constexpr fa{};
+
+    static_assert(std::is_same<Type, decltype(f)::result_type>::value, "");
+    static_assert(std::is_same<Type, decltype(f)::argument_type>::value, "");
+
+    static_assert(f(0) == ~0, "");
+    static_assert(f(1) == ~1, "");
+
+    static_assert(fa(0) == ~0, "");
+    static_assert(fa(1) == ~1, "");
+
+    // @todo Тест для случайного целого числа
+}
+
 BOOST_AUTO_TEST_CASE(make_functor_for_member_var_test)
 {
     typedef std::pair<int, std::string> Type;
