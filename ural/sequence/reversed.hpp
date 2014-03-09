@@ -117,10 +117,19 @@ namespace ural
     auto operator|(BidirectionalSequence && seq, reversed_helper)
     -> decltype(make_reverse_sequence(std::forward<BidirectionalSequence>(seq)))
     {
-        return ural::make_reverse_sequence(std::forward<BidirectionalSequence>(seq));
+        return make_reverse_sequence(std::forward<BidirectionalSequence>(seq));
     }
 
     constexpr auto reversed = reversed_helper{};
+
+    template <class Iterator>
+    auto make_iterator_sequence(std::reverse_iterator<Iterator> first,
+                                std::reverse_iterator<Iterator> last)
+    -> reverse_sequence<decltype(make_iterator_sequence(first.base(), last.base()))>
+    {
+        return make_reverse_sequence(make_iterator_sequence(first.base(),
+                                                            last.base()));
+    }
 }
 // namespace ural
 

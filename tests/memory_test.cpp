@@ -101,8 +101,6 @@ BOOST_AUTO_TEST_CASE(copy_ptr_types)
                                ural::default_copy<Type>>::value, "");
     static_assert(std::is_same<typename Copy_ptr::checker_type,
                                ural::default_ptr_checker<Type*>>::value, "");
-    static_assert(std::is_same<typename Copy_ptr::threading_policy,
-                               ural::single_thread_policy>::value, "");
 
     static_assert(sizeof(Copy_ptr) == sizeof(Unique_ptr),
                   "Copy ptr with default policies must be lean!");
@@ -122,6 +120,25 @@ BOOST_AUTO_TEST_CASE(copy_ptr_default_ctor_test)
     BOOST_CHECK(static_cast<bool>(p) == false);
     BOOST_CHECK(!p);
     BOOST_CHECK(nullptr == p.get());
+}
+
+BOOST_AUTO_TEST_CASE(copy_ptr_dereference_check_test)
+{
+    typedef int Type;
+    typedef ural::copy_ptr<Type, ural::use_default, ural::use_default,
+                           ural::throwing_ptr_checker<Type*>> Pointer;
+
+    Pointer const p0{};
+    Pointer const p1{ural::make_unique<int>(42)};
+
+    static_assert(noexcept(ural::copy_ptr<Pointer>{}),
+                  "default ctor must be noexcept");
+
+    BOOST_CHECK(static_cast<bool>(p0) == false);
+    BOOST_CHECK_THROW(*p0, std::logic_error);
+
+    BOOST_CHECK(static_cast<bool>(p1) == true);
+    BOOST_CHECK_EQUAL(42, *p1);
 }
 
 BOOST_AUTO_TEST_CASE(copy_ptr_ctor_test)
@@ -259,6 +276,22 @@ BOOST_AUTO_TEST_CASE(copy_ptr_copy_polymorhic_test)
     BOOST_CHECK(typeid(*p2) == typeid(Derived));
     BOOST_CHECK(typeid(*p1) == typeid(*p2));
     BOOST_CHECK_EQUAL(typeid(*p1).name(), typeid(*p2).name());
+}
+
+BOOST_AUTO_TEST_CASE(copy_ptr_move_compatible_test)
+{
+    auto const value = 42;
+
+    ural::copy_ptr<Derived> p1{new Derived{value}};
+    auto const ptr_old = p1.get();
+
+    ural::copy_ptr<Base> p2{std::move(p1)};
+
+    BOOST_CHECK(!p1);
+    BOOST_CHECK(!!p2);
+
+    BOOST_CHECK(typeid(*p2) == typeid(Derived));
+    BOOST_CHECK_EQUAL(ptr_old, p2.get());
 }
 
 BOOST_AUTO_TEST_CASE(copy_ptr_assign_polymorhic_test)

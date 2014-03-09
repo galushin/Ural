@@ -105,6 +105,20 @@ BOOST_AUTO_TEST_CASE(reversed_reversed_test)
     BOOST_CHECK(typeid(s) == typeid(rr));
 }
 
+BOOST_AUTO_TEST_CASE(reversed_iterators_to_sequence_test)
+{
+    std::vector<int> const xs = {1, 2, 3, 4, 5};
+    auto r_begin = xs.rbegin();
+    auto r_end = xs.rend();
+
+    auto rs = ural::make_iterator_sequence(r_begin, r_end);
+
+    typedef ural::reverse_sequence<ural::iterator_sequence<decltype(xs.begin())>>
+        RSequence;
+
+    static_assert(std::is_same<decltype(rs), RSequence>::value, "");
+}
+
 BOOST_AUTO_TEST_CASE(sink_output_sequence_test_auto)
 {
     ural::sink_sequence<> sink {};

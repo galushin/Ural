@@ -83,6 +83,22 @@ namespace ural
         ~default_ptr_checker() = default;
     };
 
+    template <class Pointer>
+    class throwing_ptr_checker
+    {
+    public:
+        static void assert_not_null(Pointer p)
+        {
+            if(p == nullptr)
+            {
+                BOOST_THROW_EXCEPTION(std::logic_error{"unexpected null pointer"});
+            }
+        }
+
+    protected:
+        ~throwing_ptr_checker() = default;
+    };
+
     /**
     @todo Учесть N3339
     @todo Тесты с полиморфными типами (стратегии копирования и удаления)
@@ -93,7 +109,7 @@ namespace ural
     @todo Все функции должны быть noexcept?
     @todo Специализация для массивов
     @todo Защита от срезки: как на этапе компиляции (см. shared_ptr), так и во
-    время выполнения программы.
+    время выполнения программы. Проверка, что типы оригинала и копии совпадают
     @todo Произвольный порядок следования стратегий
 
     Обоснование.
@@ -107,8 +123,7 @@ namespace ural
     template <class T,
               class Cloner = use_default,
               class Deleter = use_default,
-              class Checker = use_default,
-              class Threading = use_default>
+              class Checker = use_default>
     class copy_ptr
     {
         friend bool operator==(copy_ptr const & x, copy_ptr const & y)
@@ -150,10 +165,8 @@ namespace ural
 
         typedef typename Holder::pointer pointer;
 
-        typedef typename default_helper<Checker, default_ptr_checker<pointer>>::type checker_type;
-
-        typedef typename default_helper<Threading, single_thread_policy>::type
-            threading_policy;
+        typedef typename default_helper<Checker, default_ptr_checker<pointer>>::type
+            checker_type;
 
         // Конструкторы
         constexpr copy_ptr() noexcept = default;
@@ -173,9 +186,14 @@ namespace ural
 
         copy_ptr(copy_ptr &&) = default;
 
-        template <class T1, class C1, class D1, class Ch1, class Tr1>
-        copy_ptr(copy_ptr<T1, C1, D1, Ch1, Tr1> const & x)
+        template <class T1, class C1, class D1, class Ch1>
+        copy_ptr(copy_ptr<T1, C1, D1, Ch1> const & x)
          : holder_{x.make_copy().release(), x.get_deleter()}
+        {}
+
+        template <class T1, class C1, class D1, class Ch1>
+        copy_ptr(copy_ptr<T1, C1, D1, Ch1> && x)
+         : holder_{x.release(), std::move(x.get_deleter())}
         {}
 
         constexpr copy_ptr(nullptr_t) noexcept
@@ -240,18 +258,18 @@ namespace ural
         Holder holder_;
     };
 
-    template <class T1, class C1, class D1, class Ch1, class Tr1,
-              class T2, class C2, class D2, class Ch2, class Tr2>
-    bool operator==(copy_ptr<T1, C1, D1, Ch1, Tr1> const & x,
-                    copy_ptr<T2, C2, D2, Ch2, Tr2> const & y)
+    template <class T1, class C1, class D1, class Ch1,
+              class T2, class C2, class D2, class Ch2>
+    bool operator==(copy_ptr<T1, C1, D1, Ch1> const & x,
+                    copy_ptr<T2, C2, D2, Ch2> const & y)
     {
         return static_cast<void const volatile*>(x.get())
                 == static_cast<void const volatile*>(y.get());
     }
 
-    template <class T, class C, class D, class Ch, class Tr>
-    void swap(copy_ptr<T, C, D, Ch, Tr> & x,
-              copy_ptr<T, C, D, Ch, Tr> & y) noexcept
+    template <class T, class C, class D, class Ch>
+    void swap(copy_ptr<T, C, D, Ch> & x,
+              copy_ptr<T, C, D, Ch> & y) noexcept
     {
         return x.swap(y);
     }

@@ -102,7 +102,7 @@
 	<ural/sequence/transform.hpp>
 	<ural/sequence/uniqued.hpp>
 
-1394084578 c:\devtools\github\ural\ural\sequence\iterator_sequence.hpp
+1394336893 c:\devtools\github\ural\ural\sequence\iterator_sequence.hpp
 	<ural/sequence/base.hpp>
 	<ural/tuple.hpp>
 
@@ -864,7 +864,7 @@
 	<ural/functional/make_functor.hpp>
 	<ural/functional/compose.hpp>
 
-1394084578 c:\devtools\github\ural\ural\sequence\make.hpp
+1394336952 c:\devtools\github\ural\ural\sequence\make.hpp
 	<valarray>
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/insertion.hpp>
@@ -879,19 +879,19 @@
 	<ural/sequence/transform.hpp>
 	<ural/functional/replace.hpp>
 
-1394084578 c:\devtools\github\ural\ural\sequence\reversed.hpp
+1394337060 c:\devtools\github\ural\ural\sequence\reversed.hpp
 
 1394084578 c:\devtools\github\ural\ural\sequence\taken.hpp
 
 1394084578 c:\devtools\github\ural\ural\sequence\uniqued.hpp
 	<ural/algorithm/details/algo_base.hpp>
 
-1394257838 c:\devtools\github\ural\ural\memory.hpp
+1394361222 c:\devtools\github\ural\ural\memory.hpp
 	<ural/defs.hpp>
 	<ural/thread.hpp>
 	<memory>
 
-1394084578 source:c:\devtools\github\ural\tests\sequence_test.cpp
+1394336584 source:c:\devtools\github\ural\tests\sequence_test.cpp
 	<boost/test/unit_test.hpp>
 	<iterator>
 	<ural/abi.hpp>
@@ -6184,7 +6184,7 @@
 	<map>
 	<list>
 
-1394198134 source:c:\devtools\github\ural\tests\memory_test.cpp
+1394361141 source:c:\devtools\github\ural\tests\memory_test.cpp
 	<string>
 	<memory>
 	<boost/test/unit_test.hpp>
