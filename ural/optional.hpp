@@ -370,7 +370,9 @@ namespace details
         }
 
         template <class U>
-        optional & operator=(U && value)
+        // @todo typename std::enable_if<std::is_same<typename std::decay<U>::type, T>::value, optional &>::type?
+        optional &
+        operator=(U && value)
         {
             impl_ = std::forward<U>(value);
             return *this;
@@ -506,8 +508,10 @@ namespace details
     class optional<T&>
     {
     public:
+        // Типы
         typedef T & value_type;
 
+        // Конструкторы
         constexpr optional()
          : ptr_{nullptr}
         {}
@@ -515,6 +519,9 @@ namespace details
         constexpr optional(nullopt_t)
          : ptr_{nullptr}
         {}
+
+        optional(optional const & ) = default;
+        optional(optional && ) = default;
 
         constexpr optional(T & x)
          : ptr_(details::constexpr_addressof(x))
@@ -524,6 +531,17 @@ namespace details
          : ptr_(details::constexpr_addressof(x))
         {}
 
+        // Присваивания
+        optional & operator=(nullopt_t)
+        {
+            ptr_ = nullptr;
+            return *this;
+        }
+
+        optional & operator=(optional const & ) = default;
+        optional & operator=(optional && ) = default;
+
+        // Свойства
         constexpr bool operator!() const
         {
             return this->ptr_ == nullptr;
@@ -565,6 +583,7 @@ namespace details
             return !*this ? other : **this;
         }
 
+        // Модифицирующие операциии
         void emplace(T & x)
         {
             ptr_ = std::addressof(x);

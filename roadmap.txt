@@ -22,6 +22,7 @@ less_equal, bit_and, bit_or, bit_xor, специализации для указ
 
 * Функциональные объекты: учесть is_transparent
 http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3657.htm
+* Согласование с http://www.open-std.org/JTC1/SC22/WG21/docs/papers/2014/n3908.htm
 
 * Последовательности на основе временных контейнеров
 * Разобраться с иерархией категорий последовательностей. В частности, от чего
@@ -35,7 +36,6 @@ http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3657.htm
 + Распаковка кортежа в список аргументов функции
 + Алгоритм вычисления значения многочлена [2014-03-05-07.49]
 
-* Согласование с http://www.open-std.org/JTC1/SC22/WG21/docs/papers/2014/n3908.htm
 * Класс многочлена (на основе вектора)
 
 * универсальный интерфейс для tuple, pair, complex, compressed_pair

@@ -206,16 +206,26 @@ BOOST_AUTO_TEST_CASE(value_ctor)
   }
 }
 
-BOOST_AUTO_TEST_CASE(optional_nullopt_assigment)
-{
-    auto oi = tr2::optional<int>{1};
-    BOOST_CHECK (!!oi);
-
-//    @todo oi = {};
+// @todo BOOST_AUTO_TEST_CASE(optional_nullopt_assigment)
+//{
+//    auto oi = tr2::optional<int>{1};
+//    BOOST_CHECK (!!oi);
+//
+//    oi = {};
 //    BOOST_CHECK (!oi);
-}
+//}
+//
+//BOOST_AUTO_TEST_CASE(optional_nullopt_ref_assigment)
+//{
+//    int var = 1;
+//    auto oi = tr2::optional<int&>{var};
+//    BOOST_CHECK (!!oi);
+//
+//    oi = {};
+//    BOOST_CHECK (!oi);
+//}
 
-BOOST_AUTO_TEST_CASE(assignment)
+BOOST_AUTO_TEST_CASE(optional_assignment_test)
 {
     tr2::optional<int> oi;
     oi = tr2::optional<int>{1};
@@ -228,6 +238,25 @@ BOOST_AUTO_TEST_CASE(assignment)
     BOOST_CHECK (*oi == 2);
 
     oi = ural::nullopt;
+    BOOST_CHECK (!oi);
+}
+
+BOOST_AUTO_TEST_CASE(optional_ref_assignment_test)
+{
+    int var = 1;
+    int var_2 = 2;
+
+    tr2::optional<int&> oi;
+    oi = tr2::optional<int&>{var};
+    BOOST_CHECK (*oi == 1);
+
+    oi = tr2::nullopt;
+    BOOST_CHECK (!oi);
+
+    oi = var_2;
+    BOOST_CHECK (*oi == 2);
+
+    oi = tr2::nullopt;
     BOOST_CHECK (!oi);
 }
 
