@@ -161,7 +161,8 @@ namespace ural
         private:
             void init(std::vector<weight_type> ws)
             {
-                // @todo Оптмизация
+                // @todo Оптмизация (устранить стэки)
+                // @todo Выделить алгоритмы
                 auto const w_sum = ural::accumulate(ws, weight_type{0.0});
 
                 data_.reserve(ws.size());
@@ -176,21 +177,46 @@ namespace ural
 
                 auto const w_uni = weight_type{1.0} / ws.size();
 
-                for(size_t k = 0; k != ws.size(); ++ k)
+                typedef decltype(data_.size()) size_type;
+
+                typedef std::vector<size_type> Stack;
+
+                Stack small;
+                Stack large;
+
+                for(size_type i = 0; i != ws.size(); ++ i)
                 {
-                    auto const w = ws[k];
-                    if(w < w_uni)
+                    if(ws[i] > w_uni)
                     {
-                        auto donation = w_uni - w;
-                        auto const max_index
-                            = std::max_element(ws.begin(), ws.end())
-                            - ws.begin();
+                        large.push_back(i);
+                    }
+                    else
+                    {
+                        small.push_back(i);
+                    }
+                }
 
-                        data_[k].first = w / w_uni;
-                        data_[k].second = max_index;
+                for(; !large.empty() && !small.empty(); )
+                {
+                    auto large_index = large.back();
+                    large.pop_back();
 
-                        ws[k] = w_uni;
-                        ws[max_index] -= donation;
+                    auto small_index = small.back();
+                    small.pop_back();
+
+                    data_[small_index].first = ws[small_index] / w_uni;
+                    data_[small_index].second = large_index;
+
+                    ws[large_index] -= (w_uni - ws[small_index]);
+                    ws[small_index] = w_uni;
+
+                    if(ws[large_index] > w_uni)
+                    {
+                        large.push_back(large_index);
+                    }
+                    else
+                    {
+                        small.push_back(large_index);
                     }
                 }
             }
