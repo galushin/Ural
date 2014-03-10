@@ -309,7 +309,7 @@
 	<ural/algorithm/details/copy.hpp>
 	<ural/algorithm/details/algo_base.hpp>
 
-1394151640 c:\devtools\ural_repo\ural\ural\sequence\all.hpp
+1394422229 c:\devtools\ural_repo\ural\ural\sequence\all.hpp
 	<iterator>
 	<ural/sequence/base.hpp>
 	<ural/sequence/make.hpp>
@@ -361,7 +361,7 @@
 	<ural/optional.hpp>
 	<ural/sequence/base.hpp>
 
-1392344896 source:c:\devtools\ural_repo\ural\tests\optional_tests.cpp
+1394422228 source:c:\devtools\ural_repo\ural\tests\optional_tests.cpp
 	<boost/test/unit_test.hpp>
 	<boost/concept/assert.hpp>
 	<ostream>
@@ -377,7 +377,7 @@
 	<unordered_set>
 	<ural/utility/tracers.hpp>
 
-1393837779 c:\devtools\ural_repo\ural\ural\optional.hpp
+1394422229 c:\devtools\ural_repo\ural\ural\optional.hpp
 	<stdexcept>
 	<type_traits>
 	<ostream>
@@ -438,7 +438,7 @@
 	<ural/defs.hpp>
 	<utility>
 
-1394151640 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
+1394422229 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
 	<ural/defs.hpp>
 	<utility>
 
@@ -481,7 +481,7 @@
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
-1394151640 source:c:\devtools\ural_repo\ural\tests\functional_test.cpp
+1394422228 source:c:\devtools\ural_repo\ural\tests\functional_test.cpp
 	<boost/test/unit_test.hpp>
 	<ural/utility/tracers.hpp>
 	<ural/functional.hpp>
@@ -542,7 +542,7 @@
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
-1394151640 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
+1394422497 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
 	<boost/test/unit_test.hpp>
 	<iterator>
 	<ural/abi.hpp>
@@ -558,12 +558,12 @@
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/insertion.hpp>
 
-1394172519 c:\devtools\ural_repo\ural\ural\memory.hpp
+1394422229 c:\devtools\ural_repo\ural\ural\memory.hpp
 	<ural/defs.hpp>
 	<ural/thread.hpp>
 	<memory>
 
-1394151640 c:\devtools\ural_repo\ural\ural\sequence\moved.hpp
+1394422718 c:\devtools\ural_repo\ural\ural\sequence\moved.hpp
 	<ural/sequence/base.hpp>
 
 1394151640 c:\devtools\ural_repo\ural\ural\sequence\replace.hpp
@@ -574,7 +574,7 @@
 	<ural/tuple.hpp>
 	<ural/functional/cpp_operators.hpp>
 
-1394151640 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
+1394422229 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
 	<ural/functional/make_functor.hpp>
 	<ural/functional/compose.hpp>
 
@@ -899,7 +899,7 @@
 	<ural/sequence/all.hpp>
 	<ural/sequence/sink.hpp>
 
-1394151640 c:\devtools\ural_repo\ural\ural\sequence\reversed.hpp
+1394422229 c:\devtools\ural_repo\ural\ural\sequence\reversed.hpp
 
 1393837734 c:\devtools\ural_repo\ural\ural\abi.hpp
 	<cxxabi.h>
@@ -6190,7 +6190,7 @@
 	<boost/test/unit_test.hpp>
 	<ural/memory.hpp>
 
-1394172631 source:c:\devtools\ural_repo\ural\tests\memory_test.cpp
+1394422228 source:c:\devtools\ural_repo\ural\tests\memory_test.cpp
 	<string>
 	<memory>
 	<boost/test/unit_test.hpp>

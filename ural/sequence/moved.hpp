@@ -89,6 +89,15 @@ namespace ural
         return Result{sequence(std::forward<Sequence>(seq))};
     }
 
+    template <class Iterator>
+    auto make_iterator_sequence(std::move_iterator<Iterator> first,
+                                std::move_iterator<Iterator> last)
+    -> move_sequence<decltype(make_iterator_sequence(first.base(), last.base()))>
+    {
+        return make_move_sequence(make_iterator_sequence(first.base(),
+                                                         last.base()));
+    }
+
     struct moved_helper{};
 
     template <class Sequence>
