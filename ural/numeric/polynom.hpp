@@ -96,7 +96,6 @@ namespace ural
     @tparam A тип коэффициентов
     @tparam X тип аргументов
     @tparam Alloc тип распределителя памяти
-    @todo Ослабить требование к типу множителя
     */
     template <class A, class X = void, class Alloc = std::allocator<A> >
     class polynomial

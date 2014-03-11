@@ -62,6 +62,11 @@ namespace ural
             return reverse_sequence{this->base().traversed_back()};
         }
 
+        void shrink_front()
+        {
+            return base_.shrink_back();
+        }
+
         // Двусторонняя последовательность
         reference back() const
         {

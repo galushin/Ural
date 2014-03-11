@@ -103,9 +103,12 @@ namespace concepts
         /// @brief Проверка неявных интерфейсов
         BOOST_CONCEPT_USAGE(ForwardSequence)
         {
-            // @todo traversed_front
+            ural::value_consumer<Seq>() = seq.traversed_front();
+            seq.shrink_front();
         }
+
     private:
+        static Seq seq;
     };
 
     /** @brief Концепция двустороннней последовательности

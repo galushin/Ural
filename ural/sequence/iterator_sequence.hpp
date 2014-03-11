@@ -366,6 +366,11 @@ namespace ural
                                      iterators_[end_index]);
         }
 
+        void shrink_back()
+        {
+            iterators_[end_index] = iterators_[stop_index];
+        }
+
         // Последовательность произвольного доступа
         reference operator[](distance_type index) const
         {
