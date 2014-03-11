@@ -30,6 +30,38 @@
 
 namespace ural
 {
+    template <class R, class X>
+    class horner_accumulator
+    {
+    public:
+        explicit horner_accumulator(R r0, X x)
+         : data_{std::move(r0), std::move(x)}
+        {}
+
+        template <class C>
+        horner_accumulator &
+        operator()(C && arg)
+        {
+            data_[ural::_1] = std::move(data_[ural::_1]) * data_[ural::_2]
+                            + std::forward<C>(arg);
+            return *this;
+        }
+
+        R const & value() const
+        {
+            return data_[ural::_1];
+        }
+
+    private:
+        ural::tuple<R, X> data_;
+    };
+
+    /**
+    С одной стороны, многочлен может иметь нулевую степень, тогда тип результата
+    будет совпадать с типом коэффициента. С другой стороны, рассмотрим многочлен
+    с целыми коэффициентами и вещественными переменными. Его значения должны
+    быть вещественными.
+    */
     template <class Input, class X>
     auto polynom(Input && in, X const & x)
     -> decltype(sequence(in).front() * x)
@@ -40,15 +72,10 @@ namespace ural
 
         assert(!!s);
 
-        result_type r = *s;
+        horner_accumulator<result_type, X> acc(*s, std::cref(x));
         ++ s;
 
-        for(; !!s; ++ s)
-        {
-            r = std::move(r) * x + *s;
-        }
-
-        return r;
+        return ural::for_each(std::move(s), acc).value();
     }
 
     template <class A, class X, class Alloc>
