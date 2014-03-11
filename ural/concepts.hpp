@@ -124,6 +124,8 @@ namespace concepts
         {
             seq.pop_back();
             value_consumer<reference>() = seq.back();
+            value_consumer<Seq>() = seq.traversed_back();
+            seq.shrink_back();
         }
 
     private:
