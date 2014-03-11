@@ -555,6 +555,30 @@ namespace ural
             return x -= std::forward<T2>(y);
         }
     };
+
+    template <class T = void>
+    class dereference
+    {
+    public:
+        auto operator()(T const & x)
+        -> decltype(*x)
+        {
+            return *x;
+        }
+    };
+
+    /// @brief Специализация с выводом типа аргумента
+    template <>
+    class dereference<void>
+    {
+    public:
+        template <class T>
+        constexpr auto operator()(T && x) const
+        -> decltype(*std::forward<T>(x))
+        {
+            return *std::forward<T>(x);
+        }
+    };
 }
 // namespace ural
 

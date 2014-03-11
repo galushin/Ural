@@ -345,13 +345,14 @@
 	<ural/numeric/partial_sums.hpp>
 	<ural/numeric/adjacent_differences.hpp>
 
-1394151640 c:\devtools\ural_repo\ural\ural\functional.hpp
+1394497158 c:\devtools\ural_repo\ural\ural\functional.hpp
 	<boost/compressed_pair.hpp>
-	<ural/tuple.hpp>
 	<ural/functional/adjoin.hpp>
-	<ural/functional/replace.hpp>
+	<ural/functional/compare_by.hpp>
 	<ural/functional/cpp_operators.hpp>
 	<ural/functional/make_functor.hpp>
+	<ural/functional/replace.hpp>
+	<ural/tuple.hpp>
 
 1394151640 c:\devtools\ural_repo\ural\ural\numeric\details\num_algo.hpp
 
@@ -542,7 +543,7 @@
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
-1394422497 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
+1394423114 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
 	<boost/test/unit_test.hpp>
 	<iterator>
 	<ural/abi.hpp>
@@ -574,7 +575,7 @@
 	<ural/tuple.hpp>
 	<ural/functional/cpp_operators.hpp>
 
-1394422229 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
+1394496755 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
 	<ural/functional/make_functor.hpp>
 	<ural/functional/compose.hpp>
 
@@ -904,7 +905,7 @@
 1393837734 c:\devtools\ural_repo\ural\ural\abi.hpp
 	<cxxabi.h>
 
-1393837795 c:\devtools\ural_repo\ural\ural\random.hpp
+1394496525 c:\devtools\ural_repo\ural\ural\random.hpp
 	<ural/numeric.hpp>
 	<ural/defs.hpp>
 	<cstdlib>
@@ -6404,7 +6405,8 @@
 	<ural/math/common_factor.hpp>
 	<ural/defs.hpp>
 
-1394151640 c:\devtools\ural_repo\ural\ural\functional\adjoin.hpp
+1394497434 c:\devtools\ural_repo\ural\ural\functional\adjoin.hpp
+	<ural/tuple.hpp>
 	<ural/utility.hpp>
 	<ural/functional/make_functor.hpp>
 
@@ -6413,4 +6415,7 @@
 1394151640 c:\devtools\ural_repo\ural\ural\numeric\polynom.hpp
 	<ural/sequence/sink.hpp>
 	<boost/operators.hpp>
+
+1394497455 c:\devtools\ural_repo\ural\ural\functional\compare_by.hpp
+	<ural/functional/cpp_operators.hpp>
 

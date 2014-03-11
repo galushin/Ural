@@ -74,6 +74,7 @@
 		<Unit filename="../ural/defs.hpp" />
 		<Unit filename="../ural/functional.hpp" />
 		<Unit filename="../ural/functional/adjoin.hpp" />
+		<Unit filename="../ural/functional/compare_by.hpp" />
 		<Unit filename="../ural/functional/compose.hpp" />
 		<Unit filename="../ural/functional/cpp_operators.hpp" />
 		<Unit filename="../ural/functional/make_functor.hpp" />

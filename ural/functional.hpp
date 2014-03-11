@@ -24,11 +24,13 @@
 
 #include <boost/compressed_pair.hpp>
 
-#include <ural/tuple.hpp>
 #include <ural/functional/adjoin.hpp>
-#include <ural/functional/replace.hpp>
+#include <ural/functional/compare_by.hpp>
 #include <ural/functional/cpp_operators.hpp>
 #include <ural/functional/make_functor.hpp>
+#include <ural/functional/replace.hpp>
+
+#include <ural/tuple.hpp>
 
 namespace ural
 {
@@ -51,7 +53,6 @@ namespace ural
         T value_;
     };
 
-    // @note Подлежит переработке
     template <class ForwardSequence, class Compare>
     class min_element_accumulator
     {
@@ -83,88 +84,6 @@ namespace ural
 
     private:
         boost::compressed_pair<ForwardSequence, Compare> impl_;
-    };
-
-    template <class UnaryFunction, class Compare = ural::less<> >
-    class comparer_by
-     : boost::compressed_pair<UnaryFunction, Compare>
-    {
-        typedef boost::compressed_pair<UnaryFunction, Compare> Base;
-
-    public:
-        explicit comparer_by(UnaryFunction f)
-         : Base{std::move(f)}
-        {}
-
-        explicit comparer_by(UnaryFunction f, Compare cmp)
-         : Base{std::move(f), std::move(cmp)}
-        {}
-
-        template <class T1, class T2>
-        bool operator()(T1 const & x, T2 const & y) const
-        {
-            return this->compare()(this->transformation()(x),
-                                   this->transformation()(y));
-        }
-
-        UnaryFunction const & transformation() const
-        {
-            return Base::first();
-        }
-
-        Compare const & compare() const
-        {
-            return Base::second();
-        }
-    };
-
-    template <class F, class Tr>
-    bool operator==(comparer_by<F, Tr> const & x, comparer_by<F, Tr> const & y)
-    {
-        return x.compare() == y.compare()
-            && x.transformation() == y.transformation();
-    }
-
-    template <class UnaryFunction, class Compare>
-    auto compare_by(UnaryFunction f, Compare cmp)
-    -> comparer_by<decltype(make_functor(std::move(f))),
-                   decltype(make_functor(std::move(cmp)))>
-    {
-        typedef comparer_by<decltype(make_functor(std::move(f))),
-                   decltype(make_functor(std::move(cmp)))> Functor;
-        return Functor(make_functor(std::move(f)), make_functor(std::move(cmp)));
-    }
-
-    template <class UnaryFunction>
-    auto compare_by(UnaryFunction f)
-    -> comparer_by<decltype(make_functor(std::move(f)))>
-    {
-        typedef comparer_by<decltype(make_functor(std::move(f)))> Functor;
-        return Functor(make_functor(std::move(f)));
-    }
-
-    template <class T = void>
-    class dereference
-    {
-    public:
-        auto operator()(T const & x)
-        -> decltype(*x)
-        {
-            return *x;
-        }
-    };
-
-    /// @brief Специализация с выводом типа аргумента
-    template <>
-    class dereference<void>
-    {
-    public:
-        template <class T>
-        constexpr auto operator()(T && x) const
-        -> decltype(*x)
-        {
-            return *x;
-        }
     };
 
     template <class BinaryFunctor>

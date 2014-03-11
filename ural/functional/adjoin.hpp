@@ -17,6 +17,7 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <ural/tuple.hpp>
 #include <ural/utility.hpp>
 #include <ural/functional/make_functor.hpp>
 
