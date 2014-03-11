@@ -20,7 +20,6 @@
 /** @file ural/functional/replace.hpp
  @brief Функциональные объекты, заменяющие значения, удовлетворяющие
  определённым условиям.
- @todo Сохранять ссылки, а не значения
 */
 
 #include <ural/tuple.hpp>
@@ -65,6 +64,10 @@ namespace ural
         boost::compressed_pair<Predicate, T> members_;
     };
 
+    /**
+    По умолчанию сохраняются значения, а не ссылки. Чтобы избежать копирования,
+    следует обернуть объекты в вызовы std::cref()
+    */
     template <class Predicate, class T>
     replace_if_functor<Predicate, T>
     make_replace_if_functor(Predicate pred, T const & new_value)
@@ -121,10 +124,20 @@ namespace ural
         ural::tuple<T, T, BinaryPredicate> members_;
     };
 
+    /**
+    По умолчанию сохраняются значения, а не ссылки. Чтобы избежать копирования,
+    следует обернуть объекты в вызовы std::cref()
+
+    @todo Покрыть тестами
+    */
     template <class T, class BinaryPredicate>
     replace_functor<T, BinaryPredicate>
     make_replace_functor(T old_value, T new_value, BinaryPredicate pred);
 
+    /**
+    По умолчанию сохраняются значения, а не ссылки. Чтобы избежать копирования,
+    следует обернуть объекты в вызовы std::cref()
+    */
     template <class T>
     replace_functor<T, ural::equal_to<T,T>>
     make_replace_functor(T old_value, T new_value)
