@@ -68,8 +68,7 @@ namespace
     private:
         virtual Base * clone_impl() const override
         {
-            // @todo Выделить фукнцию (чтобы не указывать тип явно)
-            return new Derived{*this};
+            return ural::make_copy_new(*this).release();
         }
     };
 

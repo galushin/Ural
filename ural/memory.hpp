@@ -49,6 +49,12 @@ namespace ural
                             std::unique_ptr<T>>::type
     make_unique(size_t size) = delete;
 
+    template <class T>
+    std::unique_ptr<T> make_copy_new(T x)
+    {
+        return ural::make_unique<T>(std::move(x));
+    }
+
     // Умный указатель с глубоким копированием
     template <class T>
     class default_copy
