@@ -146,14 +146,10 @@ namespace ural
     private:
         void seek()
         {
-            // @todo Заменить на алгоритм
-            for(; !!members_[ural::_1]; ++ members_[ural::_1])
-            {
-                if(!this->predicate()(*members_[ural::_1], this->removed_value()))
-                {
-                    return;
-                }
-            }
+            members_[ural::_1]
+                = ural::details::find(std::move(members_[ural::_1]),
+                                      std::cref(this->removed_value()),
+                                      ural::not_fn(this->predicate()));
         }
 
     private:

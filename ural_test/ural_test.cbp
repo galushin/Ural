@@ -34,6 +34,7 @@
 			<Add option="-fexceptions" />
 			<Add directory=".." />
 		</Compiler>
+		<Unit filename="../README.md" />
 		<Unit filename="../boost_1_54/libs/test/src/compiler_log_formatter.cpp" />
 		<Unit filename="../boost_1_54/libs/test/src/debug.cpp" />
 		<Unit filename="../boost_1_54/libs/test/src/execution_monitor.cpp" />
@@ -50,6 +51,7 @@
 		<Unit filename="../boost_1_54/libs/test/src/unit_test_suite.cpp" />
 		<Unit filename="../boost_1_54/libs/test/src/xml_log_formatter.cpp" />
 		<Unit filename="../boost_1_54/libs/test/src/xml_report_formatter.cpp" />
+		<Unit filename="../notes.txt" />
 		<Unit filename="../roadmap.txt" />
 		<Unit filename="../tests/algo_tests.cpp" />
 		<Unit filename="../tests/concepts_checks.cpp" />
