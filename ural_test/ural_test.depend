@@ -559,7 +559,7 @@
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/insertion.hpp>
 
-1394422229 c:\devtools\ural_repo\ural\ural\memory.hpp
+1394498510 c:\devtools\ural_repo\ural\ural\memory.hpp
 	<ural/defs.hpp>
 	<ural/thread.hpp>
 	<memory>
@@ -6191,7 +6191,7 @@
 	<boost/test/unit_test.hpp>
 	<ural/memory.hpp>
 
-1394422228 source:c:\devtools\ural_repo\ural\tests\memory_test.cpp
+1394498582 source:c:\devtools\ural_repo\ural\tests\memory_test.cpp
 	<string>
 	<memory>
 	<boost/test/unit_test.hpp>
@@ -6261,7 +6261,7 @@
 	<ural/sequence/base.hpp>
 	<string>
 
-1394151640 source:c:\devtools\ural_repo\ural\tests\random_tests.cpp
+1394498734 source:c:\devtools\ural_repo\ural\tests\random_tests.cpp
 	<ural/random.hpp>
 	<boost/test/unit_test.hpp>
 	<sstream>
@@ -6412,7 +6412,7 @@
 
 1394151640 c:\devtools\ural_repo\ural\ural\sequence\iostream.hpp
 
-1394151640 c:\devtools\ural_repo\ural\ural\numeric\polynom.hpp
+1394499045 c:\devtools\ural_repo\ural\ural\numeric\polynom.hpp
 	<ural/sequence/sink.hpp>
 	<boost/operators.hpp>
 

@@ -58,6 +58,9 @@ namespace ural
     class polynomial_base
     {
     public:
+        static_assert(std::is_same<X, decltype(std::declval<X>() * std::declval<X>())>::value,
+                      "Type of polynom variable must be closed relative to multiplication");
+
         typedef X argument_type;
         typedef decltype(std::declval<A>() * std::declval<X>()) result_type;
 
