@@ -70,6 +70,15 @@ namespace ural
         using Indices = make_index_sequence<std::tuple_size<decay_t<Tuple>>::value>;
         return apply_impl(std::forward<F>(f), std::forward<Tuple>(t), Indices{});
     }
+
+    template <class T>
+    T & copy_and_swap(T & x, T value)
+    {
+        // Копирование правой части производится из-за передачи параметра по
+        // значению
+        value.swap(x);
+        return x;
+    }
 }
 // namespace ural
 

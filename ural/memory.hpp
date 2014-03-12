@@ -22,7 +22,7 @@
 */
 
 #include <ural/defs.hpp>
-#include <ural/thread.hpp>
+#include <ural/utility.hpp>
 #include <memory>
 
 namespace ural
@@ -209,9 +209,7 @@ namespace ural
         // Присваивание
         copy_ptr & operator=(copy_ptr const & x)
         {
-            *this = std::move(copy_ptr(x));
-
-            return *this;
+            return ::ural::copy_and_swap(*this, x);
         }
 
         copy_ptr & operator=(copy_ptr &&) = default;
