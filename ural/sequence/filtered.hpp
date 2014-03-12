@@ -23,6 +23,8 @@
  @todo Более подробные тесты
 */
 
+#include <ural/algorithm/details/algo_base.hpp>
+
 #include <boost/compressed_pair.hpp>
 
 namespace ural
@@ -79,9 +81,8 @@ namespace ural
     private:
         void seek()
         {
-            for(;!!data_.first() && !this->predicate()(*data_.first());
-                ++ data_.first())
-            {}
+            data_.first()
+                = ::ural::details::find_if(data_.first(), this->predicate());
         }
 
     private:

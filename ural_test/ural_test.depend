@@ -551,7 +551,8 @@
 	<ural/sequence/all.hpp>
 	<ural/sequence/sink.hpp>
 
-1394151640 c:\devtools\ural_repo\ural\ural\sequence\filtered.hpp
+1394609214 c:\devtools\ural_repo\ural\ural\sequence\filtered.hpp
+	<ural/algorithm/details/algo_base.hpp>
 	<boost/compressed_pair.hpp>
 
 1394151640 c:\devtools\ural_repo\ural\ural\sequence\make.hpp
