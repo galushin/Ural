@@ -251,7 +251,7 @@
 	<tuple>
 	<ural/placeholders.hpp>
 
-1393837787 c:\devtools\ural_repo\ural\ural\placeholders.hpp
+1394700815 c:\devtools\ural_repo\ural\ural\placeholders.hpp
 
 1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\compiler_log_formatter.cpp
 	<boost/test/impl/compiler_log_formatter.ipp>
@@ -6231,7 +6231,7 @@
 	<ural/math/common_factor.hpp>
 	<ural/defs.hpp>
 
-1394676609 source:c:\devtools\ural_repo\ural\tests\rational_tests.cpp
+1394701017 source:c:\devtools\ural_repo\ural\tests\rational_tests.cpp
 	<ostream>
 	<boost/test/unit_test.hpp>
 	<boost/mpl/list.hpp>
@@ -6264,7 +6264,8 @@
 	<ural/sequence/base.hpp>
 	<string>
 
-1394681176 source:c:\devtools\ural_repo\ural\tests\random_tests.cpp
+1394703001 source:c:\devtools\ural_repo\ural\tests\random_tests.cpp
+	<ural/statistics.hpp>
 	<ural/random.hpp>
 	<ural/math.hpp>
 	<boost/test/unit_test.hpp>
@@ -6426,13 +6427,16 @@
 
 1394681635 c:\devtools\ural_repo\ural\ural\math.hpp
 
-1394695788 source:c:\devtools\ural_repo\ural\tests\statistics_tests.cpp
+1394702640 source:c:\devtools\ural_repo\ural\tests\statistics_tests.cpp
 	<ural/statistics.hpp>
 	<ural/math/rational.hpp>
 	<boost/mpl/list.hpp>
 	<boost/test/unit_test.hpp>
 
-1394699143 c:\devtools\ural_repo\ural\ural\statistics.hpp
+1394704278 c:\devtools\ural_repo\ural\ural\statistics.hpp
 	<ural/defs.hpp>
 	<stdexcept>
+
+1394704070 c:\devtools\ural_repo\ural\ural\operators.hpp
+	<ural/defs.hpp>
 

@@ -179,11 +179,13 @@ public:
     operator <<( std::basic_ostream<Ch, Tr> &o, self_type const &x )
     { return o << x.v_; }
 
-};  // MyOverflowingUnsigned
+};
+// MyOverflowingUnsigned
 
 inline MyOverflowingUnsigned abs( MyOverflowingUnsigned const &x ) { return x; }
 
-} // namespace
+}
+// namespace
 
 
 // Specialize numeric_limits for the custom types
@@ -234,7 +236,8 @@ public:
     static const bool tinyness_before          = limits_type::tinyness_before;
     static const float_round_style round_style = limits_type::round_style;
 
-};  // std::numeric_limits<MyInt>
+};
+// std::numeric_limits<MyInt>
 
 template < >
 class numeric_limits< MyOverflowingUnsigned >

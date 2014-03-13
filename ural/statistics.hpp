@@ -125,6 +125,13 @@ namespace ural
         value_type value_;
     };
 
+    template <class RealType>
+    probability<RealType>
+    make_probability(RealType p)
+    {
+        return probability<RealType>{std::move(p)};
+    }
+
     /** @brief Оператор равно
     @param x левый операнд
     @param y правый операнд
@@ -157,6 +164,20 @@ namespace ural
     constexpr bool operator==(T1 const & x, probability<T2, P2> const & y)
     {
         return x == y.value();
+    }
+
+    template <class T1, class P1, class T2, class P2>
+    constexpr bool operator<(probability<T1, P1> const & x,
+                             probability<T2, P2> const & y)
+    {
+        return x.value() < y.value();
+    }
+
+    template <class Char, class Tr, class T, class P>
+    std::basic_ostream<Char, Tr> &
+    operator<<(std::basic_ostream<Char, Tr> & os, probability<T, P> const & x)
+    {
+        return os << x.value();
     }
 }
 // namespace ural

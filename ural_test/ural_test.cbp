@@ -91,6 +91,7 @@
 		<Unit filename="../ural/numeric/details/num_algo.hpp" />
 		<Unit filename="../ural/numeric/partial_sums.hpp" />
 		<Unit filename="../ural/numeric/polynom.hpp" />
+		<Unit filename="../ural/operators.hpp" />
 		<Unit filename="../ural/optional.hpp" />
 		<Unit filename="../ural/placeholders.hpp" />
 		<Unit filename="../ural/random.hpp" />

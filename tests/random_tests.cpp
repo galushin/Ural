@@ -76,6 +76,7 @@ md5 contributions   llvm/lib/Support/MD5.cpp llvm/include/llvm/Support/MD5.h
 */
 
 // @todo Устранить (Уменьшить) дублирование
+#include <ural/statistics.hpp>
 #include <ural/random.hpp>
 #include <ural/math.hpp>
 
@@ -395,36 +396,34 @@ namespace
             BOOST_CHECK_EQUAL((double)u[i]/N, prob[i]);
     }
 
-    template <class Weights>
-    void test_discrete_distribution_approx(Weights && ws, size_t N, double eps)
+    template <class InputSequence, class Probabilities>
+    ural::probability<>
+    pearson_test(InputSequence && in, Probabilities const & prob)
     {
-        typedef ural::discrete_distribution<> D;
-        typedef std::minstd_rand G;
+        std::vector<typename InputSequence::value_type> u(prob.size());
+        size_t N = 0;
 
-        G g;
-        D d(ws.begin(), ws.end());
-
-        std::vector<D::result_type> u(d.max()+1);
-        for (int i = 0; i < N; ++i)
+        for(auto s = sequence(in); !!s; ++ s)
         {
-            D::result_type v = d(g);
-            BOOST_CHECK(d.min() <= v && v <= d.max());
-            u[v]++;
-        }
+            auto v = *s;
 
-        std::vector<double> prob = d.probabilities();
+            assert(0 <= v && v < prob.size());
+
+            ++ u[v];
+            ++ N;
+        }
 
         double chi_square = {0.0};
 
-        for(int i = 0; i <= d.max(); ++i)
+        for(int i = 0; i < u.size(); ++i)
         {
-            if (prob[i] != 0)
+            if(prob[i] != 0)
             {
                 chi_square += ural::square((double)u[i]/N - prob[i]) / prob[i];
             }
             else
             {
-                BOOST_CHECK_EQUAL(0, u[i]);
+                assert(0 == u[i]);
             }
         }
 
@@ -432,9 +431,30 @@ namespace
 
         boost::math::chi_squared_distribution<double> d_teor{double(N)-1};
 
-        auto p = cdf(d_teor, chi_square);
+        return ural::probability<>{cdf(d_teor, chi_square)};
+    }
 
-        BOOST_CHECK_LE(p, eps);
+    template <class Weights>
+    void test_discrete_distribution_approx(Weights && ws, size_t N, double eps)
+    {
+        typedef ural::discrete_distribution<> D;
+        typedef std::minstd_rand G;
+
+        ural::probability<> alpha(eps);
+
+        G g;
+        D d(ws.begin(), ws.end());
+
+        std::vector<double> prob = d.probabilities();
+
+        auto gen = std::bind(std::move(d), std::ref(g));
+        auto seq = ural::make_generator_sequence(std::move(gen)) | ural::taken(N);
+
+        auto p = pearson_test(std::move(seq), prob);
+
+        std::vector<D::result_type> u(d.max()+1);
+
+        BOOST_CHECK_LE(p, alpha);
     }
 }
 
