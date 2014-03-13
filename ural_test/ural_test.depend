@@ -333,7 +333,7 @@
 1394151640 c:\devtools\ural_repo\ural\ural\sequence\insertion.hpp
 	<ural/sequence/base.hpp>
 
-1394151640 c:\devtools\ural_repo\ural\ural\algorithm\details\copy.hpp
+1394615334 c:\devtools\ural_repo\ural\ural\algorithm\details\copy.hpp
 	<boost/concept/assert.hpp>
 	<ural/concepts.hpp>
 	<ural/tuple.hpp>
@@ -439,7 +439,7 @@
 	<ural/defs.hpp>
 	<utility>
 
-1394422229 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
+1394615334 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
 	<ural/defs.hpp>
 	<utility>
 
@@ -456,7 +456,7 @@
 	<ural/functional.hpp>
 	<cassert>
 
-1394151640 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
+1394615334 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
 	<ural/sequence/base.hpp>
 
 1394151640 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
@@ -6262,7 +6262,7 @@
 	<ural/sequence/base.hpp>
 	<string>
 
-1394498734 source:c:\devtools\ural_repo\ural\tests\random_tests.cpp
+1394613648 source:c:\devtools\ural_repo\ural\tests\random_tests.cpp
 	<ural/random.hpp>
 	<boost/test/unit_test.hpp>
 	<sstream>
