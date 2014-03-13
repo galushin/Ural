@@ -903,7 +903,7 @@
 
 1394503279 c:\devtools\ural_repo\ural\ural\sequence\reversed.hpp
 
-1393837734 c:\devtools\ural_repo\ural\ural\abi.hpp
+1394681742 c:\devtools\ural_repo\ural\ural\abi.hpp
 	<cxxabi.h>
 
 1394496525 c:\devtools\ural_repo\ural\ural\random.hpp
@@ -6192,7 +6192,7 @@
 	<boost/test/unit_test.hpp>
 	<ural/memory.hpp>
 
-1394498582 source:c:\devtools\ural_repo\ural\tests\memory_test.cpp
+1394669468 source:c:\devtools\ural_repo\ural\tests\memory_test.cpp
 	<string>
 	<memory>
 	<boost/test/unit_test.hpp>
@@ -6231,17 +6231,19 @@
 	<ural/math/common_factor.hpp>
 	<ural/defs.hpp>
 
-1393378346 source:c:\devtools\ural_repo\ural\tests\rational_tests.cpp
+1394676609 source:c:\devtools\ural_repo\ural\tests\rational_tests.cpp
 	<ostream>
 	<boost/test/unit_test.hpp>
 	<boost/mpl/list.hpp>
 	<boost/operators.hpp>
 	<ural/math/rational.hpp>
 
-1394503019 c:\devtools\ural_repo\ural\ural\math\rational.hpp
-	<utility>
+1394694089 c:\devtools\ural_repo\ural\ural\math\rational.hpp
 	<ural/math/common_factor.hpp>
 	<ural/defs.hpp>
+	<istream>
+	<ostream>
+	<utility>
 
 1394610465 c:\devtools\ural_repo\ural\ural\utility.hpp
 	<ural/defs.hpp>
@@ -6262,9 +6264,11 @@
 	<ural/sequence/base.hpp>
 	<string>
 
-1394613648 source:c:\devtools\ural_repo\ural\tests\random_tests.cpp
+1394681176 source:c:\devtools\ural_repo\ural\tests\random_tests.cpp
 	<ural/random.hpp>
+	<ural/math.hpp>
 	<boost/test/unit_test.hpp>
+	<boost/math/distributions/chi_squared.hpp>
 	<sstream>
 
 1393903294 c:\pavel\ural_repo\ural\ural\type_traits.hpp
@@ -6419,4 +6423,16 @@
 
 1394497455 c:\devtools\ural_repo\ural\ural\functional\compare_by.hpp
 	<ural/functional/cpp_operators.hpp>
+
+1394681635 c:\devtools\ural_repo\ural\ural\math.hpp
+
+1394695788 source:c:\devtools\ural_repo\ural\tests\statistics_tests.cpp
+	<ural/statistics.hpp>
+	<ural/math/rational.hpp>
+	<boost/mpl/list.hpp>
+	<boost/test/unit_test.hpp>
+
+1394699143 c:\devtools\ural_repo\ural\ural\statistics.hpp
+	<ural/defs.hpp>
+	<stdexcept>
 

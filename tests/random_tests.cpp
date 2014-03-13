@@ -77,8 +77,10 @@ md5 contributions   llvm/lib/Support/MD5.cpp llvm/include/llvm/Support/MD5.h
 
 // @todo Устранить (Уменьшить) дублирование
 #include <ural/random.hpp>
+#include <ural/math.hpp>
 
 #include <boost/test/unit_test.hpp>
+#include <boost/math/distributions/chi_squared.hpp>
 
 #include <sstream>
 
@@ -371,7 +373,6 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_io_test)
     BOOST_CHECK(d1 == d2);
 }
 
-// Генерация значений
 namespace
 {
     template <class Distribution>
@@ -410,16 +411,34 @@ namespace
             BOOST_CHECK(d.min() <= v && v <= d.max());
             u[v]++;
         }
+
         std::vector<double> prob = d.probabilities();
 
-        for (int i = 0; i <= d.max(); ++i)
+        double chi_square = {0.0};
+
+        for(int i = 0; i <= d.max(); ++i)
+        {
             if (prob[i] != 0)
-                BOOST_CHECK_CLOSE((double)u[i]/N, prob[i], eps * 100);
+            {
+                chi_square += ural::square((double)u[i]/N - prob[i]) / prob[i];
+            }
             else
-                BOOST_CHECK(u[i] == 0);
+            {
+                BOOST_CHECK_EQUAL(0, u[i]);
+            }
+        }
+
+        chi_square *= N;
+
+        boost::math::chi_squared_distribution<double> d_teor{double(N)-1};
+
+        auto p = cdf(d_teor, chi_square);
+
+        BOOST_CHECK_LE(p, eps);
     }
 }
 
+// Генерация значений
 BOOST_AUTO_TEST_CASE(discrete_distribution_eval_test)
 {
     typedef ural::discrete_distribution<> D;
@@ -428,8 +447,8 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_eval_test)
     test_discrete_distribution_exact(D{}, 100);
     test_discrete_distribution_exact(D{.3}, 100);
 
-    const int N = 100000;
-    const double eps = 0.01;
+    const int N = 100;
+    const double eps = 1e-6;
     typedef std::vector<double> Weights;
     test_discrete_distribution_approx(Weights{.75, .25}, N, eps);
 
@@ -440,14 +459,15 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_eval_test)
     test_discrete_distribution_approx(Weights{0, 25, 75}, N, eps);
     test_discrete_distribution_approx(Weights{25, 0, 75}, N, eps);
     test_discrete_distribution_approx(Weights{25, 75, 0}, N, eps);
-    test_discrete_distribution_approx(Weights{0, 0, 1}, N, eps);
-    test_discrete_distribution_approx(Weights{0, 1, 0}, N, eps);
-    test_discrete_distribution_approx(Weights{1, 0, 0}, N, eps);
+    test_discrete_distribution_exact(D{0, 0, 1}, N);
+    test_discrete_distribution_exact(D{0, 1, 0}, N);
+    test_discrete_distribution_exact(D{1, 0, 0}, N);
     test_discrete_distribution_approx(Weights{33, 0, 0, 67}, N, eps);
 }
 
 BOOST_AUTO_TEST_CASE(discrete_distribution_param_eval_test)
 {
+    // @todo Унифицировать с тестом d(g)
     typedef ural::discrete_distribution<> D;
     typedef D::param_type P;
     typedef std::minstd_rand G;

@@ -286,9 +286,11 @@ public:
     static const bool tinyness_before          = limits_type::tinyness_before;
     static const float_round_style round_style = limits_type::round_style;
 
-};  // std::numeric_limits<MyOverflowingUnsigned>
+};
+// std::numeric_limits<MyOverflowingUnsigned>
 
-}  // namespace std
+}
+// namespace std
 
 typedef ::boost::mpl::list<short, int, long>     builtin_signed_test_types;
 // @todo typedef ::boost::mpl::list<short, int, long, MyInt>  all_signed_test_types;

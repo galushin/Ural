@@ -22,10 +22,12 @@
  @todo Оптимизация
 */
 
-#include <utility>
-
 #include <ural/math/common_factor.hpp>
 #include <ural/defs.hpp>
+
+#include <istream>
+#include <ostream>
+#include <utility>
 
 namespace ural
 {

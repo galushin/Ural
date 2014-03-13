@@ -65,6 +65,7 @@
 		<Unit filename="../tests/random_tests.cpp" />
 		<Unit filename="../tests/rational_tests.cpp" />
 		<Unit filename="../tests/sequence_test.cpp" />
+		<Unit filename="../tests/statistics_tests.cpp" />
 		<Unit filename="../tests/tracers_tests.cpp" />
 		<Unit filename="../tests/tuple_tests.cpp" />
 		<Unit filename="../ural/abi.hpp" />
@@ -81,6 +82,7 @@
 		<Unit filename="../ural/functional/cpp_operators.hpp" />
 		<Unit filename="../ural/functional/make_functor.hpp" />
 		<Unit filename="../ural/functional/replace.hpp" />
+		<Unit filename="../ural/math.hpp" />
 		<Unit filename="../ural/math/common_factor.hpp" />
 		<Unit filename="../ural/math/rational.hpp" />
 		<Unit filename="../ural/memory.hpp" />
@@ -115,6 +117,7 @@
 		<Unit filename="../ural/sequence/taken.hpp" />
 		<Unit filename="../ural/sequence/transform.hpp" />
 		<Unit filename="../ural/sequence/uniqued.hpp" />
+		<Unit filename="../ural/statistics.hpp" />
 		<Unit filename="../ural/thread.hpp" />
 		<Unit filename="../ural/tuple.hpp" />
 		<Unit filename="../ural/type_traits.hpp" />

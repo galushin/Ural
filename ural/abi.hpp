@@ -27,6 +27,12 @@ namespace ural
 {
 namespace abi
 {
+    /** @brief Функция, возвращающая исходное ("неисковерканное" компилятором)
+    имя, если это возможно
+    @param name "исковерканное" компилятором имя
+    @return исходное имя, из которого было получено @c name
+    @note Работает только для GCC
+    */
     inline std::string demangle_name(char const * name)
     {
         int status = 0;
