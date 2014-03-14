@@ -110,7 +110,7 @@ namespace ural
     }
 
     /**
-    @todo Оптимизация
+    @todo Оптимизация: можно ли использовать перемещение вместо копирования
     */
     template <class Sequence>
     Sequence make_reverse_sequence(reverse_sequence<Sequence> seq)

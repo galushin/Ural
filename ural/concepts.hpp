@@ -44,14 +44,6 @@ namespace concepts
         static T value;
     };
 
-    /** @brief Концепция регулярного типа
-    @tparam T тип, для которого проверяется концепция
-    */
-    template <class T>
-    class Regular
-     : SemiRegular<T>
-    {};
-
     template <class T>
     class EqualityComparable
     {
@@ -64,10 +56,18 @@ namespace concepts
         }
 
     private:
-        static T const & make();
         static T const x;
         static T const y;
     };
+
+    /** @brief Концепция регулярного типа
+    @tparam T тип, для которого проверяется концепция
+    */
+    template <class T>
+    class Regular
+     : SemiRegular<T>
+     , EqualityComparable<T>
+    {};
 
     /** @brief Концепция однопроходной последовательности
     @tparam тип последовательности, для которого проверяется концепция
@@ -143,10 +143,17 @@ namespace concepts
     public:
         /// @brief Проверка неявных интерфейсов
         BOOST_CONCEPT_USAGE(RandomAccessSequence)
-        {}
+        {
+            value_consumer<reference>() = seq[distance_type{0}];
+            value_consumer<Seq&>() = (seq += distance_type{0});
+
+            seq.pop_back(distance_type{1});
+        }
 
     private:
         static Seq seq;
+        typedef typename Seq::distance_type distance_type;
+        typedef typename Seq::reference reference;
     };
 
     /** @brief Концепция последовательности, допускающей чтение
