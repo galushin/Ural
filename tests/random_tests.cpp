@@ -76,6 +76,7 @@ md5 contributions   llvm/lib/Support/MD5.cpp llvm/include/llvm/Support/MD5.h
 */
 
 // @todo Устранить (Уменьшить) дублирование
+#include <ural/algorithm.hpp>
 #include <ural/statistics.hpp>
 #include <ural/random.hpp>
 #include <ural/math.hpp>
@@ -137,65 +138,41 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_param_default_ctor_test)
     BOOST_CHECK_EQUAL(1, p[0]);
 }
 
+namespace
+{
+    template <class Vector>
+    Vector & normalize_weights(Vector & ws)
+    {
+        auto w_sum = ural::accumulate(ws, typename Vector::value_type{0});
+
+        ural::for_each(ws, [=](typename Vector::reference x) { x /= w_sum;});
+
+        return ws;
+    }
+}
+
 BOOST_AUTO_TEST_CASE(discrete_distribution_iterator_ctor_test)
 {
+    typedef std::vector<double> Probabilities;
+    std::vector<Probabilities> p0s =
+    {
+        {1},
+        {10},
+        {10, 30},
+        {30, 10},
+        {30, 0, 10},
+        {0, 30, 10},
+        {0, 0, 10}
+    };
+
     typedef ural::discrete_distribution<> D;
+
+    for(auto & p0 : p0s)
     {
-        std::vector<double> p0 = {1};
         D d(p0.begin(), p0.end());
-        std::vector<double> p = d.probabilities();
-        BOOST_CHECK_EQUAL(p.size(), 1);
-        BOOST_CHECK_EQUAL(p[0], 1);
-    }
-    {
-        std::vector<double> p0 = {10};
-        D d(p0.begin(), p0.end());
-        std::vector<double> p = d.probabilities();
-        BOOST_CHECK_EQUAL(p.size(), 1);
-        BOOST_CHECK_EQUAL(p[0], 1);
-    }
-    {
-        std::vector<double> p0 = {10, 30};
-        D d(p0.begin(), p0.end());
-        std::vector<double> p = d.probabilities();
-        BOOST_CHECK_EQUAL(p.size(), 2);
-        BOOST_CHECK_EQUAL(p[0], 0.25);
-        BOOST_CHECK_EQUAL(p[1], 0.75);
-    }
-    {
-        std::vector<double> p0 = {30, 10};
-        D d(p0.begin(), p0.end());
-        std::vector<double> p = d.probabilities();
-        BOOST_CHECK_EQUAL(p.size(), 2);
-        BOOST_CHECK_EQUAL(p[0], 0.75);
-        BOOST_CHECK_EQUAL(p[1], 0.25);
-    }
-    {
-        std::vector<double> p0 = {30, 0, 10};
-        D d(p0.begin(), p0.end());
-        std::vector<double> p = d.probabilities();
-        BOOST_CHECK_EQUAL(p.size(), 3);
-        BOOST_CHECK_EQUAL(p[0], 0.75);
-        BOOST_CHECK_EQUAL(p[1], 0);
-        BOOST_CHECK_EQUAL(p[2], 0.25);
-    }
-    {
-        std::vector<double> p0 = {0, 30, 10};
-        D d(p0.begin(), p0.end());
-        std::vector<double> p = d.probabilities();
-        BOOST_CHECK_EQUAL(p.size(), 3);
-        BOOST_CHECK_EQUAL(p[0], 0);
-        BOOST_CHECK_EQUAL(p[1], 0.75);
-        BOOST_CHECK_EQUAL(p[2], 0.25);
-    }
-    {
-        std::vector<double> p0 = {0, 0, 10};
-        D d(p0.begin(), p0.end());
-        std::vector<double> p = d.probabilities();
-        BOOST_CHECK_EQUAL(p.size(), 3);
-        BOOST_CHECK_EQUAL(p[0], 0);
-        BOOST_CHECK_EQUAL(p[1], 0);
-        BOOST_CHECK_EQUAL(p[2], 1);
+        auto p = d.probabilities();
+        normalize_weights(p0);
+        BOOST_CHECK_EQUAL_COLLECTIONS(p0.begin(), p0.end(), p.begin(), p.end());
     }
 }
 
@@ -207,9 +184,9 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_ctor_param_test)
     P pa(p0.begin(), p0.end());
     D d(pa);
     std::vector<double> p = d.probabilities();
-    BOOST_CHECK_EQUAL(p.size(), 2);
-    BOOST_CHECK_EQUAL(p[0], 0.25);
-    BOOST_CHECK_EQUAL(p[1], 0.75);
+
+    normalize_weights(p0);
+    BOOST_CHECK_EQUAL_COLLECTIONS(p0.begin(), p0.end(), p.begin(), p.end());
 }
 
 BOOST_AUTO_TEST_CASE(discrete_distribution_func_ctor_test)
