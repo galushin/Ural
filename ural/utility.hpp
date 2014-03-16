@@ -17,6 +17,10 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/** @file ural/utility.hpp
+ @brief Вспомогательные средства
+*/
+
 #include <ural/defs.hpp>
 #include <ural/type_traits.hpp>
 

@@ -23,6 +23,10 @@
 
 namespace ural
 {
+    /** @brief Тип-тэг, обозначающий номер аргумента
+    @tparam N номер аргумента
+    @todo Специализация std::is_placeholder
+    */
     template <size_t N>
     struct placeholder{};
 

@@ -125,6 +125,11 @@ namespace ural
         value_type value_;
     };
 
+    /** @brief Создание вероятности на основе значения
+    @param p значение
+    @return <tt> probability<RealType>{std::move(p)} </tt>
+    @throw То же, что <tt> probability<RealType>{std::move(p)} </tt>
+    */
     template <class RealType>
     probability<RealType>
     make_probability(RealType p)
@@ -155,7 +160,7 @@ namespace ural
         return x.value() == y;
     }
 
-    /** @brief Оператор равно
+    /** @brief Оператор "равно"
     @param x левый операнд
     @param y правый операнд
     @return <tt> x == y.value() </tt>
@@ -166,6 +171,11 @@ namespace ural
         return x == y.value();
     }
 
+    /** @brief Оператор "меньше"
+    @param x левый операнд
+    @param y правый операнд
+    @return <tt> x.value() < y.value() </tt>
+    */
     template <class T1, class P1, class T2, class P2>
     constexpr bool operator<(probability<T1, P1> const & x,
                              probability<T2, P2> const & y)

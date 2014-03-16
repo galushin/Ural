@@ -76,10 +76,19 @@ namespace ural
     public:
         typedef R (T::*target_type);
 
+        /** @brief Конструктор
+        @param mv указатель на переменную-член
+        @post <tt> this->target() == mv </tt>
+        */
         explicit function_ptr_functor(target_type mv)
          : mv_(mv)
         {}
 
+        //@{
+        /** @brief Оператор вычисления значения
+        @param obj объект, к которому нужно применить функцию-член
+        @return <tt> obj.*mv_ </tt>
+        */
         R & operator()(T & obj) const
         {
             return obj.*mv_;
@@ -99,6 +108,7 @@ namespace ural
         {
             return obj.*mv_;
         }
+        //@}
 
         template <class U>
         auto operator()(std::reference_wrapper<U> r) const

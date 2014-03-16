@@ -28,16 +28,33 @@
 
 namespace ural
 {
+    /** @brief Функциональный объект, заменяющий значения, удовлетворяющие
+    унарному предикату.
+    @tparam Predicate тип предиката
+    @tparam T тип значения
+    */
     template <class Predicate, class T>
     class replace_if_functor
     {
     public:
+        /// @brief Тип возвращаемого значения
         typedef T const & result_type;
 
-        replace_if_functor(Predicate pred, T const & new_value)
+        /** @brief Конструктор
+        @param pred предикат
+        @tparam new_value новое значение
+        @post <tt> this->predicate() == pred </tt>
+        @post <tt> this->new_value() == new_value </tt>
+        */
+        replace_if_functor(Predicate pred, T new_value)
          : members_{std::move(pred), new_value}
         {}
 
+        /** @brief Оператор вычисления значения
+        @param x значение
+        @return Если @c x не удовлетворяет предикату, то
+        <tt> this->new_value() </t>> иначе --- @c x.
+        */
         result_type operator()(T const & x) const
         {
             if(this->predicate()(x))
@@ -50,11 +67,19 @@ namespace ural
             }
         }
 
+        /** @brief Используемый предикат
+        @return Используемый предикат
+        */
         Predicate const & predicate() const
         {
             return members_.first();
         }
 
+        /** @brief Значение, которое будет возвращено, если аргумент
+        удовлетворяет условию
+        @return Значение, которое будет возвращено, если аргумент
+        удовлетворяет условию
+        */
         result_type new_value() const
         {
             return members_.second();

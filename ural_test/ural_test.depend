@@ -110,7 +110,7 @@
 	<tuple>
 	<ural/placeholders.hpp>
 
-1394084578 c:\devtools\github\ural\ural\placeholders.hpp
+1394959220 c:\devtools\github\ural\ural\placeholders.hpp
 
 1394084578 c:\devtools\github\ural\ural\sequence\insertion.hpp
 	<ural/sequence/base.hpp>
@@ -136,7 +136,7 @@
 	<ural/numeric/partial_sums.hpp>
 	<ural/numeric/adjacent_differences.hpp>
 
-1394536027 c:\devtools\github\ural\ural\functional.hpp
+1394959006 c:\devtools\github\ural\ural\functional.hpp
 	<boost/compressed_pair.hpp>
 	<ural/functional/adjoin.hpp>
 	<ural/functional/compare_by.hpp>
@@ -501,7 +501,7 @@
 	<ural/memory.hpp>
 	<boost/mpl/list.hpp>
 
-1394084578 c:\devtools\github\ural\ural\defs.hpp
+1394959131 c:\devtools\github\ural\ural\defs.hpp
 	<ural/type_traits.hpp>
 
 1394084578 c:\devtools\github\ural\ural\thread.hpp
@@ -859,7 +859,7 @@
 
 1394005984 c:\pavel\ural_repo\ural\ural\sequence\reversed.hpp
 
-1394536027 c:\devtools\github\ural\ural\functional\replace.hpp
+1394960153 c:\devtools\github\ural\ural\functional\replace.hpp
 	<ural/tuple.hpp>
 	<ural/functional/cpp_operators.hpp>
 
@@ -946,7 +946,7 @@
 1393837742 c:\devtools\ural_repo\ural\ural\archetypes.hpp
 	<ural/sequence/base.hpp>
 
-1394084578 c:\devtools\github\ural\ural\functional\make_functor.hpp
+1394961577 c:\devtools\github\ural\ural\functional\make_functor.hpp
 	<ural/defs.hpp>
 
 1394451846 c:\devtools\github\ural\ural\random.hpp
@@ -6206,7 +6206,7 @@
 
 1394151640 c:\devtools\ural_repo\ural\ural\functional\compose.hpp
 
-1394084578 c:\devtools\github\ural\ural\functional\compose.hpp
+1394961755 c:\devtools\github\ural\ural\functional\compose.hpp
 
 1394084578 source:c:\devtools\github\ural\tests\tracers_tests.cpp
 	<boost/test/unit_test.hpp>
@@ -6351,7 +6351,7 @@
 	<ural/sequence/sink.hpp>
 	<boost/operators.hpp>
 
-1394084578 c:\devtools\github\ural\ural\type_traits.hpp
+1394958638 c:\devtools\github\ural\ural\type_traits.hpp
 	<type_traits>
 
 1394536027 c:\devtools\github\ural\ural\functional\adjoin.hpp
@@ -6359,7 +6359,7 @@
 	<ural/utility.hpp>
 	<ural/functional/make_functor.hpp>
 
-1394634023 c:\devtools\github\ural\ural\utility.hpp
+1394958592 c:\devtools\github\ural\ural\utility.hpp
 	<ural/defs.hpp>
 	<ural/type_traits.hpp>
 
@@ -6397,7 +6397,8 @@
 
 1394084578 c:\devtools\github\ural\ural\sequence\sink.hpp
 
-1394801780 source:c:\devtools\github\ural\tests\random_tests.cpp
+1394879099 source:c:\devtools\github\ural\tests\random_tests.cpp
+	<ural/algorithm.hpp>
 	<ural/statistics.hpp>
 	<ural/random.hpp>
 	<ural/math.hpp>
@@ -6451,7 +6452,7 @@
 1394536027 c:\devtools\github\ural\ural\functional\compare_by.hpp
 	<ural/functional/cpp_operators.hpp>
 
-1394801780 c:\devtools\github\ural\ural\statistics.hpp
+1394958805 c:\devtools\github\ural\ural\statistics.hpp
 	<ural/defs.hpp>
 	<stdexcept>
 

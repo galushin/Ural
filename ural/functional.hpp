@@ -33,16 +33,31 @@
 
 namespace ural
 {
+    /** @brief Функциональный объект без аргументов, возвращающий фиксированное
+    знчение
+    @tparam T тип значения
+    @todo Изменение значения через присваивания
+    @todo Проверка концепции Regular
+    */
     template <class T>
     class value_functor
     {
     public:
+        /// @brief Тип возвращаемого значения
         typedef T const & result_type;
 
+        /** @brief Конструктор
+        @param value значение
+        @post <tt> (*this)() == value </tt>
+        */
         explicit value_functor(T value)
          : value_(std::move(value))
         {}
 
+        /** @brief Оператор вычисления значения
+        @return Значение, установленное в конструкторе или в результате
+        присваивания
+        */
         result_type operator()() const
         {
             return this->value_;

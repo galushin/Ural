@@ -25,15 +25,27 @@
 namespace ural
 {
     // Композиция функциональных объектов
+    /** @brief Композиция функциональных объектов
+    @tparam UnaryFunctor тип унарного функционального объекта, вычисляющего
+    окончательное значение
+    @tparam Functor тип функционального объекта, применяемого непосредственно к
+    аргументам
+    */
     template <class UnaryFunctor, class Functor>
     class compose_functor
      : boost::compressed_pair<decltype(ural::make_functor(std::declval<UnaryFunctor>())),
                               decltype(ural::make_functor(std::declval<Functor>()))>
     {
     public:
+        /** @brief тип унарного функционального объекта, вычисляющего
+        окончательное значение
+        */
         typedef decltype(ural::make_functor(std::declval<UnaryFunctor>()))
             first_functor_type;
 
+        /** @brief тип функционального объекта, применяемого непосредственно к
+        аргументам
+        */
         typedef decltype(ural::make_functor(std::declval<Functor>()))
             second_functor_type;
 
@@ -42,6 +54,12 @@ namespace ural
             Base;
 
     public:
+        /** @brief Конструктор
+        @param f1 функциональный объект, вычисляющий окончательный результат
+        @param f2 функциональный объект, применяемый к аргументам
+        @post <tt> this->first_functor() == f1 </tt>
+        @post <tt> this->second_functor() == f2 </tt>
+        */
         explicit compose_functor(UnaryFunctor f1, Functor f2)
          : Base{std::move(f1), std::move(f2)}
         {}

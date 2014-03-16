@@ -17,6 +17,10 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/** @file ural/type_traits.hpp
+ @brief Характеристики типов
+*/
+
 #include <type_traits>
 
 namespace ural
