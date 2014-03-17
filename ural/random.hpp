@@ -19,7 +19,6 @@
 
 /** @file ural/random.hpp
  @brief Средства генерации случайных чисел
- @todo Пересмотр и оптимизация средств ввода/вывода
 */
 
 #include <ural/numeric.hpp>
@@ -53,14 +52,21 @@ namespace ural
         }
     };
 
+    /** @brief Класс, представляющий дискретное распределение
+    @tparam IntType тип значений
+    @todo проверка discrete_distribution::reset
+    @todo Пересмотр и оптимизация средств ввода/вывода
+    */
     template <class IntType = int>
     class discrete_distribution
     {
         typedef double weight_type;
     public:
         // Типы
+        /// @brief Тип возвращаемого значения
         typedef IntType result_type;
 
+        /// @brief Тип параметра
         class param_type
         {
             friend bool operator==(param_type const & x,
@@ -228,15 +234,34 @@ namespace ural
         };
 
         // Конструкторы
+        /** @brief Конструктор без параметров
+        @post <tt> this->probabilities() == {1} </tt>
+        */
         discrete_distribution()
          : param_{}
         {}
 
+        /** @brief Конструктор на основе последовательности весов
+        @param first итератор, задающий начало последовательности весов
+        @param last итератор, задающий конец последовательности весов
+        @pre Для любого @c i из <tt> [first; last) </tt> выполняется
+        <tt> *i >= 0 </tt>.
+        @pre Либо <tt> first == last </tt>, либо сумма всех весов больше нуля.
+        @post Если <tt> first == last </tt>, то
+        <tt> this->probabilities() == {1} </tt>. В противном случае, пусть
+        @c w_sum --- сумма всех весов из  <tt> [first; last) </tt>, тогда
+        значение @c k из интервала  <tt> [0; last - first) </tt> имеет
+        вероятность  <tt> first[k] / w_sum </tt>.
+        */
         template <class Iterator>
         discrete_distribution(Iterator first, Iterator last)
          : param_{std::move(first), std::move(last)}
         {}
 
+        /** @brief Конструктор на основе списка инициализации. Эквивалентен
+        <tt> discrete_distribution<result_type>(ws.begin(), ws.end()) </tt>
+        @param ws список инициализации, содержащий веса
+        */
         discrete_distribution(std::initializer_list<weight_type> ws)
          : param_{ws}
         {}
@@ -248,17 +273,29 @@ namespace ural
          : param_(nw, xmin, xmax, std::move(fw))
         {}
 
+        /** @brief Конструктор на основе параметра распределения
+        @param p параметр распределения
+        @post <tt> this->param() == p </tt>
+        */
         discrete_distribution(param_type const & p)
          : param_{p}
         {}
 
         // Генерация значений
+        /** @brief Порождение значений
+        @param g генератор равномерно распределённых случайных чисел
+        @return <tt> (*this)(g, this->param()) </tt>
+        */
         template <class URNG>
         result_type operator()(URNG & g) const
         {
-            return (*this)(g, this->param_);
+            return (*this)(g, this->param());
         }
 
+        /** @brief Порождение значений
+        @param g генератор равномерно распределённых случайных чисел
+        @param parm
+        */
         template <class URNG>
         result_type operator()(URNG & g, param_type const & parm) const
         {
@@ -266,27 +303,44 @@ namespace ural
         }
 
         // Изменение свойств
+        /** @brief Установка параметра распределения
+        @param parm параметр распределения
+        @post <tt> this->parm() == parm </tt>
+        */
         void param(param_type const & parm)
         {
             this->param_ = parm;
         }
 
         // Свойства
+        /** @brief Вектор вероятностей
+        @return Вектор вероятностей, с которыми появляются значения,
+        возвращаемые оператором ().
+        */
         std::vector<weight_type> probabilities() const
         {
             return param_.probabilities();
         }
 
+        /** @brief Параметр распределения
+        @return Параметр распределения
+        */
         param_type const & param() const
         {
             return this->param_;
         }
 
+        /** @brief Наименьшее значение
+        @return Наименьшее значение, которое может вернуть оператор ().
+        */
         result_type min URAL_PREVENT_MACRO_SUBSTITUTION () const
         {
             return param_.min();
         }
 
+        /** @brief Наибольшее значение
+        @return Наибольшее значение, которое может вернуть оператор ().
+        */
         result_type max URAL_PREVENT_MACRO_SUBSTITUTION () const
         {
             return param_.max();
@@ -296,6 +350,11 @@ namespace ural
         param_type param_;
     };
 
+    /** @brief Оператор "равно"
+    @param x левый операнд
+    @param y правый операнд
+    @return <tt> x.param() == y.param() </tt>
+    */
     template <class IntType>
     bool operator==(discrete_distribution<IntType> const & x,
                     discrete_distribution<IntType> const & y)

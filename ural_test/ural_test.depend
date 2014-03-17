@@ -908,7 +908,7 @@
 1394681742 c:\devtools\ural_repo\ural\ural\abi.hpp
 	<cxxabi.h>
 
-1394496525 c:\devtools\ural_repo\ural\ural\random.hpp
+1395044029 c:\devtools\ural_repo\ural\ural\random.hpp
 	<ural/numeric.hpp>
 	<ural/defs.hpp>
 	<cstdlib>
@@ -6212,7 +6212,7 @@
 	<boost/test/unit_test.hpp>
 	<ural/utility/tracers.hpp>
 
-1394512070 c:\devtools\ural_repo\ural\ural\sequence\remove.hpp
+1395044786 c:\devtools\ural_repo\ural\ural\sequence\remove.hpp
 	<ural/algorithm/details/algo_base.hpp>
 
 1394151640 c:\devtools\ural_repo\ural\ural\sequence\sink.hpp
@@ -6225,7 +6225,7 @@
 	<boost/operators.hpp>
 	<ural/math/common_factor.hpp>
 
-1394151640 c:\devtools\ural_repo\ural\ural\math\common_factor.hpp
+1395044376 c:\devtools\ural_repo\ural\ural\math\common_factor.hpp
 	<cmath>
 
 1392699171 source:c:\devtools\ural_repo\ural\ural\math\rational.hpp
@@ -6240,7 +6240,7 @@
 	<boost/operators.hpp>
 	<ural/math/rational.hpp>
 
-1394694089 c:\devtools\ural_repo\ural\ural\math\rational.hpp
+1395044666 c:\devtools\ural_repo\ural\ural\math\rational.hpp
 	<ural/math/common_factor.hpp>
 	<ural/defs.hpp>
 	<istream>
@@ -6266,7 +6266,8 @@
 	<ural/sequence/base.hpp>
 	<string>
 
-1395040302 source:c:\devtools\ural_repo\ural\tests\random_tests.cpp
+1395041769 source:c:\devtools\ural_repo\ural\tests\random_tests.cpp
+	"rnd.hpp"
 	<ural/algorithm.hpp>
 	<ural/statistics.hpp>
 	<ural/random.hpp>
@@ -6421,14 +6422,14 @@
 	<ostream>
 	<utility>
 
-1394497434 c:\devtools\ural_repo\ural\ural\functional\adjoin.hpp
+1395044651 c:\devtools\ural_repo\ural\ural\functional\adjoin.hpp
 	<ural/tuple.hpp>
 	<ural/utility.hpp>
 	<ural/functional/make_functor.hpp>
 
-1394151640 c:\devtools\ural_repo\ural\ural\sequence\iostream.hpp
+1395044712 c:\devtools\ural_repo\ural\ural\sequence\iostream.hpp
 
-1394513172 c:\devtools\ural_repo\ural\ural\numeric\polynom.hpp
+1395044692 c:\devtools\ural_repo\ural\ural\numeric\polynom.hpp
 	<ural/sequence/sink.hpp>
 	<boost/operators.hpp>
 

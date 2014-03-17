@@ -17,10 +17,18 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/** @file ural/math/common_factor.hpp
+ @brief Наибольший общий делитель и наименьшее общее кратное.
+*/
+
 #include <cmath>
 
 namespace ural
 {
+    /** @brief Абсолютное значение
+    @param x аргумент
+    @return <tt> (x < IntegerType(0)) ? -std::move(x) : x </tt>
+    */
     template <class IntegerType>
     constexpr IntegerType absolute_value(IntegerType x)
     {

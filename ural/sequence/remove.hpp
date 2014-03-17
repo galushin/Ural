@@ -17,6 +17,11 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/** @file ural/sequence/remove.hpp
+ @brief Адаптор последовательности, исключающий элементы базовой
+ последовательности, удовлетворяющие некоторому условию
+*/
+
 #include <ural/algorithm/details/algo_base.hpp>
 
 namespace ural

@@ -18,31 +18,31 @@
 */
 
 /** @file ural/sequence/iostream.hpp
- @brief Последовательности на основе потоков ввода и/или вывода
+ @brief РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё РЅР° РѕСЃРЅРѕРІРµ РїРѕС‚РѕРєРѕРІ РІРІРѕРґР° Рё/РёР»Рё РІС‹РІРѕРґР°
 */
 
 namespace ural
 {
     /**
-    @brief Последовательность, записывающая элементы в поток вывода
-    @todo Возможность задавать начальное значение: для типов без конструктора
-    без параметров
-    К сожалению, поддерживать типы без конструктора без параметров, в общем
-    случае, нельзя. Дело в том, что не существует стандартного механизма
-    инициализации из потока ввода. Лучшее, что мы можем сделать --- это
-    предоставить возможность задавать начальное значение.
+    @brief РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ, Р·Р°РїРёСЃС‹РІР°СЋС‰Р°СЏ СЌР»РµРјРµРЅС‚С‹ РІ РїРѕС‚РѕРє РІС‹РІРѕРґР°
+    @todo Р’РѕР·РјРѕР¶РЅРѕСЃС‚СЊ Р·Р°РґР°РІР°С‚СЊ РЅР°С‡Р°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ: РґР»СЏ С‚РёРїРѕРІ Р±РµР· РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР°
+    Р±РµР· РїР°СЂР°РјРµС‚СЂРѕРІ
+    Рљ СЃРѕР¶Р°Р»РµРЅРёСЋ, РїРѕРґРґРµСЂР¶РёРІР°С‚СЊ С‚РёРїС‹ Р±РµР· РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР° Р±РµР· РїР°СЂР°РјРµС‚СЂРѕРІ, РІ РѕР±С‰РµРј
+    СЃР»СѓС‡Р°Рµ, РЅРµР»СЊР·СЏ. Р”РµР»Рѕ РІ С‚РѕРј, С‡С‚Рѕ РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚ СЃС‚Р°РЅРґР°СЂС‚РЅРѕРіРѕ РјРµС…Р°РЅРёР·РјР°
+    РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РёР· РїРѕС‚РѕРєР° РІРІРѕРґР°. Р›СѓС‡С€РµРµ, С‡С‚Рѕ РјС‹ РјРѕР¶РµРј СЃРґРµР»Р°С‚СЊ --- СЌС‚Рѕ
+    РїСЂРµРґРѕСЃС‚Р°РІРёС‚СЊ РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ Р·Р°РґР°РІР°С‚СЊ РЅР°С‡Р°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ.
     */
     template <class T, class IStream = std::istream>
     class istream_sequence
      : public sequence_base<istream_sequence<T, IStream>>
     {
     public:
-        // Типы
+        // РўРёРїС‹
         typedef T value_type;
         typedef T const & reference;
         typedef single_pass_traversal_tag traversal_tag;
 
-        // Конструкторы
+        // РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂС‹
         explicit istream_sequence(IStream & is)
          : is_(is)
          , value_{}
@@ -53,7 +53,7 @@ namespace ural
             }
         }
 
-        // Однопроходная последовательность
+        // РћРґРЅРѕРїСЂРѕС…РѕРґРЅР°СЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ
         bool operator!() const
         {
             return !is_.get();
@@ -83,23 +83,23 @@ namespace ural
     }
 
     /**
-    @brief Последовательность для потока вывода
-    @tparam OStream Тип потока вывода
-    @tparam T тип выводимых объектов
-    @tparam Delimeter тип разделителя
-    @todo параметр по умолчанию OStream
-    @todo параметр по умолчанию Delimeter
-    @todo параметр по умолчанию T
+    @brief РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РґР»СЏ РїРѕС‚РѕРєР° РІС‹РІРѕРґР°
+    @tparam OStream РўРёРї РїРѕС‚РѕРєР° РІС‹РІРѕРґР°
+    @tparam T С‚РёРї РІС‹РІРѕРґРёРјС‹С… РѕР±СЉРµРєС‚РѕРІ
+    @tparam Delimeter С‚РёРї СЂР°Р·РґРµР»РёС‚РµР»СЏ
+    @todo РїР°СЂР°РјРµС‚СЂ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ OStream
+    @todo РїР°СЂР°РјРµС‚СЂ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ Delimeter
+    @todo РїР°СЂР°РјРµС‚СЂ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ T
     */
     template <class OStream, class T, class Delimeter>
     class ostream_sequence
      : public sequence_base<ostream_sequence<OStream, T, Delimeter>>
     {
     public:
-        // Типы
+        // РўРёРїС‹
         typedef single_pass_traversal_tag traversal_tag;
 
-        // Конструктор
+        // РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
         explicit ostream_sequence(OStream & os)
          : data_{os}
         {}
@@ -108,7 +108,7 @@ namespace ural
          : data_{os, std::move(delim)}
         {}
 
-        // Однопроходная последовательность
+        // РћРґРЅРѕРїСЂРѕС…РѕРґРЅР°СЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ
         bool operator!() const
         {
             return false;
@@ -131,19 +131,19 @@ namespace ural
         boost::compressed_pair<std::reference_wrapper<OStream>, Delimeter> data_;
     };
 
-    /** @brief Специализация с выводом типа выводимых объектов
-    @tparam OStream Тип потока вывода
-    @tparam Delimeter тип разделителя
+    /** @brief РЎРїРµС†РёР°Р»РёР·Р°С†РёСЏ СЃ РІС‹РІРѕРґРѕРј С‚РёРїР° РІС‹РІРѕРґРёРјС‹С… РѕР±СЉРµРєС‚РѕРІ
+    @tparam OStream РўРёРї РїРѕС‚РѕРєР° РІС‹РІРѕРґР°
+    @tparam Delimeter С‚РёРї СЂР°Р·РґРµР»РёС‚РµР»СЏ
     */
     template <class OStream, class Delimeter>
     class ostream_sequence<OStream, auto_tag, Delimeter>
      : public sequence_base<ostream_sequence<OStream, auto_tag, Delimeter>>
     {
     public:
-        // Типы
+        // РўРёРїС‹
         typedef single_pass_traversal_tag traversal_tag;
 
-        // Конструктор
+        // РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
         explicit ostream_sequence(OStream & os)
          : data_{os}
         {}
@@ -152,7 +152,7 @@ namespace ural
          : data_{os, std::move(delim)}
         {}
 
-        // Однопроходная последовательность
+        // РћРґРЅРѕРїСЂРѕС…РѕРґРЅР°СЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ
         bool operator!() const
         {
             return false;

@@ -17,8 +17,7 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/**
- @file ural/math/rational.hpp
+/** @file ural/math/rational.hpp
  @todo Оптимизация
 */
 
