@@ -75,6 +75,11 @@ namespace ural
         return apply_impl(std::forward<F>(f), std::forward<Tuple>(t), Indices{});
     }
 
+    /** @brief Обобщённая реализация присваивания "Скопировать и обменять"
+    @param x объект, которому должно быть присвоено значение
+    @param value присваиваемое значение
+    @return x
+    */
     template <class T>
     T & copy_and_swap(T & x, T value)
     {

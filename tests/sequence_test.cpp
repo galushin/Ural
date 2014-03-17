@@ -161,3 +161,21 @@ BOOST_AUTO_TEST_CASE(sink_output_sequence_test_auto)
 
     *sink = 42;
 }
+
+BOOST_AUTO_TEST_CASE(ostream_sequence_default_test)
+{
+    typedef std::ostream OStream;
+
+    typedef ural::ostream_sequence<OStream, int> S1;
+
+    static_assert(std::is_same<std::string, S1::delimeter_type>::value, "");
+
+    typedef ural::ostream_sequence<OStream> S2;
+
+    static_assert(std::is_same<std::string, S2::delimeter_type>::value, "");
+
+    typedef ural::ostream_sequence<> S3;
+
+    static_assert(std::is_same<std::ostream, S3::ostream_type>::value, "");
+    static_assert(std::is_same<std::string, S3::delimeter_type>::value, "");
+}

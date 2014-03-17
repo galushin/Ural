@@ -82,16 +82,27 @@ namespace ural
         return istream_sequence<T, IStream>(is);
     }
 
+    template <class OStream, class Delimeter>
+    struct default_delimeter_helper
+     : public declare_type<Delimeter>
+    {};
+
+    template <class OStream>
+    struct default_delimeter_helper<OStream, use_default>
+     : public declare_type<std::basic_string<typename OStream::char_type,
+                                             typename OStream::traits_type>>
+    {};
+
     /**
     @brief Последовательность для потока вывода
     @tparam OStream Тип потока вывода
     @tparam T тип выводимых объектов
     @tparam Delimeter тип разделителя
-    @todo параметр по умолчанию OStream
-    @todo параметр по умолчанию Delimeter
-    @todo параметр по умолчанию T
+    @todo Уменьшить дублирование
     */
-    template <class OStream, class T, class Delimeter>
+    template <class OStream = use_default,
+              class T  = use_default,
+              class Delimeter = use_default>
     class ostream_sequence
      : public sequence_base<ostream_sequence<OStream, T, Delimeter>>
     {
@@ -99,12 +110,18 @@ namespace ural
         // Типы
         typedef single_pass_traversal_tag traversal_tag;
 
+        typedef typename default_helper<OStream, std::ostream>::type
+            ostream_type;
+
+        typedef typename default_delimeter_helper<ostream_type, Delimeter>::type
+            delimeter_type;
+
         // Конструктор
-        explicit ostream_sequence(OStream & os)
+        explicit ostream_sequence(ostream_type & os)
          : data_{os}
         {}
 
-        explicit ostream_sequence(OStream & os, Delimeter delim)
+        explicit ostream_sequence(ostream_type & os, Delimeter delim)
          : data_{os, std::move(delim)}
         {}
 
@@ -128,7 +145,7 @@ namespace ural
         {}
 
     private:
-        boost::compressed_pair<std::reference_wrapper<OStream>, Delimeter> data_;
+        boost::compressed_pair<std::reference_wrapper<ostream_type>, Delimeter> data_;
     };
 
     /** @brief Специализация с выводом типа выводимых объектов
@@ -136,12 +153,18 @@ namespace ural
     @tparam Delimeter тип разделителя
     */
     template <class OStream, class Delimeter>
-    class ostream_sequence<OStream, auto_tag, Delimeter>
-     : public sequence_base<ostream_sequence<OStream, auto_tag, Delimeter>>
+    class ostream_sequence<OStream, use_default, Delimeter>
+     : public sequence_base<ostream_sequence<OStream, use_default, Delimeter>>
     {
     public:
         // Типы
         typedef single_pass_traversal_tag traversal_tag;
+
+        typedef typename default_helper<OStream, std::ostream>::type
+            ostream_type;
+
+        typedef typename default_delimeter_helper<ostream_type, Delimeter>::type
+            delimeter_type;
 
         // Конструктор
         explicit ostream_sequence(OStream & os)
@@ -193,10 +216,10 @@ namespace ural
     }
 
     template <class OStream, class Delimeter>
-    ostream_sequence<OStream, auto_tag, Delimeter>
+    ostream_sequence<OStream, use_default, Delimeter>
     make_ostream_sequence(OStream & os, Delimeter delim)
     {
-        return ostream_sequence<OStream, auto_tag, Delimeter>(os, std::move(delim));
+        return ostream_sequence<OStream, use_default, Delimeter>(os, std::move(delim));
     }
 
     template <class T, class OStream>
@@ -207,10 +230,10 @@ namespace ural
     }
 
     template <class OStream>
-    ostream_sequence<OStream, auto_tag, no_delimeter>
+    ostream_sequence<OStream, use_default, no_delimeter>
     make_ostream_sequence(OStream & os)
     {
-        return ostream_sequence<OStream, auto_tag, no_delimeter>(os);
+        return ostream_sequence<OStream, use_default, no_delimeter>(os);
     }
 }
 // namespace ural

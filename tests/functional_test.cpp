@@ -13,6 +13,8 @@
     You should have received a copy of the GNU General Public License
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+#include "rnd.hpp"
 #include <boost/test/unit_test.hpp>
 
 #include <ural/utility/tracers.hpp>
@@ -273,7 +275,12 @@ BOOST_AUTO_TEST_CASE(bit_not_test)
     static_assert(fa(0) == ~0, "");
     static_assert(fa(1) == ~1, "");
 
-    // @todo Тест для случайного целого числа
+    std::uniform_int_distribution<int> d(-100, 100);
+
+    auto const value = d(random_engine());
+
+    BOOST_CHECK_EQUAL(~value, f(value));
+    BOOST_CHECK_EQUAL(~value, fa(value));
 }
 
 BOOST_AUTO_TEST_CASE(make_functor_for_member_var_test)
