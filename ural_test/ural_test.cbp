@@ -33,6 +33,7 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 			<Add directory=".." />
+			<Add directory="C:/DevTools/boost_1_54_0" />
 		</Compiler>
 		<Unit filename="../README.md" />
 		<Unit filename="../boost_1_54/libs/test/src/compiler_log_formatter.cpp" />
@@ -64,6 +65,8 @@
 		<Unit filename="../tests/optional_tests.cpp" />
 		<Unit filename="../tests/random_tests.cpp" />
 		<Unit filename="../tests/rational_tests.cpp" />
+		<Unit filename="../tests/rnd.cpp" />
+		<Unit filename="../tests/rnd.hpp" />
 		<Unit filename="../tests/sequence_test.cpp" />
 		<Unit filename="../tests/statistics_tests.cpp" />
 		<Unit filename="../tests/tracers_tests.cpp" />

@@ -76,6 +76,8 @@ md5 contributions   llvm/lib/Support/MD5.cpp llvm/include/llvm/Support/MD5.h
 */
 
 // @todo Устранить (Уменьшить) дублирование
+#include "rnd.hpp"
+
 #include <ural/algorithm.hpp>
 #include <ural/statistics.hpp>
 #include <ural/random.hpp>
@@ -173,6 +175,32 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_iterator_ctor_test)
         auto p = d.probabilities();
         normalize_weights(p0);
         BOOST_CHECK_EQUAL_COLLECTIONS(p0.begin(), p0.end(), p.begin(), p.end());
+    }
+}
+
+BOOST_AUTO_TEST_CASE(discrete_distribution_iter_ctor_random_test)
+{
+    std::vector<double> ws;
+
+    std::uniform_real_distribution<double> d_w(0.0, 1.0);
+    auto & rnd = random_engine();
+    auto const N = 10;
+
+    for(auto n = N; n > 0; -- n)
+    {
+        ws.push_back(d_w(rnd));
+    }
+
+    ural::discrete_distribution<> d(ws.begin(), ws.end());
+
+    auto p = d.probabilities();
+    normalize_weights(ws);
+
+    BOOST_CHECK_EQUAL(p.size(), ws.size());
+
+    for(size_t i = 0; i < p.size(); ++ i)
+    {
+        BOOST_CHECK_CLOSE(ws[i], p[i], 1e-6);
     }
 }
 
