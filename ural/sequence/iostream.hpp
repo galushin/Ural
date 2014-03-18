@@ -93,12 +93,16 @@ namespace ural
                                              typename OStream::traits_type>>
     {};
 
+    template <class T, class U>
+    struct ostream_sequence_enable
+     : std::enable_if<std::is_same<T, use_default>::value, void>
+    {};
+
     /**
     @brief Последовательность для потока вывода
     @tparam OStream Тип потока вывода
     @tparam T тип выводимых объектов
     @tparam Delimeter тип разделителя
-    @todo Уменьшить дублирование
     */
     template <class OStream = use_default,
               class T  = use_default,
@@ -141,53 +145,9 @@ namespace ural
             data_.first().get() << x << data_.second();
         }
 
-        void pop_front()
-        {}
-
-    private:
-        boost::compressed_pair<std::reference_wrapper<ostream_type>, Delimeter> data_;
-    };
-
-    /** @brief Специализация с выводом типа выводимых объектов
-    @tparam OStream Тип потока вывода
-    @tparam Delimeter тип разделителя
-    */
-    template <class OStream, class Delimeter>
-    class ostream_sequence<OStream, use_default, Delimeter>
-     : public sequence_base<ostream_sequence<OStream, use_default, Delimeter>>
-    {
-    public:
-        // Типы
-        typedef single_pass_traversal_tag traversal_tag;
-
-        typedef typename default_helper<OStream, std::ostream>::type
-            ostream_type;
-
-        typedef typename default_delimeter_helper<ostream_type, Delimeter>::type
-            delimeter_type;
-
-        // Конструктор
-        explicit ostream_sequence(OStream & os)
-         : data_{os}
-        {}
-
-        explicit ostream_sequence(OStream & os, Delimeter delim)
-         : data_{os, std::move(delim)}
-        {}
-
-        // Однопроходная последовательность
-        bool operator!() const
-        {
-            return false;
-        }
-
-        ostream_sequence const & operator*() const
-        {
-            return *this;
-        }
-
-        template <class T>
-        void operator=(T const & x) const
+        template <class U>
+        typename ostream_sequence_enable<T, U>::type
+        operator=(U const & x) const
         {
             data_.first().get() << x << data_.second();
         }
@@ -196,7 +156,7 @@ namespace ural
         {}
 
     private:
-        boost::compressed_pair<std::reference_wrapper<OStream>, Delimeter> data_;
+        boost::compressed_pair<std::reference_wrapper<ostream_type>, Delimeter> data_;
     };
 
     struct no_delimeter

@@ -15,3 +15,20 @@
 же доступ к базовой математической и алгоритмической функциональности как и сама
 система статистического анализа.
 */
+
+/**
+Eric Niebler. Как отличить контейнер от интервала.
+
+http://www.open-std.org/pipermail/ranges/2014-March/000474.html
+I gave this some thought last night. I would define as_range as a
+customization point. Folks overload it for their container types. The
+general overload provided by a range library can evaluate the tests
+below in order to distinguish ranges from containers
+
+1) If the type being queried is a known range type provided by the range
+library, it's a range. Return it.
+2) If a trait is_range has been specialized, it's a range. Return it.
+3) If the constness of T affects the constness of decltype(*begin(T{})),
+it's a container. Return a pair of iterators.
+4) Otherwise, it's an error
+*/
