@@ -140,6 +140,7 @@ namespace ural
             return *this;
         }
 
+        //@{
         void operator=(T const & x) const
         {
             data_.first().get() << x << data_.second();
@@ -151,6 +152,13 @@ namespace ural
         {
             data_.first().get() << x << data_.second();
         }
+        //@}
+
+        /** @brief Удалённый оператор присваивания с @c use_default
+        @c use_delete --- это тэг, который не предназначен для создания
+        объектов.
+        */
+        void operator=(use_default) const = delete;
 
         void pop_front()
         {}
