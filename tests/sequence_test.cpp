@@ -162,6 +162,20 @@ BOOST_AUTO_TEST_CASE(sink_output_sequence_test_auto)
     *sink = 42;
 }
 
+BOOST_AUTO_TEST_CASE(istream_sequence_no_default_ctor_test)
+{
+    int var = 13;
+
+    std::istringstream is("42");
+
+    ural::istream_sequence<std::reference_wrapper<int>, std::istream>
+        seq{is, std::ref(var)};
+
+    std::ref(var) = *seq;
+
+    BOOST_CHECK_EQUAL(42, var);
+}
+
 BOOST_AUTO_TEST_CASE(ostream_sequence_default_test)
 {
     typedef std::ostream OStream;

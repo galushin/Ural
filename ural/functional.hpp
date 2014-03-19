@@ -36,8 +36,15 @@ namespace ural
     /** @brief Функциональный объект без аргументов, возвращающий фиксированное
     знчение
     @tparam T тип значения
-    @todo Изменение значения через присваивания
-    @todo Проверка концепции Regular
+
+    Если T --- регулярный тип, то <tt> value_functor<T> </tt> --- тоже,
+    регулярный.
+
+    Пусть @c f --- это объект типа, <tt> value_functor<T> </tt>, а @c x ---
+    типа @c T.
+    Выражение <tt> f = x </tt> выглядит не очень логичным. Если нужно изменить
+    значение @c f, то можно воспользоваться кодом вида
+    <tt> f = value_functor<T>{x} </tt>.
     */
     template <class T>
     class value_functor
@@ -50,7 +57,7 @@ namespace ural
         @param value значение
         @post <tt> (*this)() == value </tt>
         */
-        explicit value_functor(T value)
+        constexpr explicit value_functor(T value)
          : value_(std::move(value))
         {}
 
@@ -58,7 +65,7 @@ namespace ural
         @return Значение, установленное в конструкторе или в результате
         присваивания
         */
-        result_type operator()() const
+        constexpr result_type operator()() const
         {
             return this->value_;
         }
@@ -66,6 +73,13 @@ namespace ural
     private:
         T value_;
     };
+
+    template <class T1, class T2>
+    constexpr bool
+    operator==(value_functor<T1> const & x, value_functor<T2> const & y)
+    {
+        return x() == y();
+    }
 
     template <class ForwardSequence, class Compare>
     class min_element_accumulator

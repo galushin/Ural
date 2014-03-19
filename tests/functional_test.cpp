@@ -449,3 +449,21 @@ BOOST_AUTO_TEST_CASE(make_adjoint_functor_constexpr_test)
     BOOST_CHECK_EQUAL(2, std::get<2>(x));
     BOOST_CHECK_EQUAL(2, std::get<3>(x));
 }
+
+BOOST_AUTO_TEST_CASE(value_functor_equality_test)
+{
+    typedef ural::value_functor<int> Functor;
+
+    Functor constexpr f1{42};
+    Functor constexpr f2{13};
+
+    auto constexpr r1 = f1();
+    auto constexpr r2 = f2();
+
+    static_assert(r1 != r2, "");
+
+    static_assert(f1 == f1, "");
+    static_assert(f2 == f2, "");
+    static_assert(f2 != f1, "");
+    static_assert(f1 != f2, "");
+}

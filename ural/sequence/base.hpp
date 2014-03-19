@@ -122,7 +122,7 @@ namespace ural
         ~ sequence_base() = default;
     };
 
-    // @todo Можно ли объявить эту функцию в sequence_base?
+    // @todo Можно ли объявить эту функцию (другом) в sequence_base?
     template <class Seq, class Base>
     typename Seq::reference
     operator*(sequence_base<Seq, Base> const & s)

@@ -20,7 +20,6 @@
 /** @file ural/numeric/polynom.hpp
  @brief Многочлены и средства для работы с ними
  @todo Тест многочленов с коэффициентами-векторами
- @todo Проверять, что для типа аргумента выполняется decltype(x*x) == X
  @todo Вся арифметика многочленов: разделить, вычесть, вычислить остаток от
  деления
 */
@@ -111,6 +110,9 @@ namespace ural
         auto operator()(X && x) const
         -> decltype(std::declval<A>() * x)
         {
+            static_assert(std::is_same<X, decltype(std::declval<X>() * std::declval<X>())>::value,
+                      "Type of polynom variable must be closed relative to multiplication");
+
             auto const & r = static_cast<polynomial<A, void, Alloc> const &>(*this);
 
             return polynom(r.coefficients() | ural::reversed, x);

@@ -19,7 +19,6 @@
 
 /** @file ural/concepts.hpp
  @brief Классы для проверки концепций
- @todo Реализовать
 */
 
 #include <boost/concept/usage.hpp>
@@ -37,7 +36,11 @@ namespace concepts
     public:
         /// @brief Проверка неявных интерфейсов
         BOOST_CONCEPT_USAGE(SemiRegular)
-        {}
+        {
+            // @todo Какие ещё требования?
+            T x = make();
+            x = make();
+        }
 
     private:
         static T make();
@@ -146,6 +149,7 @@ namespace concepts
         {
             value_consumer<reference>() = seq[distance_type{0}];
             value_consumer<Seq&>() = (seq += distance_type{0});
+            value_consumer<distance_type>() = seq.size();
 
             seq.pop_back(distance_type{1});
         }
@@ -166,10 +170,11 @@ namespace concepts
         /// @brief Примеры использования
         BOOST_CONCEPT_USAGE(ReadableSequence)
         {
-            decltype(consume(*seq));
-            decltype(consume(seq.front()));
+            decltype(consume_ref(*seq));
+            decltype(consume_ref(seq.front()));
 
-            // @todo проверки value_type
+            decltype(consume_value(*seq));
+            decltype(consume_value(seq.front()));
         }
 
     private:
@@ -177,7 +182,8 @@ namespace concepts
         typedef typename Seq::reference reference;
         typedef typename Seq::value_type value_type;
 
-        static void consume(reference);
+        static void consume_ref(reference);
+        static void consume_value(value_type);
     };
 
     /** @brief Конпцепция последовательности, допускающей запись

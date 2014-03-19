@@ -28,6 +28,11 @@ namespace ural
     class reverse_sequence
      : public sequence_base<reverse_sequence<BidirectionalSequence>>
     {
+
+    friend BidirectionalSequence make_reverse_sequence(reverse_sequence seq)
+    {
+        return std::move(seq.base_);
+    }
     public:
         // Типы
         typedef typename BidirectionalSequence::reference reference;
@@ -107,15 +112,6 @@ namespace ural
     {
         typedef reverse_sequence<decltype(sequence(std::forward<BidirectionalSequence>(seq)))> Seq;
         return Seq{sequence(std::forward<BidirectionalSequence>(seq))};
-    }
-
-    /**
-    @todo Оптимизация: можно ли использовать перемещение вместо копирования
-    */
-    template <class Sequence>
-    Sequence make_reverse_sequence(reverse_sequence<Sequence> seq)
-    {
-        return seq.base();
     }
 
     template <class BidirectionalSequence>
