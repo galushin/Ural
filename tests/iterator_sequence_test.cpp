@@ -27,8 +27,6 @@
 #include <ural/numeric.hpp>
 #include <ural/sequence/all.hpp>
 
-// @todo Тест возвращаемого значения для copy при копировании разной длины
-
 BOOST_AUTO_TEST_CASE(copy_sequence_test_via_details)
 {
     std::vector<int> const xs = {1, 2, 3, 4};
