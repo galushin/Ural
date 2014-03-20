@@ -59,6 +59,17 @@ namespace ural
                 throw std::logic_error("Invalid index");
             }
         }
+
+        template <class Seq>
+        static void check_step(Seq const & seq,
+                               typename Seq::distance_type n)
+        {
+            if(n > seq.size())
+            {
+                // @todo Передавать больше информации
+                throw std::logic_error("Invalid step size");
+            }
+        }
     };
 
     /// @cond false
@@ -385,14 +396,14 @@ namespace ural
 
         iterator_sequence & operator+=(distance_type n)
         {
-            // @todo Проверка индекса
+            policy_type::check_step(*this, n);
             iterators_[front_index] += n;
             return *this;
         }
 
         void pop_back(distance_type n)
         {
-            // @todo Проверка индекса
+            policy_type::check_step(*this, n);
             assert(n >= 0);
 
             iterators_[stop_index] -= n;
