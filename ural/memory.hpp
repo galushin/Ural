@@ -110,12 +110,10 @@ namespace ural
     @todo Тесты с полиморфными типами (стратегии копирования и удаления)
     @todo По аналогии с 20.7.1
     @todo По аналогии с 20.7.2
-    @todo Функция создания
     @todo Все функции должны быть noexcept?
     @todo Специализация для массивов
     @todo Защита от срезки: как на этапе компиляции (см. shared_ptr), так и во
     время выполнения программы. Проверка, что типы оригинала и копии совпадают
-    @todo Произвольный порядок следования стратегий
 
     Обоснование.
 
@@ -288,6 +286,13 @@ namespace ural
               copy_ptr<T, C, D, Ch> & y) noexcept
     {
         return x.swap(y);
+    }
+
+    template <class T, class... Args>
+    copy_ptr<T>
+    make_copy_ptr(Args &&... args)
+    {
+        return copy_ptr<T>(ural::make_unique<T>(std::forward<Args>(args)...));
     }
 }
 // namespace ural

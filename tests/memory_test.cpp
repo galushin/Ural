@@ -449,3 +449,11 @@ BOOST_AUTO_TEST_CASE(copy_ptr_equality_test)
     BOOST_CHECK(p0_long == p0);
     BOOST_CHECK(p1_long != p);
 }
+
+BOOST_AUTO_TEST_CASE(make_copy_ptr_test)
+{
+    auto const value = 42;
+    ural::copy_ptr<Derived> p = ural::make_copy_ptr<Derived>(value);
+    BOOST_CHECK(!!p);
+    BOOST_CHECK_EQUAL(value, p->value);
+}

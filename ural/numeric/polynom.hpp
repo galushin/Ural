@@ -182,7 +182,6 @@ namespace ural
 
             auto const n = std::min(old_size, p.cs_.size());
 
-
             std::transform(cs_.begin(), cs_.begin() + n, p.cs_.begin(),
                            sink_sequence<>{},
                            ural::plus_assign<>{});

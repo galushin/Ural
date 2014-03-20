@@ -892,7 +892,7 @@
 1394084578 c:\devtools\github\ural\ural\sequence\uniqued.hpp
 	<ural/algorithm/details/algo_base.hpp>
 
-1395321309 c:\devtools\github\ural\ural\memory.hpp
+1395324275 c:\devtools\github\ural\ural\memory.hpp
 	<ural/defs.hpp>
 	<ural/utility.hpp>
 	<memory>
@@ -951,7 +951,7 @@
 1394961577 c:\devtools\github\ural\ural\functional\make_functor.hpp
 	<ural/defs.hpp>
 
-1395321309 c:\devtools\github\ural\ural\random.hpp
+1395323541 c:\devtools\github\ural\ural\random.hpp
 	<ural/numeric.hpp>
 	<ural/defs.hpp>
 	<cstdlib>
@@ -6190,7 +6190,7 @@
 	<map>
 	<list>
 
-1395321308 source:c:\devtools\github\ural\tests\memory_test.cpp
+1395323968 source:c:\devtools\github\ural\tests\memory_test.cpp
 	<string>
 	<memory>
 	<boost/test/unit_test.hpp>
@@ -6395,7 +6395,7 @@
 1395321309 c:\devtools\github\ural\ural\math\common_factor.hpp
 	<cmath>
 
-1395321309 c:\devtools\github\ural\ural\numeric\polynom.hpp
+1395322745 c:\devtools\github\ural\ural\numeric\polynom.hpp
 	<ural/sequence/sink.hpp>
 	<boost/operators.hpp>
 
