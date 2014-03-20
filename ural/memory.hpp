@@ -111,7 +111,6 @@ namespace ural
     @todo По аналогии с 20.7.1
     @todo По аналогии с 20.7.2
     @todo Функция создания
-    @todo Интеграция с unique_ptr и shared_ptr
     @todo Все функции должны быть noexcept?
     @todo Специализация для массивов
     @todo Защита от срезки: как на этапе компиляции (см. shared_ptr), так и во
@@ -125,6 +124,12 @@ namespace ural
 
     Сравнение @c copy_ptr с параметрами разных типов может давать истину только
     если оба они указывают на ноль.
+
+    Конструирование на основе <tt> std::shared_ptr </tt> не вводится, так как
+    эти умные указатели имеют разную семантику владения.
+
+    Конструирование на основе <tt> std::auto_ptr </tt> не вводится, так как
+    <tt> std::auto_ptr </tt> объявлен нежелательным.
     */
     template <class T,
               class Cloner = use_default,
@@ -213,6 +218,13 @@ namespace ural
         }
 
         copy_ptr & operator=(copy_ptr &&) = default;
+
+        template <class U>
+        copy_ptr & operator=(std::unique_ptr<U> && p)
+        {
+            holder_ = std::move(p);
+            return *this;
+        }
 
         // Свойства
         deleter_type const & get_deleter() const

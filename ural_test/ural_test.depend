@@ -346,7 +346,7 @@
 	<ural/numeric/partial_sums.hpp>
 	<ural/numeric/adjacent_differences.hpp>
 
-1395215435 c:\devtools\ural_repo\ural\ural\functional.hpp
+1395300045 c:\devtools\ural_repo\ural\ural\functional.hpp
 	<boost/compressed_pair.hpp>
 	<ural/functional/adjoin.hpp>
 	<ural/functional/compare_by.hpp>
@@ -460,7 +460,7 @@
 1394615334 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
 	<ural/sequence/base.hpp>
 
-1395188018 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
+1395298138 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<forward_list>
 	<list>
@@ -474,7 +474,7 @@
 1395040302 c:\devtools\ural_repo\ural\ural\defs.hpp
 	<ural/type_traits.hpp>
 
-1394151640 c:\devtools\ural_repo\ural\ural\sequence\transform.hpp
+1395303176 c:\devtools\ural_repo\ural\ural\sequence\transform.hpp
 	<boost/compressed_pair.hpp>
 	<ural/functional.hpp>
 	<ural/sequence/base.hpp>
@@ -545,7 +545,7 @@
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
-1395045900 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
+1395219660 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
 	<boost/test/unit_test.hpp>
 	<iterator>
 	<ural/abi.hpp>
@@ -562,7 +562,7 @@
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/insertion.hpp>
 
-1394609793 c:\devtools\ural_repo\ural\ural\memory.hpp
+1395297906 c:\devtools\ural_repo\ural\ural\memory.hpp
 	<ural/defs.hpp>
 	<ural/utility.hpp>
 	<memory>
@@ -570,7 +570,7 @@
 1394422718 c:\devtools\ural_repo\ural\ural\sequence\moved.hpp
 	<ural/sequence/base.hpp>
 
-1394151640 c:\devtools\ural_repo\ural\ural\sequence\replace.hpp
+1395298889 c:\devtools\ural_repo\ural\ural\sequence\replace.hpp
 	<ural/sequence/transform.hpp>
 	<ural/functional/replace.hpp>
 
@@ -578,7 +578,7 @@
 	<ural/tuple.hpp>
 	<ural/functional/cpp_operators.hpp>
 
-1394496755 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
+1395298254 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
 	<ural/functional/make_functor.hpp>
 	<ural/functional/compose.hpp>
 
@@ -6195,7 +6195,7 @@
 	<boost/test/unit_test.hpp>
 	<ural/memory.hpp>
 
-1394669468 source:c:\devtools\ural_repo\ural\tests\memory_test.cpp
+1395296971 source:c:\devtools\ural_repo\ural\tests\memory_test.cpp
 	<string>
 	<memory>
 	<boost/test/unit_test.hpp>

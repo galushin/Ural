@@ -211,8 +211,20 @@ BOOST_AUTO_TEST_CASE(copy_ptr_ctor_from_unique_ptr)
     BOOST_CHECK_EQUAL(value, *p);
 }
 
-// @todo Конструктор на основе unique_ptr с совместимым типом
-// @todo Конструктор на основе shared_ptr и auto_ptr
+BOOST_AUTO_TEST_CASE(copy_ptr_ctor_unique_ptr_U_test)
+{
+    auto const value = 42;
+
+    auto pu = ural::make_unique<MoreDerived>(value);
+    ural::copy_ptr<Derived> pc(std::move(pu));
+
+    BOOST_CHECK(!!pc);
+    BOOST_CHECK_EQUAL(value, pc->value);
+
+    pc = std::unique_ptr<MoreDerived>{};
+
+    BOOST_CHECK(!pc);
+}
 
 BOOST_AUTO_TEST_CASE(copy_ptr_copy_ctor_test)
 {
