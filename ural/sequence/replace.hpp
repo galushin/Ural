@@ -29,20 +29,20 @@ namespace ural
 {
     template <class Sequence, class T>
     auto make_replace_sequence(Sequence && seq, T const & old_value, T const & new_value)
-    -> decltype(::ural::transform(std::forward<Sequence>(seq),
-                                  make_replace_functor(old_value, new_value)))
+    -> decltype(::ural::make_transform_sequence(make_replace_functor(old_value, new_value),
+                                                std::forward<Sequence>(seq)))
     {
-        return ::ural::transform(std::forward<Sequence>(seq),
-                                  make_replace_functor(old_value, new_value));
+        return ::ural::make_transform_sequence(make_replace_functor(old_value, new_value),
+                                               std::forward<Sequence>(seq));
     }
 
     template <class Sequence, class Predicate, class T>
     auto make_replace_if_sequence(Sequence && seq, Predicate pred, T const & new_value)
-    -> decltype(::ural::transform(std::forward<Sequence>(seq),
-                                  make_replace_if_functor(std::move(pred), new_value)))
+    -> decltype(::ural::make_transform_sequence(make_replace_if_functor(std::move(pred), new_value),
+                                                std::forward<Sequence>(seq)))
     {
-        return ::ural::transform(std::forward<Sequence>(seq),
-                                  make_replace_if_functor(std::move(pred), new_value));
+        return ::ural::make_transform_sequence(make_replace_if_functor(std::move(pred), new_value),
+                                               std::forward<Sequence>(seq));
     }
 }
 // namespace ural

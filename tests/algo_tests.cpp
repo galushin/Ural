@@ -463,13 +463,33 @@ BOOST_AUTO_TEST_CASE(transform_test)
 
     std::transform(s.begin(), s.end(), std::back_inserter(x_std), f);
 
-    ural::copy(ural::transform(s, f), std::back_inserter(x_ural));
+    ural::copy(ural::make_transform_sequence(f, s),
+               std::back_inserter(x_ural));
 
     BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
                                   x_ural.begin(), x_ural.end());
 }
 
-// @todo transform с двумя (и более?) аргументами
+BOOST_AUTO_TEST_CASE(transform_2_test)
+{
+    std::vector<int> const x1 = {1, 20, 30, 40, 50};
+    std::vector<int> const x2 = {10, 2, 30, 4, 5};
+
+    std::vector<bool> z_std;
+    std::vector<bool> z_ural;
+
+    std::less_equal<int> constexpr f_std{};
+    ural::less_equal<> constexpr f_ural{};
+
+    std::transform(x1.begin(), x1.end(), x2.begin(),
+                   std::back_inserter(z_std), f_std);
+
+    auto seq = ural::make_transform_sequence(f_ural, x1, x2);
+    ural::copy(std::move(seq), std::back_inserter(z_ural));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(z_std.begin(), z_std.end(),
+                                  z_ural.begin(), z_ural.end());
+}
 
 // 25.3.5
 BOOST_AUTO_TEST_CASE(replace_test)
