@@ -102,20 +102,43 @@ namespace ural
 
     public:
         // Конструкторы и присваивание
+        /** @brief Конструктор без параметров
+        @post <tt> this->numerator() == 0 </tt>
+        @post <tt> this->denominator() == 1 </tt>
+        */
         constexpr rational()
          : Base(IntegerType{0})
         {}
 
+        /** @brief Конструктор на основе целого числа
+        @param x значение
+        @post <tt> this->numerator() == x </tt>
+        @post <tt> this->denominator() == 1 </tt>
+        */
         explicit constexpr rational(IntegerType x)
          : Base{std::move(x)}
         {}
 
+        /** @brief Конструктор на основе числителя и знаменателя
+        @param num числитель
+        @param denom знаменатель
+        @pre <tt> denom != 0 </tt>
+        Пусть <tt> g = gcd(abs(num), abs(denom)) </tt>
+        @post <tt> this->numerator() == num / g * sign(denom) </tt>
+        @post <tt> this->denominator() == abs(denom) / g </tt>
+        */
         explicit constexpr rational(IntegerType num, IntegerType denom)
          : Base(denom < 0 ? - std::move(num) : std::move(num),
                 denom != 0 ? absolute_value(denom) : throw bad_rational{},
                 ural::gcd(num, denom))
         {}
 
+        /** @brief Оператор присваивания с целым аргументом
+        @param x значение
+        @post <tt> this->numerator() == x </tt>
+        @post <tt> this->denominator() == 1 </tt>
+        @return <tt> *this </tt>
+        */
         rational & operator=(IntegerType x)
         {
             Base::numerator = std::move(x);

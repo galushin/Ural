@@ -114,6 +114,11 @@ namespace ural
         boost::compressed_pair<ForwardSequence, Compare> impl_;
     };
 
+    /** @brief Адаптор функционального объекта с двумя аргументами, меняющий
+    порядок аргументов.
+    @tparam BinaryFunctor Тип функционального объекта с двумя аргументами
+    @todo constexpr
+    */
     template <class BinaryFunctor>
     class binary_reverse_args_functor
      : private BinaryFunctor
@@ -121,10 +126,19 @@ namespace ural
         typedef BinaryFunctor Base;
 
     public:
+        /** @brief Конструктор
+        @param f функциональный объект
+        @post <tt> this->functor() == f </tt>
+        */
         explicit binary_reverse_args_functor(BinaryFunctor f)
          : Base(std::move(f))
         {}
 
+        /** @brief Вычисление значения
+        @param x первый аргумент
+        @param y второй аргумент
+        @return <tt> this->functor()(std::forward<T2>(y), std::forward<T1>(x)) </tt>
+        */
         template <class T1, class T2>
         auto operator()(T1 && x, T2 && y) const
         -> decltype(std::declval<BinaryFunctor>()(std::forward<T2>(y), std::forward<T1>(x)))
@@ -132,12 +146,19 @@ namespace ural
             return this->functor()(std::forward<T2>(y), std::forward<T1>(x));
         }
 
+        /** @brief Адаптируемый функциональный объект
+        @return Адаптируемый функциональный объект
+        */
         BinaryFunctor const & functor() const
         {
             return static_cast<BinaryFunctor const &>(*this);
         }
     };
 
+    /** @brief Создание адаптора функционального объекта с двумя аргументами,
+    меняющего порядок аргументов.
+    @param f функциональный объект с двумя аргументами
+    */
     template <class BinaryFunctor>
     auto make_binary_reverse_args(BinaryFunctor f)
     -> binary_reverse_args_functor<decltype(make_functor(std::move(f)))>

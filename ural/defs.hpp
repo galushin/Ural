@@ -23,6 +23,7 @@
 
 #include <ural/type_traits.hpp>
 
+/// @brief Макрос для предотвращения макро-подстановки при объявлении функции
 #define URAL_PREVENT_MACRO_SUBSTITUTION
 
 namespace ural
