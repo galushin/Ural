@@ -22,6 +22,8 @@
 */
 
 #include <cxxabi.h>
+#include <string>
+#include <cstdlib>
 
 namespace ural
 {
