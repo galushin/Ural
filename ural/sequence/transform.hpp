@@ -109,16 +109,17 @@ namespace ural
         bool is_empty(placeholder<sizeof...(Inputs)>,
                       placeholder<sizeof...(Inputs)>) const
         {
-            return true;
+            return false;
         }
 
         template <size_t I>
         bool is_empty(placeholder<I> first,
                       placeholder<sizeof...(Inputs)> last) const
         {
-            return !impl_.second()[first] && is_empty(placeholder<I+1>{}, last);
+            return !impl_.second()[first] || is_empty(placeholder<I+1>{}, last);
         }
 
+    private:
         boost::compressed_pair<F, Bases_tuple> impl_;
     };
 
