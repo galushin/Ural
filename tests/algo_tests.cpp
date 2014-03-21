@@ -1407,11 +1407,11 @@ BOOST_AUTO_TEST_CASE(includes_test)
 {
     std::vector<std::string> vs{"abcfhx", "abc", "ac", "g", "acg", {}};
 
-    for(size_t i = 0; i != vs.size(); ++ i)
-    for(size_t j = 0; j != vs.size(); ++ j)
+    for(auto const & s1 : vs)
+    for(auto const & s2 : vs)
     {
-        bool const r_std = std::includes(vs[i].begin(), vs[i].end(),
-                                         vs[j].begin(), vs[j].end());        bool const r_ural = ural::includes(vs[i], vs[j]);
+        bool const r_std = std::includes(s1.begin(), s1.end(),
+                                         s2.begin(), s2.end());        bool const r_ural = ural::includes(s1, s2);
         BOOST_CHECK_EQUAL(r_std, r_ural);
     }
 }
@@ -1425,10 +1425,10 @@ BOOST_AUTO_TEST_CASE(includes_test_custom_compare)
     return std::tolower(a) < std::tolower(b);
     };
 
-    for(size_t i = 0; i != vs.size(); ++ i)
+    for(auto const & s : vs)
     {
-        bool const r_std = std::includes(vs[i].begin(), vs[i].end(),
-                                         v0.begin(), v0.end(), cmp_nocase);        bool const r_ural = ural::includes(vs[i], v0, cmp_nocase);
+        bool const r_std = std::includes(s.begin(), s.end(),
+                                         v0.begin(), v0.end(), cmp_nocase);        bool const r_ural = ural::includes(s, v0, cmp_nocase);
         BOOST_CHECK_EQUAL(r_std, r_ural);
     }
 }
