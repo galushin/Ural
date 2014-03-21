@@ -66,7 +66,7 @@ namespace ural
         // Однопроходная последовательность
         bool operator!() const
         {
-            return this->is_empty(ural::_1, ural::placeholder<sizeof...(Inputs)>{});
+            return ural::any_of(impl_.second(), ural::logical_not<>{});
         }
 
         void pop_front()
@@ -104,19 +104,6 @@ namespace ural
         {
             impl_.second()[first].pop_front();
             return pop_fronts(placeholder<I+1>{}, last);
-        }
-
-        bool is_empty(placeholder<sizeof...(Inputs)>,
-                      placeholder<sizeof...(Inputs)>) const
-        {
-            return false;
-        }
-
-        template <size_t I>
-        bool is_empty(placeholder<I> first,
-                      placeholder<sizeof...(Inputs)> last) const
-        {
-            return !impl_.second()[first] || is_empty(placeholder<I+1>{}, last);
         }
 
     private:

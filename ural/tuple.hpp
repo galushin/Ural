@@ -86,6 +86,35 @@ namespace ural
     {
         return tuple<Args && ...>(std::forward<Args>(args)...);
     }
+
+
+namespace details
+{
+    template <class Tuple, class UnaryPredicate, size_t Index>
+    bool any_of(Tuple const &, UnaryPredicate,
+                placeholder<Index>, placeholder<Index>)
+    {
+        return false;
+    }
+
+    template <class Tuple, class UnaryPredicate, size_t First, size_t Last>
+    bool any_of(Tuple const & x, UnaryPredicate pred,
+                placeholder<First>,
+                placeholder<Last> last)
+    {
+        return pred(std::get<First>(x))
+             || ::ural::details::any_of(x, std::move(pred),
+                                        placeholder<First+1>{}, last);
+    }
+}
+// namespace details
+    template <class Tuple, class UnaryPredicate>
+    typename std::enable_if<(std::tuple_size<Tuple>::value > 0), bool>::type
+    any_of(Tuple const & x, UnaryPredicate pred)
+    {
+        return ural::details::any_of(x, pred, placeholder<0>{},
+                                     placeholder<std::tuple_size<Tuple>::value>{});
+    }
 }
 // namespace ural
 
