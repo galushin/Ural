@@ -500,7 +500,7 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_param_eval_test)
     D d;
     double p0[] = {.3, .1, .6};
     P p(p0, p0+3);
-    const int N = 10000000;
+    const int N = 1000000;
     std::vector<D::result_type> u(3);
     for (int i = 0; i < N; ++i)
     {
@@ -510,7 +510,7 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_param_eval_test)
     }
     std::vector<double> prob = p.probabilities();
     for (int i = 0; i <= 2; ++i)
-        BOOST_CHECK(std::abs((double)u[i]/N - prob[i]) / prob[i] < 0.001);
+        BOOST_CHECK(std::abs((double)u[i]/N - prob[i]) / prob[i] < 0.003);
 }
 
 // Параметр

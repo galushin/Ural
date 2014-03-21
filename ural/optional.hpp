@@ -470,14 +470,17 @@ namespace details
         }
 
         template <class U>
-        constexpr T value_or(U && value) const&
+        constexpr T value_or(U && value) const &
         {
             return !*this ? T{std::forward<U>(value)} : *(*this);
         }
 
         /// @todo Покрыть тестами
         template <class U>
-        T value_or(U && value) &&;
+        T value_or(U && value) &&
+        {
+            return !*this ? T{std::forward<U>(value)} : std::move(**this);
+        }
 
         template <class... Args>
         void emplace(Args&&... args)

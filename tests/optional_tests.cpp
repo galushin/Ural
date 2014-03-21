@@ -482,7 +482,8 @@ BOOST_AUTO_TEST_CASE(example1)
     Process::process(*om);
 
   /////////////////////////////////////////
-  Process::process(ol.value_or(0));     // use 0 if ol is disengaged
+  // use 0 if ol is disengaged
+  Process::process(ol.value_or(0));
 
   ////////////////////////////////////////////
   ok = nullopt;                         // if ok was engaged calls T's dtor
@@ -1184,13 +1185,14 @@ BOOST_AUTO_TEST_CASE(optional_ref_emulation)
   int j = 4;
   optional<generic<int&>::type> ori {i};
   BOOST_CHECK (*ori == 8);
-  BOOST_CHECK ((void*)&*ori != (void*)&i); // !DIFFERENT THAN optional<T&>
+
+  // !DIFFERENT THAN optional<T&>
+  BOOST_CHECK ((void*)&*ori != (void*)&i);
 
   *ori = j;
   BOOST_CHECK (*ori == 4);
 }
 
-# if OPTIONAL_HAS_THIS_RVALUE_REFS == 1
 BOOST_AUTO_TEST_CASE(moved_on_value_or)
 {
   using namespace tr2;
@@ -1209,11 +1211,12 @@ BOOST_AUTO_TEST_CASE(moved_on_value_or)
   BOOST_CHECK (om->moved == false);
 
   MoveAware<int> m = std::move(om).value_or( MoveAware<int>{1} );
+
   BOOST_CHECK (om);
   BOOST_CHECK (om->moved == true);
-};
-# endif
 
+  BOOST_CHECK(m.moved == false);
+};
 
 BOOST_AUTO_TEST_CASE(optional_ref_hashing)
 {
