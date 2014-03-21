@@ -40,5 +40,14 @@ namespace ural
 }
 // namespace ural
 
+namespace std
+{
+    template <size_t N>
+    struct is_placeholder<ural::placeholder<N>>
+     : std::integral_constant<int, N+1>
+    {};
+}
+// namespace std
+
 #endif
 // Z_URAL_PLACEHOLDERS_HPP_INCLUDED

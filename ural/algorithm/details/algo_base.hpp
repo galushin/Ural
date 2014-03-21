@@ -192,8 +192,8 @@ namespace details
         BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate,
                                                        bool(decltype(*in), T const &)>));
 
-        auto pred = std::bind(std::move(bin_pred), std::placeholders::_1,
-                              std::cref(value));
+        auto pred = std::bind(std::move(bin_pred), ural::_1, std::cref(value));
+
         return ::ural::details::find_if(std::move(in), std::move(pred));
     }
 
