@@ -70,6 +70,20 @@ namespace ural
 
     };
 
+    template <class F>
+    constexpr bool operator==(function_ptr_functor<F> const & x,
+                              typename function_ptr_functor<F>::target_type y)
+    {
+        return x.target() == y;
+    }
+
+    template <class F>
+    constexpr bool operator==(typename function_ptr_functor<F>::target_type x,
+                              function_ptr_functor<F> const & y)
+    {
+        return x == y.target();
+    }
+
     template <class T, class R>
     class function_ptr_functor<R(T::*)>
     {

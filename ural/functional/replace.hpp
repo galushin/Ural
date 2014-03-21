@@ -104,67 +104,66 @@ namespace ural
     class replace_functor
     {
     public:
-        typedef BinaryPredicate predicate_type;
+        typedef decltype(make_functor(std::declval<BinaryPredicate>())) predicate_type;
         typedef T const & result_type;
 
-        explicit replace_functor(T old_value, T new_value)
+        constexpr explicit replace_functor(T old_value, T new_value)
          : members_{std::move(old_value), std::move(new_value),
-                    BinaryPredicate{}}
+                    predicate_type{}}
         {}
 
-        explicit replace_functor(T old_value, T new_value, BinaryPredicate pred)
-         : members_{std::move(old_value), std::move(new_value), std::move(pred)}
+        constexpr explicit replace_functor(T old_value, T new_value,
+                                           BinaryPredicate pred)
+         : members_{std::move(old_value), std::move(new_value),
+                    make_functor(std::move(pred))}
         {}
 
-        T const & old_value() const
+        constexpr T const & old_value() const
         {
             return members_[ural::_1];
         }
 
-        T const & new_value() const
+        constexpr T const & new_value() const
         {
             return members_[ural::_2];
         }
 
-        predicate_type const & predicate() const
+        constexpr predicate_type const & predicate() const
         {
             return members_[ural::_3];
         }
 
-        result_type operator()(T const & x) const
+        constexpr result_type operator()(T const & x) const
         {
-            if(this->predicate()(x, this->old_value()))
-            {
-                return this->new_value();
-            }
-            else
-            {
-                return x;
-            }
+            return (this->predicate()(x, this->old_value()))
+                   ? this->new_value() : x;
         }
 
     private:
         // @todo Оптимизация размера
         // @todo Выразить через replace_if_functor
-        ural::tuple<T, T, BinaryPredicate> members_;
+        ural::tuple<T, T, predicate_type> members_;
     };
 
     /**
     По умолчанию сохраняются значения, а не ссылки. Чтобы избежать копирования,
     следует обернуть объекты в вызовы std::cref()
-
-    @todo Покрыть тестами
     */
     template <class T, class BinaryPredicate>
-    replace_functor<T, BinaryPredicate>
-    make_replace_functor(T old_value, T new_value, BinaryPredicate pred);
+    constexpr replace_functor<T, BinaryPredicate>
+    make_replace_functor(T old_value, T new_value, BinaryPredicate pred)
+    {
+        return replace_functor<T, BinaryPredicate>{std::move(old_value),
+                                                   std::move(new_value),
+                                                   std::move(pred)};
+    }
 
     /**
     По умолчанию сохраняются значения, а не ссылки. Чтобы избежать копирования,
     следует обернуть объекты в вызовы std::cref()
     */
     template <class T>
-    replace_functor<T, ural::equal_to<T,T>>
+    constexpr replace_functor<T, ural::equal_to<T,T>>
     make_replace_functor(T old_value, T new_value)
     {
         return replace_functor<T, ural::equal_to<T,T>>(std::move(old_value),

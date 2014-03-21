@@ -83,7 +83,8 @@ BOOST_AUTO_TEST_CASE(replace_functor_test_custom_predicate)
     BOOST_CHECK(eq(old_value, f.old_value()));
     BOOST_CHECK(eq(new_value, f.new_value()));
 
-    BOOST_CHECK_EQUAL(eq, f.predicate());
+    BOOST_CHECK(eq == f.predicate());
+    BOOST_CHECK_EQUAL(eq, f.predicate().target());
 
     BOOST_CHECK(eq(new_value, f(old_value)));
     BOOST_CHECK(eq(new_value, f(new_value)));
@@ -466,4 +467,17 @@ BOOST_AUTO_TEST_CASE(value_functor_equality_test)
     static_assert(f2 == f2, "");
     static_assert(f2 != f1, "");
     static_assert(f1 != f2, "");
+}
+
+BOOST_AUTO_TEST_CASE(replace_functor_custom_predicate)
+{
+    auto constexpr old_value = 13;
+    auto constexpr new_value = 42;
+
+    auto constexpr f = ural::make_replace_functor(old_value, new_value,
+                                                  ural::greater_equal<>{});
+
+    static_assert(12 == f(12), "");
+    static_assert(new_value == f(13), "");
+    static_assert(new_value == f(14), "");
 }
