@@ -128,6 +128,9 @@ namespace ural
 
     Конструирование на основе <tt> std::auto_ptr </tt> не вводится, так как
     <tt> std::auto_ptr </tt> объявлен нежелательным.
+
+    Убедиться, что удаление безопасно, то есть либо деструктор виртуальный,
+    либо тип указываемого объекта совпадает с T
     */
     template <class T,
               class Cloner = use_default,
@@ -180,9 +183,14 @@ namespace ural
         // Конструкторы
         constexpr copy_ptr() noexcept = default;
 
-        explicit copy_ptr(pointer ptr) noexcept
+        template <class U>
+        explicit copy_ptr(U * ptr) noexcept
          : holder_{std::move(ptr)}
-        {}
+        {
+            static_assert(std::has_virtual_destructor<U>::value
+                          || std::is_same<T, U>::value,
+                          "Can't be safely destroed");
+        }
 
         template <class U>
         explicit copy_ptr(std::unique_ptr<U> && p)
