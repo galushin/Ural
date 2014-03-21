@@ -54,7 +54,6 @@ namespace ural
 
     /** @brief Класс, представляющий дискретное распределение
     @tparam IntType тип значений
-    @todo проверка discrete_distribution::reset
     @todo Пересмотр и оптимизация средств ввода/вывода
     */
     template <class IntType = int>
@@ -345,6 +344,10 @@ namespace ural
         {
             return param_.max();
         }
+
+        // Модификаторы
+        void reset()
+        {}
 
     private:
         param_type param_;
