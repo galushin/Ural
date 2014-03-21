@@ -14,14 +14,15 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <boost/test/unit_test.hpp>
-
-#include <iterator>
-
 #include <ural/abi.hpp>
 #include <ural/algorithm.hpp>
 #include <ural/sequence/all.hpp>
 #include <ural/sequence/sink.hpp>
+
+#include <boost/test/unit_test.hpp>
+
+#include <iterator>
+#include <set>
 
 BOOST_AUTO_TEST_CASE(istream_sequence_test)
 {
@@ -192,4 +193,23 @@ BOOST_AUTO_TEST_CASE(ostream_sequence_default_test)
 
     static_assert(std::is_same<std::ostream, S3::ostream_type>::value, "");
     static_assert(std::is_same<std::string, S3::delimeter_type>::value, "");
+}
+
+BOOST_AUTO_TEST_CASE(all_tuples_test)
+{
+    // @todo Заменить на арифметическую прогрессию
+    std::vector<int> const digits = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    auto s2 = ural::make_all_tuples_sequence(digits, digits);
+
+    std::set<int> r2;
+
+    for(; !!s2; ++ s2)
+    {
+        auto t = *s2;
+        r2.insert(t[ural::_1] * 10 + t[ural::_2]);
+    }
+
+    BOOST_CHECK_EQUAL(100, r2.size());
+    BOOST_CHECK_EQUAL(0,  *r2.begin());
+    BOOST_CHECK_EQUAL(99, *r2.rbegin());
 }

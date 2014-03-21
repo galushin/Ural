@@ -99,6 +99,7 @@
 		<Unit filename="../ural/placeholders.hpp" />
 		<Unit filename="../ural/random.hpp" />
 		<Unit filename="../ural/sequence/all.hpp" />
+		<Unit filename="../ural/sequence/all_tuples.hpp" />
 		<Unit filename="../ural/sequence/base.hpp">
 			<Option target="Debug" />
 		</Unit>

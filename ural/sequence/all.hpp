@@ -40,6 +40,7 @@
 
 #include <iterator>
 
+#include <ural/sequence/all_tuples.hpp>
 #include <ural/sequence/base.hpp>
 #include <ural/sequence/make.hpp>
 #include <ural/sequence/moved.hpp>
