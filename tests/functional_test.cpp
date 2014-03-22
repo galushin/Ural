@@ -469,7 +469,7 @@ BOOST_AUTO_TEST_CASE(value_functor_equality_test)
     static_assert(f1 != f2, "");
 }
 
-BOOST_AUTO_TEST_CASE(replace_functor_custom_predicate)
+BOOST_AUTO_TEST_CASE(replace_functor_custom_predicate_test)
 {
     auto constexpr old_value = 13;
     auto constexpr new_value = 42;
@@ -480,4 +480,40 @@ BOOST_AUTO_TEST_CASE(replace_functor_custom_predicate)
     static_assert(12 == f(12), "");
     static_assert(new_value == f(13), "");
     static_assert(new_value == f(14), "");
+}
+
+namespace
+{
+    struct Equal
+    {
+    public:
+        constexpr bool operator()(int x, int y)
+        {
+            return (x == y) && flag;
+        }
+
+        bool flag;
+
+        friend constexpr bool operator==(Equal x, Equal y)
+        {
+            return x.flag == y.flag;
+        }
+    };
+}
+
+BOOST_AUTO_TEST_CASE(replace_functor_equal_test)
+{
+    auto constexpr old_value = 13;
+    auto constexpr new_value = 42;
+
+    auto constexpr f1 = ural::make_replace_functor(old_value, new_value, Equal{true});
+    auto constexpr f2 = ural::make_replace_functor(old_value+1, new_value, Equal{true});
+    auto constexpr f3 = ural::make_replace_functor(old_value, new_value+1, Equal{true});
+    auto constexpr f4 = ural::make_replace_functor(old_value, new_value, Equal{false});
+
+    static_assert(f1 == f1, "");
+
+    static_assert(f1 != f2, "");
+    static_assert(f1 != f3, "");
+    static_assert(f1 != f4, "");
 }

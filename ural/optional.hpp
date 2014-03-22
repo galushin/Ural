@@ -269,6 +269,7 @@ namespace details
                 else
                 {
                     using std::swap;
+                    using boost::swap;
                     swap(this->value_, that.value_);
                 }
             }

@@ -103,6 +103,12 @@ namespace ural
     template <class T, class BinaryPredicate = ural::equal_to<T> >
     class replace_functor
     {
+    friend constexpr bool
+    operator==(replace_functor const & x, replace_functor const & y)
+    {
+        return x.members_ == y.members_;
+    }
+
     public:
         typedef decltype(make_functor(std::declval<BinaryPredicate>())) predicate_type;
         typedef T const & result_type;
