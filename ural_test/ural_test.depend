@@ -111,7 +111,7 @@
 	<tuple>
 	<ural/placeholders.hpp>
 
-1395392909 c:\devtools\github\ural\ural\placeholders.hpp
+1395397599 c:\devtools\github\ural\ural\placeholders.hpp
 
 1394084578 c:\devtools\github\ural\ural\sequence\insertion.hpp
 	<ural/sequence/base.hpp>
@@ -137,7 +137,7 @@
 	<ural/numeric/partial_sums.hpp>
 	<ural/numeric/adjacent_differences.hpp>
 
-1395392908 c:\devtools\github\ural\ural\functional.hpp
+1395402702 c:\devtools\github\ural\ural\functional.hpp
 	<boost/compressed_pair.hpp>
 	<ural/functional/adjoin.hpp>
 	<ural/functional/compare_by.hpp>
@@ -412,7 +412,7 @@
 	<ural/functional.hpp>
 	<ural/sequence/base.hpp>
 
-1395396165 source:c:\devtools\github\ural\tests\optional_tests.cpp
+1395396477 source:c:\devtools\github\ural\tests\optional_tests.cpp
 	<boost/test/unit_test.hpp>
 	<boost/concept/assert.hpp>
 	<ostream>
@@ -544,7 +544,7 @@
 	<ural/functional.hpp>
 	<ural/sequence/base.hpp>
 
-1394084578 c:\devtools\github\ural\ural\sequence\set_operations.hpp
+1395402429 c:\devtools\github\ural\ural\sequence\set_operations.hpp
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 

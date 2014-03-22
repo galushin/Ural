@@ -19,7 +19,6 @@
 
 /** @file ural/sequence/set_operations.hpp
  @brief Последовательности для операций над отсортированными множествами
- @todo Проверка концепций
 */
 
 #include <ural/functional.hpp>
@@ -45,18 +44,39 @@ namespace ural
      : public sequence_base<merge_sequence<Input1, Input2, Compare>,
                              Compare>
     {
+        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input1>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input1>));
+
+        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input2>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input2>));
+
+        typedef bool(Compare_signature)(typename Input1::reference,
+                                        typename Input2::reference);
+
+        BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, Compare_signature>));
+
         typedef sequence_base<merge_sequence, Compare> Base_class;
+
     public:
+        /// @brief Тип ссылки
         typedef typename std::common_type<typename Input1::reference,
                                           typename Input2::reference>::type reference;
 
+        /// @brief Тип значения
         typedef typename std::common_type<typename Input1::value_type,
                                           typename Input2::value_type>::type value_type;
 
+        /// @brief Категория обхода
         typedef typename common_tag<typename Input1::traversal_tag,
                                     typename Input2::traversal_tag,
                                     forward_traversal_tag>::type traversal_tag;
 
+        /** @brief Конструктор
+        @param in1 первая входная последовательность
+        @param in2 вторая входная последовательность
+        @param cmp функция сравнения
+        @post <tt> this->functor() == cmp </tt>
+        */
         explicit merge_sequence(Input1 in1, Input2 in2, Compare cmp)
          : Base_class(std::move(cmp))
          , in1_{std::move(in1)}
@@ -177,15 +197,36 @@ namespace ural
      : public sequence_base<set_intersection_sequence<Input1, Input2, Compare>,
                             Compare>
     {
+        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input1>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input1>));
+
+        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input2>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input2>));
+
+        typedef bool(Compare_signature)(typename Input1::reference,
+                                        typename Input2::reference);
+
+        BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, Compare_signature>));
+
         typedef sequence_base<set_intersection_sequence, Compare> Base_class;
     public:
+        /// @brief Тип ссылки
         typedef typename Input1::reference reference;
+
+        /// @brief Тип значения
         typedef typename Input1::value_type value_type;
 
+        /// @brief Категория обхода
         typedef typename common_tag<typename Input1::traversal_tag,
                                     typename Input2::traversal_tag,
                                     forward_traversal_tag>::type traversal_tag;
 
+        /** @brief Конструктор
+        @param in1 первая входная последовательность
+        @param in2 вторая входная последовательность
+        @param cmp функция сравнения
+        @post <tt> this->functor() == cmp </tt>
+        */
         explicit set_intersection_sequence(Input1 in1, Input2 in2, Compare cmp)
          : Base_class{std::move(cmp)}
          , in1_(std::move(in1))
@@ -275,15 +316,36 @@ namespace ural
      : public sequence_base<set_difference_sequence<Input1, Input2, Compare>,
                              Compare>
     {
+        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input1>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input1>));
+
+        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input2>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input2>));
+
+        typedef bool(Compare_signature)(typename Input1::reference,
+                                        typename Input2::reference);
+
+        BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, Compare_signature>));
+
         typedef sequence_base<set_difference_sequence, Compare> Base_class;
     public:
+        /// @brief Тип ссылки
         typedef typename Input1::reference reference;
+
+        /// @brief Тип значения
         typedef typename Input1::value_type value_type;
 
+        /// @brief Категория обхода
         typedef typename common_tag<typename Input1::traversal_tag,
                                     typename Input2::traversal_tag,
                                     forward_traversal_tag>::type traversal_tag;
 
+        /** @brief Конструктор
+        @param in1 первая входная последовательность
+        @param in2 вторая входная последовательность
+        @param cmp функция сравнения
+        @post <tt> this->functor() == cmp </tt>
+        */
         explicit set_difference_sequence(Input1 in1, Input2 in2, Compare cmp)
          : Base_class{std::move(cmp)}
          , in1_(std::move(in1))
@@ -374,17 +436,38 @@ namespace ural
      : public sequence_base<set_symmetric_difference_sequence<Input1, Input2, Compare>,
                              Compare>
     {
+        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input1>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input1>));
+
+        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input2>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input2>));
+
+        typedef bool(Compare_signature)(typename Input1::reference,
+                                        typename Input2::reference);
+
+        BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, Compare_signature>));
+
         typedef sequence_base<set_symmetric_difference_sequence, Compare> Base_class;
     public:
+        /// @brief Тип ссылки
         typedef typename std::common_type<typename Input1::reference,
                                           typename Input2::reference>::type reference;
+
+        /// @brief Тип значения
         typedef typename std::common_type<typename Input1::value_type,
                                           typename Input2::value_type>::type value_type;
 
+        /// @brief Категория обхода
         typedef typename common_tag<typename Input1::traversal_tag,
                                     typename Input2::traversal_tag,
                                     forward_traversal_tag>::type traversal_tag;
 
+        /** @brief Конструктор
+        @param in1 первая входная последовательность
+        @param in2 вторая входная последовательность
+        @param cmp функция сравнения
+        @post <tt> this->functor() == cmp </tt>
+        */
         explicit set_symmetric_difference_sequence(Input1 in1, Input2 in2, Compare cmp)
          : Base_class(std::move(cmp))
          , in1_{std::move(in1)}
@@ -512,17 +595,38 @@ namespace ural
      : public sequence_base<set_union_sequence<Input1, Input2, Compare>,
                              Compare>
     {
+        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input1>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input1>));
+
+        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input2>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input2>));
+
+        typedef bool(Compare_signature)(typename Input1::reference,
+                                        typename Input2::reference);
+
+        BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, Compare_signature>));
+
         typedef sequence_base<set_union_sequence, Compare> Base_class;
     public:
+        /// @brief Тип ссылки
         typedef typename std::common_type<typename Input1::reference,
                                           typename Input2::reference>::type reference;
+
+        /// @brief Тип значения
         typedef typename std::common_type<typename Input1::value_type,
                                           typename Input2::value_type>::type value_type;
 
+        /// @brief Категория обхода
         typedef typename common_tag<typename Input1::traversal_tag,
                                     typename Input2::traversal_tag,
                                     forward_traversal_tag>::type traversal_tag;
 
+        /** @brief Конструктор
+        @param in1 первая входная последовательность
+        @param in2 вторая входная последовательность
+        @param cmp функция сравнения
+        @post <tt> this->functor() == cmp </tt>
+        */
         explicit set_union_sequence(Input1 in1, Input2 in2, Compare cmp)
          : Base_class(std::move(cmp))
          , in1_{std::move(in1)}

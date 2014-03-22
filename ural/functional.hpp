@@ -117,7 +117,6 @@ namespace ural
     /** @brief Адаптор функционального объекта с двумя аргументами, меняющий
     порядок аргументов.
     @tparam BinaryFunctor Тип функционального объекта с двумя аргументами
-    @todo constexpr
     */
     template <class BinaryFunctor>
     class binary_reverse_args_functor
@@ -130,7 +129,7 @@ namespace ural
         @param f функциональный объект
         @post <tt> this->functor() == f </tt>
         */
-        explicit binary_reverse_args_functor(BinaryFunctor f)
+        constexpr explicit binary_reverse_args_functor(BinaryFunctor f)
          : Base(std::move(f))
         {}
 
@@ -140,7 +139,7 @@ namespace ural
         @return <tt> this->functor()(std::forward<T2>(y), std::forward<T1>(x)) </tt>
         */
         template <class T1, class T2>
-        auto operator()(T1 && x, T2 && y) const
+        constexpr auto operator()(T1 && x, T2 && y) const
         -> decltype(std::declval<BinaryFunctor>()(std::forward<T2>(y), std::forward<T1>(x)))
         {
             return this->functor()(std::forward<T2>(y), std::forward<T1>(x));
@@ -149,7 +148,7 @@ namespace ural
         /** @brief Адаптируемый функциональный объект
         @return Адаптируемый функциональный объект
         */
-        BinaryFunctor const & functor() const
+        constexpr BinaryFunctor const & functor() const
         {
             return static_cast<BinaryFunctor const &>(*this);
         }
@@ -158,9 +157,11 @@ namespace ural
     /** @brief Создание адаптора функционального объекта с двумя аргументами,
     меняющего порядок аргументов.
     @param f функциональный объект с двумя аргументами
+    @return <tt> Functor{make_functor(std::move(f))} </tt>, где @c Functor ---
+    <tt> binary_reverse_args_functor<decltype(make_functor(std::move(f)))> </tt>
     */
     template <class BinaryFunctor>
-    auto make_binary_reverse_args(BinaryFunctor f)
+    constexpr auto make_binary_reverse_args(BinaryFunctor f)
     -> binary_reverse_args_functor<decltype(make_functor(std::move(f)))>
     {
         typedef binary_reverse_args_functor<decltype(make_functor(std::move(f)))>
