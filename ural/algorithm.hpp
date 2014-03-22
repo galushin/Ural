@@ -353,10 +353,13 @@ namespace ural
     }
 
     template <class Input, class Output1, class Output2, class UnaryPredicate>
-    void partition_copy(Input && in, Output1 && out_true, Output2 && out_false,
+    auto partition_copy(Input && in, Output1 && out_true, Output2 && out_false,
                         UnaryPredicate pred)
+    -> ural::tuple<decltype(sequence(std::forward<Input>(in))),
+                   decltype(sequence(std::forward<Output1>(out_true))),
+                   decltype(sequence(std::forward<Output2>(out_false)))>
     {
-        ::ural::details::partition_copy(sequence(std::forward<Input>(in)),
+        return ::ural::details::partition_copy(sequence(std::forward<Input>(in)),
                                                sequence(std::forward<Output1>(out_true)),
                                                sequence(std::forward<Output2>(out_false)),
                                                make_functor(std::move(pred)));

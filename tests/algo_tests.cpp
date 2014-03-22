@@ -1017,7 +1017,6 @@ BOOST_AUTO_TEST_CASE(partition_copy_test)
 
     auto const pred = [] (int x) {return x % 2 == 0;};
 
-    // @todo Тест возвращаемого значения
     ural::partition_copy(src, true_sink | ural::back_inserter,
                          std::front_inserter(false_sink), pred);
 
@@ -1028,6 +1027,24 @@ BOOST_AUTO_TEST_CASE(partition_copy_test)
     {
         BOOST_CHECK(!!ural::find(true_sink, x) || !!ural::find(false_sink, x));
     }
+}
+
+BOOST_AUTO_TEST_CASE(partition_copy_return_value_test)
+{
+    std::array<int, 10> const src = {1,2,3,4,5,6,7,8,9,10};
+    std::vector<int> true_sink(src.size(), -1);
+    std::vector<int> false_sink(src.size(), -1);
+
+    auto const pred = [] (int x) {return x % 2 == 0;};
+
+    auto r = ural::partition_copy(src, true_sink, false_sink, pred);
+
+    BOOST_CHECK(!r[ural::_1]);
+    BOOST_CHECK_EQUAL(src.size(), r[ural::_2].traversed_front().size()
+                                  + r[ural::_3].traversed_front().size());
+
+    BOOST_CHECK(ural::all_of(r[ural::_2].traversed_front(), pred));
+    BOOST_CHECK(ural::none_of(r[ural::_3].traversed_front(), pred));
 }
 
 BOOST_AUTO_TEST_CASE(partition_point_test)
