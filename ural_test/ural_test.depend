@@ -107,7 +107,7 @@
 	<ural/sequence/base.hpp>
 	<ural/tuple.hpp>
 
-1395392909 c:\devtools\github\ural\ural\tuple.hpp
+1395555161 c:\devtools\github\ural\ural\tuple.hpp
 	<tuple>
 	<ural/placeholders.hpp>
 
@@ -510,7 +510,7 @@
 
 1394084578 c:\devtools\github\ural\ural\thread.hpp
 
-1395392908 c:\devtools\github\ural\ural\algorithm\details\algo_base.hpp
+1395550049 c:\devtools\github\ural\ural\algorithm\details\algo_base.hpp
 	<ural/sequence/base.hpp>
 	<ural/sequence/function_output.hpp>
 	<ural/sequence/generator.hpp>
@@ -528,7 +528,7 @@
 	<ural/functional.hpp>
 	<ural/sequence/base.hpp>
 
-1395392908 source:c:\devtools\github\ural\tests\algo_tests.cpp
+1395500742 source:c:\devtools\github\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<forward_list>
 	<list>
@@ -864,7 +864,7 @@
 
 1394005984 c:\pavel\ural_repo\ural\ural\sequence\reversed.hpp
 
-1395492968 c:\devtools\github\ural\ural\functional\replace.hpp
+1395569253 c:\devtools\github\ural\ural\functional\replace.hpp
 	<ural/tuple.hpp>
 	<ural/functional/cpp_operators.hpp>
 
@@ -877,7 +877,7 @@
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/insertion.hpp>
 
-1394434564 c:\devtools\github\ural\ural\sequence\moved.hpp
+1395570676 c:\devtools\github\ural\ural\sequence\moved.hpp
 	<ural/sequence/base.hpp>
 
 1394634023 c:\devtools\github\ural\ural\sequence\filtered.hpp
@@ -895,7 +895,7 @@
 1394084578 c:\devtools\github\ural\ural\sequence\uniqued.hpp
 	<ural/algorithm/details/algo_base.hpp>
 
-1395392909 c:\devtools\github\ural\ural\memory.hpp
+1395573402 c:\devtools\github\ural\ural\memory.hpp
 	<ural/defs.hpp>
 	<ural/utility.hpp>
 	<memory>
@@ -957,7 +957,7 @@
 1395392909 c:\devtools\github\ural\ural\functional\make_functor.hpp
 	<ural/defs.hpp>
 
-1395392909 c:\devtools\github\ural\ural\random.hpp
+1395569489 c:\devtools\github\ural\ural\random.hpp
 	<ural/numeric.hpp>
 	<ural/defs.hpp>
 	<cstdlib>
@@ -6198,7 +6198,7 @@
 	<map>
 	<list>
 
-1395323968 source:c:\devtools\github\ural\tests\memory_test.cpp
+1395573335 source:c:\devtools\github\ural\tests\memory_test.cpp
 	<string>
 	<memory>
 	<boost/test/unit_test.hpp>
@@ -6371,7 +6371,7 @@
 	<ural/utility.hpp>
 	<ural/functional/make_functor.hpp>
 
-1395321309 c:\devtools\github\ural\ural\utility.hpp
+1395573049 c:\devtools\github\ural\ural\utility.hpp
 	<ural/defs.hpp>
 	<ural/type_traits.hpp>
 

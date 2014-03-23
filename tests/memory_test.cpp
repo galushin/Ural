@@ -289,9 +289,14 @@ BOOST_AUTO_TEST_CASE(copy_ptr_copy_polymorhic_test)
     BOOST_CHECK(typeid(*p2) == typeid(Derived));
     BOOST_CHECK(typeid(*p1) == typeid(*p2));
     BOOST_CHECK_EQUAL(typeid(*p1).name(), typeid(*p2).name());
+
+    auto & r1 = dynamic_cast<Derived&>(*p1);
+    auto & r2 = dynamic_cast<Derived&>(*p2);
+
+    BOOST_CHECK(r1.value == r2.value);
 }
 
-BOOST_AUTO_TEST_CASE(copy_ptr_move_compatible_test)
+BOOST_AUTO_TEST_CASE(copy_ptr_move_compatible_ctor_test)
 {
     auto const value = 42;
 
@@ -305,6 +310,44 @@ BOOST_AUTO_TEST_CASE(copy_ptr_move_compatible_test)
 
     BOOST_CHECK(typeid(*p2) == typeid(Derived));
     BOOST_CHECK_EQUAL(ptr_old, p2.get());
+}
+
+BOOST_AUTO_TEST_CASE(copy_ptr_move_compatible_assign_test)
+{
+    auto const value = 42;
+
+    ural::copy_ptr<Derived> p1{ural::make_unique<Derived>(value)};
+    auto const ptr_old = p1.get();
+
+    ural::copy_ptr<Base> p2;
+    p2 = std::move(p1);
+
+    BOOST_CHECK(!p1);
+    BOOST_CHECK(!!p2);
+
+    BOOST_CHECK(typeid(*p2) == typeid(Derived));
+    BOOST_CHECK_EQUAL(ptr_old, p2.get());
+}
+
+// @todo копирующее присваивание совместимых
+BOOST_AUTO_TEST_CASE(copy_ptr_copy_compatible_ctor_test)
+{
+    ural::copy_ptr<Derived, ural::member_function_copy<Base>>
+        p1{ural::make_unique<Derived>(42)};
+    ural::copy_ptr<Base, ural::member_function_copy<Base>>
+        p2{p1};
+
+    BOOST_CHECK(p1.get() != p2.get());
+
+    BOOST_CHECK(typeid(*p1) == typeid(Derived));
+    BOOST_CHECK(typeid(*p2) == typeid(Derived));
+    BOOST_CHECK(typeid(*p1) == typeid(*p2));
+    BOOST_CHECK_EQUAL(typeid(*p1).name(), typeid(*p2).name());
+
+    auto & r1 = dynamic_cast<Derived&>(*p1);
+    auto & r2 = dynamic_cast<Derived&>(*p2);
+
+    BOOST_CHECK(r1.value == r2.value);
 }
 
 BOOST_AUTO_TEST_CASE(copy_ptr_assign_polymorhic_test)
@@ -337,8 +380,6 @@ BOOST_AUTO_TEST_CASE(copy_ptr_compatible_copy_assign)
     BOOST_CHECK(typeid(*p1) == typeid(*p2));
     BOOST_CHECK_EQUAL(typeid(*p1).name(), typeid(*p2).name());
 }
-
-// @todo ѕрисваивание и конструктор с перемещением copy_ptr<U>
 
 BOOST_AUTO_TEST_CASE(copy_ptr_move_assign_test)
 {

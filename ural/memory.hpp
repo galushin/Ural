@@ -60,7 +60,9 @@ namespace ural
     class default_copy
     {
     public:
-        static std::unique_ptr<T> make_copy(T const & x)
+        typedef std::unique_ptr<T> owner_type;
+
+        static owner_type make_copy(T const & x)
         {
             return ural::make_unique<T>(std::move(x));
         }
@@ -70,7 +72,9 @@ namespace ural
     class member_function_copy
     {
     public:
-        static std::unique_ptr<T> make_copy(T const & x)
+        typedef std::unique_ptr<T> owner_type;
+
+        static owner_type make_copy(T const & x)
         {
             return (x.*clone_fn)();
         }
@@ -110,7 +114,7 @@ namespace ural
     @todo Тесты с полиморфными типами (стратегии копирования и удаления)
     @todo По аналогии с 20.7.1
     @todo По аналогии с 20.7.2
-    @todo Все функции должны быть noexcept?
+    @todo Какие функции должны быть noexcept?
     @todo Специализация для массивов
     @todo Защита от срезки: как на этапе компиляции (см. shared_ptr), так и во
     время выполнения программы. Проверка, что типы оригинала и копии совпадают
@@ -204,13 +208,13 @@ namespace ural
         copy_ptr(copy_ptr &&) = default;
 
         template <class T1, class C1, class D1, class Ch1>
-        copy_ptr(copy_ptr<T1, C1, D1, Ch1> const & x)
+        explicit copy_ptr(copy_ptr<T1, C1, D1, Ch1> const & x)
          : holder_{x.make_copy().release(), x.get_deleter()}
         {}
 
         template <class T1, class C1, class D1, class Ch1>
-        copy_ptr(copy_ptr<T1, C1, D1, Ch1> && x)
-         : holder_{x.release(), std::move(x.get_deleter())}
+        explicit copy_ptr(copy_ptr<T1, C1, D1, Ch1> && x)
+         : holder_(x.release(), std::move(x.get_deleter()))
         {}
 
         constexpr copy_ptr(nullptr_t) noexcept
@@ -223,7 +227,21 @@ namespace ural
             return ::ural::copy_and_swap(*this, x);
         }
 
+        template <class T1, class C1, class D1, class Ch1>
+        copy_ptr & operator=(copy_ptr<T1, C1, D1, Ch1> const & x)
+        {
+            copy_ptr(x).swap(*this);
+            return *this;
+        }
+
         copy_ptr & operator=(copy_ptr &&) = default;
+
+        template <class T1, class C1, class D1, class Ch1>
+        copy_ptr & operator=(copy_ptr<T1, C1, D1, Ch1> && x)
+        {
+            copy_ptr(std::move(x)).swap(*this);
+            return *this;
+        }
 
         template <class U>
         copy_ptr & operator=(std::unique_ptr<U> && p)
@@ -260,9 +278,16 @@ namespace ural
             return holder_.operator->();
         }
 
-        std::unique_ptr<T> make_copy() const
+        typename cloner_type::owner_type make_copy() const
         {
-            return !*this ? std::unique_ptr<T>{} : cloner_type::make_copy(**this);
+            if(!*this)
+            {
+                return typename cloner_type::owner_type{};
+            }
+            else
+            {
+                return cloner_type::make_copy(**this);
+            }
         }
 
         // Модификаторы
