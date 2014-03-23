@@ -147,7 +147,6 @@ namespace ural
 
     private:
         // @todo Оптимизация размера
-        // @todo Выразить через replace_if_functor
         ural::tuple<T, T, predicate_type> members_;
     };
 

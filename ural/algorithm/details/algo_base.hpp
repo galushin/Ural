@@ -978,7 +978,6 @@ namespace details
 
         ::ural::details::make_heap(to_sort, cmp);
 
-        // @todo Устранить дублирование с partial_sort
         for(; !!in; ++ in)
         {
             if(cmp(*in, *to_sort))

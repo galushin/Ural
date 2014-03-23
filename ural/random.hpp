@@ -167,7 +167,6 @@ namespace ural
             void init(std::vector<weight_type> ws)
             {
                 // @todo Оптмизация (устранить стэки)
-                // @todo Выделить алгоритмы
                 auto const w_sum = ural::accumulate(ws, weight_type{0.0});
 
                 data_.reserve(ws.size());
