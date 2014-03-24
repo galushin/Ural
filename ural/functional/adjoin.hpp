@@ -42,33 +42,19 @@ namespace ural
         constexpr auto operator()(Args && ... args) const
         -> ural::tuple<decltype(std::declval<Fs>()(args...))...>
         {
-            // @todo Можно ли реализовать без псевдо-рекурсии
             typedef ural::tuple<decltype(std::declval<Fs>()(args...))...> R;
             return call_impl(declare_type<R>{},
                              ural::forward_as_tuple(std::forward<Args>(args)...),
-                             ural::_1, placeholder<sizeof...(Fs)>{});
+                             ural::index_sequence_for<Fs...>{});
         }
 
     private:
-        template <class R, class Tuple, size_t last, class... Rs>
+        template <class R, class Tuple, size_t... Is>
         constexpr
-        R call_impl(declare_type<R>, Tuple &&,
-                    placeholder<last>, placeholder<last>, Rs && ... rs) const
+        R call_impl(declare_type<R>, Tuple && t,
+                    integer_sequence<size_t, Is...>) const
         {
-            return R(std::forward<Rs>(rs)...);
-        }
-
-        template <class R, class Tuple, size_t first, size_t last, class... Rs>
-        constexpr
-        R call_impl(declare_type<R> rd, Tuple && t,
-                    placeholder<first>, placeholder<last> stop,
-                    Rs && ... rs) const
-        {
-            return call_impl(rd, std::forward<Tuple>(t),
-                             placeholder<first+1>{}, stop,
-                             std::forward<Rs>(rs)...,
-                             apply(std::get<first>(functors_),
-                                   std::forward<Tuple>(t)));
+            return R(apply(std::get<Is>(functors_), std::forward<Tuple>(t))...);
         }
 
     private:
