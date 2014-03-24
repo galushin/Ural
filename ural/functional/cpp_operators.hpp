@@ -19,8 +19,6 @@
 
 /** @file ural/functional/cpp_operators.hpp
  @brief Функциональные объекты, аналогичные определённым в @< functional @>
- @todo Оптимальные типы параметров
- @todo rvalue в функциональных объектах с выводом типов
  @todo Устарнить дублирование
 */
 
@@ -29,9 +27,55 @@
 
 namespace ural
 {
+    template <class T1, class T2, class F>
+    class binary_operator_helper
+     : private F
+    {
+    public:
+        constexpr auto
+        operator()(typename boost::call_traits<T1>::param_type x,
+                   typename boost::call_traits<T2>::param_type y) const
+        -> decltype(std::declval<F const>()(x, y))
+        {
+            return F::operator()(x, y);
+        }
+    };
+
+    template <class T1, class F>
+    class binary_operator_helper<T1, void, F>
+     : private F
+    {
+    public:
+        template <class T2>
+        constexpr auto
+        operator()(typename boost::call_traits<T1>::param_type x,
+                   T2 && y) const
+        -> decltype(std::declval<F const>()(x, std::forward<T2>(y)))
+        {
+            return static_cast<F const &>(*this)(x, std::forward<T2>(y));
+        }
+    };
+
+    template <class T2, class F>
+    class binary_operator_helper<void, T2, F>
+     : private F
+    {
+    public:
+        template <class T1>
+        constexpr auto
+        operator()(T1 && x,
+                   typename boost::call_traits<T2>::param_type y) const
+        -> decltype(std::declval<F const>()(std::forward<T1>(x), y))
+        {
+            return static_cast<F const &>(*this)(std::forward<T1>(x), y);
+        }
+    };
+
 // Функциональные объекты для операторов
     template <class T1 = void, class T2 = T1>
-    class plus;
+    class plus
+     : public binary_operator_helper<T1, T2, plus<>>
+    {};
 
     /// @brief Специализация с выводом типов обоих аргументов
     template <>
@@ -52,7 +96,9 @@ namespace ural
     };
 
     template <class T1 = void, class T2 = T1>
-    class minus;
+    class minus
+     : public binary_operator_helper<T1, T2, minus<>>
+    {};
 
     /// @brief Специализация с выводом типов обоих аргументов
     template <>
@@ -73,7 +119,9 @@ namespace ural
     };
 
     template <class T1 = void, class T2 = T1>
-    class multiplies;
+    class multiplies
+     : public binary_operator_helper<T1, T2, multiplies<>>
+    {};
 
     /// @brief Специализация с выводом типов обоих аргументов
     template <>
@@ -95,38 +143,8 @@ namespace ural
 
     template <class T1 = void, class T2 = T1>
     class divides
-    {
-    public:
-        constexpr auto operator()(T1 const & x, T2 const & y) const
-        -> decltype(x / y)
-        {
-            return x / y;
-        }
-    };
-
-    template <class T1>
-    class divides<T1, void>
-    {
-    public:
-        template <class T2>
-        constexpr auto operator()(T1 const & x, T2 && y) const
-        -> decltype(x / std::forward<T2>(y))
-        {
-            return x / std::forward<T2>(y);
-        }
-    };
-
-    template <class T2>
-    class divides<void, T2>
-    {
-    public:
-        template <class T1>
-        constexpr auto operator()(T1 && x, T2 const & y) const
-        -> decltype(std::forward<T1>(x) / y)
-        {
-            return std::forward<T1>(x) / y;
-        }
-    };
+      : public binary_operator_helper<T1, T2, divides<>>
+    {};
 
     template <>
     class divides<void, void>
@@ -142,38 +160,8 @@ namespace ural
 
     template <class T1 = void, class T2 = T1>
     class modulus
-    {
-    public:
-        constexpr auto operator()(T1 const & x, T2 const & y) const
-        -> decltype(x % y)
-        {
-            return x % y;
-        }
-    };
-
-    template <class T1>
-    class modulus<T1, void>
-    {
-    public:
-        template <class T2>
-        constexpr auto operator()(T1 const & x, T2 && y) const
-        -> decltype(x % std::forward<T2>(y))
-        {
-            return x % std::forward<T2>(y);
-        }
-    };
-
-    template <class T2>
-    class modulus<void, T2>
-    {
-    public:
-        template <class T1>
-        constexpr auto operator()(T1 && x, T2 const & y) const
-        -> decltype(std::forward<T1>(x) % y)
-        {
-            return std::forward<T1>(x) % y;
-        }
-    };
+     : public binary_operator_helper<T1, T2, modulus<>>
+    {};
 
     template <>
     class modulus<void, void>
@@ -212,16 +200,8 @@ namespace ural
 
     template <class T1 = void, class T2 = T1>
     class equal_to
-    {
-    public:
-        constexpr auto
-        operator()(typename boost::call_traits<T1>::param_type x,
-                   typename boost::call_traits<T1>::param_type y) const
-        -> decltype(x == y)
-        {
-            return x == y;
-        }
-    };
+     : public binary_operator_helper<T1, T2, equal_to<>>
+    {};
 
     template <>
     class equal_to<void, void>
@@ -243,97 +223,59 @@ namespace ural
     */
     template <class T1 = void, class T2 = T1>
     class not_equal_to
-    {
-    public:
-        constexpr auto
-        operator()(typename boost::call_traits<T1>::param_type x,
-                   typename boost::call_traits<T2>::param_type y) const
-        -> decltype(x != y)
-        {
-            return x != y;
-        }
-    };
-
-    template <class T1>
-    class not_equal_to<T1, void>
-    {
-    public:
-        template <class T2>
-        constexpr auto
-        operator()(typename boost::call_traits<T1>::param_type x,
-                   T2 const & y) const
-        -> decltype(x != y)
-        {
-            return x != y;
-        }
-    };
-
-    template <class T2>
-    class not_equal_to<void, T2>
-    {
-    public:
-        template <class T1>
-        constexpr auto
-        operator()(T1 const & x,
-                   typename boost::call_traits<T2>::param_type y) const
-        -> decltype(x != y)
-        {
-            return x != y;
-        }
-    };
+     : public binary_operator_helper<T1, T2, not_equal_to<>>
+    {};
 
     template <>
     class not_equal_to<void, void>
     {
     public:
         template <class T1, class T2>
-        constexpr auto operator()(T1 const & x, T2 const & y) const
-        -> decltype(x != y)
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype (std::forward<T1>(x) != std::forward<T2>(y))
         {
-            return x != y;
+            return std::forward<T1>(x) != std::forward<T2>(y);
         }
     };
 
     template <class T1 = void, class T2 = T1>
     class less
-    {
-    public:
-        constexpr auto operator()(T1 const & x, T2 const & y) const
-        -> decltype(x < y)
-        {
-            return x < y;
-        }
-    };
+     : public binary_operator_helper<T1, T2, less<>>
+    {};
 
     template <>
     class less<void, void>
     {
     public:
         template <class T1, class T2>
-        constexpr auto operator()(T1 const & x, T2 const & y) const
-        -> decltype(x < y)
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype (std::forward<T1>(x) < std::forward<T2>(y))
         {
-            return x < y;
+            return std::forward<T1>(x) < std::forward<T2>(y);
         }
     };
 
     template <class T1 = void, class T2 = T1>
-    class greater;
+    class greater
+     : public binary_operator_helper<T1, T2, greater<>>
+    {};
 
     template <>
     class greater<void, void>
     {
     public:
         template <class T1, class T2>
-        constexpr auto operator()(T1 const & x, T2 const & y) const
-        -> decltype(x > y)
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype (std::forward<T1>(x) > std::forward<T2>(y))
         {
-            return x > y;
+            return std::forward<T1>(x) > std::forward<T2>(y);
         }
     };
 
     template <class T1 = void, class T2 = T1>
-    class less_equal;
+    class less_equal
+      : public binary_operator_helper<T1, T2, less_equal<>>
+    {};
 
     template <>
     class less_equal<void, void>
@@ -348,7 +290,9 @@ namespace ural
     };
 
     template <class T1 = void, class T2 = T1>
-    class greater_equal;
+    class greater_equal
+     : public binary_operator_helper<T1, T2, greater_equal<>>
+    {};
 
     template <>
     class greater_equal<void, void>
@@ -364,101 +308,35 @@ namespace ural
 
     template <class T1 = void, class T2 = T1>
     class logical_and
-    {
-    public:
-        constexpr auto operator()(T1 const & x, T2 const & y) const
-        -> decltype(x && y)
-        {
-            return x && y;
-        }
-    };
+     : public binary_operator_helper<T1, T2, logical_and<>>
+    {};
 
     template <>
     class logical_and<void, void>
     {
     public:
         template <class T1, class T2>
-        constexpr auto operator()(T1 const & x, T2 const & y) const
-        -> decltype(x && y)
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype(std::forward<T1>(x) && std::forward<T2>(y))
         {
-            return x && y;
-        }
-    };
-
-    template <class T1>
-    class logical_and<T1, void>
-    {
-    public:
-        template <class T2>
-        constexpr auto operator()(T1 const & x, T2 const & y) const
-        -> decltype(x && y)
-        {
-            return x && y;
-        }
-    };
-
-    template <class T2>
-    class logical_and<void, T2>
-    {
-    public:
-        template <class T1>
-        constexpr auto operator()(T1 const & x, T2 const & y) const
-        -> decltype(x && y)
-        {
-            return x && y;
+            return std::forward<T1>(x) && std::forward<T2>(y);
         }
     };
 
     template <class T1 = void, class T2 = T1>
     class logical_or
-    {
-    public:
-        constexpr auto operator()(T1 const & x, T2 const & y) const
-        -> decltype(x || y)
-        {
-            return x || y;
-        }
-    };
+     : public binary_operator_helper<T1, T2, logical_or<>>
+    {};
 
     template <>
     class logical_or<void, void>
     {
     public:
         template <class T1, class T2>
-        constexpr auto operator()(T1 const & x, T2 const & y) const
-        -> decltype(x || y)
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype(std::forward<T1>(x) || std::forward<T2>(y))
         {
-            return x || y;
-        }
-    };
-
-    /** @brief Специаилизация с выводом типа второго аргумента
-    @tparam T1 тип первого аргумента
-    */
-    template <class T1>
-    class logical_or<T1, void>
-    {
-    public:
-        template <class T2>
-        constexpr auto operator()(T1 const & x, T2 const & y) const
-        -> decltype(x || y)
-        {
-            return x || y;
-        }
-    };
-
-    /** @brief Специаилизация с выводом типа первого аргумента
-    @tparam T1 тип второго аргумента
-    */
-    template <class T2>
-    class logical_or<void, T2>
-    {
-    public:
-        template <class T1>
-        constexpr auto operator()(T1 const & x, T2 const & y) const
-        -> decltype(x || y)
-        {
-            return x || y;
+            return std::forward<T1>(x) || std::forward<T2>(y);
         }
     };
 
@@ -478,10 +356,10 @@ namespace ural
     {
     public:
         template <class T>
-        constexpr auto operator()(T const & x) const
-        -> decltype(!x)
+        constexpr auto operator()(T && x) const
+        -> decltype(!std::forward<T>(x))
         {
-            return !x;
+            return !std::forward<T>(x);
         }
     };
 
