@@ -20,19 +20,41 @@
 /** @file ural/sequence/filtered.hpp
  @brief Последовательность элементов базовой последовательности, удовлетворяющих
  заданному предикату.
- @todo Более подробные тесты
 */
 
 #include <ural/algorithm/details/algo_base.hpp>
 
 #include <boost/compressed_pair.hpp>
 
+namespace boost
+{
+    // @todo Вынести в отдельный файл
+    template <class T1, class T2>
+    constexpr bool operator==(compressed_pair<T1, T2> const & x,
+                              compressed_pair<T1, T2> const & y)
+    {
+        return x.first() == y.first()
+                && x.second() == y.second();
+    }
+}
+// namespace boost
+
 namespace ural
 {
+    /** @brief Последовательность элементов базовой последовательности,
+    удовлетворяющих заданному предикату.
+    @todo Оптимизация размера
+    */
     template <class Sequence, class Predicate>
     class filter_sequence
      : public sequence_base<filter_sequence<Sequence, Predicate>>
     {
+        friend bool operator==(filter_sequence const & x,
+                               filter_sequence const & y)
+        {
+            return x.data_ == y.data_;
+        }
+
     public:
         // Типы
         typedef typename Sequence::reference reference;

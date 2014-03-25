@@ -43,6 +43,14 @@ namespace ural
     template <class Signature>
     class function_ptr_functor;
 
+    template <class Signature>
+    constexpr bool
+    operator==(function_ptr_functor<Signature> const & x,
+               function_ptr_functor<Signature> const & y)
+    {
+        return x.target() == y.target();
+    }
+
     template <class R, class... Args>
     class function_ptr_functor<R(Args...)>
     {

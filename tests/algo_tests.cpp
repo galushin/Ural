@@ -341,21 +341,51 @@ BOOST_AUTO_TEST_CASE(copy_n_test)
     BOOST_CHECK_EQUAL(r_std, r_ural);
 }
 
-BOOST_AUTO_TEST_CASE(copy_if_test)
+BOOST_AUTO_TEST_CASE(filtered_test)
 {
     typedef int Type;
     std::vector<Type> const xs = {25, -15, 5, -5, 15};
     auto const pred = [](Type i){return !(i<0);};
+    typedef decltype(ural::sequence(xs)) Sequence;
+
+    static_assert(std::is_empty<decltype(pred)>::value, "");
+    BOOST_CHECK_EQUAL(sizeof(Sequence), sizeof(boost::compressed_pair<Sequence, decltype(pred)>));
 
     std::vector<Type> r_std;
     std::vector<Type> r_ural;
 
     std::copy_if (xs.begin(), xs.end(), std::back_inserter(r_std) , pred);
 
-    ural::copy(xs | ural::filtered(pred), r_ural | ural::back_inserter);
+    auto seq = xs | ural::filtered(pred);
+
+    ural::copy(seq, r_ural | ural::back_inserter);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
                                   r_ural.begin(), r_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(filtered_getters_test)
+{
+    typedef int Type;
+    std::vector<Type> const xs = {25, -15, 5, -5, 15};
+    std::vector<Type> const xs_1 = xs;
+
+    auto const pred_1 = +[](Type i){return !(i<0);};
+    auto const pred_2 = +[](Type i){return !(i<=0);};
+
+    auto s1 = xs | ural::filtered(pred_1);
+    auto s11 = xs | ural::filtered(pred_1);
+    auto s2 = xs | ural::filtered(pred_2);
+    auto s3 = xs_1 | ural::filtered(pred_1);
+
+    BOOST_CHECK(pred_1 == s1.predicate());
+    BOOST_CHECK(pred_2 == s2.predicate());
+
+    BOOST_CHECK(s1 == s1);
+    BOOST_CHECK(s1 == s11);
+    BOOST_CHECK(s2 == s2);
+    BOOST_CHECK(s1 != s2);
+    BOOST_CHECK(s1 != s3);
 }
 
 BOOST_AUTO_TEST_CASE(copy_backward_test)
