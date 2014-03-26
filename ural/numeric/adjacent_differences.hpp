@@ -72,7 +72,7 @@ namespace ural
 
         reference front() const
         {
-            // @todo проверка через стратегию?
+            assert(!!*this);
             return members_[ural::_3].value();
         }
 

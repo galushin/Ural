@@ -396,7 +396,7 @@
 	<ural/thread.hpp>
 	<ural/functional.hpp>
 
-1394151640 c:\devtools\ural_repo\ural\ural\numeric\adjacent_differences.hpp
+1395804597 c:\devtools\ural_repo\ural\ural\numeric\adjacent_differences.hpp
 	<ural/functional.hpp>
 	<ural/sequence/base.hpp>
 
@@ -583,7 +583,7 @@
 	<ural/tuple.hpp>
 	<ural/functional/cpp_operators.hpp>
 
-1395796121 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
+1395805384 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
 	<ural/functional/make_functor.hpp>
 	<ural/functional/compose.hpp>
 
