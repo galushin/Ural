@@ -329,7 +329,6 @@ BOOST_AUTO_TEST_CASE(copy_ptr_move_compatible_assign_test)
     BOOST_CHECK_EQUAL(ptr_old, p2.get());
 }
 
-// @todo копирующее присваивание совместимых
 BOOST_AUTO_TEST_CASE(copy_ptr_copy_compatible_ctor_test)
 {
     ural::copy_ptr<Derived, ural::member_function_copy<Base>>
