@@ -18,6 +18,7 @@
 #include <ural/algorithm.hpp>
 #include <ural/sequence/all.hpp>
 #include <ural/sequence/sink.hpp>
+#include <ural/sequence/progression.hpp>
 
 #include <boost/test/unit_test.hpp>
 
@@ -197,8 +198,7 @@ BOOST_AUTO_TEST_CASE(ostream_sequence_default_test)
 
 BOOST_AUTO_TEST_CASE(all_tuples_test)
 {
-    // @todo Заменить на арифметическую прогрессию
-    std::vector<int> const digits = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    auto digits = ural::make_arithmetic_progression(0, 1) | ural::taken(10);
     auto s2 = ural::make_all_tuples_sequence(digits, digits);
 
     std::set<int> r2;
