@@ -109,11 +109,12 @@
 		<Unit filename="../ural/sequence/generator.hpp" />
 		<Unit filename="../ural/sequence/insertion.hpp" />
 		<Unit filename="../ural/sequence/iostream.hpp" />
-		<Unit filename="../ural/sequence/iota.hpp" />
 		<Unit filename="../ural/sequence/iterator_sequence.hpp" />
 		<Unit filename="../ural/sequence/make.hpp" />
 		<Unit filename="../ural/sequence/moved.hpp" />
+		<Unit filename="../ural/sequence/outdirected.hpp" />
 		<Unit filename="../ural/sequence/partition.hpp" />
+		<Unit filename="../ural/sequence/progression.hpp" />
 		<Unit filename="../ural/sequence/remove.hpp" />
 		<Unit filename="../ural/sequence/replace.hpp" />
 		<Unit filename="../ural/sequence/reversed.hpp" />

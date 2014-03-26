@@ -1,5 +1,5 @@
-#ifndef Z_URAL_SEQUENCE_IOTA_HPP_INCLUDED
-#define Z_URAL_SEQUENCE_IOTA_HPP_INCLUDED
+#ifndef Z_URAL_SEQUENCE_OUTDIRECTED_HPP_INCLUDED
+#define Z_URAL_SEQUENCE_OUTDIRECTED_HPP_INCLUDED
 
 /*  This file is part of Ural.
 
@@ -24,16 +24,16 @@
 
 namespace ural
 {
-    template <class Incrementable>
-    class iota_sequence
-     : public sequence_base<iota_sequence<Incrementable>>
+    template <class Sequence>
+    class outdirected_sequence
+     : public sequence_base<outdirected_sequence<Sequence>>
     {
     public:
-        typedef typename Incrementable::traversal_tag traversal_tag;
-        typedef Incrementable value_type;
+        typedef typename Sequence::traversal_tag traversal_tag;
+        typedef Sequence value_type;
         typedef value_type const & reference;
 
-        explicit iota_sequence(Incrementable s)
+        explicit outdirected_sequence(Sequence s)
          : base_{std::move(s)}
         {}
 
@@ -59,17 +59,27 @@ namespace ural
         }
 
     private:
-        Incrementable base_;
+        Sequence base_;
     };
 
-    template <class Incrementable>
-    iota_sequence<Incrementable>
-    make_iota_sequence(Incrementable x)
+    template <class Sequence>
+    outdirected_sequence<Sequence>
+    make_outdirected_sequence(Sequence x)
     {
-        return iota_sequence<Incrementable>{std::move(x)};
+        return outdirected_sequence<Sequence>{std::move(x)};
+    }
+
+    struct outdirected_helper {};
+    auto constexpr outdirected = outdirected_helper{};
+
+    template <class Sequence>
+    outdirected_sequence<Sequence>
+    operator|(Sequence seq, outdirected_helper)
+    {
+        return make_outdirected_sequence(std::move(seq));
     }
 }
 // namespace ural
 
 #endif
-// Z_URAL_SEQUENCE_IOTA_HPP_INCLUDED
+// Z_URAL_SEQUENCE_OUTDIRECTED_HPP_INCLUDED
