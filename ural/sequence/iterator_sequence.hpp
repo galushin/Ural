@@ -99,7 +99,7 @@ namespace ural
         Iterator const & traversed_end() const
         {
             // @todo Сделать более устойчивым к модификациям
-            return data_[ural::_3];
+            return data_[ural::_2];
         }
 
         typedef ural::tuple<Iterator, Iterator> iterators_tuple;
@@ -136,7 +136,7 @@ namespace ural
         Iterator const & traversed_end() const
         {
             // @todo Сделать более устойчивым к модификациям
-            return data_[ural::_3];
+            return data_[ural::_2];
         }
 
         typedef ural::tuple<Iterator, Iterator, Iterator> iterators_tuple;
@@ -155,13 +155,8 @@ namespace ural
     {
     public:
         explicit iterator_sequence_base(Iterator first, Iterator last)
-         : data_{first, first, last, last, last}
-        {
-            if(first != last)
-            {
-                -- data_[ural::_4];
-            }
-        }
+         : data_{first, first, last, last}
+        {}
 
         template <size_t index>
         Iterator & operator[](placeholder<index> p)
@@ -178,10 +173,10 @@ namespace ural
         Iterator const & traversed_end() const
         {
             // @todo Сделать более устойчивым к модификациям
-            return data_[ural::_5];
+            return data_[ural::_4];
         }
 
-        typedef ural::tuple<Iterator, Iterator, Iterator, Iterator, Iterator>
+        typedef ural::tuple<Iterator, Iterator, Iterator, Iterator>
             iterators_tuple;
 
         iterators_tuple const & iterators() const
@@ -199,13 +194,8 @@ namespace ural
     public:
         // @todo Либо оптимизировать, либо унаследовать от версии для двунаправленных
         explicit iterator_sequence_base(Iterator first, Iterator last)
-         : data_{first, first, last, last, last}
-        {
-            if(first != last)
-            {
-                -- data_[ural::_4];
-            }
-        }
+         : data_{first, first, last, last}
+        {}
 
         template <size_t index>
         Iterator & operator[](placeholder<index> p)
@@ -222,10 +212,10 @@ namespace ural
         Iterator const & traversed_end() const
         {
             // @todo Сделать более устойчивым к модификациям
-            return data_[ural::_5];
+            return data_[ural::_4];
         }
 
-        typedef ural::tuple<Iterator, Iterator, Iterator, Iterator, Iterator>
+        typedef ural::tuple<Iterator, Iterator, Iterator, Iterator>
             iterators_tuple;
 
         iterators_tuple const & iterators() const
@@ -306,12 +296,7 @@ namespace ural
         */
         bool operator!() const
         {
-            return iterators_[front_index] == iterators_[stop_index];
-        }
-
-        Iterator const & front_iterator() const
-        {
-            return iterators_[front_index];
+            return this->begin() == this->end();
         }
 
         /** @brief Доступ к текущему (переднему) элементу последовательности
@@ -358,17 +343,14 @@ namespace ural
         {
             policy_type::assert_not_empty(*this);
             -- iterators_[stop_index];
-
-            if(!!*this)
-            {
-                -- iterators_[back_index];
-            }
         }
 
         reference back() const
         {
             policy_type::assert_not_empty(*this);
-            return *iterators_[back_index];
+            auto tmp = this->end();
+            -- tmp;
+            return *tmp;
         }
 
         iterator_sequence traversed_back() const
@@ -407,15 +389,6 @@ namespace ural
             assert(n >= 0);
 
             iterators_[stop_index] -= n;
-
-            if(iterators_[stop_index] == iterators_[front_index])
-            {
-                iterators_[back_index] = iterators_[stop_index];
-            }
-            else
-            {
-                iterators_[back_index] -= n;
-            }
         }
 
         // Итераторы
@@ -454,8 +427,7 @@ namespace ural
         static constexpr auto begin_index = ural::_1;
         static constexpr auto front_index = ural::_2;
         static constexpr auto stop_index = ural::_3;
-        static constexpr auto back_index = ural::_4;
-        static constexpr auto end_index = ural::_5;
+        static constexpr auto end_index = ural::_4;
 
     private:
         Base iterators_;

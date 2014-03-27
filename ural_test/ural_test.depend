@@ -103,7 +103,7 @@
 	<ural/sequence/transform.hpp>
 	<ural/sequence/uniqued.hpp>
 
-1395500764 c:\devtools\github\ural\ural\sequence\iterator_sequence.hpp
+1395922635 c:\devtools\github\ural\ural\sequence\iterator_sequence.hpp
 	<ural/sequence/base.hpp>
 	<ural/tuple.hpp>
 
@@ -528,7 +528,7 @@
 	<ural/functional.hpp>
 	<ural/sequence/base.hpp>
 
-1395741538 source:c:\devtools\github\ural\tests\algo_tests.cpp
+1395922645 source:c:\devtools\github\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<forward_list>
 	<list>

@@ -106,8 +106,8 @@ BOOST_AUTO_TEST_CASE(iterator_sequence_size_test)
 
     BOOST_CHECK_EQUAL(2*sizeof(std::istream_iterator<int>{}), sizeof(s_in));
     BOOST_CHECK_EQUAL(3*sizeof(fwd.begin()), sizeof(s_fwd));
-    BOOST_CHECK_EQUAL(5*sizeof(bi.begin()), sizeof(s_bi));
-    BOOST_CHECK_EQUAL(5*sizeof(ra.begin()), sizeof(s_ra));
+    BOOST_CHECK_EQUAL(3*sizeof(bi.begin()) + sizeof(bi.rbegin()), sizeof(s_bi));
+    BOOST_CHECK_EQUAL(3*sizeof(ra.begin()) + sizeof(ra.rbegin()), sizeof(s_ra));
 }
 
 BOOST_AUTO_TEST_CASE(valarray_to_sequence_test)

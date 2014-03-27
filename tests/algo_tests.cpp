@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE(find_success_test)
 
     BOOST_CHECK(!!s);
     BOOST_CHECK_EQUAL(value, *s);
-    BOOST_CHECK(std::find(v.begin(), v.end(), value) == s.front_iterator());
+    BOOST_CHECK(std::find(v.begin(), v.end(), value) == s.begin());
 }
 
 // 25.2.6
