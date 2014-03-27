@@ -26,6 +26,7 @@ namespace ural
 {
     /** @note Длина последовательности меньше заданной --- это ошибка или
     нормальная ситуация?
+    @todo Настройка структуры в зависимости от категории обхода
     */
     template <class Sequence, class Size>
     class take_sequence
@@ -40,7 +41,7 @@ namespace ural
 
         // Создание, копирование
         explicit take_sequence(Sequence seq, Size count)
-         : impl_{std::move(seq), std::move(count)}
+         : impl_{std::move(seq), count, count}
         {}
 
         // Однопроходная последовательность
@@ -56,9 +57,17 @@ namespace ural
 
         void pop_front()
         {
-            // @todo Проверить, что счётчик не исчерпан
-            ++ impl_.first();
-            -- impl_.second();
+            assert(this->count() > 0);
+
+            ++ impl_[ural::_1];
+            -- impl_[ural::_2];
+        }
+
+        // Прямая последовательность
+        take_sequence traversed_front() const
+        {
+            return take_sequence(this->base().traversed_front(),
+                                 this->init_count() - this->count());
         }
 
         // Последовательность производного доступа
@@ -66,16 +75,22 @@ namespace ural
         // Адаптор последовательности
         Sequence const & base() const
         {
-            return impl_.first();
+            return impl_[ural::_1];
         }
 
         Size const & count() const
         {
-            return impl_.second();
+            return impl_[ural::_2];
         }
 
     private:
-        boost::compressed_pair<Sequence, Size> impl_;
+        Size const & init_count() const
+        {
+            return impl_[ural::_3];
+        }
+
+    private:
+        ural::tuple<Sequence, Size, Size> impl_;
     };
 
     template <class Size>

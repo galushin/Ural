@@ -39,3 +39,36 @@ library, it's a range. Return it.
 it's a container. Return a pair of iterators.
 4) Otherwise, it's an error
 */
+
+/**
+get<> для кортежей не является constexpr функцией в случае, если элемент
+представляет собой пустой класс
+*/
+
+/**
+Список свойств математических распределений
+boost_1_54_0/libs/math/doc/html/math_toolkit/dist_ref/nmp.html
+
+Cumulative Distribution Function.
+Complement of the Cumulative Distribution Function.
+Cumulative Hazard Function.
+Hazard Function.
+kurtosis.
+kurtosis_excess
+mean.
+median.
+mode.
+Probability Density Function.
+range.
+Quantile.
+Quantile from the complement of the probability.
+skewness.
+standard deviation.
+support.
+variance.
+*/
+
+/** Выбор между разными версиями одного алгоритма (_if, _bounded, _reversed)
+и использованием адапторов сделан в пользу последнего, так как это позволяет
+формировать алгоритмы, как предложения из отдельных слов.
+*/

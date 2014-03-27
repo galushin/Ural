@@ -19,7 +19,7 @@
 
 /** @file ural/functional/cpp_operators.hpp
  @brief Функциональные объекты, аналогичные определённым в @< functional @>
- @todo Устарнить дублирование
+ @todo Устранить дублирование в составных операторах присваивания
 */
 
 #include <ural/functional/make_functor.hpp>
@@ -68,6 +68,21 @@ namespace ural
         -> decltype(std::declval<F const>()(std::forward<T1>(x), y))
         {
             return static_cast<F const &>(*this)(std::forward<T1>(x), y);
+        }
+    };
+
+    template <class T, class F>
+    class unary_operator_helper
+     : private F
+    {
+    public:
+        typedef T argument_type;
+        typedef decltype(std::declval<F const>()(std::declval<T>())) result_type;
+
+        constexpr result_type
+        operator()(typename boost::call_traits<T>::param_type x) const
+        {
+            return F::operator()(x);
         }
     };
 
@@ -177,14 +192,8 @@ namespace ural
 
     template <class T = void>
     class negate
-    {
-    public:
-        constexpr auto operator()(T const & x) const
-        -> decltype(-x)
-        {
-            return -x;
-        }
-    };
+     : public unary_operator_helper<T, negate<>>
+    {};
 
     template <>
     class negate<>
@@ -342,14 +351,8 @@ namespace ural
 
     template <class T = void>
     class logical_not
-    {
-    public:
-        constexpr auto operator()(T const & x) const
-        -> decltype(!x)
-        {
-            return !x;
-        }
-    };
+     : public unary_operator_helper<T, logical_not<>>
+    {};
 
     template <>
     class logical_not<void>
@@ -366,16 +369,8 @@ namespace ural
     // Побитовые операции
     template <class T = void>
     class bit_not
-    {
-    public:
-        typedef T argument_type;
-        typedef T result_type;
-
-        constexpr result_type operator()(T const & arg) const
-        {
-            return ~arg;
-        }
-    };
+     : public unary_operator_helper<T, bit_not<>>
+    {};
 
     template <>
     class bit_not<void>
@@ -466,14 +461,8 @@ namespace ural
 
     template <class T = void>
     class dereference
-    {
-    public:
-        auto operator()(T const & x)
-        -> decltype(*x)
-        {
-            return *x;
-        }
-    };
+     : public unary_operator_helper<T, dereference<>>
+    {};
 
     /// @brief Специализация с выводом типа аргумента
     template <>

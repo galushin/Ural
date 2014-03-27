@@ -20,7 +20,7 @@
 #include <ural/sequence/base.hpp>
 #include <ural/sequence/function_output.hpp>
 #include <ural/sequence/generator.hpp>
-#include <ural/sequence/iota.hpp>
+#include <ural/sequence/outdirected.hpp>
 #include <ural/sequence/reversed.hpp>
 #include <ural/sequence/partition.hpp>
 
@@ -1098,7 +1098,7 @@ namespace details
         ::ural::min_element_accumulator<ForwardSequence, decltype(cmp_s)>
             acc(in++, cmp_s);
 
-        auto seq = ural::make_iota_sequence(in);
+        auto seq = in | ural::outdirected;
 
         acc = ::ural::details::for_each(std::move(seq), std::move(acc));
 
