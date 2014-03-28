@@ -13,7 +13,7 @@
 
 1382764809 c:\devtools\ural_repo\ural\\ural\placeholders.hpp
 
-1395187831 source:c:\devtools\ural_repo\ural\tests\iterator_sequence_test.cpp
+1395965210 source:c:\devtools\ural_repo\ural\tests\iterator_sequence_test.cpp
 	<boost/test/unit_test.hpp>
 	<forward_list>
 	<list>
@@ -329,7 +329,7 @@
 	<ural/sequence/transform.hpp>
 	<ural/sequence/uniqued.hpp>
 
-1395360121 c:\devtools\ural_repo\ural\ural\sequence\iterator_sequence.hpp
+1395965441 c:\devtools\ural_repo\ural\ural\sequence\iterator_sequence.hpp
 	<ural/sequence/base.hpp>
 	<ural/tuple.hpp>
 
@@ -462,7 +462,7 @@
 1394615334 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
 	<ural/sequence/base.hpp>
 
-1395793126 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
+1395965210 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<forward_list>
 	<list>
@@ -6258,7 +6258,7 @@
 	<ostream>
 	<utility>
 
-1395618267 c:\devtools\ural_repo\ural\ural\utility.hpp
+1395965171 c:\devtools\ural_repo\ural\ural\utility.hpp
 	<ural/defs.hpp>
 	<ural/type_traits.hpp>
 

@@ -307,7 +307,7 @@ namespace ural
         {
             policy_type::assert_not_empty(*this);
 
-            return *(iterators_[front_index]);
+            return *this->begin();
         }
 
         /** @brief Переход к следующему элементу последовательности
@@ -323,13 +323,13 @@ namespace ural
         // Многопроходная прямая последовательность
         iterator_sequence traversed_front() const
         {
-            return iterator_sequence{iterators_[begin_index],
-                                     iterators_[front_index]};
+            return iterator_sequence{this->traversed_begin(),
+                                     this->begin()};
         }
 
         void shrink_front()
         {
-            iterators_[begin_index] = iterators_[front_index];
+            iterators_[begin_index] = this->begin();
         }
 
         iterator_sequence original() const
@@ -355,25 +355,25 @@ namespace ural
 
         iterator_sequence traversed_back() const
         {
-            return iterator_sequence(iterators_[stop_index],
-                                     iterators_[end_index]);
+            return iterator_sequence(this->end(),
+                                     this->traversed_end());
         }
 
         void shrink_back()
         {
-            iterators_[end_index] = iterators_[stop_index];
+            iterators_[end_index] = this->end();
         }
 
         // Последовательность произвольного доступа
         reference operator[](distance_type index) const
         {
             policy_type::check_index(*this, index);
-            return iterators_[front_index][index];
+            return this->begin()[index];
         }
 
         distance_type size() const
         {
-            return iterators_[stop_index] - iterators_[front_index];
+            return this->end() - this->begin();
         }
 
         iterator_sequence & operator+=(distance_type n)
