@@ -24,6 +24,8 @@
 #include <ural/defs.hpp>
 #include <ural/type_traits.hpp>
 
+#include <boost/compressed_pair.hpp>
+
 namespace ural
 {
     template <class T, T... Ints>
@@ -88,6 +90,63 @@ namespace ural
         // значению
         value.swap(x);
         return x;
+    }
+
+    template <class T>
+    class with_old_value
+    {
+    public:
+        // @todo использовать move, если возможно
+        explicit with_old_value(T value)
+         : members_(value, value)
+        {}
+
+        T & value()
+        {
+            return members_.first();
+        }
+
+        T const & value() const
+        {
+            return members_.first();
+        }
+
+        T const & old_value() const
+        {
+            return members_.second();
+        }
+
+        void commit()
+        {
+            members_.second() = members_.first();
+        }
+
+    private:
+        boost::compressed_pair<T, T> members_;
+    };
+
+    template <class T1, class T2>
+    bool operator==(with_old_value<T1> const & x, with_old_value<T2> const & y)
+    {
+        return x.value() == y.value() && x.old_value() == y.old_value();
+    }
+
+    template <class T>
+    T && get(T && x)
+    {
+        return std::forward<T>(x);
+    }
+
+    template <class T>
+    T & get(with_old_value<T> & x)
+    {
+        return x.value();
+    }
+
+    template <class T>
+    T const & get(with_old_value<T> const & x)
+    {
+        return x.value();
     }
 }
 // namespace ural

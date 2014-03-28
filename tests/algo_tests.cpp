@@ -904,7 +904,6 @@ BOOST_AUTO_TEST_CASE(partition_test)
 
     BOOST_CHECK(::ural::none_of(ural::shrink_front(r_ural), is_even));
     BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.end(), is_even));
-    BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.traversed_end(), is_even));
 }
 
 BOOST_AUTO_TEST_CASE(stable_partition_test_empty)

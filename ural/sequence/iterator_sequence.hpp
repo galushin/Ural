@@ -24,6 +24,7 @@
 
 #include <ural/sequence/base.hpp>
 #include <ural/tuple.hpp>
+#include <ural/utility.hpp>
 
 namespace ural
 {
@@ -73,160 +74,6 @@ namespace ural
     };
 
     /// @cond false
-    template <class Iterator, class Category>
-    class iterator_sequence_base;
-
-    template <class Iterator>
-    class iterator_sequence_base<Iterator, std::input_iterator_tag>
-    {
-    public:
-        explicit iterator_sequence_base(Iterator first, Iterator last)
-         : data_{first, last}
-        {}
-
-        template <size_t index>
-        Iterator & operator[](placeholder<index> p)
-        {
-            return data_[p];
-        }
-
-        template <size_t index>
-        Iterator const & operator[](placeholder<index> p) const
-        {
-            return data_[p];
-        }
-
-        Iterator const & traversed_end() const
-        {
-            // @todo Сделать более устойчивым к модификациям
-            return data_[ural::_2];
-        }
-
-        typedef ural::tuple<Iterator, Iterator> iterators_tuple;
-
-        iterators_tuple const & iterators() const
-        {
-            return data_;
-        }
-
-    private:
-        iterators_tuple data_;
-    };
-
-    template <class Iterator>
-    class iterator_sequence_base<Iterator, std::forward_iterator_tag>
-    {
-    public:
-        explicit iterator_sequence_base(Iterator first, Iterator last)
-         : data_{first, first, last}
-        {}
-
-        template <size_t index>
-        Iterator & operator[](placeholder<index> p)
-        {
-            return data_[p];
-        }
-
-        template <size_t index>
-        Iterator const & operator[](placeholder<index> p) const
-        {
-            return data_[p];
-        }
-
-        Iterator const & traversed_end() const
-        {
-            // @todo Сделать более устойчивым к модификациям
-            return data_[ural::_2];
-        }
-
-        typedef ural::tuple<Iterator, Iterator, Iterator> iterators_tuple;
-
-        iterators_tuple const & iterators() const
-        {
-            return data_;
-        }
-
-    private:
-        iterators_tuple data_;
-    };
-
-    template <class Iterator>
-    class iterator_sequence_base<Iterator, std::bidirectional_iterator_tag>
-    {
-    public:
-        explicit iterator_sequence_base(Iterator first, Iterator last)
-         : data_{first, first, last, last}
-        {}
-
-        template <size_t index>
-        Iterator & operator[](placeholder<index> p)
-        {
-            return data_[p];
-        }
-
-        template <size_t index>
-        Iterator const & operator[](placeholder<index> p) const
-        {
-            return data_[p];
-        }
-
-        Iterator const & traversed_end() const
-        {
-            // @todo Сделать более устойчивым к модификациям
-            return data_[ural::_4];
-        }
-
-        typedef ural::tuple<Iterator, Iterator, Iterator, Iterator>
-            iterators_tuple;
-
-        iterators_tuple const & iterators() const
-        {
-            return data_;
-        }
-
-    private:
-        iterators_tuple data_;
-    };
-
-    template <class Iterator>
-    class iterator_sequence_base<Iterator, std::random_access_iterator_tag>
-    {
-    public:
-        // @todo Либо оптимизировать, либо унаследовать от версии для двунаправленных
-        explicit iterator_sequence_base(Iterator first, Iterator last)
-         : data_{first, first, last, last}
-        {}
-
-        template <size_t index>
-        Iterator & operator[](placeholder<index> p)
-        {
-            return data_[p];
-        }
-
-        template <size_t index>
-        Iterator const & operator[](placeholder<index> p) const
-        {
-            return data_[p];
-        }
-
-        Iterator const & traversed_end() const
-        {
-            // @todo Сделать более устойчивым к модификациям
-            return data_[ural::_4];
-        }
-
-        typedef ural::tuple<Iterator, Iterator, Iterator, Iterator>
-            iterators_tuple;
-
-        iterators_tuple const & iterators() const
-        {
-            return data_;
-        }
-
-    private:
-        iterators_tuple data_;
-    };
-
     template <class Iterator>
     struct iterator_tag_to_traversal_tag;
 
@@ -287,7 +134,7 @@ namespace ural
         @pre <tt> [first; last) </tt> должен быть допустимым интервалом
         */
         explicit iterator_sequence(Iterator first, Iterator last)
-         : iterators_{std::move(first), std::move(last)}
+         : members_{Front_type{std::move(first)}, Back_type{std::move(last)}}
         {}
 
         /** @brief Проверка исчерпания последовательности
@@ -317,7 +164,7 @@ namespace ural
         void pop_front()
         {
             policy_type::assert_not_empty(*this);
-            ++ iterators_[front_index];
+            ++ ural::get(members_.first());
         }
 
         // Многопроходная прямая последовательность
@@ -329,7 +176,7 @@ namespace ural
 
         void shrink_front()
         {
-            iterators_[begin_index] = this->begin();
+            members_.first().commit();
         }
 
         iterator_sequence original() const
@@ -342,7 +189,7 @@ namespace ural
         void pop_back()
         {
             policy_type::assert_not_empty(*this);
-            -- iterators_[stop_index];
+            -- ural::get(members_.second());
         }
 
         reference back() const
@@ -361,7 +208,7 @@ namespace ural
 
         void shrink_back()
         {
-            iterators_[end_index] = this->end();
+            members_.second().commit();
         }
 
         // Последовательность произвольного доступа
@@ -379,7 +226,7 @@ namespace ural
         iterator_sequence & operator+=(distance_type n)
         {
             policy_type::check_step(*this, n);
-            iterators_[front_index] += n;
+            ural::get(members_.first()) += n;
             return *this;
         }
 
@@ -388,56 +235,61 @@ namespace ural
             policy_type::check_step(*this, n);
             assert(n >= 0);
 
-            iterators_[stop_index] -= n;
+            ural::get(members_.second()) -= n;
         }
 
         // Итераторы
         iterator begin() const
         {
-            return iterators_[front_index];
+            return ural::get(members_.first());
         }
 
         iterator end() const
         {
-            return iterators_[stop_index];
+            return ural::get(members_.second());
         }
 
         iterator traversed_begin() const
         {
-            return iterators_[begin_index];
+            return members_.first().old_value();
         }
 
         iterator traversed_end() const
         {
-            return iterators_.traversed_end();
+            return members_.second().old_value();
         }
 
     private:
-        typedef iterator_sequence_base<Iterator, iterator_category> Base;
+        static auto constexpr is_forward
+            = std::is_convertible<traversal_tag, forward_traversal_tag>::value;
+
+        static auto constexpr is_bidirectional
+            = std::is_convertible<traversal_tag, bidirectional_traversal_tag>::value
+            || std::is_convertible<traversal_tag, random_access_traversal_tag>::value;
+
+        typedef typename std::conditional<is_forward, with_old_value<iterator>, iterator>::type
+            Front_type;
+        typedef typename std::conditional<is_bidirectional, with_old_value<iterator>, iterator>::type
+            Back_type;
+
+        typedef boost::compressed_pair<Front_type, Back_type> Members;
 
     public:
-        typedef typename Base::iterators_tuple iterators_tuple;
-
-        iterators_tuple const & iterators() const
+        Members const & members() const
         {
-            return iterators_.iterators();
+            return this->members_;
         }
 
     private:
-        static constexpr auto begin_index = ural::_1;
-        static constexpr auto front_index = ural::_2;
-        static constexpr auto stop_index = ural::_3;
-        static constexpr auto end_index = ural::_4;
-
-    private:
-        Base iterators_;
+        Members members_;
     };
 
     template <class Iterator1, class P1, class Iterator2, class P2>
     bool operator==(iterator_sequence<Iterator1, P1> const & x,
                     iterator_sequence<Iterator2, P2> const & y)
     {
-        return x.iterators() == y.iterators();
+        return x.members().first() == y.members().first()
+                && x.members().second() == y.members().second();
     }
 
     template <class Iterator>
