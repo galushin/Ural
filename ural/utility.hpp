@@ -26,11 +26,19 @@
 
 namespace ural
 {
+    /** @brief Последовательность целых чисел времени компиляции
+    @tparam T тип целых чисел
+    @tparam Ints список целых чисел
+    */
     template <class T, T... Ints>
     struct integer_sequence
     {
+        /// @brief тип целых чисел
         typedef T value_type;
 
+        /** @brief Количество элементов
+        @return Количество чисел в последовательности
+        */
         static constexpr std::size_t size() noexcept
         {
             return sizeof...(Ints);
@@ -40,6 +48,7 @@ namespace ural
     template<std::size_t... Ints>
     using index_sequence = integer_sequence<std::size_t, Ints...>;
 
+    /// @cond false
     template <class T, T first, T last, T... Rs>
     struct make_int_sequence_helper
      : make_int_sequence_helper<T, first+1, last, Rs..., first>
@@ -49,6 +58,7 @@ namespace ural
     struct make_int_sequence_helper<T, first, first, Rs...>
      : declare_type<integer_sequence<T, Rs...> >
     {};
+    /// @endcond
 
     template<class T, T N>
     using make_integer_sequence = typename make_int_sequence_helper<T, 0, N>::type;
