@@ -22,6 +22,8 @@
 #include <ural/algorithm.hpp>
 #include <ural/numeric.hpp>
 
+#include <cmath>
+
 // @todo тестировать с архетипами
 
 BOOST_AUTO_TEST_CASE(iota_test)
@@ -322,4 +324,49 @@ BOOST_AUTO_TEST_CASE(polynomial_unary_minus_test)
     BOOST_CHECK_EQUAL(P1.degree(), 1);
     BOOST_CHECK_EQUAL(P1[0], -P[0]);
     BOOST_CHECK_EQUAL(P1[1], -P[1]);
+}
+
+// Интерполяционный многочлен Ньютона
+#include <ural/numeric/interpolation.hpp>
+#include <boost/math/constants/constants.hpp>
+
+BOOST_AUTO_TEST_CASE(newton_interpolation_test)
+{
+    auto f = [](double x) { return std::cos(x); };
+
+    const double x1 = 0.0;
+    const double x2 = boost::math::constants::half_pi<double>();
+    auto const x_mid = (x1 + x2)/2;
+
+    auto const f1 = f(x1);
+    auto const f2 = f(x2);
+    auto const f_mid = f(x_mid);
+
+    ural::newton_polynomial<double> P{};
+
+    BOOST_CHECK_EQUAL(0, P.degree());
+
+    BOOST_CHECK_EQUAL(0.0, P(x1));
+    BOOST_CHECK_EQUAL(0.0, P(x2));
+    BOOST_CHECK_EQUAL(0.0, P(x_mid));
+
+    P.update(x1, f1);
+
+    BOOST_CHECK_EQUAL(0, P.degree());
+
+    BOOST_CHECK_EQUAL(f1, P(x1));
+    BOOST_CHECK_EQUAL(f1, P(x2));
+    BOOST_CHECK_EQUAL(f1, P(x_mid));
+
+    P.update(x2, f(x2));
+
+    BOOST_CHECK_EQUAL(1, P.degree());
+
+    BOOST_CHECK_EQUAL(f1, P(x1));
+    BOOST_CHECK_LE(std::abs(f2 - P(x2)), 1e-10);
+
+    using std::abs;
+    auto const eps = 0.5 * abs(x_mid - x1) * abs(x_mid - x2);
+
+    BOOST_CHECK_LE(abs(f_mid - P(x_mid)), eps);
 }
