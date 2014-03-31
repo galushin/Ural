@@ -22,11 +22,15 @@
  заданным числом элементов
 */
 
+#include <ural/utility.hpp>
+
 namespace ural
 {
-    /** @note Длина последовательности меньше заданной --- это ошибка или
-    нормальная ситуация?
-    @todo Настройка структуры в зависимости от категории обхода
+    /** @brief Адаптор последовательности, ограничивающий длину базовой
+    последовательности
+    @tparam Sequence тип последовательности
+    @tparam Size тип количества элементов, которые должны быть взяты из базовой
+    последовательности
     */
     template <class Sequence, class Size>
     class take_sequence
@@ -41,7 +45,7 @@ namespace ural
 
         // Создание, копирование
         explicit take_sequence(Sequence seq, Size count)
-         : impl_{std::move(seq), count, count}
+         : impl_(std::move(seq), Count_type{std::move(count)})
         {}
 
         // Однопроходная последовательность
@@ -60,7 +64,7 @@ namespace ural
             assert(this->count() > 0);
 
             ++ impl_[ural::_1];
-            -- impl_[ural::_2];
+            -- ural::get(impl_[ural::_2]);
         }
 
         // Прямая последовательность
@@ -80,17 +84,23 @@ namespace ural
 
         Size const & count() const
         {
-            return impl_[ural::_2];
+            return ural::get(impl_[ural::_2]);
         }
 
     private:
         Size const & init_count() const
         {
-            return impl_[ural::_3];
+            return impl_[ural::_2].old_value();
         }
 
     private:
-        ural::tuple<Sequence, Size, Size> impl_;
+        static auto constexpr is_forward
+            = std::is_convertible<traversal_tag, forward_traversal_tag>::value;
+
+        typedef typename std::conditional<is_forward, with_old_value<Size>, Size>::type
+            Count_type;
+
+        ural::tuple<Sequence, Count_type> impl_;
     };
 
     template <class Size>

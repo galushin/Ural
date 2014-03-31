@@ -96,33 +96,35 @@ namespace ural
     class with_old_value
     {
     public:
-        // @todo использовать move, если возможно
         explicit with_old_value(T value)
-         : members_(value, value)
+         : value_{value}
+         , old_value_(std::move(value))
         {}
 
         T & value()
         {
-            return members_.first();
+            return value_;
         }
 
         T const & value() const
         {
-            return members_.first();
+            return value_;
         }
 
         T const & old_value() const
         {
-            return members_.second();
+            return old_value_;
         }
 
         void commit()
         {
-            members_.second() = members_.first();
+            old_value_ = value_;
         }
 
     private:
-        boost::compressed_pair<T, T> members_;
+        // Порядок объявления важен
+        T value_;
+        T old_value_;
     };
 
     template <class T1, class T2>
