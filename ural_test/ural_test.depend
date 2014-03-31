@@ -41,14 +41,17 @@
 
 1382674135 c:\devtools\ural_repo\ural\\ural\sequence\insertion.hpp
 
-1395801381 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
+1396230168 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
 	<numeric>
 	<forward_list>
 	<boost/test/unit_test.hpp>
 	<ural/algorithm.hpp>
 	<ural/numeric.hpp>
+	<cmath>
 	<ural/numeric/polynom.hpp>
 	<boost/mpl/list.hpp>
+	<ural/numeric/interpolation.hpp>
+	<boost/math/constants/constants.hpp>
 
 1382760303 c:\devtools\ural_repo\ural\\ural\numeric.hpp
 	<ural/functional.hpp>
@@ -329,7 +332,7 @@
 	<ural/sequence/transform.hpp>
 	<ural/sequence/uniqued.hpp>
 
-1395968834 c:\devtools\ural_repo\ural\ural\sequence\iterator_sequence.hpp
+1395991945 c:\devtools\ural_repo\ural\ural\sequence\iterator_sequence.hpp
 	<ural/sequence/base.hpp>
 	<ural/tuple.hpp>
 	<ural/utility.hpp>
@@ -366,7 +369,7 @@
 	<ural/optional.hpp>
 	<ural/sequence/base.hpp>
 
-1395618267 source:c:\devtools\ural_repo\ural\tests\optional_tests.cpp
+1395982286 source:c:\devtools\ural_repo\ural\tests\optional_tests.cpp
 	<boost/test/unit_test.hpp>
 	<boost/concept/assert.hpp>
 	<ostream>
@@ -382,7 +385,7 @@
 	<unordered_set>
 	<ural/utility/tracers.hpp>
 
-1395618267 c:\devtools\ural_repo\ural\ural\optional.hpp
+1395982171 c:\devtools\ural_repo\ural\ural\optional.hpp
 	<stdexcept>
 	<type_traits>
 	<ostream>
@@ -588,7 +591,8 @@
 	<ural/functional/make_functor.hpp>
 	<ural/functional/compose.hpp>
 
-1395803623 c:\devtools\ural_repo\ural\ural\sequence\taken.hpp
+1395980832 c:\devtools\ural_repo\ural\ural\sequence\taken.hpp
+	<ural/utility.hpp>
 
 1394151640 c:\devtools\ural_repo\ural\ural\sequence\uniqued.hpp
 	<ural/algorithm/details/algo_base.hpp>
@@ -6259,7 +6263,7 @@
 	<ostream>
 	<utility>
 
-1395968855 c:\devtools\ural_repo\ural\ural\utility.hpp
+1395970810 c:\devtools\ural_repo\ural\ural\utility.hpp
 	<ural/defs.hpp>
 	<ural/type_traits.hpp>
 	<boost/compressed_pair.hpp>
@@ -6443,7 +6447,7 @@
 
 1395219638 c:\devtools\ural_repo\ural\ural\sequence\iostream.hpp
 
-1395360121 c:\devtools\ural_repo\ural\ural\numeric\polynom.hpp
+1395982435 c:\devtools\ural_repo\ural\ural\numeric\polynom.hpp
 	<ural/sequence/sink.hpp>
 	<boost/operators.hpp>
 
@@ -9560,4 +9564,6 @@
 1395803092 c:\devtools\ural_repo\ural\ural\sequence\outdirected.hpp
 
 1395803755 c:\devtools\ural_repo\ural\ural\sequence\progression.hpp
+
+1396229277 c:\devtools\ural_repo\ural\ural\numeric\interpolation.hpp
 

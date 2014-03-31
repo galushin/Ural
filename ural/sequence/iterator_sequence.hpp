@@ -19,7 +19,6 @@
 
 /** @file ural/sequence/iterator_sequence.hpp
  @brief Последовательность на основе пары итераторов
- @todo Хранить reverse_iterator для конца интервала
 */
 
 #include <ural/sequence/base.hpp>
@@ -112,6 +111,9 @@ namespace ural
         /// @brief Тип ссылки
         typedef typename std::iterator_traits<Iterator>::reference reference;
 
+        /// @brief Тип ссылки
+        typedef typename std::iterator_traits<Iterator>::pointer pointer;
+
         /// @brief Тип значения
         typedef typename std::iterator_traits<Iterator>::value_type value_type;
 
@@ -119,9 +121,11 @@ namespace ural
         typedef typename std::iterator_traits<Iterator>::difference_type
             distance_type;
 
+        /// @brief Категория итератора
         typedef typename std::iterator_traits<Iterator>::iterator_category
             iterator_category;
 
+        /// @brief Категория обхода
         typedef typename iterator_tag_to_traversal_tag<iterator_category>::type
             traversal_tag;
 
@@ -155,6 +159,11 @@ namespace ural
             policy_type::assert_not_empty(*this);
 
             return *this->begin();
+        }
+
+        pointer operator->() const
+        {
+            return this->begin().operator->();
         }
 
         /** @brief Переход к следующему элементу последовательности
