@@ -23,6 +23,7 @@
 
 #include <ural/defs.hpp>
 #include <ural/utility.hpp>
+
 #include <memory>
 
 namespace ural
@@ -109,7 +110,11 @@ namespace ural
         ~throwing_ptr_checker() = default;
     };
 
-    /**
+    /** @brief Умный указатель с глубоким копированием
+    @tparam T тип указываемого объекта
+    @tparam Cloner стратегия копирования
+    @tparam Deleter стратегия удаления
+    @tparam Checker стратегия проверок
     @todo Учесть N3339
     @todo Тесты с полиморфными типами (стратегии копирования и удаления)
     @todo По аналогии с 20.7.1
@@ -129,12 +134,8 @@ namespace ural
 
     Конструирование на основе <tt> std::shared_ptr </tt> не вводится, так как
     эти умные указатели имеют разную семантику владения.
-
     Конструирование на основе <tt> std::auto_ptr </tt> не вводится, так как
     <tt> std::auto_ptr </tt> объявлен нежелательным.
-
-    Убедиться, что удаление безопасно, то есть либо деструктор виртуальный,
-    либо тип указываемого объекта совпадает с T
     */
     template <class T,
               class Cloner = use_default,
@@ -169,24 +170,40 @@ namespace ural
 
     public:
         // Типы
+        /// @brief Тип указываемого объекта
         typedef T element_type;
+
+        /// @brief Тип ссылки
         typedef typename std::add_lvalue_reference<T>::type reference;
 
+        /// @brief Тип стратегии копирования
         typedef typename default_helper<Cloner, default_copy<element_type>>::type
             cloner_type;
+
+        /// @brief Тип стратегии удаления
         typedef typename default_helper<Deleter, std::default_delete<element_type>>::type
             deleter_type;
 
+        /// @brief Тип объекта, управляющего владением и удалением
         typedef std::unique_ptr<T, deleter_type> Holder;
 
+        /// @brief Тип указателя
         typedef typename Holder::pointer pointer;
 
+        /// @brief Тип стратегии проверок
         typedef typename default_helper<Checker, default_ptr_checker<pointer>>::type
             checker_type;
 
         // Конструкторы
+        /** @brief Конструктор без параметров
+        @post <tt> !*this == true </tt>
+        */
         constexpr copy_ptr() noexcept = default;
 
+        /** @brief Конструктор на основе указателя
+        @param ptr указатель
+        @post <tt> this->get() == ptr </tt>
+        */
         template <class U>
         explicit copy_ptr(U * ptr) noexcept
          : holder_{std::move(ptr)}
@@ -196,11 +213,21 @@ namespace ural
                           "Can't be safely destroed");
         }
 
+        /** @brief Конструктор на основе <tt> std::unique_ptr </tt>
+        @param p умный указатель
+        @post <tt> this->get() </tt> будет иметь то же значение, что @c p имел
+        до начала выполнения конструктора.
+        */
         template <class U>
         explicit copy_ptr(std::unique_ptr<U> && p)
          : holder_{std::move(p)}
         {}
 
+        /** @brief Конструктор копий
+        @param x копируемый объект
+        @post <tt> !*this == !x </tt>
+        @post Если <tt> x.get() != nullptr </tt>, то <tt> **this == *x </tt>
+        */
         copy_ptr(copy_ptr const & x)
          : holder_{x.make_copy().release(), x.get_deleter()}
         {}
@@ -217,7 +244,10 @@ namespace ural
          : holder_(x.release(), std::move(x.get_deleter()))
         {}
 
-        constexpr copy_ptr(nullptr_t) noexcept
+        /** @brief Конструктор на основе @c nullptr_t
+        @post <tt> !*this == true </tt>
+        */
+        constexpr copy_ptr(std::nullptr_t) noexcept
          : copy_ptr{}
         {}
 
@@ -251,11 +281,17 @@ namespace ural
         }
 
         // Свойства
+        /** @brief Доступ к стратегии удаления
+        @return Константная ссылка на стратегию удаления
+        */
         deleter_type const & get_deleter() const
         {
             return holder_.get_deleter();
         }
 
+        /** @brief Явное преобразование в @c bool
+        @return @b true, если указатель владеет объектом, иначе --- @c false.
+        */
         explicit operator bool() const
         {
             return static_cast<bool>(holder_);
@@ -278,7 +314,12 @@ namespace ural
             return holder_.operator->();
         }
 
-        typename cloner_type::owner_type make_copy() const
+        /** @brief Создание копии указываемого объекта
+        @return Умный указатель с эксклюзивным владением, владеющий копией
+        указываемого объекта
+        */
+        typename cloner_type::owner_type
+        make_copy() const
         {
             if(!*this)
             {
