@@ -206,7 +206,8 @@ BOOST_AUTO_TEST_CASE(value_ctor)
   }
 }
 
-// @todo BOOST_AUTO_TEST_CASE(optional_nullopt_assigment)
+// @todo Реализовать
+//BOOST_AUTO_TEST_CASE(optional_nullopt_assigment)
 //{
 //    auto oi = tr2::optional<int>{1};
 //    BOOST_CHECK (!!oi);

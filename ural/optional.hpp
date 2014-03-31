@@ -322,11 +322,7 @@ namespace details
          : impl_{}
         {}
 
-        constexpr optional(T const & value)
-         : impl_{value}
-        {}
-
-        constexpr optional(T && value)
+        constexpr optional(T value)
          : impl_{std::move(value)}
         {}
 
@@ -371,17 +367,12 @@ namespace details
         }
 
         template <class U>
-        // @todo typename std::enable_if<std::is_same<typename std::decay<U>::type, T>::value, optional &>::type?
-        optional &
+        // @todo && is_assignable<T, U>::value
+        typename std::enable_if<std::is_constructible<T, U>::value, optional &>::type
         operator=(U && value)
         {
             impl_ = std::forward<U>(value);
             return *this;
-        }
-
-        optional & operator=(optional & x)
-        {
-            return *this = static_cast<optional const&>(x);
         }
 
         optional & operator=(optional const & x)
@@ -476,7 +467,6 @@ namespace details
             return !*this ? T{std::forward<U>(value)} : *(*this);
         }
 
-        /// @todo Покрыть тестами
         template <class U>
         T value_or(U && value) &&
         {
