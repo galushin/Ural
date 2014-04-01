@@ -91,7 +91,6 @@ namespace ural
     @param x объект, которому должно быть присвоено значение
     @param value присваиваемое значение
     @return x
-    @todo Разные типы левой и правой части
     */
     template <class T>
     T & copy_and_swap(T & x, T value)

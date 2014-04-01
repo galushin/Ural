@@ -3,6 +3,8 @@
 
 /** @file ural/sequence/progression.hpp
  @brief Прогрессии
+ @todo Возможность задавать категорию обхода. Настройка структуры в зависимости
+ от категории обхода
 */
 
 namespace ural
@@ -50,7 +52,6 @@ namespace ural
         }
 
     private:
-        // @todo Настройка структуры в зависимости от категории обхода
         Additive init_first_;
         Additive first_;
         Additive step_;

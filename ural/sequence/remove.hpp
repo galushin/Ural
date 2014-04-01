@@ -20,6 +20,8 @@
 /** @file ural/sequence/remove.hpp
  @brief Адаптор последовательности, исключающий элементы базовой
  последовательности, удовлетворяющие некоторому условию
+ @todo Усилить категории обхода, проблема в том, что это невозможно без
+ дополнительных затрат
 */
 
 #include <ural/algorithm/details/algo_base.hpp>
@@ -35,7 +37,6 @@ namespace ural
         typedef typename Input::reference reference;
         typedef typename Input::value_type value_type;
 
-        // @todo Усилить категорию обхода
         typedef typename std::common_type<typename Input::traversal_tag,
                                           forward_traversal_tag>::type
             traversal_tag;
@@ -111,7 +112,6 @@ namespace ural
         typedef typename Input::reference reference;
         typedef typename Input::value_type value_type;
 
-        // @todo Усилить категорию обхода
         typedef typename std::common_type<typename Input::traversal_tag,
                                           forward_traversal_tag>::type
             traversal_tag;

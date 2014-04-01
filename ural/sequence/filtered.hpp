@@ -26,24 +26,12 @@
 
 #include <boost/compressed_pair.hpp>
 
-namespace boost
-{
-    // @todo Вынести в отдельный файл
-    template <class T1, class T2>
-    constexpr bool operator==(compressed_pair<T1, T2> const & x,
-                              compressed_pair<T1, T2> const & y)
-    {
-        return x.first() == y.first()
-                && x.second() == y.second();
-    }
-}
-// namespace boost
-
 namespace ural
 {
     /** @brief Последовательность элементов базовой последовательности,
     удовлетворяющих заданному предикату.
     @todo Оптимизация размера
+    @todo Усилить категорию обхода
     */
     template <class Sequence, class Predicate>
     class filter_sequence
@@ -60,7 +48,6 @@ namespace ural
         typedef typename Sequence::reference reference;
         typedef typename Sequence::value_type value_type;
 
-        // @todo Усилить категорию обхода
         typedef typename std::common_type<typename Sequence::traversal_tag,
                                           forward_traversal_tag>::type
             traversal_tag;
@@ -80,35 +67,35 @@ namespace ural
 
         reference front() const
         {
-            return *data_.first();
+            return *data_[ural::_1];
         }
 
         void pop_front()
         {
-            ++ data_.first();
+            ++ data_[ural::_1];
             this->seek();
         }
 
         // Адаптор последовательности
         Predicate const & predicate() const
         {
-            return data_.second();
+            return data_[ural::_2];
         }
 
         Sequence const & base() const
         {
-            return data_.first();
+            return data_[ural::_1];
         }
 
     private:
         void seek()
         {
-            data_.first()
-                = ::ural::details::find_if(data_.first(), this->predicate());
+            data_[ural::_1]
+                = ::ural::details::find_if(data_[ural::_1], this->predicate());
         }
 
     private:
-        boost::compressed_pair<Sequence, Predicate> data_;
+        ural::tuple<Sequence, Predicate> data_;
     };
 
     template <class Sequence, class Predicate>

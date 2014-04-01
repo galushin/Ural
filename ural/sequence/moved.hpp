@@ -20,7 +20,6 @@
 /** @file ural/sequence/moved.hpp
  @brief Адаптор последовательности, преобразующий ссылки на элементы в
  rvalue-ссылки
- @todo Больше тестов
 */
 
 #include <ural/sequence/base.hpp>
