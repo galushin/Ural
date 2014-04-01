@@ -121,8 +121,6 @@ namespace ural
     @todo По аналогии с 20.7.2
     @todo Какие функции должны быть noexcept?
     @todo Специализация для массивов
-    @todo Защита от срезки: как на этапе компиляции (см. shared_ptr), так и во
-    время выполнения программы. Проверка, что типы оригинала и копии совпадают
 
     Обоснование.
 
@@ -232,6 +230,7 @@ namespace ural
          : holder_{x.make_copy().release(), x.get_deleter()}
         {}
 
+        /// @brief Конструктор с перемещением
         copy_ptr(copy_ptr &&) = default;
 
         template <class T1, class C1, class D1, class Ch1>
@@ -252,6 +251,9 @@ namespace ural
         {}
 
         // Присваивание
+        /** @brief Оператор копирующего присваивания
+        @return *this
+        */
         copy_ptr & operator=(copy_ptr const & x)
         {
             return ::ural::copy_and_swap(*this, x);
@@ -264,6 +266,9 @@ namespace ural
             return *this;
         }
 
+        /** @brief Оператор присваивания с перемещением
+        @return *this
+        */
         copy_ptr & operator=(copy_ptr &&) = default;
 
         template <class T1, class C1, class D1, class Ch1>
@@ -327,7 +332,11 @@ namespace ural
             }
             else
             {
-                return cloner_type::make_copy(**this);
+                auto p = cloner_type::make_copy(**this);
+
+                assert(typeid(*p) == typeid(**this));
+
+                return p;
             }
         }
 

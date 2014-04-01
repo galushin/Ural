@@ -96,8 +96,11 @@ namespace ural
         return Sequence(sequence(std::forward<Input>(in)), make_functor(std::move(pred)));
     }
 
-    /**
-    @todo Выразить через remove_if_sequence
+    /** @brief Адаптор последовательности, исключающий элементы базовой
+    последовательности, равные заданному значению
+    @tparam Input Тип базовой последовательности
+    @tparam T тип значения
+    @tparam BinaryPredicate тип бинарного предиката, задающего равенство.
     */
     template <class Input, class T, class BinaryPredicate>
     class remove_sequence
