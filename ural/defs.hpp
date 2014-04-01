@@ -41,16 +41,6 @@ namespace ural
     */
     struct auto_tag{};
 
-    /** @brief Класс, содержащий @b typedef-объявление типа
-    @tparam T тип
-    */
-    template <class T>
-    struct declare_type
-    {
-        /// @brief Объявляемый тип
-        typedef T type;
-    };
-
     /** Если @c T совпадает с @c use_default, то результат @c --- Default,
     иначе --- @c T.
     @brief Класс-характеристика для определения значения шаблонного

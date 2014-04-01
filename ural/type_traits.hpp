@@ -25,8 +25,40 @@
 
 namespace ural
 {
+    /** @brief Класс, содержащий @b typedef-объявление типа
+    @tparam T тип
+    */
+    template <class T>
+    struct declare_type
+    {
+        /// @brief Объявляемый тип
+        typedef T type;
+    };
+
     template <class T>
     using decay_t = typename std::decay<T>::type;
+
+    /// @cond false
+    namespace details
+    {
+        template <class T, class U>
+        std::integral_constant<bool, false>
+        is_assignable_helper(...);
+
+        template <class T, class U>
+        std::integral_constant<bool, true>
+        is_assignable_helper(ural::declare_type<decltype(std::declval<T>() = std::declval<U>())> *);
+    }
+    // namespace details
+    /// @endcond
+
+    template <class T, class U>
+    struct is_assignable
+     : decltype(::ural::details::is_assignable_helper<T, U>(nullptr))
+    {
+        typedef decltype(::ural::details::is_assignable_helper<T, U>(nullptr)) type;
+        constexpr static auto value = type::value;
+    };
 }
 // namespace ural
 

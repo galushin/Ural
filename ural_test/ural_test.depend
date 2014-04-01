@@ -369,7 +369,7 @@
 	<ural/optional.hpp>
 	<ural/sequence/base.hpp>
 
-1395982286 source:c:\devtools\ural_repo\ural\tests\optional_tests.cpp
+1396326945 source:c:\devtools\ural_repo\ural\tests\optional_tests.cpp
 	<boost/test/unit_test.hpp>
 	<boost/concept/assert.hpp>
 	<ostream>
@@ -385,7 +385,8 @@
 	<unordered_set>
 	<ural/utility/tracers.hpp>
 
-1395982171 c:\devtools\ural_repo\ural\ural\optional.hpp
+1396327276 c:\devtools\ural_repo\ural\ural\optional.hpp
+	<ural/type_traits.hpp>
 	<stdexcept>
 	<type_traits>
 	<ostream>
@@ -477,7 +478,7 @@
 	<ural/sequence/all.hpp>
 	<ural/utility/tracers.hpp>
 
-1395369146 c:\devtools\ural_repo\ural\ural\defs.hpp
+1396325763 c:\devtools\ural_repo\ural\ural\defs.hpp
 	<ural/type_traits.hpp>
 
 1395386592 c:\devtools\ural_repo\ural\ural\sequence\transform.hpp
@@ -562,7 +563,7 @@
 	<iterator>
 	<set>
 
-1395793126 c:\devtools\ural_repo\ural\ural\sequence\filtered.hpp
+1396319014 c:\devtools\ural_repo\ural\ural\sequence\filtered.hpp
 	<ural/algorithm/details/algo_base.hpp>
 	<boost/compressed_pair.hpp>
 
@@ -576,7 +577,7 @@
 	<ural/utility.hpp>
 	<memory>
 
-1395618267 c:\devtools\ural_repo\ural\ural\sequence\moved.hpp
+1396318700 c:\devtools\ural_repo\ural\ural\sequence\moved.hpp
 	<ural/sequence/base.hpp>
 
 1395298889 c:\devtools\ural_repo\ural\ural\sequence\replace.hpp
@@ -6228,7 +6229,7 @@
 	<boost/test/unit_test.hpp>
 	<ural/utility/tracers.hpp>
 
-1396237139 c:\devtools\ural_repo\ural\ural\sequence\remove.hpp
+1396318619 c:\devtools\ural_repo\ural\ural\sequence\remove.hpp
 	<ural/algorithm/details/algo_base.hpp>
 
 1394151640 c:\devtools\ural_repo\ural\ural\sequence\sink.hpp
@@ -6263,12 +6264,12 @@
 	<ostream>
 	<utility>
 
-1396230660 c:\devtools\ural_repo\ural\ural\utility.hpp
+1396318553 c:\devtools\ural_repo\ural\ural\utility.hpp
 	<ural/defs.hpp>
 	<ural/type_traits.hpp>
 	<boost/compressed_pair.hpp>
 
-1395040302 c:\devtools\ural_repo\ural\ural\type_traits.hpp
+1396327288 c:\devtools\ural_repo\ural\ural\type_traits.hpp
 	<type_traits>
 
 1394151640 c:\devtools\ural_repo\ural\ural\sequence\iota.hpp
@@ -9563,7 +9564,7 @@
 
 1395803092 c:\devtools\ural_repo\ural\ural\sequence\outdirected.hpp
 
-1395803755 c:\devtools\ural_repo\ural\ural\sequence\progression.hpp
+1396318693 c:\devtools\ural_repo\ural\ural\sequence\progression.hpp
 
 1396229277 c:\devtools\ural_repo\ural\ural\numeric\interpolation.hpp
 

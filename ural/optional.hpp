@@ -22,6 +22,8 @@
  отсутствовать.
 */
 
+#include <ural/type_traits.hpp>
+
 #include <stdexcept>
 #include <type_traits>
 #include <ostream>
@@ -367,8 +369,7 @@ namespace details
         }
 
         template <class U>
-        // @todo && is_assignable<T, U>::value
-        typename std::enable_if<std::is_constructible<T, U>::value, optional &>::type
+        typename std::enable_if<std::is_constructible<T, U>::value && is_assignable<T&, U>::value, optional &>::type
         operator=(U && value)
         {
             impl_ = std::forward<U>(value);

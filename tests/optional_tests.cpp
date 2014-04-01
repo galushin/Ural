@@ -228,6 +228,8 @@ BOOST_AUTO_TEST_CASE(value_ctor)
 
 BOOST_AUTO_TEST_CASE(optional_assignment_test)
 {
+    static_assert(ural::is_assignable<int&, int>::value, "is_assignable is buggy");
+
     tr2::optional<int> oi;
     oi = tr2::optional<int>{1};
     BOOST_CHECK (*oi == 1);
