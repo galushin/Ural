@@ -29,14 +29,44 @@ class MyOverflowingUnsigned;
 
 // This is a trivial user-defined wrapper around the built in int type.
 // It can be used as a test type for rational<>
-class MyInt : boost::operators<MyInt>
+class MyInt
 {
     friend class MyOverflowingUnsigned;
     int val;
 public:
     constexpr MyInt(int n = 0) : val(n) {}
-    friend MyInt operator+ (const MyInt&);
-    friend MyInt operator- (const MyInt&);
+
+    friend constexpr MyInt operator+ (const MyInt& rhs)
+    { return rhs; }
+
+    friend constexpr MyInt operator- (const MyInt & rhs)
+    { return MyInt(-rhs.val); }
+
+    constexpr MyInt operator+(const MyInt& rhs) const
+    {
+        return MyInt(val + rhs.val);
+    }
+
+    constexpr MyInt operator-(const MyInt& rhs) const
+    {
+        return MyInt(val - rhs.val);
+    }
+
+    constexpr MyInt operator*(const MyInt& rhs) const
+    {
+        return MyInt(val * rhs.val);
+    }
+
+    constexpr MyInt operator/(const MyInt& rhs) const
+    {
+        return MyInt(val / rhs.val);
+    }
+
+    constexpr MyInt operator%(const MyInt& rhs) const
+    {
+        return MyInt(val % rhs.val);
+    }
+
     MyInt& operator+= (const MyInt& rhs) { val += rhs.val; return *this; }
     MyInt& operator-= (const MyInt& rhs) { val -= rhs.val; return *this; }
     MyInt& operator*= (const MyInt& rhs) { val *= rhs.val; return *this; }
@@ -47,15 +77,15 @@ public:
     MyInt& operator^= (const MyInt& rhs) { val ^= rhs.val; return *this; }
     const MyInt& operator++() { ++val; return *this; }
     const MyInt& operator--() { --val; return *this; }
-    bool operator< (const MyInt& rhs) const { return val < rhs.val; }
-    bool operator== (const MyInt& rhs) const { return val == rhs.val; }
-    bool operator! () const { return !val; }
+
+    constexpr bool operator< (const MyInt& rhs) const { return val < rhs.val; }
+    constexpr bool operator== (const MyInt& rhs) const { return val == rhs.val; }
+    constexpr bool operator! () const { return !val; }
+
     friend std::istream& operator>>(std::istream&, MyInt&);
     friend std::ostream& operator<<(std::ostream&, const MyInt&);
 };
 
-inline MyInt operator+(const MyInt& rhs) { return rhs; }
-inline MyInt operator-(const MyInt& rhs) { return MyInt(-rhs.val); }
 inline std::istream& operator>>(std::istream& is, MyInt& i) { is >> i.val; return is; }
 inline std::ostream& operator<<(std::ostream& os, const MyInt& i) { os << i.val; return os; }
 inline MyInt abs(MyInt rhs) { if (rhs < MyInt()) rhs = -rhs; return rhs; }
@@ -296,8 +326,7 @@ public:
 // namespace std
 
 typedef ::boost::mpl::list<short, int, long>     builtin_signed_test_types;
-// @todo typedef ::boost::mpl::list<short, int, long, MyInt>  all_signed_test_types;
-typedef builtin_signed_test_types all_signed_test_types;
+typedef ::boost::mpl::list<short, int, long, MyInt>  all_signed_test_types;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(rational_size_check, T, all_signed_test_types)
 {

@@ -571,7 +571,7 @@
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/insertion.hpp>
 
-1396230660 c:\devtools\ural_repo\ural\ural\memory.hpp
+1396314184 c:\devtools\ural_repo\ural\ural\memory.hpp
 	<ural/defs.hpp>
 	<ural/utility.hpp>
 	<memory>
@@ -6249,7 +6249,7 @@
 	<ural/math/common_factor.hpp>
 	<ural/defs.hpp>
 
-1395363283 source:c:\devtools\ural_repo\ural\tests\rational_tests.cpp
+1396315233 source:c:\devtools\ural_repo\ural\tests\rational_tests.cpp
 	<ostream>
 	<boost/test/unit_test.hpp>
 	<boost/mpl/list.hpp>
