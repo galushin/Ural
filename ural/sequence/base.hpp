@@ -41,6 +41,13 @@ namespace ural
      : forward_traversal_tag
     {};
 
+    struct finite_random_access_traversal_tag
+     : random_access_traversal_tag
+    {
+    public:
+        constexpr operator bidirectional_traversal_tag() const;
+    };
+
     single_pass_traversal_tag
     decl_common_type(single_pass_traversal_tag, single_pass_traversal_tag);
 

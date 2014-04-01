@@ -93,7 +93,7 @@ namespace ural
 
     template <>
     struct iterator_tag_to_traversal_tag<std::random_access_iterator_tag>
-     : declare_type<random_access_traversal_tag>
+     : declare_type<finite_random_access_traversal_tag>
     {};
     /// @endcond
 
