@@ -369,7 +369,7 @@
 	<ural/optional.hpp>
 	<ural/sequence/base.hpp>
 
-1396326945 source:c:\devtools\ural_repo\ural\tests\optional_tests.cpp
+1396412006 source:c:\devtools\ural_repo\ural\tests\optional_tests.cpp
 	<boost/test/unit_test.hpp>
 	<boost/concept/assert.hpp>
 	<ostream>
@@ -453,7 +453,7 @@
 
 1393837797 c:\devtools\ural_repo\ural\ural\thread.hpp
 
-1395802064 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
+1396416976 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
 	<ural/sequence/base.hpp>
 	<ural/sequence/function_output.hpp>
 	<ural/sequence/generator.hpp>

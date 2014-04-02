@@ -1116,24 +1116,25 @@ namespace details
     }
 
     template <class ForwardSequence, class Compare>
-    ural::tuple<ForwardSequence, ForwardSequence>
+    tuple<ForwardSequence, ForwardSequence>
     minmax_element(ForwardSequence in, Compare cmp)
     {
-        typedef ural::tuple<ForwardSequence, ForwardSequence> Tuple;
+        typedef tuple<ForwardSequence, ForwardSequence> Tuple;
 
         if(!in)
         {
             return Tuple{in, in};
         }
 
-        ForwardSequence min_pos = in;
-        ForwardSequence max_pos = in;
+        auto cmp_min = ural::compare_by(ural::dereference<>{}, std::cref(cmp));
+        auto cmp_max = ural::make_binary_reverse_args(cmp_min);
+
+        ::ural::min_element_accumulator<ForwardSequence, decltype(cmp_min)>
+            acc_min(in, std::move(cmp_min));
+        ::ural::min_element_accumulator<ForwardSequence, decltype(cmp_max)>
+            acc_max(in, std::move(cmp_max));
         ++ in;
 
-        /* @todo Устранить дублирование
-        Проблема в том, что введение двух накопителей приведёт к необходимости
-        копировать функциональный объект
-        */
         for(; !!in; ++ in)
         {
             auto in_next = in;
@@ -1142,45 +1143,28 @@ namespace details
             // остался только один элемент
             if(!in_next)
             {
-                if(cmp(*in, *min_pos))
-                {
-                    min_pos = in;
-                }
-                else if(cmp(*max_pos, *in))
-                {
-                    max_pos = in;
-                }
+                // @todo Пропускать второй вызов, если первый завершился обновлением
+                acc_min(in);
+                acc_max(in);
                 break;
             }
 
             // осталось как минимум два элемента
             if(cmp(*in, *in_next))
             {
-                if(cmp(*in, *min_pos))
-                {
-                    min_pos = in;
-                }
-                if(cmp(*max_pos, *in_next))
-                {
-                    max_pos = in_next;
-                }
+                acc_min(in);
+                acc_max(in_next);
             }
             else
             {
-                if(cmp(*in_next, *min_pos))
-                {
-                    min_pos = in_next;
-                }
-                if(cmp(*max_pos, *in))
-                {
-                    max_pos = in;
-                }
+                acc_min(in_next);
+                acc_max(in);
             }
 
             in = in_next;
         }
 
-        return Tuple{min_pos, max_pos};
+        return Tuple{acc_min.result(), acc_max.result()};
     }
 
     template <class Forward1, class Forward2, class BinaryPredicate>
