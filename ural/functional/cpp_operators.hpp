@@ -19,7 +19,6 @@
 
 /** @file ural/functional/cpp_operators.hpp
  @brief Функциональные объекты, аналогичные определённым в @< functional @>
- @todo Устранить дублирование в составных операторах присваивания
 */
 
 #include <ural/functional/make_functor.hpp>
@@ -70,6 +69,18 @@ namespace ural
             return static_cast<F const &>(*this)(std::forward<T1>(x), y);
         }
     };
+
+    template <class T1, class T2, class F>
+    class compound_assignment_helper
+    {};
+
+    template <class T1, class F>
+    class compound_assignment_helper<T1, void, F>
+    {};
+
+    template <class T2, class F>
+    class compound_assignment_helper<void, T2, F>
+    {};
 
     template <class T, class F>
     class unary_operator_helper
@@ -432,7 +443,9 @@ namespace ural
 
     // Составные операторы присваивания
     template <class T1 = void, class T2 = T1>
-    class plus_assign;
+    class plus_assign
+     : compound_assignment_helper<T1, T2, plus_assign<>>
+    {};
 
     template <>
     class plus_assign<>
@@ -446,7 +459,9 @@ namespace ural
     };
 
     template <class T1 = void, class T2 = T1>
-    class minus_assign;
+    class minus_assign
+     : compound_assignment_helper<T1, T2, plus_assign<>>
+    {};
 
     template <>
     class minus_assign<>

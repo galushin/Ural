@@ -75,7 +75,6 @@ ARM contributions   llvm/lib/Target/ARM/LICENSE.TXT
 md5 contributions   llvm/lib/Support/MD5.cpp llvm/include/llvm/Support/MD5.h
 */
 
-// @todo Устранить (Уменьшить) дублирование
 #include "rnd.hpp"
 
 #include <ural/algorithm.hpp>

@@ -14,14 +14,13 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <ural/memory.hpp>
+#include <ural/utility/tracers.hpp>
+
 #include <string>
 #include <memory>
 
 #include <boost/test/unit_test.hpp>
-
-#include <ural/memory.hpp>
-
-// @todo Трасировщики, чтобы убедиться, что все объекты уничтожаются
 
 BOOST_AUTO_TEST_CASE(make_unique_array)
 {
@@ -164,22 +163,30 @@ BOOST_AUTO_TEST_CASE(copy_ptr_ctor_test)
 
 BOOST_AUTO_TEST_CASE(copy_ptr_move_ctor_test)
 {
-    typedef int Type;
+    typedef ural::regular_tracer<int> Type;
 
-    auto const value = Type{42};
+    auto const old_active = Type::active_objects();
 
-    ural::copy_ptr<Type> p1(ural::make_unique<Type>(value));
+    {
+        auto const value = Type{42};
 
-    auto * old_ptr = p1.get();
+        ural::copy_ptr<Type> p1(ural::make_unique<Type>(value));
 
-    ural::copy_ptr<Type> p2(std::move(p1));
+        auto * old_ptr = p1.get();
 
-    static_assert(noexcept(ural::copy_ptr<Type>{ural::copy_ptr<Type>{}}),
-                  "move ctor must be noexcept");
+        ural::copy_ptr<Type> p2(std::move(p1));
 
-    BOOST_CHECK_EQUAL(old_ptr, p2.get());
-    BOOST_CHECK_EQUAL(value, *p2);
-    BOOST_CHECK_EQUAL(static_cast<Type*>(nullptr), p1.get());
+        static_assert(noexcept(ural::copy_ptr<Type>{ural::copy_ptr<Type>{}}),
+                      "move ctor must be noexcept");
+
+        BOOST_CHECK_EQUAL(old_ptr, p2.get());
+        BOOST_CHECK_EQUAL(value, *p2);
+        BOOST_CHECK_EQUAL(static_cast<Type*>(nullptr), p1.get());
+    }
+
+    auto const new_active = Type::active_objects();
+
+    BOOST_CHECK_EQUAL(old_active, new_active);
 }
 
 BOOST_AUTO_TEST_CASE(copy_ptr_nullptr_ctor_test)

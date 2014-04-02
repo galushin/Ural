@@ -146,7 +146,6 @@ namespace ural
         }
 
     private:
-        // @todo Оптимизация размера
         ural::tuple<T, T, predicate_type> members_;
     };
 

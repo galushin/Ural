@@ -396,7 +396,7 @@
 	<ural/defs.hpp>
 	<ural/sequence/base.hpp>
 
-1394151640 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
+1396418936 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
 	<ural/defs.hpp>
 	<ural/thread.hpp>
 	<ural/functional.hpp>
@@ -453,7 +453,7 @@
 
 1393837797 c:\devtools\ural_repo\ural\ural\thread.hpp
 
-1396416976 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
+1396418011 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
 	<ural/sequence/base.hpp>
 	<ural/sequence/function_output.hpp>
 	<ural/sequence/generator.hpp>
@@ -572,9 +572,11 @@
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/insertion.hpp>
 
-1396314184 c:\devtools\ural_repo\ural\ural\memory.hpp
+1396418720 c:\devtools\ural_repo\ural\ural\memory.hpp
 	<ural/defs.hpp>
 	<ural/utility.hpp>
+	<boost/throw_exception.hpp>
+	<cassert>
 	<memory>
 
 1396318700 c:\devtools\ural_repo\ural\ural\sequence\moved.hpp
@@ -584,11 +586,11 @@
 	<ural/sequence/transform.hpp>
 	<ural/functional/replace.hpp>
 
-1395618267 c:\devtools\ural_repo\ural\ural\functional\replace.hpp
+1396418204 c:\devtools\ural_repo\ural\ural\functional\replace.hpp
 	<ural/tuple.hpp>
 	<ural/functional/cpp_operators.hpp>
 
-1395805384 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
+1396418420 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
 	<ural/functional/make_functor.hpp>
 	<ural/functional/compose.hpp>
 
@@ -6211,11 +6213,12 @@
 	<boost/test/unit_test.hpp>
 	<ural/memory.hpp>
 
-1395801431 source:c:\devtools\ural_repo\ural\tests\memory_test.cpp
+1396418944 source:c:\devtools\ural_repo\ural\tests\memory_test.cpp
+	<ural/memory.hpp>
+	<ural/utility/tracers.hpp>
 	<string>
 	<memory>
 	<boost/test/unit_test.hpp>
-	<ural/memory.hpp>
 
 1394151640 source:c:\devtools\ural_repo\ural\tests\tracers_tests.cpp
 	<boost/test/unit_test.hpp>
@@ -6284,7 +6287,7 @@
 	<ural/sequence/base.hpp>
 	<string>
 
-1395618267 source:c:\devtools\ural_repo\ural\tests\random_tests.cpp
+1396417943 source:c:\devtools\ural_repo\ural\tests\random_tests.cpp
 	"rnd.hpp"
 	<ural/algorithm.hpp>
 	<ural/statistics.hpp>

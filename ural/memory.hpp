@@ -24,6 +24,9 @@
 #include <ural/defs.hpp>
 #include <ural/utility.hpp>
 
+#include <boost/throw_exception.hpp>
+
+#include <cassert>
 #include <memory>
 
 namespace ural

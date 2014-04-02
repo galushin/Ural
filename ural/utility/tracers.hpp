@@ -215,6 +215,13 @@ namespace ural
         T value_;
     };
 
+    template <class Ch, class Tr, class T>
+    std::basic_ostream<Ch, Tr> &
+    operator<<(std::basic_ostream<Ch, Tr> & os, regular_tracer<T> const & x)
+    {
+        return os << x.value();
+    }
+
     /** @tparam F тип функционального объекта
     @tparam Tag тэг
     @tparam Threading тип, определяющий стратегию многопоточности
