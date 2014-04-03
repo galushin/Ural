@@ -92,12 +92,19 @@ namespace ural
         min_element_accumulator &
         operator()(ForwardSequence s)
         {
+            this->update(std::move(s));
+            return *this;
+        }
+
+        bool update(ForwardSequence s)
+        {
             if(this->compare()(s, this->result()))
             {
                 impl_.first() = s;
+                return true;
             }
 
-            return *this;
+            return false;
         }
 
         ForwardSequence const & result() const

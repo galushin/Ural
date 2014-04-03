@@ -1143,9 +1143,10 @@ namespace details
             // остался только один элемент
             if(!in_next)
             {
-                // @todo Пропускать второй вызов, если первый завершился обновлением
-                acc_min(in);
-                acc_max(in);
+                if(acc_min.update(in) == false)
+                {
+                    acc_max(in);
+                }
                 break;
             }
 
