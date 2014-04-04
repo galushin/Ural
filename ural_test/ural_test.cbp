@@ -91,7 +91,6 @@
 		<Unit filename="../ural/memory.hpp" />
 		<Unit filename="../ural/numeric.hpp" />
 		<Unit filename="../ural/numeric/adjacent_differences.hpp" />
-		<Unit filename="../ural/numeric/details/num_algo.hpp" />
 		<Unit filename="../ural/numeric/interpolation.hpp" />
 		<Unit filename="../ural/numeric/partial_sums.hpp" />
 		<Unit filename="../ural/numeric/polynom.hpp" />

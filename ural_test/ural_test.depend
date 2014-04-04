@@ -349,10 +349,9 @@
 	<ural/concepts.hpp>
 	<ural/tuple.hpp>
 
-1393837770 c:\devtools\ural_repo\ural\ural\numeric.hpp
+1396596894 c:\devtools\ural_repo\ural\ural\numeric.hpp
 	<ural/functional.hpp>
 	<ural/sequence/all.hpp>
-	<ural/numeric/details/num_algo.hpp>
 	<ural/numeric/partial_sums.hpp>
 	<ural/numeric/adjacent_differences.hpp>
 
@@ -495,7 +494,7 @@
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
-1395800763 source:c:\devtools\ural_repo\ural\tests\functional_test.cpp
+1396581293 source:c:\devtools\ural_repo\ural\tests\functional_test.cpp
 	"rnd.hpp"
 	<boost/test/unit_test.hpp>
 	<ural/utility/tracers.hpp>

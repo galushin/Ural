@@ -24,56 +24,107 @@
 #include <ural/functional.hpp>
 #include <ural/sequence/all.hpp>
 
-#include <ural/numeric/details/num_algo.hpp>
 #include <ural/numeric/partial_sums.hpp>
 #include <ural/numeric/adjacent_differences.hpp>
 
 namespace ural
 {
-    template <class ForwardSequence, class Incrementable>
-    Incrementable
-    iota(ForwardSequence && seq, Incrementable init_value)
+    class
     {
-        return ::ural::details::iota(ural::sequence(std::forward<ForwardSequence>(seq)),
-                                     std::move(init_value));
-    }
+    public:
+        template <class ForwardSequence, class Incrementable>
+        Incrementable
+        operator()(ForwardSequence && seq, Incrementable init_value) const
+        {
+            return impl(ural::sequence(std::forward<ForwardSequence>(seq)),
+                        std::move(init_value));
+        }
 
-    template <class Input, class T, class BinaryOperation>
-    T accumulate(Input && in, T init_value, BinaryOperation op)
+    private:
+        template <class ForwardSequence, class Incrementable>
+        Incrementable
+        impl(ForwardSequence seq, Incrementable init_value) const
+        {
+            for(; !!seq; ++ seq, ++ init_value)
+            {
+                *seq = init_value;
+            }
+
+            return init_value;
+        }
+    }
+    constexpr iota{};
+
+    class
     {
-        return ::ural::details::accumulate(sequence(std::forward<Input>(in)),
-                                           std::move(init_value),
-                                           ural::make_functor(std::move(op)));
-    }
+    public:
+        template <class Input, class T, class BinaryOperation>
+        T operator()(Input && in, T init_value, BinaryOperation op) const
+        {
+            return impl(sequence(std::forward<Input>(in)),
+                        std::move(init_value),
+                        ural::make_functor(std::move(op)));
+        }
 
-    template <class Input, class T>
-    T accumulate(Input && in, T init_value)
+        template <class Input, class T>
+        T operator()(Input && in, T init_value) const
+        {
+            return (*this)(std::forward<Input>(in), std::move(init_value),
+                           ural::plus<>());
+        }
+
+    private:
+        template <class InputSequence, class T, class BinaryOperation>
+        T impl(InputSequence in, T init_value, BinaryOperation op) const
+        {
+            for(; !!in; ++ in)
+            {
+                init_value = op(std::move(init_value), *in);
+            }
+
+            return init_value;
+        }
+    }
+    constexpr accumulate {};
+
+    class
     {
-        return ::ural::accumulate(std::forward<Input>(in),
-                                  std::move(init_value),
-                                  ural::plus<>());
-    }
-
-    template <class Input1, class Input2, class T,
+    public:
+        template <class Input1, class Input2, class T,
                 class BinaryOperation1, class BinaryOperation2>
-    T inner_product(Input1 && in1, Input2 && in2, T init_value,
-                    BinaryOperation1 add, BinaryOperation2 mult)
-    {
-        return ::ural::details::inner_product(ural::sequence(std::forward<Input1>(in1)),
-                                              ural::sequence(std::forward<Input2>(in2)),
-                                              std::move(init_value),
-                                              ural::make_functor(std::move(add)),
-                                              ural::make_functor(std::move(mult)));
-    }
+        T operator()(Input1 && in1, Input2 && in2, T init_value,
+                     BinaryOperation1 add, BinaryOperation2 mult) const
+        {
+            return impl(ural::sequence(std::forward<Input1>(in1)),
+                        ural::sequence(std::forward<Input2>(in2)),
+                        std::move(init_value),
+                        ural::make_functor(std::move(add)),
+                        ural::make_functor(std::move(mult)));
+        }
 
-    template <class Input1, class Input2, class T>
-    T inner_product(Input1 && in1, Input2 && in2, T init_value)
-    {
-        return ::ural::inner_product(std::forward<Input1>(in1),
-                                     std::forward<Input2>(in2),
-                                     std::move(init_value),
-                                     ural::plus<>{}, ural::multiplies<>{});
+        template <class Input1, class Input2, class T>
+        T operator()(Input1 && in1, Input2 && in2, T init_value) const
+        {
+            return (*this)(std::forward<Input1>(in1), std::forward<Input2>(in2),
+                           std::move(init_value),
+                           ural::plus<>{}, ural::multiplies<>{});
+        }
+
+    private:
+        template <class Input1, class Input2, class T,
+                  class BinaryOperation1, class BinaryOperation2>
+        T impl(Input1 in1, Input2 in2, T value,
+               BinaryOperation1 add, BinaryOperation2 mult) const
+        {
+            for(; !!in1 && !!in2; ++ in1, ++in2)
+            {
+                value = add(std::move(value), mult(*in1, *in2));
+            }
+
+            return value;
+        }
     }
+    constexpr inner_product{};
 }
 // namespace ural
 
