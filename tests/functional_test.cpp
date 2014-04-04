@@ -216,6 +216,30 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(logical_or_test, Functor, Or_functors)
     BOOST_CHECK_EQUAL(true, or_(true, true));
 }
 
+typedef boost::mpl::list<ural::logical_implication<bool>,
+                         ural::logical_implication<bool, void>,
+                         ural::logical_implication<void, bool>,
+                         ural::logical_implication<void, void>>
+    Implication_functors;
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(logic_implication_test, Functor, Implication_functors)
+{
+    constexpr auto f = Functor{};
+
+    static_assert(f == f, "");
+    static_assert(!(f != f), "");
+
+    static_assert(true == f(false, false), "");
+    static_assert(false == f(true, false), "");
+    static_assert(true == f(false, true), "");
+    static_assert(true == f(true, true), "");
+
+    BOOST_CHECK_EQUAL(true, f(false, false));
+    BOOST_CHECK_EQUAL(false, f(true, false));
+    BOOST_CHECK_EQUAL(true, f(false, true));
+    BOOST_CHECK_EQUAL(true, f(true, true));
+}
+
 BOOST_AUTO_TEST_CASE(negate_test)
 {
     const auto value = 42;

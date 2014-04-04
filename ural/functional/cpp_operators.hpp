@@ -377,6 +377,23 @@ namespace ural
         }
     };
 
+    template <class T1 = void, class T2 = T1>
+    class logical_implication
+     : public binary_operator_helper<T1, T2, logical_implication<>>
+    {};
+
+    template <>
+    class logical_implication<void, void>
+    {
+    public:
+        template <class T1, class T2>
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype(!std::forward<T1>(x) || std::forward<T2>(y))
+        {
+            return !std::forward<T1>(x) || std::forward<T2>(y);
+        }
+    };
+
     // Побитовые операции
     template <class T = void>
     class bit_not
