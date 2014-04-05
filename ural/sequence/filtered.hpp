@@ -30,7 +30,6 @@ namespace ural
 {
     /** @brief Последовательность элементов базовой последовательности,
     удовлетворяющих заданному предикату.
-    @todo Оптимизация размера
     @todo Усилить категорию обхода
     */
     template <class Sequence, class Predicate>
@@ -45,14 +44,24 @@ namespace ural
 
     public:
         // Типы
+        /// @brief Тип ссылки
         typedef typename Sequence::reference reference;
+
+        /// @brief Тип значения
         typedef typename Sequence::value_type value_type;
 
+        /// @brief Категория обхода
         typedef typename std::common_type<typename Sequence::traversal_tag,
                                           forward_traversal_tag>::type
             traversal_tag;
 
         // Конструкторы
+        /** @brief Конструктор
+        @param seq базовая последовательность
+        @param pred предикат
+        @post <tt> this->base() == seq </tt>
+        @post <tt> this->predicate() == pred </tt>
+        */
         explicit filter_sequence(Sequence seq, Predicate pred)
          : data_{std::move(seq), std::move(pred)}
         {
@@ -60,16 +69,23 @@ namespace ural
         }
 
         // Однопроходная последовательность
+        /** @brief Проверка того, что последовательность исчерпана
+        @return @b true, если последовательность исчерпана, иначе --- @b false
+        */
         bool operator!() const
         {
             return !this->base();
         }
 
+        /** @brief Первый элемент последовательности
+        @return Первый элемент последовательности
+        */
         reference front() const
         {
             return *data_[ural::_1];
         }
 
+        /// @brief Переход к следующему элементу
         void pop_front()
         {
             ++ data_[ural::_1];
@@ -77,11 +93,17 @@ namespace ural
         }
 
         // Адаптор последовательности
+        /** @brief Предикат
+        @return Используемый предикат
+        */
         Predicate const & predicate() const
         {
             return data_[ural::_2];
         }
 
+        /** @brief Базовая последовательность
+        @return Базовая последовательность
+        */
         Sequence const & base() const
         {
             return data_[ural::_1];

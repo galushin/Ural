@@ -215,6 +215,7 @@ namespace ural
             return !!*this;
         }
 
+        // Составные операторы присваивания
         rational & operator+=(rational const & x)
         {
             return *this = *this + x;

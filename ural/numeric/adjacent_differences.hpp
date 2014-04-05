@@ -31,7 +31,6 @@ namespace ural
     @tparam Input тип базовая последовательнсоть
     @tparam BinaryOperation тип бинарной операции, определяющей разность между
     элементами
-    @todo Оптимизация размера
     */
     template <class Input, class BinaryOperation>
     class adjacent_differences_sequence

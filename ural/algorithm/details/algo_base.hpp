@@ -386,7 +386,6 @@ namespace details
 
         auto s_next = ural::next(s);
 
-        // @todo можно ли унифицировать с mismatch?
         for(; !!s_next; ++ s_next)
         {
             if(pred(*s, *s_next))
