@@ -24,9 +24,26 @@
 #include <ural/sequence/base.hpp>
 #include <ural/tuple.hpp>
 #include <ural/utility.hpp>
+#include <ural/meta/map.hpp>
 
 namespace ural
 {
+    template <class T>
+    class bad_index
+     : std::logic_error
+    {
+    public:
+        bad_index(char const * msg, T index, T size)
+         : logic_error(msg)
+         , index_(std::move(index))
+         , size_(std::move(size))
+        {}
+
+    private:
+        T index_;
+        T size_;
+    };
+
     /** @brief Строгая стратегия проверок для последовательности: возбуждает
     исключения в случае ошибок
     */
@@ -53,10 +70,11 @@ namespace ural
         static void check_index(Seq const & seq,
                                 typename Seq::distance_type index)
         {
+            typedef typename Seq::distance_type D;
+
             if(index >= seq.size())
             {
-                // @todo Передавать больше информации
-                throw std::logic_error("Invalid index");
+                throw bad_index<D>("Invalid index", index, seq.size());
             }
         }
 
@@ -64,38 +82,29 @@ namespace ural
         static void check_step(Seq const & seq,
                                typename Seq::distance_type n)
         {
+            typedef typename Seq::distance_type D;
+
             if(n > seq.size())
             {
-                // @todo Передавать больше информации
-                throw std::logic_error("Invalid step size");
+                throw bad_index<D>("Invalid step size", n, seq.size());
             }
         }
     };
 
     /// @cond false
-    // @todo Задать в одно объявление
     template <class Iterator>
-    struct iterator_tag_to_traversal_tag;
+    struct iterator_tag_to_traversal_tag
+    {
+    private:
+        typedef meta::map<meta::pair<std::input_iterator_tag, single_pass_traversal_tag>,
+                 meta::pair<std::forward_iterator_tag, forward_traversal_tag>,
+                 meta::pair<std::bidirectional_iterator_tag, bidirectional_traversal_tag>,
+                 meta::pair<std::random_access_iterator_tag, finite_random_access_traversal_tag>
+                 > Map;
 
-    template <>
-    struct iterator_tag_to_traversal_tag<std::input_iterator_tag>
-     : declare_type<single_pass_traversal_tag>
-    {};
-
-    template <>
-    struct iterator_tag_to_traversal_tag<std::forward_iterator_tag>
-     : declare_type<forward_traversal_tag>
-    {};
-
-    template <>
-    struct iterator_tag_to_traversal_tag<std::bidirectional_iterator_tag>
-     : declare_type<bidirectional_traversal_tag>
-    {};
-
-    template <>
-    struct iterator_tag_to_traversal_tag<std::random_access_iterator_tag>
-     : declare_type<finite_random_access_traversal_tag>
-    {};
+    public:
+        typedef typename meta::at<Map, Iterator>::type type;
+    };
     /// @endcond
 
     /** @brief Последовательность на основе пары итераторов
@@ -107,6 +116,7 @@ namespace ural
      : public sequence_base<iterator_sequence<Iterator, Policy>>
     {
     public:
+        /// @brief Тип итератора
         typedef Iterator iterator;
 
         /// @brief Тип ссылки
@@ -178,17 +188,24 @@ namespace ural
         }
 
         // Многопроходная прямая последовательность
+        /** @brief Пройденная передная часть последовательности
+        @return Пройденная передная часть последовательности
+        */
         iterator_sequence traversed_front() const
         {
             return iterator_sequence{this->traversed_begin(),
                                      this->begin()};
         }
 
+        /// @brief Отбросить переднюю пройденную часть последовательности
         void shrink_front()
         {
             members_.first().commit();
         }
 
+        /** @brief Полная последовательность (включая пройденные части)
+        @return Полная последовательность
+        */
         iterator_sequence original() const
         {
             return iterator_sequence(this->traversed_begin(),
@@ -216,6 +233,7 @@ namespace ural
                                      this->traversed_end());
         }
 
+        /// @brief Отбросить заднюю пройденную часть последовательности
         void shrink_back()
         {
             members_.second().commit();
@@ -236,6 +254,7 @@ namespace ural
         iterator_sequence & operator+=(distance_type n)
         {
             policy_type::check_step(*this, n);
+
             ural::get(members_.first()) += n;
             return *this;
         }

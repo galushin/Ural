@@ -335,10 +335,11 @@
 	<ural/sequence/transform.hpp>
 	<ural/sequence/uniqued.hpp>
 
-1396844219 c:\devtools\ural_repo\ural\ural\sequence\iterator_sequence.hpp
+1396852639 c:\devtools\ural_repo\ural\ural\sequence\iterator_sequence.hpp
 	<ural/sequence/base.hpp>
 	<ural/tuple.hpp>
 	<ural/utility.hpp>
+	<ural/meta/map.hpp>
 
 1394151640 c:\devtools\ural_repo\ural\ural\sequence\insertion.hpp
 	<ural/sequence/base.hpp>
@@ -450,7 +451,7 @@
 	<ural/defs.hpp>
 	<utility>
 
-1396662973 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
+1396851092 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
 	<ural/defs.hpp>
 	<utility>
 
@@ -600,7 +601,7 @@
 1395980832 c:\devtools\ural_repo\ural\ural\sequence\taken.hpp
 	<ural/utility.hpp>
 
-1394151640 c:\devtools\ural_repo\ural\ural\sequence\uniqued.hpp
+1396851287 c:\devtools\ural_repo\ural\ural\sequence\uniqued.hpp
 	<ural/algorithm/details/algo_base.hpp>
 
 1390362855 source:c:\pavel\ural_repo\ural\boost_1_54\libs\test\src\compiler_log_formatter.cpp
@@ -6275,7 +6276,7 @@
 	<ostream>
 	<utility>
 
-1396318553 c:\devtools\ural_repo\ural\ural\utility.hpp
+1396856786 c:\devtools\ural_repo\ural\ural\utility.hpp
 	<ural/defs.hpp>
 	<ural/type_traits.hpp>
 	<boost/compressed_pair.hpp>
@@ -6464,7 +6465,7 @@
 	<ural/sequence/sink.hpp>
 	<boost/operators.hpp>
 
-1394497455 c:\devtools\ural_repo\ural\ural\functional\compare_by.hpp
+1396857788 c:\devtools\ural_repo\ural\ural\functional\compare_by.hpp
 	<ural/functional/cpp_operators.hpp>
 
 1394681635 c:\devtools\ural_repo\ural\ural\math.hpp
@@ -9576,7 +9577,7 @@
 
 1395803092 c:\devtools\ural_repo\ural\ural\sequence\outdirected.hpp
 
-1396844305 c:\devtools\ural_repo\ural\ural\sequence\progression.hpp
+1396850777 c:\devtools\ural_repo\ural\ural\sequence\progression.hpp
 
 1396229277 c:\devtools\ural_repo\ural\ural\numeric\interpolation.hpp
 
@@ -9585,4 +9586,6 @@
 1396523041 c:\devtools\github\ural\ural\sequence\progression.hpp
 
 1396523041 c:\devtools\github\ural\ural\numeric\interpolation.hpp
+
+1396858084 c:\devtools\ural_repo\ural\ural\meta\map.hpp
 
