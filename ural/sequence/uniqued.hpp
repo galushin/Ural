@@ -37,15 +37,31 @@ namespace ural
     {
     public:
         // Типы
+        /// @brief Тип ссылки
         typedef typename Forward::reference reference;
+
+        /// @brief Тип значения
         typedef typename Forward::value_type value_type;
+
+        /// @brief Категория обхода
         typedef ural::forward_traversal_tag traversal_tag;
 
         // Конструкторы
+        /** @brief Конструктор
+        @param in входная последовательность
+        @post <tt> this->base() == in </tt>
+        @post <tt> this->predicate() == BinaryPredicate{} </tt>
+        */
         explicit unique_sequence(Forward in)
          : data_(std::move(in))
         {}
 
+        /** @brief Конструктор
+        @param in входная последовательность
+        @param pred используемый предикат
+        @post <tt> this->base() == in </tt>
+        @post <tt> this->predicate() == pred </tt>
+        */
         explicit unique_sequence(Forward in, BinaryPredicate pred)
          : data_(std::move(in), std::move(pred))
         {}

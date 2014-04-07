@@ -106,6 +106,11 @@ namespace ural
         Additive step_;
     };
 
+    /** @brief Создание последовательности, представляющей арифметическую
+    прогрессию
+    @param first Первый элемент
+    @param step Шаг
+    */
     template <class Additive>
     arithmetic_progression<Additive>
     make_arithmetic_progression(Additive first, Additive step)

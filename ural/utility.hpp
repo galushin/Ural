@@ -47,6 +47,9 @@ namespace ural
         }
     };
 
+    /** @brief Последовательность индексов времени компиляции
+    @tparam Ints список целых чисел без знака (типа @c size_t )
+    */
     template<std::size_t... Ints>
     using index_sequence = integer_sequence<std::size_t, Ints...>;
 
@@ -62,30 +65,52 @@ namespace ural
     {};
     /// @endcond
 
+    /** @brief Создание последовательности целых чисел <tt> [0; N) </tt>
+    @tparam T тип целых чисел
+    @tparam N количество индексов
+    */
     template<class T, T N>
     using make_integer_sequence = typename make_int_sequence_helper<T, 0, N>::type;
 
+    /** @brief Создание последовательности индексов <tt> [0; N) </tt>
+    @tparam N количество индексов
+    */
     template<std::size_t N>
     using make_index_sequence = make_integer_sequence<std::size_t, N>;
 
-    template<class... T>
-    using index_sequence_for = make_index_sequence<sizeof...(T)>;
+    /** @brief Создание последовательности индексов для списка типов
+    @tparam Ts типы-аргументы
+    */
+    template<class... Ts>
+    using index_sequence_for = make_index_sequence<sizeof...(Ts)>;
 
-    template <typename F, typename Tuple, size_t... I>
-    constexpr auto apply_impl(F&& f, Tuple&& t, index_sequence<I...>)
-        -> decltype(std::forward<F>(f)(std::get<I>(std::forward<Tuple>(t))...))
+    struct
     {
-        return std::forward<F>(f)(std::get<I>(std::forward<Tuple>(t))...);
-    }
+    private:
+        template <typename F, typename Tuple, size_t... I>
+        static constexpr auto impl(F&& f, Tuple&& t, index_sequence<I...>)
+            -> decltype(std::forward<F>(f)(std::get<I>(std::forward<Tuple>(t))...))
+        {
+            return std::forward<F>(f)(std::get<I>(std::forward<Tuple>(t))...);
+        }
 
-    template <typename F, typename Tuple>
-    constexpr auto apply(F&& f, Tuple&& t)
-    -> decltype(apply_impl(std::forward<F>(f), std::forward<Tuple>(t),
-                           make_index_sequence<std::tuple_size<decay_t<Tuple>>::value>{}))
-    {
-        using Indices = make_index_sequence<std::tuple_size<decay_t<Tuple>>::value>;
-        return apply_impl(std::forward<F>(f), std::forward<Tuple>(t), Indices{});
+    public:
+        /** @brief Вызов функционального объекта с элементами кортежа в качестве
+        аргументов
+        @param f функциональный объект
+        @param t кортеж аргументов
+        @return <tt> f(get<0>(t), ..., get<n-1>(t)) </tt>
+        */
+        template <typename F, typename Tuple>
+        constexpr auto operator()(F&& f, Tuple&& t) const
+        -> decltype(impl(std::forward<F>(f), std::forward<Tuple>(t),
+                         make_index_sequence<std::tuple_size<decay_t<Tuple>>::value>{}))
+        {
+            using Indices = make_index_sequence<std::tuple_size<decay_t<Tuple>>::value>;
+            return impl(std::forward<F>(f), std::forward<Tuple>(t), Indices{});
+        }
     }
+    constexpr apply {};
 
     /** @brief Обобщённая реализация присваивания "Скопировать и обменять"
     @param x объект, которому должно быть присвоено значение
@@ -101,15 +126,31 @@ namespace ural
         return x;
     }
 
+    /** @brief Обёртка, сохраняющая старое значение
+    @tparam T тип значения
+    @todo Тесты для конструктора копий и оператора присваивания:
+    в копии старое значение должно совпадать с текущим?
+    @todo Придумать пример, в котором используется откат к предыдущему значению
+    */
     template <class T>
     class with_old_value
     {
     public:
+        /** @brief Конструктор
+        @param value значение
+        @post <tt> this->value() == value </tt>
+        @post <tt> this->old_value() == value </tt>
+        */
         explicit with_old_value(T value)
          : value_{value}
          , old_value_(std::move(value))
         {}
 
+        // Доступ к данным
+        ///@{
+        /** @brief Текущее значение
+        @return Ссылка на текущее значение
+        */
         T & value()
         {
             return value_;
@@ -119,12 +160,21 @@ namespace ural
         {
             return value_;
         }
+        ///@}
 
+        /** @brief Исходное значение
+        @return Значение <tt> this->value() </tt> сразу после конструктора или
+        последнего вызова <tt> this->commit() </tt>.
+        */
         T const & old_value() const
         {
             return old_value_;
         }
 
+        // Подтверждение и откат
+        /** @brief Подтверждение изменений
+        @post <tt> this->old_value() == this->value() </tt>
+        */
         void commit()
         {
             old_value_ = value_;
@@ -136,18 +186,31 @@ namespace ural
         T old_value_;
     };
 
+    /** @brief Оператор "равно"
+    @param x левый операнд
+    @param y правый операнд
+    */
     template <class T1, class T2>
     bool operator==(with_old_value<T1> const & x, with_old_value<T2> const & y)
     {
         return x.value() == y.value() && x.old_value() == y.old_value();
     }
 
+    /** @brief Функция доступа к значению - реализация для обычных переменных
+    @param x переменная
+    @return <tt> std::forward<T>(x) </tt>
+    */
     template <class T>
     T && get(T && x)
     {
         return std::forward<T>(x);
     }
 
+    ///@{
+    /** @brief Функция доступа к значению @c with_old_value
+    @param x переменная
+    @return <tt> x.value() </tt>
+    */
     template <class T>
     T & get(with_old_value<T> & x)
     {
@@ -159,6 +222,7 @@ namespace ural
     {
         return x.value();
     }
+    ///@}
 }
 // namespace ural
 
