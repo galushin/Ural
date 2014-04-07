@@ -196,6 +196,13 @@ BOOST_AUTO_TEST_CASE(ostream_sequence_default_test)
     static_assert(std::is_same<std::string, S3::delimeter_type>::value, "");
 }
 
+BOOST_AUTO_TEST_CASE(arithmetic_progression_size_test)
+{
+    auto s = ural::make_arithmetic_progression(0, 1);
+
+    BOOST_CHECK_LE(sizeof(s), sizeof(0) * 3);
+}
+
 BOOST_AUTO_TEST_CASE(all_tuples_test)
 {
     auto digits = ural::make_arithmetic_progression(0, 1) | ural::taken(10);

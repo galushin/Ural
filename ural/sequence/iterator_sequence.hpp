@@ -73,6 +73,7 @@ namespace ural
     };
 
     /// @cond false
+    // @todo Задать в одно объявление
     template <class Iterator>
     struct iterator_tag_to_traversal_tag;
 
