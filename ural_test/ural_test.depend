@@ -9650,3 +9650,10 @@
 
 1396935369 c:\pavel\ural_repo\ural\ural\sequence\progression.hpp
 
+1396988112 source:c:\pavel\ural_repo\ural\tests\expected_test.cpp
+	<boost/test/unit_test.hpp>
+	<ural/utility/expected.hpp>
+
+1396988658 c:\pavel\ural_repo\ural\ural\utility\expected.hpp
+	<ural/defs.hpp>
+
