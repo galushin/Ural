@@ -37,11 +37,19 @@ namespace ural
     {
     public:
         // Типы
+        /// @brief Тип значения
         typedef T value_type;
-        typedef T const & reference;
+
+        /// @brief Тип ссылки
+        typedef value_type const & reference;
+
+        /// @brief Категория обхода
         typedef single_pass_traversal_tag traversal_tag;
 
         // Конструкторы
+        /** @brief Конструктор
+        @param is ссылка на поток ввода
+        */
         explicit istream_sequence(IStream & is)
          : is_(is)
          , value_{}
@@ -49,6 +57,10 @@ namespace ural
             this->init();
         }
 
+        /** @brief Конструктор (для типов без конструктора без аргументов)
+        @param is ссылка на поток ввода
+        @param init_value начальное значение
+        */
         explicit istream_sequence(IStream & is, T init_value)
          : is_(is)
          , value_{std::move(init_value)}
@@ -87,6 +99,11 @@ namespace ural
         T value_;
     };
 
+    /** @brief Создание последовательности на основе потока ввода
+    @tparam T тип элементов
+    @param is поток ввода
+    @return <tt> istream_sequence<T, IStream>(is) </tt>
+    */
     template <class T, class IStream>
     istream_sequence<T, IStream>
     make_istream_sequence(IStream & is)
@@ -105,11 +122,6 @@ namespace ural
                                              typename OStream::traits_type>>
     {};
 
-    template <class T, class U>
-    struct ostream_sequence_enable
-     : std::enable_if<std::is_same<T, use_default>::value, void>
-    {};
-
     /**
     @brief Последовательность для потока вывода
     @tparam OStream Тип потока вывода
@@ -124,24 +136,37 @@ namespace ural
     {
     public:
         // Типы
+        /// @brief Категория обхода
         typedef single_pass_traversal_tag traversal_tag;
 
+        /// @brief Тип потока вывода
         typedef typename default_helper<OStream, std::ostream>::type
             ostream_type;
 
+        /// @brief Тип разделителя
         typedef typename default_delimeter_helper<ostream_type, Delimeter>::type
             delimeter_type;
 
         // Конструктор
+        /** @brief Конструктор
+        @param os поток вывода
+        */
         explicit ostream_sequence(ostream_type & os)
          : data_{os}
         {}
 
+        /** @brief Конструктор
+        @param os поток вывода
+        @param delim разделитель
+        */
         explicit ostream_sequence(ostream_type & os, Delimeter delim)
          : data_{os, std::move(delim)}
         {}
 
         // Однопроходная последовательность
+        /** @brief Провекра исчерпания последовательности
+        @return @b false.
+        */
         bool operator!() const
         {
             return false;
@@ -152,6 +177,10 @@ namespace ural
             return *this;
         }
 
+        /// @brief Переход к следующему элементу. Ничего не делает.
+        void pop_front()
+        {}
+
         //@{
         void operator=(T const & x) const
         {
@@ -159,7 +188,7 @@ namespace ural
         }
 
         template <class U>
-        typename ostream_sequence_enable<T, U>::type
+        typename std::enable_if<!std::is_same<T, U>::value && std::is_same<T, use_default>::value>::type
         operator=(U const & x) const
         {
             data_.first().get() << x << data_.second();
@@ -171,9 +200,6 @@ namespace ural
         объектов.
         */
         void operator=(use_default) const = delete;
-
-        void pop_front()
-        {}
 
     private:
         boost::compressed_pair<std::reference_wrapper<ostream_type>, Delimeter> data_;

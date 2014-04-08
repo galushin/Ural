@@ -37,31 +37,50 @@ namespace ural
         typedef ural::sequence_base<function_output_sequence<UnaryFunction>,
                                     UnaryFunction> Base_class;
     public:
+        // Типы
+        /// @brief Категория обхода
         typedef single_pass_traversal_tag traversal_tag;
 
+        // Конструкторы
+        /** @brief Конструктор без аргументов
+        @post <tt> this->functor() == UnaryFunction{} </tt>
+        */
         function_output_sequence()
          : Base_class()
         {}
 
+        /** @brief Конструктор
+        @param f функциональный объект
+        @post <tt> this->functor() == f </tt>
+        */
         explicit function_output_sequence(UnaryFunction f)
          : Base_class{std::move(f)}
         {}
 
+        // Свойства
         UnaryFunction const & functor() const
         {
             return *this;
         }
 
+        // Однопроходная последовательность
+        /** @brief Провекра исчерпания последовательности
+        @return @b false.
+        */
         bool operator!() const
         {
             return false;
         }
 
+        /** @brief Текущий элемент
+        @return <tt> *this </tt>
+        */
         function_output_sequence & operator*()
         {
             return *this;
         }
 
+        /// @brief Переход к следующему элементу. Ничего не делает.
         void pop_front()
         {}
 
@@ -79,6 +98,11 @@ namespace ural
         }
     };
 
+    /** @brief Создание @c make_function_output_sequence
+    @param f функциональный объект
+    @return <tt> function_output_sequence<F>(make_functor(std::move(f))) </tt>,
+    где @c F есть decltype(ural::make_functor(std::move(f))).
+    */
     template <class UnaryFunction>
     auto make_function_output_sequence(UnaryFunction f)
     -> function_output_sequence<decltype(ural::make_functor(std::move(f)))>

@@ -26,6 +26,9 @@
 
 namespace ural
 {
+    /** @brief Последовательность на основе функции без аргументов
+    @tparam Generator функция без аргументов
+    */
     template <class Generator>
     class generator_sequence
      : public sequence_base<generator_sequence<Generator>,
@@ -43,34 +46,63 @@ namespace ural
         static T make_value(T);
 
     public:
+        // Типы
+        /// @brief Тип ссылки
         typedef decltype(std::declval<functor_type>()()) reference;
+
+        /// @brief Тип значения
         typedef decltype(make_value(std::declval<reference>())) value_type;
+
+        /// @brief Тип расстояния
         typedef size_t distance_type;
+
+        /// @brief Категория обхода
         typedef single_pass_traversal_tag traversal_tag;
 
+        // Конструктор
+        /** @brief Конструктор
+        @param gen функция без аргументо
+        @post <tt> this->functor() == gen </tt>
+        */
         explicit generator_sequence(Generator gen)
          : Base_class{std::move(gen)}
         {}
 
+        // Однопроходная последовательность
+        /** @brief Провекра исчерпания последовательности
+        @return @b false.
+        */
         constexpr bool operator!() const
         {
             return false;
         }
 
+        /** @brief Текущий элемент
+        @return Текущий элемент
+        */
         reference front() const
         {
             return this->functor()();
         }
 
+        /// @brief Переход к следующему элементу. Ничего не делает.
         void pop_front()
         {}
 
+        // Свойства
+        /** @brief Используемый функциональный объект
+        @return Используемый функциональный объект
+        */
         functor_type const & functor() const
         {
             return *this;
         }
     };
 
+    /** @brief Создание последоательности на основе генератора
+    @param g функция без аргументов
+    @return <tt> generator_sequence<Generator>{std::move(g)} </tt>
+    */
     template <class Generator>
     generator_sequence<Generator>
     make_generator_sequence(Generator g)

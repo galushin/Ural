@@ -37,6 +37,8 @@ namespace ural
      : public sequence_base<partition_sequence<Output1, Output2, Predicate>>
     {
     public:
+        // Типы
+        /// @brief Категория обхода
         typedef single_pass_traversal_tag traversal_tag;
 
         // Конструкторы

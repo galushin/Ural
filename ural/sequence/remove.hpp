@@ -28,6 +28,11 @@
 
 namespace ural
 {
+    /** @brief Адаптор последовательности, пропускающий элементы,
+    удовлетворяющие предикату
+    @tparam Input тип входной последовательности
+    @tparam Predicate тип унарного предиката
+    */
     template <class Input, class Predicate>
     class remove_if_sequence
      : public sequence_base<remove_if_sequence<Input, Predicate>>

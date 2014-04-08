@@ -35,11 +35,14 @@ namespace ural
      : public sequence_base<output_iterator_sequence<OutputIterator>>
     {
     public:
+        // Типы
         /// @brief Тип возвращаемого значения для оператора *
         typedef decltype(*std::declval<OutputIterator>())  reference;
 
+        /// @brief Категория обхода
         typedef single_pass_traversal_tag traversal_tag;
 
+        // Конструкторы
         /** @brief Конструктор
         @param iter итератор, на основе которого будет создана данная
         последовательность
@@ -48,6 +51,7 @@ namespace ural
          : iter_(std::move(iter))
         {}
 
+        // Однопроходная последовательность
         /** @brief Проверка того, что последовательность исчерпана
         @return @b false
         */

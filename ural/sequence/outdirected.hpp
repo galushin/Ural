@@ -24,19 +24,26 @@
 
 namespace ural
 {
+    /** @brief Адаптор последовательности, возвращающий в качестве значения
+    исходную последовательность
+    @tparam Sequence последовательность
+    */
     template <class Sequence>
     class outdirected_sequence
      : public sequence_base<outdirected_sequence<Sequence>>
     {
     public:
+        // Типы
         typedef typename Sequence::traversal_tag traversal_tag;
         typedef Sequence value_type;
         typedef value_type const & reference;
 
+        // Конструктор
         explicit outdirected_sequence(Sequence s)
          : base_{std::move(s)}
         {}
 
+        // Однопроходная последовательность
         bool operator!() const
         {
             return !this->base();

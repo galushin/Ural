@@ -27,12 +27,16 @@
 
 namespace ural
 {
+    /// @brief Перечисление "Сохранять ли разделитель в конце строки)
     enum class keep_delimeter
     {
         no = 0,
         yes = 1
     };
 
+    /** @brief Последовательность строк потока ввода
+    @tparam IStream поток ввода
+    */
     template <class IStream>
     class by_line_sequence
      : public sequence_base<by_line_sequence<IStream>>
@@ -40,11 +44,22 @@ namespace ural
         typedef typename IStream::char_type char_type;
     public:
         // Типы
+        /// @brief Категория обхода
         typedef single_pass_traversal_tag traversal_tag;
+
+        /// @brief Тип значения
         typedef std::basic_string<char_type> value_type;
+
+        /// @brief Тип ссылки
         typedef value_type const & reference;
 
         // Конструкторы
+        /** @brief Конструктор
+        @param is поток ввода
+        @param delimeter символ-разделитель
+        @param kd флаг, показывающий, нужно ли сохранять символ-разделитель в
+        конце строки.
+        */
         explicit by_line_sequence(IStream & is,
                                   char_type delimeter = char_type('\n'),
                                   keep_delimeter kd = keep_delimeter::no)
@@ -56,16 +71,26 @@ namespace ural
         }
 
         // Однопроходная последовательность
+        /** @brief Провекра исчерпания последовательности
+        @return @b true, если последовательность исчерпана, иначе --- @b false.
+        */
         bool operator!() const
         {
             return !is_.get();
         }
 
+        /** @brief Текущий элемент
+        @return Ссылка на текущую строку
+        @pre <tt> !*this == false </tt>
+        */
         reference front() const
         {
             return reader_;
         }
 
+        /** @brief Переход к следующему элементу
+        @pre <tt> !*this == false </tt>
+        */
         void pop_front()
         {
             this->seek();
