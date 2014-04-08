@@ -27,25 +27,49 @@
 
 namespace ural
 {
+    /** @brief Последовательность всех кортежей (в лексикографическом порядке)
+    @todo Проверка того, что кортежи следуют в лексикографическом порядке
+    @todo Проверки концепций
+    @todo Начинать увеличение с самой младшей последовательности
+    @tparam Inputs типы базовых последовательностей
+
+    Идея "зациклить" все последовательности, кроме первой, кажется
+    соблазнительной, но, к сожалению, это невозможно, так как требуется
+    обнаружение "переполнения".
+    */
     template <class... Inputs>
     class all_tuples_sequence
      : public sequence_base<all_tuples_sequence<Inputs...>>
     {
     public:
         // Типы
+        /// @brief Тип ссылки
         typedef tuple<typename Inputs::reference...> reference;
 
         // Конструкторы
+        /** @brief Конструктор
+        @param ins базовые последовательности
+        @post <tt> this->base() == make_tuple(ins...) </tt>
+        */
         explicit all_tuples_sequence(Inputs... ins)
          : bases_{std::move(ins)...}
-        {}
+        {
+            // @todo Отбросить пройденные части
+        }
 
         // Однопроходная последовательность
+        /** @brief Проверка исчерпания последовательностей
+        @return @b true, если последовательность исчерпана, иначе --- @b false.
+        */
         bool operator!() const
         {
             return !bases_[ural::_1];
         }
 
+        /** @brief Текущий элемент последовательности
+        @pre <tt> !*this == false </tt>
+        @return Ссылка на текущий элемент последовательности
+        */
         reference front() const
         {
             auto f = [this](Inputs const & ... args)->reference
@@ -54,6 +78,9 @@ namespace ural
             return apply(f, bases_);
         }
 
+        /** @brief Переход к следующему элементу
+        @pre <tt> !*this == false </tt>
+        */
         void pop_front()
         {
             this->pop_front_impl(ural::_1);
@@ -109,6 +136,9 @@ namespace ural
         tuple<Inputs...> bases_;
     };
 
+    /** @brief Создание последовательности всех возможных кортежей
+    @param ins базовые последовательности
+    */
     template <class... Inputs>
     auto make_all_tuples_sequence(Inputs && ... ins)
     -> all_tuples_sequence<decltype(sequence(std::forward<Inputs>(ins)))...>

@@ -37,7 +37,6 @@ namespace concepts
         /// @brief Проверка неявных интерфейсов
         BOOST_CONCEPT_USAGE(SemiRegular)
         {
-            // @todo Какие ещё требования?
             T x = make();
             x = make();
         }

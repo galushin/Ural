@@ -129,7 +129,12 @@ namespace ural
         ~ sequence_base() = default;
     };
 
-    // @todo Можно ли объявить эту функцию (другом) в sequence_base?
+    /** @brief Ссылка на текущий элемент последовательности
+    @param s последовательность
+    @pre <tt> !s == false </tt>
+    @return <tt> static_cast<Seq const&>(s).front() </tt>
+    @todo Реализовать через SFINAE и is_sequence
+    */
     template <class Seq, class Base>
     typename Seq::reference
     operator*(sequence_base<Seq, Base> const & s)
