@@ -30,7 +30,6 @@ namespace ural
     /** @brief Последовательность всех кортежей (в лексикографическом порядке)
     @todo Проверка того, что кортежи следуют в лексикографическом порядке
     @todo Проверки концепций
-    @todo Начинать увеличение с самой младшей последовательности
     @tparam Inputs типы базовых последовательностей
 
     Идея "зациклить" все последовательности, кроме первой, кажется
@@ -83,47 +82,25 @@ namespace ural
         */
         void pop_front()
         {
-            this->pop_front_impl(ural::_1);
+            static_assert(sizeof...(Inputs) > 0, "");
+            this->pop_front_impl(placeholder<sizeof...(Inputs) - 1>{});
         }
 
     private:
-        bool pop_front_impl(placeholder<sizeof...(Inputs)>)
-        {
-            return true;
-        }
-
         void pop_front_impl(placeholder<0>)
         {
-            bool was_wrap = pop_front_impl(placeholder<1>{});
-
-            if(was_wrap)
-            {
-                ++ bases_[ural::_1];
-            }
+            ++ bases_[ural::_1];
         }
 
         template <size_t I>
-        bool pop_front_impl(placeholder<I> first)
+        void pop_front_impl(placeholder<I> first)
         {
-            bool was_wrap = pop_front_impl(placeholder<I+1>{});
-
-            if(was_wrap)
-            {
-                ++ bases_[first];
-            }
-            else
-            {
-                return false;
-            }
+            ++ bases_[first];
 
             if(!bases_[first])
             {
                 bases_[first] = bases_[first].traversed_front();
-                return true;
-            }
-            else
-            {
-                return false;
+                return this->pop_front_impl(placeholder<I-1>{});
             }
         }
 
