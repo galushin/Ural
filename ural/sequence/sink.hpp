@@ -24,23 +24,33 @@
 
 namespace ural
 {
+    /** @brief Шаблон класса функционального объекта, который принимает один
+    аргумент и ничего не делает.
+    @tparam T тип аргумента. Если этот тип совпадает с @c auto_tag, то
+    приниматься будет любой тип.
+    */
     template <class T = auto_tag>
     class sink_functor
     {
     public:
-        void operator()(typename boost::call_traits<T>::param_type &) const
+        /// @brief Тип возвращаемого значения
+        typedef void result_type;
+
+        constexpr void
+        operator()(typename boost::call_traits<T>::param_type &) const
+        {}
+
+        template <class Arg>
+        typename std::enable_if<!std::is_same<Arg, T>::value && std::is_same<T, auto_tag>::value>::type
+        operator()(Arg const & arg) const
         {}
     };
 
-    template <>
-    class sink_functor<auto_tag>
-    {
-    public:
-        template <class T>
-        void operator()(T &&) const
-        {}
-    };
-
+    /** @brief Последовательность вывода, которая просто игнорирует передаваемое
+    значение.
+    @tparam T тип элементов, которые можно помещать в последовательность. Если
+    этот тип совпадает с @c auto_tag, то приниматься будет любой тип.
+    */
     template <class T = auto_tag>
     using sink_sequence = ural::function_output_sequence<sink_functor<T>>;
 }
