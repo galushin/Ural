@@ -367,6 +367,31 @@ BOOST_AUTO_TEST_CASE(make_functor_for_member_var_test)
     BOOST_CHECK_EQUAL(x.first, f(p_x_cv));
 }
 
+BOOST_AUTO_TEST_CASE(make_functor_for_member_var_test_smart_ptr)
+{
+    typedef std::pair<int, std::string> Type;
+    Type x{42, "abc"};
+
+    auto p = ural::make_unique<Type>(x);
+    auto p_c = ural::make_unique<Type const>(x);
+    auto p_v = ural::make_unique<Type volatile>(x);
+    auto p_cv = ural::make_unique<Type const volatile>(x);
+
+    auto f = ural::make_functor(&Type::first);
+
+    BOOST_CHECK_EQUAL(&Type::first, f.target());
+
+    static_assert(std::is_same<int &, decltype(f(p))>::value, "");
+    static_assert(std::is_same<int const &, decltype(f(p_c))>::value, "");
+    static_assert(std::is_same<int volatile &, decltype(f(p_v))>::value, "");
+    static_assert(std::is_same<int const volatile &, decltype(f(p_cv))>::value, "");
+
+    BOOST_CHECK_EQUAL(x.first, f(p));
+    BOOST_CHECK_EQUAL(x.first, f(p_c));
+    BOOST_CHECK_EQUAL(x.first, f(p_v));
+    BOOST_CHECK_EQUAL(x.first, f(p_cv));
+}
+
 BOOST_AUTO_TEST_CASE(make_functor_for_member_function_test)
 {
     struct Inner

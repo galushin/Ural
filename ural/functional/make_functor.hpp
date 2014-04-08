@@ -118,7 +118,6 @@ namespace ural
     /** @brief Функциональный объект на основе указателя на переменную-член
     @tparam T класс, которому принадлежит переменная-член
     @tparam R тип переменной-члена
-    @todo Применение к умным указателям
     */
     template <class T, class R>
     class function_ptr_functor<R(T::*)>
@@ -181,6 +180,34 @@ namespace ural
         -> decltype(std::declval<function_ptr_functor>()(*p))
         {
             return (*this)(*p);
+        }
+
+    private:
+        R & call(T & obj) const
+        {
+            return obj.*mv_;
+        }
+
+        R const & call(T const & obj) const
+        {
+            return obj.*mv_;
+        }
+
+        R volatile & call(T volatile & obj) const
+        {
+            return obj.*mv_;
+        }
+
+        R const volatile & call(T const volatile & obj) const
+        {
+            return obj.*mv_;
+        }
+    public:
+        template <class Ptr>
+        auto operator()(Ptr const & p) const
+        -> decltype(std::declval<function_ptr_functor>().call(*p))
+        {
+            return this->call(*p);
         }
 
         /** @brief Доступ к указателю на переменную-член
