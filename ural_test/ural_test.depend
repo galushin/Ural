@@ -974,7 +974,7 @@
 	<ural/archetypes.hpp>
 	<ural/algorithm.hpp>
 
-1396013770 c:\pavel\ural_repo\ural\ural\functional\make_functor.hpp
+1396965402 c:\pavel\ural_repo\ural\ural\functional\make_functor.hpp
 	<ural/defs.hpp>
 
 1395793126 c:\devtools\ural_repo\ural\ural\functional\make_functor.hpp
@@ -6388,13 +6388,13 @@
 	<ostream>
 	<utility>
 
-1396961759 c:\pavel\ural_repo\ural\ural\sequence\sink.hpp
+1396962023 c:\pavel\ural_repo\ural\ural\sequence\sink.hpp
 
 1394005434 source:c:\pavel\ural_repo\ural\tests\tracers_tests.cpp
 	<boost/test/unit_test.hpp>
 	<ural/utility/tracers.hpp>
 
-1396960326 c:\pavel\ural_repo\ural\ural\utility.hpp
+1396961981 c:\pavel\ural_repo\ural\ural\utility.hpp
 	<ural/defs.hpp>
 	<ural/type_traits.hpp>
 	<boost/compressed_pair.hpp>

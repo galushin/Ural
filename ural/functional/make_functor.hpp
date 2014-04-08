@@ -43,6 +43,11 @@ namespace ural
     template <class Signature>
     class function_ptr_functor;
 
+    /** @brief Оператор "равно"
+    @param x левый операнд
+    @param y правый операнд
+    @return <tt> x.target() == y.target() </tt>
+    */
     template <class Signature>
     constexpr bool
     operator==(function_ptr_functor<Signature> const & x,
@@ -51,23 +56,41 @@ namespace ural
         return x.target() == y.target();
     }
 
+    /** @brief Функциональный объект на основе указателя на функцию
+    @tparam R тип возвращаемого значения
+    @tparam Args типы аргументов
+    */
     template <class R, class... Args>
     class function_ptr_functor<R(Args...)>
     {
     public:
+        /// @brief Тип указателя на функцию
         typedef R(*target_type)(Args...);
+
+        /// @brief Тип возвращаемого значения
         typedef R result_type;
 
+        /** @brief Конструктор
+        @param f указатель на функцию
+        @post <tt> this->target() == f </tt>
+        */
         function_ptr_functor(target_type f)
          : target_{f}
         {}
 
+        /** @brief Оператор применения функционального объекта
+        @param args аргументы
+        @return <tt> this->target()(args...) </tt>
+        */
         result_type
         operator()(typename boost::call_traits<Args>::param_type... args) const
         {
             return this->target()(args...);
         }
 
+        /** @brief Указатель на функцию
+        @return Заданный указатель на функцию-член
+        */
         target_type target() const
         {
             return this->target_;
@@ -92,10 +115,16 @@ namespace ural
         return x == y.target();
     }
 
+    /** @brief Функциональный объект на основе указателя на переменную-член
+    @tparam T класс, которому принадлежит переменная-член
+    @tparam R тип переменной-члена
+    @todo Применение к умным указателям
+    */
     template <class T, class R>
     class function_ptr_functor<R(T::*)>
     {
     public:
+        /// @brief Тип указателя на переменную-член
         typedef R (T::*target_type);
 
         /** @brief Конструктор
@@ -132,6 +161,10 @@ namespace ural
         }
         //@}
 
+        /** @brief Оператор применения функционального объекта
+        @param r обёртка ссылки на объект
+        @return <tt> (*this)(r.get()) </tt>
+        */
         template <class U>
         auto operator()(std::reference_wrapper<U> r) const
         -> decltype(std::declval<function_ptr_functor>()(r.get()))
@@ -139,6 +172,10 @@ namespace ural
             return (*this)(r.get());
         }
 
+        /** @brief Оператор применения функционального объекта
+        @param p указатель на объект
+        @return <tt> (*this)(*p) </tt>
+        */
         template <class U>
         auto operator()(U * p) const
         -> decltype(std::declval<function_ptr_functor>()(*p))
@@ -146,6 +183,9 @@ namespace ural
             return (*this)(*p);
         }
 
+        /** @brief Доступ к указателю на переменную-член
+        @return Заданный указатель на переменную-член
+        */
         target_type target() const
         {
             return mv_;
@@ -155,6 +195,13 @@ namespace ural
         target_type mv_;
     };
 
+    /** @brief Класс-характеристика, синтезирующий тип указателя на функцию-член
+    по типу класса (возможно с квалификаторами @b const и/или @b volatile), типу
+    возвращаемого значения и типам аргументов.
+    @tparam R тип возвращаемого значения
+    @tparam T тип класса
+    @tparam Args типы аргументов
+    */
     template <class R, class T, class... Args>
     struct declare_mem_fn_ptr_type
     {
@@ -172,6 +219,7 @@ namespace ural
         typedef typename std::conditional<is_c, Sig_cv, Sig_v>::type Res_v;
 
     public:
+        /// @brief Тип указателя на функцию
         typedef typename std::conditional<is_v, Res_v, Res>::type type;
     };
 
@@ -188,12 +236,22 @@ namespace ural
         typedef typename declare_mem_fn_ptr_type<R, T, Args...>::type
             target_type;
 
+        /// @brief Тип возвращаемого значения
         typedef R result_type;
 
+        /** @brief Конструктор
+        @param mf указатель на функцию-член
+        @post <tt> this->target() == mf </tt>
+        */
         explicit mem_fn_functor(target_type mf)
          : mf_{mf}
         {}
 
+        /** @brief Применение функционального объекта
+        @param obj объект, для которого вызывается функция-член
+        @param args аргументы
+        @return <tt> (obj.*mf_)(args...) </tt>
+        */
         result_type
         operator()(T & obj,
                    typename boost::call_traits<Args>::param_type... args) const
@@ -201,6 +259,12 @@ namespace ural
             return (obj.*mf_)(args...);
         }
 
+        /** @brief Применение функционального объекта
+        @param r обёртка ссылки на объект, для которого вызывается
+        функция-член
+        @param args аргументы
+        @return <tt> (*this)(r.get(), args...) </tt>
+        */
         result_type
         operator()(std::reference_wrapper<T> r,
                    typename boost::call_traits<Args>::param_type... args) const
@@ -208,6 +272,12 @@ namespace ural
             return (*this)(r.get(), args...);
         }
 
+        /** @brief Применение функционального объекта
+        @param p указатель (или умный указатель) на объект, для которого
+        вызывается функция-член.
+        @param args аргументы
+        @return <tt> (*this)(r.get(), args...) </tt>
+        */
         template <class Ptr>
         result_type
         operator()(Ptr const & p,
@@ -216,6 +286,9 @@ namespace ural
             return (*this)(*p, args...);
         }
 
+        /** @brief Доступ к указателю на функцию-член
+        @return mf_ заданный указатель на функцию-член
+        */
         target_type target() const
         {
             return mf_;
@@ -248,6 +321,11 @@ namespace ural
      : ural::declare_type<mem_fn_functor<R, T const volatile, Args...>>
     {};
 
+    /** @brief Создание функционального объекта на основе указателя на
+    функцию-член
+    @param mf указатель на функцию-член
+    @return <tt> typename mem_fn_functor_type<F>::type(mf) </tt>
+    */
     template <class F>
     typename std::enable_if<std::is_member_function_pointer<F>::value,
                             typename mem_fn_functor_type<F>::type>::type
@@ -256,6 +334,11 @@ namespace ural
         return typename mem_fn_functor_type<F>::type(mf);
     }
 
+    /** @brief Создание функционального объекта на основе указателя на
+    переменную-член
+    @param mv указатель на переменную-член
+    @return <tt> function_ptr_functor<T>(mv) </tt>
+    */
     template <class T>
     typename std::enable_if<std::is_member_object_pointer<T>::value,
                             function_ptr_functor<T>>::type
@@ -264,6 +347,10 @@ namespace ural
         return function_ptr_functor<T>(mv);
     }
 
+    /** @brief Создание функционального объекта на основе указателя на функцию
+    @param f указатель на функцию
+    @return <tt> function_ptr_functor<R(Args...)>{f} </tt>
+    */
     template <class R, class... Args>
     function_ptr_functor<R(Args...)>
     make_functor(R(*f)(Args...))

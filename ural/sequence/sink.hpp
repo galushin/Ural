@@ -36,6 +36,8 @@ namespace ural
         /// @brief Тип возвращаемого значения
         typedef void result_type;
 
+        //@{
+        /// @brief Оператор применения функционального объекта
         constexpr void
         operator()(typename boost::call_traits<T>::param_type &) const
         {}
@@ -44,6 +46,7 @@ namespace ural
         typename std::enable_if<!std::is_same<Arg, T>::value && std::is_same<T, auto_tag>::value>::type
         operator()(Arg const & arg) const
         {}
+        //@}
     };
 
     /** @brief Последовательность вывода, которая просто игнорирует передаваемое

@@ -171,7 +171,7 @@ namespace ural
         {
             return value_;
         }
-        ///@}
+        //@}
 
         /** @brief Исходное значение
         @return Значение <tt> this->value() </tt> сразу после конструктора или
@@ -233,7 +233,7 @@ namespace ural
     {
         return x.value();
     }
-    ///@}
+    //@}
 }
 // namespace ural
 
