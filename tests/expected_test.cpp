@@ -104,28 +104,91 @@ BOOST_AUTO_TEST_CASE(expected_copy_ctor_test)
 
 namespace
 {
-    int may_throw(bool x)
+    int may_throw(bool flag, int value)
     {
-        if(x)
+        if(flag)
         {
-            return 42;
+            return value;
         }
         else
         {
-            throw std::logic_error("Error");
+            throw value;
         }
     }
 }
 
 BOOST_AUTO_TEST_CASE(expected_from_call_test)
 {
-    auto const e1 = ural::expected_from_call([](){ return may_throw(true);});
+    auto const e1 = ural::expected_from_call(may_throw, true, 42);
 
     BOOST_CHECK(e1.has_value() == true);
     BOOST_CHECK(e1.value() == 42);
 
-    auto const e2 = ural::expected_from_call([](){ return may_throw(false);});
+    BOOST_CHECK(e1.get_exception<int>() == nullptr);
+
+    auto const e2 = ural::expected_from_call(may_throw, false, 42);
 
     BOOST_CHECK(e2.has_value() == false);
-    BOOST_CHECK_THROW(e2.value(), std::logic_error);
+    BOOST_CHECK_THROW(e2.value(), int);
+
+    auto * p_ex = e2.get_exception<int>();
+
+    BOOST_CHECK(p_ex != nullptr);
+    BOOST_CHECK_EQUAL(*p_ex, 42);
+}
+
+BOOST_AUTO_TEST_CASE(expected_swap_values_test)
+{
+    auto const e1_old = ural::expected_from_call(may_throw, true, 13);
+    auto const e2_old = ural::expected_from_call(may_throw, true, 42);
+
+    auto e1 = e1_old;
+    auto e2 = e2_old;
+
+    e1.swap(e2);
+
+    BOOST_CHECK_EQUAL(e1.value(), e2_old.value());
+    BOOST_CHECK_EQUAL(e2.value(), e1_old.value());
+}
+
+BOOST_AUTO_TEST_CASE(expected_swap_mixed_1_test)
+{
+    auto const e1_old = ural::expected_from_call(may_throw, false, 13);
+    auto const e2_old = ural::expected_from_call(may_throw, true, 42);
+
+    auto e1 = e1_old;
+    auto e2 = e2_old;
+
+    e1.swap(e2);
+
+    BOOST_CHECK_EQUAL(e1.value(), e2_old.value());
+    BOOST_CHECK_EQUAL(*e2.get_exception<int>(), *e1_old.get_exception<int>());
+}
+
+BOOST_AUTO_TEST_CASE(expected_swap_mixed_2_test)
+{
+    auto const e1_old = ural::expected_from_call(may_throw, true, 13);
+    auto const e2_old = ural::expected_from_call(may_throw, false, 42);
+
+    auto e1 = e1_old;
+    auto e2 = e2_old;
+
+    e1.swap(e2);
+
+    BOOST_CHECK_EQUAL(*e1.get_exception<int>(), *e2_old.get_exception<int>());
+    BOOST_CHECK_EQUAL(e2.value(), e1_old.value());
+}
+
+BOOST_AUTO_TEST_CASE(expected_swap_exceptions_test)
+{
+    auto const e1_old = ural::expected_from_call(may_throw, false, 13);
+    auto const e2_old = ural::expected_from_call(may_throw, false, 42);
+
+    auto e1 = e1_old;
+    auto e2 = e2_old;
+
+    e1.swap(e2);
+
+    BOOST_CHECK_EQUAL(*e1.get_exception<int>(), *e2_old.get_exception<int>());
+    BOOST_CHECK_EQUAL(*e2.get_exception<int>(), *e1_old.get_exception<int>());
 }

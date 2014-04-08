@@ -111,12 +111,16 @@ namespace ural
 
             return expected::from_exception(std::copy_exception(e));
         }
+        //@}
 
+        /** @brief Создание @c expected на основе активного в данный момент
+        исключения
+        @return <tt> from_exception(std::current_exception()) </tt>
+        */
         static expected from_exception()
         {
             return expected::from_exception(std::current_exception());
         }
-        //@}
 
         // Свойства
         /** @brief Содержит ли значение
@@ -157,8 +161,66 @@ namespace ural
         }
         //@}
 
+        /**
+        @tparam Exception тип исключения
+        @return Если данный объект содержит исключение типа @c Exception, то
+        возвращает константный указатель на него, иначе --- nullptr,
+        */
+        template <class Exception>
+        Exception const *
+        get_exception() const
+        {
+            try
+            {
+                this->value();
+            }
+            catch(Exception const & e)
+            {
+                return &e;
+            }
+            return nullptr;
+        }
+
         // Специализированные алгоритмы
-        void swap(expected & x);
+        /** @brief Обмен содержимым объектов
+        @param x объект, содержимое которого будет обменен с содержимым данного
+        объекта.
+        */
+        void swap(expected & x)
+        {
+            if(this->has_value_)
+            {
+                if(x.has_value_)
+                {
+                    using std::swap;
+                    swap(this->value_, x.value_);
+                }
+                else
+                {
+                    std::swap(this->has_value_, x.has_value_);
+
+                    auto val = std::move(this->value_);
+
+                    this->value_.~T();
+                    new(&ex_) std::exception_ptr{std::move(x.ex_)};
+
+                    using std::exception_ptr;
+                    x.ex_.~exception_ptr();
+                    new(&x.value_) T{std::move(val)};
+                }
+            }
+            else
+            {
+                if(x.has_value_)
+                {
+                    x.swap(*this);
+                }
+                else
+                {
+                    std::swap(this->ex_, x.ex_);
+                }
+            }
+        }
 
     private:
         bool has_value_;
@@ -198,13 +260,17 @@ namespace ural
         return expected<T>(value);
     }
 
-    template <class F>
-    auto expected_from_call(F f) -> expected<decltype(f())>
+    /** @brief Создание expected на основе функциональног объекта
+    @param f функциональный объект
+    */
+    template <class F, class... Args>
+    auto expected_from_call(F f, Args &&... args)
+    -> expected<decltype(f(std::forward<Args>(args)...))>
     {
-        typedef expected<decltype(f())> Expected;
+        typedef expected<decltype(f(std::forward<Args>(args)...))> Expected;
         try
         {
-            return Expected(f());
+            return Expected(f(std::forward<Args>(args)...));
         }
         catch(...)
         {
