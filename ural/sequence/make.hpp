@@ -21,6 +21,7 @@
  @brief Функции создания последовательностей
 */
 
+#include <iterator>
 #include <valarray>
 
 #include <ural/sequence/iterator_sequence.hpp>
@@ -39,6 +40,10 @@ namespace ural
         return iterator_sequence<decltype(c.begin())>{c.begin(), c.end()};
     }
 
+    /** @brief Создание последовательности на основе массива фиксированной длины
+    @param x массив
+    @return <tt> iterator_sequence<T *>{x, x + N} </tt>
+    */
     template <class T, size_t N>
     iterator_sequence<T *>
     sequence(T (&x)[N])
@@ -49,23 +54,34 @@ namespace ural
     /** @brief Создание последовательности на основе итератора вставки в конец
     контейнера
     @param i итератор-вставка
+    @return <tt> output_iterator_sequence<decltype(i)>(std::move(i)) </tt>
     */
     template <class Container>
-    ural::output_iterator_sequence<std::back_insert_iterator<Container>>
+    output_iterator_sequence<std::back_insert_iterator<Container>>
     sequence(std::back_insert_iterator<Container> i)
     {
         typedef std::back_insert_iterator<Container> Iterator;
-        return ural::output_iterator_sequence<Iterator>(std::move(i));
+        return output_iterator_sequence<Iterator>(std::move(i));
     }
 
+    /** @brief Создание последовательности на основе итератора вставки в начало
+    контейнера
+    @param i итератор-вставка
+    @return <tt> output_iterator_sequence<decltype(i)>(std::move(i)) </tt>
+    */
     template <class Container>
-    ural::output_iterator_sequence<std::front_insert_iterator<Container>>
+    output_iterator_sequence<std::front_insert_iterator<Container>>
     sequence(std::front_insert_iterator<Container> i)
     {
         typedef std::front_insert_iterator<Container> Iterator;
-        return ural::output_iterator_sequence<Iterator>(std::move(i));
+        return output_iterator_sequence<Iterator>(std::move(i));
     }
 
+    //@{
+    /** @brief Создание последовательности на основе <tt> std::valarray </tt>
+    @param c вектор для которого создаётся последовательность
+    @return <tt> iterator_sequence<T*>(begin(c), end(c)) </tt>
+    */
     template <class T>
     iterator_sequence<T*>
     sequence(std::valarray<T> & c)
@@ -95,6 +111,7 @@ namespace ural
             return iterator_sequence<const T*>(first, first + c.size());
         }
     }
+    //@}
 }
 // namespace ural
 

@@ -26,50 +26,79 @@
 
 namespace ural
 {
+    /** @brief Адаптор последовательности, возвращающие rvalue-ссылки для
+    элементов базовой последовательности
+    @tparam Sequence тип базовой последовательности
+    */
     template <class Sequence>
     class move_sequence
      : public sequence_base<move_sequence<Sequence>>
     {
     public:
         // Типы
+        /// @brief Тип значения
         typedef typename Sequence::value_type value_type;
+
+        /// @brief Тип ссылки
         typedef value_type && reference;
+
+        /// @brief Тип расстояния
         typedef typename Sequence::distance_type distance_type;
+
+        /// @brief Категория обхода
         typedef typename Sequence::traversal_tag traversal_tag;
 
         // Конструирование, копирование, присваивание
+        /** @brief Конструктор
+        @param seq базовая последовательность
+        @post <tt> this->base() == seq </tt>
+        */
         explicit move_sequence(Sequence seq)
          : base_{std::move(seq)}
         {}
 
         // Однопроходная последовательность
+        /** @brief Проверка исчерпания последовательностей
+        @return <tt> !this->base() </tt>
+        */
         bool operator!() const
         {
             return !this->base();
         }
 
+        /** @brief Текущий передний элемент
+        @return <tt> std::move(this->base().front()) </tt>
+        */
         reference front() const
         {
             return std::move(this->base().front());
         }
 
+        /// @brief Отбрасывает передний элемент
         void pop_front()
         {
             ++ base_;
         }
 
         // Двусторонняя последовательность
+        /** @brief Текущий задний элемент
+        @return <tt> std::move(this->base().back()) </tt>
+        */
         reference back() const
         {
             return std::move(this->base().back());
         }
 
+        /// @brief Отбрасывает задний элемент
         void pop_back()
         {
             this->base_.pop_back();
         }
 
         // Адаптор последовательности
+        /** @brief Базовая последовательность
+        @return Базовая последовательность
+        */
         Sequence const & base() const
         {
             return this->base_;
@@ -79,6 +108,10 @@ namespace ural
         Sequence base_;
     };
 
+    /** @brief Создание последовательности rvalue-ссылок базовой
+    последовательности.
+    @param seq последовательность
+    */
     template <class Sequence>
     auto make_move_sequence(Sequence && seq)
     -> move_sequence<decltype(sequence(std::forward<Sequence>(seq)))>
@@ -87,6 +120,12 @@ namespace ural
         return Result{sequence(std::forward<Sequence>(seq))};
     }
 
+    /** @brief Создание последовательности на основе
+    <tt> std::move_iterator </tt>.
+    @param first итератор, задающий начало последовательности.
+    @param last итератор, задающий конец последовательности.
+    @return <tt> make_move_sequence(make_iterator_sequence(first.base(), last.base())) </tt>
+    */
     template <class Iterator>
     auto make_iterator_sequence(std::move_iterator<Iterator> first,
                                 std::move_iterator<Iterator> last)
@@ -96,8 +135,15 @@ namespace ural
                                                          last.base()));
     }
 
+    /** @brief Вспомогательный класс для создания последовательностей
+    rvalue-ссылок в конвеерной нотации
+    */
     struct moved_helper{};
 
+    /** @brief Создание последовательностей rvalue-ссылок в конвеерной нотации
+    @param seq последовательность
+    @return <tt> make_move_sequence(std::forward<Sequence>(seq)) </tt>
+    */
     template <class Sequence>
     auto operator|(Sequence && seq, moved_helper)
     -> decltype(make_move_sequence(std::forward<Sequence>(seq)))

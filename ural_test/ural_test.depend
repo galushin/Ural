@@ -719,7 +719,8 @@
 1396619420 c:\pavel\ural_repo\ural\ural\defs.hpp
 	<ural/type_traits.hpp>
 
-1394005943 c:\pavel\ural_repo\ural\ural\sequence\make.hpp
+1397032467 c:\pavel\ural_repo\ural\ural\sequence\make.hpp
+	<iterator>
 	<valarray>
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/insertion.hpp>
@@ -733,7 +734,7 @@
 1396977085 c:\pavel\ural_repo\ural\ural\sequence\insertion.hpp
 	<ural/sequence/base.hpp>
 
-1396619420 c:\pavel\ural_repo\ural\ural\sequence\moved.hpp
+1397034586 c:\pavel\ural_repo\ural\ural\sequence\moved.hpp
 	<ural/sequence/base.hpp>
 
 1396935369 c:\pavel\ural_repo\ural\ural\sequence\filtered.hpp
@@ -872,7 +873,7 @@
 	<unordered_set>
 	<ural/utility/tracers.hpp>
 
-1397031660 source:c:\pavel\ural_repo\ural\tests\sequence_test.cpp
+1397031860 source:c:\pavel\ural_repo\ural\tests\sequence_test.cpp
 	<ural/abi.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/all.hpp>
@@ -890,7 +891,7 @@
 1394807792 source:c:\pavel\ural_repo\ural\ural_test\main.cpp
 	<boost/test/unit_test.hpp>
 
-1397031735 c:\pavel\ural_repo\ural\ural\sequence\reversed.hpp
+1397031987 c:\pavel\ural_repo\ural\ural\sequence\reversed.hpp
 
 1396523041 c:\devtools\github\ural\ural\functional\replace.hpp
 	<ural/tuple.hpp>

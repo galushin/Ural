@@ -180,6 +180,7 @@ namespace ural
     <tt> std::reverse_iterator </tt>
     @param first итератор, задающий начало последовательности.
     @param last итератор, задающий конец последовательности.
+    @return <tt> make_reverse_sequence(make_iterator_sequence(last.base(), first.base())) </tt>
     */
     template <class Iterator>
     auto make_iterator_sequence(std::reverse_iterator<Iterator> first,
