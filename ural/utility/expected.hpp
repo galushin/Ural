@@ -262,6 +262,7 @@ namespace ural
 
     /** @brief Создание expected на основе функциональног объекта
     @param f функциональный объект
+    @param args аргументы
     */
     template <class F, class... Args>
     auto expected_from_call(F f, Args &&... args)
