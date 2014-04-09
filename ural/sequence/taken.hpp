@@ -62,16 +62,26 @@ namespace ural
         {}
 
         // Однопроходная последовательность
+        /** @brief Проверка исчерпания последовательностей
+        @return @b true, если последовательность исчерпана, иначе --- @b false.
+        */
         bool operator!() const
         {
             return !this->base() || this->count() == 0;
         }
 
+        /** @brief Текущий элемент последовательности
+        @pre <tt> !*this == false </tt>
+        @return Ссылка на текущий элемент последовательности
+        */
         reference front() const
         {
             return *this->base();
         }
 
+        /** @brief Переход к следующему элементу
+        @pre <tt> !*this == false </tt>
+        */
         void pop_front()
         {
             assert(this->count() > 0);
@@ -81,12 +91,16 @@ namespace ural
         }
 
         // Прямая последовательность
+        /** @brief Пройденная часть последовательности
+        @return Пройденная часть последовательности
+        */
         take_sequence traversed_front() const
         {
             return take_sequence(this->base().traversed_front(),
                                  this->init_count() - this->count());
         }
 
+        /// @brief Отбрасывание пройденной части последовательности
         void shrink_front()
         {
             impl_[ural::_1].shrink_front();
@@ -96,11 +110,17 @@ namespace ural
         // Последовательность производного доступа
 
         // Адаптор последовательности
+        /** @brief Базовая последовательность
+        @return Базовая последовательность
+        */
         Sequence const & base() const
         {
             return impl_[ural::_1];
         }
 
+        /** @brief Оставшееся количество элементов
+        @return Оставшееся количество элементов
+        */
         Size const & count() const
         {
             return ural::get(impl_[ural::_2]);

@@ -67,27 +67,43 @@ namespace ural
         {}
 
         // Адаптор последовательности
+        /** @brief Базовая последовательность
+        @return Базовая последовательность
+        */
         Forward const & base() const
         {
             return this->data_.first();
         }
 
+        /** @brief Используемый предикат
+        @return Используемый предикат
+        */
         BinaryPredicate const & predicate() const
         {
             return this->data_.second();
         }
 
         // Однопроходная последовательность
+        /** @brief Проверка исчерпания последовательностей
+        @return @b true, если последовательность исчерпана, иначе --- @b false.
+        */
         bool operator!() const
         {
             return !this->base();
         }
 
+        /** @brief Текущий элемент последовательности
+        @pre <tt> !*this == false </tt>
+        @return Ссылка на текущий элемент последовательности
+        */
         reference front() const
         {
             return *this->base();
         }
 
+        /** @brief Переход к следующему элементу
+        @pre <tt> !*this == false </tt>
+        */
         void pop_front()
         {
             auto s = this->base();

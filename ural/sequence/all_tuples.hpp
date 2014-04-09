@@ -45,6 +45,9 @@ namespace ural
         /// @brief Тип ссылки
         typedef tuple<typename Inputs::reference...> reference;
 
+        /// @brief Тип значения
+        typedef tuple<typename Inputs::value_type...> value_type;
+
         // Конструкторы
         /** @brief Конструктор
         @param ins базовые последовательности

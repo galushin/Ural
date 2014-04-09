@@ -100,6 +100,7 @@ namespace ural
             return arithmetic_progression(init_first_, step_);
         }
 
+        /// @brief Отбрасывание пройденной части последовательности
         void shrink_front()
         {
             init_first_ = first_;

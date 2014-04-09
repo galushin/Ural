@@ -226,12 +226,11 @@ BOOST_AUTO_TEST_CASE(all_tuples_is_sorted_test)
     auto digits = ural::make_arithmetic_progression(0, 1) | ural::taken(10);
     auto s2 = ural::make_all_tuples_sequence(digits, digits);
 
-    std::vector<int> r2;
+    std::vector<decltype(s2)::value_type> r2;
 
     for(; !!s2; ++ s2)
     {
-        auto t = *s2;
-        r2.push_back(t[ural::_1] * 10 + t[ural::_2]);
+        r2.emplace_back(*s2);
     }
 
     BOOST_CHECK_EQUAL(100, r2.size());
