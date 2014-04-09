@@ -128,6 +128,8 @@ BOOST_AUTO_TEST_CASE(expected_from_call_test)
 
     auto const e2 = ural::expected_from_call(may_throw, false, 42);
 
+    BOOST_CHECK(e2.get_exception<std::exception>() == nullptr);
+
     BOOST_CHECK(e2.has_value() == false);
     BOOST_CHECK_THROW(e2.value(), int);
 

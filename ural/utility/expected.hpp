@@ -178,6 +178,9 @@ namespace ural
             {
                 return &e;
             }
+            catch(...)
+            {}
+
             return nullptr;
         }
 
