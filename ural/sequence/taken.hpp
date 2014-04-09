@@ -38,12 +38,25 @@ namespace ural
     {
     public:
         // Типы
+        /// @brief Тип ссылки
         typedef typename Sequence::reference reference;
+
+        /// @breif Тип значения
         typedef typename Sequence::value_type value_type;
+
+        /// @brief Тип расстояния
         typedef typename Sequence::distance_type distance_type;
+
+        /// @brief Категория обхода
         typedef typename Sequence::traversal_tag traversal_tag;
 
         // Создание, копирование
+        /** @brief Конструктор
+        @param seq исходная последовательность
+        @param count число элементов, которое должно быть извлечено
+        @post <tt> this->base() == seq </tt>
+        @post <tt> this->count() == count </tt>
+        */
         explicit take_sequence(Sequence seq, Size count)
          : impl_(std::move(seq), Count_type{std::move(count)})
         {}
@@ -72,6 +85,12 @@ namespace ural
         {
             return take_sequence(this->base().traversed_front(),
                                  this->init_count() - this->count());
+        }
+
+        void shrink_front()
+        {
+            impl_[ural::_1].shrink_front();
+            impl_[ural::_2].commit();
         }
 
         // Последовательность производного доступа

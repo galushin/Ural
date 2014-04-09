@@ -100,6 +100,11 @@ namespace ural
             return arithmetic_progression(init_first_, step_);
         }
 
+        void shrink_front()
+        {
+            init_first_ = first_;
+        }
+
     private:
         Additive init_first_;
         Additive first_;

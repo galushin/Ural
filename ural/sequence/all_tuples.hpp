@@ -53,7 +53,7 @@ namespace ural
         explicit all_tuples_sequence(Inputs... ins)
          : bases_{std::move(ins)...}
         {
-            // @todo Отбросить пройденные части
+            this->shrink_fronts(ural::_2);
         }
 
         // Однопроходная последовательность
@@ -87,6 +87,18 @@ namespace ural
         }
 
     private:
+        template <size_t I>
+        void shrink_fronts(placeholder<I>)
+        {
+            bases_[ural::_1].shrink_front();
+            return this->shrink_fronts(placeholder<I+1>{});
+        }
+
+        void shrink_fronts(placeholder<sizeof...(Inputs)>)
+        {
+            return;
+        }
+
         void pop_front_impl(placeholder<0>)
         {
             ++ bases_[ural::_1];
