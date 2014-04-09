@@ -120,8 +120,14 @@ BOOST_AUTO_TEST_CASE(reversed_iterators_to_sequence_test)
 
     static_assert(std::is_same<decltype(rs), RSequence>::value, "");
 
-    BOOST_CHECK(r_begin.base() == rs.base().begin());
-    BOOST_CHECK(r_end.base() == rs.base().end());
+    BOOST_CHECK(r_begin.base() == rs.base().end());
+    BOOST_CHECK(r_end.base() == rs.base().begin());
+
+    std::vector<int> result;
+    ural::copy(rs, std::back_inserter(result));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(xs.begin(), xs.end(),
+                                  result.rbegin(), result.rend());
 }
 
 BOOST_AUTO_TEST_CASE(move_iterators_to_sequence_test)
