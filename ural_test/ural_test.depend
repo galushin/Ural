@@ -6295,7 +6295,7 @@
 	<ostream>
 	<utility>
 
-1397120791 c:\devtools\ural_repo\ural\ural\utility.hpp
+1397120857 c:\devtools\ural_repo\ural\ural\utility.hpp
 	<ural/defs.hpp>
 	<ural/type_traits.hpp>
 	<boost/compressed_pair.hpp>
@@ -9659,10 +9659,14 @@
 1397047646 c:\pavel\ural_repo\ural\ural\utility\expected.hpp
 	<ural/defs.hpp>
 
-1397118478 source:c:\devtools\ural_repo\ural\tests\expected_test.cpp
+1397121996 source:c:\devtools\ural_repo\ural\tests\expected_test.cpp
 	<boost/test/unit_test.hpp>
 	<ural/utility/expected.hpp>
 
-1397118418 c:\devtools\ural_repo\ural\ural\utility\expected.hpp
+1397122420 c:\devtools\ural_repo\ural\ural\utility\expected.hpp
 	<ural/defs.hpp>
+
+1397120801 source:c:\devtools\ural_repo\ural\tests\utility_test.cpp
+	<ural/utility.hpp>
+	<boost/test/unit_test.hpp>
 

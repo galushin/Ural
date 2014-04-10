@@ -206,3 +206,45 @@ BOOST_AUTO_TEST_CASE(expected_value_or_test)
     BOOST_CHECK_EQUAL(42, r1);
     BOOST_CHECK_EQUAL(13, r2);
 }
+
+BOOST_AUTO_TEST_CASE(expected_copy_assign_to_value)
+{
+    auto const old_value = 42;
+    auto const new_value = 13;
+
+    auto e = ural::expected_from_call(may_throw, true, old_value);
+
+    auto e_good = ural::expected_from_call(may_throw, true, new_value);
+    auto e_bad = ural::expected_from_call(may_throw, false, new_value);
+
+    e = e_good;
+
+    BOOST_CHECK(e.has_value());
+    BOOST_CHECK_EQUAL(new_value, e.value());
+
+    e = e_bad;
+
+    BOOST_CHECK(e.has_value() == false);
+    BOOST_CHECK_EQUAL(new_value, *e.get_exception<int>());
+}
+
+BOOST_AUTO_TEST_CASE(expected_copy_assign_to_exception)
+{
+    auto const old_value = 42;
+    auto const new_value = 13;
+
+    auto e = ural::expected_from_call(may_throw, false, old_value);
+
+    auto e_good = ural::expected_from_call(may_throw, true, new_value);
+    auto e_bad = ural::expected_from_call(may_throw, false, new_value);
+
+    e = e_good;
+
+    BOOST_CHECK(e.has_value());
+    BOOST_CHECK_EQUAL(new_value, e.value());
+
+    e = e_bad;
+
+    BOOST_CHECK(e.has_value() == false);
+    BOOST_CHECK_EQUAL(new_value, *e.get_exception<int>());
+}

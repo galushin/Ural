@@ -73,7 +73,19 @@ namespace ural
 
         expected(expected && x);
 
-        expected & operator=(expected const & x);
+        expected & operator=(expected const & x)
+        {
+            if(x.has_value())
+            {
+                this->set_value(x.value_);
+            }
+            else
+            {
+                this->set_exception(x.ex_);
+            }
+            return *this;
+        }
+
         expected & operator=(expected && x);
 
         /// @brief Деструктор
@@ -191,7 +203,41 @@ namespace ural
             return nullptr;
         }
 
-        // @todo future
+        // future
+        template <class Exception>
+        void set_exception(Exception const & ex)
+        {
+            *this = from_exception(ex);
+        }
+
+        void set_exception(std::exception_ptr p)
+        {
+            if(this->has_value_)
+            {
+                this->value_.~T();
+                new(&this->ex_) std::exception_ptr(std::move(p));
+                has_value_ = false;
+            }
+            else
+            {
+                this->ex_ = std::move(p);
+            }
+        }
+
+        void set_value(T value)
+        {
+            if(this->has_value_)
+            {
+                this->value_ = std::move(value);
+            }
+            else
+            {
+                using std::exception_ptr;
+                this->ex_.~exception_ptr();
+                new(&this->value_) T(std::move(value));
+                has_value_ = true;
+            }
+        }
 
         // Специализированные алгоритмы
         /** @brief Обмен содержимым объектов
