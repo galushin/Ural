@@ -36,6 +36,15 @@ namespace ural
     constexpr nullopt_t nullopt{};
     constexpr in_place_t inplace{};
 
+    template <class T>
+    class optional;
+
+    template <class T>
+    void swap(optional<T> & x, optional<T> & y)
+    {
+        return x.swap(y);
+    }
+
 /// @cond false
 namespace details
 {
@@ -272,6 +281,7 @@ namespace details
                 {
                     using std::swap;
                     using boost::swap;
+                    using ural::swap;
                     swap(this->value_, that.value_);
                 }
             }
@@ -314,25 +324,43 @@ namespace details
     class optional
     {
     public:
+        /// @brief Тип значения
         typedef T value_type;
 
-        constexpr optional()
+        //@{
+        /** @brief Конструктор объекта без значения
+        @post <tt> !*this == true </tt>
+        */
+        constexpr optional() noexcept
          : impl_{}
         {}
 
         constexpr optional(nullopt_t)
          : impl_{}
         {}
+        //@}
 
+        /** @brief Создание на основе значения
+        @param value значение
+        @post <tt> !*this == false </tt>
+        @post <tt> this->value() == value </tt>
+        */
         constexpr optional(T value)
          : impl_{std::move(value)}
         {}
 
+        /** @brief Создаёт значение с помощью конструктора с аргументами @c args
+        @param tag тэг
+        @param args аргументы
+        @post <tt> !*this == false </tt>
+        @post <tt> this->value() == T(std::forward<Args>(args)...) </tt>
+        */
         template <class... Args>
         constexpr explicit optional(in_place_t tag, Args &&... args)
          : impl_(tag, std::forward<Args>(args)...)
         {}
 
+        // @todo Запретить, если из таких аргументов нельзя создать T
         template <class U, class... Args>
         constexpr explicit optional(in_place_t tag,
                                     std::initializer_list<U> ilist,
@@ -362,6 +390,10 @@ namespace details
             }
         }
 
+        /** @brief Присвание объекта, означающего отсутствие значения
+        @post <tt> !*this == true </tt>
+        @return <tt> *this </tt>
+        */
         optional & operator=(nullopt_t) noexcept
         {
             impl_ = nullopt;
@@ -587,15 +619,14 @@ namespace details
         void swap(optional & that)
         {
             using std::swap;
+            using boost::swap;
+            using ural::swap;
             swap(this->ptr_, that.ptr_);
         }
 
     private:
         T * ptr_;
     };
-
-    template <class T>
-    void swap(optional<T> & x, optional<T> & y);
 
     template <class T>
     constexpr optional<typename std::decay<T>::type>

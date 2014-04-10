@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_CASE(expected_value_ctor_test)
     BOOST_CHECK(init_value == e);
 }
 
-BOOST_AUTO_TEST_CASE(make_expected__test)
+BOOST_AUTO_TEST_CASE(make_expected_test)
 {
     typedef ural::expected<int> Expected;
 
