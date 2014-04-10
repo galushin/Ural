@@ -194,3 +194,15 @@ BOOST_AUTO_TEST_CASE(expected_swap_exceptions_test)
     BOOST_CHECK_EQUAL(*e1.get_exception<int>(), *e2_old.get_exception<int>());
     BOOST_CHECK_EQUAL(*e2.get_exception<int>(), *e1_old.get_exception<int>());
 }
+
+BOOST_AUTO_TEST_CASE(expected_value_or_test)
+{
+    auto const e1 = ural::expected_from_call(may_throw, true, 42);
+    auto const e2 = ural::expected_from_call(may_throw, false, 42);
+
+    auto const r1 = e1.value_or(13);
+    auto const r2 = e2.value_or(13);
+
+    BOOST_CHECK_EQUAL(42, r1);
+    BOOST_CHECK_EQUAL(13, r2);
+}

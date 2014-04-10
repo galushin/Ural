@@ -20,6 +20,7 @@
 /** @file ural/utility/expected.hpp
  @brief Обёртка для значения или исключения, которое помешало вычислению этого
  значения.
+ @todo Поддержка типов с перемещением
 */
 
 #include <ural/defs.hpp>
@@ -160,6 +161,12 @@ namespace ural
             }
         }
         //@}
+
+        template <class U>
+        T value_or(U && value) const &
+        {
+            return this->has_value() ? this->value_ : std::forward<U>(value);
+        }
 
         /**
         @tparam Exception тип исключения
