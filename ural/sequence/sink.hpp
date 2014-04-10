@@ -44,7 +44,7 @@ namespace ural
 
         template <class Arg>
         typename std::enable_if<!std::is_same<Arg, T>::value && std::is_same<T, auto_tag>::value>::type
-        operator()(Arg const & arg) const
+        operator()(Arg const &) const
         {}
         //@}
     };
