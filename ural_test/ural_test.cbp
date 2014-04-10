@@ -72,6 +72,7 @@
 		<Unit filename="../tests/statistics_tests.cpp" />
 		<Unit filename="../tests/tracers_tests.cpp" />
 		<Unit filename="../tests/tuple_tests.cpp" />
+		<Unit filename="../tests/utility_test.cpp" />
 		<Unit filename="../ural/abi.hpp" />
 		<Unit filename="../ural/algorithm.hpp" />
 		<Unit filename="../ural/algorithm/details/algo_base.hpp" />

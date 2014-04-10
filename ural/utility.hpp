@@ -128,7 +128,6 @@ namespace ural
 
     /** @brief Обёртка, сохраняющая старое значение
     @tparam T тип значения
-    @todo Придумать пример, в котором используется откат к предыдущему значению
 
     Обоснование
 
@@ -147,6 +146,7 @@ namespace ural
     class with_old_value
     {
     public:
+        // Создание и присваивание
         /** @brief Конструктор
         @param value значение
         @post <tt> this->value() == value </tt>
@@ -189,6 +189,11 @@ namespace ural
         void commit()
         {
             old_value_ = value_;
+        }
+
+        void rollback()
+        {
+            value_ = old_value_;
         }
 
     private:
