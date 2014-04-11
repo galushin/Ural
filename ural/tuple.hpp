@@ -122,7 +122,12 @@ namespace std
 {
     template <class... Ts>
     struct tuple_size<ural::tuple<Ts...>>
-     : tuple_size<std::tuple<Ts...>>
+     : std::tuple_size<std::tuple<Ts...>>
+    {};
+
+    template <size_t I, class... Ts>
+    struct tuple_element<I, ural::tuple<Ts...>>
+     : std::tuple_element<I, std::tuple<Ts...>>
     {};
 }
 // namespace std

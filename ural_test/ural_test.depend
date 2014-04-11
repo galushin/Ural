@@ -255,7 +255,7 @@
 1223887188 source:c:\devtools\github\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
 	<boost/test/impl/xml_report_formatter.ipp>
 
-1395387312 c:\devtools\ural_repo\ural\ural\tuple.hpp
+1397183866 c:\devtools\ural_repo\ural\ural\tuple.hpp
 	<tuple>
 	<ural/placeholders.hpp>
 
@@ -372,7 +372,7 @@
 	<ural/optional.hpp>
 	<ural/sequence/base.hpp>
 
-1397119730 source:c:\devtools\ural_repo\ural\tests\optional_tests.cpp
+1397123171 source:c:\devtools\ural_repo\ural\tests\optional_tests.cpp
 	<boost/test/unit_test.hpp>
 	<boost/concept/assert.hpp>
 	<ostream>
@@ -388,7 +388,7 @@
 	<unordered_set>
 	<ural/utility/tracers.hpp>
 
-1397119928 c:\devtools\ural_repo\ural\ural\optional.hpp
+1397123166 c:\devtools\ural_repo\ural\ural\optional.hpp
 	<ural/type_traits.hpp>
 	<stdexcept>
 	<type_traits>
@@ -599,7 +599,7 @@
 	<ural/functional/make_functor.hpp>
 	<ural/functional/compose.hpp>
 
-1397100591 c:\devtools\ural_repo\ural\ural\sequence\taken.hpp
+1397184012 c:\devtools\ural_repo\ural\ural\sequence\taken.hpp
 	<ural/utility.hpp>
 
 1397100591 c:\devtools\ural_repo\ural\ural\sequence\uniqued.hpp
@@ -6288,7 +6288,7 @@
 	<boost/operators.hpp>
 	<ural/math/rational.hpp>
 
-1396832139 c:\devtools\ural_repo\ural\ural\math\rational.hpp
+1397184185 c:\devtools\ural_repo\ural\ural\math\rational.hpp
 	<ural/math/common_factor.hpp>
 	<ural/defs.hpp>
 	<istream>
@@ -6490,7 +6490,7 @@
 
 1397100591 c:\devtools\ural_repo\ural\ural\sequence\iostream.hpp
 
-1395982435 c:\devtools\ural_repo\ural\ural\numeric\polynom.hpp
+1397183247 c:\devtools\ural_repo\ural\ural\numeric\polynom.hpp
 	<ural/sequence/sink.hpp>
 	<boost/operators.hpp>
 
@@ -9596,7 +9596,8 @@
 	"rnd.hpp"
 	<ctime>
 
-1397101052 c:\devtools\ural_repo\ural\ural\sequence\all_tuples.hpp
+1397184050 c:\devtools\ural_repo\ural\ural\sequence\all_tuples.hpp
+	<ural/concepts.hpp>
 	<ural/sequence/base.hpp>
 	<ural/sequence/make.hpp>
 

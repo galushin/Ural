@@ -142,6 +142,10 @@ namespace ural
         ural::tuple<Sequence, Count_type> impl_;
     };
 
+    template <class Sequence, class Size>
+    bool operator==(take_sequence<Sequence, Size> const & x,
+                    take_sequence<Sequence, Size> const & y);
+
     template <class Size>
     struct taken_helper
     {

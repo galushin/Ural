@@ -22,18 +22,18 @@
  @todo Устранить дублирование с @c transform_sequence
 */
 
+#include <ural/concepts.hpp>
 #include <ural/sequence/base.hpp>
 #include <ural/sequence/make.hpp>
 
 namespace ural
 {
     /** @brief Последовательность всех кортежей (в лексикографическом порядке)
-    @todo Проверки концепций
     @tparam Inputs типы базовых последовательностей
 
     Идея "зациклить" все последовательности, кроме первой, кажется
     соблазнительной, но, к сожалению, это невозможно, так как требуется
-    обнаружение "переполнения".
+    обнаружение "переполнения" для переноса разрядов.
     */
     template <class... Inputs>
     class all_tuples_sequence
@@ -55,6 +55,11 @@ namespace ural
         explicit all_tuples_sequence(Inputs... ins)
          : bases_{std::move(ins)...}
         {
+            typedef typename std::tuple_element<0, decltype(bases_)>::type
+                Front_seq;
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Front_seq>));
+            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Front_seq>));
+
             this->shrink_fronts(ural::_2);
         }
 
@@ -92,6 +97,11 @@ namespace ural
         template <size_t I>
         void shrink_fronts(placeholder<I>)
         {
+            typedef typename std::tuple_element<I, decltype(bases_)>::type
+                Seq;
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Seq>));
+            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Seq>));
+
             bases_[ural::_1].shrink_front();
             return this->shrink_fronts(placeholder<I+1>{});
         }
