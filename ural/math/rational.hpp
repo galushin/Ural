@@ -18,7 +18,7 @@
 */
 
 /** @file ural/math/rational.hpp
- @todo Оптимизация
+ @brief Класс рациональных чисел (в том числе --- с поддержкой @b constexpr).
 */
 
 #include <ural/math/common_factor.hpp>
