@@ -26,25 +26,25 @@
 #include <ural/defs.hpp>
 #include <ural/sequence/base.hpp>
 
+#include <type_traits>
+
+#define URAL_CONCEPT_ERROR_MSG(T, Concept) #T "is not" #Concept
+
+#define URAL_CONCEPT_ASSERT(T, Concept)\
+    static_assert(Concept<T>(), URAL_CONCEPT_ERROR_MSG(T, Concept) )
+
 namespace ural
 {
 namespace concepts
 {
+    /** @brief Концепция "Полурегулярный тип"
+    */
     template <class T>
-    class SemiRegular
+    constexpr bool SemiRegular()
     {
-    public:
-        /// @brief Проверка неявных интерфейсов
-        BOOST_CONCEPT_USAGE(SemiRegular)
-        {
-            T x = make();
-            x = make();
-        }
-
-    private:
-        static T make();
-        static T value;
-    };
+        return std::is_copy_constructible<T>::value
+            && std::is_copy_assignable<T>::value;
+    }
 
     template <class T>
     class EqualityComparable
@@ -67,9 +67,10 @@ namespace concepts
     */
     template <class T>
     class Regular
-     : SemiRegular<T>
-     , EqualityComparable<T>
-    {};
+     : EqualityComparable<T>
+    {
+        URAL_CONCEPT_ASSERT(T, SemiRegular);
+    };
 
     /** @brief Концепция однопроходной последовательности
     @tparam тип последовательности, для которого проверяется концепция

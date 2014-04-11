@@ -394,10 +394,11 @@
 	<type_traits>
 	<ostream>
 
-1397100591 c:\devtools\ural_repo\ural\ural\concepts.hpp
+1397200650 c:\devtools\ural_repo\ural\ural\concepts.hpp
 	<boost/concept/usage.hpp>
 	<ural/defs.hpp>
 	<ural/sequence/base.hpp>
+	<type_traits>
 
 1396418936 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
 	<ural/defs.hpp>
@@ -6288,7 +6289,7 @@
 	<boost/operators.hpp>
 	<ural/math/rational.hpp>
 
-1397184185 c:\devtools\ural_repo\ural\ural\math\rational.hpp
+1397187278 c:\devtools\ural_repo\ural\ural\math\rational.hpp
 	<ural/math/common_factor.hpp>
 	<ural/defs.hpp>
 	<istream>
