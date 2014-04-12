@@ -26,6 +26,7 @@
 #include <ural/defs.hpp>
 #include <ural/sequence/base.hpp>
 
+#include <boost/type_traits.hpp>
 #include <type_traits>
 
 #define URAL_CONCEPT_ERROR_MSG(T, Concept) #T "is not" #Concept
@@ -47,30 +48,19 @@ namespace concepts
     }
 
     template <class T>
-    class EqualityComparable
+    constexpr bool EqualityComparable()
     {
-    public:
-        /// @brief Проверка неявных интерфейсов
-        BOOST_CONCEPT_USAGE(EqualityComparable)
-        {
-            value_consumer<bool>() = (x == y);
-            value_consumer<bool>() = (x != y);
-        }
-
-    private:
-        static T const x;
-        static T const y;
-    };
+        return boost::has_equal_to<T>::value;
+    }
 
     /** @brief Концепция регулярного типа
     @tparam T тип, для которого проверяется концепция
     */
     template <class T>
-    class Regular
-     : EqualityComparable<T>
+    constexpr bool Regular()
     {
-        URAL_CONCEPT_ASSERT(T, SemiRegular);
-    };
+        return SemiRegular<T>() && EqualityComparable<T>();
+    }
 
     /** @brief Концепция однопроходной последовательности
     @tparam тип последовательности, для которого проверяется концепция
@@ -100,12 +90,12 @@ namespace concepts
     template <class Seq>
     class ForwardSequence
      : SinglePassSequence<Seq>
-     , EqualityComparable<Seq>
     {
     public:
         /// @brief Проверка неявных интерфейсов
         BOOST_CONCEPT_USAGE(ForwardSequence)
         {
+            URAL_CONCEPT_ASSERT(Seq, EqualityComparable);
             ural::value_consumer<Seq>() = seq.traversed_front();
             seq.shrink_front();
         }
