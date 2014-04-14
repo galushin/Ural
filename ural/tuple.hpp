@@ -24,6 +24,7 @@
 
 #include <tuple>
 
+#include <ural/utility.hpp>
 #include <ural/placeholders.hpp>
 
 namespace ural
@@ -115,6 +116,44 @@ namespace details
         return ural::details::any_of(x, pred, placeholder<0>{},
                                      placeholder<std::tuple_size<Tuple>::value>{});
     }
+
+namespace tuples
+{
+namespace details
+{
+    template <class Tuple, class F, size_t Last>
+    F for_each(Tuple &&, F f, placeholder<Last>, placeholder<Last>)
+    {
+        return std::move(f);
+    }
+
+    template <class Tuple, class F, size_t First, size_t Last>
+    F for_each(Tuple && t, F f, placeholder<First>, placeholder<Last> last)
+    {
+        f(std::get<First>(t));
+        return ::ural::tuples::details::for_each(std::forward<Tuple>(t),
+                                                 std::move(f),
+                                                 ural::placeholder<First+1>{},
+                                                 last);
+    }
+}
+// namespace details
+
+    template <class Tuple, class F>
+    F for_each(Tuple && t, F f)
+    {
+        typedef typename std::remove_reference<Tuple>::type Unref;
+        typedef typename std::remove_cv<Unref>::type Raw_tuple;
+
+        constexpr auto N = std::tuple_size<Raw_tuple>::value;
+
+        return ::ural::tuples::details::for_each(std::forward<Tuple>(t),
+                                                 std::move(f),
+                                                 ural::placeholder<0>{},
+                                                 ural::placeholder<N>{});
+    }
+}
+// namespace tuples
 }
 // namespace ural
 
