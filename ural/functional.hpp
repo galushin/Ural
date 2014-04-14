@@ -175,6 +175,19 @@ namespace ural
             Functor;
         return Functor{make_functor(std::move(f))};
     }
+
+    template <class Fun, Fun f>
+    class static_fn;
+
+    template <class R, class T, class... Args, R(T::*f)(Args...)>
+    class static_fn<R(T::*)(Args...), f>
+    {
+    public:
+        R operator()(T & obj, typename boost::call_traits<Args>::type... args) const
+        {
+            return (obj.*f)(args...);
+        }
+    };
 }
 // namespace ural
 
