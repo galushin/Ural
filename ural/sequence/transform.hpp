@@ -21,10 +21,13 @@
  @brief Последовательность с преобразованием
 */
 
-#include <boost/compressed_pair.hpp>
+#include <ural/meta/list.hpp>
+#include <ural/meta/hierarchy.hpp>
 
 #include <ural/functional.hpp>
 #include <ural/sequence/base.hpp>
+
+#include <boost/compressed_pair.hpp>
 
 namespace ural
 {
@@ -42,6 +45,14 @@ namespace ural
         static T make_value(T);
 
         typedef tuple<Inputs...> Bases_tuple;
+
+        typedef typename meta::make_list<static_fn<void(Inputs::*)(), &Inputs::pop_front>...>::type
+            pop_front_types;
+
+        typedef typename meta::copy_without_duplicates<pop_front_types>::type
+            uniq_pop_front_types;
+
+        typedef meta::inherit_from<uniq_pop_front_types> pop_fronts_fn;
 
     public:
         /// @brief Тип ссылки
@@ -71,7 +82,8 @@ namespace ural
 
         void pop_front()
         {
-            return this->pop_fronts(ural::_1, ural::placeholder<sizeof...(Inputs)>{});
+            constexpr pop_fronts_fn fn{};
+            ural::tuples::for_each(impl_.second(), fn);
         }
 
         reference front() const
@@ -94,16 +106,6 @@ namespace ural
         reference deref(Inputs const & ... ins) const
         {
             return this->functor()((*ins)...);
-        }
-
-        void pop_fronts(placeholder<sizeof...(Inputs)>, placeholder<sizeof...(Inputs)>)
-        {}
-
-        template <size_t I>
-        void pop_fronts(placeholder<I> first, placeholder<sizeof...(Inputs)> last)
-        {
-            impl_.second()[first].pop_front();
-            return pop_fronts(placeholder<I+1>{}, last);
         }
 
     private:
