@@ -85,11 +85,18 @@ namespace ural
             this->seek();
         }
 
+        /** @brief Проверка исчерпания последовательностей
+        @return @b true, если последовательность исчерпана, иначе --- @b false.
+        */
         bool operator!() const
         {
             return !in1_ && !in2_;
         }
 
+        /** @brief Текущий элемент последовательности
+        @pre <tt> !*this == false </tt>
+        @return Ссылка на текущий элемент последовательности
+        */
         reference front() const
         {
             if(state_.value() == set_operations_state::second)
@@ -102,6 +109,9 @@ namespace ural
             }
         }
 
+        /** @brief Переход к следующему элементу
+        @pre <tt> !*this == false </tt>
+        */
         void pop_front()
         {
             auto const state_value = state_.value();
@@ -122,6 +132,9 @@ namespace ural
             this->seek();
         }
 
+        /** @brief Используемая функция сравнения
+        @return Используемая функция сравнения
+        */
         Compare const & functor() const
         {
             return static_cast<Compare const &>(*this);
@@ -235,22 +248,35 @@ namespace ural
             this->seek();
         }
 
+        /** @brief Проверка исчерпания последовательностей
+        @return @b true, если последовательность исчерпана, иначе --- @b false.
+        */
         bool operator!() const
         {
             return !in1_ || !in2_;
         }
 
+        /** @brief Текущий элемент последовательности
+        @pre <tt> !*this == false </tt>
+        @return Ссылка на текущий элемент последовательности
+        */
         reference front() const
         {
             return *in1_;
         }
 
+        /** @brief Переход к следующему элементу
+        @pre <tt> !*this == false </tt>
+        */
         void pop_front()
         {
             ++ in1_;
             this->seek();
         }
 
+        /** @brief Используемая функция сравнения
+        @return Используемая функция сравнения
+        */
         Compare const & functor() const
         {
             return static_cast<Compare const &>(*this);
@@ -354,22 +380,35 @@ namespace ural
             this->seek();
         }
 
+        /** @brief Проверка исчерпания последовательностей
+        @return @b true, если последовательность исчерпана, иначе --- @b false.
+        */
         bool operator!() const
         {
             return !in1_;
         }
 
+        /** @brief Текущий элемент последовательности
+        @pre <tt> !*this == false </tt>
+        @return Ссылка на текущий элемент последовательности
+        */
         reference front() const
         {
             return *in1_;
         }
 
+        /** @brief Переход к следующему элементу
+        @pre <tt> !*this == false </tt>
+        */
         void pop_front()
         {
             ++ in1_;
             this->seek();
         }
 
+        /** @brief Используемая функция сравнения
+        @return Используемая функция сравнения
+        */
         Compare const & functor() const
         {
             return static_cast<Compare const &>(*this);
@@ -476,11 +515,18 @@ namespace ural
             this->seek();
         }
 
+        /** @brief Проверка исчерпания последовательностей
+        @return @b true, если последовательность исчерпана, иначе --- @b false.
+        */
         bool operator!() const
         {
             return !in1_ && !in2_;
         }
 
+        /** @brief Текущий элемент последовательности
+        @pre <tt> !*this == false </tt>
+        @return Ссылка на текущий элемент последовательности
+        */
         reference front() const
         {
             if(state_.value() == set_operations_state::second)
@@ -493,6 +539,9 @@ namespace ural
             }
         }
 
+        /** @brief Переход к следующему элементу
+        @pre <tt> !*this == false </tt>
+        */
         void pop_front()
         {
             auto const state_value = state_.value();
@@ -513,6 +562,9 @@ namespace ural
             this->seek();
         }
 
+        /** @brief Используемая функция сравнения
+        @return Используемая функция сравнения
+        */
         Compare const & functor() const
         {
             return static_cast<Compare const &>(*this);
@@ -635,11 +687,18 @@ namespace ural
             this->seek();
         }
 
+        /** @brief Проверка исчерпания последовательностей
+        @return @b true, если последовательность исчерпана, иначе --- @b false.
+        */
         bool operator!() const
         {
             return !in1_ && !in2_;
         }
 
+        /** @brief Текущий элемент последовательности
+        @pre <tt> !*this == false </tt>
+        @return Ссылка на текущий элемент последовательности
+        */
         reference front() const
         {
             if(state_.value() == set_operations_state::second)
@@ -652,6 +711,9 @@ namespace ural
             }
         }
 
+        /** @brief Переход к следующему элементу
+        @pre <tt> !*this == false </tt>
+        */
         void pop_front()
         {
             auto const state_value = state_.value();
@@ -673,6 +735,9 @@ namespace ural
             this->seek();
         }
 
+        /** @brief Используемая функция сравнения
+        @return Используемая функция сравнения
+        */
         Compare const & functor() const
         {
             return static_cast<Compare const &>(*this);

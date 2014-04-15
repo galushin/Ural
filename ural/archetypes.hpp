@@ -41,6 +41,9 @@ namespace archetypes
     class functor<R(Args...)>
     {
     public:
+        /** @brief Оператор применения функционального объекта
+        @return <tt> R{} </tt>
+        */
         R operator()(Args...) const
         {
             return instance();
@@ -61,6 +64,7 @@ namespace archetypes
     class functor<void(Args...)>
     {
     public:
+        /// @brief Оператор применения функционального объекта
         void operator()(Args...) const
         {}
     };

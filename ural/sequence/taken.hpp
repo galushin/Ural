@@ -41,7 +41,7 @@ namespace ural
         /// @brief Тип ссылки
         typedef typename Sequence::reference reference;
 
-        /// @breif Тип значения
+        /// @brief Тип значения
         typedef typename Sequence::value_type value_type;
 
         /// @brief Тип расстояния
@@ -142,6 +142,10 @@ namespace ural
         ural::tuple<Sequence, Count_type> impl_;
     };
 
+    /** @brief Оператор "равно"
+    @param x левый операнд
+    @param y правый операнд
+    */
     template <class Sequence, class Size>
     bool operator==(take_sequence<Sequence, Size> const & x,
                     take_sequence<Sequence, Size> const & y);
@@ -149,6 +153,7 @@ namespace ural
     template <class Size>
     struct taken_helper
     {
+        /// @brief Количество элементов, которым необходимо ограничиться
         Size count;
     };
 

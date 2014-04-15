@@ -184,6 +184,7 @@ namespace ural
 
         // Подтверждение и откат
         /** @brief Подтверждение изменений
+        @post <tt> this->value() </tt> не меняет значения
         @post <tt> this->old_value() == this->value() </tt>
         */
         void commit()
@@ -191,6 +192,10 @@ namespace ural
             old_value_ = value_;
         }
 
+        /** @brief Откат к предыдущему значению.
+        @post <tt> this->old_value() </tt> не меняет значения
+        @post <tt> this->value() == this->old_value() </tt>
+        */
         void rollback()
         {
             value_ = old_value_;

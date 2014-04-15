@@ -76,31 +76,49 @@ namespace ural
             return destroyed_ref();
         }
 
+        /** @brief Количество вызовов конструктора копий
+        @return Количество вызовов конструктора копий
+        */
         static counter_type copy_ctor_count()
         {
             return copy_ctor_ref();
         }
 
+        /** @brief Количество вызовов конструктора с перемещением
+        @return Количество вызовов конструктора с перемещением
+        */
         static counter_type move_ctor_count()
         {
             return move_ctor_ref();
         }
 
+        /** @brief Количество вызовов оператора копирующего присваивания
+        @return Количество вызовов оператора копирующего присваивания
+        */
         static counter_type copy_assignments_count()
         {
             return copy_assign_ref();
         }
 
+        /** @brief Количество вызовов оператора присваивания с перемещением
+        @return Количество вызовов оператора присваивания с перемещением
+        */
         static counter_type move_assignments_count()
         {
             return move_assign_ref();
         }
 
+        /** @brief Количество вызовов оператора "равно"
+        @return Количество вызовов оператора "равно"
+        */
         static counter_type equality_count()
         {
             return equality_ref();
         }
 
+        /** @brief Количество вызовов оператора "меньше"
+        @return Количество вызовов оператора "меньше"
+        */
         static counter_type less_count()
         {
             return less_ref();
@@ -117,6 +135,8 @@ namespace ural
         }
 
         /** @brief Конструктор копий
+        @param x объект, который должен быть скопирован
+        @post <tt> *this == x </tt>
         */
         regular_tracer(regular_tracer const & x)
          : value_{x.value_}
@@ -125,6 +145,11 @@ namespace ural
             ++ copy_ctor_ref();
         }
 
+        /** @brief Конструктор с перемещением
+        @param x объект, содержимое которого будет перемещено
+        @post <tt> *this </tt> будет содержать значение, которое до вызова
+        содержал @c x.
+        */
         regular_tracer(regular_tracer && x)
          : value_{std::move(x.value_)}
         {
@@ -143,6 +168,10 @@ namespace ural
             {}
         }
 
+        /** @brief Оператор копирующего присваивания
+        @param x объект, содержимое которого будет скопировано
+        @return <tt> *this </tt>
+        */
         regular_tracer & operator=(regular_tracer const & x)
         {
             this->value_ = x.value_;
@@ -150,6 +179,10 @@ namespace ural
             return *this;
         }
 
+        /** @brief Оператор присваивания с перемещением
+        @param x объект, содержимое которого будет перемещено
+        @return <tt> *this </tt>
+        */
         regular_tracer & operator=(regular_tracer && x)
         {
             this->value_ = std::move(x.value_);
@@ -157,6 +190,9 @@ namespace ural
             return *this;
         }
 
+        /** @brief Значение
+        @return Значение заданное в конструкторе или в результате присваивания
+        */
         T const & value() const
         {
             return this->value_;
@@ -285,6 +321,9 @@ namespace ural
             calls_ref() = 0;
         }
 
+        /** @brief Используемый функциональный объект
+        @return Используемый функциональный объект
+        */
         Base_class const & functor() const
         {
             return *this;

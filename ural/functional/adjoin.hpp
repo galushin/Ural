@@ -17,9 +17,9 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/** @file ural/functionla/adjoin.hpp
- @brief Объединение нескольких функциональных объектов в один, возвращающий
- кортеж
+/** @file ural/functional/adjoin.hpp
+ @brief РћР±СЉРµРґРёРЅРµРЅРёРµ РЅРµСЃРєРѕР»СЊРєРёС… С„СѓРЅРєС†РёРѕРЅР°Р»СЊРЅС‹С… РѕР±СЉРµРєС‚РѕРІ РІ РѕРґРёРЅ, РІРѕР·РІСЂР°С‰Р°СЋС‰РёР№
+ РєРѕСЂС‚РµР¶
 */
 
 #include <ural/tuple.hpp>

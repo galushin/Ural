@@ -256,7 +256,7 @@
 1223887188 source:c:\devtools\github\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
 	<boost/test/impl/xml_report_formatter.ipp>
 
-1397441764 c:\devtools\ural_repo\ural\ural\tuple.hpp
+1397523898 c:\devtools\ural_repo\ural\ural\tuple.hpp
 	<tuple>
 	<ural/utility.hpp>
 	<ural/placeholders.hpp>
@@ -403,7 +403,7 @@
 	<boost/type_traits.hpp>
 	<type_traits>
 
-1396418936 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
+1397522907 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
 	<ural/defs.hpp>
 	<ural/thread.hpp>
 	<ural/functional.hpp>
@@ -491,14 +491,14 @@
 1396325763 c:\devtools\ural_repo\ural\ural\defs.hpp
 	<ural/type_traits.hpp>
 
-1397440915 c:\devtools\ural_repo\ural\ural\sequence\transform.hpp
+1397524437 c:\devtools\ural_repo\ural\ural\sequence\transform.hpp
 	<ural/meta/list.hpp>
 	<ural/meta/hierarchy.hpp>
 	<ural/functional.hpp>
 	<ural/sequence/base.hpp>
 	<boost/compressed_pair.hpp>
 
-1395618267 c:\devtools\ural_repo\ural\ural\sequence\set_operations.hpp
+1397525466 c:\devtools\ural_repo\ural\ural\sequence\set_operations.hpp
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
@@ -585,7 +585,7 @@
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/insertion.hpp>
 
-1397100591 c:\devtools\ural_repo\ural\ural\memory.hpp
+1397524255 c:\devtools\ural_repo\ural\ural\memory.hpp
 	<ural/defs.hpp>
 	<ural/utility.hpp>
 	<boost/throw_exception.hpp>
@@ -607,7 +607,7 @@
 	<ural/functional/make_functor.hpp>
 	<ural/functional/compose.hpp>
 
-1397184012 c:\devtools\ural_repo\ural\ural\sequence\taken.hpp
+1397524727 c:\devtools\ural_repo\ural\ural\sequence\taken.hpp
 	<ural/utility.hpp>
 
 1397100591 c:\devtools\ural_repo\ural\ural\sequence\uniqued.hpp
@@ -996,7 +996,7 @@
 	<ural/archetypes.hpp>
 	<ural/algorithm.hpp>
 
-1393837742 c:\devtools\ural_repo\ural\ural\archetypes.hpp
+1397522351 c:\devtools\ural_repo\ural\ural\archetypes.hpp
 	<ural/sequence/base.hpp>
 
 1397290470 c:\devtools\github\ural\ural\functional\make_functor.hpp
@@ -6269,7 +6269,7 @@
 	<boost/test/unit_test.hpp>
 	<ural/utility/tracers.hpp>
 
-1397100591 c:\devtools\ural_repo\ural\ural\sequence\remove.hpp
+1397524851 c:\devtools\ural_repo\ural\ural\sequence\remove.hpp
 	<ural/algorithm/details/algo_base.hpp>
 
 1397100877 c:\devtools\ural_repo\ural\ural\sequence\sink.hpp
@@ -6304,12 +6304,12 @@
 	<ostream>
 	<utility>
 
-1397120857 c:\devtools\ural_repo\ural\ural\utility.hpp
+1397522420 c:\devtools\ural_repo\ural\ural\utility.hpp
 	<ural/defs.hpp>
 	<ural/type_traits.hpp>
 	<boost/compressed_pair.hpp>
 
-1396327288 c:\devtools\ural_repo\ural\ural\type_traits.hpp
+1397523842 c:\devtools\ural_repo\ural\ural\type_traits.hpp
 	<type_traits>
 
 1394151640 c:\devtools\ural_repo\ural\ural\sequence\iota.hpp
@@ -6492,14 +6492,14 @@
 	<ostream>
 	<utility>
 
-1395636160 c:\devtools\ural_repo\ural\ural\functional\adjoin.hpp
+1397521935 c:\devtools\ural_repo\ural\ural\functional\adjoin.hpp
 	<ural/tuple.hpp>
 	<ural/utility.hpp>
 	<ural/functional/make_functor.hpp>
 
 1397100591 c:\devtools\ural_repo\ural\ural\sequence\iostream.hpp
 
-1397183247 c:\devtools\ural_repo\ural\ural\numeric\polynom.hpp
+1397521728 c:\devtools\ural_repo\ural\ural\numeric\polynom.hpp
 	<ural/sequence/sink.hpp>
 	<boost/operators.hpp>
 
@@ -6514,7 +6514,7 @@
 	<boost/mpl/list.hpp>
 	<boost/test/unit_test.hpp>
 
-1395040302 c:\devtools\ural_repo\ural\ural\statistics.hpp
+1397523977 c:\devtools\ural_repo\ural\ural\statistics.hpp
 	<ural/defs.hpp>
 	<stdexcept>
 
@@ -9615,7 +9615,7 @@
 	<ural/sequence/base.hpp>
 	<ural/sequence/make.hpp>
 
-1397100591 c:\devtools\ural_repo\ural\ural\sequence\outdirected.hpp
+1397521785 c:\devtools\ural_repo\ural\ural\sequence\outdirected.hpp
 
 1397100591 c:\devtools\ural_repo\ural\ural\sequence\progression.hpp
 
@@ -9674,7 +9674,7 @@
 	<boost/test/unit_test.hpp>
 	<ural/utility/expected.hpp>
 
-1397122420 c:\devtools\ural_repo\ural\ural\utility\expected.hpp
+1397523789 c:\devtools\ural_repo\ural\ural\utility\expected.hpp
 	<ural/defs.hpp>
 
 1397120801 source:c:\devtools\ural_repo\ural\tests\utility_test.cpp
@@ -9690,7 +9690,7 @@
 1397290470 c:\devtools\github\ural\ural\utility\expected.hpp
 	<ural/defs.hpp>
 
-1397436959 c:\devtools\ural_repo\ural\ural\meta\list.hpp
+1397522269 c:\devtools\ural_repo\ural\ural\meta\list.hpp
 
-1397439238 c:\devtools\ural_repo\ural\ural\meta\hierarchy.hpp
+1397521951 c:\devtools\ural_repo\ural\ural\meta\hierarchy.hpp
 

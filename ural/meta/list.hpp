@@ -28,7 +28,10 @@ namespace meta
     template <class Head, class Tail>
     struct list
     {
+        /// @brief Голова списка типов --- первый элемент.
         typedef Head head;
+
+        /// @brief Хвост списка типов --- остальные элементы или @c null_type
         typedef Tail tail;
     };
 
@@ -81,6 +84,7 @@ namespace meta
                                           list<Head, Out>, Out>::type new_out;
 
     public:
+        /// @brief Тип-результат
         typedef typename copy_without_duplicates<Tail, new_out>::type type;
     };
 }

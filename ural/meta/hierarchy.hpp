@@ -17,7 +17,7 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/** @file ural/meta/list.hpp
+/** @file ural/meta/hierarchy.hpp
  @brief Средства генерации иерархий
 */
 

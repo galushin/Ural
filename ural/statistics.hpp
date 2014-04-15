@@ -52,7 +52,7 @@ namespace ural
 
         /** @brief Функция проверки значения
         @param value проверяемое значение
-        @return @c value
+        @return Возвращает @c value
         @throw <tt> bad_probability{} </tt>, если
         <tt> value < 0 || value > 1 </tt>
         */
@@ -106,9 +106,9 @@ namespace ural
         @return <tt> *this </tt>
         @throw Тоже, что <tt> Policy::enforce(std::move(value)) </tt>
         */
-        probability & operator=(value_type x)
+        probability & operator=(value_type value)
         {
-            this->value_ = Policy::enforce(std::move(x));
+            this->value_ = Policy::enforce(std::move(value));
 
             return *this;
         }

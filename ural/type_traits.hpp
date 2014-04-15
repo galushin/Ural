@@ -56,7 +56,10 @@ namespace ural
     struct is_assignable
      : decltype(::ural::details::is_assignable_helper<T, U>(nullptr))
     {
+        /// @brief Тип-результат
         typedef decltype(::ural::details::is_assignable_helper<T, U>(nullptr)) type;
+
+        /// @brief Значение-результат
         constexpr static auto value = type::value;
     };
 }

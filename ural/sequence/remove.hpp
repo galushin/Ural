@@ -39,14 +39,22 @@ namespace ural
     {
     public:
         // Типы
+        /// @brief Тип ссылки
         typedef typename Input::reference reference;
+
+        /// @brief Тип значения
         typedef typename Input::value_type value_type;
 
+        /// @brief Категория обхода
         typedef typename std::common_type<typename Input::traversal_tag,
                                           forward_traversal_tag>::type
             traversal_tag;
 
         // Конструкторы
+        /** @brief Конструктор
+        @param input входая последовательность
+        @param pred предикат
+        */
         remove_if_sequence(Input input, Predicate pred)
          : members_{std::move(input), std::move(pred)}
         {
@@ -54,16 +62,26 @@ namespace ural
         }
 
         // Однопроходная последовательность
+        /** @brief Проверка исчерпания последовательностей
+        @return @b true, если последовательность исчерпана, иначе --- @b false.
+        */
         bool operator!() const
         {
             return !this->base();
         }
 
+        /** @brief Текущий элемент последовательности
+        @pre <tt> !*this == false </tt>
+        @return Ссылка на текущий элемент последовательности
+        */
         reference front() const
         {
             return this->base().front();
         }
 
+        /** @brief Переход к следующему элементу
+        @pre <tt> !*this == false </tt>
+        */
         void pop_front()
         {
             members_.first().pop_front();
@@ -71,11 +89,17 @@ namespace ural
         }
 
         // Адаптор последовательности
+        /** @brief Базовая последовательность
+        @return Базовая последовательность
+        */
         Input const & base() const
         {
             return members_.first();
         }
 
+        /** @brief Используемый предикат
+        @return Используемый предикат
+        */
         Predicate const & predicate() const
         {
             return members_.second();
@@ -114,14 +138,23 @@ namespace ural
     {
     public:
         // Типы
+        /// @brief Тип ссылки
         typedef typename Input::reference reference;
+
+        /// @brief Тип значения
         typedef typename Input::value_type value_type;
 
+        /// @brief Категория обхода
         typedef typename std::common_type<typename Input::traversal_tag,
                                           forward_traversal_tag>::type
             traversal_tag;
 
         // Конструкторы
+        /** @brief Конструктор
+        @param in базовая последовательность
+        @param value пропускаемое значение
+        @param pred бинарный предикат
+        */
         explicit remove_sequence(Input in, T const & value, BinaryPredicate pred)
          : members_{std::move(in), value, std::move(pred)}
         {
@@ -129,16 +162,26 @@ namespace ural
         }
 
         // Однопроходная последовательность
+        /** @brief Проверка исчерпания последовательностей
+        @return @b true, если последовательность исчерпана, иначе --- @b false.
+        */
         bool operator!() const
         {
             return !members_[ural::_1];
         }
 
+        /** @brief Текущий элемент последовательности
+        @pre <tt> !*this == false </tt>
+        @return Ссылка на текущий элемент последовательности
+        */
         reference front() const
         {
             return members_[ural::_1].front();
         }
 
+        /** @brief Переход к следующему элементу
+        @pre <tt> !*this == false </tt>
+        */
         void pop_front()
         {
             ++ members_[ural::_1];
@@ -146,11 +189,17 @@ namespace ural
         }
 
         // Адаптор последовательности
+        /** @brief Пропускаемое значение
+        @return Пропускаемое значение
+        */
         T const & removed_value() const
         {
             return members_[ural::_2];
         }
 
+        /** @brief Используемый предикат
+        @return Используемый предикат
+        */
         BinaryPredicate const & predicate() const
         {
             return members_[ural::_3];

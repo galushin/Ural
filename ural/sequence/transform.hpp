@@ -61,6 +61,7 @@ namespace ural
         /// @brief Тип значения
         typedef decltype(make_value(std::declval<reference>())) value_type;
 
+        /// @brief Категория обхода
         typedef typename common_tag<typename Inputs::traversal_tag...>::type
             traversal_tag;
 
@@ -75,17 +76,27 @@ namespace ural
         {}
 
         // Однопроходная последовательность
+        /** @brief Проверка исчерпания последовательностей
+        @return @b true, если последовательность исчерпана, иначе --- @b false.
+        */
         bool operator!() const
         {
             return ural::any_of(impl_.second(), ural::logical_not<>{});
         }
 
+        /** @brief Переход к следующему элементу в передней части
+        @pre <tt> !*this == true </tt>
+        */
         void pop_front()
         {
             constexpr pop_fronts_fn fn{};
             ural::tuples::for_each(impl_.second(), fn);
         }
 
+        /** @brief Передний элемент
+        @return Ссылка на первый элемент последовательности
+        @pre <tt> !*this == true </tt>
+        */
         reference front() const
         {
             auto f = [this](Inputs const & ... args)->reference

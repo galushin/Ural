@@ -49,6 +49,9 @@ namespace ural
         {}
 
         // Однопроходная последовательность
+        /** @brief Проверка исчерпания последовательностей
+        @return @b true, если последовательность исчерпана, иначе --- @b false.
+        */
         bool operator!() const
         {
             return !this->true_sequence() && !this->false_sequence();

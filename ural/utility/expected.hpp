@@ -18,18 +18,18 @@
 */
 
 /** @file ural/utility/expected.hpp
- @brief Обёртка для значения или исключения, которое помешало вычислению этого
- значения.
- @todo Поддержка типов с перемещением
+ @brief РћР±С‘СЂС‚РєР° РґР»СЏ Р·РЅР°С‡РµРЅРёСЏ РёР»Рё РёСЃРєР»СЋС‡РµРЅРёСЏ, РєРѕС‚РѕСЂРѕРµ РїРѕРјРµС€Р°Р»Рѕ РІС‹С‡РёСЃР»РµРЅРёСЋ СЌС‚РѕРіРѕ
+ Р·РЅР°С‡РµРЅРёСЏ.
+ @todo РџРѕРґРґРµСЂР¶РєР° С‚РёРїРѕРІ СЃ РїРµСЂРµРјРµС‰РµРЅРёРµРј
 */
 
 #include <ural/defs.hpp>
 
 namespace ural
 {
-    /** @brief Обёртка для значения или исключения, которое помешало вычислению
-    этого значения.
-    @tparam T тип значения
+    /** @brief РћР±С‘СЂС‚РєР° РґР»СЏ Р·РЅР°С‡РµРЅРёСЏ РёР»Рё РёСЃРєР»СЋС‡РµРЅРёСЏ, РєРѕС‚РѕСЂРѕРµ РїРѕРјРµС€Р°Р»Рѕ РІС‹С‡РёСЃР»РµРЅРёСЋ
+    СЌС‚РѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ.
+    @tparam T С‚РёРї Р·РЅР°С‡РµРЅРёСЏ
     */
     template <class T>
     class expected
@@ -38,13 +38,13 @@ namespace ural
         {}
 
     public:
-        // Типы
-        /// @brief Тип значения
+        // РўРёРїС‹
+        /// @brief РўРёРї Р·РЅР°С‡РµРЅРёСЏ
         typedef T value_type;
 
-        // Создание, присваивание и уничтожение
-        /** @brief Коструктор
-        @param init_value значение
+        // РЎРѕР·РґР°РЅРёРµ, РїСЂРёСЃРІР°РёРІР°РЅРёРµ Рё СѓРЅРёС‡С‚РѕР¶РµРЅРёРµ
+        /** @brief РљРѕСЃС‚СЂСѓРєС‚РѕСЂ
+        @param init_value Р·РЅР°С‡РµРЅРёРµ
         @post <tt> this->has_value() == true </tt>
         @post <tt> this->value() == init_value </tt>
         */
@@ -54,8 +54,8 @@ namespace ural
             new(&value_)T(std::move(init_value));
         }
 
-        /** @brief Конструктор копий
-        @param x копируемый объект
+        /** @brief РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РєРѕРїРёР№
+        @param x РєРѕРїРёСЂСѓРµРјС‹Р№ РѕР±СЉРµРєС‚
         @post <tt> this->has_value() == x.has_value() </tt>
         */
         expected(expected const & x)
@@ -71,8 +71,17 @@ namespace ural
             }
         }
 
+        /** @brief РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЃ РїРµСЂРµРјРµС‰РµРЅРёРµРј
+        @param x РѕР±СЉРµРєС‚, СЃРѕРґРµСЂР¶РёРјРѕРµ РєРѕС‚РѕСЂРѕРіРѕ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РїРµСЂРµРјРµС‰РµРЅРѕ
+        @post <tt> *this </tt> СЃРѕРґРµСЂР¶РёС‚ Р·РЅР°С‡РµРЅРёРµ, РєРѕС‚РѕСЂРѕС‹Рµ @c x СЃРѕРґРµСЂР¶Р°Р» РґРѕ
+        РїСЂРёСЃРІР°РёРІР°РЅРёСЏ.
+        */
         expected(expected && x);
 
+        /** @brief РћРїРµСЂР°С‚РѕСЂ РєРѕРїРёСЂСѓСЋС‰РµРіРѕ РїСЂРёСЃРІР°РёРІР°РЅРёСЏ
+        @param x РєРѕРїРёСЂСѓРµРјС‹Р№ РѕР±СЉРµРєС‚
+        @post <tt> *this == x </tt>
+        */
         expected & operator=(expected const & x)
         {
             if(x.has_value())
@@ -86,9 +95,15 @@ namespace ural
             return *this;
         }
 
+        /** @brief РћРїРµСЂР°С‚РѕСЂ РїСЂРёСЃРІР°РёРІР°РЅРёСЏ СЃ РїРµСЂРµРјРµС‰РµРЅРёРµРј
+        @param x РѕР±СЉРµРєС‚, СЃРѕРґРµСЂР¶РёРјРѕРµ РєРѕС‚РѕСЂРѕРіРѕ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РїРµСЂРµРјРµС‰РµРЅРѕ
+        @post <tt> *this </tt> СЃРѕРґРµСЂР¶РёС‚ Р·РЅР°С‡РµРЅРёРµ, РєРѕС‚РѕСЂРѕС‹Рµ @c x СЃРѕРґРµСЂР¶Р°Р» РґРѕ
+        РїСЂРёСЃРІР°РёРІР°РЅРёСЏ.
+        @return <tt> *this </tt>
+        */
         expected & operator=(expected && x);
 
-        /// @brief Деструктор
+        /// @brief Р”РµСЃС‚СЂСѓРєС‚РѕСЂ
         ~ expected()
         {
             if(this->value_)
@@ -103,9 +118,9 @@ namespace ural
         }
 
         //@{
-        /** @brief Создание @c expected на основе исключения
-        @param e исключение
-        @return @c expected, содержащий исключение @c e
+        /** @brief РЎРѕР·РґР°РЅРёРµ @c expected РЅР° РѕСЃРЅРѕРІРµ РёСЃРєР»СЋС‡РµРЅРёСЏ
+        @param e РёСЃРєР»СЋС‡РµРЅРёРµ
+        @return @c expected, СЃРѕРґРµСЂР¶Р°С‰РёР№ РёСЃРєР»СЋС‡РµРЅРёРµ @c e
         */
         static expected from_exception(std::exception_ptr const & e)
         {
@@ -126,8 +141,8 @@ namespace ural
         }
         //@}
 
-        /** @brief Создание @c expected на основе активного в данный момент
-        исключения
+        /** @brief РЎРѕР·РґР°РЅРёРµ @c expected РЅР° РѕСЃРЅРѕРІРµ Р°РєС‚РёРІРЅРѕРіРѕ РІ РґР°РЅРЅС‹Р№ РјРѕРјРµРЅС‚
+        РёСЃРєР»СЋС‡РµРЅРёСЏ
         @return <tt> from_exception(std::current_exception()) </tt>
         */
         static expected from_exception()
@@ -135,9 +150,9 @@ namespace ural
             return expected::from_exception(std::current_exception());
         }
 
-        // Свойства
-        /** @brief Содержит ли значение
-        @return @b true, если объект содержит значение, иначе --- @b false.
+        // РЎРІРѕР№СЃС‚РІР°
+        /** @brief РЎРѕРґРµСЂР¶РёС‚ Р»Рё Р·РЅР°С‡РµРЅРёРµ
+        @return @b true, РµСЃР»Рё РѕР±СЉРµРєС‚ СЃРѕРґРµСЂР¶РёС‚ Р·РЅР°С‡РµРЅРёРµ, РёРЅР°С‡Рµ --- @b false.
         */
         bool has_value() const
         {
@@ -145,9 +160,9 @@ namespace ural
         }
 
         //@{
-        /** @brief Доступ к значению
-        @return Заданное значение, если <tt> this->has_value() </tt>.
-        @throw Заданное исключение.
+        /** @brief Р”РѕСЃС‚СѓРї Рє Р·РЅР°С‡РµРЅРёСЋ
+        @return Р—Р°РґР°РЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ, РµСЃР»Рё <tt> this->has_value() </tt>.
+        @throw Р—Р°РґР°РЅРЅРѕРµ РёСЃРєР»СЋС‡РµРЅРёРµ.
         */
         T & value()
         {
@@ -174,16 +189,23 @@ namespace ural
         }
         //@}
 
+        /** @brief Р”РѕСЃС‚СѓРї Рє С…СЂР°РЅРёРјРѕРјСѓ Р·РЅР°С‡РµРЅРёСЋ СЃ РІРѕР·РІСЂР°С‚РѕРј Р·Р°РґР°РЅРЅРѕРіРѕ РІ СЃР»СѓС‡Р°Рµ,
+        РµСЃР»Рё С…СЂР°РЅРёРјРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ РЅРµС‚.
+        @param value Р·РЅР°С‡РµРЅРёРµ, РєРѕС‚РѕСЂРѕРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РІРѕР·РІСЂР°С‰РµРЅРѕ, РµСЃР»Рё
+        <tt> *this </tt> РЅРµ СЃРѕРґРµСЂР¶РёС‚ Р·РЅР°С‡РµРЅРёСЏ
+        @return Р•СЃР»Рё <tt> this->has_value() </tt>, С‚Рѕ РІРѕР·РІСЂР°С‰Р°РµС‚
+        <tt> this->value() </tt>, РёРЅР°С‡Рµ --- <tt> std::forward<U>(value) </tt>.
+        */
         template <class U>
         T value_or(U && value) const &
         {
             return this->has_value() ? this->value_ : std::forward<U>(value);
         }
 
-        /**
-        @tparam Exception тип исключения
-        @return Если данный объект содержит исключение типа @c Exception, то
-        возвращает константный указатель на него, иначе --- nullptr,
+        /** @brief Р”РѕСЃС‚СѓРї Рє С…СЂР°РЅРёРјРѕРјСѓ РёСЃРєР»СЋС‡РµРЅРёСЋ
+        @tparam Exception С‚РёРї РёСЃРєР»СЋС‡РµРЅРёСЏ
+        @return Р•СЃР»Рё РґР°РЅРЅС‹Р№ РѕР±СЉРµРєС‚ СЃРѕРґРµСЂР¶РёС‚ РёСЃРєР»СЋС‡РµРЅРёРµ С‚РёРїР° @c Exception, С‚Рѕ
+        РІРѕР·РІСЂР°С‰Р°РµС‚ РєРѕРЅСЃС‚Р°РЅС‚РЅС‹Р№ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РЅРµРіРѕ, РёРЅР°С‡Рµ --- nullptr,
         */
         template <class Exception>
         Exception const *
@@ -204,12 +226,21 @@ namespace ural
         }
 
         // future
+        /** @brief Р—Р°РґР°С‚СЊ РёСЃРєР»СЋС‡РµРЅРёРµ
+        @param ex РѕР±СЉРµРєС‚-РёСЃРєР»СЋС‡РµРЅРёРµ
+        @post <tt> this->has_value() == false </tt>
+        @post <tt> *this->get_exception() == ex </tt>
+        */
         template <class Exception>
         void set_exception(Exception const & ex)
         {
             *this = from_exception(ex);
         }
 
+        /** @brief Р—Р°РґР°С‚СЊ РёСЃРєР»СЋС‡РµРЅРёРµ
+        @param p СѓРєР°Р·Р°С‚РµР»СЊ, С…СЂР°РЅСЏС‰РёР№ РёСЃРєР»СЋС‡РµРЅРёРµ
+        @post <tt> this->has_value() == false </tt>
+        */
         void set_exception(std::exception_ptr p)
         {
             if(this->has_value_)
@@ -224,6 +255,11 @@ namespace ural
             }
         }
 
+        /** @brief РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ
+        @param value Р·РЅР°С‡РµРЅРёРµ
+        @post <tt> this->has_value() == true </tt>
+        @post <tt> this->value() == value </tt>
+        */
         void set_value(T value)
         {
             if(this->has_value_)
@@ -239,10 +275,10 @@ namespace ural
             }
         }
 
-        // Специализированные алгоритмы
-        /** @brief Обмен содержимым объектов
-        @param x объект, содержимое которого будет обменен с содержимым данного
-        объекта.
+        // РЎРїРµС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅС‹Рµ Р°Р»РіРѕСЂРёС‚РјС‹
+        /** @brief РћР±РјРµРЅ СЃРѕРґРµСЂР¶РёРјС‹Рј РѕР±СЉРµРєС‚РѕРІ
+        @param x РѕР±СЉРµРєС‚, СЃРѕРґРµСЂР¶РёРјРѕРµ РєРѕС‚РѕСЂРѕРіРѕ Р±СѓРґРµС‚ РѕР±РјРµРЅРµРЅ СЃ СЃРѕРґРµСЂР¶РёРјС‹Рј РґР°РЅРЅРѕРіРѕ
+        РѕР±СЉРµРєС‚Р°.
         */
         void swap(expected & x)
         {
@@ -290,9 +326,9 @@ namespace ural
     };
 
     //@{
-    /** @brief Оператор "равно"
-    @param x объект
-    @param a значение
+    /** @brief РћРїРµСЂР°С‚РѕСЂ "СЂР°РІРЅРѕ"
+    @param x РѕР±СЉРµРєС‚
+    @param a Р·РЅР°С‡РµРЅРёРµ
     @return <tt> x.has_value() ? x.value() == a : false </tt>
     */
     template <class T>
@@ -308,8 +344,8 @@ namespace ural
     }
     //@}
 
-    /** @brief Создание @c expected
-    @param value значение
+    /** @brief РЎРѕР·РґР°РЅРёРµ @c expected
+    @param value Р·РЅР°С‡РµРЅРёРµ
     @return <tt> expected<T>(value) </tt>
     */
     template <class T>
@@ -318,9 +354,9 @@ namespace ural
         return expected<T>(value);
     }
 
-    /** @brief Создание expected на основе функциональног объекта
-    @param f функциональный объект
-    @param args аргументы
+    /** @brief РЎРѕР·РґР°РЅРёРµ expected РЅР° РѕСЃРЅРѕРІРµ С„СѓРЅРєС†РёРѕРЅР°Р»СЊРЅРѕРі РѕР±СЉРµРєС‚Р°
+    @param f С„СѓРЅРєС†РёРѕРЅР°Р»СЊРЅС‹Р№ РѕР±СЉРµРєС‚
+    @param args Р°СЂРіСѓРјРµРЅС‚С‹
     */
     template <class F, class... Args>
     auto expected_from_call(F f, Args &&... args)

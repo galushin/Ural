@@ -60,12 +60,22 @@ namespace ural
     }
 
     // Умный указатель с глубоким копированием
+    /** @brief Стратегия копирования по-умолчанию
+    @tparam T тип копируемого объекта
+    */
     template <class T>
     class default_copy
     {
     public:
+        /** @brief Тип умного указателя, управляющего временем жизни созданного
+        объектами
+        */
         typedef std::unique_ptr<T> owner_type;
 
+        /** @brief Создание копии в динамической памяти
+        @param x копируемое значение
+        @return <tt> make_unique<T>(std::move(x)) </tt>
+        */
         static owner_type make_copy(T const & x)
         {
             return ural::make_unique<T>(std::move(x));
