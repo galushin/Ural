@@ -3,8 +3,7 @@
 
 /** @file ural/sequence/progression.hpp
  @brief Прогрессии
- @todo Возможность задавать категорию обхода. Настройка структуры в зависимости
- от категории обхода
+ @todo Настройка структуры в зависимости от категории обхода
 */
 
 namespace ural
@@ -14,7 +13,8 @@ namespace ural
     @tparam Plus операция, используемая в качестве сложения
     @todo Конструктор с функциональным объектом
     */
-    template <class Additive, class Plus = ural::plus<Additive>>
+    template <class Additive, class Plus = plus<Additive>,
+              class Traversal = random_access_traversal_tag>
     class arithmetic_progression
      : public sequence_base<arithmetic_progression<Additive, Plus>>
      , private Plus
@@ -88,7 +88,7 @@ namespace ural
         */
         void pop_front()
         {
-            this->first_ = this->functor()(this->first_, this->step_);
+            this->first_ = this->functor()(std::move(this->first_), this->step_);
         }
 
         // Прямая последовательность

@@ -42,6 +42,14 @@ namespace ural
         typedef single_pass_traversal_tag traversal_tag;
 
         // Конструкторы
+        /** @brief Конструктор
+        @param out_true выходная последовательность для "истинных" элементов
+        @param out_false выходная последовательность для "ложных" элементов
+        @param pred предикат
+        @post <tt> this->true_sequence() == out_true </tt>
+        @post <tt> this->false_sequence() == out_false </tt>
+        @post <tt> this->predicate() == pred </tt>
+        */
         explicit partition_sequence(Output1 out_true, Output2 out_false,
                                     Predicate pred)
          : data_{Bases{std::move(out_true), std::move(out_false)},
@@ -57,11 +65,16 @@ namespace ural
             return !this->true_sequence() && !this->false_sequence();
         }
 
+        /** @return <tt> *this </tt>
+        */
         partition_sequence & operator*()
         {
             return *this;
         }
 
+        /** @brief Запись элемента в последовательность
+        @param x новый элемент
+        */
         template <class T>
         void operator=(T && x)
         {
@@ -77,20 +90,36 @@ namespace ural
             }
         }
 
+        /** @brief Переход к следующему элементу
+        @pre <tt> !*this == false </tt>
+        */
         void pop_front()
         {}
 
         // Адаптор последовательности
+        /** @brief Последовательность, в которую записываются элементы,
+        удовлетворяющие предикату
+        @return Последовательность, в которую записываются элементы,
+        удовлетворяющие предикату.
+        */
         Output1 const & true_sequence() const
         {
             return data_.first()[ural::_1];
         }
 
+        /** @brief Последовательность, в которую записываются элементы, не
+        удовлетворяющие предикату
+        @return Последовательность, в которую записываются элементы, не
+        удовлетворяющие предикату.
+        */
         Output2 const & false_sequence() const
         {
             return data_.first()[ural::_2];
         }
 
+        /** @brief Используемый предикат
+        @return Используемый предикат
+        */
         Predicate const & predicate() const
         {
             return data_.second();
@@ -101,6 +130,12 @@ namespace ural
         boost::compressed_pair<Bases, Predicate> data_;
     };
 
+    /** @brief Создание последовательность вывода, записывающая значения в одну
+    из двух базовых последовательностей, в зависимости от значения предиката.
+    @param out_true выходная последовательность для "истинных" элементов
+    @param out_false выходная последовательность для "ложных" элементов
+    @param pred предикат
+    */
     template <class Output1, class Output2, class Predicate>
     auto make_partition_sequence(Output1 && out_true, Output2 && out_false,
                                  Predicate pred)

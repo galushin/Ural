@@ -53,8 +53,7 @@ namespace ural
         /** @brief Функция проверки значения
         @param value проверяемое значение
         @return Возвращает @c value
-        @throw <tt> bad_probability{} </tt>, если
-        <tt> value < 0 || value > 1 </tt>
+        @throw bad_probability, если <tt> value < 0 || value > 1 </tt>
         */
         constexpr static value_type enforce(value_type value)
         {
