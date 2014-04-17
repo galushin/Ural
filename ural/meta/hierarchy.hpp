@@ -25,18 +25,17 @@ namespace ural
 {
 namespace meta
 {
-    template <class Container, class Out = empty_type>
-    struct inherit_from;
-
-    template <class Out>
-    struct inherit_from<null_type, Out>
-     : declare_type<Out>
-    {};
-
-    template <class Container, class Out>
+    /** @brief Наследование от всех элементов списка типов
+    @tparam Container список типов
+    */
+    template <class Container>
     struct inherit_from
      : public Container::head
      , public inherit_from<typename Container::tail>
+    {};
+
+    template <>
+    struct inherit_from<null_type>
     {};
 }
 // namespace meta
