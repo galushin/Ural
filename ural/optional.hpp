@@ -361,6 +361,12 @@ namespace details
         {}
 
         // @todo Запретить, если из таких аргументов нельзя создать T
+        /** @brief Создание значения "на месте"
+        @param tag тэг
+        @param ilist список инициализаторов
+        @param args прочие аргументы
+        @post <tt> this->value() == T(ilist, std::forward<Args>(args)...) </tt>
+        */
         template <class U, class... Args>
         constexpr explicit optional(in_place_t tag,
                                     std::initializer_list<U> ilist,
@@ -368,6 +374,10 @@ namespace details
          : impl_{tag, ilist, std::forward<Args>(args)...}
         {}
 
+        /** @brief Конструктор копий
+        @param x копируемый объект
+        @post <tt> *this == x </tt>
+        */
         optional(optional const & x)
          : impl_{}
         {
@@ -379,6 +389,9 @@ namespace details
             }
         }
 
+        /** @brief Конструктор перемещения
+        @param x объект, содержимое которого должно быть перемещено
+        */
         optional(optional && x) noexcept(std::is_nothrow_move_constructible<T>::value)
         : impl_{}
         {
@@ -408,6 +421,11 @@ namespace details
             return *this;
         }
 
+        /** @brief Оператор присваивания
+        @param x аргумент
+        @return <tt> *this </tt>
+        @post <tt> *this == x </tt>
+        */
         optional & operator=(optional const & x)
         {
             if(!x)
@@ -434,16 +452,28 @@ namespace details
             }
         }
 
+        /** @brief Проверка отсутствия значения
+        @return <tt> !static_cast<bool>(*this) </tt>
+        */
         constexpr bool operator!() const
         {
             return !impl_;
         }
 
+        /** @brief Явное преобразование в @c bool
+        @return Если данный объект содержит значение --- @b true, иначе ---
+        @b false.
+        */
         constexpr explicit operator bool() const
         {
             return !!*this;
         }
 
+        //@{
+        /** @brief Доступ к указателю на значение
+        @return @c nullptr, если объект не содержит значение, иначе ---
+        <tt> &**this </tt>.
+        */
         constexpr const value_type * get_pointer() const
         {
             return !*this ? nullptr
@@ -464,7 +494,9 @@ namespace details
         {
             return this->get_pointer();
         }
+        //@}
 
+        //@{
         constexpr value_type const & operator*() const
         {
             return impl_.value_unsafe();
@@ -475,7 +507,9 @@ namespace details
             assert(bool(*this) != false);
             return impl_.value_unsafe();
         }
+        //@}
 
+        //@{
         constexpr const T & value() const
         {
             return !!*this ? **this
@@ -493,7 +527,9 @@ namespace details
                 return **this;
             }
         }
+        //@}
 
+        //@{
         template <class U>
         constexpr T value_or(U && value) const &
         {
@@ -505,6 +541,7 @@ namespace details
         {
             return !*this ? T{std::forward<U>(value)} : std::move(**this);
         }
+        //@}
 
         template <class... Args>
         void emplace(Args&&... args)
@@ -536,9 +573,14 @@ namespace details
     {
     public:
         // Типы
+        /// @brief Тип значения
         typedef T & value_type;
 
         // Конструкторы
+        //@{
+        /** @brief Конструктор объекта без значения
+        @post <tt> !*this == true </tt>
+        */
         constexpr optional()
          : ptr_{nullptr}
         {}
@@ -546,6 +588,7 @@ namespace details
         constexpr optional(nullopt_t)
          : ptr_{nullptr}
         {}
+        //@}
 
         optional(optional const & ) = default;
         optional(optional && ) = default;
@@ -559,6 +602,10 @@ namespace details
         {}
 
         // Присваивания
+        /** @brief Удаление значения
+        @post <tt> !*this </tt>
+        @reutnr <tt> *this </tt>
+        */
         optional & operator=(nullopt_t)
         {
             ptr_ = nullptr;
@@ -569,6 +616,10 @@ namespace details
         optional & operator=(optional && ) = default;
 
         // Свойства
+        //@{
+        /** @brief Проверка отсутствия значения
+        @return @b false, если значение отсутствует, иначе --- @b true.
+        */
         constexpr bool operator!() const
         {
             return this->ptr_ == nullptr;
@@ -578,6 +629,7 @@ namespace details
         {
             return !*this;
         }
+        //@}
 
         constexpr explicit operator bool() const
         {
@@ -589,6 +641,7 @@ namespace details
             return *this->get_pointer();
         }
 
+        //@{
         constexpr T * operator->() const
         {
             return this->get_pointer();
@@ -598,6 +651,7 @@ namespace details
         {
             return ptr_;
         }
+        //@}
 
         constexpr T & value() const
         {
