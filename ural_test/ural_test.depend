@@ -680,7 +680,7 @@
 	<ural/algorithm/details/copy.hpp>
 	<ural/algorithm/details/algo_base.hpp>
 
-1398092291 c:\pavel\ural_repo\ural\ural\functional.hpp
+1398095511 c:\pavel\ural_repo\ural\ural\functional.hpp
 	<boost/compressed_pair.hpp>
 	<ural/functional/adjoin.hpp>
 	<ural/functional/compare_by.hpp>

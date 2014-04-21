@@ -96,9 +96,13 @@ namespace ural
     {
     public:
         // Типы
+        /// @brief Тип значения
         typedef T value_type;
+
+        /// @brief Тип функции сравнения
         typedef Compare compare_type;
 
+        // Конструкторы
         /** @brief Конструктор
         @param init_value начальное значение
         @param cmp функция сравнения
@@ -109,6 +113,12 @@ namespace ural
          : impl_{std::move(init_value), std::move(cmp)}
         {}
 
+        // Обновление
+        //@{
+        /** @brief Обновление статистики
+        @param value новое значение
+        @return <tt> *this </tt>
+        */
         min_element_accumulator &
         operator()(value_type const & value)
         {
@@ -118,7 +128,13 @@ namespace ural
 
         min_element_accumulator &
         operator()(value_type && value);
+        //@}
 
+        //@{
+        /** @brief Обновление статистики
+        @param value новое значение
+        @return @b true, если значение было обновлено, иначе --- @b false.
+        */
         bool update(value_type const & value)
         {
             if(this->compare()(value, this->result()))
@@ -131,12 +147,20 @@ namespace ural
         }
 
         bool update(value_type && value);
+        //@}
 
+        // Свойства
+        /** @brief Текущее значение статистики
+        @return Текущее значение статистики
+        */
         value_type const & result() const
         {
             return impl_.first();
         }
 
+        /** @brief Используемая функция сравнения
+        @return Ссылка на используемую функцию сравнения
+        */
         Compare const & compare() const
         {
             return impl_.second();
