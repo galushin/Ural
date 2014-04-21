@@ -189,18 +189,13 @@ namespace ural
         //@{
         /** @brief Доступ к значению
         @return Заданное значение, если <tt> this->has_value() </tt>.
-        @throw Заданное исключение.
+        @throw Заданное исключение, если <tt> this->has_value() == false </tt>.
         */
         T & value()
         {
-            if(this->has_value_)
-            {
-                return this->value_;
-            }
-            else
-            {
-                std::rethrow_exception(this->ex_);
-            }
+            auto const & cr = *this;
+
+            return const_cast<T&>(cr.value());
         }
 
         T const & value() const

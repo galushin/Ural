@@ -31,21 +31,34 @@
 
 namespace ural
 {
+    /** @brief Генератор случайных чисел, основанный на использовании функции
+    <tt> std::rand </tt>.
+    */
     class c_rand_engine
     {
     public:
+        /// @brief Тип возвращаемого значения
         typedef decltype(std::rand()) result_type;
 
+        /** @brief Генерация значения
+        @return <tt> std::rand() </tt>
+        */
         result_type operator()() const
         {
             return std::rand();
         }
 
+        /** @brief Наименьшее возвращаемое значение
+        @return Наименьшее возвращаемое значение
+        */
         constexpr result_type min URAL_PREVENT_MACRO_SUBSTITUTION () const
         {
             return 0;
         }
 
+        /** @brief Наибольшее возвращаемое значение
+        @return Наибольшее возвращаемое значение
+        */
         constexpr result_type max URAL_PREVENT_MACRO_SUBSTITUTION () const
         {
             return RAND_MAX;
@@ -364,6 +377,11 @@ namespace ural
         return x.param() == y.param();
     }
 
+    /** @brief Запись в поток вывода
+    @param os поток вывода
+    @param d объект-распределение
+    @return <tt> os </tt>
+    */
     template <class Ch, class Tr, class IntType>
     std::basic_ostream<Ch, Tr> &
     operator<<(std::basic_ostream<Ch, Tr> & os,
@@ -381,6 +399,11 @@ namespace ural
         return os;
     }
 
+    /** @brief Чтение из потока ввода
+    @param is поток ввода
+    @param d объект-распределение
+    @return <tt> is </tt>
+    */
     template <class Ch, class Tr, class IntType>
     std::basic_istream<Ch, Tr> &
     operator>>(std::basic_istream<Ch, Tr> & is,
