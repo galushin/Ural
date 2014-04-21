@@ -808,7 +808,7 @@
 	<boost/type_traits.hpp>
 	<type_traits>
 
-1398066381 c:\pavel\ural_repo\ural\ural\memory.hpp
+1398089463 c:\pavel\ural_repo\ural\ural\memory.hpp
 	<ural/defs.hpp>
 	<ural/utility.hpp>
 	<boost/throw_exception.hpp>
@@ -9669,7 +9669,7 @@
 
 1398066381 c:\pavel\ural_repo\ural\ural\sequence\progression.hpp
 
-1398085234 source:c:\pavel\ural_repo\ural\tests\expected_test.cpp
+1398085667 source:c:\pavel\ural_repo\ural\tests\expected_test.cpp
 	<ural/utility/expected.hpp>
 	<ural/memory.hpp>
 	<boost/test/unit_test.hpp>

@@ -66,6 +66,10 @@ namespace ural
                             std::unique_ptr<T>>::type
     make_unique(size_t size) = delete;
 
+    /** @brief Создание копии в динамической памяти
+    @param x копируемое значение
+    @return <tt> ural::make_unique<T>(std::move(x)) </tt>
+    */
     template <class T>
     std::unique_ptr<T> make_copy_new(T x)
     {
@@ -81,7 +85,7 @@ namespace ural
     {
     public:
         /** @brief Тип умного указателя, управляющего временем жизни созданного
-        объектами
+        объекта.
         */
         typedef std::unique_ptr<T> owner_type;
 
@@ -93,18 +97,31 @@ namespace ural
         {
             return ural::make_unique<T>(std::move(x));
         }
+
+    protected:
+        ~default_copy() = default;
     };
 
     template <class T, std::unique_ptr<T>(T::*clone_fn)() const = &T::clone>
     class member_function_copy
     {
     public:
+        /** @brief Тип умного указателя, управляющего временем жизни созданного
+        объекта.
+        */
         typedef std::unique_ptr<T> owner_type;
 
+        /** @brief Создание копии в динамической памяти
+        @param x копируемое значение
+        @return <tt> (x.*clone_fn)() </tt>
+        */
         static owner_type make_copy(T const & x)
         {
             return (x.*clone_fn)();
         }
+
+    protected:
+        ~member_function_copy() = default;
     };
 
     /** @brief Стратегия проверки указателей, использующая макрос @c assert.
@@ -274,11 +291,18 @@ namespace ural
         /// @brief Конструктор с перемещением
         copy_ptr(copy_ptr &&) = default;
 
+        /** @brief Копирование умного указателя совместимого типа
+        @param x копируемый умный указатель
+        @post <tt> **this == *x </tt>
+        */
         template <class T1, class C1, class D1, class Ch1>
         explicit copy_ptr(copy_ptr<T1, C1, D1, Ch1> const & x)
          : holder_{x.make_copy().release(), x.get_deleter()}
         {}
 
+        /** @brief Конструктор перемещения умного указателя совместимого типа
+        @param x перемещаемый умный указатель
+        */
         template <class T1, class C1, class D1, class Ch1>
         explicit copy_ptr(copy_ptr<T1, C1, D1, Ch1> && x)
          : holder_(x.release(), std::move(x.get_deleter()))
@@ -314,10 +338,15 @@ namespace ural
         }
 
         /** @brief Оператор присваивания с перемещением
-        @return *this
+        @return <tt> *this </tt>
         */
         copy_ptr & operator=(copy_ptr &&) = default;
 
+        /** @brief Присваивание с перемещением на основе умного указателя
+        совместимого типа
+        @param x объект, содержимое которого должно быть перемещено
+        @return <tt> *this </tt>
+        */
         template <class T1, class C1, class D1, class Ch1>
         copy_ptr & operator=(copy_ptr<T1, C1, D1, Ch1> && x)
         {
@@ -402,6 +431,10 @@ namespace ural
         }
 
         // Модификаторы
+        /** @brief Отказ от владения указываемым объектом
+        @return @c unique_ptr, хранящий адрес указываемого объекта
+        @post <tt> !*this == true </tt>
+        */
         pointer release()
         {
             return holder_.release();
