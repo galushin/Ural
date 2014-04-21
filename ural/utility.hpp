@@ -21,6 +21,7 @@
  @brief Вспомогательные средства
 */
 
+#include <ural/placeholders.hpp>
 #include <ural/defs.hpp>
 #include <ural/type_traits.hpp>
 
@@ -244,6 +245,31 @@ namespace ural
         return x.value();
     }
     //@}
+
+    // Универсальный интерфейс для кортежей, pair, complex, compressed_pair
+    template <class T1, class T2>
+    T1 const & get(std::pair<T1, T2> const & x, ural::placeholder<0>)
+    {
+        return x.first;
+    }
+
+    template <class T1, class T2>
+    T2 const & get(std::pair<T1, T2> const & x, ural::placeholder<1>)
+    {
+        return x.second;
+    }
+
+    template <class T1, class T2>
+    T1 const & get(boost::compressed_pair<T1, T2> const & x, ural::placeholder<0>)
+    {
+        return x.first();
+    }
+
+    template <class T1, class T2>
+    T2 const & get(boost::compressed_pair<T1, T2> const & x, ural::placeholder<1>)
+    {
+        return x.second();
+    }
 }
 // namespace ural
 

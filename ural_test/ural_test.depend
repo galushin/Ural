@@ -694,7 +694,8 @@
 	<ural/utility.hpp>
 	<ural/placeholders.hpp>
 
-1396013770 c:\pavel\ural_repo\ural\ural\placeholders.hpp
+1398104008 c:\pavel\ural_repo\ural\ural\placeholders.hpp
+	<functional>
 
 1396619420 c:\pavel\ural_repo\ural\ural\functional\replace.hpp
 	<ural/tuple.hpp>
@@ -6410,7 +6411,8 @@
 	<boost/test/unit_test.hpp>
 	<ural/utility/tracers.hpp>
 
-1398066381 c:\pavel\ural_repo\ural\ural\utility.hpp
+1398104072 c:\pavel\ural_repo\ural\ural\utility.hpp
+	<ural/placeholders.hpp>
 	<ural/defs.hpp>
 	<ural/type_traits.hpp>
 	<boost/compressed_pair.hpp>
@@ -9709,7 +9711,8 @@
 
 1398066381 c:\pavel\ural_repo\ural\ural\meta\hierarchy.hpp
 
-1397223322 source:c:\pavel\ural_repo\ural\tests\utility_test.cpp
+1398103786 source:c:\pavel\ural_repo\ural\tests\utility_test.cpp
 	<ural/utility.hpp>
+	<ural/placeholders.hpp>
 	<boost/test/unit_test.hpp>
 

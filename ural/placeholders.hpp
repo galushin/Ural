@@ -21,6 +21,8 @@
  @brief Статические индексы
 */
 
+#include <functional>
+
 namespace ural
 {
     /** @brief Тип-тэг, обозначающий номер аргумента
