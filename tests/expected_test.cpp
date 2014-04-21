@@ -144,17 +144,23 @@ BOOST_AUTO_TEST_CASE(expected_move_ctor_test)
 
 namespace
 {
-    int may_throw(bool flag, int value)
+    struct may_throw_t
     {
-        if(flag)
+        template <class T>
+        T operator()(bool flag, T value) const
         {
-            return value;
+            if(flag)
+            {
+                return std::move(value);
+            }
+            else
+            {
+                throw value;
+            }
         }
-        else
-        {
-            throw value;
-        }
-    }
+    };
+
+    constexpr may_throw_t may_throw {};
 }
 
 BOOST_AUTO_TEST_CASE(expected_from_call_test)
@@ -287,4 +293,51 @@ BOOST_AUTO_TEST_CASE(expected_copy_assign_to_exception)
 
     BOOST_CHECK(e.has_value() == false);
     BOOST_CHECK_EQUAL(new_value, *e.get_exception<int>());
+}
+
+
+BOOST_AUTO_TEST_CASE(expected_move_assign_to_value)
+{
+    typedef std::vector<int> Type;
+    Type const old_value{4, 2};
+    Type const new_value{1, 3};
+
+    auto e = ural::expected_from_call(may_throw, true, old_value);
+
+    auto e_good = ural::expected_from_call(may_throw, true, new_value);
+    auto e_bad = ural::expected_from_call(may_throw, false, new_value);
+
+    e = std::move(e_good);
+
+    BOOST_CHECK(e.has_value());
+    BOOST_CHECK(new_value == e.value());
+    BOOST_CHECK(e_good.value().empty());
+
+    e = std::move(e_bad);
+
+    BOOST_CHECK(e.has_value() == false);
+    BOOST_CHECK(new_value == *e.get_exception<Type>());
+}
+
+BOOST_AUTO_TEST_CASE(expected_move_assign_to_exception)
+{
+    typedef std::vector<int> Type;
+    Type const old_value{4, 2};
+    Type const new_value{1, 3};
+
+    auto e = ural::expected_from_call(may_throw, false, old_value);
+
+    auto e_good = ural::expected_from_call(may_throw, true, new_value);
+    auto e_bad = ural::expected_from_call(may_throw, false, new_value);
+
+    e = std::move(e_good);
+
+    BOOST_CHECK(e.has_value());
+    BOOST_CHECK(new_value == e.value());
+    BOOST_CHECK(e_good.value().empty());
+
+    e = std::move(e_bad);
+
+    BOOST_CHECK(e.has_value() == false);
+    BOOST_CHECK(new_value == *e.get_exception<Type>());
 }

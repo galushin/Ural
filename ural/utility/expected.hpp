@@ -117,7 +117,18 @@ namespace ural
         присваивания.
         @return <tt> *this </tt>
         */
-        expected & operator=(expected && x);
+        expected & operator=(expected && x)
+        {
+            if(x.has_value())
+            {
+                this->set_value(std::move(x.value_));
+            }
+            else
+            {
+                this->set_exception(std::move(x.ex_));
+            }
+            return *this;
+        }
 
         /// @brief Деструктор
         ~ expected()
