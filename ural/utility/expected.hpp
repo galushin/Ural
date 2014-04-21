@@ -25,6 +25,11 @@
 
 #include <ural/defs.hpp>
 
+#include <cassert>
+#include <exception>
+#include <typeinfo>
+#include <utility>
+
 namespace ural
 {
     /** @brief Обёртка для значения или исключения, которое помешало вычислению
@@ -76,7 +81,18 @@ namespace ural
         @post <tt> *this </tt> содержит значение, котороые @c x содержал до
         присваивания.
         */
-        expected(expected && x);
+        expected(expected && x)
+         : has_value_(x.has_value_)
+        {
+            if(has_value_)
+            {
+                new(&value_) T(std::move(x.value_));
+            }
+            else
+            {
+                new(&ex_) std::exception_ptr(std::move(x.ex_));
+            }
+        }
 
         /** @brief Оператор копирующего присваивания
         @param x копируемый объект
@@ -106,7 +122,7 @@ namespace ural
         /// @brief Деструктор
         ~ expected()
         {
-            if(this->value_)
+            if(this->has_value_)
             {
                 value_.~T();
             }

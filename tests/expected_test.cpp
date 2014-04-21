@@ -14,9 +14,10 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <boost/test/unit_test.hpp>
-
 #include <ural/utility/expected.hpp>
+#include <ural/memory.hpp>
+
+#include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_CASE(expected_value_ctor_test)
 {
@@ -31,6 +32,23 @@ BOOST_AUTO_TEST_CASE(expected_value_ctor_test)
 
     BOOST_CHECK(e == init_value);
     BOOST_CHECK(init_value == e);
+}
+
+BOOST_AUTO_TEST_CASE(expected_move_value_ctor_test)
+{
+    typedef std::unique_ptr<int> Type;
+    typedef ural::expected<Type> Expected;
+
+    auto const init_value = 42;
+    Expected::value_type init = ural::make_unique<Type::element_type>(init_value);
+
+    Expected const e{std::move(init)};
+
+    BOOST_CHECK(e.has_value());
+    BOOST_CHECK_EQUAL(*e.value(), init_value);
+
+    BOOST_CHECK(e != init);
+    BOOST_CHECK(init != e);
 }
 
 BOOST_AUTO_TEST_CASE(make_expected_test)
@@ -97,6 +115,28 @@ BOOST_AUTO_TEST_CASE(expected_copy_ctor_test)
 
     BOOST_CHECK(x1_c.has_value() == true);
     BOOST_CHECK_EQUAL(x1_c.value(), x1.value());
+
+    BOOST_CHECK(x2_c.has_value() == false);
+    BOOST_CHECK_THROW(x2_c.value(), Exception);
+}
+
+BOOST_AUTO_TEST_CASE(expected_move_ctor_test)
+{
+    typedef std::vector<int> Type;
+    typedef ural::expected<Type> Expected;
+
+    typedef std::logic_error Exception;
+
+    Type const init_value = {1, 2, 3, 4, 5};
+
+    Expected x1{init_value};
+    auto x2 = Expected::from_exception(Exception("Message"));
+
+    Expected const x1_c = std::move(x1);
+    Expected const x2_c = std::move(x2);
+
+    BOOST_CHECK(x1_c.has_value() == true);
+    BOOST_CHECK(x1_c.value() == init_value);
 
     BOOST_CHECK(x2_c.has_value() == false);
     BOOST_CHECK_THROW(x2_c.value(), Exception);
