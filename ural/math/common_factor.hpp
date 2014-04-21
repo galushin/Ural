@@ -35,7 +35,9 @@ namespace ural
         return (x < IntegerType(0)) ? -std::move(x) : x;
     }
 
-
+    /** @brief Функциональный объект, вычисляющий наибольший общий делитель
+    @tparam IntegerType целочисленный тип
+    */
     template <typename IntegerType>
     class gcd_evaluator
     {
@@ -46,12 +48,20 @@ namespace ural
         }
 
     public:
+        /** @brief Вычисление НОД
+        @param x первый аргумент
+        @param y второй аргумент
+        @return НОД чисел @c x и @c y
+        */
         constexpr IntegerType operator()(IntegerType x, IntegerType y) const
         {
             return absolute_value(euclidean(x, y));
         }
     };
 
+    /** @brief Функциональный объект, вычисляющий наименьшее общее кратное
+    @tparam IntegerType целочисленный тип
+    */
     template <typename IntegerType>
     class lcm_evaluator
     {
@@ -62,18 +72,33 @@ namespace ural
         }
 
     public:
+        /** @brief Вычисление НОК
+        @param x первый аргумент
+        @param y второй аргумент
+        @return НОК чисел @c x и @c y
+        */
         constexpr IntegerType operator()(IntegerType x, IntegerType y) const
         {
             return absolute_value(impl(x, y));
         }
     };
 
+    /** @brief Наибольший общий делитель
+    @param a первый аргумент
+    @param b второй аргумент
+    @return Наибольший общий делитель чисел @c a и @c b.
+    */
     template <typename IntegerType>
     constexpr IntegerType gcd(IntegerType const &a, IntegerType const &b)
     {
         return gcd_evaluator<IntegerType>{}(a, b);
     }
 
+    /** @brief Наименьшее общее кратное
+    @param a первый аргумент
+    @param b второй аргумент
+    @return Наименьшее общее кратное чисел @c a и @c b.
+    */
     template <typename IntegerType>
     constexpr IntegerType lcm(IntegerType const &a, IntegerType const &b)
     {

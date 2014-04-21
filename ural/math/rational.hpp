@@ -30,8 +30,18 @@
 
 namespace ural
 {
+    /** @brief Класс исключения для некорректных попыток создать рациональное
+    число
+    */
     class bad_rational
-    {};
+     : std::logic_error
+    {
+    public:
+        /// @brief Конструктор
+        bad_rational()
+         : logic_error("bad_rational")
+        {}
+    };
 
     /// @cond false
     template <class IntegerType>
@@ -181,6 +191,7 @@ namespace ural
         }
 
         // Инкремент и декремент
+        // @todo Пост инкремент и декремент за счёт boost::operators
         rational operator++(int)
         {
             auto old = *this;
@@ -188,6 +199,9 @@ namespace ural
             return old;
         }
 
+        /** @brief Увеличение значения на единицу
+        @return <tt> *this </tt>
+        */
         rational & operator++()
         {
             Base::numerator += Base::denominator;
@@ -201,6 +215,9 @@ namespace ural
             return old;
         }
 
+        /** @brief Уменьшение значения на единицу
+        @return <tt> *this </tt>
+        */
         rational & operator--()
         {
             Base::numerator -= Base::denominator;
@@ -208,11 +225,17 @@ namespace ural
         }
 
         // Числитель и знаменатель
+        /** @brief Числитель
+        @return Числитель
+        */
         constexpr IntegerType const & numerator() const
         {
             return Base::numerator;
         }
 
+        /** @brief Знаменатель
+        @return Знаменатель
+        */
         constexpr IntegerType const & denominator() const
         {
             return Base::denominator;
@@ -267,26 +290,39 @@ namespace ural
         }
     };
 
+    /** @brief Проверка равенства нулю
+    @return <tt> !x.numerator() </tt>
+    */
     template <class T>
     constexpr bool operator!(rational<T> const & x)
     {
         return !x.numerator();
     }
 
+    /** @brief Модуль
+    @param x число, модуль которого вычисляется
+    @return <tt> rational<T>(abs(x.numerator()), x.denominator()) </tt>
+    */
     template <class T>
     constexpr rational<T> abs(rational<T> x)
     {
-        using std::abs;
+        // @todo Оптимизация
         return rational<T>(x.numerator() < T{0} ? - x.numerator() : x.numerator(),
                            x.denominator());
     }
 
+    /** @brief Унарный плюс
+    @return <tt> x </tt>
+    */
     template <class T>
     constexpr rational<T> operator+(rational<T> x)
     {
         return x;
     }
 
+    /** @brief Унарный минус
+    @return <tt> rational<T>(-x.numerator(), x.denominator()) </tt>
+    */
     template <class T>
     constexpr rational<T> operator-(rational<T> x)
     {
@@ -294,6 +330,11 @@ namespace ural
         return rational<T>(-x.numerator(), x.denominator());
     }
 
+    /** @brief Оператор "равно"
+    @param x левый операнд
+    @param y правый опернад
+    @return <tt> x.numerator() == y.numerator() && x.denominator() == y.denominator() </tt>
+    */
     template <class T>
     constexpr bool operator==(rational<T> const & x, rational<T> const & y)
     {
@@ -313,6 +354,7 @@ namespace ural
         return x == y.numerator() && T{1} == y.denominator();
     }
 
+    /// @cond false
     template <class T>
     struct mixed_fraction
     {
@@ -360,7 +402,12 @@ namespace ural
     {
         return x.whole < y;
     }
+    /// @endcond
 
+    /** @brief Оператор "меньше"
+    @param x левый операнд
+    @param y правый операнд
+    */
     template <class T>
     constexpr bool operator<(rational<T> const & x, rational<T> const & y)
     {
@@ -415,6 +462,7 @@ namespace ural
     constexpr rational<T>
     operator-(rational<T> const & x, rational<T> const & y)
     {
+        // @todo Избегать переполнений
         return rational<T>(x.numerator() * y.denominator()
                            - y.numerator() * x.denominator(),
                            x.denominator() * y.denominator());
@@ -440,6 +488,7 @@ namespace ural
     constexpr rational<T>
     operator*(rational<T> const & x, rational<T> const & y)
     {
+        // @todo Сокращать, если возможно.
         return rational<T>(x.numerator() * y.numerator(),
                            x.denominator() * y.denominator());
     }
@@ -462,6 +511,7 @@ namespace ural
     constexpr rational<T>
     operator/(rational<T> const & x, rational<T> const & y)
     {
+        // @todo Сокращать, если возможно.
         return rational<T>(x.numerator() * y.denominator(),
                            x.denominator() * y.numerator());
     }
@@ -481,6 +531,11 @@ namespace ural
     }
 
     // Ввод/Вывод
+    /** @brief Запись в поток вывода
+    @param os поток вывода
+    @param x записываемый объект
+    @return <tt> os </tt>
+    */
     template <class Char, class Tr, class T>
     std::basic_ostream<Char, Tr> &
     operator<<(std::basic_ostream<Char, Tr> & os, rational<T> const & x)
@@ -489,6 +544,11 @@ namespace ural
     }
 
     // Преобразование
+    /** @brief Преобразование (например, в тип с плавающей точкой)
+    @tparam тип, в который осуществляется преобразование
+    @param x преобразуемое значение
+    @return <tt> To(x.numerator())/To(x.denominator())</tt>
+    */
     template <class To, class IntegerType>
     constexpr To rational_cast(rational<IntegerType> const & x)
     {

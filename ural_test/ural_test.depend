@@ -6370,7 +6370,7 @@
 	<boost/operators.hpp>
 	<ural/math/common_factor.hpp>
 
-1396013770 c:\pavel\ural_repo\ural\ural\math\common_factor.hpp
+1398097253 c:\pavel\ural_repo\ural\ural\math\common_factor.hpp
 	<cmath>
 
 1396619420 source:c:\pavel\ural_repo\ural\tests\memory_test.cpp
@@ -6397,7 +6397,7 @@
 	<boost/operators.hpp>
 	<ural/math/rational.hpp>
 
-1397223322 c:\pavel\ural_repo\ural\ural\math\rational.hpp
+1398096830 c:\pavel\ural_repo\ural\ural\math\rational.hpp
 	<ural/math/common_factor.hpp>
 	<ural/defs.hpp>
 	<istream>
