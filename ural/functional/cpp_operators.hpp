@@ -98,6 +98,12 @@ namespace ural
     };
 
 // Функциональные объекты для операторов
+    /** @brief Функциональный объект для оператора "бинарный плюс"
+    @tparam T1 тип первого аргумента, если он совпадает с @b void, то тип будет
+    выведен по фактическому аргументу
+    @tparam T2 тип второго аргумента, если он совпадает с @b void, то тип будет
+    выведен по фактическому аргументу
+    */
     template <class T1 = void, class T2 = T1>
     class plus
      : public binary_operator_helper<T1, T2, plus<>>
@@ -121,6 +127,12 @@ namespace ural
         }
     };
 
+    /** @brief Функциональный объект для оператора "бинарный минус"
+    @tparam T1 тип первого аргумента, если он совпадает с @b void, то тип будет
+    выведен по фактическому аргументу
+    @tparam T2 тип второго аргумента, если он совпадает с @b void, то тип будет
+    выведен по фактическому аргументу
+    */
     template <class T1 = void, class T2 = T1>
     class minus
      : public binary_operator_helper<T1, T2, minus<>>
@@ -144,6 +156,12 @@ namespace ural
         }
     };
 
+    /** @brief Функциональный объект для оператора "умножить"
+    @tparam T1 тип первого аргумента, если он совпадает с @b void, то тип будет
+    выведен по фактическому аргументу
+    @tparam T2 тип второго аргумента, если он совпадает с @b void, то тип будет
+    выведен по фактическому аргументу
+    */
     template <class T1 = void, class T2 = T1>
     class multiplies
      : public binary_operator_helper<T1, T2, multiplies<>>
@@ -167,6 +185,12 @@ namespace ural
         }
     };
 
+    /** @brief Функциональный объект для оператора "разделить"
+    @tparam T1 тип первого аргумента, если он совпадает с @b void, то тип будет
+    выведен по фактическому аргументу
+    @tparam T2 тип второго аргумента, если он совпадает с @b void, то тип будет
+    выведен по фактическому аргументу
+    */
     template <class T1 = void, class T2 = T1>
     class divides
       : public binary_operator_helper<T1, T2, divides<>>
@@ -189,6 +213,12 @@ namespace ural
      : public binary_operator_helper<T1, T2, modulus<>>
     {};
 
+    /** @brief Функциональный объект для оператора "остаток от деления"
+    @tparam T1 тип первого аргумента, если он совпадает с @b void, то тип будет
+    выведен по фактическому аргументу
+    @tparam T2 тип второго аргумента, если он совпадает с @b void, то тип будет
+    выведен по фактическому аргументу
+    */
     template <>
     class modulus<void, void>
     {
@@ -201,6 +231,10 @@ namespace ural
         }
     };
 
+    /** @brief Функциональный объект для оператора "унарный минус"
+    @tparam T тип аргумента, если он совпадает с @b void, то тип будет выведен
+    по фактическому аргументу.
+    */
     template <class T = void>
     class negate
      : public unary_operator_helper<T, negate<>>
@@ -218,6 +252,12 @@ namespace ural
         }
     };
 
+    /** @brief Функциональный объект для оператора "равно"
+    @tparam T1 тип первого аргумента, если он совпадает с @b void, то тип будет
+    выведен по фактическому аргументу
+    @tparam T2 тип второго аргумента, если он совпадает с @b void, то тип будет
+    выведен по фактическому аргументу
+    */
     template <class T1 = void, class T2 = T1>
     class equal_to
      : public binary_operator_helper<T1, T2, equal_to<>>
@@ -258,6 +298,12 @@ namespace ural
         }
     };
 
+    /** @brief Функциональный объект для оператора "меньше"
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    Если один из типов аргумента равен @b void, то его тип будет выводится
+    по типу фактического параметра
+    */
     template <class T1 = void, class T2 = T1>
     class less
      : public binary_operator_helper<T1, T2, less<>>
@@ -275,6 +321,12 @@ namespace ural
         }
     };
 
+    /** @brief Функциональный объект для оператора "больше"
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    Если один из типов аргумента равен @b void, то его тип будет выводится
+    по типу фактического параметра
+    */
     template <class T1 = void, class T2 = T1>
     class greater
      : public binary_operator_helper<T1, T2, greater<>>
@@ -292,6 +344,12 @@ namespace ural
         }
     };
 
+    /** @brief Функциональный объект для оператора "меньше или равно"
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    Если один из типов аргумента равен @b void, то его тип будет выводится
+    по типу фактического параметра
+    */
     template <class T1 = void, class T2 = T1>
     class less_equal
       : public binary_operator_helper<T1, T2, less_equal<>>
@@ -309,6 +367,12 @@ namespace ural
         }
     };
 
+    /** @brief Функциональный объект для оператора "больше или равно"
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    Если один из типов аргумента равен @b void, то его тип будет выводится
+    по типу фактического параметра
+    */
     template <class T1 = void, class T2 = T1>
     class greater_equal
      : public binary_operator_helper<T1, T2, greater_equal<>>
@@ -326,6 +390,13 @@ namespace ural
         }
     };
 
+    // Логические операции
+    /** @brief Функциональный объект для оператора "логическое И"
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    Если один из типов аргумента равен @b void, то его тип будет выводится
+    по типу фактического параметра
+    */
     template <class T1 = void, class T2 = T1>
     class logical_and
      : public binary_operator_helper<T1, T2, logical_and<>>
@@ -343,6 +414,12 @@ namespace ural
         }
     };
 
+    /** @brief Функциональный объект для оператора "логическое ИЛИ"
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    Если один из типов аргумента равен @b void, то его тип будет выводится
+    по типу фактического параметра
+    */
     template <class T1 = void, class T2 = T1>
     class logical_or
      : public binary_operator_helper<T1, T2, logical_or<>>
@@ -360,6 +437,10 @@ namespace ural
         }
     };
 
+    /** @brief Функциональный объект для оператора "логическое НЕ"
+    @tparam T тип аргумента, если этот тип совпадает с @b void, то тип будет
+    выводится по фактическому параметру.
+    */
     template <class T = void>
     class logical_not
      : public unary_operator_helper<T, logical_not<>>
@@ -395,6 +476,10 @@ namespace ural
     };
 
     // Побитовые операции
+    /** @brief Функциональный объект для оператора "побитовое НЕ"
+    @tparam T тип аргумента, если этот тип совпадает с @b void, то тип будет
+    выводится по фактическому параметру.
+    */
     template <class T = void>
     class bit_not
      : public unary_operator_helper<T, bit_not<>>
@@ -412,6 +497,12 @@ namespace ural
         }
     };
 
+    /** @brief Функциональный объект для оператора "побитовое И"
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    Если один из типов аргумента равен @b void, то его тип будет выводится
+    по типу фактического параметра
+    */
     template <class T1 = void, class T2 = T1>
     class bit_and
      : public binary_operator_helper<T1, T2, bit_and<void, void>>
@@ -429,6 +520,12 @@ namespace ural
         }
     };
 
+    /** @brief Функциональный объект для оператора "побитовое ИЛИ"
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    Если один из типов аргумента равен @b void, то тип будет выводится по
+    фактическому параметру
+    */
     template <class T1 = void, class T2 = T1>
     class bit_or
      : public binary_operator_helper<T1, T2, bit_or<void, void>>
@@ -446,6 +543,12 @@ namespace ural
         }
     };
 
+    /** @brief Функциональный объект для оператора "побитовое исключающее ИЛИ"
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    Если один из типов аргумента равен @b void, то тип будет выводится по
+    фактическому параметру
+    */
     template <class T1 = void, class T2 = T1>
     class bit_xor
      : public binary_operator_helper<T1, T2, bit_xor<void, void>>
@@ -478,21 +581,37 @@ namespace ural
         typedef compose_functor<ural::logical_not<>, Predicate> Base;
 
     public:
+        /// @brief Тип базового функционального объекта
         typedef decltype(make_functor(std::declval<Predicate>())) target_type;
 
+        // Конструкторы
+        /** @brief Конструктор
+        @post <tt> this->target() == target_type{} </tt>
+        */
         constexpr not_functor()
          : Base{}
         {}
 
+        /** @brief Конструктор
+        @param pred предикат
+        @post <tt> this->target() == pred </tt>
+        */
         explicit not_functor(Predicate pred)
          : Base(ural::logical_not<>{}, std::move(pred))
         {}
 
+        /** @brief Базовый функциональный объект
+        @return Базовый функциональный объект
+        */
         constexpr target_type const & target() const
         {
             return Base::second_functor();
         }
 
+        /** @brief Применение функционального объекта
+        @param args параметры вызова
+        @return <tt> !(this->target())(args...) </tt>
+        */
         template <class... Args>
         constexpr auto operator()(Args && ... args) const
         -> decltype(std::declval<Base>()(std::forward<Args>(args)...))
@@ -501,6 +620,9 @@ namespace ural
         }
     };
 
+    /** @brief Создание негатора
+    @param pred предикат
+    */
     template <class Predicate>
     auto not_fn(Predicate pred)
     -> not_functor<decltype(make_functor(std::move(pred)))>
@@ -510,6 +632,12 @@ namespace ural
     }
 
     // Составные операторы присваивания
+    /** @brief Функциональный объект для оператора "плюс-равно"
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    Если один из типов аргумента равен @b void, то тип будет выводится по
+    фактическому параметру
+    */
     template <class T1 = void, class T2 = T1>
     class plus_assign
      : compound_assignment_helper<T1, T2, plus_assign<>>
@@ -526,6 +654,12 @@ namespace ural
         }
     };
 
+    /** @brief Функциональный объект для оператора "минус-равно"
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    Если один из типов аргумента равен @b void, то тип будет выводится по
+    фактическому параметру
+    */
     template <class T1 = void, class T2 = T1>
     class minus_assign
      : compound_assignment_helper<T1, T2, plus_assign<>>

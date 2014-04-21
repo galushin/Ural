@@ -700,7 +700,7 @@
 	<ural/tuple.hpp>
 	<ural/functional/cpp_operators.hpp>
 
-1398098602 c:\pavel\ural_repo\ural\ural\functional\cpp_operators.hpp
+1398100138 c:\pavel\ural_repo\ural\ural\functional\cpp_operators.hpp
 	<ural/functional/make_functor.hpp>
 	<ural/functional/compose.hpp>
 
@@ -822,7 +822,7 @@
 
 1393903294 c:\pavel\ural_repo\ural\ural\thread.hpp
 
-1398098238 source:c:\pavel\ural_repo\ural\tests\functional_test.cpp
+1398098654 source:c:\pavel\ural_repo\ural\tests\functional_test.cpp
 	"rnd.hpp"
 	<boost/test/unit_test.hpp>
 	<ural/utility/tracers.hpp>
