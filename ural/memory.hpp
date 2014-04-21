@@ -32,6 +32,12 @@
 namespace ural
 {
     // Создание объектов в динамической памяти, обёрнутых в unique_ptr
+    /** @brief Создание объекта в динамической памяти, обёрнутого в
+    @c unique_ptr
+    @tparam T тип создаваемого объекта
+    @param args аргументы конструктора
+    @return <tt> std::unique_ptr<T>(new T(std::forward<Args>(args)...)) </tt>
+    */
     template <class T, class... Args>
     typename std::enable_if<!std::is_array<T>::value, std::unique_ptr<T>>::type
     make_unique(Args &&... args)
@@ -39,6 +45,13 @@ namespace ural
         return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
     }
 
+    /** @brief Создание массива в динамической памяти, обёрнутого в
+    @c unique_ptr
+    @tparam T тип массива неизвестного размера вида <tt> U[] </tt>
+    @param size количество элементов
+    @return <tt> std::unique_ptr<T>(new Elem[size]()) </tt>, где @c Elem ---
+    <tt> typename std::remove_extent<T>::type </tt>
+    */
     template <class T>
     typename std::enable_if<std::is_array<T>::value && std::extent<T>::value == 0,
                             std::unique_ptr<T>>::type
@@ -94,10 +107,16 @@ namespace ural
         }
     };
 
+    /** @brief Стратегия проверки указателей, использующая макрос @c assert.
+    @tparam Pointer тип указателя
+    */
     template <class Pointer>
     class default_ptr_checker
     {
     public:
+        /** @brief Проверка того, что указатель не равен @b nullptr
+        @param p указатель
+        */
         static void assert_not_null(Pointer p)
         {
             assert(p != nullptr);
@@ -107,10 +126,16 @@ namespace ural
         ~default_ptr_checker() = default;
     };
 
+    /** @brief Стратегия проверки указателей, возбуждающая исключения.
+    @tparam Pointer тип указателя
+    */
     template <class Pointer>
     class throwing_ptr_checker
     {
     public:
+        /** @brief Проверка того, что указатель не равен @b nullptr
+        @param p указатель
+        */
         static void assert_not_null(Pointer p)
         {
             if(p == nullptr)
@@ -268,6 +293,7 @@ namespace ural
 
         // Присваивание
         /** @brief Оператор копирующего присваивания
+        @param x копируемый объект
         @return *this
         */
         copy_ptr & operator=(copy_ptr const & x)
@@ -275,6 +301,11 @@ namespace ural
             return ::ural::copy_and_swap(*this, x);
         }
 
+        /** @brief Присваивание умного указателя совместимого типа
+        @param x копируемый умный указатель
+        @return <tt> *this </tt>
+        @post <tt> **this == *x </tt>
+        */
         template <class T1, class C1, class D1, class Ch1>
         copy_ptr & operator=(copy_ptr<T1, C1, D1, Ch1> const & x)
         {
@@ -294,6 +325,10 @@ namespace ural
             return *this;
         }
 
+        /** @brief Присваивание с перемещением из @c unique_ptr
+        @param p умный указатель
+        @return <tt> *this </tt>
+        */
         template <class U>
         copy_ptr & operator=(std::unique_ptr<U> && p)
         {
@@ -318,17 +353,27 @@ namespace ural
             return static_cast<bool>(holder_);
         }
 
+        /** @brief Указатель на указываемый объект
+        @return Указатель на указываемый объект
+        */
         pointer get() const
         {
             return holder_.get();
         }
 
+        /** @brief Ссылка на указываемый объект
+        @pre <tt> !*this == false </tt>
+        @return Ссылка на указываемый объект
+        */
         reference operator*() const
         {
             checker_type::assert_not_null(this->get());
             return *holder_;
         }
 
+        /** @brief Доступ к членам указывемого объекта
+        @pre <tt> !*this == false </tt>
+        */
         pointer operator->() const
         {
             checker_type::assert_not_null(this->get());
@@ -362,6 +407,9 @@ namespace ural
             return holder_.release();
         }
 
+        /** @brief Обмен содержимым с другим объектом
+        @param x объект, с которым производится обмен
+        */
         void swap(copy_ptr & x) noexcept
         {
             holder_.swap(x.holder_);
@@ -371,6 +419,10 @@ namespace ural
         Holder holder_;
     };
 
+    /** @brief Оператор "равно"
+    @param x левый операнд
+    @param y правый операнд
+    */
     template <class T1, class C1, class D1, class Ch1,
               class T2, class C2, class D2, class Ch2>
     bool operator==(copy_ptr<T1, C1, D1, Ch1> const & x,
@@ -380,6 +432,10 @@ namespace ural
                 == static_cast<void const volatile*>(y.get());
     }
 
+    /** @brief Обмен значений двух @c copy_ptr
+    @param x первый аргумент
+    @param y второй аргумент
+    */
     template <class T, class C, class D, class Ch>
     void swap(copy_ptr<T, C, D, Ch> & x,
               copy_ptr<T, C, D, Ch> & y) noexcept
@@ -387,11 +443,16 @@ namespace ural
         return x.swap(y);
     }
 
+    /** @brief Создание объекта в динамической памяти, обёрнутого в @c copy_ptr
+    @tparam T тип создаваемого объекта
+    @param args аргументы
+    @return <tt> copy_ptr<T>(make_unique<T>(std::forward<Args>(args)...)) </tt>
+    */
     template <class T, class... Args>
     copy_ptr<T>
     make_copy_ptr(Args &&... args)
     {
-        return copy_ptr<T>(ural::make_unique<T>(std::forward<Args>(args)...));
+        return copy_ptr<T>(make_unique<T>(std::forward<Args>(args)...));
     }
 }
 // namespace ural
