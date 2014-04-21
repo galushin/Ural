@@ -216,6 +216,60 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(logical_or_test, Functor, Or_functors)
     BOOST_CHECK_EQUAL(true, or_(true, true));
 }
 
+typedef boost::mpl::list<ural::bit_and<int>,
+                         ural::bit_and<int, void>,
+                         ural::bit_and<void, int>,
+                         ural::bit_and<void, void>>
+    Bit_and_functors;
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(bit_and_test, Functor, Bit_and_functors)
+{
+    constexpr auto f = Functor{};
+
+    std::uniform_int_distribution<int> d(-100, 100);
+
+    auto const x = d(random_engine());
+    auto const y = d(random_engine());
+
+    BOOST_CHECK_EQUAL((x & y), f(x, y));
+}
+
+typedef boost::mpl::list<ural::bit_or<int>,
+                         ural::bit_or<int, void>,
+                         ural::bit_or<void, int>,
+                         ural::bit_or<void, void>>
+    Bit_or_functors;
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(bit_or_test, Functor, Bit_or_functors)
+{
+    constexpr auto f = Functor{};
+
+    std::uniform_int_distribution<int> d(-100, 100);
+
+    auto const x = d(random_engine());
+    auto const y = d(random_engine());
+
+    BOOST_CHECK_EQUAL((x | y), f(x, y));
+}
+
+typedef boost::mpl::list<ural::bit_xor<int>,
+                         ural::bit_xor<int, void>,
+                         ural::bit_xor<void, int>,
+                         ural::bit_xor<void, void>>
+    Bit_xor_functors;
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(bit_xor_test, Functor, Bit_xor_functors)
+{
+    constexpr auto f = Functor{};
+
+    std::uniform_int_distribution<int> d(-100, 100);
+
+    auto const x = d(random_engine());
+    auto const y = d(random_engine());
+
+    BOOST_CHECK_EQUAL((x ^ y), f(x, y));
+}
+
 typedef boost::mpl::list<ural::logical_implication<bool>,
                          ural::logical_implication<bool, void>,
                          ural::logical_implication<void, bool>,

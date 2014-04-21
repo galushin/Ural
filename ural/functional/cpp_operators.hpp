@@ -412,6 +412,57 @@ namespace ural
         }
     };
 
+    template <class T1 = void, class T2 = T1>
+    class bit_and
+     : public binary_operator_helper<T1, T2, bit_and<void, void>>
+    {};
+
+    template <>
+    class bit_and<void, void>
+    {
+    public:
+        template <class T1, class T2>
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype(std::forward<T1>(x) & std::forward<T2>(y))
+        {
+            return std::forward<T1>(x) & std::forward<T2>(y);
+        }
+    };
+
+    template <class T1 = void, class T2 = T1>
+    class bit_or
+     : public binary_operator_helper<T1, T2, bit_or<void, void>>
+    {};
+
+    template <>
+    class bit_or<void, void>
+    {
+    public:
+        template <class T1, class T2>
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype(std::forward<T1>(x) | std::forward<T2>(y))
+        {
+            return std::forward<T1>(x) | std::forward<T2>(y);
+        }
+    };
+
+    template <class T1 = void, class T2 = T1>
+    class bit_xor
+     : public binary_operator_helper<T1, T2, bit_xor<void, void>>
+    {};
+
+    template <>
+    class bit_xor<void, void>
+    {
+    public:
+        template <class T1, class T2>
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype(std::forward<T1>(x) ^ std::forward<T2>(y))
+        {
+            return std::forward<T1>(x) ^ std::forward<T2>(y);
+        }
+    };
+
     // Негатор
     template <class Predicate>
     class not_functor
