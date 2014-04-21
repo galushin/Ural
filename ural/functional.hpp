@@ -74,6 +74,11 @@ namespace ural
         T value_;
     };
 
+    /** @brief Оператор "равно"
+    @param x левый операнд
+    @param y правый операнд
+    @return <tt> x() == y() </tt>
+    */
     template <class T1, class T2>
     constexpr bool
     operator==(value_functor<T1> const & x, value_functor<T2> const & y)
@@ -81,33 +86,53 @@ namespace ural
         return x() == y();
     }
 
-    template <class ForwardSequence, class Compare>
+    /** @brief Накопитель для определения наименьшего значения
+    @tparam T тип значения
+    @tparam Compare функция сравнения
+    @todo Создание без задания функции сравнения
+    */
+    template <class T, class Compare = ural::less<> >
     class min_element_accumulator
     {
     public:
-        explicit min_element_accumulator(ForwardSequence s, Compare cmp)
-         : impl_{std::move(s), std::move(cmp)}
+        // Типы
+        typedef T value_type;
+        typedef Compare compare_type;
+
+        /** @brief Конструктор
+        @param init_value начальное значение
+        @param cmp функция сравнения
+        @post <tt> this->result() == init_value </tt>
+        @post <tt> this->compare() == cmp </tt>
+        */
+        explicit min_element_accumulator(T init_value, Compare cmp)
+         : impl_{std::move(init_value), std::move(cmp)}
         {}
 
         min_element_accumulator &
-        operator()(ForwardSequence s)
+        operator()(value_type const & value)
         {
-            this->update(std::move(s));
+            this->update(value);
             return *this;
         }
 
-        bool update(ForwardSequence s)
+        min_element_accumulator &
+        operator()(value_type && value);
+
+        bool update(value_type const & value)
         {
-            if(this->compare()(s, this->result()))
+            if(this->compare()(value, this->result()))
             {
-                impl_.first() = s;
+                impl_.first() = value;
                 return true;
             }
 
             return false;
         }
 
-        ForwardSequence const & result() const
+        bool update(value_type && value);
+
+        value_type const & result() const
         {
             return impl_.first();
         }
@@ -118,7 +143,7 @@ namespace ural
         }
 
     private:
-        boost::compressed_pair<ForwardSequence, Compare> impl_;
+        boost::compressed_pair<value_type, Compare> impl_;
     };
 
     /** @brief Адаптор функционального объекта с двумя аргументами, меняющий
@@ -179,10 +204,21 @@ namespace ural
     template <class Fun, Fun f>
     class static_fn;
 
+    /** @brief Функциональный объект на основе указателя на функцию-член
+    @tparam R тип возвращаемого значения
+    @tparam T класс, которому принадлежит функция-член
+    @tparam Args типы аргументов
+    @tparam f указатель на функцию-член
+    */
     template <class R, class T, class... Args, R(T::*f)(Args...)>
     class static_fn<R(T::*)(Args...), f>
     {
     public:
+        /** @brief Оператор применения функционального объекта
+        @param obj объект, для которого вызывается функция-член
+        @param args аргументы
+        @return <tt> (obj.*f)(args...) </tt>
+        */
         R operator()(T & obj, typename boost::call_traits<Args>::type... args) const
         {
             return (obj.*f)(args...);
