@@ -24,6 +24,7 @@
 
 #include <ural/type_traits.hpp>
 
+#include <cassert>
 #include <stdexcept>
 #include <type_traits>
 #include <ostream>
@@ -280,7 +281,6 @@ namespace details
                 else
                 {
                     using std::swap;
-                    using boost::swap;
                     using ural::swap;
                     swap(this->value_, that.value_);
                 }
@@ -673,7 +673,6 @@ namespace details
         void swap(optional & that)
         {
             using std::swap;
-            using boost::swap;
             using ural::swap;
             swap(this->ptr_, that.ptr_);
         }

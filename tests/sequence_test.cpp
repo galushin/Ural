@@ -242,3 +242,38 @@ BOOST_AUTO_TEST_CASE(all_tuples_is_sorted_test)
     BOOST_CHECK_EQUAL(100, r2.size());
     BOOST_CHECK(std::is_sorted(r2.begin(), r2.end()));
 }
+
+BOOST_AUTO_TEST_CASE(sequence_for_each_test)
+{
+    std::vector<int> x_std = {1, 2, 3, 4, 5};
+    auto x_ural = x_std;
+
+    for(auto & x : x_std)
+    {
+        x *= 2;
+    }
+
+    for(auto & x : ural::sequence(x_ural))
+    {
+        x *= 2;
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(filtered_sequence_for_each)
+{
+    std::vector<int> x = {1, 2, 3, 4, 5, 6, 7, 8};
+    auto s = x | ural::filtered([](int & x) { return x % 3 == 0;});
+
+    std::vector<int> r;
+    std::vector<int> const z  = {3, 6};
+
+    for(auto & x : s)
+    {
+        r.push_back(x);
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(), r.begin(), r.end());
+}

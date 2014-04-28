@@ -24,6 +24,8 @@
 #include <ural/defs.hpp>
 #include <utility>
 
+#include <ural/sequence/sequence_iterator.hpp>
+
 namespace ural
 {
     struct single_pass_traversal_tag
@@ -113,6 +115,16 @@ namespace ural
         {
             s.pop_front();
             return s;
+        }
+
+        friend sequence_iterator<Seq> begin(Seq const & s)
+        {
+            return sequence_iterator<Seq>{s};
+        }
+
+        friend sequence_iterator<Seq> end(Seq const &)
+        {
+            return sequence_iterator<Seq>{};
         }
 
     protected:

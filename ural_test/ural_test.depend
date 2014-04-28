@@ -393,8 +393,9 @@
 	<unordered_set>
 	<ural/utility/tracers.hpp>
 
-1397720809 c:\devtools\ural_repo\ural\ural\optional.hpp
+1398665853 c:\devtools\ural_repo\ural\ural\optional.hpp
 	<ural/type_traits.hpp>
+	<cassert>
 	<stdexcept>
 	<type_traits>
 	<ostream>
@@ -460,9 +461,10 @@
 	<ural/defs.hpp>
 	<utility>
 
-1397100591 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
+1398665486 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
 	<ural/defs.hpp>
 	<utility>
+	<ural/sequence/sequence_iterator.hpp>
 
 1393837797 c:\devtools\ural_repo\ural\ural\thread.hpp
 
@@ -570,7 +572,7 @@
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
-1397100591 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
+1398666690 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
 	<ural/abi.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/all.hpp>
@@ -9760,4 +9762,7 @@
 	<vector>
 	<sstream>
 	<sstream>
+
+1398666928 c:\devtools\ural_repo\ural\ural\sequence\sequence_iterator.hpp
+	<ural/optional.hpp>
 
