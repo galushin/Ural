@@ -25,7 +25,10 @@
 #include <ural/sequence/make.hpp>
 #include <ural/sequence/by_line.hpp>
 
+#include <cassert>
 #include <vector>
+#include <sstream>
+#include <sstream>
 
 namespace ural
 {
@@ -52,10 +55,44 @@ namespace ural
         return os;
     }
 
+    template <class Ch, class Tr, class T>
+    class from_string_policy
+    {
+    public:
+        typedef T result_type;
+        static result_type convert(std::basic_string<Ch, Tr> const & s)
+        {
+            std::basic_istringstream<Ch, Tr> is(s);
+            T reader;
+            is >> reader;
+            assert(is.eof());
+            return reader;
+        }
+    };
+
+    template <class Ch, class Tr>
+    class from_string_policy<Ch, Tr, std::basic_string<Ch, Tr>>
+    {
+    public:
+        typedef std::basic_string<Ch, Tr> result_type;
+
+        static result_type convert(std::basic_string<Ch, Tr> const & s)
+        {
+            return s;
+        }
+    };
+
+    template <class T, class Ch, class Tr>
+    T from_string(std::basic_string<Ch, Tr> const & s)
+    {
+        return from_string_policy<Ch, Tr, T>::convert(s);
+    }
+
     template <class T, class IStream>
     std::vector<std::vector<T>>
     read_table(IStream & is)
     {
+        // @todo Проверка концепций
         std::vector<std::vector<T>> result;
 
         auto seq = ural::by_line(is, '\n');
@@ -68,10 +105,13 @@ namespace ural
             std::basic_istringstream<char_type, traits_type> str_is(str);
 
             std::vector<T> row;
-            T cell;
 
-            while(str_is >> std::ws >> cell >> std::ws)
+            std::basic_string<char_type, traits_type> cell_str;
+
+            while(std::getline(str_is, cell_str, '\t') >> std::ws)
             {
+                auto cell = ural::from_string<T>(cell_str);
+
                 row.push_back(std::move(cell));
             }
 

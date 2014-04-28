@@ -263,7 +263,8 @@
 	<ural/utility.hpp>
 	<ural/placeholders.hpp>
 
-1395618267 c:\devtools\ural_repo\ural\ural\placeholders.hpp
+1398316481 c:\devtools\ural_repo\ural\ural\placeholders.hpp
+	<functional>
 
 1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\compiler_log_formatter.cpp
 	<boost/test/impl/compiler_log_formatter.ipp>
@@ -359,7 +360,7 @@
 	<ural/numeric/partial_sums.hpp>
 	<ural/numeric/adjacent_differences.hpp>
 
-1397440207 c:\devtools\ural_repo\ural\ural\functional.hpp
+1398316481 c:\devtools\ural_repo\ural\ural\functional.hpp
 	<boost/compressed_pair.hpp>
 	<ural/functional/adjoin.hpp>
 	<ural/functional/compare_by.hpp>
@@ -504,7 +505,7 @@
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
-1397100591 source:c:\devtools\ural_repo\ural\tests\functional_test.cpp
+1398316481 source:c:\devtools\ural_repo\ural\tests\functional_test.cpp
 	"rnd.hpp"
 	<boost/test/unit_test.hpp>
 	<ural/utility/tracers.hpp>
@@ -589,7 +590,7 @@
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/insertion.hpp>
 
-1397524255 c:\devtools\ural_repo\ural\ural\memory.hpp
+1398316481 c:\devtools\ural_repo\ural\ural\memory.hpp
 	<ural/defs.hpp>
 	<ural/utility.hpp>
 	<boost/throw_exception.hpp>
@@ -607,7 +608,7 @@
 	<ural/tuple.hpp>
 	<ural/functional/cpp_operators.hpp>
 
-1396581236 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
+1398316481 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
 	<ural/functional/make_functor.hpp>
 	<ural/functional/compose.hpp>
 
@@ -969,7 +970,7 @@
 	<string>
 	<cstdlib>
 
-1395618267 c:\devtools\ural_repo\ural\ural\random.hpp
+1398316481 c:\devtools\ural_repo\ural\ural\random.hpp
 	<ural/numeric.hpp>
 	<ural/defs.hpp>
 	<cstdlib>
@@ -6292,7 +6293,7 @@
 	<boost/operators.hpp>
 	<ural/math/common_factor.hpp>
 
-1395044376 c:\devtools\ural_repo\ural\ural\math\common_factor.hpp
+1398316481 c:\devtools\ural_repo\ural\ural\math\common_factor.hpp
 	<cmath>
 
 1392699171 source:c:\devtools\ural_repo\ural\ural\math\rational.hpp
@@ -6307,14 +6308,15 @@
 	<boost/operators.hpp>
 	<ural/math/rational.hpp>
 
-1397187278 c:\devtools\ural_repo\ural\ural\math\rational.hpp
+1398316481 c:\devtools\ural_repo\ural\ural\math\rational.hpp
 	<ural/math/common_factor.hpp>
 	<ural/defs.hpp>
 	<istream>
 	<ostream>
 	<utility>
 
-1397522420 c:\devtools\ural_repo\ural\ural\utility.hpp
+1398316481 c:\devtools\ural_repo\ural\ural\utility.hpp
+	<ural/placeholders.hpp>
 	<ural/defs.hpp>
 	<ural/type_traits.hpp>
 	<boost/compressed_pair.hpp>
@@ -6324,7 +6326,8 @@
 
 1394151640 c:\devtools\ural_repo\ural\ural\sequence\iota.hpp
 
-1394151640 source:c:\devtools\ural_repo\ural\tests\io_tests.cpp
+1398644090 source:c:\devtools\ural_repo\ural\tests\io_tests.cpp
+	<ural/format.hpp>
 	<ural/sequence/by_line.hpp>
 	<ural/algorithm.hpp>
 	<boost/test/unit_test.hpp>
@@ -9690,15 +9693,21 @@
 	<typeinfo>
 	<utility>
 
-1397121996 source:c:\devtools\ural_repo\ural\tests\expected_test.cpp
-	<boost/test/unit_test.hpp>
+1398316481 source:c:\devtools\ural_repo\ural\tests\expected_test.cpp
 	<ural/utility/expected.hpp>
+	<ural/memory.hpp>
+	<boost/test/unit_test.hpp>
 
-1397523789 c:\devtools\ural_repo\ural\ural\utility\expected.hpp
+1398316481 c:\devtools\ural_repo\ural\ural\utility\expected.hpp
 	<ural/defs.hpp>
+	<cassert>
+	<exception>
+	<typeinfo>
+	<utility>
 
-1397120801 source:c:\devtools\ural_repo\ural\tests\utility_test.cpp
+1398316481 source:c:\devtools\ural_repo\ural\tests\utility_test.cpp
 	<ural/utility.hpp>
+	<ural/placeholders.hpp>
 	<boost/test/unit_test.hpp>
 
 1397290470 c:\devtools\github\ural\ural\meta\map.hpp
@@ -9743,4 +9752,12 @@
 	<ural/sequence/make.hpp>
 	<ural/sequence/by_line.hpp>
 	<vector>
+
+1398652820 c:\devtools\ural_repo\ural\ural\format.hpp
+	<ural/sequence/make.hpp>
+	<ural/sequence/by_line.hpp>
+	<cassert>
+	<vector>
+	<sstream>
+	<sstream>
 
