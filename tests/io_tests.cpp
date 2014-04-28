@@ -122,3 +122,28 @@ BOOST_AUTO_TEST_CASE(table_io_test)
         BOOST_CHECK(data_src[i] == data[i]);
     }
 }
+
+BOOST_AUTO_TEST_CASE(table_io_test_temporary_stream)
+{
+    typedef double Type;
+
+    std::vector<std::vector<Type>> const data_src =
+    {
+        {1, 1.5, 2},
+        {3, 4, 4.5},
+        {5.5, 6, 6.5},
+        {-1, 0, 1}
+    };
+
+    auto & os = ural::write_table(std::ostringstream{}, data_src);
+
+    auto data = ural::read_table<Type>(std::istringstream(os.str()));
+
+    BOOST_CHECK_EQUAL(data_src.size(), data.size());
+
+    for(auto i = 0U; i != data.size(); ++ i)
+    {
+        BOOST_CHECK_EQUAL(data_src[i].size(), data[i].size());
+        BOOST_CHECK(data_src[i] == data[i]);
+    }
+}

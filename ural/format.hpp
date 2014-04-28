@@ -33,7 +33,7 @@
 namespace ural
 {
     template <class OStream, class Table>
-    OStream & write_table(OStream & os, Table const & table)
+    OStream & write_table(OStream && os, Table const & table)
     {
         for(auto & row : table)
         {
@@ -90,8 +90,10 @@ namespace ural
 
     template <class T, class IStream>
     std::vector<std::vector<T>>
-    read_table(IStream & is)
+    read_table(IStream && is)
     {
+        typedef typename std::remove_reference<IStream>::type input_stream_type;
+
         // @todo Проверка концепций
         std::vector<std::vector<T>> result;
 
@@ -99,20 +101,19 @@ namespace ural
 
         for(; !!seq; ++ seq)
         {
-            typedef typename IStream::char_type char_type;
-            typedef typename IStream::traits_type traits_type;
+            typedef typename input_stream_type::char_type char_type;
+            typedef typename input_stream_type::traits_type traits_type;
             std::basic_string<char_type, traits_type> const & str = *seq;
             std::basic_istringstream<char_type, traits_type> str_is(str);
+            str_is >> std::ws;
+
+            auto cell_seq = ural::by_line(str_is, '\t');
 
             std::vector<T> row;
 
-            std::basic_string<char_type, traits_type> cell_str;
-
-            while(std::getline(str_is, cell_str, '\t') >> std::ws)
+            for(; !!cell_seq; ++ cell_seq)
             {
-                auto cell = ural::from_string<T>(cell_str);
-
-                row.push_back(std::move(cell));
+                row.push_back(ural::from_string<T>(*cell_seq));
             }
 
             result.push_back(std::move(row));
