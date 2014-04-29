@@ -17,6 +17,7 @@
 #include <ural/abi.hpp>
 #include <ural/algorithm.hpp>
 #include <ural/sequence/all.hpp>
+#include <ural/sequence/map.hpp>
 #include <ural/sequence/sink.hpp>
 #include <ural/sequence/progression.hpp>
 
@@ -24,6 +25,7 @@
 
 #include <iterator>
 #include <set>
+#include <map>
 
 BOOST_AUTO_TEST_CASE(istream_sequence_test)
 {
@@ -276,4 +278,25 @@ BOOST_AUTO_TEST_CASE(filtered_sequence_for_each)
     }
 
     BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(), r.begin(), r.end());
+}
+
+BOOST_AUTO_TEST_CASE(map_keys_test)
+{
+    std::vector<int> const x = {1, 2, 3, 4, 5};
+    std::vector<char> const y = {'a', 'b', 'c', 'd', 'e'};
+
+    assert(x.size() == y.size());
+
+    std::map<int, char> xy;
+
+    for(size_t i = 0; i < x.size(); ++ i)
+    {
+        xy[x[i]] = y[i];
+    }
+
+    auto x_seq = xy | ural::map_keys;
+
+    BOOST_CHECK(ural::equal(x, x_seq));
+
+    // @todo тест map_values
 }

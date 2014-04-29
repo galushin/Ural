@@ -22,6 +22,8 @@
  итераторов
 */
 
+#include <iterator>
+
 #include <ural/sequence/base.hpp>
 
 namespace ural

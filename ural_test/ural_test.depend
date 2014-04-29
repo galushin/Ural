@@ -314,7 +314,7 @@
 1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
 	<boost/test/impl/xml_report_formatter.ipp>
 
-1395794221 c:\devtools\ural_repo\ural\ural\algorithm.hpp
+1398740109 c:\devtools\ural_repo\ural\ural\algorithm.hpp
 	<ural/functional.hpp>
 	<ural/random.hpp>
 	<ural/sequence/all.hpp>
@@ -346,7 +346,8 @@
 	<ural/utility.hpp>
 	<ural/meta/map.hpp>
 
-1397100591 c:\devtools\ural_repo\ural\ural\sequence\insertion.hpp
+1398740890 c:\devtools\ural_repo\ural\ural\sequence\insertion.hpp
+	<iterator>
 	<ural/sequence/base.hpp>
 
 1394615334 c:\devtools\ural_repo\ural\ural\algorithm\details\copy.hpp
@@ -572,15 +573,17 @@
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
-1398666690 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
+1398739464 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
 	<ural/abi.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/all.hpp>
+	<ural/sequence/map.hpp>
 	<ural/sequence/sink.hpp>
 	<ural/sequence/progression.hpp>
 	<boost/test/unit_test.hpp>
 	<iterator>
 	<set>
+	<map>
 
 1396832139 c:\devtools\ural_repo\ural\ural\sequence\filtered.hpp
 	<ural/algorithm/details/algo_base.hpp>
@@ -6287,7 +6290,7 @@
 
 1397100877 c:\devtools\ural_repo\ural\ural\sequence\sink.hpp
 
-1397617696 c:\devtools\ural_repo\ural\ural\sequence\partition.hpp
+1398739770 c:\devtools\ural_repo\ural\ural\sequence\partition.hpp
 
 1394151640 source:c:\devtools\ural_repo\ural\tests\math_tests.cpp
 	<boost/test/unit_test.hpp>
@@ -9765,4 +9768,7 @@
 
 1398675845 c:\devtools\ural_repo\ural\ural\sequence\sequence_iterator.hpp
 	<ural/optional.hpp>
+
+1398740468 c:\devtools\ural_repo\ural\ural\sequence\map.hpp
+	<utility>
 
