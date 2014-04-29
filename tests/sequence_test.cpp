@@ -300,3 +300,21 @@ BOOST_AUTO_TEST_CASE(map_keys_test)
 
     // @todo тест map_values
 }
+
+BOOST_AUTO_TEST_CASE(set_inserter_test)
+{
+    std::vector<int> const xs = {1, 2, 3, 4, 5, 1, 3, 5, 2, 4, 6};
+
+    std::set<int> z;
+
+    for(auto & x : xs)
+    {
+        z.insert(x);
+    }
+
+    std::set<int> z_ural;
+    ural::copy(xs, z_ural | ural::set_inserter);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
+                                  z_ural.begin(), z_ural.end());
+}

@@ -122,6 +122,52 @@ namespace ural
     {
         return helper(c);
     }
+
+    template <class Container>
+    class set_insert_sequence
+     : sequence_base<set_insert_sequence<Container>>
+    {
+    public:
+        typedef single_pass_traversal_tag traversal_tag;
+
+        explicit set_insert_sequence(Container & c)
+         : c_{c}
+        {}
+
+        bool operator!() const
+        {
+            return false;
+        }
+
+        set_insert_sequence const & operator*() const
+        {
+            return *this;
+        }
+
+        template <class T>
+        void operator=(T && x) const
+        {
+            c_.get().insert(std::forward<T>(x));
+        }
+
+        void pop_front()
+        {};
+
+    private:
+        std::reference_wrapper<Container> c_;
+    };
+
+    struct set_inserter_helper
+    {};
+
+    template <class Container>
+    ural::set_insert_sequence<Container>
+    operator|(Container & c, set_inserter_helper)
+    {
+        return ural::set_insert_sequence<Container>{c};
+    }
+
+    constexpr auto set_inserter = set_inserter_helper{};
 }
 // namespace ural
 

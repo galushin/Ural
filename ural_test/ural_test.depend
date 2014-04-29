@@ -346,7 +346,7 @@
 	<ural/utility.hpp>
 	<ural/meta/map.hpp>
 
-1398740890 c:\devtools\ural_repo\ural\ural\sequence\insertion.hpp
+1398742014 c:\devtools\ural_repo\ural\ural\sequence\insertion.hpp
 	<iterator>
 	<ural/sequence/base.hpp>
 
@@ -573,7 +573,7 @@
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
-1398739464 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
+1398741705 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
 	<ural/abi.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/all.hpp>
