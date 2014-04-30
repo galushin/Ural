@@ -48,6 +48,7 @@
 #include <ural/sequence/iostream.hpp>
 #include <ural/sequence/iterator_sequence.hpp>
 #include <ural/sequence/insertion.hpp>
+#include <ural/sequence/map.hpp>
 #include <ural/sequence/remove.hpp>
 #include <ural/sequence/replace.hpp>
 #include <ural/sequence/reversed.hpp>

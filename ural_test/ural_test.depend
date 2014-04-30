@@ -322,7 +322,7 @@
 	<ural/algorithm/details/copy.hpp>
 	<ural/algorithm/details/algo_base.hpp>
 
-1395372470 c:\devtools\ural_repo\ural\ural\sequence\all.hpp
+1398742115 c:\devtools\ural_repo\ural\ural\sequence\all.hpp
 	<iterator>
 	<ural/sequence/all_tuples.hpp>
 	<ural/sequence/base.hpp>
@@ -332,6 +332,7 @@
 	<ural/sequence/iostream.hpp>
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/insertion.hpp>
+	<ural/sequence/map.hpp>
 	<ural/sequence/remove.hpp>
 	<ural/sequence/replace.hpp>
 	<ural/sequence/reversed.hpp>
@@ -401,7 +402,7 @@
 	<type_traits>
 	<ostream>
 
-1397431751 c:\devtools\ural_repo\ural\ural\concepts.hpp
+1398838785 c:\devtools\ural_repo\ural\ural\concepts.hpp
 	<boost/concept/usage.hpp>
 	<ural/defs.hpp>
 	<ural/sequence/base.hpp>
@@ -6288,7 +6289,7 @@
 1397527545 c:\devtools\ural_repo\ural\ural\sequence\remove.hpp
 	<ural/algorithm/details/algo_base.hpp>
 
-1397100877 c:\devtools\ural_repo\ural\ural\sequence\sink.hpp
+1398839162 c:\devtools\ural_repo\ural\ural\sequence\sink.hpp
 
 1398739770 c:\devtools\ural_repo\ural\ural\sequence\partition.hpp
 
@@ -6298,7 +6299,7 @@
 	<boost/operators.hpp>
 	<ural/math/common_factor.hpp>
 
-1398316481 c:\devtools\ural_repo\ural\ural\math\common_factor.hpp
+1398839309 c:\devtools\ural_repo\ural\ural\math\common_factor.hpp
 	<cmath>
 
 1392699171 source:c:\devtools\ural_repo\ural\ural\math\rational.hpp
@@ -9771,4 +9772,1761 @@
 
 1398740468 c:\devtools\ural_repo\ural\ural\sequence\map.hpp
 	<utility>
+
+1370766726 c:\devtools\gcc\mingw\include\c++\4.8.1\\cstddef
+	<bits/c++config.h>
+	<stddef.h>
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\i686-pc-mingw32\\bits\c++config.h
+	<bits/os_defines.h>
+	<bits/cpu_defines.h>
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\i686-pc-mingw32\\bits\os_defines.h
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\i686-pc-mingw32\\bits\cpu_defines.h
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\utility
+	<bits/c++config.h>
+	<bits/stl_relops.h>
+	<bits/stl_pair.h>
+	<bits/move.h>
+	<initializer_list>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stl_relops.h
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stl_pair.h
+	<bits/move.h>
+	<type_traits>
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\move.h
+	<bits/c++config.h>
+	<bits/concept_check.h>
+	<type_traits>
+
+1370766701 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\concept_check.h
+	<bits/c++config.h>
+	<bits/boost_concept_check.h>
+
+1370766701 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\boost_concept_check.h
+	<bits/c++config.h>
+	<bits/stl_iterator_base_types.h>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stl_iterator_base_types.h
+	<bits/c++config.h>
+	<type_traits>
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\type_traits
+	<bits/c++0x_warning.h>
+	<bits/c++config.h>
+
+1370766701 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\c++0x_warning.h
+
+1370766734 c:\devtools\gcc\mingw\include\c++\4.8.1\\initializer_list
+	<bits/c++0x_warning.h>
+	<bits/c++config.h>
+
+1370766788 c:\devtools\gcc\mingw\include\unistd.h
+	<io.h>
+	<process.h>
+	<getopt.h>
+	<sys/types.h>
+
+1370766788 c:\devtools\gcc\mingw\include\io.h
+	<_mingw.h>
+	<sys/types.h>
+
+1370766788 c:\devtools\gcc\mingw\include\_mingw.h
+
+1370766788 c:\devtools\gcc\mingw\include\sys\types.h
+	<_mingw.h>
+	<stddef.h>
+
+1370766788 c:\devtools\gcc\mingw\include\process.h
+	<_mingw.h>
+	<sys/types.h>
+	<stdint.h>
+
+1370766788 c:\devtools\gcc\mingw\include\stdint.h
+	<stddef.h>
+
+1370766788 c:\devtools\gcc\mingw\include\getopt.h
+	<_mingw.h>
+
+1370766788 c:\devtools\gcc\mingw\include\limits.h
+	<_mingw.h>
+
+1370766734 c:\devtools\gcc\mingw\include\c++\4.8.1\\typeinfo
+	<exception>
+	<bits/hash_bytes.h>
+
+1370766734 c:\devtools\gcc\mingw\include\c++\4.8.1\\exception
+	<bits/c++config.h>
+	<bits/atomic_lockfree_defines.h>
+	<bits/exception_ptr.h>
+	<bits/nested_exception.h>
+
+1370766733 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\atomic_lockfree_defines.h
+
+1370766733 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\exception_ptr.h
+	<bits/c++config.h>
+	<bits/exception_defines.h>
+
+1370766733 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\exception_defines.h
+
+1370766733 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\nested_exception.h
+	<bits/c++0x_warning.h>
+	<bits/c++config.h>
+
+1370766733 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\hash_bytes.h
+	<bits/c++config.h>
+
+1370766727 c:\devtools\gcc\mingw\include\c++\4.8.1\\string
+	<bits/c++config.h>
+	<bits/stringfwd.h>
+	<bits/char_traits.h>
+	<bits/allocator.h>
+	<bits/cpp_type_traits.h>
+	<bits/localefwd.h>
+	<bits/ostream_insert.h>
+	<bits/stl_iterator_base_types.h>
+	<bits/stl_iterator_base_funcs.h>
+	<bits/stl_iterator.h>
+	<bits/stl_function.h>
+	<ext/numeric_traits.h>
+	<bits/stl_algobase.h>
+	<bits/range_access.h>
+	<bits/basic_string.h>
+	<bits/basic_string.tcc>
+
+1370766704 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stringfwd.h
+	<bits/c++config.h>
+	<bits/memoryfwd.h>
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\memoryfwd.h
+	<bits/c++config.h>
+
+1370766701 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\char_traits.h
+	<bits/stl_algobase.h>
+	<bits/postypes.h>
+	<cwchar>
+	<cstdint>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stl_algobase.h
+	<bits/c++config.h>
+	<bits/functexcept.h>
+	<bits/cpp_type_traits.h>
+	<ext/type_traits.h>
+	<ext/numeric_traits.h>
+	<bits/stl_pair.h>
+	<bits/stl_iterator_base_types.h>
+	<bits/stl_iterator_base_funcs.h>
+	<bits/stl_iterator.h>
+	<bits/concept_check.h>
+	<debug/debug.h>
+	<bits/move.h>
+	<parallel/algobase.h>
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\functexcept.h
+	<bits/c++config.h>
+	<bits/exception_defines.h>
+
+1370766701 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\cpp_type_traits.h
+	<bits/c++config.h>
+
+1370766705 c:\devtools\gcc\mingw\include\c++\4.8.1\\ext\type_traits.h
+	<bits/c++config.h>
+	<bits/cpp_type_traits.h>
+
+1370766705 c:\devtools\gcc\mingw\include\c++\4.8.1\\ext\numeric_traits.h
+	<bits/cpp_type_traits.h>
+	<ext/type_traits.h>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stl_iterator_base_funcs.h
+	<bits/concept_check.h>
+	<debug/debug.h>
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\debug.h
+	<debug/macros.h>
+	<debug/functions.h>
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\macros.h
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\functions.h
+	<bits/c++config.h>
+	<bits/stl_iterator_base_types.h>
+	<bits/cpp_type_traits.h>
+	<debug/formatter.h>
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\formatter.h
+	<bits/c++config.h>
+	<bits/cpp_type_traits.h>
+	<typeinfo>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stl_iterator.h
+	<bits/cpp_type_traits.h>
+	<ext/type_traits.h>
+	<bits/move.h>
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\algobase.h
+	<bits/stl_algobase.h>
+	<parallel/base.h>
+	<parallel/algorithmfwd.h>
+	<parallel/find.h>
+	<parallel/find_selectors.h>
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\base.h
+	<bits/c++config.h>
+	<bits/stl_function.h>
+	<omp.h>
+	<parallel/features.h>
+	<parallel/basic_iterator.h>
+	<parallel/parallel.h>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stl_function.h
+	<backward/binders.h>
+
+1370766704 c:\devtools\gcc\mingw\include\c++\4.8.1\\backward\binders.h
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\features.h
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\basic_iterator.h
+	<bits/c++config.h>
+	<bits/stl_iterator_base_types.h>
+	<bits/stl_iterator_base_funcs.h>
+	<bits/stl_iterator.h>
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\parallel.h
+	<parallel/features.h>
+	<parallel/compiletime_settings.h>
+	<parallel/types.h>
+	<parallel/tags.h>
+	<parallel/settings.h>
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\compiletime_settings.h
+	<cstdio>
+
+1370766726 c:\devtools\gcc\mingw\include\c++\4.8.1\\cstdio
+	<bits/c++config.h>
+	<stdio.h>
+
+1370766788 c:\devtools\gcc\mingw\include\stdio.h
+	<_mingw.h>
+	<stddef.h>
+	<stdarg.h>
+	<sys/types.h>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\types.h
+	<cstdlib>
+	<limits>
+	<tr1/cstdint>
+
+1370766726 c:\devtools\gcc\mingw\include\c++\4.8.1\\cstdlib
+	<bits/c++config.h>
+	<stdlib.h>
+
+1370766788 c:\devtools\gcc\mingw\include\stdlib.h
+	<_mingw.h>
+	<stddef.h>
+
+1370766727 c:\devtools\gcc\mingw\include\c++\4.8.1\\limits
+	<bits/c++config.h>
+
+1370766724 c:\devtools\gcc\mingw\include\c++\4.8.1\\tr1\cstdint
+	<bits/c++config.h>
+	<stdint.h>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\tags.h
+	<omp.h>
+	<parallel/types.h>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\settings.h
+	<parallel/types.h>
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\algorithmfwd.h
+	<parallel/tags.h>
+	<parallel/settings.h>
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\find.h
+	<bits/stl_algobase.h>
+	<parallel/features.h>
+	<parallel/parallel.h>
+	<parallel/compatibility.h>
+	<parallel/equally_split.h>
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\compatibility.h
+	<parallel/types.h>
+	<parallel/base.h>
+	<sched.h>
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\equally_split.h
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\find_selectors.h
+	<parallel/tags.h>
+	<parallel/basic_iterator.h>
+	<bits/stl_pair.h>
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\postypes.h
+	<cwchar>
+	<stdint.h>
+
+1370766726 c:\devtools\gcc\mingw\include\c++\4.8.1\\cwchar
+	<bits/c++config.h>
+	<wchar.h>
+
+1370766788 c:\devtools\gcc\mingw\include\wchar.h
+	<_mingw.h>
+	<stddef.h>
+	<stdarg.h>
+	<wctype.h>
+	<sys/types.h>
+	<stdio.h>
+	<stdint.h>
+	<stdint.h>
+
+1370766788 c:\devtools\gcc\mingw\include\wctype.h
+	<_mingw.h>
+	<stddef.h>
+
+1370766726 c:\devtools\gcc\mingw\include\c++\4.8.1\\cstdint
+	<bits/c++0x_warning.h>
+	<bits/c++config.h>
+	<stdint.h>
+
+1370766701 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\allocator.h
+	<bits/c++allocator.h>
+	<bits/memoryfwd.h>
+	<type_traits>
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\i686-pc-mingw32\\bits\c++allocator.h
+	<ext/new_allocator.h>
+
+1370766705 c:\devtools\gcc\mingw\include\c++\4.8.1\\ext\new_allocator.h
+	<bits/c++config.h>
+	<new>
+	<bits/functexcept.h>
+	<bits/move.h>
+	<type_traits>
+
+1370766734 c:\devtools\gcc\mingw\include\c++\4.8.1\\new
+	<bits/c++config.h>
+	<exception>
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\localefwd.h
+	<bits/c++config.h>
+	<bits/c++locale.h>
+	<iosfwd>
+	<cctype>
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\i686-pc-mingw32\\bits\c++locale.h
+	<clocale>
+
+1370766726 c:\devtools\gcc\mingw\include\c++\4.8.1\\clocale
+	<bits/c++config.h>
+	<locale.h>
+
+1370766788 c:\devtools\gcc\mingw\include\locale.h
+	<_mingw.h>
+	<stddef.h>
+	<stddef.h>
+
+1370766727 c:\devtools\gcc\mingw\include\c++\4.8.1\\iosfwd
+	<bits/c++config.h>
+	<bits/stringfwd.h>
+	<bits/postypes.h>
+
+1370766726 c:\devtools\gcc\mingw\include\c++\4.8.1\\cctype
+	<bits/c++config.h>
+	<ctype.h>
+
+1370766787 c:\devtools\gcc\mingw\include\ctype.h
+	<_mingw.h>
+	<stddef.h>
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\ostream_insert.h
+	<iosfwd>
+	<bits/cxxabi_forced.h>
+
+1370766733 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\cxxabi_forced.h
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\range_access.h
+
+1370766701 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\basic_string.h
+	<ext/atomicity.h>
+	<debug/debug.h>
+	<initializer_list>
+	<ext/string_conversions.h>
+	<bits/functional_hash.h>
+
+1370766704 c:\devtools\gcc\mingw\include\c++\4.8.1\\ext\atomicity.h
+	<bits/c++config.h>
+	<bits/gthr.h>
+	<bits/atomic_word.h>
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\i686-pc-mingw32\\bits\gthr.h
+	<bits/gthr-default.h>
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\i686-pc-mingw32\\bits\gthr-default.h
+	<errno.h>
+	<_mingw.h>
+	<windows.h>
+	<windows.h>
+	<errno.h>
+
+1370766787 c:\devtools\gcc\mingw\include\errno.h
+	<_mingw.h>
+
+1370766787 c:\devtools\gcc\mingw\include\windows.h
+	<winresrc.h>
+	<stdarg.h>
+	<windef.h>
+	<wincon.h>
+	<winbase.h>
+	<wingdi.h>
+	<winuser.h>
+	<winnls.h>
+	<winver.h>
+	<winnetwk.h>
+	<winreg.h>
+	<winsvc.h>
+	<cderr.h>
+	<dde.h>
+	<ddeml.h>
+	<dlgs.h>
+	<imm.h>
+	<lzexpand.h>
+	<mmsystem.h>
+	<nb30.h>
+	<rpc.h>
+	<shellapi.h>
+	<winperf.h>
+	<commdlg.h>
+	<winspool.h>
+	<winsock2.h>
+	<winsock.h>
+	<ole2.h>
+
+1370766787 c:\devtools\gcc\mingw\include\winresrc.h
+	<winuser.h>
+	<winnt.h>
+	<winver.h>
+	<dde.h>
+	<dlgs.h>
+	<commctrl.h>
+
+1370766787 c:\devtools\gcc\mingw\include\winuser.h
+
+1370766787 c:\devtools\gcc\mingw\include\winnt.h
+	<winerror.h>
+	<string.h>
+	<basetsd.h>
+	<pshpack4.h>
+	<poppack.h>
+
+1370766787 c:\devtools\gcc\mingw\include\winerror.h
+
+1370766788 c:\devtools\gcc\mingw\include\string.h
+	<_mingw.h>
+	<stddef.h>
+
+1370766787 c:\devtools\gcc\mingw\include\basetsd.h
+
+1370766787 c:\devtools\gcc\mingw\include\pshpack4.h
+
+1370766787 c:\devtools\gcc\mingw\include\poppack.h
+
+1370766787 c:\devtools\gcc\mingw\include\winver.h
+
+1370766787 c:\devtools\gcc\mingw\include\dde.h
+
+1370766787 c:\devtools\gcc\mingw\include\dlgs.h
+
+1370766787 c:\devtools\gcc\mingw\include\commctrl.h
+	<prsht.h>
+
+1370766787 c:\devtools\gcc\mingw\include\prsht.h
+
+1370766787 c:\devtools\gcc\mingw\include\windef.h
+	<winnt.h>
+
+1370766787 c:\devtools\gcc\mingw\include\wincon.h
+
+1370766787 c:\devtools\gcc\mingw\include\winbase.h
+
+1370766787 c:\devtools\gcc\mingw\include\wingdi.h
+
+1370766787 c:\devtools\gcc\mingw\include\winnls.h
+
+1370766787 c:\devtools\gcc\mingw\include\winnetwk.h
+
+1370766787 c:\devtools\gcc\mingw\include\winreg.h
+
+1370766787 c:\devtools\gcc\mingw\include\winsvc.h
+
+1370766787 c:\devtools\gcc\mingw\include\cderr.h
+
+1370766787 c:\devtools\gcc\mingw\include\ddeml.h
+
+1370766787 c:\devtools\gcc\mingw\include\imm.h
+
+1370766787 c:\devtools\gcc\mingw\include\lzexpand.h
+
+1370766787 c:\devtools\gcc\mingw\include\mmsystem.h
+
+1370766787 c:\devtools\gcc\mingw\include\nb30.h
+
+1370766787 c:\devtools\gcc\mingw\include\rpc.h
+	<windows.h>
+	<rpcdce.h>
+	<rpcnsi.h>
+	<rpcnterr.h>
+	<winerror.h>
+	<excpt.h>
+
+1370766787 c:\devtools\gcc\mingw\include\rpcdce.h
+	<basetyps.h>
+	<rpcdcep.h>
+
+1370766787 c:\devtools\gcc\mingw\include\basetyps.h
+
+1370766787 c:\devtools\gcc\mingw\include\rpcdcep.h
+
+1370766787 c:\devtools\gcc\mingw\include\rpcnsi.h
+
+1370766787 c:\devtools\gcc\mingw\include\rpcnterr.h
+
+1370766787 c:\devtools\gcc\mingw\include\excpt.h
+	<_mingw.h>
+	<windef.h>
+
+1370766787 c:\devtools\gcc\mingw\include\shellapi.h
+	<pshpack2.h>
+	<poppack.h>
+
+1370766787 c:\devtools\gcc\mingw\include\pshpack2.h
+
+1370766787 c:\devtools\gcc\mingw\include\winperf.h
+
+1370766787 c:\devtools\gcc\mingw\include\commdlg.h
+	<unknwn.h>
+	<prsht.h>
+
+1370766787 c:\devtools\gcc\mingw\include\unknwn.h
+	<windows.h>
+	<objfwd.h>
+	<wtypes.h>
+
+1370766787 c:\devtools\gcc\mingw\include\objfwd.h
+	<basetyps.h>
+
+1370766787 c:\devtools\gcc\mingw\include\wtypes.h
+	<rpc.h>
+	<rpcndr.h>
+
+1370766787 c:\devtools\gcc\mingw\include\rpcndr.h
+	<rpcnsip.h>
+	<objfwd.h>
+
+1370766787 c:\devtools\gcc\mingw\include\rpcnsip.h
+
+1370766787 c:\devtools\gcc\mingw\include\winspool.h
+
+1370766787 c:\devtools\gcc\mingw\include\winsock2.h
+	<windows.h>
+
+1370766787 c:\devtools\gcc\mingw\include\winsock.h
+	<windows.h>
+	<mswsock.h>
+
+1370766787 c:\devtools\gcc\mingw\include\mswsock.h
+
+1370766787 c:\devtools\gcc\mingw\include\ole2.h
+	<winerror.h>
+	<objbase.h>
+	<olectlid.h>
+	<oleauto.h>
+	<oleidl.h>
+
+1370766787 c:\devtools\gcc\mingw\include\objbase.h
+	<rpc.h>
+	<rpcndr.h>
+	<stdlib.h>
+	<basetyps.h>
+	<wtypes.h>
+	<unknwn.h>
+	<objidl.h>
+	<cguid.h>
+
+1370766787 c:\devtools\gcc\mingw\include\objidl.h
+	<objfwd.h>
+
+1370766787 c:\devtools\gcc\mingw\include\cguid.h
+
+1370766787 c:\devtools\gcc\mingw\include\olectlid.h
+
+1370766787 c:\devtools\gcc\mingw\include\oleauto.h
+	<oaidl.h>
+
+1370766787 c:\devtools\gcc\mingw\include\oaidl.h
+	<windows.h>
+	<ole2.h>
+
+1370766787 c:\devtools\gcc\mingw\include\oleidl.h
+	<objfwd.h>
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\i686-pc-mingw32\\bits\atomic_word.h
+
+1370766705 c:\devtools\gcc\mingw\include\c++\4.8.1\\ext\string_conversions.h
+	<bits/c++0x_warning.h>
+	<bits/c++config.h>
+	<ext/numeric_traits.h>
+	<bits/functexcept.h>
+	<cstdlib>
+	<cwchar>
+	<cstdio>
+	<cerrno>
+
+1370766726 c:\devtools\gcc\mingw\include\c++\4.8.1\\cerrno
+	<errno.h>
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\functional_hash.h
+	<bits/hash_bytes.h>
+
+1370766701 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\basic_string.tcc
+	<bits/cxxabi_forced.h>
+
+1370766787 c:\devtools\gcc\mingw\include\assert.h
+	<_mingw.h>
+
+1370766727 c:\devtools\gcc\mingw\include\c++\4.8.1\\iostream
+	<bits/c++config.h>
+	<ostream>
+	<istream>
+
+1370766727 c:\devtools\gcc\mingw\include\c++\4.8.1\\ostream
+	<ios>
+	<bits/ostream_insert.h>
+	<bits/ostream.tcc>
+
+1370766727 c:\devtools\gcc\mingw\include\c++\4.8.1\\ios
+	<iosfwd>
+	<exception>
+	<bits/char_traits.h>
+	<bits/localefwd.h>
+	<bits/ios_base.h>
+	<streambuf>
+	<bits/basic_ios.h>
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\ios_base.h
+	<ext/atomicity.h>
+	<bits/localefwd.h>
+	<bits/locale_classes.h>
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\locale_classes.h
+	<bits/localefwd.h>
+	<string>
+	<ext/atomicity.h>
+	<bits/locale_classes.tcc>
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\locale_classes.tcc
+
+1370766727 c:\devtools\gcc\mingw\include\c++\4.8.1\\streambuf
+	<bits/c++config.h>
+	<iosfwd>
+	<bits/localefwd.h>
+	<bits/ios_base.h>
+	<bits/cpp_type_traits.h>
+	<ext/type_traits.h>
+	<bits/streambuf.tcc>
+
+1370766704 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\streambuf.tcc
+
+1370766701 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\basic_ios.h
+	<bits/localefwd.h>
+	<bits/locale_classes.h>
+	<bits/locale_facets.h>
+	<bits/streambuf_iterator.h>
+	<bits/basic_ios.tcc>
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\locale_facets.h
+	<cwctype>
+	<cctype>
+	<bits/ctype_base.h>
+	<iosfwd>
+	<bits/ios_base.h>
+	<streambuf>
+	<bits/cpp_type_traits.h>
+	<ext/type_traits.h>
+	<ext/numeric_traits.h>
+	<bits/streambuf_iterator.h>
+	<bits/ctype_inline.h>
+	<bits/locale_facets.tcc>
+
+1370766726 c:\devtools\gcc\mingw\include\c++\4.8.1\\cwctype
+	<bits/c++config.h>
+	<stddef.h>
+	<wctype.h>
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\i686-pc-mingw32\\bits\ctype_base.h
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\streambuf_iterator.h
+	<streambuf>
+	<debug/debug.h>
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\i686-pc-mingw32\\bits\ctype_inline.h
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\locale_facets.tcc
+
+1370766701 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\basic_ios.tcc
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\ostream.tcc
+	<bits/cxxabi_forced.h>
+
+1370766727 c:\devtools\gcc\mingw\include\c++\4.8.1\\istream
+	<ios>
+	<ostream>
+	<bits/istream.tcc>
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\istream.tcc
+	<bits/cxxabi_forced.h>
+
+1370766727 c:\devtools\gcc\mingw\include\c++\4.8.1\\memory
+	<bits/stl_algobase.h>
+	<bits/allocator.h>
+	<bits/stl_construct.h>
+	<bits/stl_uninitialized.h>
+	<bits/stl_tempbuf.h>
+	<bits/stl_raw_storage_iter.h>
+	<exception>
+	<typeinfo>
+	<iosfwd>
+	<ext/atomicity.h>
+	<ext/concurrence.h>
+	<bits/functexcept.h>
+	<bits/stl_function.h>
+	<bits/uses_allocator.h>
+	<type_traits>
+	<functional>
+	<debug/debug.h>
+	<bits/unique_ptr.h>
+	<bits/shared_ptr.h>
+	<backward/auto_ptr.h>
+	<backward/auto_ptr.h>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stl_construct.h
+	<new>
+	<bits/move.h>
+	<ext/alloc_traits.h>
+
+1370766704 c:\devtools\gcc\mingw\include\c++\4.8.1\\ext\alloc_traits.h
+	<bits/move.h>
+	<bits/alloc_traits.h>
+	<bits/allocator.h>
+
+1370766701 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\alloc_traits.h
+	<bits/memoryfwd.h>
+	<bits/ptr_traits.h>
+	<ext/numeric_traits.h>
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\ptr_traits.h
+	<type_traits>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stl_uninitialized.h
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stl_tempbuf.h
+	<bits/stl_algobase.h>
+	<bits/stl_construct.h>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stl_raw_storage_iter.h
+
+1370766704 c:\devtools\gcc\mingw\include\c++\4.8.1\\ext\concurrence.h
+	<exception>
+	<bits/gthr.h>
+	<bits/functexcept.h>
+	<bits/cpp_type_traits.h>
+	<ext/type_traits.h>
+
+1370766704 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\uses_allocator.h
+	<bits/c++0x_warning.h>
+	<type_traits>
+
+1370766727 c:\devtools\gcc\mingw\include\c++\4.8.1\\functional
+	<bits/c++config.h>
+	<bits/stl_function.h>
+	<typeinfo>
+	<new>
+	<tuple>
+	<type_traits>
+	<bits/functexcept.h>
+	<bits/functional_hash.h>
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\tuple
+	<bits/c++0x_warning.h>
+	<utility>
+	<array>
+	<bits/uses_allocator.h>
+
+1370766726 c:\devtools\gcc\mingw\include\c++\4.8.1\\array
+	<bits/c++0x_warning.h>
+	<stdexcept>
+	<bits/stl_algobase.h>
+	<bits/range_access.h>
+	<debug/array>
+	<profile/array>
+
+1370766727 c:\devtools\gcc\mingw\include\c++\4.8.1\\stdexcept
+	<exception>
+	<string>
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\array
+	<debug/safe_sequence.h>
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\safe_sequence.h
+	<debug/debug.h>
+	<debug/macros.h>
+	<debug/functions.h>
+	<debug/safe_base.h>
+	<debug/safe_sequence.tcc>
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\safe_base.h
+	<ext/concurrence.h>
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\safe_sequence.tcc
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\array
+
+1370766704 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\unique_ptr.h
+	<bits/c++config.h>
+	<debug/debug.h>
+	<type_traits>
+	<utility>
+	<tuple>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\shared_ptr.h
+	<bits/shared_ptr_base.h>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\shared_ptr_base.h
+
+1370766704 c:\devtools\gcc\mingw\include\c++\4.8.1\\backward\auto_ptr.h
+	<bits/c++config.h>
+	<debug/debug.h>
+
+1370766726 c:\devtools\gcc\mingw\include\c++\4.8.1\\algorithm
+	<utility>
+	<bits/stl_algobase.h>
+	<bits/stl_algo.h>
+	<parallel/algorithm>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stl_algo.h
+	<cstdlib>
+	<bits/algorithmfwd.h>
+	<bits/stl_heap.h>
+	<bits/stl_tempbuf.h>
+	<random>
+	<functional>
+
+1370766701 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\algorithmfwd.h
+	<bits/c++config.h>
+	<bits/stl_pair.h>
+	<bits/stl_iterator_base_types.h>
+	<initializer_list>
+	<parallel/algorithmfwd.h>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stl_heap.h
+	<debug/debug.h>
+	<bits/move.h>
+
+1370766727 c:\devtools\gcc\mingw\include\c++\4.8.1\\random
+	<bits/c++0x_warning.h>
+	<cmath>
+	<cstdio>
+	<cstdlib>
+	<string>
+	<iosfwd>
+	<limits>
+	<debug/debug.h>
+	<type_traits>
+	<cstdint>
+	<bits/random.h>
+	<bits/opt_random.h>
+	<bits/random.tcc>
+
+1370766726 c:\devtools\gcc\mingw\include\c++\4.8.1\\cmath
+	<bits/c++config.h>
+	<bits/cpp_type_traits.h>
+	<ext/type_traits.h>
+	<math.h>
+
+1370766788 c:\devtools\gcc\mingw\include\math.h
+	<_mingw.h>
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\random.h
+	<vector>
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\vector
+	<bits/stl_algobase.h>
+	<bits/allocator.h>
+	<bits/stl_construct.h>
+	<bits/stl_uninitialized.h>
+	<bits/stl_vector.h>
+	<bits/stl_bvector.h>
+	<bits/range_access.h>
+	<bits/vector.tcc>
+	<debug/vector>
+	<profile/vector>
+
+1370766704 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stl_vector.h
+	<bits/stl_iterator_base_funcs.h>
+	<bits/functexcept.h>
+	<bits/concept_check.h>
+	<initializer_list>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stl_bvector.h
+	<initializer_list>
+	<bits/stl_vector.h>
+	<bits/functional_hash.h>
+
+1370766704 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\vector.tcc
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\vector
+	<vector>
+	<utility>
+	<debug/safe_sequence.h>
+	<debug/safe_iterator.h>
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\safe_iterator.h
+	<debug/debug.h>
+	<debug/macros.h>
+	<debug/functions.h>
+	<debug/safe_base.h>
+	<bits/stl_pair.h>
+	<ext/type_traits.h>
+	<debug/safe_iterator.tcc>
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\safe_iterator.tcc
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\vector
+	<vector>
+	<utility>
+	<profile/base.h>
+	<profile/iterator_tracker.h>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\base.h
+	<functional>
+	<profile/impl/profiler.h>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\impl\profiler.h
+	<bits/c++config.h>
+	"profile/impl/profiler_hash_func.h"
+	"profile/impl/profiler_hashtable_size.h"
+	"profile/impl/profiler_map_to_unordered_map.h"
+	"profile/impl/profiler_vector_size.h"
+	"profile/impl/profiler_vector_to_list.h"
+	"profile/impl/profiler_list_to_slist.h"
+	"profile/impl/profiler_list_to_vector.h"
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\impl\profiler_hash_func.h
+	"profile/impl/profiler.h"
+	"profile/impl/profiler_node.h"
+	"profile/impl/profiler_trace.h"
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\impl\profiler_node.h
+	<cstdio>
+	<vector>
+	<execinfo.h>
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\impl\profiler_trace.h
+	<cstdio>
+	<cerrno>
+	<cstdlib>
+	<unordered_map>
+	<tr1/unordered_map>
+	<ext/concurrence.h>
+	<fstream>
+	<string>
+	<utility>
+	<vector>
+	"profile/impl/profiler_algos.h"
+	"profile/impl/profiler_state.h"
+	"profile/impl/profiler_node.h"
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\unordered_map
+	<bits/c++0x_warning.h>
+	<utility>
+	<type_traits>
+	<initializer_list>
+	<tuple>
+	<bits/stl_algobase.h>
+	<bits/allocator.h>
+	<bits/alloc_traits.h>
+	<bits/stl_function.h>
+	<bits/functional_hash.h>
+	<bits/hashtable.h>
+	<bits/unordered_map.h>
+	<bits/range_access.h>
+	<debug/unordered_map>
+	<profile/unordered_map>
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\hashtable.h
+	<bits/hashtable_policy.h>
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\hashtable_policy.h
+
+1370766704 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\unordered_map.h
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\unordered_map
+	<bits/c++0x_warning.h>
+	<unordered_map>
+	<debug/safe_unordered_container.h>
+	<debug/safe_iterator.h>
+	<debug/safe_local_iterator.h>
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\safe_unordered_container.h
+	<debug/debug.h>
+	<debug/macros.h>
+	<debug/functions.h>
+	<debug/safe_unordered_base.h>
+	<debug/safe_unordered_container.tcc>
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\safe_unordered_base.h
+	<debug/safe_base.h>
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\safe_unordered_container.tcc
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\safe_local_iterator.h
+	<debug/debug.h>
+	<debug/macros.h>
+	<debug/functions.h>
+	<debug/safe_unordered_base.h>
+	<ext/type_traits.h>
+	<debug/safe_local_iterator.tcc>
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\safe_local_iterator.tcc
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\unordered_map
+	<bits/c++0x_warning.h>
+	<unordered_map>
+	<profile/base.h>
+
+1370766725 c:\devtools\gcc\mingw\include\c++\4.8.1\\tr1\unordered_map
+	<utility>
+	<bits/stl_algobase.h>
+	<bits/allocator.h>
+	<bits/stl_function.h>
+	<bits/stringfwd.h>
+	<tr1/type_traits>
+	<tr1/functional_hash.h>
+	<tr1/hashtable.h>
+	<tr1/unordered_map.h>
+
+1370766725 c:\devtools\gcc\mingw\include\c++\4.8.1\\tr1\type_traits
+	<bits/c++config.h>
+
+1370766724 c:\devtools\gcc\mingw\include\c++\4.8.1\\tr1\functional_hash.h
+
+1370766724 c:\devtools\gcc\mingw\include\c++\4.8.1\\tr1\hashtable.h
+	<tr1/hashtable_policy.h>
+
+1370766724 c:\devtools\gcc\mingw\include\c++\4.8.1\\tr1\hashtable_policy.h
+
+1370766725 c:\devtools\gcc\mingw\include\c++\4.8.1\\tr1\unordered_map.h
+
+1370766727 c:\devtools\gcc\mingw\include\c++\4.8.1\\fstream
+	<istream>
+	<ostream>
+	<bits/codecvt.h>
+	<cstdio>
+	<bits/basic_file.h>
+	<string>
+	<bits/fstream.tcc>
+
+1370766701 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\codecvt.h
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\i686-pc-mingw32\\bits\basic_file.h
+	<bits/c++config.h>
+	<bits/c++io.h>
+	<ios>
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\i686-pc-mingw32\\bits\c++io.h
+	<cstdio>
+	<bits/gthr.h>
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\fstream.tcc
+	<bits/cxxabi_forced.h>
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\impl\profiler_algos.h
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\impl\profiler_state.h
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\impl\profiler_hashtable_size.h
+	"profile/impl/profiler.h"
+	"profile/impl/profiler_node.h"
+	"profile/impl/profiler_trace.h"
+	"profile/impl/profiler_state.h"
+	"profile/impl/profiler_container_size.h"
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\impl\profiler_container_size.h
+	<sstream>
+	"profile/impl/profiler.h"
+	"profile/impl/profiler_node.h"
+	"profile/impl/profiler_trace.h"
+
+1370766727 c:\devtools\gcc\mingw\include\c++\4.8.1\\sstream
+	<istream>
+	<ostream>
+	<bits/sstream.tcc>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\sstream.tcc
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\impl\profiler_map_to_unordered_map.h
+	"profile/impl/profiler.h"
+	"profile/impl/profiler_node.h"
+	"profile/impl/profiler_trace.h"
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\impl\profiler_vector_size.h
+	"profile/impl/profiler.h"
+	"profile/impl/profiler_node.h"
+	"profile/impl/profiler_trace.h"
+	"profile/impl/profiler_state.h"
+	"profile/impl/profiler_container_size.h"
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\impl\profiler_vector_to_list.h
+	"profile/impl/profiler.h"
+	"profile/impl/profiler_node.h"
+	"profile/impl/profiler_trace.h"
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\impl\profiler_list_to_slist.h
+	"profile/impl/profiler.h"
+	"profile/impl/profiler_node.h"
+	"profile/impl/profiler_trace.h"
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\impl\profiler_list_to_vector.h
+	<sstream>
+	"profile/impl/profiler.h"
+	"profile/impl/profiler_node.h"
+	"profile/impl/profiler_trace.h"
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\iterator_tracker.h
+	<ext/type_traits.h>
+
+1370766704 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\opt_random.h
+	<x86intrin.h>
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\random.tcc
+	<numeric>
+
+1370766727 c:\devtools\gcc\mingw\include\c++\4.8.1\\numeric
+	<bits/c++config.h>
+	<bits/stl_iterator_base_types.h>
+	<bits/stl_numeric.h>
+	<parallel/numeric>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stl_numeric.h
+	<bits/concept_check.h>
+	<debug/debug.h>
+	<bits/move.h>
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\numeric
+	<numeric>
+	<bits/stl_function.h>
+	<parallel/numericfwd.h>
+	<parallel/iterator.h>
+	<parallel/for_each.h>
+	<parallel/for_each_selectors.h>
+	<parallel/partial_sum.h>
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\numericfwd.h
+	<parallel/tags.h>
+	<parallel/settings.h>
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\iterator.h
+	<parallel/basic_iterator.h>
+	<bits/stl_pair.h>
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\for_each.h
+	<parallel/settings.h>
+	<parallel/par_loop.h>
+	<parallel/omp_loop.h>
+	<parallel/workstealing.h>
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\par_loop.h
+	<omp.h>
+	<parallel/settings.h>
+	<parallel/base.h>
+	<parallel/equally_split.h>
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\omp_loop.h
+	<omp.h>
+	<parallel/settings.h>
+	<parallel/basic_iterator.h>
+	<parallel/base.h>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\workstealing.h
+	<parallel/parallel.h>
+	<parallel/random_number.h>
+	<parallel/compatibility.h>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\random_number.h
+	<parallel/types.h>
+	<tr1/random>
+	<limits>
+
+1370766725 c:\devtools\gcc\mingw\include\c++\4.8.1\\tr1\random
+	<cmath>
+	<cstdio>
+	<cstdlib>
+	<string>
+	<iosfwd>
+	<limits>
+	<ext/type_traits.h>
+	<ext/numeric_traits.h>
+	<bits/concept_check.h>
+	<debug/debug.h>
+	<tr1/type_traits>
+	<tr1/cmath>
+	<tr1/random.h>
+	<tr1/random.tcc>
+
+1370766724 c:\devtools\gcc\mingw\include\c++\4.8.1\\tr1\cmath
+	<cmath>
+	<bits/stl_algobase.h>
+	<limits>
+	<tr1/type_traits>
+	<tr1/gamma.tcc>
+	<tr1/bessel_function.tcc>
+	<tr1/beta_function.tcc>
+	<tr1/ell_integral.tcc>
+	<tr1/exp_integral.tcc>
+	<tr1/hypergeometric.tcc>
+	<tr1/legendre_function.tcc>
+	<tr1/modified_bessel_func.tcc>
+	<tr1/poly_hermite.tcc>
+	<tr1/poly_laguerre.tcc>
+	<tr1/riemann_zeta.tcc>
+
+1370766724 c:\devtools\gcc\mingw\include\c++\4.8.1\\tr1\gamma.tcc
+	"special_function_util.h"
+
+1370766725 c:\devtools\gcc\mingw\include\c++\4.8.1\\tr1\special_function_util.h
+
+1370766724 c:\devtools\gcc\mingw\include\c++\4.8.1\\tr1\bessel_function.tcc
+	"special_function_util.h"
+
+1370766724 c:\devtools\gcc\mingw\include\c++\4.8.1\\tr1\beta_function.tcc
+
+1370766724 c:\devtools\gcc\mingw\include\c++\4.8.1\\tr1\ell_integral.tcc
+
+1370766724 c:\devtools\gcc\mingw\include\c++\4.8.1\\tr1\exp_integral.tcc
+	"special_function_util.h"
+
+1370766724 c:\devtools\gcc\mingw\include\c++\4.8.1\\tr1\hypergeometric.tcc
+
+1370766725 c:\devtools\gcc\mingw\include\c++\4.8.1\\tr1\legendre_function.tcc
+	"special_function_util.h"
+
+1370766724 c:\devtools\gcc\mingw\include\c++\4.8.1\\tr1\modified_bessel_func.tcc
+	"special_function_util.h"
+
+1370766725 c:\devtools\gcc\mingw\include\c++\4.8.1\\tr1\poly_hermite.tcc
+
+1370766725 c:\devtools\gcc\mingw\include\c++\4.8.1\\tr1\poly_laguerre.tcc
+
+1370766725 c:\devtools\gcc\mingw\include\c++\4.8.1\\tr1\riemann_zeta.tcc
+	"special_function_util.h"
+
+1370766725 c:\devtools\gcc\mingw\include\c++\4.8.1\\tr1\random.h
+
+1370766725 c:\devtools\gcc\mingw\include\c++\4.8.1\\tr1\random.tcc
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\for_each_selectors.h
+	<parallel/basic_iterator.h>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\partial_sum.h
+	<omp.h>
+	<new>
+	<bits/stl_algobase.h>
+	<parallel/parallel.h>
+	<parallel/numericfwd.h>
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\algorithm
+	<algorithm>
+	<parallel/algorithmfwd.h>
+	<parallel/algobase.h>
+	<parallel/algo.h>
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\algo.h
+	<parallel/algorithmfwd.h>
+	<bits/stl_algobase.h>
+	<bits/stl_algo.h>
+	<parallel/iterator.h>
+	<parallel/base.h>
+	<parallel/sort.h>
+	<parallel/workstealing.h>
+	<parallel/par_loop.h>
+	<parallel/omp_loop.h>
+	<parallel/omp_loop_static.h>
+	<parallel/for_each_selectors.h>
+	<parallel/for_each.h>
+	<parallel/find.h>
+	<parallel/find_selectors.h>
+	<parallel/search.h>
+	<parallel/random_shuffle.h>
+	<parallel/partition.h>
+	<parallel/merge.h>
+	<parallel/unique_copy.h>
+	<parallel/set_operations.h>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\sort.h
+	<parallel/basic_iterator.h>
+	<parallel/features.h>
+	<parallel/parallel.h>
+	<parallel/checkers.h>
+	<parallel/multiway_mergesort.h>
+	<parallel/quicksort.h>
+	<parallel/balanced_quicksort.h>
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\checkers.h
+	<cstdio>
+	<bits/stl_algobase.h>
+	<bits/stl_function.h>
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\multiway_mergesort.h
+	<vector>
+	<parallel/basic_iterator.h>
+	<bits/stl_algo.h>
+	<parallel/parallel.h>
+	<parallel/multiway_merge.h>
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\multiway_merge.h
+	<vector>
+	<bits/stl_algo.h>
+	<parallel/features.h>
+	<parallel/parallel.h>
+	<parallel/losertree.h>
+	<parallel/multiseq_selection.h>
+	<parallel/checkers.h>
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\losertree.h
+	<bits/stl_algobase.h>
+	<bits/stl_function.h>
+	<parallel/features.h>
+	<parallel/base.h>
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\multiseq_selection.h
+	<vector>
+	<queue>
+	<bits/stl_algo.h>
+
+1370766727 c:\devtools\gcc\mingw\include\c++\4.8.1\\queue
+	<deque>
+	<vector>
+	<bits/stl_heap.h>
+	<bits/stl_function.h>
+	<bits/stl_queue.h>
+
+1370766727 c:\devtools\gcc\mingw\include\c++\4.8.1\\deque
+	<bits/stl_algobase.h>
+	<bits/allocator.h>
+	<bits/stl_construct.h>
+	<bits/stl_uninitialized.h>
+	<bits/stl_deque.h>
+	<bits/range_access.h>
+	<bits/deque.tcc>
+	<debug/deque>
+	<profile/deque>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stl_deque.h
+	<bits/concept_check.h>
+	<bits/stl_iterator_base_types.h>
+	<bits/stl_iterator_base_funcs.h>
+	<initializer_list>
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\deque.tcc
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\deque
+	<deque>
+	<debug/safe_sequence.h>
+	<debug/safe_iterator.h>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\deque
+	<deque>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stl_queue.h
+	<bits/concept_check.h>
+	<debug/debug.h>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\quicksort.h
+	<parallel/parallel.h>
+	<parallel/partition.h>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\partition.h
+	<parallel/basic_iterator.h>
+	<parallel/sort.h>
+	<parallel/random_number.h>
+	<bits/stl_algo.h>
+	<parallel/parallel.h>
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\balanced_quicksort.h
+	<parallel/basic_iterator.h>
+	<bits/stl_algo.h>
+	<bits/stl_function.h>
+	<parallel/settings.h>
+	<parallel/partition.h>
+	<parallel/random_number.h>
+	<parallel/queue.h>
+	<parallel/checkers.h>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\queue.h
+	<parallel/types.h>
+	<parallel/base.h>
+	<parallel/compatibility.h>
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\omp_loop_static.h
+	<omp.h>
+	<parallel/settings.h>
+	<parallel/basic_iterator.h>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\search.h
+	<bits/stl_algobase.h>
+	<parallel/parallel.h>
+	<parallel/equally_split.h>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\random_shuffle.h
+	<limits>
+	<bits/stl_numeric.h>
+	<parallel/parallel.h>
+	<parallel/random_number.h>
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\merge.h
+	<parallel/basic_iterator.h>
+	<bits/stl_algo.h>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\unique_copy.h
+	<parallel/parallel.h>
+	<parallel/multiseq_selection.h>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\parallel\set_operations.h
+	<omp.h>
+	<parallel/settings.h>
+	<parallel/multiseq_selection.h>
+
+1370766788 c:\devtools\gcc\mingw\include\time.h
+	<_mingw.h>
+	<stddef.h>
+
+1370766788 c:\devtools\gcc\mingw\include\inttypes.h
+	<_mingw.h>
+	<stdint.h>
+	<stddef.h>
+
+1370766727 c:\devtools\gcc\mingw\include\c++\4.8.1\\iterator
+	<bits/c++config.h>
+	<bits/stl_iterator_base_types.h>
+	<bits/stl_iterator_base_funcs.h>
+	<bits/stl_iterator.h>
+	<ostream>
+	<istream>
+	<bits/stream_iterator.h>
+	<bits/streambuf_iterator.h>
+	<bits/range_access.h>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stream_iterator.h
+	<debug/debug.h>
+
+1370766726 c:\devtools\gcc\mingw\include\c++\4.8.1\\cstring
+	<bits/c++config.h>
+	<string.h>
+
+1370766727 c:\devtools\gcc\mingw\include\c++\4.8.1\\list
+	<bits/stl_algobase.h>
+	<bits/allocator.h>
+	<bits/range_access.h>
+	<bits/stl_list.h>
+	<bits/list.tcc>
+	<debug/list>
+	<profile/list>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stl_list.h
+	<bits/concept_check.h>
+	<initializer_list>
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\list.tcc
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\list
+	<list>
+	<debug/safe_sequence.h>
+	<debug/safe_iterator.h>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\list
+	<list>
+	<profile/base.h>
+	<profile/iterator_tracker.h>
+
+1370766727 c:\devtools\gcc\mingw\include\c++\4.8.1\\map
+	<bits/stl_tree.h>
+	<bits/stl_map.h>
+	<bits/stl_multimap.h>
+	<bits/range_access.h>
+	<debug/map>
+	<profile/map>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stl_tree.h
+	<bits/stl_algobase.h>
+	<bits/allocator.h>
+	<bits/stl_function.h>
+	<bits/cpp_type_traits.h>
+	<bits/alloc_traits.h>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stl_map.h
+	<bits/functexcept.h>
+	<bits/concept_check.h>
+	<initializer_list>
+	<tuple>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stl_multimap.h
+	<bits/concept_check.h>
+	<initializer_list>
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\map
+	<map>
+	<debug/map.h>
+	<debug/multimap.h>
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\map.h
+	<debug/safe_sequence.h>
+	<debug/safe_iterator.h>
+	<utility>
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\multimap.h
+	<debug/safe_sequence.h>
+	<debug/safe_iterator.h>
+	<utility>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\map
+	<map>
+	<profile/map.h>
+	<profile/multimap.h>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\map.h
+	<utility>
+	<profile/base.h>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\multimap.h
+	<utility>
+
+1370766788 c:\devtools\gcc\mingw\include\signal.h
+	<_mingw.h>
+
+1370766787 c:\devtools\gcc\mingw\include\fcntl.h
+	<_mingw.h>
+	<io.h>
+
+1370766788 c:\devtools\gcc\mingw\include\sys\stat.h
+	<_mingw.h>
+	<stddef.h>
+	<sys/types.h>
+
+1370766788 c:\devtools\gcc\mingw\include\sys\time.h
+	<time.h>
+
+1370766734 c:\devtools\gcc\mingw\include\c++\4.8.1\\cxxabi.h
+	<stddef.h>
+	<bits/c++config.h>
+	<bits/cxxabi_tweaks.h>
+	<bits/cxxabi_forced.h>
+	<typeinfo>
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\i686-pc-mingw32\\bits\cxxabi_tweaks.h
+
+1370766726 c:\devtools\gcc\mingw\include\c++\4.8.1\\climits
+	<limits.h>
+
+1370766727 c:\devtools\gcc\mingw\include\c++\4.8.1\\locale
+	<bits/localefwd.h>
+	<bits/locale_classes.h>
+	<bits/locale_facets.h>
+	<bits/locale_facets_nonio.h>
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\locale_facets_nonio.h
+	<ctime>
+	<bits/time_members.h>
+	<bits/messages_members.h>
+	<bits/codecvt.h>
+	<bits/locale_facets_nonio.tcc>
+
+1370766726 c:\devtools\gcc\mingw\include\c++\4.8.1\\ctime
+	<bits/c++config.h>
+	<time.h>
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\i686-pc-mingw32\\bits\time_members.h
+
+1370766731 c:\devtools\gcc\mingw\include\c++\4.8.1\i686-pc-mingw32\\bits\messages_members.h
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\locale_facets_nonio.tcc
+
+1370766726 c:\devtools\gcc\mingw\include\c++\4.8.1\\cassert
+	<assert.h>
+
+1370766726 c:\devtools\gcc\mingw\include\c++\4.8.1\\cstdarg
+	<bits/c++config.h>
+	<stdarg.h>
+
+1370766787 c:\devtools\gcc\mingw\include\float.h
+	<_mingw.h>
+
+1370766788 c:\devtools\gcc\mingw\include\setjmp.h
+	<_mingw.h>
+
+1370766727 c:\devtools\gcc\mingw\include\c++\4.8.1\\set
+	<bits/stl_tree.h>
+	<bits/stl_set.h>
+	<bits/stl_multiset.h>
+	<bits/range_access.h>
+	<debug/set>
+	<profile/set>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stl_set.h
+	<bits/concept_check.h>
+	<initializer_list>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\stl_multiset.h
+	<bits/concept_check.h>
+	<initializer_list>
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\set
+	<set>
+	<debug/set.h>
+	<debug/multiset.h>
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\set.h
+	<debug/safe_sequence.h>
+	<debug/safe_iterator.h>
+	<utility>
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\multiset.h
+	<debug/safe_sequence.h>
+	<debug/safe_iterator.h>
+	<utility>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\set
+	<set>
+	<profile/set.h>
+	<profile/multiset.h>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\set.h
+	<utility>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\multiset.h
+	<utility>
+
+1370766727 c:\devtools\gcc\mingw\include\c++\4.8.1\\iomanip
+	<bits/c++config.h>
+	<iosfwd>
+	<bits/ios_base.h>
+	<locale>
+
+1370766726 c:\devtools\gcc\mingw\include\c++\4.8.1\\cfloat
+	<float.h>
+
+1370766726 c:\devtools\gcc\mingw\include\c++\4.8.1\\fenv.h
+	<bits/c++config.h>
+
+1370766727 c:\devtools\gcc\mingw\include\c++\4.8.1\\complex
+	<bits/c++config.h>
+	<bits/cpp_type_traits.h>
+	<ext/type_traits.h>
+	<cmath>
+	<sstream>
+
+1370766727 c:\devtools\gcc\mingw\include\c++\4.8.1\\forward_list
+	<bits/c++0x_warning.h>
+	<bits/forward_list.h>
+	<bits/range_access.h>
+	<bits/forward_list.tcc>
+	<debug/forward_list>
+	<profile/forward_list>
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\forward_list.h
+	<memory>
+	<initializer_list>
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\forward_list.tcc
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\forward_list
+	<forward_list>
+	<debug/safe_sequence.h>
+	<debug/safe_iterator.h>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\forward_list
+	<bits/c++0x_warning.h>
+	<forward_list>
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\valarray
+	<bits/c++config.h>
+	<cmath>
+	<algorithm>
+	<debug/debug.h>
+	<initializer_list>
+	<bits/valarray_array.h>
+	<bits/valarray_before.h>
+	<bits/valarray_after.h>
+	<bits/slice_array.h>
+	<bits/gslice.h>
+	<bits/gslice_array.h>
+	<bits/mask_array.h>
+	<bits/indirect_array.h>
+
+1370766704 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\valarray_array.h
+	<bits/c++config.h>
+	<bits/cpp_type_traits.h>
+	<cstdlib>
+	<new>
+	<bits/valarray_array.tcc>
+
+1370766704 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\valarray_array.tcc
+
+1370766704 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\valarray_before.h
+	<bits/slice_array.h>
+
+1370766703 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\slice_array.h
+
+1370766704 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\valarray_after.h
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\gslice.h
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\gslice_array.h
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\mask_array.h
+
+1370766702 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\indirect_array.h
+
+1370766728 c:\devtools\gcc\mingw\include\c++\4.8.1\\unordered_set
+	<bits/c++0x_warning.h>
+	<utility>
+	<type_traits>
+	<initializer_list>
+	<tuple>
+	<bits/stl_algobase.h>
+	<bits/allocator.h>
+	<bits/alloc_traits.h>
+	<bits/stl_function.h>
+	<bits/functional_hash.h>
+	<bits/hashtable.h>
+	<bits/unordered_set.h>
+	<bits/range_access.h>
+	<debug/unordered_set>
+	<profile/unordered_set>
+
+1370766704 c:\devtools\gcc\mingw\include\c++\4.8.1\\bits\unordered_set.h
+
+1370766729 c:\devtools\gcc\mingw\include\c++\4.8.1\\debug\unordered_set
+	<bits/c++0x_warning.h>
+	<unordered_set>
+	<debug/safe_unordered_container.h>
+	<debug/safe_iterator.h>
+	<debug/safe_local_iterator.h>
+
+1370766730 c:\devtools\gcc\mingw\include\c++\4.8.1\\profile\unordered_set
+	<bits/c++0x_warning.h>
+	<unordered_set>
+	<profile/base.h>
 
