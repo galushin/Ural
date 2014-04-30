@@ -23,9 +23,8 @@ http://www.boost.org/community/generic_programming.html
 присваивания (с сильной гарантией при исключениях).
 + Класс вероятности (с проверкой значения)
 [2014-04-22-00.46] bit_and, bit_or, bit_xor
-
-* map_keys
-* map_inserter
++ map_keys
++ set_inserter
 
 * "Системный тест": метод главных компонент для наркоситуации
 

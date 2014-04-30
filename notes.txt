@@ -86,3 +86,11 @@ variance.
 В свою очередь, future/promise могут быть выражены как expected<T>, защищённый
 мьютексом.
 */
+
+/** Согласно этой точке зрения, noexcept нужно тольк для move-операций
+So, in other words, the only convincing (for me) usage of noexcept is to declare
+to function overload resolution mechanism your resolution of the trade-off
+between run-time performance and exception safety guarantees.
+
+http://akrzemi1.wordpress.com/2014/04/24/noexcept-what-for/
+*/
