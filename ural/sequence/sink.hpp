@@ -38,14 +38,18 @@ namespace ural
 
         //@{
         /// @brief Оператор применения функционального объекта
-        constexpr void
+        constexpr sink_functor const &
         operator()(typename boost::call_traits<T>::param_type &) const
-        {}
+        {
+            return *this;
+        }
 
         template <class Arg>
-        typename std::enable_if<!std::is_same<Arg, T>::value && std::is_same<T, auto_tag>::value>::type
+        typename std::enable_if<!std::is_same<Arg, T>::value && std::is_same<T, auto_tag>::value, sink_functor>::type const &
         operator()(Arg const &) const
-        {}
+        {
+            return *this;
+        }
         //@}
     };
 
