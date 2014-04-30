@@ -44,7 +44,7 @@ namespace ural
     private:
         constexpr IntegerType euclidean(IntegerType x, IntegerType y) const
         {
-            return y == IntegerType(0) ? x : (*this)(y, x % y);
+            return y == IntegerType(0) ? x : euclidean(y, x % y);
         }
 
     public:
