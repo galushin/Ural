@@ -126,12 +126,12 @@ namespace ural
     template <class UnaryFunction, class... Inputs>
     auto make_transform_sequence(UnaryFunction f, Inputs && ... in)
     -> transform_sequence<decltype(ural::make_functor(std::move(f))),
-                          decltype(ural::sequence(std::forward<Inputs>(in)))...>
+                          decltype(sequence(std::forward<Inputs>(in)))...>
     {
         typedef transform_sequence<decltype(ural::make_functor(std::move(f))),
                           decltype(ural::sequence(std::forward<Inputs>(in)))...> Result;
         return Result(ural::make_functor(std::move(f)),
-                      ural::sequence(std::forward<Inputs>(in))...);
+                      sequence(std::forward<Inputs>(in))...);
     }
 }
 // namespace ural

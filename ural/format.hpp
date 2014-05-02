@@ -20,8 +20,10 @@
 /** @file ural/format.hpp
  @brief Средства форматированного ввода/вывода
  @todo Оптимизация
+ @todo istringstream для произвольных строк, не обязательно basic_string<>
 */
 
+#include <ural/algorithm.hpp>
 #include <ural/sequence/make.hpp>
 #include <ural/sequence/by_line.hpp>
 
@@ -60,7 +62,7 @@ namespace ural
     {
     public:
         typedef T result_type;
-        static result_type convert(std::basic_string<Ch, Tr> const & s)
+        result_type operator()(std::basic_string<Ch, Tr> const & s) const
         {
             std::basic_istringstream<Ch, Tr> is(s);
             T reader;
@@ -76,7 +78,7 @@ namespace ural
     public:
         typedef std::basic_string<Ch, Tr> result_type;
 
-        static result_type convert(std::basic_string<Ch, Tr> const & s)
+        result_type operator()(std::basic_string<Ch, Tr> const & s) const
         {
             return s;
         }
@@ -85,7 +87,7 @@ namespace ural
     template <class T, class Ch, class Tr>
     T from_string(std::basic_string<Ch, Tr> const & s)
     {
-        return from_string_policy<Ch, Tr, T>::convert(s);
+        return from_string_policy<Ch, Tr, T>{}(s);
     }
 
     template <class T, class IStream>
@@ -111,10 +113,10 @@ namespace ural
 
             std::vector<T> row;
 
-            for(; !!cell_seq; ++ cell_seq)
-            {
-                row.push_back(ural::from_string<T>(*cell_seq));
-            }
+            from_string_policy<char_type, traits_type, T> constexpr converter{};
+
+            ural::copy(ural::make_transform_sequence(converter, cell_seq),
+                       row | ural::back_inserter);
 
             result.push_back(std::move(row));
         }
