@@ -27,6 +27,21 @@
 
 namespace ural
 {
+    template <class T1, class T2>
+    struct are_integral
+     : std::integral_constant<bool, std::is_integral<T1>::value && std::is_integral<T2>::value>
+    {};
+
+    template <class T, class N, class Enabler = void>
+    class average_type
+     : declare_type<decltype(std::declval<T>() / std::declval<N>())>
+    {};
+
+    template <class T, class N>
+    class average_type<T, N, typename std::enable_if<are_integral<T, N>::value>::type>
+     : declare_type<double>
+    {};
+
     /** @brief Класс исключения "некорректное значение вероятности"
     */
     class bad_probability
