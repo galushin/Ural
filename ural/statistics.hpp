@@ -213,14 +213,35 @@ namespace statistics
 {
     template <class... Ts>
     struct tags_list
-    {};
+    {
+        typedef typename meta::make_list<Ts...>::type list;
+    };
 
 namespace tags
 {
-    struct variance_tag;
-    struct range_tag;
+    template <class... Ts>
+    struct declare_depend_on
+    {
+        typedef typename meta::make_list<Ts...>::type depends_on;
+    };
 
+    template <class T1, class T2>
+    struct is_depend_on
+     : std::integral_constant<bool, !std::is_same<typename meta::find<typename T1::depends_on, T2>::type, null_type>::value>
+    {};
+
+    struct count_tag    : declare_depend_on<>{};
+    struct mean_tag     : declare_depend_on<count_tag>{};
+    struct variance_tag : declare_depend_on<mean_tag>{};
+    struct min_tag      : declare_depend_on<>{};
+    struct max_tag      : declare_depend_on<>{};
+    struct range_tag    : declare_depend_on<min_tag, max_tag>{};
+
+    constexpr auto count = tags_list<count_tag>{};
+    constexpr auto mean = tags_list<mean_tag>{};
     constexpr auto variance = tags_list<variance_tag>{};
+    constexpr auto min = tags_list<min_tag>{};
+    constexpr auto max = tags_list<max_tag>{};
     constexpr auto range = tags_list<range_tag>{};
 
     template <class... Ts1, class... Ts2>
@@ -230,58 +251,157 @@ namespace tags
         return {};
     }
 
+    template <class List, class Out>
+    struct expand_depend_on;
+
+    template <class Out>
+    struct expand_depend_on<null_type, Out>
+     : declare_type<Out>
+    {};
+
+    template <class Head, class Tail, class Out>
+    struct expand_depend_on<::ural::meta::list<Head, Tail>, Out>
+    {
+    private:
+        typedef ::ural::meta::list<Head, Out> R1;
+        typedef typename expand_depend_on<typename Head::depends_on, R1>::type
+            R2;
+
+    public:
+        typedef typename expand_depend_on<Tail, R2>::type type;
+    };
+
+    template <class Tags>
+    struct prepare
+    {
+        typedef typename expand_depend_on<typename Tags::list, null_type>::type
+            WithDependencies;
+        typedef typename meta::copy_without_duplicates<WithDependencies>::type
+            UniqueTags;
+        typedef typename meta::selection_sort<UniqueTags, statistics::tags::is_depend_on>::type
+            type;
+    };
 }
 // namespace tags
 }
 // namespace statistics
-    template <class T, class Tag>
+    template <class T, class Tag, class Base>
     class descriptive;
 
-    // @todo Разбить на более мелкие аккумуляторы
-    template <class T>
-    class descriptive<T, statistics::tags::variance_tag>
+    template <class T, class Base>
+    class descriptive<T, statistics::tags::count_tag, Base>
+     : public Base
     {
     public:
         // Типы
-        typedef size_t count_type;
         typedef T value_type;
+        typedef size_t count_type;
+
+        descriptive()
+         : Base{}
+         , n_{0}
+        {}
+
+        descriptive(value_type const & x)
+         : Base{x}
+         , n_{1}
+        {}
+
+        count_type const & count() const
+        {
+            return n_;
+        }
+
+        descriptive & operator()(T const & x)
+        {
+            Base::operator()(x);
+            ++ n_;
+            return *this;
+        }
+
+    protected:
+        ~descriptive() = default;
+
+    private:
+        count_type n_;
+    };
+
+    template <class T, class Base>
+    class descriptive<T, statistics::tags::mean_tag, Base>
+     : public Base
+    {
+    public:
+        typedef typename Base::count_type count_type;
         typedef typename average_type<T, count_type>::type mean_type;
 
-        // Конструкторы
         descriptive()
-         : data_{count_type{0}, mean_type{0}, mean_type{0}}
+         : Base{}
+         , mean_{0}
         {}
 
         descriptive(T const & x)
-         : data_{count_type{1}, mean_type{x}, square(x)}
+         : Base{x}
+         , mean_(x)
+        {}
+
+        mean_type const & mean() const
+        {
+            return mean_;
+        }
+
+        descriptive & operator()(T const & x)
+        {
+            Base::operator()(x);
+
+            mean_ += (x - this->mean()) / this->count();
+
+            return *this;
+        }
+
+    protected:
+        ~descriptive() = default;
+
+    private:
+        mean_type mean_;
+    };
+
+    // @todo Устранить дублирование с mean
+    template <class T, class Base>
+    class descriptive<T, statistics::tags::variance_tag, Base>
+     : public Base
+    {
+    public:
+        // Типы
+        typedef typename Base::count_type count_type;
+        typedef typename Base::mean_type mean_type;
+
+        // Конструкторы
+        descriptive()
+         : Base{}
+         , mean_sq_(0)
+        {}
+
+        descriptive(T const & x)
+         : Base{x}
+         , mean_sq_{square(mean_type(x))}
         {}
 
         // Обновление
         descriptive & operator()(T const & x)
         {
+            Base::operator()(x);
+
             using ural::square;
-            data_[ural::_1] += 1;
-            data_[ural::_2] += (x - this->mean()) / this->count();
-            data_[ural::_3] += (square(x) - data_[ural::_3]) / this->count();
+            mean_sq_ += (square(x) - mean_sq_) / this->count();
 
             return *this;
         }
 
         // Свойства
-        count_type const & count() const
-        {
-            return data_[ural::_1];
-        }
-
-        mean_type const & mean() const
-        {
-            return data_[ural::_2];
-        }
-
         mean_type variance() const
         {
             using ural::square;
-            return data_[ural::_3] - square(this->mean());
+            return mean_sq_ - square(this->mean());
         }
 
         mean_type standard_deviation() const
@@ -290,13 +410,96 @@ namespace tags
             return sqrt(this->variance());
         }
 
+    protected:
+        ~descriptive() = default;
+
     private:
-        ural::tuple<count_type, mean_type, mean_type> data_;
+        mean_type mean_sq_;
     };
 
-    // @todo Разбить на более мелкие аккумуляторы
-    template <class T>
-    class descriptive<T, statistics::tags::range_tag>
+    template <class T, class Base>
+    class descriptive<T, statistics::tags::min_tag, Base>
+     : public Base
+    {
+    public:
+        typedef T value_type;
+
+        descriptive()
+         : Base{}
+         , min_{std::numeric_limits<T>::infinity()}
+        {}
+
+        descriptive(T const & x)
+         : Base{x}
+         , min_{x}
+        {}
+
+        value_type const & min URAL_PREVENT_MACRO_SUBSTITUTION () const
+        {
+            return min_;
+        }
+
+        descriptive & operator()(T const & x)
+        {
+            Base::operator()(x);
+            if(x < min_)
+            {
+                min_ = x;
+            }
+            return *this;
+        }
+
+    protected:
+        ~descriptive() = default;
+
+    private:
+        value_type min_;
+    };
+
+    template <class T, class Base>
+    class descriptive<T, statistics::tags::max_tag, Base>
+     : public Base
+    {
+    public:
+        typedef T value_type;
+
+        descriptive()
+         : Base{}
+         , max_{-std::numeric_limits<T>::infinity()}
+        {}
+
+        descriptive(T const & x)
+         : Base{x}
+         , max_{x}
+        {}
+
+        value_type const & max URAL_PREVENT_MACRO_SUBSTITUTION () const
+        {
+            return max_;
+        }
+
+        descriptive & operator()(T const & x)
+        {
+            Base::operator()(x);
+
+            if(max_ < x)
+            {
+                max_ = x;
+            }
+
+            return *this;
+        }
+
+    protected:
+        ~descriptive() = default;
+
+    private:
+        value_type max_;
+    };
+
+    template <class T, class Base>
+    class descriptive<T, statistics::tags::range_tag, Base>
+     : public Base
     {
     public:
         // Типы
@@ -304,103 +507,80 @@ namespace tags
 
         // Конструкторы
         descriptive()
-         : data_{-std::numeric_limits<T>::infinity(),
-                 std::numeric_limits<T>::infinity()}
+         : Base{}
         {}
 
         descriptive(T const & x)
-         : data_{x, x}
+         : Base{x}
         {}
 
         // Обновление
         descriptive & operator()(T const & x)
         {
-            if(x < this->min())
-            {
-                data_[ural::_1] = x;
-            }
-            else if(x > this->max())
-            {
-                data_[ural::_2] = x;
-            }
+            Base::operator()(x);
             return *this;
         }
 
         // Свойства
-        value_type const & min URAL_PREVENT_MACRO_SUBSTITUTION () const
-        {
-            return data_[ural::_1];
-        }
-
-        value_type const & max URAL_PREVENT_MACRO_SUBSTITUTION () const
-        {
-            return data_[ural::_2];
-        }
-
         value_type range () const
         {
             return this->max() - this->min();
         }
 
-    private:
-        ural::tuple<value_type, value_type> data_;
+    protected:
+        ~descriptive() = default;
     };
 
     template <class T, class Tags>
     class descriptives;
 
+    template <class T>
+    class descriptives<T, null_type>
+    {
+    public:
+        descriptives() = default;
+
+        descriptives(T const &)
+        {};
+
+        descriptives & operator()(T const &)
+        {
+            return *this;
+        }
+    };
+
     /** @todo Убедиться, что нет повторяющихся тэгов
     */
-    template <class T, class... Tags>
-    class descriptives<T, statistics::tags_list<Tags...>>
-     : public meta::inherit_from<typename meta::make_list<descriptive<T, Tags>...>::type>
+    template <class T, class Tags>
+    class descriptives
+     : public descriptive<T, typename Tags::head, descriptives<T, typename Tags::tail>>
     {
-        typedef typename meta::make_list<descriptive<T, Tags>...>::type Units;
-
-        typedef meta::inherit_from<typename meta::make_list<descriptive<T, Tags>...>::type>
+        typedef descriptive<T, typename Tags::head, descriptives<T, typename Tags::tail>>
             Base;
-
-        template <class U>
-        T const & tagged_return(T const & x)
-        {
-            return x;
-        }
 
     public:
         descriptives() = default;
 
         explicit descriptives(T const & init_value)
-         : Base{tagged_return<Tags>(init_value)...}
+         : Base{init_value}
         {}
 
         descriptives & operator()(T const & x)
         {
-            // @todo Без "рекурсии"
-            this->update_chain(x, ural::_1);
+            Base::operator()(x);
             return *this;
-        }
-
-    private:
-        void update_chain(T const &, ural::placeholder<sizeof...(Tags)>)
-        {
-            return;
-        }
-
-        template <size_t Index>
-        void update_chain(T const & x, placeholder<Index>)
-        {
-            typedef typename meta::at<Units, Index>::type Unit;
-            static_cast<Unit&>(*this)(x);
-            return this->update_chain(x, placeholder<Index+1>{});
         }
     };
 
     template <class Input, class Tags>
     auto describe(Input && in, Tags)
-    -> descriptives<typename decltype(sequence(in))::value_type, Tags>
+    -> descriptives<typename decltype(sequence(in))::value_type,
+                    typename statistics::tags::prepare<Tags>::type>
     {
         typedef typename decltype(sequence(in))::value_type Value;
-        typedef descriptives<Value, Tags> Result;
+        typedef typename statistics::tags::prepare<Tags>::type PreparedTags;
+
+        typedef descriptives<Value, PreparedTags> Result;
 
         using ural::sequence;
         auto seq = sequence(in);

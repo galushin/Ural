@@ -129,3 +129,22 @@ BOOST_AUTO_TEST_CASE(describe_test)
     BOOST_CHECK_CLOSE((ural::square(xs.size()) - 1) / 12.0, ds.variance(), 1e-3);
     BOOST_CHECK_EQUAL(std::sqrt(ds.variance()), ds.standard_deviation());
 }
+
+BOOST_AUTO_TEST_CASE(describe_test_duplicated_tags)
+{
+    std::vector<int> const xs = {1, 2, 3, 4, 5, 6};
+
+    using namespace ural::statistics::tags;
+
+    auto ds = ural::describe(xs, count | mean | min | max | variance | range);
+
+    BOOST_CHECK_EQUAL(xs.size(), ds.count());
+
+    BOOST_CHECK_EQUAL(xs.front(), ds.min());
+    BOOST_CHECK_EQUAL(xs.back(), ds.max());
+    BOOST_CHECK_EQUAL(xs.back() - xs.front(), ds.range());
+
+    BOOST_CHECK_EQUAL((xs.front() + xs.back()) / 2.0, ds.mean());
+    BOOST_CHECK_CLOSE((ural::square(xs.size()) - 1) / 12.0, ds.variance(), 1e-3);
+    BOOST_CHECK_EQUAL(std::sqrt(ds.variance()), ds.standard_deviation());
+}

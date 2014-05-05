@@ -118,6 +118,60 @@ namespace meta
         /// @brief Тип-результат
         typedef typename copy_without_duplicates<Tail, new_out>::type type;
     };
+
+    template <class List, template <class, class> class Compare, class Result>
+    struct min_value
+    {
+    private:
+        typedef typename List::head Candidate;
+
+        typedef typename std::conditional<Compare<Candidate, Result>::value,
+                                          Candidate, Result>::type new_result;
+
+    public:
+        typedef typename min_value<typename List::tail, Compare, Result>::type
+            type;
+    };
+
+    template <template <class, class> class Compare, class Result>
+    struct min_value<null_type, Compare, Result>
+     : declare_type<Result>
+    {};
+
+    template <class List, class Value>
+    struct remove_first;
+
+    template <class Value>
+    struct remove_first<null_type, Value>
+     : declare_type<null_type>
+    {};
+
+    template <class Head, class Tail>
+    struct remove_first<list<Head, Tail>, Head>
+     : declare_type<Tail>
+    {};
+
+    template <class Head, class Tail, class Value>
+    struct remove_first<list<Head, Tail>, Value>
+     : list<Head, typename remove_first<Tail, Value>::type>
+    {};
+
+    template <class List, template <class, class> class Compare>
+    struct selection_sort
+    {
+    private:
+        typedef typename min_value<typename List::tail, Compare, typename List::head>::type new_head;
+        typedef typename remove_first<List, new_head>::type without_new_head;
+        typedef typename selection_sort<without_new_head, Compare>::type new_tail;
+
+    public:
+        typedef list<new_head, new_tail> type;
+    };
+
+    template <template <class, class> class Compare>
+    struct selection_sort<null_type, Compare>
+     : declare_type<null_type>
+    {};
 }
 // namespace meta
 }
