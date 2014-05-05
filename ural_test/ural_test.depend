@@ -6333,7 +6333,7 @@
 	<ural/type_traits.hpp>
 	<boost/compressed_pair.hpp>
 
-1397523842 c:\devtools\ural_repo\ural\ural\type_traits.hpp
+1399258873 c:\devtools\ural_repo\ural\ural\type_traits.hpp
 	<type_traits>
 
 1394151640 c:\devtools\ural_repo\ural\ural\sequence\iota.hpp
@@ -6542,7 +6542,8 @@
 	<boost/mpl/list.hpp>
 	<boost/test/unit_test.hpp>
 
-1399082430 c:\devtools\ural_repo\ural\ural\statistics.hpp
+1399259658 c:\devtools\ural_repo\ural\ural\statistics.hpp
+	<ural/meta/list.hpp>
 	<ural/defs.hpp>
 	<stdexcept>
 
@@ -9735,7 +9736,9 @@
 	<typeinfo>
 	<utility>
 
-1397522269 c:\devtools\ural_repo\ural\ural\meta\list.hpp
+1399260136 c:\devtools\ural_repo\ural\ural\meta\list.hpp
+	<ural/type_traits.hpp>
+	<ural/defs.hpp>
 
 1397618898 c:\devtools\ural_repo\ural\ural\meta\hierarchy.hpp
 

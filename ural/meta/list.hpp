@@ -19,12 +19,17 @@
 
 /** @file ural/meta/list.hpp
  @brief Спиоск типов
+ @todo Обобщить алгоритмы на любые контейнеры типов
 */
+
+#include <ural/type_traits.hpp>
+#include <ural/defs.hpp>
 
 namespace ural
 {
 namespace meta
 {
+    // Список
     template <class Head, class Tail>
     struct list
     {
@@ -35,6 +40,7 @@ namespace meta
         typedef Tail tail;
     };
 
+    // Создание списка
     template <class... Types>
     struct make_list;
 
@@ -46,6 +52,20 @@ namespace meta
     template <class T1, class... Ts>
     struct make_list<T1, Ts...>
      : declare_type<list<T1, typename make_list<Ts...>::type>>
+    {};
+
+    // Алгоритмы
+    template <class Container, template <class> class Predicate>
+    struct all_of;
+
+    template <template <class> class Predicate>
+    struct all_of<null_type, Predicate>
+     : std::true_type
+    {};
+
+    template <class Head, class Tail, template <class> class Predicate>
+    struct all_of<list<Head, Tail>, Predicate>
+     : std::integral_constant<bool, Predicate<Head>::value && all_of<Tail, Predicate>::value>
     {};
 
     template <class Container, class T>

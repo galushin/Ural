@@ -21,15 +21,16 @@
  @brief Средства математической статистики
 */
 
+#include <ural/meta/list.hpp>
 #include <ural/defs.hpp>
 
 #include <stdexcept>
 
 namespace ural
 {
-    template <class T1, class T2>
+    template <class... Ts>
     struct are_integral
-     : std::integral_constant<bool, std::is_integral<T1>::value && std::is_integral<T2>::value>
+     : meta::all_of<typename meta::make_list<Ts...>::type, std::is_integral>
     {};
 
     template <class T, class N, class Enabler = void>
