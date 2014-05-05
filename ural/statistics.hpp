@@ -21,6 +21,10 @@
  @brief Средства математической статистики
 */
 
+#include <ural/math.hpp>
+#include <ural/algorithm.hpp>
+#include <ural/sequence/make.hpp>
+#include <ural/meta/hierarchy.hpp>
 #include <ural/meta/list.hpp>
 #include <ural/defs.hpp>
 
@@ -34,12 +38,12 @@ namespace ural
     {};
 
     template <class T, class N, class Enabler = void>
-    class average_type
+    struct average_type
      : declare_type<decltype(std::declval<T>() / std::declval<N>())>
     {};
 
     template <class T, class N>
-    class average_type<T, N, typename std::enable_if<are_integral<T, N>::value>::type>
+    struct average_type<T, N, typename std::enable_if<are_integral<T, N>::value>::type>
      : declare_type<double>
     {};
 
@@ -203,6 +207,213 @@ namespace ural
     operator<<(std::basic_ostream<Char, Tr> & os, probability<T, P> const & x)
     {
         return os << x.value();
+    }
+
+namespace statistics
+{
+    template <class... Ts>
+    struct tags_list
+    {};
+
+namespace tags
+{
+    struct variance_tag;
+    struct range_tag;
+
+    constexpr auto variance = tags_list<variance_tag>{};
+    constexpr auto range = tags_list<range_tag>{};
+
+    template <class... Ts1, class... Ts2>
+    tags_list<Ts1..., Ts2...>
+    operator|(tags_list<Ts1...>, tags_list<Ts2...>)
+    {
+        return {};
+    }
+
+}
+// namespace tags
+}
+// namespace statistics
+    template <class T, class Tag>
+    class descriptive;
+
+    // @todo Разбить на более мелкие аккумуляторы
+    template <class T>
+    class descriptive<T, statistics::tags::variance_tag>
+    {
+    public:
+        // Типы
+        typedef size_t count_type;
+        typedef T value_type;
+        typedef typename average_type<T, count_type>::type mean_type;
+
+        // Конструкторы
+        descriptive()
+         : data_{count_type{0}, mean_type{0}, mean_type{0}}
+        {}
+
+        descriptive(T const & x)
+         : data_{count_type{1}, mean_type{x}, square(x)}
+        {}
+
+        // Обновление
+        descriptive & operator()(T const & x)
+        {
+            using ural::square;
+            data_[ural::_1] += 1;
+            data_[ural::_2] += (x - this->mean()) / this->count();
+            data_[ural::_3] += (square(x) - data_[ural::_3]) / this->count();
+
+            return *this;
+        }
+
+        // Свойства
+        count_type const & count() const
+        {
+            return data_[ural::_1];
+        }
+
+        mean_type const & mean() const
+        {
+            return data_[ural::_2];
+        }
+
+        mean_type variance() const
+        {
+            using ural::square;
+            return data_[ural::_3] - square(this->mean());
+        }
+
+        mean_type standard_deviation() const
+        {
+            using std::sqrt;
+            return sqrt(this->variance());
+        }
+
+    private:
+        ural::tuple<count_type, mean_type, mean_type> data_;
+    };
+
+    // @todo Разбить на более мелкие аккумуляторы
+    template <class T>
+    class descriptive<T, statistics::tags::range_tag>
+    {
+    public:
+        // Типы
+        typedef T value_type;
+
+        // Конструкторы
+        descriptive()
+         : data_{-std::numeric_limits<T>::infinity(),
+                 std::numeric_limits<T>::infinity()}
+        {}
+
+        descriptive(T const & x)
+         : data_{x, x}
+        {}
+
+        // Обновление
+        descriptive & operator()(T const & x)
+        {
+            if(x < this->min())
+            {
+                data_[ural::_1] = x;
+            }
+            else if(x > this->max())
+            {
+                data_[ural::_2] = x;
+            }
+            return *this;
+        }
+
+        // Свойства
+        value_type const & min URAL_PREVENT_MACRO_SUBSTITUTION () const
+        {
+            return data_[ural::_1];
+        }
+
+        value_type const & max URAL_PREVENT_MACRO_SUBSTITUTION () const
+        {
+            return data_[ural::_2];
+        }
+
+        value_type range () const
+        {
+            return this->max() - this->min();
+        }
+
+    private:
+        ural::tuple<value_type, value_type> data_;
+    };
+
+    template <class T, class Tags>
+    class descriptives;
+
+    /** @todo Убедиться, что нет повторяющихся тэгов
+    */
+    template <class T, class... Tags>
+    class descriptives<T, statistics::tags_list<Tags...>>
+     : public meta::inherit_from<typename meta::make_list<descriptive<T, Tags>...>::type>
+    {
+        typedef typename meta::make_list<descriptive<T, Tags>...>::type Units;
+
+        typedef meta::inherit_from<typename meta::make_list<descriptive<T, Tags>...>::type>
+            Base;
+
+        template <class U>
+        T const & tagged_return(T const & x)
+        {
+            return x;
+        }
+
+    public:
+        descriptives() = default;
+
+        explicit descriptives(T const & init_value)
+         : Base{tagged_return<Tags>(init_value)...}
+        {}
+
+        descriptives & operator()(T const & x)
+        {
+            // @todo Без "рекурсии"
+            this->update_chain(x, ural::_1);
+            return *this;
+        }
+
+    private:
+        void update_chain(T const &, ural::placeholder<sizeof...(Tags)>)
+        {
+            return;
+        }
+
+        template <size_t Index>
+        void update_chain(T const & x, placeholder<Index>)
+        {
+            typedef typename meta::at<Units, Index>::type Unit;
+            static_cast<Unit&>(*this)(x);
+            return this->update_chain(x, placeholder<Index+1>{});
+        }
+    };
+
+    template <class Input, class Tags>
+    auto describe(Input && in, Tags)
+    -> descriptives<typename decltype(sequence(in))::value_type, Tags>
+    {
+        typedef typename decltype(sequence(in))::value_type Value;
+        typedef descriptives<Value, Tags> Result;
+
+        using ural::sequence;
+        auto seq = sequence(in);
+
+        if(!seq)
+        {
+            return Result{};
+        }
+
+        Result r{*seq};
+        ++ seq;
+
+        return ural::for_each(seq, std::move(r));
     }
 }
 // namespace ural

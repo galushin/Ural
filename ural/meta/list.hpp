@@ -54,6 +54,17 @@ namespace meta
      : declare_type<list<T1, typename make_list<Ts...>::type>>
     {};
 
+    // at
+    template <class Container, size_t Index>
+    struct at
+     : at<typename Container::tail, Index - 1>
+    {};
+
+    template <class Container>
+    struct at<Container, 0u>
+     : declare_type<typename Container::head>
+    {};
+
     // Алгоритмы
     template <class Container, template <class> class Predicate>
     struct all_of;

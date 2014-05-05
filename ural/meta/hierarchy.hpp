@@ -32,7 +32,22 @@ namespace meta
     struct inherit_from
      : public Container::head
      , public inherit_from<typename Container::tail>
-    {};
+    {
+    public:
+        constexpr inherit_from() = default;
+
+        constexpr inherit_from(inherit_from &) = default;
+        constexpr inherit_from(inherit_from &&) = default;
+        constexpr inherit_from(inherit_from const &) = default;
+
+        template <class A1, class... As>
+        constexpr inherit_from(A1 && a1, As && ... as)
+         : Container::head{std::forward<A1>(a1)}
+         , inherit_from<typename Container::tail>{std::forward<As>(as)...}
+        {}
+
+        ~inherit_from() = default;
+    };
 
     template <>
     struct inherit_from<null_type>
