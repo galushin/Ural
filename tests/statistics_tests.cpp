@@ -148,3 +148,24 @@ BOOST_AUTO_TEST_CASE(describe_test_duplicated_tags)
     BOOST_CHECK_CLOSE((ural::square(xs.size()) - 1) / 12.0, ds.variance(), 1e-3);
     BOOST_CHECK_EQUAL(std::sqrt(ds.variance()), ds.standard_deviation());
 }
+
+BOOST_AUTO_TEST_CASE(z_score_test)
+{
+    std::vector<int> const xs = {1, 2, 3, 4, 5, 6};
+
+    std::vector<double> zs;
+
+    ural::z_score(xs, zs | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL(zs.size(), xs.size());
+
+    auto const ds = ural::describe(xs, ural::statistics::tags::variance);
+
+    auto const a = ds.standard_deviation();
+    auto const b = ds.mean();
+
+    for(size_t i = 0; i != xs.size(); ++ i)
+    {
+        BOOST_CHECK_CLOSE(xs[i], a * zs[i] + b, 1e-3);
+    }
+}

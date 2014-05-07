@@ -622,7 +622,7 @@ namespace tags
         typedef descriptives<Value, PreparedTags> Result;
 
         using ural::sequence;
-        auto seq = sequence(in);
+        auto seq = sequence(std::forward<Input>(in));
 
         if(!seq)
         {
@@ -633,6 +633,24 @@ namespace tags
         ++ seq;
 
         return ural::for_each(seq, std::move(r));
+    }
+
+    template <class Forward, class Output>
+    void z_score(Forward && in, Output && out)
+    {
+        auto ds = ural::describe(std::forward<Forward>(in),
+                                 ::ural::statistics::tags::variance);
+
+        auto const m = ds.mean();
+        auto const s = ds.standard_deviation();
+
+        typedef typename decltype(ds)::value_type Value;
+
+        auto f = [m, s](Value const & x) { return (x - m) / s; };
+
+        ural::copy(ural::make_transform_sequence(std::move(f),
+                                                 std::forward<Forward>(in)),
+                   std::forward<Output>(out));
     }
 }
 // namespace ural
