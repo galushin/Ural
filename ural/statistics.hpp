@@ -537,6 +537,9 @@ namespace tags
     template <class T>
     class descriptives<T, null_type>
     {
+    protected:
+        ~descriptives() = default;
+
     public:
         descriptives() = default;
 
