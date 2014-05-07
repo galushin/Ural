@@ -21,6 +21,9 @@
  @brief Математические функции и типы данных
 */
 
+#include <cassert>
+#include <cstddef>
+
 namespace ural
 {
     /** @brief Функция вычисления квадрата
@@ -31,6 +34,25 @@ namespace ural
     T square(T const & x)
     {
         return x * x;
+    }
+
+    template <class T>
+    T natural_power(T const & x, std::size_t n)
+    {
+        assert(n != 0);
+
+        if(n == 1)
+        {
+            return x;
+        }
+
+        auto r = natural_power(x, n / 2);
+        r *= r;
+        if(n % 2 != 0)
+        {
+            r *= x;
+        }
+        return r;
     }
 }
 // namespace ural

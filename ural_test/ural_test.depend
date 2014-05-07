@@ -6558,7 +6558,7 @@
 1397290470 c:\devtools\github\ural\ural\functional\compare_by.hpp
 	<ural/functional/cpp_operators.hpp>
 
-1399440004 c:\devtools\github\ural\ural\statistics.hpp
+1399446271 c:\devtools\github\ural\ural\statistics.hpp
 	<ural/math.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/make.hpp>
@@ -6567,7 +6567,9 @@
 	<ural/defs.hpp>
 	<stdexcept>
 
-1394801780 c:\devtools\github\ural\ural\math.hpp
+1399446234 c:\devtools\github\ural\ural\math.hpp
+	<cassert>
+	<cstddef>
 
 1399431602 source:c:\devtools\github\ural\tests\statistics_tests.cpp
 	<ural/math.hpp>

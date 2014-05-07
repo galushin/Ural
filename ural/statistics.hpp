@@ -231,8 +231,12 @@ namespace tags
     {};
 
     struct count_tag    : declare_depend_on<>{};
-    struct mean_tag     : declare_depend_on<count_tag>{};
-    struct variance_tag : declare_depend_on<mean_tag>{};
+
+    template <size_t N>
+    struct raw_moment_tag   : declare_depend_on<count_tag>{};
+
+    struct mean_tag     : declare_depend_on<count_tag, raw_moment_tag<1>>{};
+    struct variance_tag : declare_depend_on<mean_tag, raw_moment_tag<2>>{};
     struct min_tag      : declare_depend_on<>{};
     struct max_tag      : declare_depend_on<>{};
     struct range_tag    : declare_depend_on<min_tag, max_tag>{};
@@ -285,7 +289,7 @@ namespace tags
 // namespace tags
 }
 // namespace statistics
-    template <class T, class Tag, class Base>
+    template <class T, class Tag, class Base = empty_type>
     class descriptive;
 
     template <class T, class Base>
@@ -326,35 +330,35 @@ namespace tags
         count_type n_;
     };
 
-    template <class T, class Base>
-    class descriptive<T, statistics::tags::mean_tag, Base>
+    template <class T, class Base, size_t N>
+    class descriptive<T, statistics::tags::raw_moment_tag<N>, Base>
      : public Base
     {
+        static_assert(N > 0, "zeroth moment is counter");
     public:
         typedef typename Base::count_type count_type;
-        typedef typename average_type<T, count_type>::type mean_type;
+        typedef typename average_type<T, count_type>::type moment_type;
 
         descriptive()
          : Base{}
-         , mean_{0}
+         , value_(0)
         {}
 
         descriptive(T const & x)
          : Base{x}
-         , mean_(x)
+         , value_(x)
         {}
 
-        mean_type const & mean() const
+        friend moment_type const &
+        raw_moment(descriptive const & x, std::integral_constant<size_t, N>)
         {
-            return mean_;
+            return x.value_;
         }
 
         descriptive & operator()(T const & x)
         {
             Base::operator()(x);
-
-            mean_ += (x - this->mean()) / this->count();
-
+            value_ += (power(x) - value_) / this->count();
             return *this;
         }
 
@@ -362,7 +366,44 @@ namespace tags
         ~descriptive() = default;
 
     private:
-        mean_type mean_;
+        static T power(T const & x)
+        {
+            return ural::natural_power(x, N);
+        }
+
+        moment_type value_;
+    };
+
+    template <class T, class Base>
+    class descriptive<T, statistics::tags::mean_tag, Base>
+     : public Base
+    {
+    public:
+        typedef typename Base::count_type count_type;
+        typedef typename Base::moment_type mean_type;
+
+        descriptive()
+         : Base{}
+        {}
+
+        descriptive(T const & x)
+         : Base{x}
+        {}
+
+        mean_type const & mean() const
+        {
+            return raw_moment(*this, std::integral_constant<size_t, 1>{});
+        }
+
+        descriptive & operator()(T const & x)
+        {
+            Base::operator()(x);
+
+            return *this;
+        }
+
+    protected:
+        ~descriptive() = default;
     };
 
     // @todo Устранить дублирование с mean
@@ -378,21 +419,16 @@ namespace tags
         // Конструкторы
         descriptive()
          : Base{}
-         , mean_sq_(0)
         {}
 
         descriptive(T const & x)
          : Base{x}
-         , mean_sq_{square(mean_type(x))}
         {}
 
         // Обновление
         descriptive & operator()(T const & x)
         {
             Base::operator()(x);
-
-            using ural::square;
-            mean_sq_ += (square(x) - mean_sq_) / this->count();
 
             return *this;
         }
@@ -401,7 +437,8 @@ namespace tags
         mean_type variance() const
         {
             using ural::square;
-            return mean_sq_ - square(this->mean());
+            return raw_moment(*this, std::integral_constant<size_t, 2>{})
+                    - square(this->mean());
         }
 
         mean_type standard_deviation() const
@@ -412,9 +449,6 @@ namespace tags
 
     protected:
         ~descriptive() = default;
-
-    private:
-        mean_type mean_sq_;
     };
 
     template <class T, class Base>
@@ -553,6 +587,8 @@ namespace tags
     };
 
     /** @todo Убедиться, что нет повторяющихся тэгов
+    @note Одна из проблем с таким дизайном: можно забыть определить operator()
+    @todo Оптимизировать min | max
     */
     template <class T, class Tags>
     class descriptives
