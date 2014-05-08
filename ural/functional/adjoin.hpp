@@ -28,16 +28,27 @@
 
 namespace ural
 {
+    /** @brief Функциональный объект, объединяющий несколько функциональных
+    объектов и возвращающий кортеж их результатов
+    @tparam Fs типы базовых функциональных объектов
+    */
     template <class... Fs>
     class adjoin_functor_type
     {
     public:
+        /// @brief Конструктор без параметров
         constexpr adjoin_functor_type() = default;
 
+        /** @brief Конструктор
+        @param fs базовые функциональные объекты
+        */
         constexpr explicit adjoin_functor_type(Fs... fs)
          : functors_{std::move(fs)...}
         {}
 
+        /** @brief Оператор применения функционального объекта
+        @param args аргументы
+        */
         template <class... Args>
         constexpr auto operator()(Args && ... args) const
         -> ural::tuple<decltype(std::declval<Fs>()(args...))...>
@@ -61,6 +72,10 @@ namespace ural
         ural::tuple<Fs...> functors_;
     };
 
+    /** @brief Создание функционального объекта, формирующего кортеж результатов
+    нескольких функциональных объектов
+    @param fs базовые функциональные объекты
+    */
     template <class... Fs>
     constexpr auto adjoin_functors(Fs... fs)
     -> adjoin_functor_type<decltype(ural::make_functor(std::move(fs)))...>

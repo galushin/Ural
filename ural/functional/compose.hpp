@@ -64,16 +64,25 @@ namespace ural
          : Base{std::move(f1), std::move(f2)}
         {}
 
+        /** @brief Первый функциональный объект
+        @return Первый функциональный объект
+        */
         first_functor_type const & first_functor() const
         {
             return Base::first();
         }
 
+        /** @brief Второй функциональный объект
+        @return Второй функциональный объект
+        */
         second_functor_type const & second_functor() const
         {
             return Base::second();
         }
 
+        /** @brief Применение функционального объекта
+        @param args аргументы
+        */
         template <class... Args>
         constexpr auto operator()(Args && ... args) const
         -> decltype(std::declval<first_functor_type>()(std::declval<second_functor_type>()(std::forward<Args>(args)...)))

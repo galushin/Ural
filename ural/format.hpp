@@ -34,6 +34,10 @@
 
 namespace ural
 {
+    /** @brief Вывод таблицы в поток
+    @param os поток вывода
+    @tparam table таблица
+    */
     template <class OStream, class Table>
     OStream & write_table(OStream && os, Table const & table)
     {
@@ -57,11 +61,22 @@ namespace ural
         return os;
     }
 
+    /** @brief Функциональный объект, преобразующий из строки в заданный тип
+    @tparam Ch тип символа
+    @tparam Tr класс-характеристика символа
+    @tparam T тип, в который осуществляется преобразование.
+    */
     template <class Ch, class Tr, class T>
     class from_string_policy
     {
     public:
+        /// @brief Тип возвращаемого значения
         typedef T result_type;
+
+        /** @brief Преобразование
+        @param s строка
+        @return Значение, записанное в строке @c s.
+        */
         result_type operator()(std::basic_string<Ch, Tr> const & s) const
         {
             std::basic_istringstream<Ch, Tr> is(s);
@@ -72,6 +87,10 @@ namespace ural
         }
     };
 
+    /** @brief Специализация для преобразования строки в саму себя
+    @tparam Ch тип символа
+    @tparam Tr класс-характеристика символа
+    */
     template <class Ch, class Tr>
     class from_string_policy<Ch, Tr, std::basic_string<Ch, Tr>>
     {
@@ -84,12 +103,24 @@ namespace ural
         }
     };
 
+    /** @brief Преобразования из строки в значение
+    @tparam T тип, в который осуществляется преобразование.
+    @tparam Ch тип символа
+    @tparam Tr класс-характеристика символа
+    @param s строка
+    @return from_string_policy<Ch, Tr, T>{}(s)
+    */
     template <class T, class Ch, class Tr>
     T from_string(std::basic_string<Ch, Tr> const & s)
     {
         return from_string_policy<Ch, Tr, T>{}(s);
     }
 
+    /** @brief Ввод однородной таблицы (матрицы) из потока
+    @tparam T тип элементов таблицы
+    @param is входной поток
+    @return считанную таблицу
+    */
     template <class T, class IStream>
     std::vector<std::vector<T>>
     read_table(IStream && is)

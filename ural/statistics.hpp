@@ -32,6 +32,10 @@
 
 namespace ural
 {
+    /** @brief Класс-характеристика, определяющая, являются ли все типы пачки
+    целочисленными.
+    @tparam Ts пачка типов
+    */
     template <class... Ts>
     struct are_integral
      : meta::all_of<typename meta::make_list<Ts...>::type, std::is_integral>
@@ -212,6 +216,11 @@ namespace ural
         return x.value() < y.value();
     }
 
+    /** @brief Вывод вероятности в поток
+    @param os поток вывода
+    @param x вероятность
+    @return @c os
+    */
     template <class Char, class Tr, class T, class P>
     std::basic_ostream<Char, Tr> &
     operator<<(std::basic_ostream<Char, Tr> & os, probability<T, P> const & x)

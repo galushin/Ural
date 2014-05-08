@@ -36,6 +36,11 @@ namespace ural
         return x * x;
     }
 
+    /** @brief Возведение числа в натуральную степень
+    @param x число
+    @param n степень
+    @return @c x в степени @c n
+    */
     template <class T>
     T natural_power(T const & x, std::size_t n)
     {

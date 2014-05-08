@@ -100,6 +100,11 @@ namespace ural
         return replace_if_functor<Predicate, T>(std::move(pred), new_value);
     }
 
+    /**
+    @todo Что если T = reference_wrapper<U>
+    @tparam T тип значения
+    @tparam BinaryPredicate бинарный предикат над @c T
+    */
     template <class T, class BinaryPredicate = ural::equal_to<T> >
     class replace_functor
     {
@@ -110,35 +115,68 @@ namespace ural
     }
 
     public:
+        /// @brief Тип предиката
         typedef decltype(make_functor(std::declval<BinaryPredicate>())) predicate_type;
+
+        /// @brief Тип возвращаемого значения
         typedef T const & result_type;
 
+        /** @brief Конструктор
+        @param old_value заменяемое значение
+        @param new_value новое значение
+        @post <tt> this->predicate() == predшcate_type{} </tt>
+        @post <tt> this->old_value() == old_value </tt>
+        @post <tt> this->new_value() == new_value </tt>
+        */
         constexpr explicit replace_functor(T old_value, T new_value)
          : members_{std::move(old_value), std::move(new_value),
                     predicate_type{}}
         {}
 
+        /** @brief Конструктор
+        @param old_value заменяемое значение
+        @param new_value новое значение
+        @param pred используемый бинарный предикат
+        @post <tt> this->predicate() == pre{} </tt>
+        @post <tt> this->old_value() == old_value </tt>
+        @post <tt> this->new_value() == new_value </tt>
+        */
         constexpr explicit replace_functor(T old_value, T new_value,
                                            BinaryPredicate pred)
          : members_{std::move(old_value), std::move(new_value),
                     make_functor(std::move(pred))}
         {}
 
+        // Свойства
+        /** @brief Заменяемое значение
+        @return Заменяемое значение
+        */
         constexpr T const & old_value() const
         {
             return members_[ural::_1];
         }
 
+        /** @brief Новое значение
+        @return Новое значение
+        */
         constexpr T const & new_value() const
         {
             return members_[ural::_2];
         }
 
+        /** @brief Используемый функциональный объект
+        @return Используемый функциональный объект
+        */
         constexpr predicate_type const & predicate() const
         {
             return members_[ural::_3];
         }
 
+        /** @brief Применение функционального объекта
+        @param x значение
+        @return Если <tt> this->predicate()(x, this->old_value()) </tt>, то ---
+        <tt> this->new_value() </tt>, иначе --- @c x
+        */
         constexpr result_type operator()(T const & x) const
         {
             return (this->predicate()(x, this->old_value()))
@@ -175,13 +213,15 @@ namespace ural
     /**
     По умолчанию сохраняются значения, а не ссылки. Чтобы избежать копирования,
     следует обернуть объекты в вызовы std::cref()
+    @param old_value заменяемое значение
+    @param new_value новое значение
+    @return <tt> replace_functor<T>(std::move(old_value), std::move(new_value))  </tt>
     */
     template <class T>
     constexpr replace_functor<T, ural::equal_to<T,T>>
     make_replace_functor(T old_value, T new_value)
     {
-        return replace_functor<T, ural::equal_to<T,T>>(std::move(old_value),
-                                                       std::move(new_value));
+        return replace_functor<T>(std::move(old_value), std::move(new_value));
     }
 }
 // namespace ural

@@ -34,6 +34,7 @@ namespace meta
      , public inherit_from<typename Container::tail>
     {};
 
+    /// @brief Специализация для пустых список
     template <>
     struct inherit_from<null_type>
     {};

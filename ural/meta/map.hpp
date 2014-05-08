@@ -37,10 +37,16 @@ namespace meta
         typedef T2 second;
     };
 
+    /// @brief Ассоциативный массив типов
     template <class... Ts>
     struct map;
 
-    template <class Container, class K>
+    /** @brief Поиск в ассоциативном массиве типов значения, соответствующего
+    заданному ключу
+    @tparam Container ассоциативный массив
+    @tparam Key тип-ключ
+    */
+    template <class Container, class Key>
     struct at;
 
     template <class Head, class... Tail, class K>

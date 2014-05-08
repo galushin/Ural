@@ -30,6 +30,10 @@ namespace ural
 namespace meta
 {
     // Список
+    /** @brief Список типов
+    @tparam Head первый элемент списка
+    @tparam Tail хвост списка --- список остальных элементов или @c null_type
+    */
     template <class Head, class Tail>
     struct list
     {
@@ -40,15 +44,23 @@ namespace meta
         typedef Tail tail;
     };
 
-    // Создание списка
+    /** @brief Класс-характеристика для создания <tt> meta::list </tt> по
+    переменному количеству типов-аргументов
+    @tparam Types типы
+    */
     template <class... Types>
     struct make_list;
 
+    /// @brief Специализация для пустого списка
     template <>
     struct make_list<>
      : declare_type<null_type>
     {};
 
+    /** @brief Специализация для непустого списка
+    @tparam T1 первый тип
+    @tparam Ts остальные типы
+    */
     template <class T1, class... Ts>
     struct make_list<T1, Ts...>
      : declare_type<list<T1, typename make_list<Ts...>::type>>
@@ -66,6 +78,7 @@ namespace meta
     {};
 
     // Алгоритмы
+    // all_of
     template <class Container, template <class> class Predicate>
     struct all_of;
 
@@ -79,6 +92,7 @@ namespace meta
      : std::integral_constant<bool, Predicate<Head>::value && all_of<Tail, Predicate>::value>
     {};
 
+    // find
     template <class Container, class T>
     struct find;
 
@@ -97,6 +111,7 @@ namespace meta
      : find<Tail, T>
     {};
 
+    // Копирование без дубликатов
     template <class Container, class Out = null_type>
     struct copy_without_duplicates;
 
@@ -119,6 +134,7 @@ namespace meta
         typedef typename copy_without_duplicates<Tail, new_out>::type type;
     };
 
+    // min_value
     template <class List, template <class, class> class Compare, class Result>
     struct min_value
     {
@@ -138,6 +154,7 @@ namespace meta
      : declare_type<Result>
     {};
 
+    // remove_first
     template <class List, class Value>
     struct remove_first;
 
@@ -156,6 +173,7 @@ namespace meta
      : list<Head, typename remove_first<Tail, Value>::type>
     {};
 
+    // Сортировка выбором
     template <class List, template <class, class> class Compare>
     struct selection_sort
     {

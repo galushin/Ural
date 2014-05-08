@@ -25,6 +25,15 @@
 
 namespace ural
 {
+    /** @brief "Отрицание" к <tt> std::enable_if </tt>
+    @tparam Flag булево значение
+    @tparam T тип
+    */
+    template <bool Flag, class T = void>
+    struct disable_if
+     : std::enable_if<!Flag, T>
+    {};
+
     /** @brief Класс, содержащий @b typedef-объявление типа
     @tparam T тип
     */
@@ -35,6 +44,9 @@ namespace ural
         typedef T type;
     };
 
+    /** @brief Синоним для <tt> std::decay </tt>
+    @tparam T тип-аргумент
+    */
     template <class T>
     using decay_t = typename std::decay<T>::type;
 
@@ -52,6 +64,11 @@ namespace ural
     // namespace details
     /// @endcond
 
+    /** @brief Класс-характеристика, проверяющая, можно ли присвоить объекту
+    типа @c T значение типа @c U.
+    @tparam T тип левого операнда
+    @tparam U тип правого операнда
+    */
     template <class T, class U>
     struct is_assignable
      : decltype(::ural::details::is_assignable_helper<T, U>(nullptr))

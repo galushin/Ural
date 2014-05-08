@@ -17,6 +17,7 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <ural/type_traits.hpp>
 #include <ural/defs.hpp>
 
 /** @file ural/functional/make_functor.hpp
@@ -34,7 +35,7 @@ namespace ural
     */
     template <class F>
     constexpr
-    typename std::enable_if<std::is_member_pointer<F>::value == false, F>::type
+    typename disable_if<std::is_member_pointer<F>::value, F>::type
     make_functor(F f)
     {
         return f;

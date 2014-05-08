@@ -105,13 +105,22 @@ namespace ural
         return lcm_evaluator<IntegerType>{}(a, b);
     }
 
+    /// @brief Целочисленный тип, используемый в статических НОД и НОК
     typedef int static_gcd_type;
 
+    /** @brief Класс-характеристика для вычисления НОД
+    @tparam Value1 первый операнд
+    @tparam Value2 второй операнд
+    */
     template <static_gcd_type Value1, static_gcd_type Value2>
     struct static_gcd
      : std::integral_constant<static_gcd_type, gcd(Value1, Value2)>
     {};
 
+    /** @brief Класс-характеристика для вычисления НОК
+    @tparam Value1 первый операнд
+    @tparam Value2 второй операнд
+    */
     template <static_gcd_type Value1, static_gcd_type Value2>
     struct static_lcm
      : std::integral_constant<static_gcd_type, lcm(Value1, Value2)>
