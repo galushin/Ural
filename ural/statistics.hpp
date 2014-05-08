@@ -237,6 +237,7 @@ namespace tags
 
     struct mean_tag     : declare_depend_on<count_tag, raw_moment_tag<1>>{};
     struct variance_tag : declare_depend_on<mean_tag, raw_moment_tag<2>>{};
+    struct standard_deviation_tag : declare_depend_on<variance_tag>{};
     struct min_tag      : declare_depend_on<>{};
     struct max_tag      : declare_depend_on<>{};
     struct range_tag    : declare_depend_on<min_tag, max_tag>{};
@@ -244,6 +245,7 @@ namespace tags
     constexpr auto count = tags_list<count_tag>{};
     constexpr auto mean = tags_list<mean_tag>{};
     constexpr auto variance = tags_list<variance_tag>{};
+    constexpr auto std_dev = tags_list<standard_deviation_tag>{};
     constexpr auto min = tags_list<min_tag>{};
     constexpr auto max = tags_list<max_tag>{};
     constexpr auto range = tags_list<range_tag>{};
@@ -323,6 +325,12 @@ namespace tags
             return *this;
         }
 
+    friend count_type const & at_tag(descriptive const & x,
+                                     statistics::tags::count_tag)
+    {
+        return x.count();
+    }
+
     protected:
         ~descriptive() = default;
 
@@ -395,6 +403,12 @@ namespace tags
             return raw_moment(*this, std::integral_constant<size_t, 1>{});
         }
 
+    friend mean_type const & at_tag(descriptive const & x,
+                                     statistics::tags::mean_tag)
+    {
+        return x.mean();
+    }
+
         descriptive & operator()(T const & x)
         {
             Base::operator()(x);
@@ -413,7 +427,6 @@ namespace tags
     {
     public:
         // Типы
-        typedef typename Base::count_type count_type;
         typedef typename Base::mean_type mean_type;
 
         // Конструкторы
@@ -434,17 +447,56 @@ namespace tags
         }
 
         // Свойства
+        friend mean_type at_tag(descriptive const & x,
+                                statistics::tags::variance_tag)
+        {
+            return x.variance();
+        }
+
         mean_type variance() const
         {
             using ural::square;
             return raw_moment(*this, std::integral_constant<size_t, 2>{})
                     - square(this->mean());
         }
+    };
 
+    template <class T, class Base>
+    class descriptive<T, statistics::tags::standard_deviation_tag, Base>
+     : public Base
+    {
+    public:
+        // Типы
+        typedef typename Base::mean_type mean_type;
+
+        // Конструкторы
+        descriptive()
+         : Base{}
+        {}
+
+        descriptive(T const & x)
+         : Base{x}
+        {}
+
+        // Обновление
+        descriptive & operator()(T const & x)
+        {
+            Base::operator()(x);
+
+            return *this;
+        }
+
+        // Свойства
         mean_type standard_deviation() const
         {
             using std::sqrt;
             return sqrt(this->variance());
+        }
+
+        friend mean_type at_tag(descriptive const & x,
+                            statistics::tags::standard_deviation_tag)
+        {
+            return x.standard_deviation();
         }
 
     protected:
@@ -467,6 +519,12 @@ namespace tags
          : Base{x}
          , min_{x}
         {}
+
+        friend value_type const & at_tag(descriptive const & x,
+                                         statistics::tags::min_tag)
+        {
+            return x.min();
+        }
 
         value_type const & min URAL_PREVENT_MACRO_SUBSTITUTION () const
         {
@@ -506,6 +564,12 @@ namespace tags
          : Base{x}
          , max_{x}
         {}
+
+        friend value_type const & at_tag(descriptive const & x,
+                                         statistics::tags::max_tag)
+        {
+            return x.max();
+        }
 
         value_type const & max URAL_PREVENT_MACRO_SUBSTITUTION () const
         {
@@ -556,6 +620,12 @@ namespace tags
         }
 
         // Свойства
+        friend value_type at_tag(descriptive const & x,
+                                 statistics::tags::range_tag)
+        {
+            return x.range();
+        }
+
         value_type range () const
         {
             return this->max() - this->min();
@@ -596,7 +666,7 @@ namespace tags
     {
         typedef descriptive<T, typename Tags::head, descriptives<T, typename Tags::tail>>
             Base;
-
+    // @todo protected
     public:
         descriptives() = default;
 
@@ -611,15 +681,45 @@ namespace tags
         }
     };
 
+    template <class T, class Tags>
+    class descriptives_facade
+     : public descriptives<T, typename statistics::tags::prepare<Tags>::type>
+    {
+        typedef typename statistics::tags::prepare<Tags>::type PreparedTags;
+        typedef descriptives<T, PreparedTags> Base;
+
+    public:
+        typedef Tags tags_list;
+
+        descriptives_facade() = default;
+
+        descriptives_facade(T const & x)
+         : Base{x}
+        {}
+
+        descriptives_facade & operator()(T const & x)
+        {
+            Base::operator()(x);
+            return *this;
+        }
+
+        template <class Tag>
+        // @todo Проверить, что тэг есть в списке
+        auto operator[](statistics::tags_list<Tag>) const
+        -> decltype(at_tag(*this, Tag{}))
+        {
+            return at_tag(*this, Tag{});
+        }
+
+    private:
+    };
+
     template <class Input, class Tags>
     auto describe(Input && in, Tags)
-    -> descriptives<typename decltype(sequence(in))::value_type,
-                    typename statistics::tags::prepare<Tags>::type>
+    -> descriptives_facade<typename decltype(sequence(in))::value_type, Tags>
     {
         typedef typename decltype(sequence(in))::value_type Value;
-        typedef typename statistics::tags::prepare<Tags>::type PreparedTags;
-
-        typedef descriptives<Value, PreparedTags> Result;
+        typedef descriptives_facade<Value, Tags> Result;
 
         using ural::sequence;
         auto seq = sequence(std::forward<Input>(in));
@@ -639,7 +739,7 @@ namespace tags
     void z_score(Forward && in, Output && out)
     {
         auto ds = ural::describe(std::forward<Forward>(in),
-                                 ::ural::statistics::tags::variance);
+                                 ::ural::statistics::tags::std_dev);
 
         auto const m = ds.mean();
         auto const s = ds.standard_deviation();
