@@ -26,6 +26,12 @@
 
 namespace ural
 {
+    /** @brief Вспомогательный класс для функциональных объектов для бинарных
+    операторов
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    @tparam F тип "прозрачного" функционального объекта, реализующего оператор
+    */
     template <class T1, class T2, class F>
     class binary_operator_helper
      : private F
@@ -531,6 +537,7 @@ namespace ural
      : public binary_operator_helper<T1, T2, bit_or<void, void>>
     {};
 
+    /// @brief Специализация с выводом типов аргументов
     template <>
     class bit_or<void, void>
     {
@@ -554,6 +561,7 @@ namespace ural
      : public binary_operator_helper<T1, T2, bit_xor<void, void>>
     {};
 
+    /// @brief Специализация с выводом типов аргументов
     template <>
     class bit_xor<void, void>
     {

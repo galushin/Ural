@@ -467,7 +467,7 @@
 	<utility>
 	<ural/sequence/sequence_iterator.hpp>
 
-1398665486 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
+1399542357 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
 	<ural/defs.hpp>
 	<utility>
 	<ural/sequence/sequence_iterator.hpp>
@@ -618,7 +618,7 @@
 	<ural/tuple.hpp>
 	<ural/functional/cpp_operators.hpp>
 
-1398316481 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
+1399542379 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
 	<ural/functional/make_functor.hpp>
 	<ural/functional/compose.hpp>
 
@@ -6546,7 +6546,7 @@
 	<boost/mpl/list.hpp>
 	<boost/test/unit_test.hpp>
 
-1399538449 c:\devtools\ural_repo\ural\ural\statistics.hpp
+1399542009 c:\devtools\ural_repo\ural\ural\statistics.hpp
 	<ural/math.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/make.hpp>
@@ -9752,7 +9752,7 @@
 	<typeinfo>
 	<utility>
 
-1399537568 c:\devtools\ural_repo\ural\ural\meta\list.hpp
+1399542062 c:\devtools\ural_repo\ural\ural\meta\list.hpp
 	<ural/type_traits.hpp>
 	<ural/defs.hpp>
 

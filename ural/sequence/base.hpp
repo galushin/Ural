@@ -62,14 +62,24 @@ namespace ural
     random_access_traversal_tag
     decl_common_type(random_access_traversal_tag, random_access_traversal_tag);
 
+    /** @brief Класс-характеристика для вычисления общего типа пачки тэгов
+    @tparam Types типы-тэги
+    */
     template <class... Types>
     struct common_tag;
 
+    /** @brief Специализация для одного типа
+    @tparam T тип
+    */
     template <class T>
     struct common_tag<T>
      : declare_type<T>
     {};
 
+    /** @brief Специализация для двух типов
+    @tparam T1 первый тип
+    @tparam T2 второй тип
+    */
     template <class T1, class T2>
     struct common_tag<T1, T2>
      : declare_type<decltype(decl_common_type(std::declval<T1>(), std::declval<T2>()))>

@@ -236,6 +236,7 @@ namespace statistics
     template <class... Ts>
     struct tags_list
     {
+        /// @brief Список типов-тэгов
         typedef typename meta::make_list<Ts...>::type list;
     };
 
@@ -317,11 +318,19 @@ namespace tags
     template <class List, class Out>
     struct expand_depend_on;
 
+     /** @brief Специализация для пустых списков типов
+    @tparam Out накопитель
+    */
     template <class Out>
     struct expand_depend_on<null_type, Out>
      : declare_type<Out>
     {};
 
+    /** @brief Специализация для непустых списков типов
+    @tparam Head первый элемент списка типов
+    @tparam Tail хвост списка типов
+    @tparam Out накопитель
+    */
     template <class Head, class Tail, class Out>
     struct expand_depend_on<::ural::meta::list<Head, Tail>, Out>
     {
@@ -331,6 +340,7 @@ namespace tags
             R2;
 
     public:
+        /// @brief Тип-результат
         typedef typename expand_depend_on<Tail, R2>::type type;
     };
 

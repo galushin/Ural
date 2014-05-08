@@ -145,6 +145,7 @@ namespace meta
                                           Candidate, Result>::type new_result;
 
     public:
+        /// @brief Тип-результат
         typedef typename min_value<typename List::tail, Compare, Result>::type
             type;
     };
@@ -183,6 +184,7 @@ namespace meta
         typedef typename selection_sort<without_new_head, Compare>::type new_tail;
 
     public:
+        /// @brief Тип-результат
         typedef list<new_head, new_tail> type;
     };
 
