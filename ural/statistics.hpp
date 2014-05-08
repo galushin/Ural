@@ -37,11 +37,21 @@ namespace ural
      : meta::all_of<typename meta::make_list<Ts...>::type, std::is_integral>
     {};
 
+    /** @brief Класс-характеристика для определения типа среднего значения
+    @tparam T тип элементов выборки
+    @tparam N тип для представления количества элементов
+    @tparam Enabler вспомогательный тип для специализации на основе
+    <tt> std::enable_if </tt>
+    */
     template <class T, class N, class Enabler = void>
     struct average_type
      : declare_type<decltype(std::declval<T>() / std::declval<N>())>
     {};
 
+    /** @brief Специализация для целочисленных выборок
+    @tparam T тип элементов выборки
+    @tparam N тип для представления количества элементов
+    */
     template <class T, class N>
     struct average_type<T, N, typename std::enable_if<are_integral<T, N>::value>::type>
      : declare_type<double>
@@ -211,37 +221,77 @@ namespace ural
 
 namespace statistics
 {
+    /** @brief Список тэгов
+    @tparam Ts тэги
+    */
     template <class... Ts>
     struct tags_list
     {
         typedef typename meta::make_list<Ts...>::type list;
     };
 
+    /** @brief Конкатенация списков тэгов
+    @tparam Ts1 тэги первого списка
+    @tparam Ts2 тэги второго списка
+    */
+    template <class... Ts1, class... Ts2>
+    tags_list<Ts1..., Ts2...>
+    operator|(tags_list<Ts1...>, tags_list<Ts2...>)
+    {
+        return {};
+    }
+
 namespace tags
 {
+    /** @brief Вспомогательный базовый класс, определеяющий список тэгов, от
+    которых зависит данный.
+    */
     template <class... Ts>
     struct declare_depend_on
     {
+        /// @brief Список зависимостей
         typedef typename meta::make_list<Ts...>::type depends_on;
     };
 
+    /** @brief Класс-характеристика для определения, зависит ли тэг @c T1 от
+    тэга @c T2.
+    @tparam T1 первый тэг
+    @tparam T1 второй тэг
+    */
     template <class T1, class T2>
     struct is_depend_on
      : std::integral_constant<bool, !std::is_same<typename meta::find<typename T1::depends_on, T2>::type, null_type>::value>
     {};
 
+    // Тэги-типы
+    /// @brief Тип-тэг описательной статистики "Количество элементов"
     struct count_tag    : declare_depend_on<>{};
 
+    /** @brief Тип-тэг описательной статистики "Начальный момент"
+    @tparam N порядок момента
+    */
     template <size_t N>
     struct raw_moment_tag   : declare_depend_on<count_tag>{};
 
+    /// @brief Тип-тэг описательной статистики "Математическое ожидание"
     struct mean_tag     : declare_depend_on<count_tag, raw_moment_tag<1>>{};
+
+    /// @brief Тип-тэг описательной статистики "Дисперсия"
     struct variance_tag : declare_depend_on<mean_tag, raw_moment_tag<2>>{};
+
+    /// @brief Тип-тэг описательной статистики "Среднеквадратическое уклонение"
     struct standard_deviation_tag : declare_depend_on<variance_tag>{};
+
+    /// @brief Тип-тэг описательной статистики "Наименьшее значение"
     struct min_tag      : declare_depend_on<>{};
+
+    /// @brief Тип-тэг описательной статистики "Наибольшее значение"
     struct max_tag      : declare_depend_on<>{};
+
+    /// @brief Тип-тэг описательной статистики "Размах"
     struct range_tag    : declare_depend_on<min_tag, max_tag>{};
 
+    // Тэги-объекты
     constexpr auto count = tags_list<count_tag>{};
     constexpr auto mean = tags_list<mean_tag>{};
     constexpr auto variance = tags_list<variance_tag>{};
@@ -250,13 +300,11 @@ namespace tags
     constexpr auto max = tags_list<max_tag>{};
     constexpr auto range = tags_list<range_tag>{};
 
-    template <class... Ts1, class... Ts2>
-    tags_list<Ts1..., Ts2...>
-    operator|(tags_list<Ts1...>, tags_list<Ts2...>)
-    {
-        return {};
-    }
-
+    /** @brief Расширение списка тэгов: добавление тэгов, от которых зависят
+    исходные.
+    @param List список тэгов
+    @param Out хвост списка-результата
+    */
     template <class List, class Out>
     struct expand_depend_on;
 
@@ -277,13 +325,19 @@ namespace tags
         typedef typename expand_depend_on<Tail, R2>::type type;
     };
 
+    /** @brief Подготовка списка тэгов для данного
+    @tparam Tags список тэгов
+    */
     template <class Tags>
     struct prepare
     {
+    private:
         typedef typename expand_depend_on<typename Tags::list, null_type>::type
             WithDependencies;
         typedef typename meta::copy_without_duplicates<WithDependencies>::type
             UniqueTags;
+    public:
+        /// @brief Список всех необходимых тэгов, топологически отсортированные
         typedef typename meta::selection_sort<UniqueTags, statistics::tags::is_depend_on>::type
             type;
     };
@@ -291,6 +345,11 @@ namespace tags
 // namespace tags
 }
 // namespace statistics
+    /** @brief Накопитель для описательных статистик
+    @tparam T тип элементов выборки
+    @tparam Tag тэг, описывающий накопительную статистику
+    @tparam Base базовый класс
+    */
     template <class T, class Tag, class Base = empty_type>
     class descriptive;
 
@@ -308,7 +367,7 @@ namespace tags
          , n_{0}
         {}
 
-        descriptive(value_type const & x)
+        explicit descriptive(value_type const & x)
          : Base{x}
          , n_{1}
         {}
@@ -342,7 +401,7 @@ namespace tags
     class descriptive<T, statistics::tags::raw_moment_tag<N>, Base>
      : public Base
     {
-        static_assert(N > 0, "zeroth moment is counter");
+        static_assert(N > 0, "Use counter instead");
     public:
         typedef typename Base::count_type count_type;
         typedef typename average_type<T, count_type>::type moment_type;
@@ -352,7 +411,7 @@ namespace tags
          , value_(0)
         {}
 
-        descriptive(T const & x)
+        explicit descriptive(T const & x)
          : Base{x}
          , value_(x)
         {}
@@ -394,7 +453,7 @@ namespace tags
          : Base{}
         {}
 
-        descriptive(T const & x)
+        explicit descriptive(T const & x)
          : Base{x}
         {}
 
@@ -420,7 +479,6 @@ namespace tags
         ~descriptive() = default;
     };
 
-    // @todo Устранить дублирование с mean
     template <class T, class Base>
     class descriptive<T, statistics::tags::variance_tag, Base>
      : public Base
@@ -434,7 +492,7 @@ namespace tags
          : Base{}
         {}
 
-        descriptive(T const & x)
+        explicit descriptive(T const & x)
          : Base{x}
         {}
 
@@ -474,7 +532,7 @@ namespace tags
          : Base{}
         {}
 
-        descriptive(T const & x)
+        explicit descriptive(T const & x)
          : Base{x}
         {}
 
@@ -515,7 +573,7 @@ namespace tags
          , min_{std::numeric_limits<T>::infinity()}
         {}
 
-        descriptive(T const & x)
+        explicit descriptive(T const & x)
          : Base{x}
          , min_{x}
         {}
@@ -560,7 +618,7 @@ namespace tags
          , max_{-std::numeric_limits<T>::infinity()}
         {}
 
-        descriptive(T const & x)
+        explicit descriptive(T const & x)
          : Base{x}
          , max_{x}
         {}
@@ -608,7 +666,7 @@ namespace tags
          : Base{}
         {}
 
-        descriptive(T const & x)
+        explicit descriptive(T const & x)
          : Base{x}
         {}
 
@@ -647,7 +705,7 @@ namespace tags
     public:
         descriptives() = default;
 
-        descriptives(T const &)
+        explicit descriptives(T const &)
         {};
 
         descriptives & operator()(T const &)
@@ -689,20 +747,34 @@ namespace tags
         typedef descriptives<T, PreparedTags> Base;
 
     public:
+        // Типы
+        /// @brief Список тэгов
         typedef Tags tags_list;
 
+        // Конструкторы
+        /** @brief Конструктор без аргументов. Используется для описания пустой
+        последовательности.
+        */
         descriptives_facade() = default;
 
-        descriptives_facade(T const & x)
+        /** @brief Конструктор
+        @param x значение
+        */
+        explicit descriptives_facade(T const & x)
          : Base{x}
         {}
 
+        // Обновление
+        /** @brief Обновление статистик
+        @param x новое значение
+        */
         descriptives_facade & operator()(T const & x)
         {
             Base::operator()(x);
             return *this;
         }
 
+        // Свойства
         template <class Tag>
         // @todo Проверить, что тэг есть в списке
         auto operator[](statistics::tags_list<Tag>) const
@@ -710,10 +782,13 @@ namespace tags
         {
             return at_tag(*this, Tag{});
         }
-
-    private:
     };
 
+    /** @brief Алгоритм сбора описательных статистик
+    @tparam Tags список тэгов описательных статистик
+    @param in входная последовательность
+    @return Объект, содержащий описательные статистики
+    */
     template <class Input, class Tags>
     auto describe(Input && in, Tags)
     -> descriptives_facade<typename decltype(sequence(in))::value_type, Tags>
@@ -735,6 +810,11 @@ namespace tags
         return ural::for_each(seq, std::move(r));
     }
 
+    /** @brief Стандартизация выборки
+    @param in входная последовательность
+    @param out выходная последовательность
+    @pre Дисперсия @c in должна быть не равной нулю.
+    */
     template <class Forward, class Output>
     void z_score(Forward && in, Output && out)
     {
