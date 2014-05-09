@@ -287,7 +287,7 @@ namespace tags
     struct mean_tag     : declare_depend_on<count_tag, raw_moment_tag<1>>{};
 
     /// @brief Тип-тэг описательной статистики "Дисперсия"
-    struct variance_tag : declare_depend_on<mean_tag, raw_moment_tag<2>>{};
+    struct variance_tag : declare_depend_on<mean_tag>{};
 
     /// @brief Тип-тэг описательной статистики "Среднеквадратическое уклонение"
     struct standard_deviation_tag : declare_depend_on<variance_tag>{};
@@ -498,6 +498,7 @@ namespace tags
         ~descriptive() = default;
     };
 
+    // @todo Несмещённая дисперсия?
     template <class T, class Base>
     class descriptive<T, statistics::tags::variance_tag, Base>
      : public Base
@@ -509,16 +510,22 @@ namespace tags
         // Конструкторы
         descriptive()
          : Base{}
+         , sq_(0)
         {}
 
         explicit descriptive(T const & x)
          : Base{x}
+         , sq_(0)
         {}
 
         // Обновление
         descriptive & operator()(T const & x)
         {
+            auto old_m = this->mean();
+
             Base::operator()(x);
+
+            sq_ += (x - old_m) * (x - this->mean());
 
             return *this;
         }
@@ -532,10 +539,11 @@ namespace tags
 
         mean_type variance() const
         {
-            using ural::square;
-            return raw_moment(*this, std::integral_constant<size_t, 2>{})
-                    - square(this->mean());
+            return sq_ / this->count();
         }
+
+    private:
+        mean_type sq_;
     };
 
     template <class T, class Base>
