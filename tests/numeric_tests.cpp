@@ -370,3 +370,43 @@ BOOST_AUTO_TEST_CASE(newton_interpolation_test)
 
     BOOST_CHECK_LE(abs(f_mid - P(x_mid)), eps);
 }
+
+#include <ural/numeric/matrix_decomposition.hpp>
+
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/matrix_proxy.hpp>
+
+// @todo матрица с инициализаторами, совместимая с ublas
+
+BOOST_AUTO_TEST_CASE(qr_decomposition_test)
+{
+    using namespace boost::numeric::ublas;
+
+    auto const dim = 3;
+    boost::numeric::ublas::matrix<double> A(dim, dim);
+    A(0, 0) = 12;   A(0, 1) = -51;  A(0, 2) = 4;
+    A(1, 0) = 6;    A(1, 1) = 167;  A(1, 2) = -68;
+    A(2, 0) = -4;   A(2, 1) = 24;   A(2, 2) = -41;
+
+    auto QR = ural::QR_decomposition(A);
+    auto Q = QR[ural::_1];
+    auto R = QR[ural::_2];
+
+    for(size_t i = 0; i != Q.size1(); ++ i)
+    {
+        auto ri = boost::numeric::ublas::row(Q, i);
+
+        BOOST_CHECK_CLOSE(1.0, norm_2(ri), 1e-6);
+
+        for(size_t j = 0; j != i; ++ j)
+        {
+            auto rj = boost::numeric::ublas::row(Q, j);
+
+            BOOST_CHECK(abs(inner_prod(ri, rj)) < 1e-6);
+        }
+    }
+
+    auto A_QR = prod(Q, R);
+
+    BOOST_CHECK(abs(norm_1(A - A_QR)) < 1e-6);
+}

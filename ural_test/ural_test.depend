@@ -130,7 +130,7 @@
 	<ural/concepts.hpp>
 	<ural/tuple.hpp>
 
-1396523041 source:c:\devtools\github\ural\tests\numeric_tests.cpp
+1399642298 source:c:\devtools\github\ural\tests\numeric_tests.cpp
 	<numeric>
 	<forward_list>
 	<boost/test/unit_test.hpp>
@@ -141,6 +141,9 @@
 	<boost/mpl/list.hpp>
 	<ural/numeric/interpolation.hpp>
 	<boost/math/constants/constants.hpp>
+	<ural/numeric/matrix_decomposition.hpp>
+	<boost/numeric/ublas/matrix.hpp>
+	<boost/numeric/ublas/matrix_proxy.hpp>
 
 1396700593 c:\devtools\github\ural\ural\numeric.hpp
 	<ural/functional.hpp>
@@ -11567,4 +11570,279 @@
 
 1399039471 c:\devtools\github\ural\ural\sequence\map.hpp
 	<utility>
+
+1399642422 c:\devtools\github\ural\ural\numeric\matrix_decomposition.hpp
+
+1370085431 c:\devtools\boost_1_54_0\boost\numeric\ublas\matrix.hpp
+	<boost/numeric/ublas/vector.hpp>
+	<boost/numeric/ublas/matrix_expression.hpp>
+	<boost/numeric/ublas/detail/matrix_assign.hpp>
+	<boost/serialization/collection_size_type.hpp>
+	<boost/serialization/array.hpp>
+	<boost/serialization/nvp.hpp>
+
+1370085431 c:\devtools\boost_1_54_0\boost\numeric\ublas\vector.hpp
+	<boost/numeric/ublas/storage.hpp>
+	<boost/numeric/ublas/vector_expression.hpp>
+	<boost/numeric/ublas/detail/vector_assign.hpp>
+	<boost/serialization/collection_size_type.hpp>
+	<boost/serialization/nvp.hpp>
+
+1370085431 c:\devtools\boost_1_54_0\boost\numeric\ublas\storage.hpp
+	<algorithm>
+	<boost/shared_array.hpp>
+	<boost/serialization/array.hpp>
+	<boost/serialization/collection_size_type.hpp>
+	<boost/serialization/nvp.hpp>
+	<boost/numeric/ublas/exception.hpp>
+	<boost/numeric/ublas/traits.hpp>
+	<boost/numeric/ublas/detail/iterator.hpp>
+
+1289061695 c:\devtools\boost_1_54_0\boost\serialization\array.hpp
+	<iostream>
+	<cstddef>
+	<cstddef>
+	<boost/config.hpp>
+	<boost/serialization/nvp.hpp>
+	<boost/serialization/split_member.hpp>
+	<boost/serialization/wrapper.hpp>
+	<boost/mpl/always.hpp>
+	<boost/mpl/apply.hpp>
+	<boost/mpl/bool.hpp>
+	<boost/type_traits/remove_const.hpp>
+	<boost/array.hpp>
+
+1289061695 c:\devtools\boost_1_54_0\boost\serialization\nvp.hpp
+	<utility>
+	<boost/config.hpp>
+	<boost/detail/workaround.hpp>
+	<boost/mpl/integral_c.hpp>
+	<boost/mpl/integral_c_tag.hpp>
+	<boost/serialization/level.hpp>
+	<boost/serialization/tracking.hpp>
+	<boost/serialization/split_member.hpp>
+	<boost/serialization/base_object.hpp>
+	<boost/serialization/traits.hpp>
+	<boost/serialization/wrapper.hpp>
+	<boost/preprocessor/stringize.hpp>
+
+1289061695 c:\devtools\boost_1_54_0\boost\serialization\level.hpp
+	<boost/config.hpp>
+	<boost/detail/workaround.hpp>
+	<boost/type_traits/is_fundamental.hpp>
+	<boost/type_traits/is_enum.hpp>
+	<boost/type_traits/is_array.hpp>
+	<boost/type_traits/is_class.hpp>
+	<boost/type_traits/is_base_and_derived.hpp>
+	<boost/mpl/eval_if.hpp>
+	<boost/mpl/int.hpp>
+	<boost/mpl/integral_c.hpp>
+	<boost/mpl/integral_c_tag.hpp>
+	<boost/mpl/aux_/nttp_decl.hpp>
+	<boost/serialization/level_enum.hpp>
+
+1089666630 c:\devtools\boost_1_54_0\boost\serialization\level_enum.hpp
+
+1289061695 c:\devtools\boost_1_54_0\boost\serialization\tracking.hpp
+	<boost/config.hpp>
+	<boost/static_assert.hpp>
+	<boost/mpl/eval_if.hpp>
+	<boost/mpl/identity.hpp>
+	<boost/mpl/int.hpp>
+	<boost/mpl/equal_to.hpp>
+	<boost/mpl/greater.hpp>
+	<boost/mpl/integral_c_tag.hpp>
+	<boost/type_traits/is_base_and_derived.hpp>
+	<boost/type_traits/is_pointer.hpp>
+	<boost/serialization/level.hpp>
+	<boost/serialization/tracking_enum.hpp>
+	<boost/serialization/type_info_implementation.hpp>
+
+1196014039 c:\devtools\boost_1_54_0\boost\serialization\tracking_enum.hpp
+
+1289061695 c:\devtools\boost_1_54_0\boost\serialization\type_info_implementation.hpp
+	<boost/config.hpp>
+	<boost/detail/workaround.hpp>
+	<boost/static_assert.hpp>
+	<boost/mpl/eval_if.hpp>
+	<boost/mpl/identity.hpp>
+	<boost/type_traits/is_base_and_derived.hpp>
+	<boost/serialization/traits.hpp>
+
+1196014039 c:\devtools\boost_1_54_0\boost\serialization\traits.hpp
+	<boost/config.hpp>
+	<boost/static_assert.hpp>
+	<boost/mpl/int.hpp>
+	<boost/mpl/bool.hpp>
+	<boost/serialization/level_enum.hpp>
+	<boost/serialization/tracking_enum.hpp>
+
+1115368920 c:\devtools\boost_1_54_0\boost\serialization\split_member.hpp
+	<boost/config.hpp>
+	<boost/mpl/eval_if.hpp>
+	<boost/mpl/identity.hpp>
+	<boost/serialization/access.hpp>
+
+1259994769 c:\devtools\boost_1_54_0\boost\serialization\access.hpp
+	<boost/config.hpp>
+	<boost/serialization/pfto.hpp>
+
+1289061695 c:\devtools\boost_1_54_0\boost\serialization\pfto.hpp
+	<boost/config.hpp>
+
+1249169533 c:\devtools\boost_1_54_0\boost\serialization\base_object.hpp
+	<boost/config.hpp>
+	<boost/detail/workaround.hpp>
+	<boost/mpl/eval_if.hpp>
+	<boost/mpl/int.hpp>
+	<boost/mpl/bool.hpp>
+	<boost/mpl/identity.hpp>
+	<boost/type_traits/is_base_and_derived.hpp>
+	<boost/type_traits/is_pointer.hpp>
+	<boost/type_traits/is_const.hpp>
+	<boost/type_traits/is_polymorphic.hpp>
+	<boost/static_assert.hpp>
+	<boost/serialization/access.hpp>
+	<boost/serialization/force_include.hpp>
+	<boost/serialization/void_cast_fwd.hpp>
+
+1332802185 c:\devtools\boost_1_54_0\boost\serialization\force_include.hpp
+	<boost/config.hpp>
+
+1214508344 c:\devtools\boost_1_54_0\boost\serialization\void_cast_fwd.hpp
+	<cstddef>
+	<boost/serialization/force_include.hpp>
+
+1253413122 c:\devtools\boost_1_54_0\boost\serialization\wrapper.hpp
+	<boost/serialization/traits.hpp>
+	<boost/type_traits/is_base_and_derived.hpp>
+	<boost/mpl/eval_if.hpp>
+	<boost/mpl/bool.hpp>
+
+1287382929 c:\devtools\boost_1_54_0\boost\serialization\collection_size_type.hpp
+	<cstddef>
+	<boost/serialization/strong_typedef.hpp>
+	<boost/serialization/level.hpp>
+	<boost/serialization/split_free.hpp>
+	<boost/serialization/is_bitwise_serializable.hpp>
+
+1303515798 c:\devtools\boost_1_54_0\boost\serialization\strong_typedef.hpp
+	<boost/config.hpp>
+	<boost/operators.hpp>
+
+1114059378 c:\devtools\boost_1_54_0\boost\serialization\split_free.hpp
+	<boost/config.hpp>
+	<boost/mpl/eval_if.hpp>
+	<boost/mpl/identity.hpp>
+	<boost/serialization/serialization.hpp>
+
+1289061695 c:\devtools\boost_1_54_0\boost\serialization\serialization.hpp
+	<boost/config.hpp>
+	<boost/serialization/strong_typedef.hpp>
+	<boost/serialization/pfto.hpp>
+	<boost/serialization/access.hpp>
+
+1289061695 c:\devtools\boost_1_54_0\boost\serialization\is_bitwise_serializable.hpp
+	<boost/mpl/bool.hpp>
+	<boost/type_traits/is_arithmetic.hpp>
+
+1370085431 c:\devtools\boost_1_54_0\boost\numeric\ublas\exception.hpp
+	<stdexcept>
+	<cstdlib>
+	<iostream>
+	<boost/numeric/ublas/detail/config.hpp>
+
+1370085431 c:\devtools\boost_1_54_0\boost\numeric\ublas\detail\config.hpp
+	<cassert>
+	<cstddef>
+	<algorithm>
+	<limits>
+	<boost/config.hpp>
+	<boost/static_assert.hpp>
+	<boost/noncopyable.hpp>
+	<boost/mpl/if.hpp>
+	<boost/mpl/and.hpp>
+	<boost/type_traits/is_same.hpp>
+	<boost/type_traits/is_convertible.hpp>
+	<boost/type_traits/is_const.hpp>
+	<boost/type_traits/remove_reference.hpp>
+	<cstdlib>
+	<cstdlib>
+	<boost/numeric/ublas/fwd.hpp>
+	<boost/numeric/ublas/detail/definitions.hpp>
+
+1278309984 c:\devtools\boost_1_54_0\boost\numeric\ublas\fwd.hpp
+	<memory>
+
+1278309984 c:\devtools\boost_1_54_0\boost\numeric\ublas\detail\definitions.hpp
+
+1348002427 c:\devtools\boost_1_54_0\boost\numeric\ublas\traits.hpp
+	<iterator>
+	<complex>
+	<boost/config/no_tr1/cmath.hpp>
+	<boost/numeric/ublas/detail/config.hpp>
+	<boost/numeric/ublas/detail/iterator.hpp>
+	<boost/numeric/ublas/detail/returntype_deduction.hpp>
+	<boost/type_traits.hpp>
+	<complex>
+	<boost/typeof/typeof.hpp>
+	<boost/utility/enable_if.hpp>
+	<boost/type_traits/is_float.hpp>
+	<boost/type_traits/is_integral.hpp>
+	<boost/mpl/and.hpp>
+
+1196014039 c:\devtools\boost_1_54_0\boost\numeric\ublas\detail\iterator.hpp
+	<boost/numeric/ublas/exception.hpp>
+	<iterator>
+
+1120248541 c:\devtools\boost_1_54_0\boost\numeric\ublas\detail\returntype_deduction.hpp
+	<boost/mpl/vector/vector20.hpp>
+	<boost/mpl/at.hpp>
+	<boost/mpl/or.hpp>
+	<boost/mpl/identity.hpp>
+	<boost/type_traits/remove_cv.hpp>
+	<boost/type_traits/is_same.hpp>
+	<boost/utility/enable_if.hpp>
+
+1348002427 c:\devtools\boost_1_54_0\boost\numeric\ublas\vector_expression.hpp
+	<boost/numeric/ublas/expression_types.hpp>
+
+1370085431 c:\devtools\boost_1_54_0\boost\numeric\ublas\expression_types.hpp
+	<boost/numeric/ublas/exception.hpp>
+	<boost/numeric/ublas/traits.hpp>
+	<boost/numeric/ublas/functional.hpp>
+
+1370085431 c:\devtools\boost_1_54_0\boost\numeric\ublas\functional.hpp
+	<functional>
+	<boost/numeric/ublas/traits.hpp>
+	<boost/numeric/ublas/detail/duff.hpp>
+	<boost/numeric/ublas/detail/raw.hpp>
+	<boost/numeric/bindings/traits/std_vector.hpp>
+	<boost/numeric/bindings/traits/ublas_vector.hpp>
+	<boost/numeric/bindings/traits/ublas_matrix.hpp>
+	<boost/numeric/bindings/atlas/cblas.hpp>
+	<boost/numeric/ublas/detail/definitions.hpp>
+
+1196014039 c:\devtools\boost_1_54_0\boost\numeric\ublas\detail\duff.hpp
+
+1196014039 c:\devtools\boost_1_54_0\boost\numeric\ublas\detail\raw.hpp
+
+1196014039 c:\devtools\boost_1_54_0\boost\numeric\ublas\detail\vector_assign.hpp
+	<boost/numeric/ublas/functional.hpp>
+	<vector>
+
+1254871882 c:\devtools\boost_1_54_0\boost\numeric\ublas\matrix_expression.hpp
+	<boost/numeric/ublas/vector_expression.hpp>
+
+1287471695 c:\devtools\boost_1_54_0\boost\numeric\ublas\detail\matrix_assign.hpp
+	<boost/numeric/ublas/traits.hpp>
+	<vector>
+
+1278309984 c:\devtools\boost_1_54_0\boost\numeric\ublas\matrix_proxy.hpp
+	<boost/numeric/ublas/matrix_expression.hpp>
+	<boost/numeric/ublas/detail/vector_assign.hpp>
+	<boost/numeric/ublas/detail/matrix_assign.hpp>
+	<boost/numeric/ublas/detail/temporary.hpp>
+
+1196014039 c:\devtools\boost_1_54_0\boost\numeric\ublas\detail\temporary.hpp
 
