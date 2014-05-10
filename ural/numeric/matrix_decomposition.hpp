@@ -23,7 +23,8 @@
 
 namespace ural
 {
-    /** @brief QR-разложение
+    /** @brief QR-разложение матрицы: представление матрицы в виде произведения
+    ортогональной и верхне-треугольной матрицы.
     @param A разлагаемая матрица
     @return <tt> make_tuple(Q, R) </tt>, где @c Q --- ортогональная матрица,
     @c R --- верхняя треугольная матрица, причём <tt> Q R == A </tt>.
@@ -56,7 +57,7 @@ namespace ural
             qi /= R(i, i);
         }
 
-        return ural::tuple<Matrix, Matrix>(std::move(Q), std::move(R));
+        return std::make_tuple(std::move(Q), std::move(R));
     }
 }
 // namespace ural

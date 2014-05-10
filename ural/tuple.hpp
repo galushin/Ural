@@ -62,6 +62,18 @@ namespace ural
         {}
         //@}
 
+        template <class... Us>
+        constexpr tuple(std::tuple<Us...> const & x);
+
+        /** @brief Инициализирует элементы кортежа
+        <tt> std::forward<Ui>(std::get<i>(other)) <tt>
+        @param x стандартный кортеж, используемый для инициализации
+        */
+        template <class... Us>
+        constexpr tuple(std::tuple<Us...> && x)
+         : Base(std::move(x))
+        {}
+
         //@{
         /** @brief Доступ к элементам по "статическому индексу"
         @tparam Index номер элемента

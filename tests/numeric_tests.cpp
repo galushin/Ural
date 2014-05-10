@@ -377,7 +377,8 @@ BOOST_AUTO_TEST_CASE(newton_interpolation_test)
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 
 // @todo матрица с инициализаторами, совместимая с ublas
-
+// @todo Последовательность строк матрицы
+// @todo Последовательность столбцов матрицы
 BOOST_AUTO_TEST_CASE(qr_decomposition_test)
 {
     using namespace boost::numeric::ublas;
@@ -392,6 +393,7 @@ BOOST_AUTO_TEST_CASE(qr_decomposition_test)
     auto Q = QR[ural::_1];
     auto R = QR[ural::_2];
 
+    // @todo Проверка, что матрица ортогональна
     for(size_t i = 0; i != Q.size1(); ++ i)
     {
         auto ri = boost::numeric::ublas::row(Q, i);
@@ -406,9 +408,24 @@ BOOST_AUTO_TEST_CASE(qr_decomposition_test)
         }
     }
 
-    // @todo Проверить, что R - верхняя треугольная
+    // @todo Проверка, что матрица верхняя треугольная
+    for(size_t i = 0; i != A.size1(); ++ i)
+    {
+        for(size_t j = 0; j != i; ++ j)
+        {
+            BOOST_CHECK_EQUAL(0.0, R(i, j));
+        }
+    }
 
     auto A_QR = prod(Q, R);
 
-    BOOST_CHECK(abs(norm_1(A - A_QR)) < 1e-6);
+    // @todo Проверка, что матрицы примерно равны
+    BOOST_CHECK_EQUAL(A.size1(), A_QR.size1());
+    BOOST_CHECK_EQUAL(A.size2(), A_QR.size2());
+
+    for(size_t i = 0; i != A.size1(); ++ i)
+    for(size_t j = 0; j != A.size2(); ++ j)
+    {
+        BOOST_CHECK_CLOSE(A(i, j), A_QR(i, j), 1e-6);
+    }
 }
