@@ -406,6 +406,8 @@ BOOST_AUTO_TEST_CASE(qr_decomposition_test)
         }
     }
 
+    // @todo Проверить, что R - верхняя треугольная
+
     auto A_QR = prod(Q, R);
 
     BOOST_CHECK(abs(norm_1(A - A_QR)) < 1e-6);

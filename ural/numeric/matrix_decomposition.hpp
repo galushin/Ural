@@ -23,29 +23,38 @@
 
 namespace ural
 {
+    /** @brief QR-разложение
+    @param A разлагаемая матрица
+    @return <tt> make_tuple(Q, R) </tt>, где @c Q --- ортогональная матрица,
+    @c R --- верхняя треугольная матрица, причём <tt> Q R == A </tt>.
+    */
     template <class Matrix>
     ural::tuple<Matrix, Matrix>
-    QR_decomposition(Matrix const & A)
+    QR_decomposition(Matrix Q)
     {
-        // @todo оптимизация вычисления R
-        // @todo настройка
-        auto Q = A;
-        for(size_t i = 0; i != Q.size1(); ++ i)
+        assert(Q.size1() == Q.size2());
+        Matrix R(Q.size1(), Q.size2());
+
+        // @todo настройка метода вычисления
+        for(size_t i = 0; i != Q.size2(); ++ i)
         {
-            auto ri = row(Q, i);
+            auto qi = column(Q, i);
 
             for(size_t j = 0; j != i; ++ j)
             {
-                auto rj = row(Q, j);
+                auto qj = column(Q, j);
 
-                ri -= inner_prod(ri, rj) * rj;
+                R(j, i) = inner_prod(qi, qj);
+
+                qi -= R(j, i) * qj;
             }
 
-            using std::sqrt;
-            ri /= norm_2(ri);
-        }
+            R(i, i) = norm_2(qi);
 
-        auto R = prod(trans(Q), A);
+            assert(R(i, i) != 0);
+
+            qi /= R(i, i);
+        }
 
         return ural::tuple<Matrix, Matrix>(std::move(Q), std::move(R));
     }
