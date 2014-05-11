@@ -247,24 +247,40 @@ namespace ural
     //@}
 
     // Универсальный интерфейс для кортежей, pair, complex, compressed_pair
+    /** @brief Первый элемент пары
+    @param x пара
+    @return <tt> x.first </tt>
+    */
     template <class T1, class T2>
     T1 const & get(std::pair<T1, T2> const & x, ural::placeholder<0>)
     {
         return x.first;
     }
 
+    /** @brief Второй элемент пары
+    @param x пара
+    @return <tt> x.second </tt>
+    */
     template <class T1, class T2>
     T2 const & get(std::pair<T1, T2> const & x, ural::placeholder<1>)
     {
         return x.second;
     }
 
+    /** @brief Первый элемент сжатой пары <tt> boost::compressed_pair </tt>
+    @param x пара
+    @return <tt> x.first() </tt>
+    */
     template <class T1, class T2>
     T1 const & get(boost::compressed_pair<T1, T2> const & x, ural::placeholder<0>)
     {
         return x.first();
     }
 
+    /** @brief Второй элемент сжатой пары <tt> boost::compressed_pair </tt>
+    @param x пара
+    @return <tt> x.second() </tt>
+    */
     template <class T1, class T2>
     T2 const & get(boost::compressed_pair<T1, T2> const & x, ural::placeholder<1>)
     {

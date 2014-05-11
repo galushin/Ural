@@ -44,7 +44,7 @@ namespace ural
         typedef T type;
     };
 
-    /** @brief Синоним для <tt> std::decay </tt>
+    /** @brief Синоним для <tt> typename std::decay<T>::type </tt>
     @tparam T тип-аргумент
     */
     template <class T>

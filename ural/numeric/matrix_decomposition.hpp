@@ -28,6 +28,9 @@ namespace ural
     @param A разлагаемая матрица
     @return <tt> make_tuple(Q, R) </tt>, где @c Q --- ортогональная матрица,
     @c R --- верхняя треугольная матрица, причём <tt> Q R == A </tt>.
+    @todo настройка метода вычисления
+    @todo Должна ли матрица быть квадратной?
+    @todo Настройка операции скалярного произведения
     */
     template <class Matrix>
     ural::tuple<Matrix, Matrix>
@@ -36,7 +39,6 @@ namespace ural
         assert(Q.size1() == Q.size2());
         Matrix R(Q.size1(), Q.size2());
 
-        // @todo настройка метода вычисления
         for(size_t i = 0; i != Q.size2(); ++ i)
         {
             auto qi = column(Q, i);

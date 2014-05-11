@@ -18,8 +18,8 @@
 */
 
 /** @file ural/tuple.hpp
- @brief Кортежи --- гетерогенный контейнер фиксированного на этапе компиляции
- размера.
+ @brief Кортеж --- гетерогенный контейнер фиксированного на этапе компиляции
+ размера, а также аналоги стандартных алгоритмов для кортежей.
 */
 
 #include <tuple>
@@ -41,6 +41,7 @@ namespace ural
         /** Инициализирует каждый элемент с помощью соответствующих
         конструкторов без аргументов.
         @brief Конструктор без аргументов
+        @post <tt> std::get<i>(x) == Ts[i]{} </tt>
         */
         constexpr tuple()
          : Base{}
@@ -66,7 +67,7 @@ namespace ural
         constexpr tuple(std::tuple<Us...> const & x);
 
         /** @brief Инициализирует элементы кортежа
-        <tt> std::forward<Ui>(std::get<i>(other)) <tt>
+        <tt> std::forward<Ui>(std::get<i>(x)) <tt>
         @param x стандартный кортеж, используемый для инициализации
         */
         template <class... Us>
@@ -95,6 +96,10 @@ namespace ural
         //@}
     };
 
+    /** @brief Создание кортежа ссылок, пригодных для передачи в функцию
+    @param args аргументы
+    @return <tt> tuple<Args && ...>(std::forward<Args>(args)...) </tt>
+    */
     template <class... Args>
     constexpr tuple<Args && ...>
     forward_as_tuple(Args &&... args) noexcept
@@ -102,7 +107,7 @@ namespace ural
         return tuple<Args && ...>(std::forward<Args>(args)...);
     }
 
-
+/// @cond false
 namespace details
 {
     template <class Tuple, class UnaryPredicate, size_t Index>
@@ -123,6 +128,14 @@ namespace details
     }
 }
 // namespace details
+/// @endcond
+
+    /** @brief Проверка того, что все элементы кортежа удовлетворяют предикату
+    @param x кортеж
+    @param pred предикат
+    @return @b true, если все элементы кортежа @c x удовлетворяют предикату
+    @c pred, иначе --- @b false.
+    */
     template <class Tuple, class UnaryPredicate>
     typename std::enable_if<(std::tuple_size<Tuple>::value > 0), bool>::type
     any_of(Tuple const & x, UnaryPredicate pred)

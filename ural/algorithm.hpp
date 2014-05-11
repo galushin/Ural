@@ -31,6 +31,12 @@
 
 namespace ural
 {
+    /** @brief Применяет функциональный объект к каждому элементу
+    последовательности
+    @param in входная последовательность
+    @param f функциональный объект
+    @return @c f
+    */
     template <class Input, class UnaryFunction>
     auto for_each(Input && in, UnaryFunction f)
     -> decltype(ural::make_functor(std::move(f)))
@@ -73,6 +79,13 @@ namespace ural
                             ural::equal_to<T>{});
     }
 
+    /** @brief Подсчитывает количество элементов последовательности,
+    удовлетворяющих предикату.
+    @param in входная последовтельность
+    @param pred предикат
+    @return Количество элементов @c x последовательности @c in, таких, что
+    <tt> pred(x) != false </tt>.
+    */
     template <class Input, class UnaryPredicate>
     auto count_if(Input && in, UnaryPredicate pred)
     -> typename decltype(sequence(std::forward<Input>(in)))::distance_type
@@ -91,6 +104,13 @@ namespace ural
                                            std::ref(value)));
     }
 
+    /** @brief Подсчитывает количество элементов последовательности, равных
+    заданному значению.
+    @param in входная последовтельность
+    @param value значение
+    @return Количество элементов @c x последовательности @c in, таких, что
+    <tt> x == value </tt>.
+    */
     template <class Input, class T>
     auto count(Input && in, T const & value)
     -> typename decltype(sequence(std::forward<Input>(in)))::distance_type
@@ -99,6 +119,13 @@ namespace ural
                              ural::equal_to<T>{});
     }
 
+    /** @brief Проверяет, что все элементы последовательности удовлетворяют
+    заданному предикату
+    @param in входная последовтельность
+    @param pred предикат
+    @return @b true, если для всех элементов @c x последовательности @c in
+    выполняется <tt> pred(x) != false </tt>
+    */
     template <class Input, class UnaryPredicate>
     bool all_of(Input && in, UnaryPredicate pred)
     {
@@ -111,6 +138,13 @@ namespace ural
         return !::ural::find_if(std::forward<Input>(in), std::move(pred));
     }
 
+    /** @brief Проверяет, что хотя бы один элемент последовательности
+    удовлетворяет заданному предикату.
+    @param in входная последовтельность
+    @param pred предикат
+    @return @b true, если для хотя бы одного элемента @c x последовательности
+    @c in выполняется <tt> pred(x) != false </tt>
+    */
     template <class Input, class UnaryPredicate>
     bool any_of(Input && in, UnaryPredicate pred)
     {
