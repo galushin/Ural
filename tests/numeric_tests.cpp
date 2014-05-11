@@ -14,15 +14,15 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <numeric>
-#include <forward_list>
-
-#include <boost/test/unit_test.hpp>
-
+#include <ural/numeric/matrix.hpp>
 #include <ural/algorithm.hpp>
 #include <ural/numeric.hpp>
 
+#include <numeric>
+#include <forward_list>
 #include <cmath>
+
+#include <boost/test/unit_test.hpp>
 
 // @todo тестировать с архетипами
 
@@ -376,7 +376,6 @@ BOOST_AUTO_TEST_CASE(newton_interpolation_test)
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 
-// @todo матрица с инициализаторами, совместимая с ublas
 // @todo Последовательность строк матрицы
 // @todo Последовательность столбцов матрицы
 BOOST_AUTO_TEST_CASE(qr_decomposition_test)
@@ -403,6 +402,69 @@ BOOST_AUTO_TEST_CASE(qr_decomposition_test)
         for(size_t j = 0; j != i; ++ j)
         {
             auto rj = boost::numeric::ublas::row(Q, j);
+
+            BOOST_CHECK(abs(inner_prod(ri, rj)) < 1e-6);
+        }
+    }
+
+    // @todo Проверка, что матрица верхняя треугольная
+    for(size_t i = 0; i != A.size1(); ++ i)
+    {
+        for(size_t j = 0; j != i; ++ j)
+        {
+            BOOST_CHECK_EQUAL(0.0, R(i, j));
+        }
+    }
+
+    auto A_QR = prod(Q, R);
+
+    // @todo Проверка, что матрицы примерно равны
+    BOOST_CHECK_EQUAL(A.size1(), A_QR.size1());
+    BOOST_CHECK_EQUAL(A.size2(), A_QR.size2());
+
+    for(size_t i = 0; i != A.size1(); ++ i)
+    for(size_t j = 0; j != A.size2(); ++ j)
+    {
+        BOOST_CHECK_CLOSE(A(i, j), A_QR(i, j), 1e-6);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(matrix_init_test)
+{
+    ural::matrix<double> const A(3, 3, 0.0);
+
+    for(size_t i = 0; i != A.size1(); ++ i)
+    for(size_t j = 0; j != A.size2(); ++ j)
+    {
+        BOOST_CHECK_EQUAL(0.0, A(i, j));
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(qr_decomposition_test_init_list)
+{
+    using namespace boost::numeric::ublas;
+
+    ural::matrix<double> const A
+        = {{12, -51, 4}, {6, 167, -68}, {-4, 24, -41}};
+
+    BOOST_CHECK_EQUAL(3, A.size1());
+    BOOST_CHECK_EQUAL(3, A.size2());
+
+    auto QR = ural::QR_decomposition(A);
+    auto Q = QR[ural::_1];
+    auto R = QR[ural::_2];
+
+    // @todo Проверка, что матрица ортогональна
+    for(size_t i = 0; i != Q.size1(); ++ i)
+    {
+        auto ri = row(Q, i);
+
+        BOOST_CHECK_CLOSE(1.0, norm_2(ri), 1e-6);
+
+        for(size_t j = 0; j != i; ++ j)
+        {
+            auto rj = row(Q, j);
 
             BOOST_CHECK(abs(inner_prod(ri, rj)) < 1e-6);
         }

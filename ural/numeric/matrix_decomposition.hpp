@@ -37,7 +37,7 @@ namespace ural
     QR_decomposition(Matrix Q)
     {
         assert(Q.size1() == Q.size2());
-        Matrix R(Q.size1(), Q.size2());
+        Matrix R(Q.size1(), Q.size2(), typename Matrix::value_type{0.0});
 
         for(size_t i = 0; i != Q.size2(); ++ i)
         {

@@ -130,13 +130,14 @@
 	<ural/concepts.hpp>
 	<ural/tuple.hpp>
 
-1399733858 source:c:\devtools\github\ural\tests\numeric_tests.cpp
-	<numeric>
-	<forward_list>
-	<boost/test/unit_test.hpp>
+1399798474 source:c:\devtools\github\ural\tests\numeric_tests.cpp
+	<ural/numeric/matrix.hpp>
 	<ural/algorithm.hpp>
 	<ural/numeric.hpp>
+	<numeric>
+	<forward_list>
 	<cmath>
+	<boost/test/unit_test.hpp>
 	<ural/numeric/polynom.hpp>
 	<boost/mpl/list.hpp>
 	<ural/numeric/interpolation.hpp>
@@ -11571,7 +11572,7 @@
 1399039471 c:\devtools\github\ural\ural\sequence\map.hpp
 	<utility>
 
-1399737910 c:\devtools\github\ural\ural\numeric\matrix_decomposition.hpp
+1399798446 c:\devtools\github\ural\ural\numeric\matrix_decomposition.hpp
 
 1370085431 c:\devtools\boost_1_54_0\boost\numeric\ublas\matrix.hpp
 	<boost/numeric/ublas/vector.hpp>
@@ -11845,4 +11846,7 @@
 	<boost/numeric/ublas/detail/temporary.hpp>
 
 1196014039 c:\devtools\boost_1_54_0\boost\numeric\ublas\detail\temporary.hpp
+
+1399798492 c:\devtools\github\ural\ural\numeric\matrix.hpp
+	<boost/numeric/ublas/matrix.hpp>
 
