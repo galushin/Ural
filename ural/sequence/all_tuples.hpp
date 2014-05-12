@@ -31,9 +31,10 @@ namespace ural
     /** @brief Последовательность всех кортежей (в лексикографическом порядке)
     @tparam Inputs типы базовых последовательностей
 
-    Идея "зациклить" все последовательности, кроме первой, кажется
+    @note Идея "зациклить" все последовательности, кроме первой, кажется
     соблазнительной, но, к сожалению, это невозможно, так как требуется
     обнаружение "переполнения" для переноса разрядов.
+    @todo Усилить категорию обхода
     */
     template <class... Inputs>
     class all_tuples_sequence
@@ -43,6 +44,9 @@ namespace ural
         // Типы
         /// @brief Тип ссылки
         typedef tuple<typename Inputs::reference...> reference;
+
+        /// @brief Категория обхода
+        typedef single_pass_traversal_tag traversal_tag;
 
         /// @brief Тип значения
         typedef tuple<typename Inputs::value_type...> value_type;

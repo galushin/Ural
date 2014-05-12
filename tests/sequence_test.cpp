@@ -236,10 +236,7 @@ BOOST_AUTO_TEST_CASE(all_tuples_is_sorted_test)
 
     std::vector<decltype(s2)::value_type> r2;
 
-    for(; !!s2; ++ s2)
-    {
-        r2.emplace_back(*s2);
-    }
+    ural::copy(s2, r2 | ural::back_inserter);
 
     BOOST_CHECK_EQUAL(100, r2.size());
     BOOST_CHECK(std::is_sorted(r2.begin(), r2.end()));
