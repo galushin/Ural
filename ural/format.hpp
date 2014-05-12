@@ -79,12 +79,27 @@ namespace ural
         return os;
     }
 
+    template <class String>
+    class basic_istringstream
+     : public std::basic_istringstream<typename String::value_type,
+                                       typename String::traits_type>
+    {
+        typedef std::basic_istringstream<typename String::value_type,
+                                         typename String::traits_type> Base;
+
+    public:
+        basic_istringstream(String const & s)
+         : Base(s)
+        {}
+
+        basic_istringstream(String && s);
+    };
+
     /** @brief Функциональный объект, преобразующий из строки в заданный тип
-    @tparam Ch тип символа
-    @tparam Tr класс-характеристика символа
+    @tparam String тип строки
     @tparam T тип, в который осуществляется преобразование.
     */
-    template <class Ch, class Tr, class T>
+    template <class String, class T>
     class from_string_policy
     {
     public:
@@ -92,12 +107,12 @@ namespace ural
         typedef T result_type;
 
         /** @brief Преобразование
-        @param s строка
+        @param s преобразуемая строка
         @return Значение, записанное в строке @c s.
         */
-        result_type operator()(std::basic_string<Ch, Tr> const & s) const
+        result_type operator()(String const & s) const
         {
-            std::basic_istringstream<Ch, Tr> is(s);
+            ural::basic_istringstream<String> is(s);
             T reader;
             is >> reader;
             assert(is.eof());
@@ -106,16 +121,21 @@ namespace ural
     };
 
     /** @brief Специализация для преобразования строки в саму себя
-    @tparam Ch тип символа
-    @tparam Tr класс-характеристика символа
+    @tparam String тип строки
+    @todo Можно ли возвращать по константной ссылке
     */
-    template <class Ch, class Tr>
-    class from_string_policy<Ch, Tr, std::basic_string<Ch, Tr>>
+    template <class String>
+    class from_string_policy<String, String>
     {
     public:
-        typedef std::basic_string<Ch, Tr> result_type;
+        /// @brief Тип возвращаемого значения
+        typedef String result_type;
 
-        result_type operator()(std::basic_string<Ch, Tr> const & s) const
+        /** @brief Преобразование
+        @param s преобразуемая строка
+        @return @c s
+        */
+        result_type operator()(String const & s) const
         {
             return s;
         }
@@ -123,15 +143,14 @@ namespace ural
 
     /** @brief Преобразования из строки в значение
     @tparam T тип, в который осуществляется преобразование.
-    @tparam Ch тип символа
-    @tparam Tr класс-характеристика символа
+    @tparam String тип строки
     @param s строка
     @return from_string_policy<Ch, Tr, T>{}(s)
     */
-    template <class T, class Ch, class Tr>
-    T from_string(std::basic_string<Ch, Tr> const & s)
+    template <class T, class String>
+    T from_string(String const & s)
     {
-        return from_string_policy<Ch, Tr, T>{}(s);
+        return from_string_policy<String, T>{}(s);
     }
 
     /** @brief Ввод однородной таблицы (матрицы) из потока
@@ -162,7 +181,8 @@ namespace ural
 
             std::vector<T> row;
 
-            from_string_policy<char_type, traits_type, T> constexpr converter{};
+            from_string_policy<std::basic_string<char_type, traits_type>, T>
+                constexpr converter{};
 
             ural::copy(ural::make_transform_sequence(converter, cell_seq),
                        row | ural::back_inserter);

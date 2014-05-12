@@ -586,7 +586,7 @@
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
-1398741705 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
+1399865362 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
 	<ural/abi.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/all.hpp>
@@ -9800,7 +9800,7 @@
 	<sstream>
 	<sstream>
 
-1399865944 c:\devtools\ural_repo\ural\ural\format.hpp
+1399868528 c:\devtools\ural_repo\ural\ural\format.hpp
 	<ural/algorithm.hpp>
 	<ural/sequence/make.hpp>
 	<ural/sequence/by_line.hpp>
