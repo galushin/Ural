@@ -21,6 +21,7 @@
  @brief Средства форматированного ввода/вывода
  @todo Оптимизация
  @todo istringstream для произвольных строк, не обязательно basic_string<>
+ @todo os << delimeted(seq, ", ") << "\n";
 */
 
 #include <ural/algorithm.hpp>
@@ -34,6 +35,36 @@
 
 namespace ural
 {
+    /** @brief Вывод в поток элементов последовательности, разделённых заданным
+    объектом.
+    @param os поток вывода
+    @param seq последовательность
+    @param delim разделител
+    @return @c os
+    @todo Унифицировать с @c describe
+    */
+    template <class OStream, class Sequence, class Delim>
+    OStream &
+    write_delimeted(OStream & os, Sequence && seq, Delim const & delim)
+    {
+        auto s = sequence(std::forward<Sequence>(seq));
+
+        if(!s)
+        {
+            return os;
+        }
+
+        os << *s;
+        ++ s;
+
+        for(; !!s; ++ s)
+        {
+            os << delim << *s;
+        }
+
+        return os;
+    }
+
     /** @brief Вывод таблицы в поток
     @param os поток вывода
     @tparam table таблица
@@ -43,20 +74,7 @@ namespace ural
     {
         for(auto & row : table)
         {
-            auto s = ural::sequence(row);
-
-            if(!!s)
-            {
-                os << *s;
-                ++ s;
-
-                for(; !!s; ++ s)
-                {
-                    os << "\t" << *s;
-                }
-            }
-
-            os << "\n";
+            ural::write_delimeted(os, row, "\t") << "\n";
         }
         return os;
     }
