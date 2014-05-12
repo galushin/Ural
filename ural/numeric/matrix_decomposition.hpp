@@ -21,8 +21,20 @@
  @brief Разложения матриц
 */
 
+#include <boost/numeric/ublas/triangular.hpp>
+
 namespace ural
 {
+    template <class M, class Type>
+    struct make_triangular_matrix
+    {
+    private:
+        typedef typename M::value_type Value;
+
+    public:
+        typedef boost::numeric::ublas::triangular_matrix<Value, Type> type;
+    };
+
     /** @brief QR-разложение матрицы: представление матрицы в виде произведения
     ортогональной и верхне-треугольной матрицы.
     @param A разлагаемая матрица
@@ -31,13 +43,15 @@ namespace ural
     @todo настройка метода вычисления
     @todo Должна ли матрица быть квадратной?
     @todo Настройка операции скалярного произведения
+    @todo Вторая компонента должна быть треугольной матрицей
     */
     template <class Matrix>
-    ural::tuple<Matrix, Matrix>
+    ural::tuple<Matrix, typename make_triangular_matrix<Matrix, boost::numeric::ublas::upper>::type>
     QR_decomposition(Matrix Q)
     {
         assert(Q.size1() == Q.size2());
-        Matrix R(Q.size1(), Q.size2(), typename Matrix::value_type{0.0});
+        typename make_triangular_matrix<Matrix, boost::numeric::ublas::upper>::type
+            R(Q.size1(), Q.size2());
 
         for(size_t i = 0; i != Q.size2(); ++ i)
         {

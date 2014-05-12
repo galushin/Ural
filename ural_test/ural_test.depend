@@ -41,7 +41,7 @@
 
 1382674135 c:\devtools\ural_repo\ural\\ural\sequence\insertion.hpp
 
-1399851848 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
+1399886376 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
 	<ural/numeric/matrix.hpp>
 	<ural/algorithm.hpp>
 	<ural/numeric.hpp>
@@ -510,7 +510,7 @@
 1399537733 c:\devtools\ural_repo\ural\ural\defs.hpp
 	<ural/type_traits.hpp>
 
-1399873416 c:\devtools\ural_repo\ural\ural\sequence\transform.hpp
+1399877431 c:\devtools\ural_repo\ural\ural\sequence\transform.hpp
 	<ural/meta/list.hpp>
 	<ural/meta/hierarchy.hpp>
 	<ural/functional.hpp>
@@ -11861,5 +11861,11 @@
 	<boost/numeric/ublas/matrix.hpp>
 	<algorithm>
 
-1399851848 c:\devtools\ural_repo\ural\ural\numeric\matrix_decomposition.hpp
+1399886528 c:\devtools\ural_repo\ural\ural\numeric\matrix_decomposition.hpp
+	<boost/numeric/ublas/triangular.hpp>
+
+1348002427 c:\devtools\boost_1_54_0\boost\numeric\ublas\triangular.hpp
+	<boost/numeric/ublas/matrix.hpp>
+	<boost/numeric/ublas/detail/temporary.hpp>
+	<boost/type_traits/remove_const.hpp>
 
