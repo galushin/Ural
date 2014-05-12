@@ -79,7 +79,6 @@ namespace ural
 
     private:
         template <class It>
-
         static size_type max_size(It first, It last)
         {
             typedef std::initializer_list<T> Row;

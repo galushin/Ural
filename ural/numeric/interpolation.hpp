@@ -23,19 +23,35 @@
 
 namespace ural
 {
+    /** @brief Интерполяционный многочлен Ньютона
+    @param X тип аргумента
+    @param Y тип значения
+    */
     template <class X = double, class Y = X>
     class newton_polynomial
     {
     public:
         // Типы
+        /// @brief Тип размера
         typedef size_t size_type;
+
+        /// @brief Тип возвращаемого значения
         typedef Y result_type;
+
+        /// @brief Тип аргумента
         typedef X argument_type;
+
+        /// @brief Отпимальный тип для передачи аргумента
         typedef typename boost::call_traits<argument_type>::param_type param_type;
 
         // Конструкторы
 
         // Добавление новых значений
+        /** @brief Добавления новой точки к многочлену
+        @param x значение аргумента
+        @param y значение функции
+        @todo Настройка обработки повторяющихся @c x
+        */
         void update(X const & x, Y const & y)
         {
             auto denom = X{1.0};
@@ -53,11 +69,18 @@ namespace ural
         }
 
         // Свойства
+        /** @brief Степень многочлена
+        @return Степень многочлена
+        */
         size_type degree() const
         {
             return data_.empty() ? 0 : data_.size() - 1;
         }
 
+        /** @brief Вычисление значения многочлена в точке
+        @param x точка, в которой вычисляется значение многочлена
+        @return Значение многочлена в данной точке
+        */
         result_type operator()(param_type x) const
         {
             if(data_.empty())
