@@ -22,6 +22,8 @@
  объектов
 */
 
+#include <boost/compressed_pair.hpp>
+
 namespace ural
 {
     // Композиция функциональных объектов

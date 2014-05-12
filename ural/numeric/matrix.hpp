@@ -21,7 +21,9 @@
  @brief Матрица для численных приложений
 */
 
+#include <ural/functional/compare_by.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
+#include <algorithm>
 
 namespace ural
 {
@@ -59,16 +61,19 @@ namespace ural
         // Конструкторы
         using Base::Base;
 
+        /** @brief Конструктор
+        @param xs список элементов матрицы
+        @post <tt> this->size1() ==  xs.size() </tt>
+        @post <tt> this->size2() ==  max{xs[i].size()} </tt>
+        */
         matrix(std::initializer_list<std::initializer_list<T>> xs)
          : Base{xs.size(), matrix::max_size(xs.begin(), xs.end())}
         {
             // @todo Убедиться, что все строки одинаковой длинны
-            // @todo Вместо matrix::max_size использовать max_element
             for(size_type row = 0; row != this->size1(); ++ row)
             for(size_type col = 0; col != this->size2(); ++ col)
             {
-                auto value = xs.begin()[row].begin()[col];
-                Base::operator()(row, col) = std::move(value);
+                Base::operator()(row, col) = xs.begin()[row].begin()[col];
             }
         }
 
@@ -77,19 +82,13 @@ namespace ural
 
         static size_type max_size(It first, It last)
         {
-            if(first == last)
-            {
-                return 0;
-            }
+            typedef std::initializer_list<T> Row;
 
-            size_type result = first->size();
-            ++first;
+            auto r = std::max_element(first, last, ural::compare_by(&Row::size));
 
-            for(; first != last; ++ first)
-            {
-                result = std::max(result, first->size());
-            }
-            return result;
+            assert(r != last);
+
+            return r->size();
         }
     };
 }

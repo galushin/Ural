@@ -19,6 +19,7 @@
 
 #include <ural/type_traits.hpp>
 #include <ural/defs.hpp>
+#include <boost/call_traits.hpp>
 
 /** @file ural/functional/make_functor.hpp
  @brief Классы и функции для преобразования указателей на функции, функции-члены
