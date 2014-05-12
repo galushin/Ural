@@ -133,6 +133,26 @@ namespace ural
         return Result(ural::make_functor(std::move(f)),
                       sequence(std::forward<Inputs>(in))...);
     }
+
+    template <class UnaryFunction>
+    struct transformed_helper
+    {
+        UnaryFunction f;
+    };
+
+    template <class Sequence, class UnaryFunction>
+    auto operator|(Sequence && in, transformed_helper<UnaryFunction> helper)
+    -> decltype(make_transform_sequence(helper.f, std::forward<Sequence>(in)))
+    {
+        return make_transform_sequence(helper.f, std::forward<Sequence>(in));
+    }
+
+    template <class UnaryFunction>
+    auto transformed(UnaryFunction f)
+    -> transformed_helper<decltype(ural::make_functor(std::move(f)))>
+    {
+        return {ural::make_functor(std::move(f))};
+    }
 }
 // namespace ural
 

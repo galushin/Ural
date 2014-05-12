@@ -65,6 +65,17 @@ namespace ural
         return os;
     }
 
+    /** @brief Класс-характеристика для потоков ввода и вывода
+    @tparam Stream поток ввода или вывода
+    */
+    template <class Stream>
+    struct stream_traits
+    {
+        typedef typename Stream::char_type char_type;
+        typedef typename Stream::traits_type traits_type;
+        typedef typename std::basic_string<char_type, traits_type> string_type;
+    };
+
     /** @brief Вывод таблицы в поток
     @param os поток вывода
     @tparam table таблица
@@ -171,20 +182,19 @@ namespace ural
 
         for(; !!seq; ++ seq)
         {
-            typedef typename input_stream_type::char_type char_type;
-            typedef typename input_stream_type::traits_type traits_type;
-            std::basic_string<char_type, traits_type> const & str = *seq;
-            std::basic_istringstream<char_type, traits_type> str_is(str);
+            typedef typename stream_traits<input_stream_type>::string_type
+                String;
+
+            String const & str = *seq;
+            ural::basic_istringstream<String> str_is(str);
             str_is >> std::ws;
 
             auto cell_seq = ural::by_line(str_is, '\t');
 
+            from_string_policy<String, T> constexpr converter{};
+
             std::vector<T> row;
-
-            from_string_policy<std::basic_string<char_type, traits_type>, T>
-                constexpr converter{};
-
-            ural::copy(ural::make_transform_sequence(converter, cell_seq),
+            ural::copy(cell_seq | ural::transformed(converter),
                        row | ural::back_inserter);
 
             result.push_back(std::move(row));

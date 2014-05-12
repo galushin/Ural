@@ -510,7 +510,7 @@
 1399537733 c:\devtools\ural_repo\ural\ural\defs.hpp
 	<ural/type_traits.hpp>
 
-1399081314 c:\devtools\ural_repo\ural\ural\sequence\transform.hpp
+1399873416 c:\devtools\ural_repo\ural\ural\sequence\transform.hpp
 	<ural/meta/list.hpp>
 	<ural/meta/hierarchy.hpp>
 	<ural/functional.hpp>
@@ -9800,7 +9800,7 @@
 	<sstream>
 	<sstream>
 
-1399868528 c:\devtools\ural_repo\ural\ural\format.hpp
+1399873041 c:\devtools\ural_repo\ural\ural\format.hpp
 	<ural/algorithm.hpp>
 	<ural/sequence/make.hpp>
 	<ural/sequence/by_line.hpp>
