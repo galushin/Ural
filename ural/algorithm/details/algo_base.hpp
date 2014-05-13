@@ -147,7 +147,6 @@ namespace details
                 ++ result;
             }
         }
-
         return result;
     }
 
@@ -180,7 +179,6 @@ namespace details
                 return in;
             }
         }
-
         return in;
     }
 
@@ -212,7 +210,6 @@ namespace details
     {
         BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<Forward1>));
         BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Forward1>));
-
         BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<Forward2>));
         BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Forward2>));
 
@@ -255,7 +252,6 @@ namespace details
             return in;
         }
 
-
         for(; !!in; ++ in)
         {
             if(!bin_pred(*in, value))
@@ -292,7 +288,6 @@ namespace details
     {
         BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<Forward1>));
         BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Forward1>));
-
         BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<Forward2>));
         BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Forward2>));
 
@@ -342,12 +337,12 @@ namespace details
     tuple<Input1, Input2>
     mismatch(Input1 in1, Input2 in2, BinaryPredicate pred)
     {
-        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input1>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input1>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input2>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input2>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate,
-                                                        bool(decltype(*in1), decltype(*in2))>));
+        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input1>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input1>));
+        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input2>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input2>));
+        BOOST_CONCEPT_ASSERT((concepts::Callable<BinaryPredicate,
+                                                 bool(decltype(*in1), decltype(*in2))>));
 
         typedef tuple<Input1, Input2> Tuple;
         for(; !!in1 && !!in2; ++ in1, ++ in2)
@@ -357,7 +352,6 @@ namespace details
                 break;
             }
         }
-
         return Tuple{std::move(in1), std::move(in2)};
     }
 
@@ -484,7 +478,6 @@ namespace details
             return ::ural::details::rotate(::ural::shrink_front(r[ural::_1]),
                                            in2);
         }
-
     }
 
     template <class ForwardSequence>
@@ -536,8 +529,8 @@ namespace details
     {
         typedef decltype(gen()) result_type;
 
-        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<ForwardSequence>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<ForwardSequence, result_type>));
+        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<ForwardSequence>));
+        BOOST_CONCEPT_ASSERT((concepts::WritableSequence<ForwardSequence, result_type>));
 
         auto r = ural::details::copy(ural::make_generator_sequence(std::move(gen)),
                                      std::move(seq));
@@ -548,8 +541,8 @@ namespace details
     ForwardSequence
     fill(ForwardSequence seq, T const & value)
     {
-        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<ForwardSequence>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<ForwardSequence, T const &>));
+        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<ForwardSequence>));
+        BOOST_CONCEPT_ASSERT((concepts::WritableSequence<ForwardSequence, T const &>));
 
         return ::ural::details::generate(std::move(seq),
                                          ural::value_functor<T const &>(value));
@@ -646,8 +639,7 @@ namespace details
         auto r =
             ::ural::details::inplace_stable_partition(std::move(s), pred);
         auto const nt = ural::size(r.traversed_front());
-        ural::advance(in, nt);
-        return in;
+        return ural::next(in, nt);
     }
 
     template <class Input, class Output1, class Output2, class UnaryPredicate>
@@ -1243,6 +1235,5 @@ namespace details
 // namespace details
 }
 // namespace ural
-
 #endif
 // Z_URAL_ALGO_BASE_HPP_INCLUDED
