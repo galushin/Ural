@@ -41,7 +41,7 @@
 
 1382674135 c:\devtools\ural_repo\ural\\ural\sequence\insertion.hpp
 
-1399886376 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
+1399943391 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
 	<ural/numeric/matrix.hpp>
 	<ural/algorithm.hpp>
 	<ural/numeric.hpp>
@@ -11861,7 +11861,8 @@
 	<boost/numeric/ublas/matrix.hpp>
 	<algorithm>
 
-1399886528 c:\devtools\ural_repo\ural\ural\numeric\matrix_decomposition.hpp
+1399944682 c:\devtools\ural_repo\ural\ural\numeric\matrix_decomposition.hpp
+	<ural/math.hpp>
 	<boost/numeric/ublas/triangular.hpp>
 
 1348002427 c:\devtools\boost_1_54_0\boost\numeric\ublas\triangular.hpp

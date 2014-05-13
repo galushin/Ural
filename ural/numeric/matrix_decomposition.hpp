@@ -21,6 +21,8 @@
  @brief Разложения матриц
 */
 
+#include <ural/math.hpp>
+
 #include <boost/numeric/ublas/triangular.hpp>
 
 namespace ural
@@ -46,7 +48,7 @@ namespace ural
     @todo Вторая компонента должна быть треугольной матрицей
     */
     template <class Matrix>
-    ural::tuple<Matrix, typename make_triangular_matrix<Matrix, boost::numeric::ublas::upper>::type>
+    tuple<Matrix, typename make_triangular_matrix<Matrix, boost::numeric::ublas::upper>::type>
     QR_decomposition(Matrix Q)
     {
         assert(Q.size1() == Q.size2());
@@ -74,6 +76,52 @@ namespace ural
         }
 
         return std::make_tuple(std::move(Q), std::move(R));
+    }
+
+    /** @brief Разложение Холецкого
+    @param A исходная матрица
+    @return Такая матрица @c L, что <tt> L * trans(L) == A </tt>
+    @todo Можно ли использовать память исходной матрицы
+    @todo Можно ли выделить полезные алгоритмы?
+    */
+    template <class SymMatrix>
+    typename make_triangular_matrix<SymMatrix, boost::numeric::ublas::lower>::type
+    cholesky_decomposition(SymMatrix const & A)
+    {
+        assert(A.size1() == A.size2());
+
+        typedef boost::numeric::ublas::lower Lower;
+        typedef typename make_triangular_matrix<SymMatrix, Lower>::type Result;
+        Result L(A.size1(), A.size2());
+
+        for(size_t i = 0; i != A.size1(); ++ i)
+        for(size_t j = 0; j != i+1; ++ j)
+        {
+            L(i, j) = A(i, j);
+        }
+
+        for(size_t i = 0; i != A.size1(); ++ i)
+        {
+            for(size_t j = 0; j != i; ++ j)
+            {
+                for(size_t k = 0; k != j; ++ k)
+                {
+                    L(i, j) -= L(i, k) * L(j, k);
+                }
+
+                L(i, j) /= L(j, j);
+
+                using ural::square;
+                L(i, i) -= square(L(i, j));
+            }
+
+            assert(L(i, i) >= 0);
+
+            using std::sqrt;
+            L(i, i) = sqrt(L(i, i));
+        }
+
+        return L;
     }
 }
 // namespace ural

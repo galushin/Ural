@@ -413,15 +413,6 @@ BOOST_AUTO_TEST_CASE(qr_decomposition_test)
         }
     }
 
-    // @todo Проверка, что матрица верхняя треугольная
-//    for(size_t i = 0; i != A.size1(); ++ i)
-//    {
-//        for(size_t j = 0; j != i; ++ j)
-//        {
-//            BOOST_CHECK_EQUAL(0.0, R(i, j));
-//        }
-//    }
-
     auto A_QR = prod(Q, R);
 
     // @todo Проверка, что матрицы примерно равны
@@ -476,15 +467,6 @@ BOOST_AUTO_TEST_CASE(qr_decomposition_test_init_list)
         }
     }
 
-    // @todo Проверка, что матрица верхняя треугольная
-//    for(size_t i = 0; i != A.size1(); ++ i)
-//    {
-//        for(size_t j = 0; j != i; ++ j)
-//        {
-//            BOOST_CHECK_EQUAL(0.0, R(i, j));
-//        }
-//    }
-
     auto A_QR = prod(Q, R);
 
     // @todo Проверка, что матрицы примерно равны
@@ -495,5 +477,37 @@ BOOST_AUTO_TEST_CASE(qr_decomposition_test_init_list)
     for(size_t j = 0; j != A.size2(); ++ j)
     {
         BOOST_CHECK_CLOSE(A(i, j), A_QR(i, j), 1e-6);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(cholesky_descomposition_test)
+{
+    using namespace boost::numeric::ublas;
+
+    ural::matrix<double> const A
+        = {{4, 12, -16}, {12, 37, -43}, {-16, -43, 98}};
+
+    boost::numeric::ublas::triangular_matrix<double, lower> const
+        L = ural::cholesky_decomposition(A);
+
+    BOOST_CHECK_EQUAL(2, L(0, 0));
+    BOOST_CHECK_EQUAL(6, L(1, 0));
+    BOOST_CHECK_EQUAL(-8, L(2, 0));
+
+    BOOST_CHECK_EQUAL(1, L(1, 1));
+    BOOST_CHECK_EQUAL(5, L(2, 1));
+
+    BOOST_CHECK_EQUAL(3, L(2, 2));
+
+
+    auto A1 = prod(L, trans(L));
+
+    BOOST_CHECK_EQUAL(A.size1(), A1.size1());
+    BOOST_CHECK_EQUAL(A.size2(), A1.size2());
+
+    for(size_t i = 0; i != A.size1(); ++ i)
+    for(size_t j = 0; j != A.size2(); ++ j)
+    {
+        BOOST_CHECK_CLOSE(A(i, j), A1(i, j), 1e-6);
     }
 }
