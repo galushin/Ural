@@ -228,8 +228,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(bit_and_test, Functor, Bit_and_functors)
 
     std::uniform_int_distribution<int> d(-100, 100);
 
-    auto const x = d(random_engine());
-    auto const y = d(random_engine());
+    auto const x = d(ural_test::random_engine());
+    auto const y = d(ural_test::random_engine());
 
     BOOST_CHECK_EQUAL((x & y), f(x, y));
 }
@@ -246,8 +246,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(bit_or_test, Functor, Bit_or_functors)
 
     std::uniform_int_distribution<int> d(-100, 100);
 
-    auto const x = d(random_engine());
-    auto const y = d(random_engine());
+    auto const x = d(ural_test::random_engine());
+    auto const y = d(ural_test::random_engine());
 
     BOOST_CHECK_EQUAL((x | y), f(x, y));
 }
@@ -264,8 +264,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(bit_xor_test, Functor, Bit_xor_functors)
 
     std::uniform_int_distribution<int> d(-100, 100);
 
-    auto const x = d(random_engine());
-    auto const y = d(random_engine());
+    auto const x = d(ural_test::random_engine());
+    auto const y = d(ural_test::random_engine());
 
     BOOST_CHECK_EQUAL((x ^ y), f(x, y));
 }
@@ -356,7 +356,7 @@ BOOST_AUTO_TEST_CASE(bit_not_test)
 
     std::uniform_int_distribution<int> d(-100, 100);
 
-    auto const value = d(random_engine());
+    auto const value = d(ural_test::random_engine());
 
     BOOST_CHECK_EQUAL(~value, f(value));
     BOOST_CHECK_EQUAL(~value, fa(value));

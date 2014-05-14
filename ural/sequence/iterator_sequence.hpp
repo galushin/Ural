@@ -92,18 +92,17 @@ namespace ural
     };
 
     /// @cond false
-    template <class Iterator>
+    template <class IteratorTag>
     struct iterator_tag_to_traversal_tag
     {
     private:
-        typedef meta::map<meta::pair<std::input_iterator_tag, single_pass_traversal_tag>,
-                 meta::pair<std::forward_iterator_tag, forward_traversal_tag>,
-                 meta::pair<std::bidirectional_iterator_tag, bidirectional_traversal_tag>,
-                 meta::pair<std::random_access_iterator_tag, finite_random_access_traversal_tag>
-                 > Map;
+        static single_pass_traversal_tag make(std::input_iterator_tag);
+        static forward_traversal_tag make(std::forward_iterator_tag);
+        static bidirectional_traversal_tag make(std::bidirectional_iterator_tag);
+        static finite_random_access_traversal_tag make(std::random_access_iterator_tag);
 
     public:
-        typedef typename meta::at<Map, Iterator>::type type;
+        typedef decltype(make(IteratorTag{})) type;
     };
     /// @endcond
 

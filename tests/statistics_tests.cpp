@@ -179,3 +179,74 @@ BOOST_AUTO_TEST_CASE(z_score_test)
         BOOST_CHECK_CLOSE(xs[i], a * zs[i] + b, 1e-3);
     }
 }
+
+#include "rnd.hpp"
+
+#include <ural/random.hpp>
+#include <ural/numeric/matrix_decomposition.hpp>
+#include <boost/numeric/ublas/vector.hpp>
+#include <boost/numeric/ublas/symmetric.hpp>
+
+BOOST_AUTO_TEST_CASE(principal_components_test)
+{
+    // @todo Выделить алгоритмы
+    using namespace boost::numeric::ublas;
+    typedef double Double;
+    size_t const sample_size = 100;
+
+    // Выбираем ковариационную матрицу
+    symmetric_matrix<Double> C(2);
+
+    C(0, 0) = 4;
+    C(0, 1) = 6;
+    C(1, 1) = 25;
+
+    BOOST_CHECK_EQUAL(C(0, 1), C(1, 0));
+
+    auto const dim = C.size1();
+    BOOST_CHECK_EQUAL(C.size2(), dim);
+
+    // Разложение Холецкого ковариационной матрицы
+    auto L = ural::cholesky_decomposition(C);
+
+    // Генерируем некоррелированные случайные величины
+    typedef boost::numeric::ublas::vector<Double> Vector;
+
+    ural::iid_adaptor<std::normal_distribution<Double>, Vector>
+        distr(C.size1());
+
+    std::vector<Vector> sample;
+
+    for(auto n = sample_size; n > 0; -- n)
+    {
+        sample.push_back(distr(ural_test::random_engine()));
+    }
+
+    BOOST_CHECK_EQUAL(sample_size, sample.size());
+
+    // Вычисляем коррелированные случайные величины
+    for(auto & x : sample)
+    {
+        x = prod(L, x);
+    }
+
+    // Вычисляем выборочную ковариационную матрицу
+    ural::covariance_matrix_accumulator<Vector> acc(dim);
+
+    for(auto const & x : sample)
+    {
+        acc(x);
+    }
+
+//    auto S = acc.covariance_matrix();
+//
+//    BOOST_CHECK_EQUAL(dim, S.size1());
+//    BOOST_CHECK_EQUAL(dim, S.size2());
+
+    // @todo Проверить, что S близка к C
+
+    // @todo Вычисляем выборочную корреляционную матрицу
+
+    // @todo Вычиляем собственные векторы и числа корреляционной матрицы
+    // @todo Вычисляем главные компоненты
+}

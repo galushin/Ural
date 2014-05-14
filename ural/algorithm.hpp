@@ -22,7 +22,7 @@
 */
 
 #include <ural/functional.hpp>
-#include <ural/random.hpp>
+#include <ural/random/c_rand_engine.hpp>
 #include <ural/sequence/all.hpp>
 #include <ural/functional/make_functor.hpp>
 
@@ -289,6 +289,13 @@ namespace ural
     {
         return ural::details::fill(sequence(std::forward<ForwardSequence>(seq)),
                                    value);
+    }
+
+    template <class ForwardSequence, class Generator>
+    void generate(ForwardSequence && seq, Generator gen)
+    {
+        ural::copy(ural::make_generator_sequence(gen),
+                   std::forward<ForwardSequence>(seq));
     }
 
     template <class Forward1, class Forward2>

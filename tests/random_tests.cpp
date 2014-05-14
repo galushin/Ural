@@ -182,7 +182,7 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_iter_ctor_random_test)
     std::vector<double> ws;
 
     std::uniform_real_distribution<double> d_w(0.0, 1.0);
-    auto & rnd = random_engine();
+    auto & rnd = ural_test::random_engine();
     auto const N = 10;
 
     for(auto n = N; n > 0; -- n)

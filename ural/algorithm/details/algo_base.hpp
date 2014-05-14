@@ -46,9 +46,9 @@ namespace details
     ForwardSequence
     is_sorted_until(ForwardSequence in, Compare cmp)
     {
-        BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<decltype(in)>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<decltype(in)>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*in), decltype(*in))>));
+        BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<decltype(in)>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<decltype(in)>));
+        BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, bool(decltype(*in), decltype(*in))>));
 
         if(!in)
         {
@@ -286,10 +286,10 @@ namespace details
     template <class Forward1, class Forward2, class BinaryPredicate>
     Forward1 find_end(Forward1 in, Forward2 s, BinaryPredicate bin_pred)
     {
-        BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<Forward1>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Forward1>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<Forward2>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Forward2>));
+        BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward1>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Forward1>));
+        BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward2>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Forward2>));
 
         BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate,
                                                        bool(decltype(*in), decltype(*s))>));

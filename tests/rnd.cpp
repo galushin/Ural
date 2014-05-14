@@ -2,8 +2,12 @@
 
 #include <ctime>
 
-Random_engine & random_engine()
+namespace ural_test
 {
-    static Random_engine rnd(std::time(0));
-    return rnd;
+    Random_engine & random_engine()
+    {
+        static Random_engine rnd(std::time(0));
+        return rnd;
+    }
 }
+// namespace ural_test

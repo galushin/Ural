@@ -21,6 +21,8 @@
  @brief Средства генерации случайных чисел
 */
 
+#include <ural/random/c_rand_engine.hpp>
+#include <ural/algorithm.hpp>
 #include <ural/numeric.hpp>
 #include <ural/defs.hpp>
 
@@ -31,40 +33,6 @@
 
 namespace ural
 {
-    /** @brief Генератор случайных чисел, основанный на использовании функции
-    <tt> std::rand </tt>.
-    */
-    class c_rand_engine
-    {
-    public:
-        /// @brief Тип возвращаемого значения
-        typedef decltype(std::rand()) result_type;
-
-        /** @brief Генерация значения
-        @return <tt> std::rand() </tt>
-        */
-        result_type operator()() const
-        {
-            return std::rand();
-        }
-
-        /** @brief Наименьшее возвращаемое значение
-        @return Наименьшее возвращаемое значение
-        */
-        constexpr result_type min URAL_PREVENT_MACRO_SUBSTITUTION () const
-        {
-            return 0;
-        }
-
-        /** @brief Наибольшее возвращаемое значение
-        @return Наибольшее возвращаемое значение
-        */
-        constexpr result_type max URAL_PREVENT_MACRO_SUBSTITUTION () const
-        {
-            return RAND_MAX;
-        }
-    };
-
     /** @brief Класс, представляющий дискретное распределение
     @tparam IntType тип значений
     @todo Пересмотр и оптимизация средств ввода/вывода
@@ -427,6 +395,43 @@ namespace ural
         }
         return is;
     }
+
+    // Векторное распределение
+    /** @brief Адаптор распределения, генерирующий вектор независимых одинаково
+    распределённых случайных величин
+    @tparam Distribution тип базового распределения
+    @tparam Vector тип вектора
+    */
+    template <class Distribution, class Vector>
+    class iid_adaptor
+    {
+    public:
+        /** @brief Конструктор
+        @param n размерность вектора-результата
+        @post <tt> this->dim() == n </tt>
+        @post <tt> this->base_distibution() == Distribution{} </tt>
+        */
+        iid_adaptor(typename Vector::size_type n)
+         : result_(n)
+         , d_{}
+        {}
+
+        /** @brief Порождение значения
+        @param g генератор равномерно распределённых случайных чисел
+        @return Вектор, компоненты которого распределены одинаково и независимо
+        с распределением <tt> this->base_distibution() </tt>
+        */
+        template <class URNG>
+        Vector const & operator()(URNG & g)
+        {
+            ural::generate(result_, std::bind(std::ref(d_), std::ref(g)));
+            return result_;
+        }
+
+    private:
+        Vector result_;
+        Distribution d_;
+    };
 }
 // namespace ural
 

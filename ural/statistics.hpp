@@ -28,6 +28,8 @@
 #include <ural/meta/list.hpp>
 #include <ural/defs.hpp>
 
+#include <boost/numeric/ublas/symmetric.hpp>
+
 #include <stdexcept>
 
 namespace ural
@@ -859,6 +861,56 @@ namespace tags
                                                  std::forward<Forward>(in)),
                    std::forward<Output>(out));
     }
+
+    /** @brief Накопитель для вычисления ковариационной матрицы
+    @tparam Vector тип вектора (элемент выборки)
+    @todo Унифицировать с вычислением дисперсии
+    */
+    template <class Vector>
+    class covariance_matrix_accumulator
+    {
+    public:
+        typedef typename Vector::value_type element_type;
+        typedef Vector mean_type;
+        typedef boost::numeric::ublas::symmetric_matrix<element_type>
+            covariance_matrix_type;
+
+        explicit covariance_matrix_accumulator(typename Vector::size_type dim)
+         : n_{0}
+         , m_(dim)
+         , cov_(dim)
+        {}
+
+        covariance_matrix_accumulator &
+        operator()(Vector const & x)
+        {
+            ++ n_;
+
+            auto d1 = (x - m_);
+
+            m_ += d1 / n_;
+
+            auto d2 = (x - m_);
+
+            for(size_t i = 0; i != cov_.size1(); ++ i)
+            for(size_t j = 0; j != i+1; ++ j)
+            {
+                cov_(i, j) += d1(i) * d2(j);
+            }
+
+            return *this;
+        }
+
+        covariance_matrix_type covariance_matrix() const
+        {
+            return cov_ / n_;
+        }
+
+    private:
+        size_t n_;
+        Vector m_;
+        covariance_matrix_type cov_;
+    };
 }
 // namespace ural
 
