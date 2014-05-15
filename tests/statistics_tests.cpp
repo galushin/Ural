@@ -182,6 +182,7 @@ BOOST_AUTO_TEST_CASE(z_score_test)
 
 #include "rnd.hpp"
 
+#include <ural/numeric/matrix.hpp>
 #include <ural/random.hpp>
 #include <ural/numeric/matrix_decomposition.hpp>
 #include <boost/numeric/ublas/vector.hpp>
@@ -192,7 +193,7 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
     // @todo Выделить алгоритмы
     using namespace boost::numeric::ublas;
     typedef double Double;
-    size_t const sample_size = 100;
+    size_t const sample_size = 1000;
 
     // Выбираем ковариационную матрицу
     symmetric_matrix<Double> C(2);
@@ -205,9 +206,6 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
 
     auto const dim = C.size1();
     BOOST_CHECK_EQUAL(C.size2(), dim);
-
-    // Разложение Холецкого ковариационной матрицы
-    auto L = ural::cholesky_decomposition(C);
 
     // Генерируем некоррелированные случайные величины
     typedef boost::numeric::ublas::vector<Double> Vector;
@@ -225,6 +223,8 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
     BOOST_CHECK_EQUAL(sample_size, sample.size());
 
     // Вычисляем коррелированные случайные величины
+    auto L = ural::cholesky_decomposition(C);
+
     for(auto & x : sample)
     {
         x = prod(L, x);
@@ -238,15 +238,73 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
         acc(x);
     }
 
-//    auto S = acc.covariance_matrix();
-//
-//    BOOST_CHECK_EQUAL(dim, S.size1());
-//    BOOST_CHECK_EQUAL(dim, S.size2());
+    auto S = acc.covariance_matrix();
 
-    // @todo Проверить, что S близка к C
+    BOOST_CHECK_EQUAL(dim, S.size1());
+    BOOST_CHECK_EQUAL(dim, S.size2());
 
-    // @todo Вычисляем выборочную корреляционную матрицу
+    for(size_t i = 0; i != S.size1(); ++ i)
+    for(size_t j = 0; j != i+1; ++ j)
+    {
+        BOOST_CHECK_CLOSE(C(i, j), S(i, j), 5);
+    }
 
-    // @todo Вычиляем собственные векторы и числа корреляционной матрицы
+
+    // Вычисляем выборочную корреляционную матрицу
+    auto s = ural::diag(S);
+
+    for(auto & x : s)
+    {
+        using std::sqrt;
+        x = sqrt(x);
+    }
+
+    for(size_t i = 0; i != S.size1(); ++ i)
+    for(size_t j = 0; j != i+1; ++ j)
+    {
+        S(i, j) /= s[i] * s[j];
+    }
+
+    for(size_t i = 0; i != S.size1(); ++ i)
+    {
+        using std::abs;
+        for(size_t j = 0; j != i; ++ j)
+        {
+            BOOST_CHECK(abs(S(i, j)) < 1.0);
+        }
+
+        BOOST_CHECK_CLOSE(1.0, abs(S(i, i)), 1e-6);
+    }
+
+    // Вычиляем собственные векторы и числа корреляционной матрицы
+    auto const iter = 50;
+
+    boost::numeric::ublas::matrix<double> A = S;
+    boost::numeric::ublas::matrix<double> V =
+        boost::numeric::ublas::identity_matrix<double>(dim);
+
+    for(auto n = iter; n > 0; -- n)
+    {
+        auto qr = ural::QR_decomposition(A);
+
+        A = prod(qr[ural::_2], qr[ural::_1]);
+        V = prod(V, qr[ural::_1]);
+    }
+
+    // Проверить, что найдены собственные числа и векторы
+    for(size_t i = 0; i != V.size2(); ++ i)
+    {
+        auto v = column(V, i);
+
+        Vector Sv = prod(S, v);
+        Vector lv = A(i, i) * v;
+
+        for(size_t j = 0; j != V.size1(); ++ j)
+        {
+            BOOST_CHECK_CLOSE(Sv[j], lv[j], 1e-6);
+        }
+    }
+
+    // @todo Сравнить с собственными числами и векторами корреляционной матрицы
     // @todo Вычисляем главные компоненты
 }

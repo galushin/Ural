@@ -870,20 +870,34 @@ namespace tags
     class covariance_matrix_accumulator
     {
     public:
+        /// @brief Тип элементов
         typedef typename Vector::value_type element_type;
+
+        /// @brief Тип среднего
         typedef Vector mean_type;
+
+        /// @brief Тип коваирационной матрицы
         typedef boost::numeric::ublas::symmetric_matrix<element_type>
             covariance_matrix_type;
 
+        /** @brief Конструктор
+        @param dim размерность вектора
+        */
         explicit covariance_matrix_accumulator(typename Vector::size_type dim)
          : n_{0}
          , m_(dim)
          , cov_(dim)
         {}
 
+        /** @brief Обновление накопленных значений
+        @param x новое значение
+        @return <tt> *this </tt>
+        */
         covariance_matrix_accumulator &
         operator()(Vector const & x)
         {
+            assert(x.size() == m_.size());
+
             ++ n_;
 
             auto d1 = (x - m_);
@@ -901,6 +915,9 @@ namespace tags
             return *this;
         }
 
+        /** @brief Ковариационная матрица
+        @return Выборочная ковариационная матрица, накопленная к данному моменту
+        */
         covariance_matrix_type covariance_matrix() const
         {
             return cov_ / n_;

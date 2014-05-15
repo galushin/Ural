@@ -22,6 +22,7 @@
 */
 
 #include <ural/functional/compare_by.hpp>
+#include <boost/numeric/ublas/matrix_proxy.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <algorithm>
 
@@ -90,6 +91,26 @@ namespace ural
             return r->size();
         }
     };
+
+    /** @todo Создавать выражение или вычислять?
+    @param a матрица
+    @return Вектор, содержащий диагональные элементы матрицы @c a
+    */
+    template <class Matrix>
+    boost::numeric::ublas::vector<typename Matrix::value_type>
+    diag(Matrix const & a)
+    {
+        auto const dim = std::min(a.size1(), a.size2());
+
+        boost::numeric::ublas::vector<typename Matrix::value_type> result(dim);
+
+        for(size_t i = 0; i != dim; ++ i)
+        {
+            result[i] = a(i, i);
+        }
+
+        return result;
+    }
 }
 // namespace ural
 
