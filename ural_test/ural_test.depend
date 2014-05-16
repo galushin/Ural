@@ -990,15 +990,17 @@
 	<string>
 	<cstdlib>
 
-1400026489 c:\devtools\ural_repo\ural\ural\random.hpp
+1400199090 c:\devtools\ural_repo\ural\ural\random.hpp
 	<ural/random/c_rand_engine.hpp>
 	<ural/algorithm.hpp>
+	<ural/numeric/matrix_decomposition.hpp>
 	<ural/numeric.hpp>
 	<ural/defs.hpp>
 	<cstdlib>
 	<vector>
 	<ostream>
 	<istream>
+	<random>
 
 1398091033 c:\pavel\ural_repo\ural\ural\random.hpp
 	<ural/numeric.hpp>
@@ -6552,7 +6554,7 @@
 	<cassert>
 	<cstddef>
 
-1400147068 source:c:\devtools\ural_repo\ural\tests\statistics_tests.cpp
+1400198280 source:c:\devtools\ural_repo\ural\tests\statistics_tests.cpp
 	<ural/math.hpp>
 	<ural/statistics.hpp>
 	<ural/math/rational.hpp>

@@ -23,6 +23,7 @@
 
 #include <ural/random/c_rand_engine.hpp>
 #include <ural/algorithm.hpp>
+#include <ural/numeric/matrix_decomposition.hpp>
 #include <ural/numeric.hpp>
 #include <ural/defs.hpp>
 
@@ -30,6 +31,7 @@
 #include <vector>
 #include <ostream>
 #include <istream>
+#include <random>
 
 namespace ural
 {
@@ -431,6 +433,50 @@ namespace ural
     private:
         Vector result_;
         Distribution d_;
+    };
+
+    /** @brief Многомерное нормальное распределение
+    @tparam Vector тип вектора-результата
+    @tparam Matrix тип корреляционной матрицы
+    */
+    template <class Vector, class Matrix>
+    class multivariate_normal_distribution
+    {
+    public:
+        // Типы
+        typedef typename Vector::value_type element_type;
+
+        // Конструкторы
+        /** @brief Конструктор
+        @param mu вектор математических ожиданий
+        @param C ковариационная матрица
+        @pre <tt> mu.size() == C.size1() </tt>
+        @pre <tt> C.size1() == C.size2() </tt>
+        */
+        multivariate_normal_distribution(Vector mu, Matrix const & C)
+         : mu_(std::move(mu))
+         , L_(ural::cholesky_decomposition(C))
+         , base_{mu.size()}
+        {}
+
+        // Генерация случайных чисел
+        /** @brief Порождение случайных чисел
+        @param g генератор равномерно распределённых случайных чисел
+        */
+        template <class URNG>
+        Vector operator()(URNG & g)
+        {
+            using namespace boost::numeric::ublas;
+            auto result = base_(g);
+            return mu_ + prod(L_, result);
+        }
+
+    private:
+        Vector mu_;
+        typename make_triangular_matrix<Matrix, boost::numeric::ublas::lower>::type
+            L_;
+
+        iid_adaptor<std::normal_distribution<element_type>, Vector> base_;
     };
 }
 // namespace ural

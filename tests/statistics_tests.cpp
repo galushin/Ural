@@ -191,8 +191,12 @@ BOOST_AUTO_TEST_CASE(z_score_test)
 BOOST_AUTO_TEST_CASE(principal_components_test)
 {
     // @todo Выделить алгоритмы
+    // @todo Добавить сдвиг мат. ожидания
     using namespace boost::numeric::ublas;
+
     typedef double Double;
+    typedef boost::numeric::ublas::vector<Double> Vector;
+
     size_t const sample_size = 1000;
 
     // Выбираем ковариационную матрицу
@@ -207,11 +211,11 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
     auto const dim = C.size1();
     BOOST_CHECK_EQUAL(C.size2(), dim);
 
-    // Генерируем некоррелированные случайные величины
-    typedef boost::numeric::ublas::vector<Double> Vector;
+    Vector const mu(dim);
 
-    ural::iid_adaptor<std::normal_distribution<Double>, Vector>
-        distr(C.size1());
+    // Вычисляем коррелированные случайные величины
+    ural::multivariate_normal_distribution<Vector, symmetric_matrix<Double>>
+        distr(mu, C);
 
     std::vector<Vector> sample;
 
@@ -221,14 +225,6 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
     }
 
     BOOST_CHECK_EQUAL(sample_size, sample.size());
-
-    // Вычисляем коррелированные случайные величины
-    auto L = ural::cholesky_decomposition(C);
-
-    for(auto & x : sample)
-    {
-        x = prod(L, x);
-    }
 
     // Вычисляем выборочную ковариационную матрицу
     ural::covariance_matrix_accumulator<Vector> acc(dim);
