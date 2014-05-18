@@ -191,7 +191,6 @@ BOOST_AUTO_TEST_CASE(z_score_test)
 BOOST_AUTO_TEST_CASE(principal_components_test)
 {
     // @todo Выделить алгоритмы
-    // @todo Добавить сдвиг мат. ожидания
     using namespace boost::numeric::ublas;
 
     typedef double Double;
@@ -211,7 +210,10 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
     auto const dim = C.size1();
     BOOST_CHECK_EQUAL(C.size2(), dim);
 
-    Vector const mu(dim);
+    // Добавить сдвиг мат. ожидания
+    Vector mu(dim);
+    mu[0] = -1;
+    mu[1] = 1;
 
     // Вычисляем коррелированные случайные величины
     ural::multivariate_normal_distribution<Vector, symmetric_matrix<Double>>
@@ -219,10 +221,8 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
 
     std::vector<Vector> sample;
 
-    for(auto n = sample_size; n > 0; -- n)
-    {
-        sample.push_back(distr(ural_test::random_engine()));
-    }
+    std::generate_n(sample | ural::back_inserter, sample_size,
+                    std::bind(distr, std::ref(ural_test::random_engine())));
 
     BOOST_CHECK_EQUAL(sample_size, sample.size());
 
@@ -239,14 +239,24 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
     BOOST_CHECK_EQUAL(dim, S.size1());
     BOOST_CHECK_EQUAL(dim, S.size2());
 
+    // @todo проверять доверительные интервалы для выборочных величин
     for(size_t i = 0; i != S.size1(); ++ i)
     for(size_t j = 0; j != i+1; ++ j)
     {
         BOOST_CHECK_CLOSE(C(i, j), S(i, j), 5);
     }
 
+    auto m = acc.mean();
+
+    BOOST_CHECK_EQUAL(mu.size(), m.size());
+
+    for(size_t i = 0; i != m.size(); ++ i)
+    {
+        BOOST_CHECK_CLOSE(mu[i], m[i], 1);
+    }
 
     // Вычисляем выборочную корреляционную матрицу
+    // @todo Выделить алгоритм
     auto s = ural::diag(S);
 
     for(auto & x : s)
