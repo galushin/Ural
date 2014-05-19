@@ -403,6 +403,7 @@ namespace ural
     распределённых случайных величин
     @tparam Distribution тип базового распределения
     @tparam Vector тип вектора
+    @todo Соответствие концепции распределения стандарта C++11
     */
     template <class Distribution, class Vector>
     class iid_adaptor
@@ -438,6 +439,7 @@ namespace ural
     /** @brief Многомерное нормальное распределение
     @tparam Vector тип вектора-результата
     @tparam Matrix тип корреляционной матрицы
+    @todo Соответствие концепции распределения стандарта C++11
     */
     template <class Vector, class Matrix>
     class multivariate_normal_distribution
