@@ -865,6 +865,8 @@ namespace tags
     /** @brief Накопитель для вычисления ковариационной матрицы
     @tparam Vector тип вектора (элемент выборки)
     @todo Унифицировать с вычислением дисперсии
+    @todo Накапливать сумму квадратов, деленную на количество, чтобы избежать
+    переполнения?
     */
     template <class Vector>
     class covariance_matrix_accumulator
@@ -915,6 +917,14 @@ namespace tags
             return *this;
         }
 
+        /** @brief Вектор средних
+        @return Вектор средних, накопленный к данному моменту
+        */
+        mean_type const & mean() const
+        {
+            return m_;
+        }
+
         /** @brief Ковариационная матрица
         @return Выборочная ковариационная матрица, накопленная к данному моменту
         */
@@ -925,7 +935,7 @@ namespace tags
 
     private:
         size_t n_;
-        Vector m_;
+        mean_type m_;
         covariance_matrix_type cov_;
     };
 }
