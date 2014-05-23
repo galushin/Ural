@@ -286,6 +286,7 @@ BOOST_AUTO_TEST_CASE(map_keys_test)
 
     std::map<int, char> xy;
 
+    // @todo Алгоритм заполнения ассоциативного массива
     for(size_t i = 0; i < x.size(); ++ i)
     {
         xy[x[i]] = y[i];
@@ -294,8 +295,26 @@ BOOST_AUTO_TEST_CASE(map_keys_test)
     auto x_seq = xy | ural::map_keys;
 
     BOOST_CHECK(ural::equal(x, x_seq));
+}
 
-    // @todo тест map_values
+BOOST_AUTO_TEST_CASE(map_values_test)
+{
+    std::vector<int> const x = {1, 2, 3, 4, 5};
+    std::vector<char> const y = {'a', 'b', 'c', 'd', 'e'};
+
+    assert(x.size() == y.size());
+
+    std::map<int, char> xy;
+
+    // @todo Алгоритм заполнения ассоциативного массива
+    for(size_t i = 0; i < x.size(); ++ i)
+    {
+        xy[x[i]] = y[i];
+    }
+
+    auto y_seq = xy | ural::map_values;
+
+    BOOST_CHECK(ural::equal(y, y_seq));
 }
 
 BOOST_AUTO_TEST_CASE(set_inserter_test)

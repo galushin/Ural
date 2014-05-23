@@ -971,7 +971,7 @@
 	<cassert>
 	<memory>
 
-1400385021 source:c:\devtools\github\ural\tests\sequence_test.cpp
+1400852551 source:c:\devtools\github\ural\tests\sequence_test.cpp
 	<ural/abi.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/all.hpp>
@@ -11599,7 +11599,7 @@
 1399039471 c:\devtools\github\ural\ural\sequence\sequence_iterator.hpp
 	<ural/optional.hpp>
 
-1399039471 c:\devtools\github\ural\ural\sequence\map.hpp
+1400853265 c:\devtools\github\ural\ural\sequence\map.hpp
 	<utility>
 
 1400385021 c:\devtools\github\ural\ural\numeric\matrix_decomposition.hpp
