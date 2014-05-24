@@ -743,7 +743,10 @@ namespace tags
         }
     };
 
-    /** @todo Убедиться, что нет повторяющихся тэгов
+    /** @brief Описательные статистики
+    @tparam T тип элементов
+    @tparam Tags список тэгов
+    @todo Убедиться, что нет повторяющихся тэгов
     @note Одна из проблем с таким дизайном: можно забыть определить operator()
     @todo Оптимизировать min | max
     */
@@ -753,14 +756,24 @@ namespace tags
     {
         typedef descriptive<T, typename Tags::head, descriptives<T, typename Tags::tail>>
             Base;
-    // @todo protected
+    // @todo почему не может быть protected
     public:
+        /// @brief Конструктор без аргументов
         descriptives() = default;
 
+        /** @brief Конструктор с параметром
+        @param init_value первый элемент выборки
+        */
         explicit descriptives(T const & init_value)
          : Base{init_value}
         {}
 
+        /** @brief Обновление элемента выборки
+        @param x новое значение
+        @pre Объект создан с помощью конструктора с параметром или ему было
+        присвоено значение
+        @return <tt> *this </tt>
+        */
         descriptives & operator()(T const & x)
         {
             Base::operator()(x);
@@ -768,6 +781,10 @@ namespace tags
         }
     };
 
+    /** @brief Фасад для описательных статистик
+    @tparam T тип элементов
+    @tparam Tags список тэгов
+    */
     template <class T, class Tags>
     class descriptives_facade
      : public descriptives<T, typename statistics::tags::prepare<Tags>::type>
@@ -796,6 +813,7 @@ namespace tags
         // Обновление
         /** @brief Обновление статистик
         @param x новое значение
+        @return <tt> *this </tt>
         */
         descriptives_facade & operator()(T const & x)
         {
@@ -865,8 +883,6 @@ namespace tags
     /** @brief Накопитель для вычисления ковариационной матрицы
     @tparam Vector тип вектора (элемент выборки)
     @todo Унифицировать с вычислением дисперсии
-    @todo Накапливать сумму квадратов, деленную на количество, чтобы избежать
-    переполнения?
     */
     template <class Vector>
     class covariance_matrix_accumulator
@@ -930,7 +946,7 @@ namespace tags
         */
         covariance_matrix_type covariance_matrix() const
         {
-            return cov_ / n_;
+            return cov_ / (n_ > 1 ? (n_ - 1) : 1);
         }
 
     private:
