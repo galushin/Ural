@@ -45,7 +45,6 @@ namespace ural
     @todo настройка метода вычисления
     @todo Должна ли матрица быть квадратной?
     @todo Настройка операции скалярного произведения
-    @todo Вторая компонента должна быть треугольной матрицей
     */
     template <class Matrix>
     tuple<Matrix, typename make_triangular_matrix<Matrix, boost::numeric::ublas::upper>::type>

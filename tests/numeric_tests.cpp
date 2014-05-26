@@ -371,10 +371,11 @@ BOOST_AUTO_TEST_CASE(newton_interpolation_test)
     BOOST_CHECK_LE(abs(f_mid - P(x_mid)), eps);
 }
 
+// QR разложение матрицы
 #include <ural/numeric/matrix_decomposition.hpp>
+#include <ural/numeric/matrix.hpp>
 
 #include <boost/numeric/ublas/matrix.hpp>
-#include <boost/numeric/ublas/matrix_proxy.hpp>
 
 // @todo Последовательность строк матрицы
 // @todo Последовательность столбцов матрицы
@@ -399,15 +400,15 @@ BOOST_AUTO_TEST_CASE(qr_decomposition_test)
     BOOST_CHECK_EQUAL(A.size2(), R.size2());
 
     // @todo Проверка, что матрица ортогональна
-    for(size_t i = 0; i != Q.size1(); ++ i)
+    for(auto rs = ural::matrix_by_rows(Q); !!rs; ++ rs)
     {
-        auto ri = boost::numeric::ublas::row(Q, i);
+        auto ri = *rs;
 
         BOOST_CHECK_CLOSE(1.0, norm_2(ri), 1e-6);
 
-        for(size_t j = 0; j != i; ++ j)
+        for(auto rs1 = rs.traversed_front(); !!rs1; ++ rs1)
         {
-            auto rj = boost::numeric::ublas::row(Q, j);
+            auto rj = *rs1;
 
             BOOST_CHECK(abs(inner_prod(ri, rj)) < 1e-6);
         }
@@ -436,7 +437,6 @@ BOOST_AUTO_TEST_CASE(matrix_init_test)
         BOOST_CHECK_EQUAL(0.0, A(i, j));
     }
 }
-
 
 BOOST_AUTO_TEST_CASE(qr_decomposition_test_init_list)
 {
