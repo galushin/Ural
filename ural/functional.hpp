@@ -238,12 +238,16 @@ namespace ural
     class static_fn<R(T::*)(Args...), f>
     {
     public:
+        /// @brief Тип возвращаемого значения
+        typedef R result_type;
+
         /** @brief Оператор применения функционального объекта
         @param obj объект, для которого вызывается функция-член
         @param args аргументы
         @return <tt> (obj.*f)(args...) </tt>
         */
-        R operator()(T & obj, typename boost::call_traits<Args>::type... args) const
+        constexpr result_type
+        operator()(T & obj, typename boost::call_traits<Args>::type... args) const
         {
             return (obj.*f)(args...);
         }

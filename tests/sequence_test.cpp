@@ -17,6 +17,7 @@
 #include <ural/abi.hpp>
 #include <ural/algorithm.hpp>
 #include <ural/sequence/all.hpp>
+#include <ural/sequence/zip.hpp>
 #include <ural/sequence/map.hpp>
 #include <ural/sequence/sink.hpp>
 #include <ural/sequence/progression.hpp>
@@ -275,6 +276,41 @@ BOOST_AUTO_TEST_CASE(filtered_sequence_for_each)
     }
 
     BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(), r.begin(), r.end());
+}
+
+BOOST_AUTO_TEST_CASE(zip_sequence_test)
+{
+    std::vector<int> const x = {1, 2, 3, 4, 5};
+    std::vector<char> const y = {'a', 'b', 'c', 'd', 'e'};
+
+    assert(x.size() == y.size());
+
+    // std
+    std::vector<std::tuple<int, char>> r_std;
+
+    for(size_t i = 0; i < x.size(); ++ i)
+    {
+        r_std.emplace_back(x[i], y[i]);
+    }
+
+    // ural
+    auto s_ural = ural::make_zip_sequence(x, y);
+
+    std::vector<std::tuple<int, char>> r_ural;
+
+    for(auto x : s_ural)
+    {
+        r_ural.push_back(std::move(x));
+    }
+
+    // проверка
+    BOOST_CHECK_EQUAL(x.size(), r_ural.size());
+    BOOST_CHECK_EQUAL(r_std.size(), r_ural.size());
+
+    for(size_t i = 0; i < x.size(); ++ i)
+    {
+        BOOST_CHECK(r_std[i] == r_ural[i]);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(map_keys_test)

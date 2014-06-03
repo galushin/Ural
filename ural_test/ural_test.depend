@@ -268,7 +268,7 @@
 1223887188 source:c:\devtools\github\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
 	<boost/test/impl/xml_report_formatter.ipp>
 
-1399955817 c:\devtools\ural_repo\ural\ural\tuple.hpp
+1401778080 c:\devtools\ural_repo\ural\ural\tuple.hpp
 	<tuple>
 	<ural/utility.hpp>
 	<ural/placeholders.hpp>
@@ -373,7 +373,7 @@
 	<ural/numeric/partial_sums.hpp>
 	<ural/numeric/adjacent_differences.hpp>
 
-1398316481 c:\devtools\ural_repo\ural\ural\functional.hpp
+1401777471 c:\devtools\ural_repo\ural\ural\functional.hpp
 	<boost/compressed_pair.hpp>
 	<ural/functional/adjoin.hpp>
 	<ural/functional/compare_by.hpp>
@@ -511,7 +511,7 @@
 1399537733 c:\devtools\ural_repo\ural\ural\defs.hpp
 	<ural/type_traits.hpp>
 
-1401769274 c:\devtools\ural_repo\ural\ural\sequence\transform.hpp
+1401780045 c:\devtools\ural_repo\ural\ural\sequence\transform.hpp
 	<ural/meta/list.hpp>
 	<ural/meta/hierarchy.hpp>
 	<ural/functional.hpp>
@@ -587,10 +587,11 @@
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
-1401765423 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
+1401777385 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
 	<ural/abi.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/all.hpp>
+	<ural/sequence/zip.hpp>
 	<ural/sequence/map.hpp>
 	<ural/sequence/sink.hpp>
 	<ural/sequence/progression.hpp>
@@ -11988,4 +11989,8 @@
 1401773725 c:\devtools\ural_repo\ural\ural\sequence\to.hpp
 	<ural/sequence/insertion.hpp>
 	<ural/algorithm/details/copy.hpp>
+
+1401778547 c:\devtools\ural_repo\ural\ural\sequence\zip.hpp
+	<ural/tuple.hpp>
+	<ural/sequence/transform.hpp>
 

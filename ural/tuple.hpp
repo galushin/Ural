@@ -157,7 +157,7 @@ namespace details
     template <class Tuple, class F, size_t First, size_t Last>
     F for_each(Tuple && t, F f, placeholder<First>, placeholder<Last> last)
     {
-        f(std::get<First>(t));
+        f(std::get<First>(std::forward<Tuple>(t)));
         return ::ural::tuples::details::for_each(std::forward<Tuple>(t),
                                                  std::move(f),
                                                  ural::placeholder<First+1>{},
