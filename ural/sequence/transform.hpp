@@ -129,7 +129,7 @@ namespace ural
                           decltype(sequence(std::forward<Inputs>(in)))...>
     {
         typedef transform_sequence<decltype(ural::make_functor(std::move(f))),
-                          decltype(ural::sequence(std::forward<Inputs>(in)))...> Result;
+                          decltype(sequence(std::forward<Inputs>(in)))...> Result;
         return Result(ural::make_functor(std::move(f)),
                       sequence(std::forward<Inputs>(in))...);
     }
