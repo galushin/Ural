@@ -21,9 +21,10 @@
  @brief Обобщённые алгоритмы
 */
 
+#include <ural/sequence/make.hpp>
+
 #include <ural/functional.hpp>
 #include <ural/random/c_rand_engine.hpp>
-#include <ural/sequence/all.hpp>
 #include <ural/functional/make_functor.hpp>
 
 #include <ural/algorithm/details/copy.hpp>
@@ -153,16 +154,16 @@ namespace ural
 
     template <class Forward1, class Forward2, class BinaryPredicate>
     auto find_end(Forward1 && in, Forward2 && s, BinaryPredicate bin_pred)
-    -> decltype(ural::sequence(std::forward<Forward1>(in)))
+    -> decltype(sequence(std::forward<Forward1>(in)))
     {
-        return ::ural::details::find_end(ural::sequence(std::forward<Forward1>(in)),
-                                         ural::sequence(std::forward<Forward2>(s)),
-                                         ural::make_functor(std::move(bin_pred)));
+        return ::ural::details::find_end(sequence(std::forward<Forward1>(in)),
+                                         sequence(std::forward<Forward2>(s)),
+                                         make_functor(std::move(bin_pred)));
     }
 
     template <class Forward1, class Forward2>
     auto find_end(Forward1 && in, Forward2 && s)
-    -> decltype(ural::sequence(std::forward<Forward1>(in)))
+    -> decltype(sequence(std::forward<Forward1>(in)))
     {
         return ::ural::find_end(std::forward<Forward1>(in),
                                 std::forward<Forward2>(s),
@@ -171,16 +172,16 @@ namespace ural
 
     template <class Input, class Forward, class BinaryPredicate>
     auto find_first_of(Input && in, Forward && s, BinaryPredicate bin_pred)
-    -> decltype(ural::sequence(std::forward<Input>(in)))
+    -> decltype(sequence(std::forward<Input>(in)))
     {
-        return ::ural::details::find_first_of(ural::sequence(std::forward<Input>(in)),
-                                              ural::sequence(std::forward<Forward>(s)),
-                                              ural::make_functor(std::move(bin_pred)));
+        return ::ural::details::find_first_of(sequence(std::forward<Input>(in)),
+                                              sequence(std::forward<Forward>(s)),
+                                              make_functor(std::move(bin_pred)));
     }
 
     template <class Input, class Forward>
     auto find_first_of(Input && in, Forward && s)
-    -> decltype(ural::sequence(std::forward<Input>(in)))
+    -> decltype(sequence(std::forward<Input>(in)))
     {
         return ::ural::find_first_of(std::forward<Input>(in),
                                      std::forward<Forward>(s),
@@ -189,15 +190,15 @@ namespace ural
 
     template <class Forward, class BinaryPredicate>
     auto adjacent_find(Forward && s, BinaryPredicate pred)
-    -> decltype(ural::sequence(std::forward<Forward>(s)))
+    -> decltype(sequence(std::forward<Forward>(s)))
     {
-        return ::ural::details::adjacent_find(ural::sequence(std::forward<Forward>(s)),
+        return ::ural::details::adjacent_find(sequence(std::forward<Forward>(s)),
                                               ural::make_functor(std::move(pred)));
     }
 
     template <class Forward>
     auto adjacent_find(Forward && s)
-    -> decltype(ural::sequence(std::forward<Forward>(s)))
+    -> decltype(sequence(std::forward<Forward>(s)))
     {
         return ::ural::adjacent_find(std::forward<Forward>(s),
                                      ::ural::equal_to<>{});
@@ -205,16 +206,16 @@ namespace ural
 
     template <class Forward1, class Forward2, class BinaryPredicate>
     auto search(Forward1 && in, Forward2 && s, BinaryPredicate bin_pred)
-    -> decltype(ural::sequence(std::forward<Forward1>(in)))
+    -> decltype(sequence(std::forward<Forward1>(in)))
     {
-        return ::ural::details::search(ural::sequence(std::forward<Forward1>(in)),
-                                       ural::sequence(std::forward<Forward2>(s)),
+        return ::ural::details::search(sequence(std::forward<Forward1>(in)),
+                                       sequence(std::forward<Forward2>(s)),
                                        ural::make_functor(std::move(bin_pred)));
     }
 
     template <class Forward1, class Forward2>
     auto search(Forward1 && in, Forward2 && s)
-    -> decltype(ural::sequence(std::forward<Forward1>(in)))
+    -> decltype(sequence(std::forward<Forward1>(in)))
     {
         return ::ural::search(std::forward<Forward1>(in),
                               std::forward<Forward2>(s),
@@ -224,16 +225,16 @@ namespace ural
     template <class Forward, class Size, class T,  class BinaryPredicate>
     auto search_n(Forward && in, Size count, T const & value,
                   BinaryPredicate bin_pred)
-    -> decltype(ural::sequence(std::forward<Forward>(in)))
+    -> decltype(sequence(std::forward<Forward>(in)))
     {
-        return ::ural::details::search_n(ural::sequence(std::forward<Forward>(in)),
+        return ::ural::details::search_n(sequence(std::forward<Forward>(in)),
                                          std::move(count), value,
                                          ural::make_functor(std::move(bin_pred)));
     }
 
     template <class Forward, class Size, class T>
     auto search_n(Forward && in, Size count, T const & value)
-    -> decltype(ural::sequence(std::forward<Forward>(in)))
+    -> decltype(sequence(std::forward<Forward>(in)))
     {
         return ::ural::search_n(std::forward<Forward>(in), std::move(count),
                                 value, ural::equal_to<>{});
