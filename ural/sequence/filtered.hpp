@@ -50,6 +50,12 @@ namespace ural
         /// @brief Тип значения
         typedef typename Sequence::value_type value_type;
 
+        /// @brief Тип указателя
+        typedef typename Sequence::pointer pointer;
+
+        //// @brief Тип расстояния
+        typedef typename Sequence::distance_type distance_type;
+
         /// @brief Категория обхода
         typedef typename std::common_type<typename Sequence::traversal_tag,
                                           forward_traversal_tag>::type

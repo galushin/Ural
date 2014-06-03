@@ -28,6 +28,7 @@ namespace ural
     /** @brief Итератор на базе последовательности. Основная цель ---
     интеграция с циклом @c for для интервалов.
     @param Sequence последовательность
+    @todo Усилить категорию итератора, когда это возможно
     */
     template <class Sequence>
     class sequence_iterator
@@ -47,8 +48,20 @@ namespace ural
 
     public:
         // Типы
+        /// @brief Категория итератора
+        typedef std::input_iterator_tag iterator_category;
+
         /// @brief Тип ссылки
         typedef typename Sequence::reference reference;
+
+        /// @brief Тип значения
+        typedef typename Sequence::value_type value_type;
+
+        /// @brief Тип указателя
+        typedef typename Sequence::pointer pointer;
+
+        /// @brief Тип расстояния
+        typedef typename Sequence::distance_type difference_type;
 
         // Конструктор
         /** @brief Конструктор по-умолчанию. Создаёт итератор конца
