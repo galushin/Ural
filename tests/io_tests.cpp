@@ -23,6 +23,7 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <forward_list>
 #include <sstream>
 
 BOOST_AUTO_TEST_CASE(by_line_test)
@@ -48,11 +49,8 @@ BOOST_AUTO_TEST_CASE(by_line_test_keep_delimeter)
 
     std::istringstream is(os.str());
 
-    auto seq = ural::by_line(is, '\n', ural::keep_delimeter::yes);
-
-    std::vector<std::string> x;
-
-    ural::copy(seq, x | ural::back_inserter);
+    auto const x = ural::by_line(is, '\n', ural::keep_delimeter::yes)
+                   | ural::to_container<std::forward_list>{};
 
     BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(), x.begin(), x.end());
 }
@@ -66,11 +64,8 @@ BOOST_AUTO_TEST_CASE(by_line_test_keep_delimeter_unexpected_eof)
 
     std::istringstream is(os.str());
 
-    auto seq = ural::by_line(is, '\n', ural::keep_delimeter::yes);
-
-    std::vector<std::string> x;
-
-    ural::copy(seq, x | ural::back_inserter);
+    auto const x = ural::by_line(is, '\n', ural::keep_delimeter::yes)
+                   | ural::to_container<std::forward_list>{};
 
     BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(), x.begin(), x.end());
 }
@@ -85,11 +80,7 @@ BOOST_AUTO_TEST_CASE(by_line_test_custom_separator)
 
     std::istringstream is(os.str());
 
-    auto seq = ural::by_line(is, separator);
-
-    std::vector<std::string> x;
-
-    ural::copy(seq, x | ural::back_inserter);
+    auto const x = ural::by_line(is, separator) | ural::to_container<std::list>{};
 
     BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(), x.begin(), x.end());
 }

@@ -25,6 +25,7 @@
 */
 
 #include <ural/algorithm.hpp>
+#include <ural/sequence/to.hpp>
 #include <ural/sequence/insertion.hpp>
 #include <ural/sequence/transform.hpp>
 #include <ural/sequence/by_line.hpp>
@@ -194,9 +195,8 @@ namespace ural
 
             from_string_policy<String, T> constexpr converter{};
 
-            std::vector<T> row;
-            ural::copy(cell_seq | ural::transformed(converter),
-                       row | ural::back_inserter);
+            auto row = cell_seq | ural::transformed(converter)
+                       | ural::to_container<std::vector>{};
 
             result.push_back(std::move(row));
         }
