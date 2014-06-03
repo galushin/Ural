@@ -227,12 +227,8 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
     BOOST_CHECK_EQUAL(sample_size, sample.size());
 
     // Вычисляем выборочную ковариационную матрицу
-    ural::covariance_matrix_accumulator<Vector> acc(dim);
-
-    for(auto const & x : sample)
-    {
-        acc(x);
-    }
+    auto acc = ural::for_each(sample,
+                              ural::covariance_matrix_accumulator<Vector>(dim));
 
     auto S = acc.covariance_matrix();
 
@@ -262,13 +258,14 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
     for(auto & x : s)
     {
         using std::sqrt;
-        x = sqrt(x);
+        x = 1.0 / sqrt(x);
     }
 
+    // @todo В матричном виде?
     for(size_t i = 0; i != S.size1(); ++ i)
     for(size_t j = 0; j != i+1; ++ j)
     {
-        S(i, j) /= s[i] * s[j];
+        S(i, j) *= s[i] * s[j];
     }
 
     for(size_t i = 0; i != S.size1(); ++ i)
@@ -295,6 +292,8 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
 
         A = prod(qr[ural::_2], qr[ural::_1]);
         V = prod(V, qr[ural::_1]);
+
+        // @todo Дополнительные критерии остановки
     }
 
     // Проверить, что найдены собственные числа и векторы

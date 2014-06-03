@@ -19,15 +19,23 @@
 
 /** @file ural/sequence/map.hpp
  @brief Адапторы последовательностей для ассоциативных контейнеров
+ @todo Унифицировать @c map_keys_functor и @c map_values_functor
 */
 
 #include <utility>
 
 namespace ural
 {
+    /** @brief Функциональный объект, извлекающий первый компонент пары
+    */
     struct map_keys_functor
     {
     public:
+        //@{
+        /** @brief Оператор применения
+        @param x пара
+        @return ссылка на первый компонент пары
+        */
         template <class T1, class T2>
         constexpr T1 & operator()(std::pair<T1, T2> & x) const
         {
@@ -39,6 +47,7 @@ namespace ural
         {
             return x.first;
         }
+        //@}
     };
 
     struct map_keys_helper{};
@@ -51,6 +60,41 @@ namespace ural
     }
 
     constexpr map_keys_helper map_keys{};
+
+    /** @brief Функциональный объект, извлекающий второй компонент пары
+    */
+    struct map_values_functor
+    {
+    public:
+        //@{
+        /** @brief Оператор применения
+        @param x пара
+        @return ссылка на первый компонент пары
+        */
+        template <class T1, class T2>
+        constexpr T2 & operator()(std::pair<T1, T2> & x) const
+        {
+            return x.second;
+        }
+
+        template <class T1, class T2>
+        constexpr T2 const & operator()(std::pair<T1, T2> const & x) const
+        {
+            return x.second;
+        }
+        //@}
+    };
+
+    struct map_values_helper{};
+
+    template <class Sequence>
+    auto operator|(Sequence && seq, map_values_helper)
+    -> decltype(make_transform_sequence(map_values_functor{}, std::forward<Sequence>(seq)))
+    {
+        return make_transform_sequence(map_values_functor{}, std::forward<Sequence>(seq));
+    }
+
+    constexpr map_values_helper map_values{};
 }
 // namespace ural
 

@@ -21,7 +21,10 @@
  @brief Матрица для численных приложений
 */
 
+#include <ural/utility.hpp>
+#include <ural/sequence/base.hpp>
 #include <ural/functional/compare_by.hpp>
+
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <algorithm>
@@ -110,6 +113,101 @@ namespace ural
         }
 
         return result;
+    }
+
+    /** @brief Последовательность строк матрицы
+    @tparam Matrix тип матрицы
+    */
+    template <class Matrix>
+    class matrix_by_rows_sequence
+     : public ural::sequence_base<matrix_by_rows_sequence<Matrix>>
+    {
+        typedef typename Matrix::size_type size_type;
+    public:
+        // Типы
+        /// @brief Категория обхода
+        typedef ural::forward_traversal_tag traversal_tag;
+
+        /// @brief Тип значения
+        typedef boost::numeric::ublas::matrix_row<Matrix> value_type;
+
+        /// @brief Тип, возвращаемый операциями разыменования
+        typedef value_type reference;
+
+        // Конструкторы
+        /** @brief Конструктор
+        @param x матрица
+        */
+        explicit matrix_by_rows_sequence(Matrix & x)
+         : m_(x)
+         , end_(x.size1())
+         , row_(0)
+        {}
+
+        /** @brief Конструктор
+        @param x матрица
+        @param nrows количество строк, которые нужно взять
+        */
+        explicit matrix_by_rows_sequence(Matrix & x, size_type nrows)
+         : m_(x)
+         , end_(nrows)
+         , row_(0)
+        {}
+
+        // Однопроходная последовательность
+        /** @brief Текущий передний элемент последовательности
+        @return Текущий передний элемент последовательности
+        @pre <tt> !!*this </tt>
+        */
+        reference front() const
+        {
+            assert(!!*this);
+            return value_type(m_, row_.value());
+        }
+
+        /** @brief Проверка исчерпания последовательности
+        @return @b true, если последовательность исчерпана, иначе --- @b false.
+        */
+        bool operator!() const
+        {
+            return row_.value() == end_;
+        }
+
+        /** @brief Переход к следующему элементу последовательности
+        @pre <tt> !!*this </tt>
+        @return <tt> *this </tt>
+        */
+        matrix_by_rows_sequence & pop_front()
+        {
+            assert(!!*this);
+            ++ row_.value();
+            return *this;
+        }
+
+        // Прямая последовательность
+        /** @brief Пройденная передняя часть последовательности
+        */
+        matrix_by_rows_sequence traversed_front() const
+        {
+            return matrix_by_rows_sequence(m_, row_.old_value());
+        }
+
+    private:
+        // @todo Настройка структуры
+        std::reference_wrapper<Matrix> m_;
+        size_type end_;
+        with_old_value<size_type> row_;
+    };
+
+    /** @brief Создание последовательности строк матрицы
+    @param x матрица
+    @return <tt> matrix_by_rows_sequence<Matrix>(std::move(x)) </tt>
+    */
+    template <class Matrix>
+    matrix_by_rows_sequence<Matrix>
+    matrix_by_rows(Matrix & x)
+    {
+        return matrix_by_rows_sequence<Matrix>(x);
     }
 }
 // namespace ural
