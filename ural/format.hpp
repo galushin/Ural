@@ -25,7 +25,8 @@
 */
 
 #include <ural/algorithm.hpp>
-#include <ural/sequence/make.hpp>
+#include <ural/sequence/insertion.hpp>
+#include <ural/sequence/transform.hpp>
 #include <ural/sequence/by_line.hpp>
 
 #include <cassert>

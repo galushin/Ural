@@ -23,6 +23,7 @@
 
 #include <ural/math.hpp>
 #include <ural/algorithm.hpp>
+#include <ural/sequence/transform.hpp>
 #include <ural/sequence/make.hpp>
 #include <ural/meta/hierarchy.hpp>
 #include <ural/meta/list.hpp>
