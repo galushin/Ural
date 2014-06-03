@@ -511,7 +511,7 @@
 1399537733 c:\devtools\ural_repo\ural\ural\defs.hpp
 	<ural/type_traits.hpp>
 
-1401780045 c:\devtools\ural_repo\ural\ural\sequence\transform.hpp
+1401780403 c:\devtools\ural_repo\ural\ural\sequence\transform.hpp
 	<ural/meta/list.hpp>
 	<ural/meta/hierarchy.hpp>
 	<ural/functional.hpp>
@@ -587,7 +587,7 @@
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
-1401777385 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
+1401780987 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
 	<ural/abi.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/all.hpp>
@@ -11986,11 +11986,11 @@
 	<ural/math.hpp>
 	<boost/numeric/ublas/triangular.hpp>
 
-1401773725 c:\devtools\ural_repo\ural\ural\sequence\to.hpp
+1401780964 c:\devtools\ural_repo\ural\ural\sequence\to.hpp
 	<ural/sequence/insertion.hpp>
 	<ural/algorithm/details/copy.hpp>
 
-1401778547 c:\devtools\ural_repo\ural\ural\sequence\zip.hpp
+1401787752 c:\devtools\ural_repo\ural\ural\sequence\zip.hpp
 	<ural/tuple.hpp>
 	<ural/sequence/transform.hpp>
 

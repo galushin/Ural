@@ -41,7 +41,48 @@ namespace ural
     };
 
     template <class... Inputs>
-    using zip_sequence = transform_sequence<make_tuple_functor, Inputs...>;
+    class zip_sequence
+     : public sequence_base<zip_sequence<Inputs...>>
+    {
+        typedef transform_sequence<make_tuple_functor, Inputs...> Impl_seq;
+    public:
+        // Типы
+        /// @brief Тип значения
+        typedef typename Impl_seq::value_type value_type;
+
+        /// @brief Тип ссылки
+        typedef typename Impl_seq::reference reference;
+
+        /// @brief Тип указателя
+        typedef typename Impl_seq::pointer pointer;
+
+        /// @brief Тип расстояния
+        typedef typename Impl_seq::distance_type distance_type;
+
+        // Конструкторы
+        zip_sequence(Inputs... ins)
+         : impl_{make_tuple_functor{}, std::move(ins)...}
+        {}
+
+        // Однопроходная последовательность
+        bool operator!() const
+        {
+            return !impl_;
+        }
+
+        reference front() const
+        {
+            return impl_.front();
+        }
+
+        void pop_front()
+        {
+            impl_.pop_front();
+        }
+
+    private:
+        Impl_seq impl_;
+    };
 
     /** @brief Создание последовательности соответствующих элементов кортежей
     @param ins базовые последовательности
@@ -52,8 +93,7 @@ namespace ural
     {
         typedef zip_sequence<decltype(sequence(std::forward<Inputs>(ins)))...>
             Result;
-        return Result(make_tuple_functor{},
-                      sequence(std::forward<Inputs>(ins))...);
+        return Result(sequence(std::forward<Inputs>(ins))...);
     }
 }
 // namespace ural

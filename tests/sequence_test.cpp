@@ -294,14 +294,8 @@ BOOST_AUTO_TEST_CASE(zip_sequence_test)
     }
 
     // ural
-    auto s_ural = ural::make_zip_sequence(x, y);
-
-    std::vector<std::tuple<int, char>> r_ural;
-
-    for(auto x : s_ural)
-    {
-        r_ural.push_back(std::move(x));
-    }
+    auto const r_ural = ural::make_zip_sequence(x, y)
+                      | ural::to_container<std::vector>{};
 
     // проверка
     BOOST_CHECK_EQUAL(x.size(), r_ural.size());
