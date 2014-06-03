@@ -50,6 +50,9 @@ namespace ural
         /// @brief Категория обхода
         typedef typename Sequence::traversal_tag traversal_tag;
 
+        /// @brief Тип указателя
+        typedef typename Sequence::pointer pointer;
+
         // Создание, копирование
         /** @brief Конструктор
         @param seq исходная последовательность

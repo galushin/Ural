@@ -59,6 +59,9 @@ namespace ural
         /// @brief Категория обхода
         typedef single_pass_traversal_tag traversal_tag;
 
+        /// @brief Тип указателя
+        typedef typename std::remove_reference<reference>::type * pointer;
+
         // Конструктор
         /** @brief Конструктор
         @param gen функция без аргументо

@@ -50,6 +50,9 @@ namespace ural
                                           forward_traversal_tag>::type
             traversal_tag;
 
+        /// @brief Тип указателя
+        typedef typename Input::pointer pointer;
+
         // Конструкторы
         /** @brief Конструктор
         @param input входая последовательность
@@ -148,6 +151,9 @@ namespace ural
         typedef typename std::common_type<typename Input::traversal_tag,
                                           forward_traversal_tag>::type
             traversal_tag;
+
+        /// @brief Тип указателя
+        typedef typename Input::pointer pointer;
 
         // Конструкторы
         /** @brief Конструктор

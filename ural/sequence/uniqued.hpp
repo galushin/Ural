@@ -46,6 +46,9 @@ namespace ural
         /// @brief Категория обхода
         typedef ural::forward_traversal_tag traversal_tag;
 
+        /// @brief Тип указателя
+        typedef typename Forward::pointer pointer;
+
         // Конструкторы
         /** @brief Конструктор
         @param in входная последовательность

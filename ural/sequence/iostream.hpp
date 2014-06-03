@@ -43,6 +43,9 @@ namespace ural
         /// @brief Тип ссылки
         typedef value_type const & reference;
 
+        /// @brief Тип указателя
+        typedef value_type const * pointer;
+
         /// @brief Категория обхода
         typedef single_pass_traversal_tag traversal_tag;
 

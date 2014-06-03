@@ -71,6 +71,10 @@ namespace ural
                                     typename Input2::traversal_tag,
                                     forward_traversal_tag>::type traversal_tag;
 
+        /// @brief Тип указателя
+        typedef typename std::common_type<typename Input1::pointer,
+                                          typename Input2::pointer>::type pointer;
+
         /** @brief Конструктор
         @param in1 первая входная последовательность
         @param in2 вторая входная последовательность
@@ -234,6 +238,9 @@ namespace ural
                                     typename Input2::traversal_tag,
                                     forward_traversal_tag>::type traversal_tag;
 
+        /// @brief Тип указателя
+        typedef typename Input1::pointer pointer;
+
         /** @brief Конструктор
         @param in1 первая входная последовательность
         @param in2 вторая входная последовательность
@@ -365,6 +372,9 @@ namespace ural
         typedef typename common_tag<typename Input1::traversal_tag,
                                     typename Input2::traversal_tag,
                                     forward_traversal_tag>::type traversal_tag;
+
+        /// @brief Тип указателя
+        typedef typename Input1::pointer pointer;
 
         /** @brief Конструктор
         @param in1 первая входная последовательность
@@ -500,6 +510,10 @@ namespace ural
         typedef typename common_tag<typename Input1::traversal_tag,
                                     typename Input2::traversal_tag,
                                     forward_traversal_tag>::type traversal_tag;
+
+        /// @brief Тип указателя
+        typedef typename std::common_type<typename Input1::pointer,
+                                          typename Input2::pointer>::type pointer;
 
         /** @brief Конструктор
         @param in1 первая входная последовательность
@@ -672,6 +686,10 @@ namespace ural
         typedef typename common_tag<typename Input1::traversal_tag,
                                     typename Input2::traversal_tag,
                                     forward_traversal_tag>::type traversal_tag;
+
+        /// @brief Тип указателя
+        typedef typename std::common_type<typename Input1::pointer,
+                                          typename Input2::pointer>::type pointer;
 
         /** @brief Конструктор
         @param in1 первая входная последовательность

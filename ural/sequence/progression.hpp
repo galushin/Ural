@@ -37,6 +37,9 @@ namespace ural
         */
         typedef random_access_traversal_tag traversal_tag;
 
+        /// @brief Тип указателя
+        typedef value_type const * pointer;
+
         /// @brief Тип операции
         typedef Plus operation_type;
 

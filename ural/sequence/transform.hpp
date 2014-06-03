@@ -65,6 +65,15 @@ namespace ural
         typedef typename common_tag<typename Inputs::traversal_tag...>::type
             traversal_tag;
 
+        /// @brief Тип расстояния
+        typedef typename std::common_type<typename Inputs::distance_type...>::type
+            distance_type;
+
+        /// @brief Тип указателя
+        typedef typename std::conditional<std::is_lvalue_reference<reference>::value,
+                                          typename std::remove_reference<reference>::type *,
+                                          void> pointer;
+
         /** @brief Конструктор
         @param f функциональный объект, задающий преобразование
         @param in входная последовательность

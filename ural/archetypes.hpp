@@ -83,6 +83,9 @@ namespace archetypes
         /// @brief Тип ссылки
         typedef value_type & reference;
 
+        /// @brief Тип указателя
+        typedef value_type * pointer;
+
         /// @brief Тип для представления расстояния
         typedef size_t distance_type;
 

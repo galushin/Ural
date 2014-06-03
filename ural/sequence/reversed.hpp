@@ -55,6 +55,9 @@ namespace ural
         /// @brief Категория обхода
         typedef typename BidirectionalSequence::traversal_tag traversal_tag;
 
+        /// @brief Тип указателя
+        typedef typename BidirectionalSequence::pointer pointer;
+
         // Конструкторы
         /** @brief Конструктор
         @param seq базовая последовательность

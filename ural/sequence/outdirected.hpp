@@ -34,9 +34,17 @@ namespace ural
     {
     public:
         // Типы
+        /// @brief Категория обхода
         typedef typename Sequence::traversal_tag traversal_tag;
+
+        /// @brief Тип значения
         typedef Sequence value_type;
+
+        /// @brief Тип ссылки
         typedef value_type const & reference;
+
+        /// @brief Тип указателя
+        typedef value_type pointer;
 
         // Конструктор
         explicit outdirected_sequence(Sequence s)

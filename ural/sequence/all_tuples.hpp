@@ -51,6 +51,10 @@ namespace ural
         /// @brief Тип значения
         typedef tuple<typename Inputs::value_type...> value_type;
 
+        /// @brief Тип указателя
+        // @todo Более разумный тип указателя
+        typedef void pointer;
+
         // Конструкторы
         /** @brief Конструктор
         @param ins базовые последовательности
