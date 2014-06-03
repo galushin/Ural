@@ -36,6 +36,9 @@ namespace ural
 
     /** @brief Создание контейнера по последовательности
     @param seq последовательность
+    @return <tt> Container<Value>(begin(s), end(s)) </tt>, где @c s есть
+    <tt> sequence(std::forward<Sequence>(seq)) </tt>, а @c Value --- тип
+    значений последовательности @c s.
     */
     template <class Sequence, template <class...> class Container>
     auto operator|(Sequence && seq, to_container<Container>)
