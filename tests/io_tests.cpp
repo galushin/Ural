@@ -16,7 +16,9 @@
 
 #include <ural/format.hpp>
 
+#include <ural/sequence/to.hpp>
 #include <ural/sequence/by_line.hpp>
+#include <ural/sequence/make.hpp>
 #include <ural/algorithm.hpp>
 
 #include <boost/test/unit_test.hpp>
@@ -32,11 +34,7 @@ BOOST_AUTO_TEST_CASE(by_line_test)
 
     std::istringstream is(os.str());
 
-    auto seq = ural::by_line(is);
-
-    std::vector<std::string> x;
-
-    ural::copy(seq, x | ural::back_inserter);
+    auto const x = ural::by_line(is) | ural::to_container<std::vector>{};
 
     BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(), x.begin(), x.end());
 }

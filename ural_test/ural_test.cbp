@@ -133,6 +133,7 @@
 		<Unit filename="../ural/sequence/set_operations.hpp" />
 		<Unit filename="../ural/sequence/sink.hpp" />
 		<Unit filename="../ural/sequence/taken.hpp" />
+		<Unit filename="../ural/sequence/to.hpp" />
 		<Unit filename="../ural/sequence/transform.hpp" />
 		<Unit filename="../ural/sequence/uniqued.hpp" />
 		<Unit filename="../ural/statistics.hpp" />
