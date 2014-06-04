@@ -136,3 +136,16 @@ BOOST_AUTO_TEST_CASE(table_io_test_temporary_stream)
         BOOST_CHECK(data_src[i] == data[i]);
     }
 }
+
+BOOST_AUTO_TEST_CASE(ostream_delimeted_test)
+{
+    std::vector<int> const xs = {1, 2, 3, 4, 5};
+
+    std::ostringstream os_1;
+    ural::write_delimeted(os_1, xs, ", ") << "\n";
+
+    std::ostringstream os_2;
+    os_2 << ural::delimeted(xs, ", ") << "\n";
+
+    BOOST_CHECK_EQUAL(os_1.str(), os_2.str());
+}

@@ -135,7 +135,7 @@
 	<ural/concepts.hpp>
 	<ural/tuple.hpp>
 
-1400385021 source:c:\devtools\github\ural\tests\numeric_tests.cpp
+1401615112 source:c:\devtools\github\ural\tests\numeric_tests.cpp
 	<ural/numeric/matrix.hpp>
 	<ural/algorithm.hpp>
 	<ural/numeric.hpp>
@@ -148,8 +148,8 @@
 	<ural/numeric/interpolation.hpp>
 	<boost/math/constants/constants.hpp>
 	<ural/numeric/matrix_decomposition.hpp>
+	<ural/numeric/matrix.hpp>
 	<boost/numeric/ublas/matrix.hpp>
-	<boost/numeric/ublas/matrix_proxy.hpp>
 
 1396700593 c:\devtools\github\ural\ural\numeric.hpp
 	<ural/functional.hpp>
@@ -984,10 +984,11 @@
 	<cassert>
 	<memory>
 
-1400852551 source:c:\devtools\github\ural\tests\sequence_test.cpp
+1401856484 source:c:\devtools\github\ural\tests\sequence_test.cpp
 	<ural/abi.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/all.hpp>
+	<ural/sequence/zip.hpp>
 	<ural/sequence/map.hpp>
 	<ural/sequence/sink.hpp>
 	<ural/sequence/progression.hpp>
@@ -6516,14 +6517,17 @@
 
 1399039471 c:\devtools\github\ural\ural\sequence\partition.hpp
 
-1399039471 source:c:\devtools\github\ural\tests\io_tests.cpp
+1401860878 source:c:\devtools\github\ural\tests\io_tests.cpp
 	<ural/format.hpp>
+	<ural/sequence/to.hpp>
 	<ural/sequence/by_line.hpp>
+	<ural/sequence/make.hpp>
 	<ural/algorithm.hpp>
 	<boost/test/unit_test.hpp>
+	<forward_list>
 	<sstream>
 
-1397290470 c:\devtools\github\ural\ural\sequence\by_line.hpp
+1401856484 c:\devtools\github\ural\ural\sequence\by_line.hpp
 	<ural/sequence/base.hpp>
 	<string>
 
@@ -6629,7 +6633,7 @@
 	<cassert>
 	<cstddef>
 
-1400773813 source:c:\devtools\github\ural\tests\statistics_tests.cpp
+1401615112 source:c:\devtools\github\ural\tests\statistics_tests.cpp
 	<ural/math.hpp>
 	<ural/statistics.hpp>
 	<ural/math/rational.hpp>
@@ -9729,7 +9733,7 @@
 
 1401856484 c:\devtools\github\ural\ural\sequence\outdirected.hpp
 
-1398515001 c:\devtools\github\ural\ural\sequence\progression.hpp
+1401856484 c:\devtools\github\ural\ural\sequence\progression.hpp
 
 1400385021 c:\devtools\github\ural\ural\numeric\interpolation.hpp
 
@@ -9858,9 +9862,11 @@
 
 1398519700 c:\devtools\github\ural\ural\statistics\data_frame.hpp
 
-1400385021 c:\devtools\github\ural\ural\format.hpp
+1401860833 c:\devtools\github\ural\ural\format.hpp
 	<ural/algorithm.hpp>
-	<ural/sequence/make.hpp>
+	<ural/sequence/to.hpp>
+	<ural/sequence/insertion.hpp>
+	<ural/sequence/transform.hpp>
 	<ural/sequence/by_line.hpp>
 	<cassert>
 	<vector>
@@ -11924,7 +11930,9 @@
 
 1196014039 c:\devtools\boost_1_54_0\boost\numeric\ublas\detail\temporary.hpp
 
-1400385021 c:\devtools\github\ural\ural\numeric\matrix.hpp
+1401615112 c:\devtools\github\ural\ural\numeric\matrix.hpp
+	<ural/utility.hpp>
+	<ural/sequence/base.hpp>
 	<ural/functional/compare_by.hpp>
 	<boost/numeric/ublas/matrix_proxy.hpp>
 	<boost/numeric/ublas/matrix.hpp>
@@ -11999,4 +12007,8 @@
 1401856484 c:\devtools\github\ural\ural\sequence\to.hpp
 	<ural/sequence/insertion.hpp>
 	<ural/algorithm/details/copy.hpp>
+
+1401856484 c:\devtools\github\ural\ural\sequence\zip.hpp
+	<ural/tuple.hpp>
+	<ural/sequence/transform.hpp>
 

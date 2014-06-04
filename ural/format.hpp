@@ -44,6 +44,7 @@ namespace ural
     @param delim разделител
     @return @c os
     @todo Унифицировать с @c describe
+    @todo Поддержка временных объектов
     */
     template <class OStream, class Sequence, class Delim>
     OStream &
@@ -65,6 +66,33 @@ namespace ural
         }
 
         return os;
+    }
+
+    template <class Sequence, class Delimeter>
+    class delimeted_helper
+    {
+    public:
+        delimeted_helper(Sequence seq, Delimeter delim)
+         : sequence(std::move(seq))
+         , delimeter(std::move(delim))
+        {}
+
+        Sequence sequence;
+        Delimeter delimeter;
+    };
+
+    template <class OStream, class Seq, class Delim>
+    OStream & operator<<(OStream & os, delimeted_helper<Seq, Delim> && d)
+    {
+        return ural::write_delimeted(os, std::move(d.sequence),
+                                     std::move(d.delimeter));
+    }
+
+    template <class Sequence, class Delimeter>
+    auto delimeted(Sequence && seq, Delimeter delim)
+    -> delimeted_helper<decltype(sequence(std::forward<Sequence>(seq))), Delimeter>
+    {
+        return {sequence(std::forward<Sequence>(seq)), std::move(delim)};
     }
 
     /** @brief Класс-характеристика для потоков ввода и вывода
