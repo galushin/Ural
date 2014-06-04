@@ -67,11 +67,19 @@ namespace meta
     {};
 
     // at
+    /** @brief Доступ по индексу
+    @tparam Container тип контейнера типов
+    @tparam Index номер элемента
+    @pre @c Index меньше количества элементов в контейнере
+    */
     template <class Container, size_t Index>
     struct at
      : at<typename Container::tail, Index - 1>
     {};
 
+    /** @brief Специализация для <tt> Index == 0 </tt>
+    @tparam Container тип контейнера типов
+    */
     template <class Container>
     struct at<Container, 0u>
      : declare_type<typename Container::head>
@@ -79,14 +87,27 @@ namespace meta
 
     // Алгоритмы
     // all_of
+    /** @brief Проверка, что все элементы контейнера удовлетворяют заданному
+    предикату
+    @tparam Container тип контейнера типов
+    @tparam Predicate тип-предикат
+    */
     template <class Container, template <class> class Predicate>
     struct all_of;
 
+    /** @brief Специализация для пустого списка типов
+    @tparam Predicate тип-предикат
+    */
     template <template <class> class Predicate>
     struct all_of<null_type, Predicate>
      : std::true_type
     {};
 
+    /** @brief Специализация для непустого списка типов
+    @tparam Head первый элемент списка
+    @tparam Tail хвост списка
+    @tparam Predicate тип-предикат
+    */
     template <class Head, class Tail, template <class> class Predicate>
     struct all_of<list<Head, Tail>, Predicate>
      : std::integral_constant<bool, Predicate<Head>::value && all_of<Tail, Predicate>::value>
@@ -135,6 +156,11 @@ namespace meta
     };
 
     // min_value
+    /** @brief Поиск наименьшего значения
+    @tparam List контейнер типов
+    @tparam Compare функция сравнения
+    @tparam Result тип, возвращаемый, если @c Container пуст
+    */
     template <class List, template <class, class> class Compare, class Result>
     struct min_value
     {
@@ -150,31 +176,56 @@ namespace meta
             type;
     };
 
+    /** @brief Специализация для пустых контейнеров
+    @tparam Compare функция сравнения
+    @tparam Result тип, возвращаемый, если @c Container пуст
+    */
     template <template <class, class> class Compare, class Result>
     struct min_value<null_type, Compare, Result>
      : declare_type<Result>
     {};
 
     // remove_first
+    /** @brief Удаляет первое входждения типа в контейнер
+    @tparam List контейнер типов
+    @tparam Value тип, который нужно удалить
+    */
     template <class List, class Value>
     struct remove_first;
 
+    /** @brief специализация для пустых списков
+    @tparam Value тип, который нужно удалить
+    */
     template <class Value>
     struct remove_first<null_type, Value>
      : declare_type<null_type>
     {};
 
+    /** @brief Специализация для случая совпадения первого элемента с удаляемым
+    @tparam Head первый элемент списка
+    @tparam Tail хвост списка
+    */
     template <class Head, class Tail>
     struct remove_first<list<Head, Tail>, Head>
      : declare_type<Tail>
     {};
 
+    /** @brief Специализация для случая несовпадения первого элемента с
+    удаляемым
+    @tparam Head первый элемент списка
+    @tparam Tail хвост списка
+    @tparam Value тип, который нужно удалить
+    */
     template <class Head, class Tail, class Value>
     struct remove_first<list<Head, Tail>, Value>
      : list<Head, typename remove_first<Tail, Value>::type>
     {};
 
     // Сортировка выбором
+    /** @brief Сортировка выбором
+    @tparam List Контейнер типов
+    @tparam Compare функция сравнения
+    */
     template <class List, template <class, class> class Compare>
     struct selection_sort
     {
@@ -188,6 +239,9 @@ namespace meta
         typedef list<new_head, new_tail> type;
     };
 
+    /** @brief Специализация для пустого списка
+    @tparam Compare функция сравнения
+    */
     template <template <class, class> class Compare>
     struct selection_sort<null_type, Compare>
      : declare_type<null_type>

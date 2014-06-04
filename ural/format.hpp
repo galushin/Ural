@@ -73,8 +73,13 @@ namespace ural
     template <class Stream>
     struct stream_traits
     {
+        /// @brief Тип символов
         typedef typename Stream::char_type char_type;
+
+        /// @brief Класс-характеристика
         typedef typename Stream::traits_type traits_type;
+
+        /// @brief Соответствующий класс строк
         typedef typename std::basic_string<char_type, traits_type> string_type;
     };
 
