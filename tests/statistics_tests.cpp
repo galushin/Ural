@@ -253,7 +253,7 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
 
     // Вычисляем выборочную корреляционную матрицу
     // @todo Выделить алгоритм
-    auto s = ural::diag(S);
+    Vector s = ural::diag(S);
 
     for(auto & x : s)
     {
