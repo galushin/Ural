@@ -24,6 +24,8 @@
 #include <ural/math/common_factor.hpp>
 #include <ural/defs.hpp>
 
+#include <boost/operators.hpp>
+
 #include <istream>
 #include <ostream>
 #include <utility>
@@ -69,6 +71,8 @@ namespace ural
     template <class IntegerType>
     class rational
      : private rational_base<IntegerType>
+     , boost::incrementable<rational<IntegerType>
+     , boost::decrementable<rational<IntegerType>>>
     {
         typedef rational_base<IntegerType> Base;
 
@@ -191,14 +195,6 @@ namespace ural
         }
 
         // Инкремент и декремент
-        // @todo Пост инкремент и декремент за счёт boost::operators
-        rational operator++(int)
-        {
-            auto old = *this;
-            ++*this;
-            return old;
-        }
-
         /** @brief Увеличение значения на единицу
         @return <tt> *this </tt>
         */
@@ -206,13 +202,6 @@ namespace ural
         {
             Base::numerator += Base::denominator;
             return *this;
-        }
-
-        rational operator--(int)
-        {
-            auto old = *this;
-            --*this;
-            return old;
         }
 
         /** @brief Уменьшение значения на единицу

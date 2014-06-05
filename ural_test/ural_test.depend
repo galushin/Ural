@@ -6362,9 +6362,10 @@
 	<boost/operators.hpp>
 	<ural/math/rational.hpp>
 
-1398316481 c:\devtools\ural_repo\ural\ural\math\rational.hpp
+1401943780 c:\devtools\ural_repo\ural\ural\math\rational.hpp
 	<ural/math/common_factor.hpp>
 	<ural/defs.hpp>
+	<boost/operators.hpp>
 	<istream>
 	<ostream>
 	<utility>
