@@ -25,6 +25,7 @@
 
 #include <ural/defs.hpp>
 
+#include <new>
 #include <cassert>
 #include <exception>
 #include <typeinfo>
@@ -32,6 +33,23 @@
 
 namespace ural
 {
+    template <class E = std::exception_ptr>
+    class unexpected
+    {
+    public:
+        unexpected(E ex)
+         : ex_{std::move(ex)}
+        {}
+
+        E move_out()
+        {
+            return std::move(ex_);
+        }
+
+    private:
+        E ex_;
+    };
+
     /** @brief Обёртка для значения или исключения, которое помешало вычислению
     этого значения.
     @tparam T тип значения
@@ -39,15 +57,18 @@ namespace ural
     template <class T>
     class expected
     {
-        expected()
-        {}
-
     public:
         // Типы
         /// @brief Тип значения
         typedef T value_type;
 
         // Создание, присваивание и уничтожение
+        expected(unexpected<std::exception_ptr> ue)
+         : has_value_{false}
+        {
+            new(&ex_) std::exception_ptr(std::move(ue.move_out()));
+        }
+
         /** @brief Коструктор
         @param init_value значение
         @post <tt> this->has_value() == true </tt>
@@ -151,12 +172,7 @@ namespace ural
         */
         static expected from_exception(std::exception_ptr const & e)
         {
-            expected result{};
-
-            result.has_value_ = false;
-            new(&result.ex_) std::exception_ptr(e);
-
-            return result;
+            return {unexpected<std::exception_ptr>{e}};
         }
 
         template <class E>

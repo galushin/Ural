@@ -9809,8 +9809,9 @@
 	<ural/memory.hpp>
 	<boost/test/unit_test.hpp>
 
-1398316481 c:\devtools\ural_repo\ural\ural\utility\expected.hpp
+1401959662 c:\devtools\ural_repo\ural\ural\utility\expected.hpp
 	<ural/defs.hpp>
+	<new>
 	<cassert>
 	<exception>
 	<typeinfo>
