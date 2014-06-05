@@ -18,6 +18,7 @@
 #include <ural/statistics.hpp>
 #include <ural/math/rational.hpp>
 
+#include <boost/math/distributions/normal.hpp>
 #include <boost/mpl/list.hpp>
 #include <boost/test/unit_test.hpp>
 
@@ -248,7 +249,12 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
 
     for(size_t i = 0; i != m.size(); ++ i)
     {
-        BOOST_CHECK_CLOSE(mu[i], m[i], 1);
+        // @todo макрос для проверки статистической гипотезы
+        using std::sqrt;
+        double eps = C(i, i) / sqrt(sample.size())
+                     * quantile(boost::math::normal_distribution<>(), 0.95);
+
+        BOOST_CHECK_CLOSE_FRACTION(mu[i], m[i], eps);
     }
 
     // Вычисляем выборочную корреляционную матрицу
