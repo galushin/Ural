@@ -46,6 +46,11 @@ namespace ural
             return std::move(ex_);
         }
 
+        E const & get() const
+        {
+            return this->ex_;
+        }
+
     private:
         E ex_;
     };
@@ -62,11 +67,13 @@ namespace ural
         /// @brief Тип значения
         typedef T value_type;
 
+        typedef unexpected<std::exception_ptr> unexpected_type;
+
         // Создание, присваивание и уничтожение
         expected(unexpected<std::exception_ptr> ue)
          : has_value_{false}
         {
-            new(&ex_) std::exception_ptr(std::move(ue.move_out()));
+            new(&ex_) unexpected_type(std::move(ue.move_out()));
         }
 
         /** @brief Коструктор
@@ -93,7 +100,7 @@ namespace ural
             }
             else
             {
-                new(&ex_) std::exception_ptr(x.ex_);
+                new(&ex_) unexpected_type(x.ex_);
             }
         }
 
@@ -111,7 +118,7 @@ namespace ural
             }
             else
             {
-                new(&ex_) std::exception_ptr(std::move(x.ex_));
+                new(&ex_) unexpected_type(x.ex_.move_out());
             }
         }
 
@@ -127,7 +134,7 @@ namespace ural
             }
             else
             {
-                this->set_exception(x.ex_);
+                this->set_exception(x.ex_.get());
             }
             return *this;
         }
@@ -146,7 +153,7 @@ namespace ural
             }
             else
             {
-                this->set_exception(std::move(x.ex_));
+                this->set_exception(x.ex_.move_out());
             }
             return *this;
         }
@@ -160,8 +167,7 @@ namespace ural
             }
             else
             {
-                using std::exception_ptr;
-                ex_.~exception_ptr();
+                ex_.~unexpected_type();
             }
         }
 
@@ -222,7 +228,7 @@ namespace ural
             }
             else
             {
-                std::rethrow_exception(this->ex_);
+                std::rethrow_exception(this->ex_.get());
             }
         }
         //@}
@@ -284,7 +290,7 @@ namespace ural
             if(this->has_value_)
             {
                 this->value_.~T();
-                new(&this->ex_) std::exception_ptr(std::move(p));
+                new(&this->ex_) unexpected_type(std::move(p));
                 has_value_ = false;
             }
             else
@@ -306,8 +312,7 @@ namespace ural
             }
             else
             {
-                using std::exception_ptr;
-                this->ex_.~exception_ptr();
+                this->ex_.~unexpected_type();
                 new(&this->value_) T(std::move(value));
                 has_value_ = true;
             }
@@ -334,10 +339,9 @@ namespace ural
                     auto val = std::move(this->value_);
 
                     this->value_.~T();
-                    new(&ex_) std::exception_ptr{std::move(x.ex_)};
+                    new(&ex_) unexpected_type{std::move(x.ex_)};
 
-                    using std::exception_ptr;
-                    x.ex_.~exception_ptr();
+                    x.ex_.~unexpected_type();
                     new(&x.value_) T{std::move(val)};
                 }
             }
@@ -359,7 +363,7 @@ namespace ural
         union
         {
             T value_;
-            std::exception_ptr ex_;
+            unexpected_type ex_;
         };
     };
 
