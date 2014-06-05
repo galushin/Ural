@@ -377,7 +377,6 @@ BOOST_AUTO_TEST_CASE(newton_interpolation_test)
 
 #include <boost/numeric/ublas/matrix.hpp>
 
-// @todo Последовательность строк матрицы
 // @todo Последовательность столбцов матрицы
 BOOST_AUTO_TEST_CASE(qr_decomposition_test)
 {

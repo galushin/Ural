@@ -19,6 +19,7 @@
 #include <ural/math/rational.hpp>
 
 #include <boost/math/distributions/normal.hpp>
+#include <boost/math/distributions/chi_squared.hpp>
 #include <boost/mpl/list.hpp>
 #include <boost/test/unit_test.hpp>
 
@@ -236,11 +237,22 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
     BOOST_CHECK_EQUAL(dim, S.size1());
     BOOST_CHECK_EQUAL(dim, S.size2());
 
-    // @todo проверять доверительные интервалы для выборочных величин
     for(size_t i = 0; i != S.size1(); ++ i)
-    for(size_t j = 0; j != i+1; ++ j)
     {
-        BOOST_CHECK_CLOSE(C(i, j), S(i, j), 5);
+        // @todo Выделить функцию
+        boost::math::chi_squared_distribution<> chi_2(sample.size() - 1);
+        auto const alpha = 0.05;
+        auto const q1 = quantile(chi_2, alpha / 2);
+        auto const q2 = quantile(chi_2, 1 - alpha / 2);
+
+        BOOST_CHECK_LE(S(i, i), C(i, i) * q2  / chi_2.degrees_of_freedom());
+        BOOST_CHECK_GE(S(i, i), C(i, i) * q1  / chi_2.degrees_of_freedom());
+
+        for(size_t j = 0; j != i+1; ++ j)
+        {
+            // @todo проверять гипотезу о ковариации
+            BOOST_CHECK_CLOSE(C(i, j), S(i, j), 5);
+        }
     }
 
     auto m = acc.mean();

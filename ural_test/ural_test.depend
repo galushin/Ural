@@ -41,7 +41,7 @@
 
 1382674135 c:\devtools\ural_repo\ural\\ural\sequence\insertion.hpp
 
-1401769599 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
+1401945681 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
 	<ural/numeric/matrix.hpp>
 	<ural/algorithm.hpp>
 	<ural/numeric.hpp>
@@ -523,7 +523,7 @@
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
-1400025524 source:c:\devtools\ural_repo\ural\tests\functional_test.cpp
+1401951306 source:c:\devtools\ural_repo\ural\tests\functional_test.cpp
 	"rnd.hpp"
 	<boost/test/unit_test.hpp>
 	<ural/utility/tracers.hpp>
@@ -625,7 +625,7 @@
 	<ural/sequence/transform.hpp>
 	<ural/functional/replace.hpp>
 
-1399541364 c:\devtools\ural_repo\ural\ural\functional\replace.hpp
+1401951429 c:\devtools\ural_repo\ural\ural\functional\replace.hpp
 	<ural/tuple.hpp>
 	<ural/functional/cpp_operators.hpp>
 
@@ -6589,10 +6589,12 @@
 	<cassert>
 	<cstddef>
 
-1401928681 source:c:\devtools\ural_repo\ural\tests\statistics_tests.cpp
+1401949687 source:c:\devtools\ural_repo\ural\tests\statistics_tests.cpp
 	<ural/math.hpp>
 	<ural/statistics.hpp>
 	<ural/math/rational.hpp>
+	<boost/math/distributions/normal.hpp>
+	<boost/math/distributions/chi_squared.hpp>
 	<boost/mpl/list.hpp>
 	<boost/test/unit_test.hpp>
 	"rnd.hpp"
@@ -9874,7 +9876,7 @@
 	<sstream>
 	<sstream>
 
-1401928002 c:\devtools\ural_repo\ural\ural\format.hpp
+1401950992 c:\devtools\ural_repo\ural\ural\format.hpp
 	<ural/algorithm.hpp>
 	<ural/sequence/to.hpp>
 	<ural/sequence/insertion.hpp>
@@ -12012,4 +12014,12 @@
 1401856484 c:\devtools\github\ural\ural\sequence\zip.hpp
 	<ural/tuple.hpp>
 	<ural/sequence/transform.hpp>
+
+1347007399 c:\devtools\boost_1_54_0\boost\math\distributions\normal.hpp
+	<boost/math/distributions/fwd.hpp>
+	<boost/math/special_functions/erf.hpp>
+	<boost/math/distributions/complement.hpp>
+	<boost/math/distributions/detail/common_error_handling.hpp>
+	<utility>
+	<boost/math/distributions/detail/derived_accessors.hpp>
 
