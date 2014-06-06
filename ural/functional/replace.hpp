@@ -100,8 +100,7 @@ namespace ural
         return replace_if_functor<Predicate, T>(std::move(pred), new_value);
     }
 
-    /**
-    @todo Что если T = reference_wrapper<U>
+    /** @brief Функциональный объект, заменяющий заданное значение на новое
     @tparam T тип значения
     @tparam BinaryPredicate бинарный предикат над @c T
     */

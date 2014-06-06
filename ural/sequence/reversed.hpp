@@ -27,6 +27,7 @@ namespace ural
     /** @brief Адаптор последовательности, посещающий элементы исходной
     последовательности в обратном порядке.
     @tparam BidirectionalSequence двусторонняя последовательность.
+    @todo Тесты/использование всех функций
     */
     template <class BidirectionalSequence>
     class reverse_sequence
@@ -122,9 +123,28 @@ namespace ural
             return base_.pop_front();
         }
 
-        // @todo Пройденная задняя часть последовательности
+        reverse_sequence traversed_back();
+
+        void shrink_back();
 
         // Последовательность произвольного доступа
+        /** @brief Индексированный доступ
+        @param n индекс
+        @pre <tt> 0 <= n && n < this->size() </tt>
+        */
+        reference operator[](distance_type n) const
+        {
+            return base_[this->size() - n - 1];
+        }
+
+        /** @brief Количество элементов
+        @return Количество непройденных элементов
+        */
+        distance_type size() const
+        {
+            return base_.size();
+        }
+
         /** @brief Продвижение на заданное число элементов в передней части
         @param n число элементов, которые будут пропущены
         @return <tt> *this </tt>
@@ -134,6 +154,11 @@ namespace ural
             base_.pop_back(n);
             return *this;
         }
+
+        /**
+        @pre <tt> 0 <= n && n <= this->size() </tt>
+        */
+        void pop_back(distance_type n);
 
         // Адаптор последовательности
         /** @brief Базовая последовательность

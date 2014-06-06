@@ -377,7 +377,6 @@ BOOST_AUTO_TEST_CASE(newton_interpolation_test)
 
 #include <boost/numeric/ublas/matrix.hpp>
 
-// @todo Последовательность строк матрицы
 // @todo Последовательность столбцов матрицы
 BOOST_AUTO_TEST_CASE(qr_decomposition_test)
 {
@@ -399,32 +398,15 @@ BOOST_AUTO_TEST_CASE(qr_decomposition_test)
     BOOST_CHECK_EQUAL(A.size1(), R.size1());
     BOOST_CHECK_EQUAL(A.size2(), R.size2());
 
-    // @todo Проверка, что матрица ортогональна
-    for(auto rs = ural::matrix_by_rows(Q); !!rs; ++ rs)
-    {
-        auto ri = *rs;
-
-        BOOST_CHECK_CLOSE(1.0, norm_2(ri), 1e-6);
-
-        for(auto rs1 = rs.traversed_front(); !!rs1; ++ rs1)
-        {
-            auto rj = *rs1;
-
-            BOOST_CHECK(abs(inner_prod(ri, rj)) < 1e-6);
-        }
-    }
+    boost::numeric::ublas::identity_matrix<> const I{Q.size1()};
+    BOOST_CHECK_LE(norm_1(prod(trans(Q), Q) - I), 1e-6);
 
     auto A_QR = prod(Q, R);
 
-    // @todo Проверка, что матрицы примерно равны
     BOOST_CHECK_EQUAL(A.size1(), A_QR.size1());
     BOOST_CHECK_EQUAL(A.size2(), A_QR.size2());
 
-    for(size_t i = 0; i != A.size1(); ++ i)
-    for(size_t j = 0; j != A.size2(); ++ j)
-    {
-        BOOST_CHECK_CLOSE(A(i, j), A_QR(i, j), 1e-6);
-    }
+    BOOST_CHECK_LE(norm_1(A - A_QR), 1e-6);
 }
 
 BOOST_AUTO_TEST_CASE(matrix_init_test)
@@ -452,32 +434,15 @@ BOOST_AUTO_TEST_CASE(qr_decomposition_test_init_list)
     auto Q = QR[ural::_1];
     auto R = QR[ural::_2];
 
-    // @todo Проверка, что матрица ортогональна
-    for(size_t i = 0; i != Q.size1(); ++ i)
-    {
-        auto ri = row(Q, i);
-
-        BOOST_CHECK_CLOSE(1.0, norm_2(ri), 1e-6);
-
-        for(size_t j = 0; j != i; ++ j)
-        {
-            auto rj = row(Q, j);
-
-            BOOST_CHECK(abs(inner_prod(ri, rj)) < 1e-6);
-        }
-    }
+    boost::numeric::ublas::identity_matrix<> const I{Q.size1()};
+    BOOST_CHECK_LE(norm_1(prod(trans(Q), Q) - I), 1e-6);
 
     auto A_QR = prod(Q, R);
 
-    // @todo Проверка, что матрицы примерно равны
     BOOST_CHECK_EQUAL(A.size1(), A_QR.size1());
     BOOST_CHECK_EQUAL(A.size2(), A_QR.size2());
 
-    for(size_t i = 0; i != A.size1(); ++ i)
-    for(size_t j = 0; j != A.size2(); ++ j)
-    {
-        BOOST_CHECK_CLOSE(A(i, j), A_QR(i, j), 1e-6);
-    }
+    BOOST_CHECK_LE(norm_1(A - A_QR), 1e-6);
 }
 
 BOOST_AUTO_TEST_CASE(cholesky_descomposition_test)
@@ -505,9 +470,5 @@ BOOST_AUTO_TEST_CASE(cholesky_descomposition_test)
     BOOST_CHECK_EQUAL(A.size1(), A1.size1());
     BOOST_CHECK_EQUAL(A.size2(), A1.size2());
 
-    for(size_t i = 0; i != A.size1(); ++ i)
-    for(size_t j = 0; j != A.size2(); ++ j)
-    {
-        BOOST_CHECK_CLOSE(A(i, j), A1(i, j), 1e-6);
-    }
+    BOOST_CHECK_LE(norm_1(A - A1), 1e-6);
 }

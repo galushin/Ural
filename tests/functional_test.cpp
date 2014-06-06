@@ -585,6 +585,20 @@ BOOST_AUTO_TEST_CASE(value_functor_equality_test)
     static_assert(f1 != f2, "");
 }
 
+BOOST_AUTO_TEST_CASE(replace_functor_cref_test)
+{
+    auto const old_value = 13;
+    auto const new_value = 42;
+
+    auto const f = ural::make_replace_functor(std::cref(old_value),
+                                              std::cref(new_value));
+
+    BOOST_CHECK(f == f);
+
+    BOOST_CHECK_EQUAL(new_value, f(old_value));
+    BOOST_CHECK_EQUAL(new_value, f(new_value));
+}
+
 BOOST_AUTO_TEST_CASE(replace_functor_custom_predicate_test)
 {
     auto constexpr old_value = 13;

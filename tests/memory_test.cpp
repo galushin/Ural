@@ -158,8 +158,79 @@ BOOST_AUTO_TEST_CASE(copy_ptr_ctor_test)
     BOOST_CHECK_EQUAL(value, *p);
 }
 
-// @todo Тест конструктора copy_ptr(pointer, d1)
-// @todo Тест конструктора copy_ptr(pointer, d2)
+namespace
+{
+    template <class T>
+    class deleter_with_id
+    {
+    public:
+        deleter_with_id(int id)
+         : id_(id)
+        {}
+
+        int id() const
+        {
+            return id_;
+        }
+
+        void set_id(int new_id)
+        {
+            id_ = new_id;
+        }
+
+        void operator()(T * p) const
+        {
+            delete p;
+        }
+
+    private:
+        int id_;
+    };
+}
+
+BOOST_AUTO_TEST_CASE(copy_ptr_copy_init_deleter_test)
+{
+    deleter_with_id<int> d(13);
+
+    ural::copy_ptr<int, ural::use_default, deleter_with_id<int>>
+        p(new int{42}, d);
+
+    BOOST_CHECK_EQUAL(d.id(), p.get_deleter().id());
+}
+
+BOOST_AUTO_TEST_CASE(copy_ptr_copy_init_deleter_cref_test)
+{
+    deleter_with_id<int> d(13);
+
+    ural::copy_ptr<int, ural::use_default, deleter_with_id<int> const &>
+        p(new int{42}, d);
+
+    BOOST_CHECK_EQUAL(d.id(), p.get_deleter().id());
+    BOOST_CHECK_EQUAL(&d, &p.get_deleter());
+}
+
+BOOST_AUTO_TEST_CASE(copy_ptr_copy_init_deleter_ref_test)
+{
+    deleter_with_id<int> d(13);
+
+    ural::copy_ptr<int, ural::use_default, deleter_with_id<int> const &>
+        p(new int{42}, d);
+
+    BOOST_CHECK_EQUAL(d.id(), p.get_deleter().id());
+    BOOST_CHECK_EQUAL(&d, &p.get_deleter());
+
+    d.set_id(0);
+    BOOST_CHECK_EQUAL(d.id(), p.get_deleter().id());
+}
+
+BOOST_AUTO_TEST_CASE(copy_ptr_move_init_deleter_test)
+{
+    const auto id = 13;
+    ural::copy_ptr<int, ural::use_default, deleter_with_id<int>>
+        p(new int{42}, deleter_with_id<int>(id));
+
+    BOOST_CHECK_EQUAL(id, p.get_deleter().id());
+}
 
 BOOST_AUTO_TEST_CASE(copy_ptr_move_ctor_test)
 {

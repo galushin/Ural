@@ -167,7 +167,6 @@ namespace ural
 
     /** @brief Специализация для преобразования строки в саму себя
     @tparam String тип строки
-    @todo Можно ли возвращать по константной ссылке
     */
     template <class String>
     class from_string_policy<String, String>
@@ -191,6 +190,7 @@ namespace ural
     @tparam String тип строки
     @param s строка
     @return from_string_policy<Ch, Tr, T>{}(s)
+    @todo Можно ли возвращать по константной ссылке, когда T == String
     */
     template <class T, class String>
     T from_string(String const & s)

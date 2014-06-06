@@ -25,6 +25,7 @@
 
 #include <ural/defs.hpp>
 
+#include <new>
 #include <cassert>
 #include <exception>
 #include <typeinfo>
@@ -32,6 +33,28 @@
 
 namespace ural
 {
+    template <class E = std::exception_ptr>
+    class unexpected
+    {
+    public:
+        unexpected(E ex)
+         : ex_{std::move(ex)}
+        {}
+
+        E move_out()
+        {
+            return std::move(ex_);
+        }
+
+        E const & get() const
+        {
+            return this->ex_;
+        }
+
+    private:
+        E ex_;
+    };
+
     /** @brief Обёртка для значения или исключения, которое помешало вычислению
     этого значения.
     @tparam T тип значения
@@ -39,21 +62,26 @@ namespace ural
     template <class T>
     class expected
     {
-        expected()
-        {}
-
     public:
         // Типы
         /// @brief Тип значения
         typedef T value_type;
 
+        typedef unexpected<std::exception_ptr> unexpected_type;
+
         // Создание, присваивание и уничтожение
+        expected(unexpected<std::exception_ptr> ue)
+         : has_value_{false}
+        {
+            new(&ex_) unexpected_type(std::move(ue.move_out()));
+        }
+
         /** @brief Коструктор
         @param init_value значение
         @post <tt> this->has_value() == true </tt>
         @post <tt> this->value() == init_value </tt>
         */
-        explicit expected(T init_value)
+        expected(T init_value)
          : has_value_(true)
         {
             new(&value_)T(std::move(init_value));
@@ -72,7 +100,7 @@ namespace ural
             }
             else
             {
-                new(&ex_) std::exception_ptr(x.ex_);
+                new(&ex_) unexpected_type(x.ex_);
             }
         }
 
@@ -90,7 +118,7 @@ namespace ural
             }
             else
             {
-                new(&ex_) std::exception_ptr(std::move(x.ex_));
+                new(&ex_) unexpected_type(x.ex_.move_out());
             }
         }
 
@@ -106,7 +134,7 @@ namespace ural
             }
             else
             {
-                this->set_exception(x.ex_);
+                this->set_exception(x.ex_.get());
             }
             return *this;
         }
@@ -125,7 +153,7 @@ namespace ural
             }
             else
             {
-                this->set_exception(std::move(x.ex_));
+                this->set_exception(x.ex_.move_out());
             }
             return *this;
         }
@@ -139,8 +167,7 @@ namespace ural
             }
             else
             {
-                using std::exception_ptr;
-                ex_.~exception_ptr();
+                ex_.~unexpected_type();
             }
         }
 
@@ -151,12 +178,7 @@ namespace ural
         */
         static expected from_exception(std::exception_ptr const & e)
         {
-            expected result{};
-
-            result.has_value_ = false;
-            new(&result.ex_) std::exception_ptr(e);
-
-            return result;
+            return {unexpected<std::exception_ptr>{e}};
         }
 
         template <class E>
@@ -206,7 +228,7 @@ namespace ural
             }
             else
             {
-                std::rethrow_exception(this->ex_);
+                std::rethrow_exception(this->ex_.get());
             }
         }
         //@}
@@ -268,7 +290,7 @@ namespace ural
             if(this->has_value_)
             {
                 this->value_.~T();
-                new(&this->ex_) std::exception_ptr(std::move(p));
+                new(&this->ex_) unexpected_type(std::move(p));
                 has_value_ = false;
             }
             else
@@ -290,8 +312,7 @@ namespace ural
             }
             else
             {
-                using std::exception_ptr;
-                this->ex_.~exception_ptr();
+                this->ex_.~unexpected_type();
                 new(&this->value_) T(std::move(value));
                 has_value_ = true;
             }
@@ -318,10 +339,9 @@ namespace ural
                     auto val = std::move(this->value_);
 
                     this->value_.~T();
-                    new(&ex_) std::exception_ptr{std::move(x.ex_)};
+                    new(&ex_) unexpected_type{std::move(x.ex_)};
 
-                    using std::exception_ptr;
-                    x.ex_.~exception_ptr();
+                    x.ex_.~unexpected_type();
                     new(&x.value_) T{std::move(val)};
                 }
             }
@@ -338,12 +358,26 @@ namespace ural
             }
         }
 
+        template <class F>
+        auto fmap(F f) -> expected<decltype(f(std::declval<T>()))>
+        {
+            if(has_value_)
+            {
+                // @todo Что, если здесь возникнет исключение
+                return {f(this->value_)};
+            }
+            else
+            {
+                return {ex_};
+            }
+        }
+
     private:
         bool has_value_;
         union
         {
             T value_;
-            std::exception_ptr ex_;
+            unexpected_type ex_;
         };
     };
 

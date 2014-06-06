@@ -95,24 +95,84 @@ namespace ural
         }
     };
 
-    /** @todo Создавать выражение или вычислять?
+    /** @brief Итератор элементов главной диагонали матрицы
+    @tparam Matrix тип матрицы
+    */
+    template <class Matrix>
+    class diagonal_iterator
+    {
+    public:
+        /// @brief Категория итератора
+        typedef std::random_access_iterator_tag iterator_category;
+
+    private:
+    };
+
+    /** @brief Адаптор для главной диагонали матрицы
+    @tparam Matrix тип матрицы
+    */
+    template <class Matrix>
+    class diagonal_adaptor
+     : public boost::numeric::ublas::vector_expression<diagonal_adaptor<Matrix>>
+    {
+    public:
+        // Типы
+        /// @brief Тип размера
+        typedef typename Matrix::size_type size_type;
+
+        /// @brief Тип значений
+        typedef typename Matrix::value_type value_type;
+
+        /// @brief Тип ссылки
+        typedef typename Matrix::const_reference const_reference;
+
+        /// @brief Тип итератора для чтения
+        typedef diagonal_iterator<Matrix const> const_iterator;
+
+        // Конструкторы
+        /** @brief Конструктор
+        @param x ссылка на матрицу
+        @post <tt> this->size() == std::min(x.size1(), x.size2()) </tt>
+        */
+        diagonal_adaptor(Matrix & x)
+         : ref_{x}
+         , size_{std::min(x.size1(), x.size2())}
+        {}
+
+        // Свойства
+        /** @brief Размер
+        @return Количество элементов на диагонали
+        */
+        size_type size() const
+        {
+            return this->size_;
+        }
+
+        /** @brief Доступ к элементу
+        @param index индекс
+        @return элемент матрицы, номер строки и столбца которого равны @c index
+        */
+        const_reference operator()(size_type index) const
+        {
+            assert(index < this->size());
+
+            return ref_.get()(index, index);
+        }
+
+    private:
+        std::reference_wrapper<Matrix> ref_;
+        size_type size_;
+    };
+
+    /** @todo Принимать matrix_expression
     @param a матрица
     @return Вектор, содержащий диагональные элементы матрицы @c a
     */
     template <class Matrix>
-    boost::numeric::ublas::vector<typename Matrix::value_type>
+    diagonal_adaptor<Matrix const>
     diag(Matrix const & a)
     {
-        auto const dim = std::min(a.size1(), a.size2());
-
-        boost::numeric::ublas::vector<typename Matrix::value_type> result(dim);
-
-        for(size_t i = 0; i != dim; ++ i)
-        {
-            result[i] = a(i, i);
-        }
-
-        return result;
+        return diagonal_adaptor<Matrix const>{a};
     }
 
     /** @brief Последовательность строк матрицы

@@ -1161,6 +1161,18 @@ BOOST_AUTO_TEST_CASE(partial_sort_test)
                             [=](int x) {return x >= ys[2];}));
 }
 
+BOOST_AUTO_TEST_CASE(partial_sort_reversed_test)
+{
+    std::array<int, 10> const ys {5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
+
+    auto xs = ys;
+
+    ural::partial_sort(xs | ural::reversed, xs.size());
+
+    BOOST_CHECK(std::is_sorted(xs.rbegin(), xs.rend()));
+    BOOST_CHECK(ural::is_permutation(xs, ys));
+}
+
 BOOST_AUTO_TEST_CASE(partial_sort_copy_test)
 {
     std::list<int> const v0{4, 2, 5, 1, 3};

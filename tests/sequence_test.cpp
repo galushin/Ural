@@ -364,3 +364,19 @@ BOOST_AUTO_TEST_CASE(set_inserter_test)
     BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
                                   z_ural.begin(), z_ural.end());
 }
+
+BOOST_AUTO_TEST_CASE(reversed_seq_concept_check)
+{
+    std::list<int> bi_c;
+    std::vector<int> ra_c;
+
+    using ural::sequence;
+
+    typedef decltype(sequence(bi_c) | ural::reversed) Bi;
+    typedef decltype(sequence(ra_c) | ural::reversed) Ra;
+
+    BOOST_CONCEPT_ASSERT((ural::concepts::BidirectionalSequence<Bi>));
+
+    BOOST_CONCEPT_ASSERT((ural::concepts::BidirectionalSequence<Ra>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<Ra>));
+}

@@ -950,7 +950,8 @@ namespace details
             if(cmp(*i, *s_old))
             {
                 ::ural::details::do_swap(*s_old, *i);
-                ::ural::details::heap_sink(s.traversed_front(), 0, part, cmp);
+                ::ural::details::heap_sink(s.traversed_front(),
+                                           static_cast<decltype(part)>(0), part, cmp);
             }
         }
 
