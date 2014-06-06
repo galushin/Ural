@@ -759,7 +759,6 @@ namespace tags
     {
         typedef descriptive<T, typename Tags::head, descriptives<T, typename Tags::tail>>
             Base;
-    // @todo почему не может быть protected
     public:
         /// @brief Конструктор без аргументов
         descriptives() = default;
