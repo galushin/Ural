@@ -134,7 +134,7 @@ namespace ural
         */
         reference operator[](distance_type n) const
         {
-            return base_[this->size() - n];
+            return base_[this->size() - n - 1];
         }
 
         /** @brief Количество элементов
