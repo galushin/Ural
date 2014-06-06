@@ -452,6 +452,8 @@ BOOST_AUTO_TEST_CASE(qr_decomposition_test_init_list)
     auto R = QR[ural::_2];
 
     // @todo Проверка, что матрица ортогональна
+    auto QTQ = prod(trans(Q), Q);
+
     for(size_t i = 0; i != Q.size1(); ++ i)
     {
         auto ri = row(Q, i);
@@ -468,15 +470,10 @@ BOOST_AUTO_TEST_CASE(qr_decomposition_test_init_list)
 
     auto A_QR = prod(Q, R);
 
-    // @todo Проверка, что матрицы примерно равны
     BOOST_CHECK_EQUAL(A.size1(), A_QR.size1());
     BOOST_CHECK_EQUAL(A.size2(), A_QR.size2());
 
-    for(size_t i = 0; i != A.size1(); ++ i)
-    for(size_t j = 0; j != A.size2(); ++ j)
-    {
-        BOOST_CHECK_CLOSE(A(i, j), A_QR(i, j), 1e-6);
-    }
+    BOOST_CHECK_LE(norm_1(A - A_QR), 1e-6);
 }
 
 BOOST_AUTO_TEST_CASE(cholesky_descomposition_test)
@@ -504,9 +501,5 @@ BOOST_AUTO_TEST_CASE(cholesky_descomposition_test)
     BOOST_CHECK_EQUAL(A.size1(), A1.size1());
     BOOST_CHECK_EQUAL(A.size2(), A1.size2());
 
-    for(size_t i = 0; i != A.size1(); ++ i)
-    for(size_t j = 0; j != A.size2(); ++ j)
-    {
-        BOOST_CHECK_CLOSE(A(i, j), A1(i, j), 1e-6);
-    }
+    BOOST_CHECK_LE(norm_1(A - A1), 1e-6);
 }
