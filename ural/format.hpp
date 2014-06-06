@@ -21,7 +21,6 @@
  @brief Средства форматированного ввода/вывода
  @todo Оптимизация
  @todo istringstream для произвольных строк, не обязательно basic_string<>
- @todo os << delimeted(seq, ", ") << "\n";
 */
 
 #include <ural/algorithm.hpp>
