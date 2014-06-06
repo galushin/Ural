@@ -81,7 +81,7 @@ namespace ural
         @post <tt> this->has_value() == true </tt>
         @post <tt> this->value() == init_value </tt>
         */
-        explicit expected(T init_value)
+        expected(T init_value)
          : has_value_(true)
         {
             new(&value_)T(std::move(init_value));
@@ -355,6 +355,20 @@ namespace ural
                 {
                     std::swap(this->ex_, x.ex_);
                 }
+            }
+        }
+
+        template <class F>
+        auto fmap(F f) -> expected<decltype(f(std::declval<T>()))>
+        {
+            if(has_value_)
+            {
+                // @todo Что, если здесь возникнет исключение
+                return {f(this->value_)};
+            }
+            else
+            {
+                return {ex_};
             }
         }
 

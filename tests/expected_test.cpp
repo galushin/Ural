@@ -341,3 +341,34 @@ BOOST_AUTO_TEST_CASE(expected_move_assign_to_exception)
     BOOST_CHECK(e.has_value() == false);
     BOOST_CHECK(new_value == *e.get_exception<Type>());
 }
+
+BOOST_AUTO_TEST_CASE(expected_fmap_test)
+{
+    auto const value = 3;
+
+    auto e_good = ural::expected_from_call(may_throw, true, value);
+
+    auto e_sq = e_good.fmap([](int x) { return x*x;});
+
+    BOOST_CHECK_EQUAL(value*value, e_sq.value());
+}
+
+BOOST_AUTO_TEST_CASE(unexpected_fmap_test)
+{
+    auto const value = 3;
+
+    auto e_good = ural::expected_from_call(may_throw, false, value);
+
+    auto e_sq = e_good.fmap([](int x) { return x*x;});
+
+    BOOST_CHECK(e_sq.has_value() == false);
+
+    try
+    {
+        e_sq.value();
+    }
+    catch(int const & x)
+    {
+        BOOST_CHECK_EQUAL(value, x);
+    }
+}
