@@ -747,8 +747,10 @@ namespace tags
     /** @brief Описательные статистики
     @tparam T тип элементов
     @tparam Tags список тэгов
-    @todo Убедиться, что нет повторяющихся тэгов
     @note Одна из проблем с таким дизайном: можно забыть определить operator()
+    @note Дбулирование тэгов не проверяется, чтобы не увиличивать время
+    компиляции. @c descriptives_facade устраняет дубликаты из списка, прежде,
+    чем передать его @c descriptives
     @todo Оптимизировать min | max
     */
     template <class T, class Tags>
@@ -824,10 +826,11 @@ namespace tags
 
         // Свойства
         template <class Tag>
-        // @todo Проверить, что тэг есть в списке
         auto operator[](statistics::tags_list<Tag>) const
         -> decltype(at_tag(*this, Tag{}))
         {
+            static_assert(!std::is_same<ural::meta::find<PreparedTags, Tag>, null_type>::value,
+                          "Unsupported tag");
             return at_tag(*this, Tag{});
         }
     };

@@ -6604,7 +6604,7 @@
 	<boost/numeric/ublas/vector.hpp>
 	<boost/numeric/ublas/symmetric.hpp>
 
-1401767205 c:\devtools\ural_repo\ural\ural\statistics.hpp
+1402030015 c:\devtools\ural_repo\ural\ural\statistics.hpp
 	<ural/math.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/transform.hpp>
@@ -9804,12 +9804,12 @@
 	<typeinfo>
 	<utility>
 
-1401960642 source:c:\devtools\ural_repo\ural\tests\expected_test.cpp
+1402024045 source:c:\devtools\ural_repo\ural\tests\expected_test.cpp
 	<ural/utility/expected.hpp>
 	<ural/memory.hpp>
 	<boost/test/unit_test.hpp>
 
-1401960610 c:\devtools\ural_repo\ural\ural\utility\expected.hpp
+1402024018 c:\devtools\ural_repo\ural\ural\utility\expected.hpp
 	<ural/defs.hpp>
 	<new>
 	<cassert>
