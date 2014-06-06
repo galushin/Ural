@@ -322,6 +322,7 @@ namespace ural
         @param p указатель на объект, которым будет владеть данный умный
         указатель
         @param d функция удаления
+        @post <tt> this->get() == p </tt>
         */
         copy_ptr(pointer p, typename std::add_lvalue_reference<deleter_type const>::type & d)
          : holder_{std::move(p), d}
@@ -331,6 +332,7 @@ namespace ural
         @param p указатель на объект, которым будет владеть данный умный
         указатель
         @param d функция удаления
+        @post <tt> this->get() == p </tt>
         */
         copy_ptr(pointer p, typename std::remove_reference<deleter_type>::type && d)
          : holder_{std::move(p), std::move(d)}
@@ -479,6 +481,7 @@ namespace ural
     /** @brief Оператор "равно"
     @param x левый операнд
     @param y правый операнд
+    @return <tt> x.get() == y.get() </tt>
     */
     template <class T1, class C1, class D1, class Ch1,
               class T2, class C2, class D2, class Ch2>
