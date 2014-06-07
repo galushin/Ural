@@ -247,6 +247,21 @@ namespace ural
     //@}
 
     // Универсальный интерфейс для кортежей, pair, complex, compressed_pair
+    template <class... Types, size_t Index>
+    typename std::tuple_element<Index, std::tuple<Types...>>::type &
+    get(std::tuple<Types...> & t, placeholder<Index>);
+
+    template <class... Types, size_t Index>
+    typename std::tuple_element<Index, std::tuple<Types...>>::type const &
+    get(std::tuple<Types...> const & t, placeholder<Index>);
+
+    template <class... Types, size_t Index>
+    typename std::tuple_element<Index, std::tuple<Types...>>::type &&
+    get(std::tuple<Types...> && t, placeholder<Index>)
+    {
+        return std::get<Index>(std::move(t));
+    }
+
     /** @brief Первый элемент пары
     @param x пара
     @return <tt> x.first </tt>

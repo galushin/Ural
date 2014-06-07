@@ -18,7 +18,8 @@
 */
 
 /** @file ural/sequence/to.hpp
-@brief Преобразование последовательностей в контейнер
+ @brief Преобразование последовательностей в контейнер
+ @todo Возможность задавать дополнительные шаблонные параметры
 */
 
 #include <ural/sequence/insertion.hpp>
@@ -50,6 +51,31 @@ namespace ural
         auto s = sequence(std::forward<Sequence>(seq));
 
         return Container<Value>(begin(s), end(s));
+    }
+
+    template <template <class, class, class...> class Map>
+    struct to_map
+    {};
+
+    template <class Sequence, template <class, class, class...> class Map>
+    auto operator|(Sequence && seq, to_map<Map>)
+    -> Map<typename std::tuple_element<0, typename decltype(sequence(std::forward<Sequence>(seq)))::value_type>::type,
+           typename std::tuple_element<1, typename decltype(sequence(std::forward<Sequence>(seq)))::value_type>::type>
+    {
+        typedef decltype(sequence(std::forward<Sequence>(seq))) Seq;
+        typedef typename Seq::value_type Value;
+        typedef typename std::tuple_element<0, Value>::type Key;
+        typedef typename std::tuple_element<1, Value>::type Mapped;
+
+        Map<Key, Mapped> result;
+
+        for(auto && x : sequence(std::forward<Sequence>(seq)))
+        {
+            result.emplace(get(std::forward<decltype(x)>(x), ural::_1),
+                           get(std::forward<decltype(x)>(x), ural::_2));
+        }
+
+        return result;
     }
 }
 // namespace ural

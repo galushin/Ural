@@ -28,6 +28,7 @@
 namespace ural
 {
     /** @brief Функциональный объект для создания кортежей из пачки аргументов
+    @todo Использовать ural::make_tuple (который ещё предстоит написать)
     */
     class make_tuple_functor
     {

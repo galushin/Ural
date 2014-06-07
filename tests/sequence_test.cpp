@@ -307,40 +307,18 @@ BOOST_AUTO_TEST_CASE(zip_sequence_test)
     }
 }
 
-BOOST_AUTO_TEST_CASE(map_keys_test)
+BOOST_AUTO_TEST_CASE(map_keys_and_values_test)
 {
     std::vector<int> const x = {1, 2, 3, 4, 5};
     std::vector<char> const y = {'a', 'b', 'c', 'd', 'e'};
 
     assert(x.size() == y.size());
 
-    std::map<int, char> xy;
-
-    // @todo Алгоритм заполнения ассоциативного массива
-    for(size_t i = 0; i < x.size(); ++ i)
-    {
-        xy[x[i]] = y[i];
-    }
+    auto xy = ural::make_zip_sequence(x, y) | ural::to_map<std::map>{};
 
     auto x_seq = xy | ural::map_keys;
 
     BOOST_CHECK(ural::equal(x, x_seq));
-}
-
-BOOST_AUTO_TEST_CASE(map_values_test)
-{
-    std::vector<int> const x = {1, 2, 3, 4, 5};
-    std::vector<char> const y = {'a', 'b', 'c', 'd', 'e'};
-
-    assert(x.size() == y.size());
-
-    std::map<int, char> xy;
-
-    // @todo Алгоритм заполнения ассоциативного массива
-    for(size_t i = 0; i < x.size(); ++ i)
-    {
-        xy[x[i]] = y[i];
-    }
 
     auto y_seq = xy | ural::map_values;
 
