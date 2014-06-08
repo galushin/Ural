@@ -314,27 +314,18 @@ BOOST_AUTO_TEST_CASE(map_keys_and_values_test)
 
     assert(x.size() == y.size());
 
-    auto xy = ural::make_zip_sequence(x, y) | ural::to_map<std::map>{};
+    std::map<int, char> const xy
+        = ural::make_zip_sequence(x, y) | ural::to_map<std::map>{};
 
-    auto x_seq = xy | ural::map_keys;
-
-    BOOST_CHECK(ural::equal(x, x_seq));
-
-    auto y_seq = xy | ural::map_values;
-
-    BOOST_CHECK(ural::equal(y, y_seq));
+    BOOST_CHECK(ural::equal(xy | ural::map_keys, x));
+    BOOST_CHECK(ural::equal(xy | ural::map_values, y));
 }
 
 BOOST_AUTO_TEST_CASE(set_inserter_test)
 {
     std::vector<int> const xs = {1, 2, 3, 4, 5, 1, 3, 5, 2, 4, 6};
 
-    std::set<int> z;
-
-    for(auto & x : xs)
-    {
-        z.insert(x);
-    }
+    std::set<int> const z(xs.begin(), xs.end());
 
     std::set<int> z_ural;
     ural::copy(xs, z_ural | ural::set_inserter);
