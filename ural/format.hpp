@@ -212,15 +212,12 @@ namespace ural
         // @todo Проверка концепций
         std::vector<std::vector<T>> result;
 
-        auto seq = ural::by_line(is, '\n');
-
-        for(; !!seq; ++ seq)
+        for(auto seq = ural::by_line(is, '\n'); !!seq; ++ seq)
         {
             typedef typename stream_traits<input_stream_type>::string_type
                 String;
 
-            String const & str = *seq;
-            ural::basic_istringstream<String> str_is(str);
+            ural::basic_istringstream<String> str_is(*seq);
             str_is >> std::ws;
 
             auto cell_seq = ural::by_line(str_is, '\t');
