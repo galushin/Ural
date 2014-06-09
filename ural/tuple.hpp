@@ -53,7 +53,7 @@ namespace ural
         @brief Конструктор
         @param args аргументы
         */
-        constexpr explicit tuple(Ts const & ... args)
+        constexpr tuple(Ts const & ... args)
          : Base(args...)
         {}
 
@@ -105,6 +105,28 @@ namespace ural
     forward_as_tuple(Args &&... args) noexcept
     {
         return tuple<Args && ...>(std::forward<Args>(args)...);
+    }
+
+    template <class T>
+    struct strip_ref_wrapper
+     : declare_type<T>
+    {};
+
+    template <class T>
+    struct strip_ref_wrapper<std::reference_wrapper<T>>
+     : declare_type<T &>
+    {};
+
+    template <class T>
+    struct strip_ref_wrapper<const std::reference_wrapper<T>>
+     : declare_type<T &>
+    {};
+
+    template <class... Ts>
+    tuple<typename strip_ref_wrapper<typename std::decay<Ts>::type>::type...>
+    make_tuple(Ts && ... args)
+    {
+        return {std::forward<Ts>(args)...};
     }
 
 /// @cond false

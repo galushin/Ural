@@ -269,7 +269,7 @@
 1223887188 source:c:\devtools\github\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
 	<boost/test/impl/xml_report_formatter.ipp>
 
-1401778080 c:\devtools\ural_repo\ural\ural\tuple.hpp
+1402283428 c:\devtools\ural_repo\ural\ural\tuple.hpp
 	<tuple>
 	<ural/utility.hpp>
 	<ural/placeholders.hpp>
@@ -9881,7 +9881,7 @@
 	<sstream>
 	<sstream>
 
-1402281798 c:\devtools\ural_repo\ural\ural\format.hpp
+1402282084 c:\devtools\ural_repo\ural\ural\format.hpp
 	<ural/algorithm.hpp>
 	<ural/sequence/to.hpp>
 	<ural/sequence/insertion.hpp>
@@ -12009,7 +12009,7 @@
 	<ural/sequence/insertion.hpp>
 	<ural/algorithm/details/copy.hpp>
 
-1402269994 c:\devtools\ural_repo\ural\ural\sequence\zip.hpp
+1402283342 c:\devtools\ural_repo\ural\ural\sequence\zip.hpp
 	<ural/tuple.hpp>
 	<ural/sequence/transform.hpp>
 
