@@ -756,5 +756,10 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_concept_check)
 {
     using namespace ural::concepts;
 
-    BOOST_CONCEPT_ASSERT((RandomDistribution<ural::discrete_distribution<int>>));
+    typedef ural::discrete_distribution<int> D;
+
+    BOOST_CONCEPT_ASSERT((RandomDistribution<D>));
+    BOOST_CONCEPT_ASSERT((RandomDistribution<ural::iid_adaptor<D>>));
+
+    // @todo для multivariate_normal_distribution
 }

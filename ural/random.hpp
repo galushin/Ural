@@ -405,19 +405,38 @@ namespace ural
     @tparam Vector тип вектора
     @todo Соответствие концепции распределения стандарта C++11
     */
-    template <class Distribution, class Vector>
+    template <class Distribution, class Vector = use_default>
     class iid_adaptor
     {
     public:
+        /// @brief Тип возвращаемого значения
+        typedef typename default_helper<Vector, std::vector<typename Distribution::result_type>>::type
+            result_type;
+
+        class param_type
+        {
+        public:
+            /// @brief Тип распределения
+            typedef iid_adaptor distribution_type;
+
+        private:
+        };
+
+        iid_adaptor();
+
         /** @brief Конструктор
         @param n размерность вектора-результата
         @post <tt> this->dim() == n </tt>
         @post <tt> this->base_distibution() == Distribution{} </tt>
         */
-        iid_adaptor(typename Vector::size_type n)
+        iid_adaptor(typename result_type::size_type n)
          : result_(n)
          , d_{}
         {}
+
+        explicit iid_adaptor(param_type const & p);
+
+        void reset();
 
         /** @brief Порождение значения
         @param g генератор равномерно распределённых случайных чисел
@@ -425,14 +444,24 @@ namespace ural
         с распределением <tt> this->base_distibution() </tt>
         */
         template <class URNG>
-        Vector const & operator()(URNG & g)
+        result_type const & operator()(URNG & g)
         {
             ural::generate(result_, std::bind(std::ref(d_), std::ref(g)));
             return result_;
         }
 
+        template <class URNG>
+        result_type const & operator()(URNG & g, param_type const & p);
+
+        // Свойства
+        result_type min URAL_PREVENT_MACRO_SUBSTITUTION () const;
+        result_type max URAL_PREVENT_MACRO_SUBSTITUTION () const;
+
+        param_type param() const;
+        void param(param_type const & p);
+
     private:
-        Vector result_;
+        result_type result_;
         Distribution d_;
     };
 
@@ -472,6 +501,9 @@ namespace ural
             auto result = base_(g);
             return mu_ + prod(L_, result);
         }
+
+        // Свойства
+
 
     private:
         Vector mu_;
