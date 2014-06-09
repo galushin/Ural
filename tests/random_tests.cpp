@@ -749,4 +749,12 @@ BOOST_AUTO_TEST_CASE(URNG_concept_test)
     using namespace ural::concepts;
     BOOST_CONCEPT_ASSERT((Uniform_random_number_generator<std::mt19937>));
     BOOST_CONCEPT_ASSERT((Uniform_random_number_generator<ural::c_rand_engine>));
+    BOOST_CONCEPT_ASSERT((Uniform_random_number_generator<ural::archetypes::URNG_archetype>));
+}
+
+BOOST_AUTO_TEST_CASE(discrete_distribution_concept_check)
+{
+    using namespace ural::concepts;
+
+    BOOST_CONCEPT_ASSERT((RandomDistribution<ural::discrete_distribution<int>>));
 }

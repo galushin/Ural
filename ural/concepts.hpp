@@ -21,12 +21,14 @@
  @brief Классы для проверки концепций
 */
 
-#include <boost/concept/usage.hpp>
-
+#include <ural/archetypes.hpp>
 #include <ural/defs.hpp>
 #include <ural/sequence/base.hpp>
 
+#include <boost/concept_check.hpp>
+#include <boost/concept/usage.hpp>
 #include <boost/type_traits.hpp>
+
 #include <type_traits>
 
 #define URAL_CONCEPT_ERROR_MSG(T, Concept) #T "is not" #Concept
@@ -45,6 +47,12 @@ namespace concepts
     {
         return std::is_copy_constructible<T>::value
             && std::is_copy_assignable<T>::value;
+    }
+
+    template <class T>
+    constexpr bool CopyAssignable()
+    {
+        return std::is_copy_assignable<T>::value;
     }
 
     template <class T>
@@ -245,6 +253,47 @@ namespace concepts
 
             static_assert(x_min < x_max, "Min must be lesser then max");
         }
+    };
+
+    template <class D>
+    class RandomDistribution
+     : boost::CopyConstructible<D>
+    {
+    public:
+        BOOST_CONCEPT_USAGE(RandomDistribution)
+        {
+            URAL_CONCEPT_ASSERT(D, CopyAssignable);
+
+            D d0;
+            // @todo конструктор с параметрами
+            static_assert(std::is_same<decltype(d0.reset()), void>::value, "");
+            P p0 = d0.param();
+
+            BOOST_CONCEPT_ASSERT((boost::CopyConstructible<P>));
+            URAL_CONCEPT_ASSERT(P, CopyAssignable);
+            URAL_CONCEPT_ASSERT(P, EqualityComparable);
+
+            static_assert(std::is_same<D, PD>::value, "");
+
+            D d1(p0);
+            d0.param(p0);
+
+            ural::archetypes::URNG_archetype g;
+
+            value_consumer<T>() = d0(g);
+            value_consumer<T>() = d0(g, p0);
+
+            value_consumer<T>() = d0.min();
+            value_consumer<T>() = d0.max();
+
+            // @todo Ввод/вывод
+            // @todo Конструкторы
+        }
+
+    private:
+        typedef typename D::result_type T;
+        typedef typename D::param_type P;
+        typedef typename P::distribution_type PD;
     };
 }
 // namespace concepts

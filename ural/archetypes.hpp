@@ -119,6 +119,29 @@ namespace archetypes
             return x;
         }
     };
+
+    class URNG_archetype
+    {
+    public:
+        typedef size_t result_type;
+
+        result_type operator()()
+        {
+            return this->min();
+        }
+
+        constexpr static result_type min()
+        {
+            return 0;
+        }
+
+        constexpr static result_type max()
+        {
+            return 1;
+        }
+
+    private:
+    };
 }
 // namespace archetypes
 }

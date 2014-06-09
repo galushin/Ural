@@ -414,10 +414,12 @@
 	<type_traits>
 	<ostream>
 
-1402271250 c:\devtools\ural_repo\ural\ural\concepts.hpp
-	<boost/concept/usage.hpp>
+1402285797 c:\devtools\ural_repo\ural\ural\concepts.hpp
+	<ural/archetypes.hpp>
 	<ural/defs.hpp>
 	<ural/sequence/base.hpp>
+	<boost/concept_check.hpp>
+	<boost/concept/usage.hpp>
 	<boost/type_traits.hpp>
 	<type_traits>
 
@@ -1053,7 +1055,7 @@
 	<ural/archetypes.hpp>
 	<ural/algorithm.hpp>
 
-1401774388 c:\devtools\ural_repo\ural\ural\archetypes.hpp
+1402285961 c:\devtools\ural_repo\ural\ural\archetypes.hpp
 	<ural/sequence/base.hpp>
 
 1400385021 c:\devtools\github\ural\ural\functional\make_functor.hpp
@@ -6395,7 +6397,7 @@
 	<ural/sequence/base.hpp>
 	<string>
 
-1402272723 source:c:\devtools\ural_repo\ural\tests\random_tests.cpp
+1402285842 source:c:\devtools\ural_repo\ural\tests\random_tests.cpp
 	"rnd.hpp"
 	<ural/algorithm.hpp>
 	<ural/statistics.hpp>
