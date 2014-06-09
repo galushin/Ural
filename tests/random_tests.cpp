@@ -760,6 +760,5 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_concept_check)
 
     BOOST_CONCEPT_ASSERT((RandomDistribution<D>));
     BOOST_CONCEPT_ASSERT((RandomDistribution<ural::iid_adaptor<D>>));
-
-    // @todo для multivariate_normal_distribution
+    BOOST_CONCEPT_ASSERT((RandomDistribution<ural::multivariate_normal_distribution<>>));
 }

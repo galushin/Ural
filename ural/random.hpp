@@ -58,6 +58,7 @@ namespace ural
             }
 
         public:
+            /// @brief Тип соответствующего распределения
             typedef ural::discrete_distribution<IntType> distribution_type;
 
             param_type()
@@ -403,16 +404,19 @@ namespace ural
     распределённых случайных величин
     @tparam Distribution тип базового распределения
     @tparam Vector тип вектора
-    @todo Соответствие концепции распределения стандарта C++11
+    @todo Реализовать и протестировать все функции
     */
     template <class Distribution, class Vector = use_default>
     class iid_adaptor
     {
+    friend bool operator==(iid_adaptor const & x, iid_adaptor const & y);
+
     public:
         /// @brief Тип возвращаемого значения
         typedef typename default_helper<Vector, std::vector<typename Distribution::result_type>>::type
             result_type;
 
+        /// @brief Тип параметра
         class param_type
         {
         public:
@@ -436,7 +440,10 @@ namespace ural
 
         explicit iid_adaptor(param_type const & p);
 
-        void reset();
+        void reset()
+        {
+            d_.reset();
+        }
 
         /** @brief Порождение значения
         @param g генератор равномерно распределённых случайных чисел
@@ -470,14 +477,31 @@ namespace ural
     @tparam Matrix тип корреляционной матрицы
     @todo Соответствие концепции распределения стандарта C++11
     */
-    template <class Vector, class Matrix>
+    template <class Vector = use_default, class Matrix = use_default>
     class multivariate_normal_distribution
     {
+    friend bool operator==(multivariate_normal_distribution const & x,
+                           multivariate_normal_distribution const & y);
     public:
         // Типы
-        typedef typename Vector::value_type element_type;
+        /// @brief Тип возвращаемого значения
+        typedef typename default_helper<Vector, boost::numeric::ublas::vector<double>>::type
+            result_type;
+
+        /// @brief Тип параметра
+        class param_type
+        {
+        public:
+            typedef multivariate_normal_distribution distribution_type;
+
+        private:
+        };
 
         // Конструкторы
+        multivariate_normal_distribution();
+
+        multivariate_normal_distribution(param_type p);
+
         /** @brief Конструктор
         @param mu вектор математических ожиданий
         @param C ковариационная матрица
@@ -490,27 +514,42 @@ namespace ural
          , base_{mu.size()}
         {}
 
+        void reset()
+        {
+            base_.reset();
+        }
+
         // Генерация случайных чисел
         /** @brief Порождение случайных чисел
         @param g генератор равномерно распределённых случайных чисел
         */
         template <class URNG>
-        Vector operator()(URNG & g)
+        result_type operator()(URNG & g)
         {
             using namespace boost::numeric::ublas;
-            auto result = base_(g);
-            return mu_ + prod(L_, result);
+            return mu_ + prod(L_, base_(g));
         }
 
-        // Свойства
+        template <class URNG>
+        result_type operator()(URNG & g, param_type const & p);
 
+        // Свойства
+        result_type min URAL_PREVENT_MACRO_SUBSTITUTION () const;
+        result_type max URAL_PREVENT_MACRO_SUBSTITUTION () const;
+
+        param_type param() const;
+        void param(param_type) const;
 
     private:
-        Vector mu_;
-        typename make_triangular_matrix<Matrix, boost::numeric::ublas::lower>::type
+        typedef typename result_type::value_type element_type;
+        typedef typename default_helper<Matrix, boost::numeric::ublas::matrix<element_type>>::type
+            Cov;
+
+        result_type mu_;
+        typename make_triangular_matrix<Cov, boost::numeric::ublas::lower>::type
             L_;
 
-        iid_adaptor<std::normal_distribution<element_type>, Vector> base_;
+        iid_adaptor<std::normal_distribution<element_type>, result_type> base_;
     };
 }
 // namespace ural

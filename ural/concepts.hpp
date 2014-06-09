@@ -265,7 +265,7 @@ namespace concepts
             URAL_CONCEPT_ASSERT(D, CopyAssignable);
 
             D d0;
-            // @todo конструктор с параметрами
+
             static_assert(std::is_same<decltype(d0.reset()), void>::value, "");
             P p0 = d0.param();
 
@@ -285,6 +285,9 @@ namespace concepts
 
             value_consumer<T>() = d0.min();
             value_consumer<T>() = d0.max();
+
+            value_consumer<bool>() = (d0 == d1);
+            value_consumer<bool>() = (d0 != d1);
 
             // @todo Ввод/вывод
             // @todo Конструкторы
