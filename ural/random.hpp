@@ -405,16 +405,23 @@ namespace ural
     @tparam Distribution тип базового распределения
     @tparam Vector тип вектора
     @todo Реализовать и протестировать все функции
+    @todo Больше конструкторов
     */
     template <class Distribution, class Vector = use_default>
     class iid_adaptor
     {
-    friend bool operator==(iid_adaptor const & x, iid_adaptor const & y);
+    friend bool operator==(iid_adaptor const & x, iid_adaptor const & y)
+    {
+        return x.count() == y.count() && x.base() == y.base();
+    }
 
     public:
         /// @brief Тип возвращаемого значения
         typedef typename default_helper<Vector, std::vector<typename Distribution::result_type>>::type
             result_type;
+
+        /// @brief Тип расстояния
+        typedef typename result_type::size_type size_type;
 
         /// @brief Тип параметра
         class param_type
@@ -426,16 +433,34 @@ namespace ural
         private:
         };
 
-        iid_adaptor();
+        /** @brief Конструктор по-умолчанию
+        @post <tt> this->count() == 1 </tt>
+        @post <tt> this->base() == Distribution{} </tt>
+        */
+        iid_adaptor()
+         : result_{size_type{1}}
+         , d_{}
+        {}
 
         /** @brief Конструктор
         @param n размерность вектора-результата
-        @post <tt> this->dim() == n </tt>
-        @post <tt> this->base_distibution() == Distribution{} </tt>
+        @post <tt> this->count() == n </tt>
+        @post <tt> this->base() == Distribution{} </tt>
         */
-        iid_adaptor(typename result_type::size_type n)
+        explicit iid_adaptor(size_type n)
          : result_(n)
          , d_{}
+        {}
+
+        /** @brief Конструктор
+        @param n размерность вектора-результата
+        @param d распределение компонентов
+        @post <tt> this->count() == n </tt>
+        @post <tt> this->base() == d </tt>
+        */
+        iid_adaptor(size_type n, Distribution const & d)
+         : result_(n)
+         , d_{d}
         {}
 
         explicit iid_adaptor(param_type const & p);
@@ -464,6 +489,19 @@ namespace ural
         result_type min URAL_PREVENT_MACRO_SUBSTITUTION () const;
         result_type max URAL_PREVENT_MACRO_SUBSTITUTION () const;
 
+        /** @brief Количество случайных величин
+        @return Количество случайных величин
+        */
+        size_type count() const
+        {
+            return result_.size();
+        }
+
+        Distribution const & base() const
+        {
+            return d_;
+        }
+
         param_type param() const;
         void param(param_type const & p);
 
@@ -481,12 +519,25 @@ namespace ural
     class multivariate_normal_distribution
     {
     friend bool operator==(multivariate_normal_distribution const & x,
-                           multivariate_normal_distribution const & y);
+                           multivariate_normal_distribution const & y)
+    {
+        return (x.dim() == y.dim())
+                && std::equal(x.mu_.begin(), x.mu_.end(), y.mu_.begin())
+                && std::equal(x.L_.data().begin(), x.L_.data().end(), y.L_.data().begin());
+    }
+
     public:
         // Типы
         /// @brief Тип возвращаемого значения
         typedef typename default_helper<Vector, boost::numeric::ublas::vector<double>>::type
             result_type;
+
+        typedef typename result_type::value_type element_type;
+
+        typedef typename default_helper<Matrix, boost::numeric::ublas::matrix<element_type>>::type
+            matrix_type;
+
+        typedef typename result_type::size_type size_type;
 
         /// @brief Тип параметра
         class param_type
@@ -500,7 +551,19 @@ namespace ural
         // Конструкторы
         multivariate_normal_distribution();
 
+        explicit multivariate_normal_distribution(size_type dim)
+         : mu_(dim, element_type{0})
+         , L_(boost::numeric::ublas::identity_matrix<element_type>(dim))
+         , base_{dim}
+        {}
+
         multivariate_normal_distribution(param_type p);
+
+        multivariate_normal_distribution(result_type mu)
+         : mu_(std::move(mu))
+         , L_(boost::numeric::ublas::identity_matrix<element_type>(mu.size()))
+         , base_{mu.size()}
+        {}
 
         /** @brief Конструктор
         @param mu вектор математических ожиданий
@@ -508,11 +571,13 @@ namespace ural
         @pre <tt> mu.size() == C.size1() </tt>
         @pre <tt> C.size1() == C.size2() </tt>
         */
-        multivariate_normal_distribution(Vector mu, Matrix const & C)
+        multivariate_normal_distribution(result_type mu, matrix_type const & C)
          : mu_(std::move(mu))
          , L_(ural::cholesky_decomposition(C))
          , base_{mu.size()}
-        {}
+        {
+            assert(mu.size() == C.size2());
+        }
 
         void reset()
         {
@@ -534,6 +599,11 @@ namespace ural
         result_type operator()(URNG & g, param_type const & p);
 
         // Свойства
+        size_type dim () const
+        {
+            return mu_.size();
+        }
+
         result_type min URAL_PREVENT_MACRO_SUBSTITUTION () const;
         result_type max URAL_PREVENT_MACRO_SUBSTITUTION () const;
 
@@ -541,12 +611,8 @@ namespace ural
         void param(param_type) const;
 
     private:
-        typedef typename result_type::value_type element_type;
-        typedef typename default_helper<Matrix, boost::numeric::ublas::matrix<element_type>>::type
-            Cov;
-
         result_type mu_;
-        typename make_triangular_matrix<Cov, boost::numeric::ublas::lower>::type
+        typename make_triangular_matrix<matrix_type, boost::numeric::ublas::lower>::type
             L_;
 
         iid_adaptor<std::normal_distribution<element_type>, result_type> base_;

@@ -762,3 +762,49 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_concept_check)
     BOOST_CONCEPT_ASSERT((RandomDistribution<ural::iid_adaptor<D>>));
     BOOST_CONCEPT_ASSERT((RandomDistribution<ural::multivariate_normal_distribution<>>));
 }
+
+BOOST_AUTO_TEST_CASE(multivariate_normal_equality_test)
+{
+    ural::multivariate_normal_distribution<> const d1{2};
+
+    typename decltype(d1)::result_type mu{d1.dim(), 1};
+    typename decltype(d1)::result_type mu_2{d1.dim()+1, 1};
+
+    ural::multivariate_normal_distribution<> const d2{mu};
+    ural::multivariate_normal_distribution<> const d3{mu_2};
+
+    BOOST_CHECK(d1 == d1);
+    BOOST_CHECK(d2 == d2);
+    BOOST_CHECK(d3 == d3);
+
+    BOOST_CHECK(d1 != d2);
+    BOOST_CHECK(d1 != d3);
+    BOOST_CHECK(d2 != d3);
+}
+
+BOOST_AUTO_TEST_CASE(iid_adaptor_default_ctor_test)
+{
+    typedef std::bernoulli_distribution D;
+
+    ural::iid_adaptor<D> const d0{};
+
+    BOOST_CHECK_EQUAL(1, d0.count());
+    BOOST_CHECK(D{} == d0.base());
+}
+
+BOOST_AUTO_TEST_CASE(iid_adaptor_equality_test)
+{
+    typedef std::bernoulli_distribution D;
+
+    ural::iid_adaptor<D> const d0{};
+    ural::iid_adaptor<D> const d1{1, D{0.5}};
+    ural::iid_adaptor<D> const d2{1, D{0.25}};
+    ural::iid_adaptor<D> const d3{3, D{0.25}};
+
+    BOOST_CHECK(d0 == d0);
+    BOOST_CHECK(d0 == d1);
+
+    BOOST_CHECK(d0 != d2);
+    BOOST_CHECK(d1 != d2);
+    BOOST_CHECK(d2 != d3);
+}
