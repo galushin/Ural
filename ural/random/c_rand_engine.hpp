@@ -23,6 +23,7 @@
 */
 
 #include <ural/defs.hpp>
+#include <cstdlib>
 
 namespace ural
 {
@@ -33,7 +34,7 @@ namespace ural
     {
     public:
         /// @brief Тип возвращаемого значения
-        typedef decltype(std::rand()) result_type;
+        typedef typename std::make_unsigned<decltype(std::rand())>::type result_type;
 
         /** @brief Генерация значения
         @return <tt> std::rand() </tt>
@@ -46,7 +47,7 @@ namespace ural
         /** @brief Наименьшее возвращаемое значение
         @return Наименьшее возвращаемое значение
         */
-        constexpr result_type min URAL_PREVENT_MACRO_SUBSTITUTION () const
+        static constexpr result_type min URAL_PREVENT_MACRO_SUBSTITUTION ()
         {
             return 0;
         }
@@ -54,7 +55,7 @@ namespace ural
         /** @brief Наибольшее возвращаемое значение
         @return Наибольшее возвращаемое значение
         */
-        constexpr result_type max URAL_PREVENT_MACRO_SUBSTITUTION () const
+        static constexpr result_type max URAL_PREVENT_MACRO_SUBSTITUTION ()
         {
             return RAND_MAX;
         }
