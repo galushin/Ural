@@ -222,6 +222,30 @@ namespace concepts
     private:
         static F f_;
     };
+
+    /** @brief Концепция генератора равномерно распределённых случайных чисел
+
+    Основан на Working draft standard n3485, пункт 26.5.1.3.
+    */
+    template <class G>
+    class Uniform_random_number_generator
+    {
+    public:
+        BOOST_CONCEPT_USAGE(Uniform_random_number_generator)
+        {
+            typedef typename G::result_type result_type;
+
+            static_assert(std::is_unsigned<result_type>::value,
+                          "result_type must be unsigned integer type");
+
+            BOOST_CONCEPT_ASSERT((Callable<G, result_type()>));
+
+            constexpr result_type x_min = G::min();
+            constexpr result_type x_max = G::max();
+
+            static_assert(x_min < x_max, "Min must be lesser then max");
+        }
+    };
 }
 // namespace concepts
 }
