@@ -36,7 +36,6 @@ namespace ural
 
     /** @brief Последовательность строк потока ввода
     @tparam IStream поток ввода
-    @todo Уточнить тип расстояния
     */
     template <class IStream>
     class by_line_sequence
@@ -58,7 +57,7 @@ namespace ural
         typedef value_type const * pointer;
 
         /// @brief Тип расстояния
-        typedef int distance_type;
+        typedef typename IStream::off_type distance_type;
 
         // Конструкторы
         /** @brief Конструктор
