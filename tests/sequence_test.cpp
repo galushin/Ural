@@ -259,6 +259,40 @@ BOOST_AUTO_TEST_CASE(arithmetic_progression_concept_check)
     // @todo BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<RA>));
 }
 
+BOOST_AUTO_TEST_CASE(arithmetic_progression_equality_test)
+{
+    struct Inner
+    {
+        static int add_1(int x, int y)
+        {
+            return x+y;
+        }
+
+        static int add_2(int x, int y)
+        {
+            return x*y;
+        }
+    };
+
+    auto a1 = ural::make_arithmetic_progression(2, 2, &Inner::add_1);
+    auto a1c = a1;
+    auto a2 = ural::make_arithmetic_progression(1, 2, &Inner::add_1);
+    auto a3 = ural::make_arithmetic_progression(2, 1, &Inner::add_1);
+    auto a4 = ural::make_arithmetic_progression(2, 2, &Inner::add_2);
+
+    BOOST_CHECK(a1 == a1);
+    BOOST_CHECK(a1 == a1c);
+
+    BOOST_CHECK(a1 != a2);
+    BOOST_CHECK(a1 != a3);
+    BOOST_CHECK(a1 != a4);
+
+    BOOST_CHECK(a2 != a3);
+    BOOST_CHECK(a2 != a4);
+
+    BOOST_CHECK(a3 != a4);
+}
+
 BOOST_AUTO_TEST_CASE(all_tuples_is_sorted_test)
 {
     auto digits = ural::make_arithmetic_progression(0, 1) | ural::taken(10);

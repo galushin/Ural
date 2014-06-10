@@ -22,6 +22,13 @@ namespace ural
         typedef sequence_base<arithmetic_progression<Additive, Plus, Traversal>>
             Base;
 
+    friend bool operator==(arithmetic_progression const & x,
+                           arithmetic_progression const & y)
+        {
+            return x.first_ == y.first_ && x.step_ == y.step_
+                   && x.functor() == y.functor();
+        }
+
     public:
         // Типы
         /// @brief Тип значения
@@ -135,10 +142,6 @@ namespace ural
         First_type first_;
         Additive step_;
     };
-
-    template <class T, class F, class Tr>
-    bool operator==(arithmetic_progression<T, F, Tr> const & x,
-                    arithmetic_progression<T, F, Tr> const & y);
 
     template <class Additive, class Plus>
     auto make_arithmetic_progression(Additive first, Additive step, Plus op)
