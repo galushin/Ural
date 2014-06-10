@@ -27,7 +27,6 @@ namespace ural
     /** @brief Адаптор последовательности, посещающий элементы исходной
     последовательности в обратном порядке.
     @tparam BidirectionalSequence двусторонняя последовательность.
-    @todo Тесты/использование всех функций
     */
     template <class BidirectionalSequence>
     class reverse_sequence

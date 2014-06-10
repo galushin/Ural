@@ -230,6 +230,18 @@ BOOST_AUTO_TEST_CASE(all_tuples_test)
     BOOST_CHECK_EQUAL(99, *r2.rbegin());
 }
 
+BOOST_AUTO_TEST_CASE(geometric_progression_test)
+{
+    std::vector<int> const zs = {1, 2, 4, 8, 16, 32, 64};
+
+    auto const xs = ural::make_arithmetic_progression(1, 2, ural::multiplies<>{})
+                  | ural::taken(zs.size())
+                  | ural::to_container<std::vector>{};
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(zs.begin(), zs.end(),
+                                  xs.begin(), xs.end());
+}
+
 BOOST_AUTO_TEST_CASE(all_tuples_is_sorted_test)
 {
     auto digits = ural::make_arithmetic_progression(0, 1) | ural::taken(10);

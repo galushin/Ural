@@ -47,14 +47,26 @@ namespace ural
         /** @brief Конструктор
         @param first Первый элемент
         @param step Шаг
-        @post <tt> this->operation() == Plus{} </tt>
+        @post <tt> this->functor() == Plus{} </tt>
         @post <tt> **this == first </tt>
         @post <tt> this->step() == step </tt>
         */
-        explicit arithmetic_progression(Additive first, Additive step)
-         : init_first_{first}
-         , first_{first}
+        arithmetic_progression(Additive first, Additive step)
+         : Plus{}
+         , first_{std::move(first)}
          , step_{std::move(step)}
+        {}
+
+        /** @brief Конструктор
+        @param first Первый элемент
+        @param step Шаг
+        @post <tt> **this == first </tt>
+        @post <tt> this->functor() == op </tt>
+        */
+        arithmetic_progression(Additive first, Additive step, Plus op)
+         : Plus(std::move(op))
+         , first_(std::move(first))
+         , step_(std::move(step))
         {}
 
         // Свойства
@@ -82,7 +94,7 @@ namespace ural
         */
         reference front() const
         {
-            return this->first_;
+            return this->first_.value();
         }
 
         /** @brief Переход к следующему элементу последовательности
@@ -91,7 +103,8 @@ namespace ural
         */
         void pop_front()
         {
-            this->first_ = this->functor()(std::move(this->first_), this->step_);
+            this->first_ = this->functor()(std::move(this->first_.value()),
+                                           this->step_);
         }
 
         // Прямая последовательность
@@ -100,20 +113,26 @@ namespace ural
         */
         arithmetic_progression traversed_front() const
         {
-            return arithmetic_progression(init_first_, step_);
+            return arithmetic_progression(first_.old_value(), step_);
         }
 
         /// @brief Отбрасывание пройденной части последовательности
         void shrink_front()
         {
-            init_first_ = first_;
+            first_.commit();
         }
 
     private:
-        Additive init_first_;
-        Additive first_;
+        with_old_value<Additive> first_;
         Additive step_;
     };
+
+    template <class Additive, class Plus>
+    auto make_arithmetic_progression(Additive first, Additive step, Plus op)
+    -> arithmetic_progression<Additive, decltype(make_functor(std::move(op)))>
+    {
+        return {std::move(first), std::move(step), std::move(op)};
+    }
 
     /** @brief Создание последовательности, представляющей арифметическую
     прогрессию
@@ -124,7 +143,7 @@ namespace ural
     arithmetic_progression<Additive>
     make_arithmetic_progression(Additive first, Additive step)
     {
-        return arithmetic_progression<Additive>{std::move(first), std::move(step)};
+        return {std::move(first), std::move(step)};
     }
 }
 // namespace ural
