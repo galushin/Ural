@@ -55,6 +55,28 @@ namespace ural
         E ex_;
     };
 
+    template <class T>
+    class expected;
+
+    /** @brief Создание expected на основе функциональног объекта
+    @param f функциональный объект
+    @param args аргументы
+    */
+    template <class F, class... Args>
+    auto expected_from_call(F f, Args &&... args) noexcept
+    -> expected<decltype(f(std::forward<Args>(args)...))>
+    {
+        typedef expected<decltype(f(std::forward<Args>(args)...))> Expected;
+        try
+        {
+            return Expected(f(std::forward<Args>(args)...));
+        }
+        catch(...)
+        {
+            return Expected::from_exception();
+        }
+    }
+
     /** @brief Обёртка для значения или исключения, которое помешало вычислению
     этого значения.
     @tparam T тип значения
@@ -359,12 +381,11 @@ namespace ural
         }
 
         template <class F>
-        auto fmap(F f) -> expected<decltype(f(std::declval<T>()))>
+        auto fmap(F f) noexcept -> expected<decltype(f(std::declval<T>()))>
         {
             if(has_value_)
             {
-                // @todo Что, если здесь возникнет исключение
-                return {f(this->value_)};
+                return ural::expected_from_call(f, this->value_);
             }
             else
             {
@@ -408,25 +429,6 @@ namespace ural
     expected<T> make_expected(T value)
     {
         return expected<T>(value);
-    }
-
-    /** @brief Создание expected на основе функциональног объекта
-    @param f функциональный объект
-    @param args аргументы
-    */
-    template <class F, class... Args>
-    auto expected_from_call(F f, Args &&... args)
-    -> expected<decltype(f(std::forward<Args>(args)...))>
-    {
-        typedef expected<decltype(f(std::forward<Args>(args)...))> Expected;
-        try
-        {
-            return Expected(f(std::forward<Args>(args)...));
-        }
-        catch(...)
-        {
-            return Expected::from_exception();
-        }
     }
 }
 //namespace ural
