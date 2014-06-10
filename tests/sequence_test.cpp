@@ -349,3 +349,41 @@ BOOST_AUTO_TEST_CASE(reversed_seq_concept_check)
     BOOST_CONCEPT_ASSERT((ural::concepts::BidirectionalSequence<Ra>));
     BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<Ra>));
 }
+
+
+BOOST_AUTO_TEST_CASE(reversed_pop_back_n_test)
+{
+    auto const xs = ural::make_arithmetic_progression(0, 1)
+                  | ural::taken(10) | ural::to_container<std::vector>{};
+
+    auto s = ural::sequence(xs);
+    auto s_r = s | ural::reversed;
+
+    auto const n = xs.size() / 3;
+
+    s += n;
+    s_r.pop_back(n);
+
+    BOOST_CHECK(s == s_r.base());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(s.begin(), s.end(),
+                                  s_r.base().begin(), s_r.base().end());
+
+    s.pop_back(n);
+    s_r += n;
+
+    BOOST_CHECK(s == s_r.base());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(s.begin(), s.end(),
+                                  s_r.base().begin(), s_r.base().end());
+
+    auto b   = s.traversed_front();
+    auto b_r = s_r.traversed_back();
+
+    BOOST_CHECK(b == b_r.base());
+
+    s.shrink_front();
+    s_r.shrink_back();
+
+    BOOST_CHECK(s == s_r.base());
+}

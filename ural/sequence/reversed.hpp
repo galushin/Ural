@@ -123,9 +123,15 @@ namespace ural
             return base_.pop_front();
         }
 
-        reverse_sequence traversed_back();
+        reverse_sequence traversed_back()
+        {
+            return reverse_sequence(base_.traversed_front());
+        }
 
-        void shrink_back();
+        void shrink_back()
+        {
+            return base_.shrink_front();
+        }
 
         // Последовательность произвольного доступа
         /** @brief Индексированный доступ
@@ -158,7 +164,10 @@ namespace ural
         /**
         @pre <tt> 0 <= n && n <= this->size() </tt>
         */
-        void pop_back(distance_type n);
+        void pop_back(distance_type n)
+        {
+            base_ += n;
+        }
 
         // Адаптор последовательности
         /** @brief Базовая последовательность
