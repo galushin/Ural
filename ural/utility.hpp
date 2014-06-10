@@ -158,6 +158,12 @@ namespace ural
          , old_value_(std::move(value))
         {}
 
+        with_old_value & operator=(T new_value)
+        {
+            this->value() = std::move(new_value);
+            return *this;
+        }
+
         // Доступ к данным
         ///@{
         /** @brief Текущее значение
