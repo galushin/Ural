@@ -551,6 +551,12 @@ namespace ural
         // Конструкторы
         multivariate_normal_distribution();
 
+        /** @brief Конструктор
+        @param dim размерность
+        @post <tt> this->dim() == dim </tt>
+        @post <tt> this->mean() == result_type(dim, 0) </tt>
+        @post Корреляционная матрица --- единичная
+        */
         explicit multivariate_normal_distribution(size_type dim)
          : mu_(dim, element_type{0})
          , L_(boost::numeric::ublas::identity_matrix<element_type>(dim))
@@ -559,10 +565,16 @@ namespace ural
 
         multivariate_normal_distribution(param_type p);
 
+        /** @brief Конструктор
+        @param dim размерность
+        @post <tt> this->dim() == dim </tt>
+        @post <tt> this->mean() == mu </tt>
+        @post Корреляционная матрица --- единичная
+        */
         multivariate_normal_distribution(result_type mu)
          : mu_(std::move(mu))
-         , L_(boost::numeric::ublas::identity_matrix<element_type>(mu.size()))
-         , base_{mu.size()}
+         , L_(boost::numeric::ublas::identity_matrix<element_type>(mu_.size()))
+         , base_{mu_.size()}
         {}
 
         /** @brief Конструктор
