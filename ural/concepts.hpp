@@ -31,7 +31,7 @@
 
 #include <type_traits>
 
-#define URAL_CONCEPT_ERROR_MSG(T, Concept) #T "is not" #Concept
+#define URAL_CONCEPT_ERROR_MSG(T, Concept) #T " is not " #Concept
 
 #define URAL_CONCEPT_ASSERT(T, Concept)\
     static_assert(Concept<T>(), URAL_CONCEPT_ERROR_MSG(T, Concept) )

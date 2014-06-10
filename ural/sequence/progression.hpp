@@ -11,15 +11,16 @@ namespace ural
     /** @brief Арифметическая прогрессия
     @tparam Additive тип значений
     @tparam Plus операция, используемая в качестве сложения
-    @todo Конструктор с функциональным объектом
+    @todo Настройка структуры в зависимости от категории обхода
     */
-    template <class Additive, class Plus = plus<Additive>,
+    template <class Additive, class Plus = use_default,
               class Traversal = random_access_traversal_tag>
     class arithmetic_progression
-     : public sequence_base<arithmetic_progression<Additive, Plus>>
-     , private Plus
+     : public sequence_base<arithmetic_progression<Additive, Plus, Traversal>>
+     , private default_helper<Plus, plus<>>::type
     {
-        typedef sequence_base<arithmetic_progression<Additive, Plus>> Base;
+        typedef sequence_base<arithmetic_progression<Additive, Plus, Traversal>>
+            Base;
 
     public:
         // Типы
@@ -35,24 +36,24 @@ namespace ural
         /** @note Проблема в том, что при произвольном доступе возвращается
         вычисленное значение, а не ссылка.
         */
-        typedef random_access_traversal_tag traversal_tag;
+        typedef Traversal traversal_tag;
 
         /// @brief Тип указателя
         typedef value_type const * pointer;
 
         /// @brief Тип операции
-        typedef Plus operation_type;
+        typedef typename default_helper<Plus, plus<>>::type operation_type;
 
         // Конструкторы
         /** @brief Конструктор
         @param first Первый элемент
         @param step Шаг
-        @post <tt> this->functor() == Plus{} </tt>
+        @post <tt> this->functor() == operation_type{} </tt>
         @post <tt> **this == first </tt>
         @post <tt> this->step() == step </tt>
         */
         arithmetic_progression(Additive first, Additive step)
-         : Plus{}
+         : operation_type{}
          , first_{std::move(first)}
          , step_{std::move(step)}
         {}
@@ -63,8 +64,8 @@ namespace ural
         @post <tt> **this == first </tt>
         @post <tt> this->functor() == op </tt>
         */
-        arithmetic_progression(Additive first, Additive step, Plus op)
-         : Plus(std::move(op))
+        arithmetic_progression(Additive first, Additive step, operation_type op)
+         : operation_type(std::move(op))
          , first_(std::move(first))
          , step_(std::move(step))
         {}
@@ -103,7 +104,7 @@ namespace ural
         */
         void pop_front()
         {
-            this->first_ = this->functor()(std::move(this->first_.value()),
+            this->first_ = this->functor()(std::move(ural::get(this->first_)),
                                            this->step_);
         }
 
@@ -123,9 +124,21 @@ namespace ural
         }
 
     private:
-        with_old_value<Additive> first_;
+        static auto constexpr is_forward
+            = std::is_convertible<traversal_tag, forward_traversal_tag>::value;
+
+        typedef typename std::conditional<is_forward,
+                                          with_old_value<value_type>,
+                                          value_type>::type
+            First_type;
+
+        First_type first_;
         Additive step_;
     };
+
+    template <class T, class F, class Tr>
+    bool operator==(arithmetic_progression<T, F, Tr> const & x,
+                    arithmetic_progression<T, F, Tr> const & y);
 
     template <class Additive, class Plus>
     auto make_arithmetic_progression(Additive first, Additive step, Plus op)

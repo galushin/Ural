@@ -242,6 +242,23 @@ BOOST_AUTO_TEST_CASE(geometric_progression_test)
                                   xs.begin(), xs.end());
 }
 
+BOOST_AUTO_TEST_CASE(arithmetic_progression_concept_check)
+{
+    using namespace ural;
+    typedef arithmetic_progression<int, use_default, single_pass_traversal_tag> SP;
+    typedef arithmetic_progression<int, use_default, forward_traversal_tag> Fw;
+    typedef arithmetic_progression<int, use_default, random_access_traversal_tag> RA;
+
+    BOOST_CHECK_LE(sizeof(SP), 2 * sizeof(int));
+    BOOST_CHECK_LE(sizeof(Fw), 3 * sizeof(int));
+    BOOST_CHECK_LE(sizeof(RA), 3 * sizeof(int));
+
+    BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<SP>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<Fw>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<RA>));
+    // @todo BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<RA>));
+}
+
 BOOST_AUTO_TEST_CASE(all_tuples_is_sorted_test)
 {
     auto digits = ural::make_arithmetic_progression(0, 1) | ural::taken(10);
