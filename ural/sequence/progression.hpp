@@ -3,7 +3,6 @@
 
 /** @file ural/sequence/progression.hpp
  @brief Прогрессии
- @todo Настройка структуры в зависимости от категории обхода
 */
 
 namespace ural
@@ -11,7 +10,10 @@ namespace ural
     /** @brief Арифметическая прогрессия
     @tparam Additive тип значений
     @tparam Plus операция, используемая в качестве сложения
-    @todo Настройка структуры в зависимости от категории обхода
+
+    @todo Последовательность произвольного доступа. Здесь есть две проблемы:
+    1. Необходимо по операции сложения построить операцию умножения
+    2. Тип возвращаемого значения оператора [] и front не совпадает
     */
     template <class Additive, class Plus = use_default,
               class Traversal = random_access_traversal_tag>
@@ -28,6 +30,9 @@ namespace ural
             return x.first_ == y.first_ && x.step_ == y.step_
                    && x.functor() == y.functor();
         }
+
+        static_assert(!std::is_same<Traversal, bidirectional_traversal_tag>::value,
+                      "Infinite sequence can't be bidirectional");
 
     public:
         // Типы
