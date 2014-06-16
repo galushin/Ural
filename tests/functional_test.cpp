@@ -647,3 +647,53 @@ BOOST_AUTO_TEST_CASE(replace_functor_equal_test)
     static_assert(f1 != f3, "");
     static_assert(f1 != f4, "");
 }
+
+BOOST_AUTO_TEST_CASE(min_element_accumulator_default_functor_test)
+{
+    typedef ural::min_element_accumulator<int> Accumulator;
+    Accumulator acc{42};
+
+    static_assert(std::is_same<ural::less<>, Accumulator::compare_type>::value,
+                  "Incorrect compare type");
+    BOOST_CHECK_EQUAL(sizeof(Accumulator::value_type), sizeof(Accumulator));
+
+    BOOST_CHECK_EQUAL(42, acc.result());
+}
+
+BOOST_AUTO_TEST_CASE(min_element_accumulator_move_ops_test)
+{
+    // Подготовка
+    typedef std::string Element;
+    typedef ural::min_element_accumulator<Element> Accumulator;
+
+    std::vector<Element> xs = {"abc", "ab", "a", "abc"};
+
+    auto const xs_old = xs;
+
+    // Инициализация
+    Accumulator acc(std::move(xs[0]));
+
+    BOOST_CHECK(xs[0].empty());
+
+    // Обновление - оператор ()
+    BOOST_CHECK_LE(xs_old[1], acc.result());
+
+    acc(std::move(xs[1]));
+
+    BOOST_CHECK_EQUAL(xs_old[1], acc.result());
+    BOOST_CHECK_NE(xs_old[1], xs[1]);
+
+    // Обновление - update: true
+    BOOST_CHECK_LE(xs_old[2], acc.result());
+
+    bool const changed_1 = acc.update(std::move(xs[2]));
+
+    BOOST_CHECK_EQUAL(xs_old[2], acc.result());
+    BOOST_CHECK_NE(xs_old[2], xs[2]);
+    BOOST_CHECK(changed_1);
+
+    // Обновление - update: false
+    bool const changed_2 = acc.update(std::move(xs[3]));
+    BOOST_CHECK(!changed_2);
+    BOOST_CHECK_EQUAL(xs_old[3], xs[3]);
+}

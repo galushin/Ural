@@ -89,7 +89,6 @@ namespace ural
     /** @brief Накопитель для определения наименьшего значения
     @tparam T тип значения
     @tparam Compare функция сравнения
-    @todo Создание без задания функции сравнения
     */
     template <class T, class Compare = ural::less<> >
     class min_element_accumulator
@@ -109,45 +108,38 @@ namespace ural
         @post <tt> this->result() == init_value </tt>
         @post <tt> this->compare() == cmp </tt>
         */
-        explicit min_element_accumulator(T init_value, Compare cmp)
+        explicit min_element_accumulator(T init_value, Compare cmp = Compare{})
          : impl_{std::move(init_value), std::move(cmp)}
         {}
 
         // Обновление
-        //@{
         /** @brief Обновление статистики
-        @param value новое значение
+        @param new_value новое значение
         @return <tt> *this </tt>
         */
+        template <class Arg>
         min_element_accumulator &
-        operator()(value_type const & value)
+        operator()(Arg && new_value)
         {
-            this->update(value);
+            this->update(std::forward<Arg>(new_value));
             return *this;
         }
 
-        min_element_accumulator &
-        operator()(value_type && value);
-        //@}
-
-        //@{
         /** @brief Обновление статистики
-        @param value новое значение
+        @param new_value новое значение
         @return @b true, если значение было обновлено, иначе --- @b false.
         */
-        bool update(value_type const & value)
+        template <class Arg>
+        bool update(Arg && new_value)
         {
-            if(this->compare()(value, this->result()))
+            if(this->compare()(new_value, this->result()))
             {
-                impl_.first() = value;
+                impl_.first() = std::forward<Arg>(new_value);
                 return true;
             }
 
             return false;
         }
-
-        bool update(value_type && value);
-        //@}
 
         // Свойства
         /** @brief Текущее значение статистики
