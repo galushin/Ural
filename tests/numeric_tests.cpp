@@ -472,3 +472,12 @@ BOOST_AUTO_TEST_CASE(cholesky_descomposition_test)
 
     BOOST_CHECK_LE(norm_1(A - A1), 1e-6);
 }
+
+BOOST_AUTO_TEST_CASE(square_constexpr_test)
+{
+    constexpr auto x = 4;
+
+    constexpr auto xx = ural::square(x);
+
+    static_assert(x*x == xx, "");
+}

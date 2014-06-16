@@ -31,7 +31,7 @@ namespace ural
     @return <tt> x * x</tt>
     */
     template <class T>
-    T square(T const & x)
+    constexpr T square(T const & x)
     {
         return x * x;
     }
@@ -40,6 +40,7 @@ namespace ural
     @param x число
     @param n степень
     @return @c x в степени @c n
+    @todo constexpr
     */
     template <class T>
     T natural_power(T const & x, std::size_t n)
@@ -51,8 +52,8 @@ namespace ural
             return x;
         }
 
-        auto r = natural_power(x, n / 2);
-        r *= r;
+        auto r = ural::square(natural_power(x, n / 2));
+
         if(n % 2 != 0)
         {
             r *= x;
