@@ -93,7 +93,10 @@ namespace meta
     @tparam Predicate тип-предикат
     */
     template <class Container, template <class> class Predicate>
-    struct all_of;
+    struct all_of
+     : std::integral_constant<bool, Predicate<typename Container::head>::value
+                                    && all_of<typename Container::tail, Predicate>::value>
+    {};
 
     /** @brief Специализация для пустого списка типов
     @tparam Predicate тип-предикат
@@ -101,16 +104,6 @@ namespace meta
     template <template <class> class Predicate>
     struct all_of<null_type, Predicate>
      : std::true_type
-    {};
-
-    /** @brief Специализация для непустого списка типов
-    @tparam Head первый элемент списка
-    @tparam Tail хвост списка
-    @tparam Predicate тип-предикат
-    */
-    template <class Head, class Tail, template <class> class Predicate>
-    struct all_of<list<Head, Tail>, Predicate>
-     : std::integral_constant<bool, Predicate<Head>::value && all_of<Tail, Predicate>::value>
     {};
 
     // find
@@ -134,17 +127,12 @@ namespace meta
 
     // Копирование без дубликатов
     template <class Container, class Out = null_type>
-    struct copy_without_duplicates;
-
-    template <class Out>
-    struct copy_without_duplicates<null_type, Out>
-     : declare_type<Out>
-    {};
-
-    template <class Head, class Tail, class Out>
-    struct copy_without_duplicates<list<Head, Tail>, Out>
+    struct copy_without_duplicates
     {
     private:
+        typedef typename Container::head Head;
+        typedef typename Container::tail Tail;
+
         typedef typename find<Out, Head>::type Pos;
 
         typedef typename std::conditional<std::is_same<Pos, null_type>::value,
@@ -154,6 +142,11 @@ namespace meta
         /// @brief Тип-результат
         typedef typename copy_without_duplicates<Tail, new_out>::type type;
     };
+
+    template <class Out>
+    struct copy_without_duplicates<null_type, Out>
+     : declare_type<Out>
+    {};
 
     // min_value
     /** @brief Поиск наименьшего значения
