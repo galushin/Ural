@@ -171,13 +171,13 @@ namespace ural
         size_type size_;
     };
 
-    /** @todo Принимать matrix_expression
+    /** @brief Главная диагональ матрицы
     @param a матрица
     @return Вектор, содержащий диагональные элементы матрицы @c a
     */
     template <class Matrix>
     diagonal_adaptor<Matrix const>
-    diag(Matrix const & a)
+    diag(boost::numeric::ublas::matrix_expression<Matrix> const & a)
     {
         return diagonal_adaptor<Matrix const>{a};
     }
