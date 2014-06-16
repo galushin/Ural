@@ -143,6 +143,12 @@ namespace ural
         Additive step_;
     };
 
+    /** @brief Создание последовательности, представляющей арифметическую
+    прогрессию
+    @param first Первый элемент
+    @param step Шаг
+    @param op операция, используемая в качестве сложения
+    */
     template <class Additive, class Plus>
     auto make_arithmetic_progression(Additive first, Additive step, Plus op)
     -> arithmetic_progression<Additive, decltype(make_functor(std::move(op)))>

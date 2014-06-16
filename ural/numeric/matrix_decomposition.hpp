@@ -27,6 +27,11 @@
 
 namespace ural
 {
+    /** @brief Класс-характеристика преобразующая тип матрицы в соответствующий
+    тип треугольной матрицы.
+    @param M исходная матрица
+    @param Type вид треугольной матрицы (верхняя, нижняя)
+    */
     template <class M, class Type>
     struct make_triangular_matrix
     {
@@ -34,14 +39,23 @@ namespace ural
         typedef typename M::value_type Value;
 
     public:
+        /// @brief Тип-результат
         typedef boost::numeric::ublas::triangular_matrix<Value, Type> type;
     };
 
+    /** @brief Функциональный объект вычисления скалярного (внутреннего)
+    произведения.
+    */
     class inner_prod_functor
     {
     public:
+        /** @brief Оператор применения функционального объекта
+        @param e1 левый операнд
+        @param e2 правый операнд
+        @return <tt>inner_prod(std::forward<E1>(e1), std::forward<E1>(e2))</tt>
+        */
         template <class E1, class E2>
-        auto operator()(E1 && e1, E2 && e2)
+        auto operator()(E1 && e1, E2 && e2) const
         -> decltype(inner_prod(std::forward<E1>(e1), std::forward<E1>(e2)))
         {
             return inner_prod(std::forward<E1>(e1), std::forward<E1>(e2));
