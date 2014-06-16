@@ -37,18 +37,28 @@ namespace ural
         typedef boost::numeric::ublas::triangular_matrix<Value, Type> type;
     };
 
+    class inner_prod_functor
+    {
+    public:
+        template <class E1, class E2>
+        auto operator()(E1 && e1, E2 && e2)
+        -> decltype(inner_prod(std::forward<E1>(e1), std::forward<E1>(e2)))
+        {
+            return inner_prod(std::forward<E1>(e1), std::forward<E1>(e2));
+        }
+    };
+
     /** @brief QR-разложение матрицы: представление матрицы в виде произведения
     ортогональной и верхне-треугольной матрицы.
     @param A разлагаемая матрица
+    @param inner_prod операция скалярного произведения
     @return <tt> make_tuple(Q, R) </tt>, где @c Q --- ортогональная матрица,
     @c R --- верхняя треугольная матрица, причём <tt> Q R == A </tt>.
     @todo настройка метода вычисления
-    @todo Должна ли матрица быть квадратной?
-    @todo Настройка операции скалярного произведения
     */
-    template <class Matrix>
+    template <class Matrix, class InnerProduct>
     tuple<Matrix, typename make_triangular_matrix<Matrix, boost::numeric::ublas::upper>::type>
-    QR_decomposition(Matrix Q)
+    QR_decomposition(Matrix Q, InnerProduct inner_prod)
     {
         assert(Q.size1() == Q.size2());
         typename make_triangular_matrix<Matrix, boost::numeric::ublas::upper>::type
@@ -75,6 +85,19 @@ namespace ural
         }
 
         return std::make_tuple(std::move(Q), std::move(R));
+    }
+
+    /** @brief QR-разложение матрицы: представление матрицы в виде произведения
+    ортогональной и верхне-треугольной матрицы.
+    @param A разлагаемая матрица
+    @return <tt> make_tuple(Q, R) </tt>, где @c Q --- ортогональная матрица,
+    @c R --- верхняя треугольная матрица, причём <tt> Q R == A </tt>.
+    */
+    template <class Matrix>
+    tuple<Matrix, typename make_triangular_matrix<Matrix, boost::numeric::ublas::upper>::type>
+    QR_decomposition(Matrix Q)
+    {
+        return QR_decomposition(std::move(Q), inner_prod_functor{});
     }
 
     /** @brief Разложение Холецкого
