@@ -73,11 +73,13 @@ namespace ural
         matrix(std::initializer_list<std::initializer_list<T>> xs)
          : Base{xs.size(), matrix::max_size(xs.begin(), xs.end())}
         {
-            // @todo Убедиться, что все строки одинаковой длинны
             for(size_type row = 0; row != this->size1(); ++ row)
-            for(size_type col = 0; col != this->size2(); ++ col)
             {
-                Base::operator()(row, col) = xs.begin()[row].begin()[col];
+                assert(xs.begin()[row].size() == this->size2());
+                for(size_type col = 0; col != this->size2(); ++ col)
+                {
+                    Base::operator()(row, col) = xs.begin()[row].begin()[col];
+                }
             }
         }
 
@@ -85,6 +87,11 @@ namespace ural
         template <class It>
         static size_type max_size(It first, It last)
         {
+            if(first == last)
+            {
+                return size_type{0};
+            }
+
             typedef std::initializer_list<T> Row;
 
             auto r = std::max_element(first, last, ural::compare_by(&Row::size));
