@@ -33,15 +33,17 @@ namespace ural
 {
     /** @brief Класс матрицы
     @tparam T тип элементов матрицы
-    @todo Настройка порядка хранения (по строкам или по столбцам)
-    @todo Настройка хранилища, по умолчанию --- вектор
+    @tparam L порядок хране хранения (по строкам или по столбцам)
+    @tparam A тип массива для хранения элементов
     @todo Отказаться от реализации через boost::numeric::ublas::matrix
     */
-    template <class T>
+    template <class T,
+              class L = boost::numeric::ublas::row_major,
+              class A = boost::numeric::ublas::unbounded_array<T>>
     class matrix
-     : public boost::numeric::ublas::matrix<T>
+     : public boost::numeric::ublas::matrix<T, L, A>
     {
-        typedef boost::numeric::ublas::matrix<T> Base;
+        typedef boost::numeric::ublas::matrix<T, L, A> Base;
     public:
         // Типы
         typedef T value_type;
