@@ -275,6 +275,8 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
 
     for(auto & x : s)
     {
+        assert(x >= 0);
+
         using std::sqrt;
         x = 1.0 / sqrt(x);
     }

@@ -181,7 +181,7 @@ namespace ural
     diagonal_adaptor<Matrix const>
     diag(boost::numeric::ublas::matrix_expression<Matrix> const & a)
     {
-        return diagonal_adaptor<Matrix const>{a};
+        return diagonal_adaptor<Matrix const>{a()};
     }
 
     /** @brief Последовательность строк матрицы
