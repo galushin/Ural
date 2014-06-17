@@ -253,6 +253,12 @@ namespace ural
     //@}
 
     // Универсальный интерфейс для кортежей, pair, complex, compressed_pair
+    //@{
+    /** @brief Доступ к элементу кортежа по статическому индексу
+    @param t кортеж
+    @tparam Index номер элемента кортежа
+    @return <tt> std::get<Index>(t) </tt>
+    */
     template <class... Types, size_t Index>
     typename std::tuple_element<Index, std::tuple<Types...>>::type &
     get(std::tuple<Types...> & t, placeholder<Index>);
@@ -267,6 +273,7 @@ namespace ural
     {
         return std::get<Index>(std::move(t));
     }
+    //@}
 
     /** @brief Первый элемент пары
     @param x пара
