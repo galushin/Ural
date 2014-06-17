@@ -74,6 +74,7 @@ namespace ural
         @param first Первый элемент
         @param step Шаг
         @post <tt> **this == first </tt>
+        @post <tt> this->step() == step </tt>
         @post <tt> this->functor() == op </tt>
         */
         arithmetic_progression(Additive first, Additive step, operation_type op)
