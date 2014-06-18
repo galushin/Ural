@@ -118,7 +118,7 @@
 	<ural/utility.hpp>
 	<ural/meta/map.hpp>
 
-1401856484 c:\devtools\github\ural\ural\tuple.hpp
+1403013489 c:\devtools\github\ural\ural\tuple.hpp
 	<tuple>
 	<ural/utility.hpp>
 	<ural/placeholders.hpp>
@@ -157,7 +157,7 @@
 	<ural/numeric/partial_sums.hpp>
 	<ural/numeric/adjacent_differences.hpp>
 
-1401856484 c:\devtools\github\ural\ural\functional.hpp
+1403013488 c:\devtools\github\ural\ural\functional.hpp
 	<boost/compressed_pair.hpp>
 	<ural/functional/adjoin.hpp>
 	<ural/functional/compare_by.hpp>
@@ -462,10 +462,12 @@
 	<unordered_set>
 	<ural/utility/tracers.hpp>
 
-1401856484 c:\devtools\github\ural\ural\concepts.hpp
-	<boost/concept/usage.hpp>
+1403013488 c:\devtools\github\ural\ural\concepts.hpp
+	<ural/archetypes.hpp>
 	<ural/defs.hpp>
 	<ural/sequence/base.hpp>
+	<boost/concept_check.hpp>
+	<boost/concept/usage.hpp>
 	<boost/type_traits.hpp>
 	<type_traits>
 
@@ -975,7 +977,7 @@
 	<ural/sequence/transform.hpp>
 	<ural/functional/replace.hpp>
 
-1402065813 c:\devtools\github\ural\ural\sequence\reversed.hpp
+1403013488 c:\devtools\github\ural\ural\sequence\reversed.hpp
 
 1401856484 c:\devtools\github\ural\ural\sequence\taken.hpp
 	<ural/utility.hpp>
@@ -1084,7 +1086,7 @@
 	<ural/archetypes.hpp>
 	<ural/algorithm.hpp>
 
-1401856484 c:\devtools\github\ural\ural\archetypes.hpp
+1403013488 c:\devtools\github\ural\ural\archetypes.hpp
 	<ural/sequence/base.hpp>
 
 1399549759 c:\devtools\github\ural\ural\abi.hpp
@@ -6513,7 +6515,7 @@
 	<ural/utility.hpp>
 	<ural/functional/make_functor.hpp>
 
-1402129795 c:\devtools\github\ural\ural\utility.hpp
+1403013489 c:\devtools\github\ural\ural\utility.hpp
 	<ural/placeholders.hpp>
 	<ural/defs.hpp>
 	<ural/type_traits.hpp>
@@ -6538,7 +6540,7 @@
 	<forward_list>
 	<sstream>
 
-1401856484 c:\devtools\github\ural\ural\sequence\by_line.hpp
+1403013488 c:\devtools\github\ural\ural\sequence\by_line.hpp
 	<ural/sequence/base.hpp>
 	<string>
 
@@ -9846,7 +9848,7 @@
 	<ural/memory.hpp>
 	<boost/test/unit_test.hpp>
 
-1402065813 c:\devtools\github\ural\ural\utility\expected.hpp
+1403013489 c:\devtools\github\ural\ural\utility\expected.hpp
 	<ural/defs.hpp>
 	<new>
 	<cassert>
@@ -9871,7 +9873,7 @@
 	<ural/placeholders.hpp>
 	<boost/test/unit_test.hpp>
 
-1401858445 c:\devtools\github\ural\ural\meta\list.hpp
+1403013488 c:\devtools\github\ural\ural\meta\list.hpp
 	<ural/type_traits.hpp>
 	<ural/defs.hpp>
 
@@ -9884,7 +9886,7 @@
 
 1398519700 c:\devtools\github\ural\ural\statistics\data_frame.hpp
 
-1402065813 c:\devtools\github\ural\ural\format.hpp
+1403013488 c:\devtools\github\ural\ural\format.hpp
 	<ural/algorithm.hpp>
 	<ural/sequence/to.hpp>
 	<ural/sequence/insertion.hpp>
@@ -11986,8 +11988,9 @@
 	<ural/defs.hpp>
 	<cstdlib>
 
-1400385021 c:\devtools\github\ural\ural\random\c_rand_engine.hpp
+1403013488 c:\devtools\github\ural\ural\random\c_rand_engine.hpp
 	<ural/defs.hpp>
+	<cstdlib>
 
 1402738752 c:\pavel\ural_repo\ural\ural\random\c_rand_engine.hpp
 	<ural/defs.hpp>

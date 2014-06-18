@@ -278,6 +278,33 @@ namespace ural
     {
         return matrix_by_rows_sequence<Matrix>(x);
     }
+
+    template <class Matrix>
+    bool is_correlational_matrix(Matrix const & S, double eps)
+    {
+        assert(eps > 0.0);
+
+        typedef typename Matrix::value_type Element;
+
+        for(size_t i = 0; i != S.size1(); ++ i)
+        {
+            using std::abs;
+            for(size_t j = 0; j != i; ++ j)
+            {
+                if(abs(S(i, j)) > Element{1.0})
+                {
+                    return false;
+                }
+            }
+
+            if(abs(abs(S(i, i)) - 1.0) > eps)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
 // namespace ural
 

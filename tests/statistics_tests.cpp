@@ -288,16 +288,7 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
         S(i, j) *= s[i] * s[j];
     }
 
-    for(size_t i = 0; i != S.size1(); ++ i)
-    {
-        using std::abs;
-        for(size_t j = 0; j != i; ++ j)
-        {
-            BOOST_CHECK(abs(S(i, j)) < 1.0);
-        }
-
-        BOOST_CHECK_CLOSE(1.0, abs(S(i, i)), 1e-6);
-    }
+    BOOST_CHECK(ural::is_correlational_matrix(S, 1e-6));
 
     // Вычиляем собственные векторы и числа корреляционной матрицы
     auto const iter = 50;
