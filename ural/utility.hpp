@@ -27,6 +27,8 @@
 
 #include <boost/compressed_pair.hpp>
 
+#include <complex>
+
 namespace ural
 {
     /** @brief Последовательность целых чисел времени компиляции
@@ -253,6 +255,7 @@ namespace ural
     //@}
 
     // Универсальный интерфейс для кортежей, pair, complex, compressed_pair
+    // Кортежи
     //@{
     /** @brief Доступ к элементу кортежа по статическому индексу
     @param t кортеж
@@ -275,6 +278,7 @@ namespace ural
     }
     //@}
 
+    // std::piar
     /** @brief Первый элемент пары
     @param x пара
     @return <tt> x.first </tt>
@@ -295,6 +299,44 @@ namespace ural
         return x.second;
     }
 
+    // std::complex
+    //@{
+    /** @brief Доступ к действительной части комплексного числа
+    @param x комлпексное числа
+    @return Ссылка на действительную часть комплексного числа
+    */
+    template <class T>
+    T & get(std::complex<T> & x, ural::placeholder<0>)
+    {
+        return reinterpret_cast<T(&)[2]>(x)[0];
+    }
+
+    template <class T>
+    T const & get(std::complex<T> const & x, ural::placeholder<0>)
+    {
+        return reinterpret_cast<T const(&)[2]>(x)[0];
+    }
+    //@}
+
+    //@{
+    /** @brief Доступ к мнимой части комплексного числа
+    @param x комлпексное числа
+    @return Ссылка на мнимую часть комплексного числа
+    */
+    template <class T>
+    T & get(std::complex<T> & x, ural::placeholder<1>)
+    {
+        return reinterpret_cast<T(&)[2]>(x)[1];
+    }
+
+    template <class T>
+    T const & get(std::complex<T> const & x, ural::placeholder<1>)
+    {
+        return reinterpret_cast<T const(&)[2]>(x)[1];
+    }
+    //@}
+
+    // boost::compressed_pair
     /** @brief Первый элемент сжатой пары <tt> boost::compressed_pair </tt>
     @param x пара
     @return <tt> x.first() </tt>
