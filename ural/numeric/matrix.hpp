@@ -186,16 +186,17 @@ namespace ural
 
     /** @brief Последовательность строк матрицы
     @tparam Matrix тип матрицы
+    @tparam Traversal категория обхода
     */
-    template <class Matrix>
+    template <class Matrix, class Traversal = forward_traversal_tag>
     class matrix_by_rows_sequence
-     : public ural::sequence_base<matrix_by_rows_sequence<Matrix>>
+     : public ural::sequence_base<matrix_by_rows_sequence<Matrix, Traversal>>
     {
         typedef typename Matrix::size_type size_type;
     public:
         // Типы
         /// @brief Категория обхода
-        typedef ural::forward_traversal_tag traversal_tag;
+        typedef Traversal traversal_tag;
 
         /// @brief Тип значения
         typedef boost::numeric::ublas::matrix_row<Matrix> value_type;
@@ -262,10 +263,15 @@ namespace ural
         }
 
     private:
-        // @todo Настройка структуры
+        static auto constexpr is_forward
+            = std::is_convertible<traversal_tag, forward_traversal_tag>::value;
+
+        typedef typename std::conditional<is_forward, with_old_value<size_type>, size_type>::type
+            Row_type;
+
         std::reference_wrapper<Matrix> m_;
         size_type end_;
-        with_old_value<size_type> row_;
+        Row_type row_;
     };
 
     /** @brief Создание последовательности строк матрицы
