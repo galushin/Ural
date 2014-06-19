@@ -434,9 +434,20 @@ BOOST_AUTO_TEST_CASE(qr_decomposition_test_init_list)
     auto Q = QR[ural::_1];
     auto R = QR[ural::_2];
 
+    // столбцы Q - ортогональны
+    for(auto s = ural::matrix_by_rows(Q); !!s; ++ s)
+    {
+        for(auto r = s.traversed_front(); !!r; ++ r)
+        {
+            BOOST_CHECK_CLOSE(0.0, inner_prod(*s, *r), 1e-6);
+        }
+    }
+
+    // Q^T * Q = I
     boost::numeric::ublas::identity_matrix<> const I{Q.size1()};
     BOOST_CHECK_LE(norm_1(prod(trans(Q), Q) - I), 1e-6);
 
+    // A = Q * R
     auto A_QR = prod(Q, R);
 
     BOOST_CHECK_EQUAL(A.size1(), A_QR.size1());
