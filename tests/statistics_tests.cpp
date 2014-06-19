@@ -239,14 +239,11 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
 
     for(size_t i = 0; i != S.size1(); ++ i)
     {
-        // @todo Выделить функцию
-        boost::math::chi_squared_distribution<> chi_2(sample.size() - 1);
-        auto const alpha = 0.05;
-        auto const q1 = quantile(chi_2, alpha / 2);
-        auto const q2 = quantile(chi_2, 1 - alpha / 2);
+        // @todo Макрос для проверки гипотезы о дисперсии?
+        auto p = ural::variance_hypothesis_test(S(i, i), C(i, i), sample.size());
 
-        BOOST_CHECK_LE(S(i, i), C(i, i) * q2  / chi_2.degrees_of_freedom());
-        BOOST_CHECK_GE(S(i, i), C(i, i) * q1  / chi_2.degrees_of_freedom());
+        BOOST_CHECK_LE(alpha / 2, p);
+        BOOST_CHECK_LE(p, 1 - alpha / 2);
 
         for(size_t j = 0; j != i+1; ++ j)
         {

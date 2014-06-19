@@ -30,6 +30,7 @@
 #include <ural/defs.hpp>
 
 #include <boost/numeric/ublas/symmetric.hpp>
+#include <boost/math/distributions/chi_squared.hpp>
 
 #include <stdexcept>
 
@@ -155,6 +156,11 @@ namespace ural
         constexpr const_reference value() const
         {
             return this->value_;
+        }
+
+        constexpr operator const_reference() const
+        {
+            return this->value();
         }
 
     private:
@@ -957,6 +963,18 @@ namespace tags
         mean_type m_;
         covariance_matrix_type cov_;
     };
+
+    template <class RealType>
+    probability<>
+    variance_hypothesis_test(RealType const & s, RealType const & s_sample,
+                            size_t n)
+    {
+        boost::math::chi_squared_distribution<> distr(n-1);
+
+        RealType const chi_sq = s_sample / s * distr.degrees_of_freedom();
+
+        return probability<>{cdf(distr, chi_sq)};
+    }
 }
 // namespace ural
 

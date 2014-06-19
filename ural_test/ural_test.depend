@@ -6607,7 +6607,7 @@
 	<utility>
 	<stdexcept>
 
-1403144307 source:c:\devtools\ural_repo\ural\tests\statistics_tests.cpp
+1403170391 source:c:\devtools\ural_repo\ural\tests\statistics_tests.cpp
 	<ural/math.hpp>
 	<ural/statistics.hpp>
 	<ural/math/rational.hpp>
@@ -6622,7 +6622,7 @@
 	<boost/numeric/ublas/vector.hpp>
 	<boost/numeric/ublas/symmetric.hpp>
 
-1402030410 c:\devtools\ural_repo\ural\ural\statistics.hpp
+1403170533 c:\devtools\ural_repo\ural\ural\statistics.hpp
 	<ural/math.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/transform.hpp>
@@ -6631,6 +6631,7 @@
 	<ural/meta/list.hpp>
 	<ural/defs.hpp>
 	<boost/numeric/ublas/symmetric.hpp>
+	<boost/math/distributions/chi_squared.hpp>
 	<stdexcept>
 
 1394704070 c:\devtools\ural_repo\ural\ural\operators.hpp
