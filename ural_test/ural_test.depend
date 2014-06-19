@@ -6349,11 +6349,12 @@
 
 1398739770 c:\devtools\ural_repo\ural\ural\sequence\partition.hpp
 
-1394151640 source:c:\devtools\ural_repo\ural\tests\math_tests.cpp
+1403159117 source:c:\devtools\ural_repo\ural\tests\math_tests.cpp
 	<boost/test/unit_test.hpp>
 	<boost/mpl/list.hpp>
 	<boost/operators.hpp>
 	<ural/math/common_factor.hpp>
+	<ural/math.hpp>
 
 1399538992 c:\devtools\ural_repo\ural\ural\math\common_factor.hpp
 	<cmath>
@@ -6599,9 +6600,11 @@
 1396857788 c:\devtools\ural_repo\ural\ural\functional\compare_by.hpp
 	<ural/functional/cpp_operators.hpp>
 
-1403148691 c:\devtools\ural_repo\ural\ural\math.hpp
+1403158928 c:\devtools\ural_repo\ural\ural\math.hpp
 	<cassert>
 	<cstddef>
+	<utility>
+	<stdexcept>
 
 1403144307 source:c:\devtools\ural_repo\ural\tests\statistics_tests.cpp
 	<ural/math.hpp>

@@ -24,6 +24,9 @@
 #include <cassert>
 #include <cstddef>
 
+#include <utility>
+#include <stdexcept>
+
 namespace ural
 {
     /** @brief Функция вычисления квадрата
@@ -36,30 +39,44 @@ namespace ural
         return x * x;
     }
 
-    /** @brief Возведение числа в натуральную степень
-    @param x число
-    @param n степень
-    @return @c x в степени @c n
-    @todo constexpr
-    */
-    template <class T>
-    T natural_power(T const & x, std::size_t n)
+    class natural_power_f
     {
-        assert(n != 0);
-
-        if(n == 1)
+    public:
+        /** @brief Возведение числа в натуральную степень
+        @param x число
+        @param n степень
+        @return @c x в степени @c n
+        @todo тесты constexpr
+        @todo Возможность передать функцию умножения
+        */
+        template <class T>
+        constexpr T operator()(T const & x, size_t n) const
         {
-            return x;
+            return this->compute(x, enforce_positive(n));
         }
 
-        auto r = ural::square(natural_power(x, n / 2));
-
-        if(n % 2 != 0)
+    private:
+        template <class T>
+        constexpr T adjust(T value, T const & x, bool is_odd) const
         {
-            r *= x;
+            return is_odd ? std::move(value) * x : value;
         }
-        return r;
-    }
+
+        template <class T>
+        constexpr T compute(T const & x, size_t n) const
+        {
+            return (n == 1)
+                    ? x
+                    : adjust(ural::square((*this)(x, n / 2)), x, n % 2 != 0);
+        }
+
+        static constexpr size_t enforce_positive(size_t n)
+        {
+            return (n > 0) ? n : throw std::logic_error{"zero power"};
+        }
+    };
+
+    auto constexpr natural_power = natural_power_f{};
 }
 // namespace ural
 
