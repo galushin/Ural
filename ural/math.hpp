@@ -21,6 +21,8 @@
  @brief Математические функции и типы данных
 */
 
+#include <ural/functional/cpp_operators.hpp>
+
 #include <cassert>
 #include <cstddef>
 
@@ -39,6 +41,18 @@ namespace ural
         return x * x;
     }
 
+    /** @brief Функция вычисления квадрата
+    @param x аргумент
+    @param op ассоциативная бинарная операция, используемая в качестве
+        умножения
+    @return <tt> op(x, x) </tt>
+    */
+    template <class T, class BinOp>
+    constexpr T square(T const & x, BinOp op)
+    {
+        return op(x, x);
+    }
+
     class natural_power_f
     {
     public:
@@ -46,28 +60,39 @@ namespace ural
         @param x число
         @param n степень
         @return @c x в степени @c n
-        @todo тесты constexpr
-        @todo Возможность передать функцию умножения
         */
         template <class T>
         constexpr T operator()(T const & x, size_t n) const
         {
-            return this->compute(x, enforce_positive(n));
+            return (*this)(x, enforce_positive(n), ural::multiplies<>{});
+        }
+
+        /** @brief Возведение числа в натуральную степень
+        @param x число
+        @param n степень
+        @param op ассоциативная бинарная операция, используемая в качестве
+        умножения
+        @return @c x в степени @c n
+        */
+        template <class T, class AssocBinOp>
+        constexpr T operator()(T const & x, size_t n, AssocBinOp op) const
+        {
+            return this->compute(x, enforce_positive(n), std::move(op));
         }
 
     private:
-        template <class T>
-        constexpr T adjust(T value, T const & x, bool is_odd) const
+        template <class T, class AssocBinOp>
+        constexpr T adjust(T value, T const & x, bool is_odd, AssocBinOp op) const
         {
-            return is_odd ? std::move(value) * x : value;
+            return is_odd ? op(std::move(value), x) : value;
         }
 
-        template <class T>
-        constexpr T compute(T const & x, size_t n) const
+        template <class T, class AssocBinOp>
+        constexpr T compute(T const & x, size_t n, AssocBinOp op) const
         {
             return (n == 1)
                     ? x
-                    : adjust(ural::square((*this)(x, n / 2)), x, n % 2 != 0);
+                    : adjust(ural::square((*this)(x, n / 2), op), x, n % 2 != 0, op);
         }
 
         static constexpr size_t enforce_positive(size_t n)
