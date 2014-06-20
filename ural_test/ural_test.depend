@@ -353,7 +353,7 @@
 	<ural/sequence/transform.hpp>
 	<ural/sequence/uniqued.hpp>
 
-1400028559 c:\devtools\ural_repo\ural\ural\sequence\iterator_sequence.hpp
+1403226886 c:\devtools\ural_repo\ural\ural\sequence\iterator_sequence.hpp
 	<ural/sequence/base.hpp>
 	<ural/tuple.hpp>
 	<ural/utility.hpp>
@@ -6607,7 +6607,7 @@
 	<utility>
 	<stdexcept>
 
-1403170391 source:c:\devtools\ural_repo\ural\tests\statistics_tests.cpp
+1403226968 source:c:\devtools\ural_repo\ural\tests\statistics_tests.cpp
 	<ural/math.hpp>
 	<ural/statistics.hpp>
 	<ural/math/rational.hpp>
@@ -6622,7 +6622,7 @@
 	<boost/numeric/ublas/vector.hpp>
 	<boost/numeric/ublas/symmetric.hpp>
 
-1403170533 c:\devtools\ural_repo\ural\ural\statistics.hpp
+1403170640 c:\devtools\ural_repo\ural\ural\statistics.hpp
 	<ural/math.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/transform.hpp>
@@ -9914,7 +9914,7 @@
 	<sstream>
 	<sstream>
 
-1401768167 c:\devtools\ural_repo\ural\ural\sequence\sequence_iterator.hpp
+1403225854 c:\devtools\ural_repo\ural\ural\sequence\sequence_iterator.hpp
 	<ural/optional.hpp>
 
 1401764629 c:\devtools\ural_repo\ural\ural\sequence\map.hpp

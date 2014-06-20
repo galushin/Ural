@@ -28,11 +28,19 @@
 
 namespace ural
 {
+    /** @brief Класс исключения "Некорректный индекс"
+    @tparam T тип индекса
+    */
     template <class T>
     class bad_index
      : std::logic_error
     {
     public:
+        /** @brief Конструктор
+        @param msg сообщение об ошибке
+        @param index индекс
+        @param size размер
+        */
         bad_index(char const * msg, T index, T size)
          : logic_error(msg)
          , index_(std::move(index))
@@ -53,9 +61,9 @@ namespace ural
         ~strict_sequence_policy() = default;
 
     public:
-        /** @param seq проверяемая последовательность
-        @brief Проверяет, что последовательность @c seq не пуста, в противном
-        случае возбуждает исключение типа <tt> logic_error </tt>.
+        /** @brief Проверяет, что последовательность @c seq не пуста, в
+        противном случае возбуждает исключение типа <tt> logic_error </tt>.
+        @param seq проверяемая последовательность
         */
         template <class Seq>
         static void assert_not_empty(Seq const & seq)
@@ -66,6 +74,12 @@ namespace ural
             }
         }
 
+        /** @brief Проверка допустимости индекса
+        @param seq последовательность
+        @param index проверяемый индекс
+        @throw bad_index<decltype(seq.size())>, если
+        <tt> index >= seq.size() </tt>
+        */
         template <class Seq>
         static void check_index(Seq const & seq,
                                 typename Seq::distance_type index)
@@ -78,6 +92,15 @@ namespace ural
             }
         }
 
+        /** @brief Проверка допустимости шага.
+        @param seq последовательность
+        @param index проверяемый индекс
+        @throw bad_index<decltype(seq.size())>, если
+        <tt> index > seq.size() </tt>
+
+        Отличается от проверки индекса тем, что может быть равен размеру
+        последовательности.
+        */
         template <class Seq>
         static void check_step(Seq const & seq,
                                typename Seq::distance_type n)
@@ -92,6 +115,7 @@ namespace ural
     };
 
     /// @cond false
+    // @todo Автоматическое построение по списку типов
     template <class IteratorTag>
     struct iterator_tag_to_traversal_tag
     {
@@ -171,6 +195,9 @@ namespace ural
             return *this->begin();
         }
 
+        /** @brief Доступ к членам первого элемента последовательности
+        @retun Указатель на первый элемент последовательности
+        */
         pointer operator->() const
         {
             return this->begin().operator->();
@@ -212,12 +239,20 @@ namespace ural
         }
 
         // Двусторонняя последовательность
+        /** @brief Переход к следующему элементу в задней части
+        последовательности
+        @pre <tt> !*this == false </tt>
+        */
         void pop_back()
         {
             policy_type::assert_not_empty(*this);
             -- ural::get(members_.second());
         }
 
+        /** @brief Доступ к последнему непройденному элементу последовательности
+        @pre <tt> !*this == false </tt>
+        @return Ссылка на последний непройденный элемент последовательности
+        */
         reference back() const
         {
             policy_type::assert_not_empty(*this);
@@ -226,6 +261,9 @@ namespace ural
             return *tmp;
         }
 
+        /** @brief Пройденная задняя часть последовательности
+        @return Пройденная задняя часть последовательности
+        */
         iterator_sequence traversed_back() const
         {
             return iterator_sequence(this->end(),
@@ -239,17 +277,32 @@ namespace ural
         }
 
         // Последовательность произвольного доступа
+        /** @brief Индексированный доступ
+        @param index
+        @pre <tt> 0 <= index < this->size() </tt>
+        @return Ссылка на элемент с индексом @c index, считая от первого
+        непройденного элемента последовательности.
+        */
         reference operator[](distance_type index) const
         {
             policy_type::check_index(*this, index);
             return this->begin()[index];
         }
 
+        /** @brief Размер последовательности
+        @return Размер последовательности
+        */
         distance_type size() const
         {
             return this->end() - this->begin();
         }
 
+        /** @brief Пропуск заданного числа элементов в передней части
+        последовательности
+        @param n количество элементов
+        @pre <tt> 0 <= index <= this->size() </tt>
+        @return <tt> *this </tt>
+        */
         iterator_sequence & operator+=(distance_type n)
         {
             policy_type::check_step(*this, n);
@@ -258,6 +311,11 @@ namespace ural
             return *this;
         }
 
+        /** @brief Пропуск заданного числа элементов в задней части
+        последовательности
+        @param n количество элементов
+        @pre <tt> 0 <= index <= this->size() </tt>
+        */
         void pop_back(distance_type n)
         {
             policy_type::check_step(*this, n);
@@ -267,21 +325,35 @@ namespace ural
         }
 
         // Итераторы
+        /** @brief Начало последовательности
+        @return Итератор, соответствующий первому непройденному элементу
+        последовательности
+        */
         iterator begin() const
         {
             return ural::get(members_.first());
         }
 
+        /** @brief Конец последовательности
+        @return Итератор на элемент, следующий за последним непройденным
+        элементом последовательности
+        */
         iterator end() const
         {
             return ural::get(members_.second());
         }
 
+        /** @brief Начало исходной последовательности
+        @return Итератор, задающий начало исходной последовательности
+        */
         iterator traversed_begin() const
         {
             return members_.first().old_value();
         }
 
+        /** @brief Конец исходной последовательности
+        @return Итератор, задающий конец исходной последовательности
+        */
         iterator traversed_end() const
         {
             return members_.second().old_value();
