@@ -964,11 +964,21 @@ namespace tags
         covariance_matrix_type cov_;
     };
 
+    /** @brief Проверка гипотезы о дисперсии
+    @param s ожидаемое значение дисперсии
+    @param s_sample выборочная (несмещённая) дисперсия
+    @param n размер выборки
+    @pre <tt> s > 0 </tt>
+    @pre <tt> s_sample > 0 </tt>
+    */
     template <class RealType>
     probability<>
     variance_hypothesis_test(RealType const & s, RealType const & s_sample,
                             size_t n)
     {
+        assert(s > 0);
+        assert(s_sample > 0);
+
         boost::math::chi_squared_distribution<> distr(n-1);
 
         RealType const chi_sq = s_sample / s * distr.degrees_of_freedom();
