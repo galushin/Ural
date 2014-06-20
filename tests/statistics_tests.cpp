@@ -240,6 +240,8 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
     for(size_t i = 0; i != S.size1(); ++ i)
     {
         // @todo Макрос для проверки гипотезы о дисперсии?
+        auto const alpha = 0.05;
+
         auto p = ural::variance_hypothesis_test(S(i, i), C(i, i), sample.size());
 
         BOOST_CHECK_LE(alpha / 2, p);
