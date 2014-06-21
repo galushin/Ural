@@ -120,6 +120,10 @@ namespace ural
         keep_delimeter kd_;
     };
 
+    /** @brief Создание последовательности, читающей поток ввода построчно
+    @param is ссылка на поток ввода
+    @return <tt> by_line_sequence<IStream>(is) </tt>
+    */
     template <class IStream>
     by_line_sequence<IStream>
     by_line(IStream & is)
@@ -127,6 +131,12 @@ namespace ural
         return by_line_sequence<IStream>(is);
     }
 
+    /** @brief Создание последовательности, читающей поток ввода блоками,
+    разделёнными заданным символом.
+    @param is ссылка на поток ввода
+    @param delimeter символ-разделитель
+    @return <tt> by_line_sequence<IStream>(is, std::move(delimeter)) </tt>
+    */
     template <class IStream>
     by_line_sequence<IStream>
     by_line(IStream & is, typename IStream::char_type delimeter)
@@ -134,6 +144,13 @@ namespace ural
         return by_line_sequence<IStream>(is, std::move(delimeter));
     }
 
+     /** @brief Создание последовательности, читающей поток ввода блоками,
+    разделёнными заданным символом.
+    @param is ссылка на поток ввода
+    @param delimeter символ-разделитель
+    @param kd показывает, нужно ли сохранять символы разделители
+    @return <tt> by_line_sequence<IStream>(is, std::move(delimeter), kd) </tt>
+    */
     template <class IStream>
     by_line_sequence<IStream>
     by_line(IStream & is, typename IStream::char_type delimeter,
