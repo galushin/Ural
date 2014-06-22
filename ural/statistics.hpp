@@ -31,6 +31,7 @@
 
 #include <boost/numeric/ublas/symmetric.hpp>
 #include <boost/math/distributions/chi_squared.hpp>
+#include <boost/math/distributions/normal.hpp>
 
 #include <stdexcept>
 
@@ -973,7 +974,7 @@ namespace tags
     */
     template <class RealType>
     probability<>
-    variance_hypothesis_test(RealType const & s, RealType const & s_sample,
+    variance_hypothesis_test(RealType const & s_sample, RealType const & s,
                             size_t n)
     {
         assert(s > 0);
@@ -984,6 +985,27 @@ namespace tags
         RealType const chi_sq = s_sample / s * distr.degrees_of_freedom();
 
         return probability<>{cdf(distr, chi_sq)};
+    }
+
+    /** @brief Проверка гипотезы о мат. ожидании при известной дисперсии
+    @param m_sample выборочное среднее
+    @param m теоретическое значение математического ожидания
+    @param s2 теоретическое значение дисперсии
+    @param n размер выборки
+    @pre <tt> s2 > 0 </tt>
+    */
+    template <class RealType>
+    probability<>
+    mean_hypothesis_test_known_variance(RealType const & m_sample,
+                                        RealType const & m, RealType const & s2,
+                                        size_t n)
+    {
+        assert(s2 > 0);
+
+        using std::sqrt;
+        auto const z = (m_sample - m) / sqrt(s2 / n);
+        boost::math::normal_distribution<> distr{};
+        return probability<>{cdf(distr, z)};
     }
 }
 // namespace ural

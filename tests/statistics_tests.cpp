@@ -261,11 +261,13 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
     for(size_t i = 0; i != m.size(); ++ i)
     {
         // @todo макрос для проверки статистической гипотезы
-        using std::sqrt;
-        double eps = C(i, i) / sqrt(sample.size())
-                     * quantile(boost::math::normal_distribution<>(), 0.95);
+        auto const alpha = 0.05;
 
-        BOOST_CHECK_CLOSE_FRACTION(mu[i], m[i], eps);
+        auto p = ural::mean_hypothesis_test_known_variance(m[i], mu[i], C(i, i),
+                                                           sample.size());
+
+        BOOST_CHECK_LE(alpha / 2, p);
+        BOOST_CHECK_LE(p, 1 - alpha / 2);
     }
 
     // Вычисляем выборочную корреляционную матрицу
