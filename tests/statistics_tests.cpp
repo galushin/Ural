@@ -218,13 +218,13 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
     mu[1] = 1;
 
     // Вычисляем коррелированные случайные величины
-    ural::multivariate_normal_distribution<Vector, symmetric_matrix<Double>>
-        distr(mu, C);
+    typedef ural::multivariate_normal_distribution<Vector, symmetric_matrix<Double>>
+        Vector_distribution;
+    typedef ural::iid_adaptor<Vector_distribution> Sample_distribution;
 
-    std::vector<Vector> sample;
+    Sample_distribution sample_distr(sample_size, Vector_distribution{mu, C});
 
-    std::generate_n(sample | ural::back_inserter, sample_size,
-                    std::bind(distr, std::ref(ural_test::random_engine())));
+    std::vector<Vector> const sample = sample_distr(ural_test::random_engine());
 
     BOOST_CHECK_EQUAL(sample_size, sample.size());
 
@@ -323,5 +323,6 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
     }
 
     // @todo Сравнить с собственными числами и векторами корреляционной матрицы
+
     // @todo Вычисляем главные компоненты
 }
