@@ -224,7 +224,7 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
 
     Sample_distribution sample_distr(sample_size, Vector_distribution{mu, C});
 
-    std::vector<Vector> const sample = sample_distr(ural_test::random_engine());
+    auto const sample = sample_distr(ural_test::random_engine());
 
     BOOST_CHECK_EQUAL(sample_size, sample.size());
 
@@ -254,7 +254,7 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
         }
     }
 
-    auto m = acc.mean();
+    auto const m = acc.mean();
 
     BOOST_CHECK_EQUAL(mu.size(), m.size());
 
@@ -324,5 +324,13 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
 
     // @todo Сравнить с собственными числами и векторами корреляционной матрицы
 
-    // @todo Вычисляем главные компоненты
+    // Вычисляем главные компоненты
+    std::vector<Vector> scores;
+
+    for(auto & x : sample)
+    {
+        scores.push_back(prod(trans(V), element_prod(x - m, s)));
+    }
+
+    // @todo Проверить, что scores - незавивисимые, m = 0, s = 1
 }
