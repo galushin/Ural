@@ -332,5 +332,33 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
         scores.push_back(prod(trans(V), element_prod(x - m, s)));
     }
 
-    // @todo Проверить, что scores - незавивисимые, m = 0, s = 1
+    // Проверить, что scores - некоррелированные, m = 0, s = 1
+    {
+        auto acc = ural::for_each(scores,
+                                  ural::covariance_matrix_accumulator<Vector>(dim));
+
+        auto S = acc.covariance_matrix();
+
+        auto const C = boost::numeric::ublas::identity_matrix<double>(dim);
+        auto const mu = Vector(dim, 0);
+
+        // @todo макрос для проверки близости матриц
+        BOOST_CHECK_EQUAL(C.size1(), S.size1());
+        BOOST_CHECK_EQUAL(C.size2(), S.size2());
+
+        for(size_t row = 0; row != C.size1(); ++ row)
+        for(size_t col = 0; col != C.size2(); ++ col)
+        {
+            BOOST_CHECK_LE(abs(C(row, col) - S(row, col)), 1e-3);
+        }
+        auto const m = acc.mean();
+
+        // @todo макрос для проверки близости векторов
+        BOOST_CHECK_EQUAL(mu.size(), m.size());
+
+        for(size_t i = 0; i != m.size(); ++ i)
+        {
+            BOOST_CHECK_LE(abs(mu[i] - m[i]), 1e-3);
+        }
+    }
 }
