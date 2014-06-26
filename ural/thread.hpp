@@ -27,10 +27,22 @@ namespace ural
 {
     /** @brief Стратегия многопотоночти: многопоточная программа, использовать
     средства стандартной библиотеки C++11
+    @todo Реализовать
     */
     class cpp11_thread_policy
     {
     public:
+    };
+
+    /** @brief Класс, реализующий синтаксические требования к мьютексу, но не
+    выполняющий никакой синхронизации
+    @todo Реализовать
+    */
+    class single_thread_mutex
+    {
+    public:
+        void lock(){}
+        void unlock(){}
     };
 
     /// @brief Стратегия многопотоночти: однопоточная программа
@@ -39,6 +51,9 @@ namespace ural
     public:
         /// @brief Тип потоково-безопасного счётчика
         typedef std::size_t atomic_counter_type;
+
+        /// @brief Тип мьютекса
+        typedef single_thread_mutex mutex_type;
     };
 }
 // namespace ural
