@@ -25,50 +25,76 @@
 
 namespace ural
 {
-    /** @todo Настройка контейнера-кэша
+    /** @brief Адаптор функционального объекта, кэширующий значения
+    @tparam Signature сигнатура вызова
+    @tparam F тип базового функционального объекта
+    @tparam Threading стратегия работы с многопоточьностью
+    @tparam Map шаблон ассоциативного контейнера, кэширующего значения
+
     @todo Настройка синхронизации
     @todo Тесты с различными типами аргументов
     */
-    template <class Signature, class F>
+    template <class Signature, class F,
+              class Threading = use_default,
+              template <class...> class Map = std::map>
     class memoize_functor;
 
-    template <class R, class... Args, class F>
-    class memoize_functor<R(Args...), F>
+    /** @brief Адаптор функционального объекта, кэширующий значения
+    @tparam R тип возвращаемого значения
+    @tparam Args типы аргументов
+    @tparam F тип базового функционального объекта
+    @tparam Threading стратегия работы с многопоточьностью
+    @tparam Map шаблон ассоциативного контейнера, кэширующего значения
+    */
+    template <class R, class... Args, class F,
+              class Threading, template <class...> class Map>
+    class memoize_functor<R(Args...), F, Threading, Map>
     {
     public:
         // Типы
+        /// @brief Тип возвращаемого значения
         typedef R result_type;
+
+        /// @brief Тип функционального объекта
         typedef decltype(ural::make_functor(std::declval<F>())) target_type;
 
         // Конструкторы
+        /** @brief Конструктор
+        @param f базовый функциональный объект
+        @post <tt> this->target() == f </tt>
+        */
         explicit memoize_functor(F f)
          : members_{std::move(f), Cache{}}
         {}
 
         // Применение функционального объекта
-        /** @brief Оптимальные типы параметров
+        /** @brief Применение функционального объекта
+        @param args аргументы
+        @return Значение адаптируемого функционального объекта при данных
+        аргументах.
         */
+        template <class... As>
         result_type
-        operator()(typename boost::call_traits<Args>::param_type... args)
+        operator()(As &&... args)
         {
-            // @todo Оптимизация
-            auto pos = this->cache().find(args_tuple(args...));
+            auto x = ural::forward_as_tuple(std::forward<As>(args)...);
 
-            if(pos != this->cache().end())
+            auto pos = this->cache().lower_bound(x);
+
+            if(pos == this->cache().end() || pos->first != x)
             {
-                return pos->second;
-            }
-            else
-            {
-                auto result = this->target()(args...);
+                auto y = this->target()(std::forward<As>(args)...);
+                pos = cache().insert(pos, std::make_pair(x, y));
 
-                cache()[args_tuple(args...)] = result;
-
-                return result;
             }
+
+            return pos->second;
         }
 
         // Свойства
+        /** @brief Адаптируемый функциональный объект
+        @return Адаптируемый функциональный объект
+        */
         target_type const & target() const
         {
             return members_[ural::_1];
@@ -76,7 +102,7 @@ namespace ural
 
     private:
         typedef ural::tuple<Args...> args_tuple;
-        typedef std::map<args_tuple, result_type> Cache;
+        typedef Map<args_tuple, result_type> Cache;
 
         Cache & cache()
         {
@@ -87,6 +113,11 @@ namespace ural
         ural::tuple<target_type, Cache> members_;
     };
 
+    /** @brief Мемоизация функционального объекта
+    @tparam Signature сигнатура вызова вида R(Args...)
+    @param f адаптируемый функциональный объект
+    @return <tt> memoize_functor<Signature, F>{std::move(f)} </tt>
+    */
     template <class Signature, class F>
     memoize_functor<Signature, F>
     memoize(F f)
