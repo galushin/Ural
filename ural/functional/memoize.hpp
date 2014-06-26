@@ -22,6 +22,7 @@
 */
 
 #include <map>
+#include <mutex>
 
 namespace ural
 {
@@ -31,8 +32,8 @@ namespace ural
     @tparam Threading стратегия работы с многопоточьностью
     @tparam Map шаблон ассоциативного контейнера, кэширующего значения
 
-    @todo Настройка синхронизации
     @todo Тесты с различными типами аргументов
+    @todo Возможность очищать кэш и управлять его ёмкостью
     */
     template <class Signature, class F,
               class Threading = use_default,
@@ -64,7 +65,7 @@ namespace ural
         @post <tt> this->target() == f </tt>
         */
         explicit memoize_functor(F f)
-         : members_{std::move(f), Cache{}}
+         : members_{std::move(f), Cache{}, mutex_type{}}
         {}
 
         // Применение функционального объекта
@@ -78,6 +79,8 @@ namespace ural
         operator()(As &&... args)
         {
             auto x = ural::forward_as_tuple(std::forward<As>(args)...);
+
+            std::lock_guard<mutex_type> lock(this->mutex_ref());
 
             auto pos = this->cache().lower_bound(x);
 
@@ -104,13 +107,23 @@ namespace ural
         typedef ural::tuple<Args...> args_tuple;
         typedef Map<args_tuple, result_type> Cache;
 
+        typedef typename default_helper<Threading, single_thread_policy>::type
+            threading_policy;
+
+        typedef typename threading_policy::mutex_type mutex_type;
+
         Cache & cache()
         {
             return members_[ural::_2];
         }
 
+        mutex_type & mutex_ref()
+        {
+            return members_[ural::_3];
+        }
+
     private:
-        ural::tuple<target_type, Cache> members_;
+        ural::tuple<target_type, Cache, mutex_type> members_;
     };
 
     /** @brief Мемоизация функционального объекта

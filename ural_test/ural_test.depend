@@ -486,7 +486,7 @@
 	<utility>
 	<ural/sequence/sequence_iterator.hpp>
 
-1403758968 c:\devtools\ural_repo\ural\ural\thread.hpp
+1403764563 c:\devtools\ural_repo\ural\ural\thread.hpp
 	<cstddef>
 
 1402035794 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
@@ -528,7 +528,7 @@
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
-1403758920 source:c:\devtools\ural_repo\ural\tests\functional_test.cpp
+1403764167 source:c:\devtools\ural_repo\ural\tests\functional_test.cpp
 	<ural/utility/tracers.hpp>
 	<ural/functional.hpp>
 	<ural/memory.hpp>
@@ -12073,6 +12073,7 @@
 	<ural/tuple.hpp>
 	<ural/sequence/transform.hpp>
 
-1403762979 c:\devtools\ural_repo\ural\ural\functional\memoize.hpp
+1403764406 c:\devtools\ural_repo\ural\ural\functional\memoize.hpp
 	<map>
+	<mutex>
 
