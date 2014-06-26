@@ -41,8 +41,23 @@ namespace ural
     class single_thread_mutex
     {
     public:
-        void lock(){}
-        void unlock(){}
+        constexpr single_thread_mutex() noexcept = default;
+
+        single_thread_mutex(single_thread_mutex const &) = delete;
+
+        single_thread_mutex&
+        operator=(single_thread_mutex const &) = delete;
+
+        void lock()
+        {}
+
+        bool try_lock()
+        {
+            return true;
+        }
+
+        void unlock()
+        {}
     };
 
     /// @brief Стратегия многопотоночти: однопоточная программа

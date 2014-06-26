@@ -65,8 +65,15 @@ namespace ural
         @post <tt> this->target() == f </tt>
         */
         explicit memoize_functor(F f)
-         : members_{std::move(f), Cache{}, mutex_type{}}
+         : members_{std::move(f), Cache{}}
+         , mutex_{}
         {}
+
+        memoize_functor(memoize_functor const &);
+        memoize_functor(memoize_functor &&);
+
+        memoize_functor & operator=(memoize_functor const &);
+        memoize_functor & operator=(memoize_functor &&);
 
         // Применение функционального объекта
         /** @brief Применение функционального объекта
@@ -119,11 +126,12 @@ namespace ural
 
         mutex_type & mutex_ref()
         {
-            return members_[ural::_3];
+            return mutex_;
         }
 
     private:
-        ural::tuple<target_type, Cache, mutex_type> members_;
+        ural::tuple<target_type, Cache> members_;
+        mutex_type mutex_;
     };
 
     /** @brief Мемоизация функционального объекта
