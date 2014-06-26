@@ -261,6 +261,7 @@ namespace ural
     /** @tparam F тип функционального объекта
     @tparam Tag тэг
     @tparam Threading тип, определяющий стратегию многопоточности
+    @todo функция создания
     */
     template <class F, class Tag = use_default, class Threading = use_default>
     class functor_tracer

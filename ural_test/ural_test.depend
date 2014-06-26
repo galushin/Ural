@@ -423,7 +423,7 @@
 	<boost/type_traits.hpp>
 	<type_traits>
 
-1397525661 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
+1403756830 c:\devtools\ural_repo\ural\ural\utility\tracers.hpp
 	<ural/defs.hpp>
 	<ural/thread.hpp>
 	<ural/functional.hpp>
@@ -481,12 +481,13 @@
 	<utility>
 	<ural/sequence/sequence_iterator.hpp>
 
-1399542357 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
+1403741290 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
 	<ural/defs.hpp>
 	<utility>
 	<ural/sequence/sequence_iterator.hpp>
 
-1399955817 c:\devtools\ural_repo\ural\ural\thread.hpp
+1403758968 c:\devtools\ural_repo\ural\ural\thread.hpp
+	<cstddef>
 
 1402035794 c:\devtools\ural_repo\ural\ural\algorithm\details\algo_base.hpp
 	<ural/sequence/base.hpp>
@@ -527,12 +528,13 @@
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
-1403144307 source:c:\devtools\ural_repo\ural\tests\functional_test.cpp
-	"rnd.hpp"
-	<boost/test/unit_test.hpp>
+1403758920 source:c:\devtools\ural_repo\ural\tests\functional_test.cpp
 	<ural/utility/tracers.hpp>
 	<ural/functional.hpp>
 	<ural/memory.hpp>
+	<ural/functional/memoize.hpp>
+	"rnd.hpp"
+	<boost/test/unit_test.hpp>
 	<boost/mpl/list.hpp>
 
 1401774471 c:\devtools\ural_repo\ural\ural\sequence\generator.hpp
@@ -6401,7 +6403,7 @@
 	<forward_list>
 	<sstream>
 
-1403316257 c:\devtools\ural_repo\ural\ural\sequence\by_line.hpp
+1403741290 c:\devtools\ural_repo\ural\ural\sequence\by_line.hpp
 	<ural/sequence/base.hpp>
 	<string>
 
@@ -9911,7 +9913,7 @@
 	<sstream>
 	<sstream>
 
-1402282084 c:\devtools\ural_repo\ural\ural\format.hpp
+1403741290 c:\devtools\ural_repo\ural\ural\format.hpp
 	<ural/algorithm.hpp>
 	<ural/sequence/to.hpp>
 	<ural/sequence/insertion.hpp>
@@ -12039,7 +12041,7 @@
 	<ural/math.hpp>
 	<boost/numeric/ublas/triangular.hpp>
 
-1402269994 c:\devtools\ural_repo\ural\ural\sequence\to.hpp
+1403741290 c:\devtools\ural_repo\ural\ural\sequence\to.hpp
 	<ural/sequence/insertion.hpp>
 	<ural/algorithm/details/copy.hpp>
 
@@ -12070,4 +12072,7 @@
 1402738752 c:\pavel\ural_repo\ural\ural\sequence\zip.hpp
 	<ural/tuple.hpp>
 	<ural/sequence/transform.hpp>
+
+1403759397 c:\devtools\ural_repo\ural\ural\functional\memoize.hpp
+	<map>
 

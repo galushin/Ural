@@ -21,6 +21,8 @@
  @brief Классы и функции для многопточного программирования
 */
 
+#include <cstddef>
+
 namespace ural
 {
     /** @brief Стратегия многопотоночти: многопоточная программа, использовать
@@ -36,7 +38,7 @@ namespace ural
     {
     public:
         /// @brief Тип потоково-безопасного счётчика
-        typedef size_t atomic_counter_type;
+        typedef std::size_t atomic_counter_type;
     };
 }
 // namespace ural

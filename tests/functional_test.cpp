@@ -14,12 +14,40 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "rnd.hpp"
-#include <boost/test/unit_test.hpp>
-
 #include <ural/utility/tracers.hpp>
 #include <ural/functional.hpp>
 #include <ural/memory.hpp>
+#include <ural/functional/memoize.hpp>
+
+#include "rnd.hpp"
+
+#include <boost/test/unit_test.hpp>
+
+BOOST_AUTO_TEST_CASE(memoize_functor_test)
+{
+    struct Tag;
+
+    typedef double(Signature)(double);
+
+    ural::functor_tracer<Signature*, Tag> f_tracer(std::abs);
+
+    auto f = ural::memoize<Signature>(std::ref(f_tracer));
+
+    auto const y1 = f(-1);
+
+    BOOST_CHECK_EQUAL(1, y1);
+    BOOST_CHECK_EQUAL(1, f_tracer.calls());
+
+    auto const y2 = f(2);
+
+    BOOST_CHECK_EQUAL(2, y2);
+    BOOST_CHECK_EQUAL(2, f_tracer.calls());
+
+    auto const y3 = f(-1);
+
+    BOOST_CHECK_EQUAL(1, y3);
+    BOOST_CHECK_EQUAL(2, f_tracer.calls());
+}
 
 BOOST_AUTO_TEST_CASE(functor_tracer_test)
 {

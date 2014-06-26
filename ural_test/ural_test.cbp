@@ -87,6 +87,7 @@
 		<Unit filename="../ural/functional/compose.hpp" />
 		<Unit filename="../ural/functional/cpp_operators.hpp" />
 		<Unit filename="../ural/functional/make_functor.hpp" />
+		<Unit filename="../ural/functional/memoize.hpp" />
 		<Unit filename="../ural/functional/replace.hpp" />
 		<Unit filename="../ural/math.hpp" />
 		<Unit filename="../ural/math/common_factor.hpp" />
