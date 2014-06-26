@@ -41,21 +41,29 @@ namespace ural
     class single_thread_mutex
     {
     public:
+        /// @brief Конструктор
         constexpr single_thread_mutex() noexcept = default;
 
+        /// @brief Копирование запрещено
         single_thread_mutex(single_thread_mutex const &) = delete;
 
+        /// @brief Копирующее присваивание запрещено
         single_thread_mutex&
         operator=(single_thread_mutex const &) = delete;
 
+        /// @brief Блокировать
         void lock()
         {}
 
+        /** @brief Попробовать заблокировать
+        @return @b true
+        */
         bool try_lock()
         {
             return true;
         }
 
+        /// @brief Разблокировать
         void unlock()
         {}
     };
