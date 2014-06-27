@@ -57,6 +57,7 @@
 		<Unit filename="../tests/algo_tests.cpp" />
 		<Unit filename="../tests/concepts_checks.cpp" />
 		<Unit filename="../tests/expected_test.cpp" />
+		<Unit filename="../tests/flex_string_tests.cpp" />
 		<Unit filename="../tests/functional_test.cpp" />
 		<Unit filename="../tests/io_tests.cpp" />
 		<Unit filename="../tests/iterator_sequence_test.cpp" />
@@ -80,6 +81,7 @@
 		<Unit filename="../ural/archetypes.hpp" />
 		<Unit filename="../ural/concepts.hpp" />
 		<Unit filename="../ural/defs.hpp" />
+		<Unit filename="../ural/flex_string.hpp" />
 		<Unit filename="../ural/format.hpp" />
 		<Unit filename="../ural/functional.hpp" />
 		<Unit filename="../ural/functional/adjoin.hpp" />
