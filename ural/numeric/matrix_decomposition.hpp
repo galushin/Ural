@@ -159,6 +159,35 @@ namespace ural
 
         return L;
     }
+
+    /** @brief QR-алгоритм нахождения собственных чисел и векторов
+    @param A матрица
+    @param max_iter максимальное число итераций
+    @return кортеж <tt> {L, V} </tt>, где @c L --- матрица собственных чисел, а
+    @c V --- матрица собственных векторов
+    @todo Дополнительные критерии остановки
+    */
+    template <class Matrix>
+    tuple<Matrix, Matrix>
+    qr_eigenvectors(Matrix A, size_t max_iter, double)
+    {
+        typedef typename Matrix::value_type Value;
+        auto const dim = A.size1();
+
+        assert(A.size2() == dim);
+
+        Matrix V = boost::numeric::ublas::identity_matrix<Value>(dim);
+
+        for(auto n = max_iter; n > 0; -- n)
+        {
+            auto qr = ural::QR_decomposition(std::move(A));
+
+            A = prod(qr[ural::_2], qr[ural::_1]);
+            V = prod(V, qr[ural::_1]);
+        }
+
+        return std::make_tuple(std::move(A), std::move(V));
+    }
 }
 // namespace ural
 

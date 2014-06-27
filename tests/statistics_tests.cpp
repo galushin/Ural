@@ -292,21 +292,12 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
     BOOST_CHECK(ural::is_correlational_matrix(S, 1e-6));
 
     // Вычиляем собственные векторы и числа корреляционной матрицы
-    auto const iter = 50;
-
     boost::numeric::ublas::matrix<double> A = S;
-    boost::numeric::ublas::matrix<double> V =
-        boost::numeric::ublas::identity_matrix<double>(dim);
 
-    for(auto n = iter; n > 0; -- n)
-    {
-        auto qr = ural::QR_decomposition(A);
-
-        A = prod(qr[ural::_2], qr[ural::_1]);
-        V = prod(V, qr[ural::_1]);
-
-        // @todo Дополнительные критерии остановки
-    }
+    auto const iter = 50;
+    auto LV = ural::qr_eigenvectors(std::move(A), iter, 1e-4);
+    A = std::move(LV[ural::_1]);
+    auto V = std::move(LV[ural::_2]);
 
     // Проверить, что найдены собственные числа и векторы
     for(size_t i = 0; i != V.size2(); ++ i)
