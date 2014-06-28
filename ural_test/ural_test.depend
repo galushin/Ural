@@ -118,7 +118,7 @@
 	<ural/utility.hpp>
 	<ural/meta/map.hpp>
 
-1403013489 c:\devtools\github\ural\ural\tuple.hpp
+1403867902 c:\devtools\github\ural\ural\tuple.hpp
 	<tuple>
 	<ural/utility.hpp>
 	<ural/placeholders.hpp>
@@ -471,7 +471,7 @@
 	<boost/type_traits.hpp>
 	<type_traits>
 
-1398515001 c:\devtools\github\ural\ural\utility\tracers.hpp
+1403867902 c:\devtools\github\ural\ural\utility\tracers.hpp
 	<ural/defs.hpp>
 	<ural/thread.hpp>
 	<ural/functional.hpp>
@@ -541,18 +541,20 @@
 	<ural/functional.hpp>
 	<ural/sequence/base.hpp>
 
-1403013488 source:c:\devtools\github\ural\tests\functional_test.cpp
-	"rnd.hpp"
-	<boost/test/unit_test.hpp>
+1403867902 source:c:\devtools\github\ural\tests\functional_test.cpp
 	<ural/utility/tracers.hpp>
 	<ural/functional.hpp>
 	<ural/memory.hpp>
+	<ural/functional/memoize.hpp>
+	"rnd.hpp"
+	<boost/test/unit_test.hpp>
 	<boost/mpl/list.hpp>
 
 1399549759 c:\devtools\github\ural\ural\defs.hpp
 	<ural/type_traits.hpp>
 
-1394084578 c:\devtools\github\ural\ural\thread.hpp
+1403867902 c:\devtools\github\ural\ural\thread.hpp
+	<cstddef>
 
 1402065813 c:\devtools\github\ural\ural\algorithm\details\algo_base.hpp
 	<ural/sequence/base.hpp>
@@ -6665,7 +6667,7 @@
 	<utility>
 	<stdexcept>
 
-1403576252 source:c:\devtools\github\ural\tests\statistics_tests.cpp
+1403867902 source:c:\devtools\github\ural\tests\statistics_tests.cpp
 	<ural/math.hpp>
 	<ural/statistics.hpp>
 	<ural/math/rational.hpp>
@@ -11693,7 +11695,7 @@
 1400853265 c:\devtools\github\ural\ural\sequence\map.hpp
 	<utility>
 
-1403013488 c:\devtools\github\ural\ural\numeric\matrix_decomposition.hpp
+1403867902 c:\devtools\github\ural\ural\numeric\matrix_decomposition.hpp
 	<ural/math.hpp>
 	<boost/numeric/ublas/triangular.hpp>
 
@@ -12082,4 +12084,15 @@
 	<ural/flex_string.hpp>
 
 1403854646 c:\devtools\ural_repo\ural\ural\flex_string.hpp
+
+1403867902 c:\devtools\github\ural\ural\functional\memoize.hpp
+	<map>
+	<mutex>
+
+1403922605 source:c:\devtools\github\ural\tests\flex_string_tests.cpp
+	<boost/test/unit_test.hpp>
+	<ural/flex_string.hpp>
+
+1403922845 c:\devtools\github\ural\ural\flex_string.hpp
+	<ural/defs.hpp>
 

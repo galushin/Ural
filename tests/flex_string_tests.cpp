@@ -41,17 +41,36 @@ public:
         return a_.deallocate(p, n);
     }
 
+    int id() const
+    {
+        return this->id_;
+    }
+
 private:
     int id_;
     std::allocator<T> a_;
 };
 
+typedef ural::flex_string<char, ural::use_default, test_allocator<char>>
+    String;
+
 BOOST_AUTO_TEST_CASE(flex_string_default_ctor)
 {
-    ural::flex_string<char, ural::use_default, test_allocator<char>> s;
+    String s;
 
     BOOST_CHECK_EQUAL(0U, s.size());
     BOOST_CHECK(nullptr != s.data());
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_allocator_ctor)
+{
+    String::allocator_type a{42};
+
+    String s{a};
+
+    BOOST_CHECK_EQUAL(0U, s.size());
+    BOOST_CHECK(nullptr != s.data());
+    BOOST_CHECK_EQUAL(a.id(), s.get_allocator().id());
 }
 
 // @todo Конструктор с распределителем памяти

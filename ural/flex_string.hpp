@@ -15,20 +15,23 @@ namespace ural
               class traits = use_default,
               class Allocator = use_default>
     class flex_string
+     : private default_helper<Allocator, std::allocator<charT>>::type
     {
     public:
-        /// @brief класс характеристик символов
+        /// @brief Класс характеристик символов
         typedef typename default_helper<traits, std::char_traits<charT>>::type
             traits_type;
+
+        /// @brief Класс распределителя памяти
+        typedef typename default_helper<Allocator, std::allocator<charT>>::type
+            allocator_type;
 
         /// @brief Тип значения
         typedef typename traits_type::char_type value_type;
 
         /// @brief Тип размера
-        typedef typename std::allocator_traits<Allocator>::size_type size_type;
-
-        /// @brief Тип распределителя памяти
-        typedef Allocator allocator_type;
+        typedef typename std::allocator_traits<allocator_type>::size_type
+            size_type;
 
         /** @brief Конструктор без аргументов
         @post <tt> size() == 0 </tt>
@@ -42,6 +45,17 @@ namespace ural
          : data_(1, value_type{})
         {}
 
+        /** @brief Конструктор без аргументов
+        @post <tt> size() == 0 </tt>
+        @post <tt> data() </tt> возвращает ненулевой указатель, который может
+        быть скопирован и к которому можно прибавить нуль.
+        @post <tt> this->get_allocator() == a </tt>
+        */
+        explicit flex_string(Allocator const & a)
+         : allocator_type{a}
+         , data_(1, value_type{})
+        {}
+
         /** @brief Размер
         @return Размер
         */
@@ -51,6 +65,7 @@ namespace ural
             return data_.size() - 1;
         }
 
+        // 21.4.7 Операции со строками
         /** @brief Доступ к массиву данных
         @return Указатель @c p такой, что <tt> p + i == &operator[](i) </tt>
         для любого @c i из <tt> [0,size()] </tt>
@@ -58,6 +73,15 @@ namespace ural
         const charT * data() const noexcept
         {
             return data_.data();
+        }
+
+        /** @brief Распределитель памяти
+        @return Копия распределителя памяти, заданного при конструировании, или,
+        если он был заменён, копия самой последней замены.
+        */
+        allocator_type get_allocator() const noexcept
+        {
+            return static_cast<allocator_type>(*this);
         }
 
     private:
