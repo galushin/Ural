@@ -60,6 +60,7 @@ BOOST_AUTO_TEST_CASE(flex_string_default_ctor)
 
     BOOST_CHECK_EQUAL(0U, s.size());
     BOOST_CHECK(nullptr != s.data());
+    BOOST_CHECK_GE(s.capacity(), s.size());
 }
 
 BOOST_AUTO_TEST_CASE(flex_string_allocator_ctor)
@@ -69,12 +70,32 @@ BOOST_AUTO_TEST_CASE(flex_string_allocator_ctor)
     String s{a};
 
     BOOST_CHECK_EQUAL(0U, s.size());
+    BOOST_CHECK_GE(s.capacity(), s.size());
     BOOST_CHECK(nullptr != s.data());
     BOOST_CHECK_EQUAL(a.id(), s.get_allocator().id());
 }
 
-// @todo Конструктор с распределителем памяти
 // @todo Конструктор копирования
 // @todo Конструктор перемещения
 // @todo Копирование фрагмента строки
 // @todo Конструктор на основе указателя и количества элементов c-массива
+
+BOOST_AUTO_TEST_CASE(flex_string_from_c_str)
+{
+    char const * cs = "Hello, world";
+    String s(cs);
+
+    typedef String::allocator_type Alloc;
+    typedef String::traits_type Traits;
+
+    BOOST_CHECK_EQUAL(Alloc{}.id(), s.get_allocator().id());
+
+    BOOST_CHECK_NE(cs, s.data());
+    BOOST_CHECK(nullptr != s.data());
+
+    BOOST_CHECK_EQUAL(Traits::length(cs), s.size());
+    BOOST_CHECK_EQUAL(std::strlen(cs), s.size());
+    BOOST_CHECK_GE(s.capacity(), s.size());
+
+    BOOST_CHECK(std::strcmp(cs, s.c_str()) == 0);
+}

@@ -56,6 +56,19 @@ namespace ural
          , data_(1, value_type{})
         {}
 
+        /** @brief Конструктор на основе строкового литерала
+        @param s строковый литерал
+        @post <tt> std::strcmp(s, this->c_str()) == 0 </tt>
+        */
+        flex_string(charT const * s)
+         : allocator_type{}
+        {
+            auto const n = traits_type::length(s);
+            data_.resize(n+1);
+
+            traits_type::copy(data_.data(), s, n+1);
+        }
+
         /** @brief Размер
         @return Размер
         */
@@ -65,7 +78,18 @@ namespace ural
             return data_.size() - 1;
         }
 
+        /** @brief Ёмкость
+        @return Ёмкость строки, то есть предел, до которого может увеличиваться
+        размер строки без перераспределения памяти
+        */
+        size_type capacity() const
+        {
+            assert(!data_.empty());
+            return data_.capacity() - 1;
+        }
+
         // 21.4.7 Операции со строками
+        //@{
         /** @brief Доступ к массиву данных
         @return Указатель @c p такой, что <tt> p + i == &operator[](i) </tt>
         для любого @c i из <tt> [0,size()] </tt>
@@ -74,6 +98,12 @@ namespace ural
         {
             return data_.data();
         }
+
+        const charT * c_str() const noexcept
+        {
+            return data_.data();
+        }
+        //@}
 
         /** @brief Распределитель памяти
         @return Копия распределителя памяти, заданного при конструировании, или,
