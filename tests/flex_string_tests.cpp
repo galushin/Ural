@@ -90,7 +90,29 @@ BOOST_AUTO_TEST_CASE(flex_string_from_c_str)
 
     BOOST_CHECK_EQUAL(Alloc{}.id(), s.get_allocator().id());
 
-    BOOST_CHECK_NE(cs, s.data());
+    BOOST_CHECK(cs != s.data());
+    BOOST_CHECK(nullptr != s.data());
+
+    BOOST_CHECK_EQUAL(Traits::length(cs), s.size());
+    BOOST_CHECK_EQUAL(std::strlen(cs), s.size());
+    BOOST_CHECK_GE(s.capacity(), s.size());
+
+    BOOST_CHECK(std::strcmp(cs, s.c_str()) == 0);
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_from_c_str_with_allocator)
+{
+    String::allocator_type a{42};
+    char const * cs = "Hello, world";
+
+    String const s{cs, a};
+
+    typedef String::allocator_type Alloc;
+    typedef String::traits_type Traits;
+
+    BOOST_CHECK_EQUAL(a.id(), s.get_allocator().id());
+
+    BOOST_CHECK(cs != s.data());
     BOOST_CHECK(nullptr != s.data());
 
     BOOST_CHECK_EQUAL(Traits::length(cs), s.size());

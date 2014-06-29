@@ -15,7 +15,6 @@ namespace ural
               class traits = use_default,
               class Allocator = use_default>
     class flex_string
-     : private default_helper<Allocator, std::allocator<charT>>::type
     {
     public:
         /// @brief Класс характеристик символов
@@ -52,16 +51,17 @@ namespace ural
         @post <tt> this->get_allocator() == a </tt>
         */
         explicit flex_string(Allocator const & a)
-         : allocator_type{a}
-         , data_(1, value_type{})
+         : data_(1, value_type{}, a)
         {}
 
         /** @brief Конструктор на основе строкового литерала
         @param s строковый литерал
+        @param a распределитель памяти
         @post <tt> std::strcmp(s, this->c_str()) == 0 </tt>
         */
-        flex_string(charT const * s)
-         : allocator_type{}
+        flex_string(charT const * s,
+                    allocator_type const & a = allocator_type{})
+         : data_{a}
         {
             auto const n = traits_type::length(s);
             data_.resize(n+1);
@@ -111,7 +111,7 @@ namespace ural
         */
         allocator_type get_allocator() const noexcept
         {
-            return static_cast<allocator_type>(*this);
+            return data_.get_allocator();
         }
 
     private:
