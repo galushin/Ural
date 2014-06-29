@@ -28,6 +28,9 @@ namespace ural
         /// @brief Тип значения
         typedef typename traits_type::char_type value_type;
 
+        /// @brief Тип константной ссылки
+        typedef value_type const & const_reference;
+
         /// @brief Тип размера
         typedef typename std::allocator_traits<allocator_type>::size_type
             size_type;
@@ -69,6 +72,22 @@ namespace ural
             traits_type::copy(data_.data(), s, n+1);
         }
 
+        /** @brief Создание строки одинаковых символов
+        @param n количество символов
+        @param c символ
+        @param a распределитель памяти
+        @post <tt> this->size() == n </tt>
+        @post Для всех @c i из интервала <tt> [0; i) </tt> выполняется
+        <tt> c == (*this)[i] </tt>
+        */
+        flex_string(size_type n, value_type c,
+                    allocator_type const & a = allocator_type{})
+         : data_(n+1, c, a)
+        {
+            data_.back() = value_type{};
+        }
+
+        // Размер и ёмкость
         /** @brief Размер
         @return Размер
         */
@@ -86,6 +105,14 @@ namespace ural
         {
             assert(!data_.empty());
             return data_.capacity() - 1;
+        }
+
+        // Доступ к элементам
+        const_reference operator[](size_type pos) const
+        {
+            assert(pos < this->size());
+
+            return data_[pos];
         }
 
         // 21.4.7 Операции со строками

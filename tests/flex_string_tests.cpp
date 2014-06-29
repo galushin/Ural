@@ -121,3 +121,47 @@ BOOST_AUTO_TEST_CASE(flex_string_from_c_str_with_allocator)
 
     BOOST_CHECK(std::strcmp(cs, s.c_str()) == 0);
 }
+
+BOOST_AUTO_TEST_CASE(flex_string_from_n_char)
+{
+    auto const n = 13;
+    auto const C = 'a';
+
+    String const s(n, C);
+
+    typedef String::allocator_type Alloc;
+    typedef String::traits_type Traits;
+
+    BOOST_CHECK_EQUAL(Alloc{}.id(), s.get_allocator().id());
+    BOOST_CHECK(nullptr != s.data());
+    BOOST_CHECK_EQUAL(n, s.size());
+    BOOST_CHECK_GE(s.capacity(), s.size());
+
+    for(size_t i = 0; i != n; ++ i)
+    {
+        BOOST_CHECK(Traits::eq(s[i], C));
+    }
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_from_n_char_and_allocator)
+{
+    String::allocator_type a{42};
+
+    auto const n = 13;
+    auto const C = 'a';
+
+    String const s(n, C, a);
+
+    typedef String::allocator_type Alloc;
+    typedef String::traits_type Traits;
+
+    BOOST_CHECK_EQUAL(a.id(), s.get_allocator().id());
+    BOOST_CHECK(nullptr != s.data());
+    BOOST_CHECK_EQUAL(n, s.size());
+    BOOST_CHECK_GE(s.capacity(), s.size());
+
+    for(size_t i = 0; i != n; ++ i)
+    {
+        BOOST_CHECK(Traits::eq(s[i], C));
+    }
+}
