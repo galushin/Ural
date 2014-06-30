@@ -326,6 +326,18 @@ BOOST_AUTO_TEST_CASE(flex_string_resize_greater_default)
     BOOST_CHECK_EQUAL(char{}, s.data()[s.size()]);
 }
 
+// @todo capacity, reserve, shrink_to_fit
+
+BOOST_AUTO_TEST_CASE(flex_string_clear)
+{
+    String s = "Stepanov";
+    s.clear();
+
+    static_assert(noexcept(&String::clear), "");
+
+    BOOST_CHECK_EQUAL("", s.c_str());
+}
+
 // @todo 21.4.5 доступ к элементам
 
 // @todo 21.4.6 модификаторы

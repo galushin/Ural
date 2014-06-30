@@ -52,6 +52,10 @@ namespace ural
         /// @brief Тип значения
         typedef typename traits_type::char_type value_type;
 
+    private:
+        typedef std::vector<value_type, allocator_type> Container;
+
+    public:
         /// @brief Тип ссылки
         typedef value_type & reference;
 
@@ -62,6 +66,13 @@ namespace ural
         typedef typename std::allocator_traits<allocator_type>::size_type
             size_type;
 
+        /// @brief Тип итератора
+        typedef typename Container::iterator iterator;
+
+        /// @brief Тип итератора констант
+        typedef typename Container::const_iterator const_iterator;
+
+        // 21.4.2 Конструкторы и присваивание
         /** @brief Конструктор без аргументов
         @post <tt> size() == 0 </tt>
         @post <tt> data() </tt> возвращает ненулевой указатель, который может
@@ -127,7 +138,18 @@ namespace ural
             data_.push_back(value_type{});
         }
 
-        // Размер и ёмкость
+        // 21.4.3 Итераторы
+        const_iterator begin() const
+        {
+            return data_.begin();
+        }
+
+        const_iterator end() const
+        {
+            return data_.end() - 1;
+        }
+
+        // 21.4.4. Размер и ёмкость
         //@{
         /** @brief Размер
         @return Размер
@@ -181,7 +203,12 @@ namespace ural
             return data_.capacity() - 1;
         }
 
-        // Доступ к элементам
+        void clear() noexcept
+        {
+            this->erase(this->begin(), this->end());
+        }
+
+        // 21.4.5 Доступ к элементам
         //@{
         reference operator[](size_type pos)
         {
@@ -195,6 +222,13 @@ namespace ural
             return data_[pos];
         }
         //@}
+
+        // 21.4.6 Модификаторы
+        iterator erase(const_iterator first, const_iterator last)
+        {
+            return data_.erase(data_.begin() + (first - data_.begin()),
+                               data_.begin() + (last - data_.begin()));
+        }
 
         // 21.4.7 Операции со строками
         //@{
@@ -231,7 +265,7 @@ namespace ural
         }
 
     private:
-        std::vector<value_type, allocator_type> data_;
+        Container data_;
     };
 }
 // namespace ural
