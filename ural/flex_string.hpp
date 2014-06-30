@@ -52,6 +52,9 @@ namespace ural
         /// @brief Тип значения
         typedef typename traits_type::char_type value_type;
 
+        /// @brief Тип ссылки
+        typedef value_type & reference;
+
         /// @brief Тип константной ссылки
         typedef value_type const & const_reference;
 
@@ -145,12 +148,19 @@ namespace ural
         }
 
         // Доступ к элементам
+        //@{
+        reference operator[](size_type pos)
+        {
+            return const_cast<reference>(static_cast<flex_string const&>(*this)[pos]);
+        }
+
         const_reference operator[](size_type pos) const
         {
             assert(pos < this->size());
 
             return data_[pos];
         }
+        //@}
 
         // 21.4.7 Операции со строками
         //@{

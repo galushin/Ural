@@ -77,7 +77,21 @@ BOOST_AUTO_TEST_CASE(flex_string_allocator_ctor)
     BOOST_CHECK_EQUAL(a.id(), s.get_allocator().id());
 }
 
-// @todo Конструктор копирования
+// Конструктор копирования
+BOOST_AUTO_TEST_CASE(flex_string_copy_ctor)
+{
+    String::allocator_type a{42};
+    char const * cs = "Hello, world";
+    String s1(cs);
+    String const s2 = s1;
+
+    BOOST_CHECK_EQUAL(s1.c_str(), s2.c_str());
+
+    s1[0] = 'W';
+
+    BOOST_CHECK_EQUAL(s2.c_str(), cs);
+}
+
 // @todo Конструктор перемещения
 // @todo Копирование фрагмента строки
 // @todo Конструктор на основе указателя и количества элементов c-массива
