@@ -234,6 +234,98 @@ BOOST_AUTO_TEST_CASE(flex_string_size)
     BOOST_CHECK_EQUAL(s.size(), s.length());
 }
 
+// @todo max_size
+
+BOOST_AUTO_TEST_CASE(flex_string_resize_less)
+{
+    String s = "Stepanov";
+
+    s.resize(4, 'a');
+
+    BOOST_CHECK_EQUAL(4, s.size());
+
+    BOOST_CHECK_EQUAL("Step", s.c_str());
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_resize_equal)
+{
+    String s = "Stepanov";
+    String const s_old = s;
+
+    s.resize(s.size(), 'a');
+
+    BOOST_CHECK_EQUAL(s_old.size(), s.size());
+    BOOST_CHECK_EQUAL(s_old.c_str(), s.c_str());
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_resize_greater)
+{
+    String s = "Stepanov";
+    String const s_old = s;
+
+    auto const filler = 'x';
+    s.resize(2 * s.size(), filler);
+
+    BOOST_CHECK_EQUAL(2*s_old.size(), s.size());
+
+    for(size_t i = 0; i != s_old.size(); ++ i)
+    {
+        BOOST_CHECK_EQUAL(s_old[i], s[i]);
+    }
+
+    for(size_t i = s_old.size(); i != s.size(); ++ i)
+    {
+        BOOST_CHECK_EQUAL(filler, s[i]);
+    }
+
+    BOOST_CHECK_EQUAL(char{}, s.data()[s.size()]);
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_resize_less_default)
+{
+    String s = "Stepanov";
+
+    s.resize(4);
+
+    BOOST_CHECK_EQUAL(4, s.size());
+
+    BOOST_CHECK_EQUAL("Step", s.c_str());
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_resize_equal_default)
+{
+    String s = "Stepanov";
+    String const s_old = s;
+
+    s.resize(s.size());
+
+    BOOST_CHECK_EQUAL(s_old.size(), s.size());
+    BOOST_CHECK_EQUAL(s_old.c_str(), s.c_str());
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_resize_greater_default)
+{
+    String s = "Stepanov";
+    String const s_old = s;
+
+    s.resize(2 * s.size());
+
+    BOOST_CHECK_EQUAL(2*s_old.size(), s.size());
+
+    for(size_t i = 0; i != s_old.size(); ++ i)
+    {
+        BOOST_CHECK_EQUAL(s_old[i], s[i]);
+    }
+
+    char const filler = 0;
+    for(size_t i = s_old.size(); i != s.size(); ++ i)
+    {
+        BOOST_CHECK_EQUAL(filler, s[i]);
+    }
+
+    BOOST_CHECK_EQUAL(char{}, s.data()[s.size()]);
+}
+
 // @todo 21.4.5 доступ к элементам
 
 // @todo 21.4.6 модификаторы

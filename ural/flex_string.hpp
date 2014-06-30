@@ -144,6 +144,33 @@ namespace ural
         }
         //@}
 
+        /** @brief Изменение размера строки
+        @param n желаемое количество элементов
+        @param c символ-заполнитель
+        @pre <tt> n <= this->max_size() </tt>
+        @throw std::lenght_error, если <tt> n > this->max_size() </tt>.
+        */
+        void resize(size_type n, value_type c)
+        {
+            data_.pop_back();
+
+            data_.resize(n, c);
+
+            data_.push_back(value_type{});
+        }
+
+        /** @brief Изменение размера строки
+        @param n желаемое количество элементов
+        @pre <tt> n <= this->max_size() </tt>
+        @throw std::lenght_error, если <tt> n > this->max_size() </tt>.
+
+        Эквивалентно вызову <tt> resize(n, value_type{}) </tt>
+        */
+        void resize(size_type n)
+        {
+            return this->resize(n, value_type{});
+        }
+
         /** @brief Ёмкость
         @return Ёмкость строки, то есть предел, до которого может увеличиваться
         размер строки без перераспределения памяти
