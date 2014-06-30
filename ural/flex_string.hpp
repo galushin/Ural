@@ -128,14 +128,21 @@ namespace ural
         }
 
         // Размер и ёмкость
+        //@{
         /** @brief Размер
         @return Размер
         */
-        size_type size() const
+        size_type size() const noexcept
         {
             assert(!data_.empty());
             return data_.size() - 1;
         }
+
+        size_type length() const noexcept
+        {
+            return this->size();
+        }
+        //@}
 
         /** @brief Ёмкость
         @return Ёмкость строки, то есть предел, до которого может увеличиваться

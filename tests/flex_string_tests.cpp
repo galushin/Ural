@@ -221,10 +221,21 @@ BOOST_AUTO_TEST_CASE(flex_string_from_iterators_and_allocator)
 // @todo Конструктор на основе списка инициализации
 // @todo Конструктор на основе строки и распределителя памяти
 // @todo Конструктор на основе временной строки и распределителя памяти
+// @todo операторы присваивания
 
 // @todo 21.4.3 Поддержка итераторов
+
 // @todo 21.4.4 Ёмкость
+BOOST_AUTO_TEST_CASE(flex_string_size)
+{
+    String const s = "Stepanov";
+
+    BOOST_CHECK_EQUAL(std::strlen(s.c_str()), s.size());
+    BOOST_CHECK_EQUAL(s.size(), s.length());
+}
+
 // @todo 21.4.5 доступ к элементам
+
 // @todo 21.4.6 модификаторы
 // @todo 21.4.7 операции со строками
 // @todo 21.4.8 вспомогательные функции
