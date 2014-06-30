@@ -1,7 +1,31 @@
 #ifndef Z_URAL_FLEX_STRING_HPP_INCLUDED
 #define Z_URAL_FLEX_STRING_HPP_INCLUDED
 
+/*  This file is part of Ural.
+
+    Ural is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Ural is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Ural.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/** @file ural/flex_string.hpp
+ @brief Реализация строк, основанная на стратегиях
+*/
+
 #include <ural/defs.hpp>
+
+#include <ostream>
+
+// @todo Интеграция с std::string
 
 namespace ural
 {
@@ -87,6 +111,19 @@ namespace ural
             data_.back() = value_type{};
         }
 
+        /** @brief Создание строки на оснвое пары итераторов
+        @param first итератор начала последовательности символов
+        @param last итератор конца последовательности символов
+        @todo Тест, когда @c InputIterator --- целочисленный тип
+        */
+        template <class InputIterator>
+        flex_string(InputIterator first, InputIterator last,
+                    allocator_type const & a = allocator_type{})
+         : data_(first, last, a)
+        {
+            data_.push_back(value_type{});
+        }
+
         // Размер и ёмкость
         /** @brief Размер
         @return Размер
@@ -139,6 +176,14 @@ namespace ural
         allocator_type get_allocator() const noexcept
         {
             return data_.get_allocator();
+        }
+
+        friend std::basic_ostream<value_type, traits_type> &
+        operator<<(std::basic_ostream<value_type, traits_type> & os,
+                   flex_string const & x)
+        {
+            // @todo добавить выравнивание
+            return os << x.c_str();
         }
 
     private:

@@ -18,6 +18,8 @@
 
 #include <ural/flex_string.hpp>
 
+#include <sstream>
+
 template <class T>
 class test_allocator
 {
@@ -165,3 +167,68 @@ BOOST_AUTO_TEST_CASE(flex_string_from_n_char_and_allocator)
         BOOST_CHECK(Traits::eq(s[i], C));
     }
 }
+
+BOOST_AUTO_TEST_CASE(flex_string_from_iterators)
+{
+    std::string const src = "Stepanov";
+    std::istringstream is(src);
+
+    String const s{std::istream_iterator<char>(is),
+                   std::istream_iterator<char>()};
+
+    BOOST_CHECK_EQUAL(src.size(), s.size());
+    BOOST_CHECK_EQUAL(src.c_str(), s.c_str());
+
+     for(size_t i = 0; i != src.size(); ++ i)
+    {
+        BOOST_CHECK_EQUAL(src[i], s[i]);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_from_iterators_and_allocator)
+{
+    String::allocator_type a{42};
+    std::string const src = "Stepanov";
+    std::istringstream is(src);
+
+    String const s{std::istream_iterator<char>(is),
+                   std::istream_iterator<char>(), a};
+
+    BOOST_CHECK_EQUAL(a.id(), s.get_allocator().id());
+    BOOST_CHECK_EQUAL(src.size(), s.size());
+    BOOST_CHECK_EQUAL(src.c_str(), s.c_str());
+
+     for(size_t i = 0; i != src.size(); ++ i)
+    {
+        BOOST_CHECK_EQUAL(src[i], s[i]);
+    }
+}
+
+// @todo Конструктор на основе списка инициализации
+// @todo Конструктор на основе строки и распределителя памяти
+// @todo Конструктор на основе временной строки и распределителя памяти
+
+// @todo 21.4.3 Поддержка итераторов
+// @todo 21.4.4 Ёмкость
+// @todo 21.4.5 доступ к элементам
+// @todo 21.4.6 модификаторы
+// @todo 21.4.7 операции со строками
+// @todo 21.4.8 вспомогательные функции
+
+// 21.4.8.9 Потоковые операторы
+// @todo Оператор ввода
+
+BOOST_AUTO_TEST_CASE(flex_string_ostreaming)
+{
+    std::string const src = "Stepanov";
+
+    String const s(src.begin(), src.end());
+
+    std::ostringstream os;
+
+    os << s;
+
+    BOOST_CHECK_EQUAL(src, os.str());
+}
+
+// @todo get_line
