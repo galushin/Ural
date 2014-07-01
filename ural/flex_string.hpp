@@ -203,9 +203,21 @@ namespace ural
             return data_.capacity() - 1;
         }
 
+        /** @brief Очистка содержимого строки.
+
+        Эквивалентно вызову <tt> erase(begin(), end()) </tt>
+        */
         void clear() noexcept
         {
             this->erase(this->begin(), this->end());
+        }
+
+        /** @brief Проверка, что строка пуста
+        @return <tt> this->begin() == this->end() </tt>
+        */
+        bool empty() const
+        {
+            return this->begin() == this->end();
         }
 
         // 21.4.5 Доступ к элементам

@@ -338,6 +338,15 @@ BOOST_AUTO_TEST_CASE(flex_string_clear)
     BOOST_CHECK_EQUAL("", s.c_str());
 }
 
+BOOST_AUTO_TEST_CASE(flex_string_empty)
+{
+    String const s0 {};
+    String const s1 = {"Stepanov"};
+
+    BOOST_CHECK(s0.empty());
+    BOOST_CHECK(!s1.empty());
+}
+
 // @todo 21.4.5 доступ к элементам
 
 // @todo 21.4.6 модификаторы
