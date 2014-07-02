@@ -348,6 +348,19 @@ BOOST_AUTO_TEST_CASE(flex_string_empty)
 }
 
 // @todo 21.4.5 доступ к элементам
+// @todo оператор[]
+
+BOOST_AUTO_TEST_CASE(flex_string_at_const)
+{
+    String const src = "Stepanov";
+
+    for(size_t i = 0; i != src.size(); ++ i)
+    {
+        BOOST_CHECK_EQUAL(src[i], src.at(i));
+    }
+
+    BOOST_CHECK_THROW(src.at(src.size()), std::out_of_range);
+}
 
 // @todo 21.4.6 модификаторы
 // @todo 21.4.7 операции со строками

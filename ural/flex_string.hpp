@@ -235,6 +235,23 @@ namespace ural
         }
         //@}
 
+        //@{
+        /** @brief Доступ к элементам по индексу с проверкой границ
+        @param pos индекс элемента
+        @pre <tt> pos < this->size() </tt>
+        @throw std::out_of_range, если <tt> pos >= size() </tt>
+        */
+        const_reference at(size_type pos) const
+        {
+            if(pos >= this->size())
+            {
+                throw std::out_of_range("flex_string::at");
+            }
+
+            return (*this)[pos];
+        }
+        //@}
+
         // 21.4.6 Модификаторы
         iterator erase(const_iterator first, const_iterator last)
         {
