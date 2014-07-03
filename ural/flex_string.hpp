@@ -348,6 +348,15 @@ namespace ural
             return *this;
         }
 
+        /** Дописывает символы списка инициализации в конец данной строки
+        @param il список инициализации
+        @return <tt> *this </tt>
+        */
+        flex_string & operator+=(std::initializer_list<value_type> il)
+        {
+            return this->append(il);
+        }
+
         // 21.4.6.2 append
         /** Дописывает строку @c x в конец данной строки. Эквивалентно
         <tt> this->append(x.data(), x.size()) </tt>.
@@ -391,6 +400,28 @@ namespace ural
         {
             data_.insert(this->end(), n, c);
             return *this;
+        }
+
+        /** @brief Дописывает элементы интервала <tt> [first; last)</tt> в конец
+        данной строки.
+        @param first начало интервала
+        @param last конец интервала
+        @pre <tt> [first; last)</tt>  --- допустимый интервал
+        @return <tt> *this </tt>
+        */
+        template <class InputIterator>
+        flex_string & append(InputIterator first, InputIterator last)
+        {
+            return this->append(flex_string{first, last});
+        }
+
+        /** Дописывает символы списка инициализации в конец данной строки
+        @param il список инициализации
+        @return <tt> *this </tt>
+        */
+        flex_string & append(std::initializer_list<value_type> il)
+        {
+            return this->append(il.begin(), il.end());
         }
 
         /** Дописывает символ @c c в конец данной строки.
