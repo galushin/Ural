@@ -477,6 +477,8 @@ BOOST_AUTO_TEST_CASE(flex_string_append_sunstring)
     fs1.append(fs2, 2, 4);
 
     BOOST_CHECK_EQUAL(s1.c_str(), fs1.c_str());
+
+    BOOST_CHECK_THROW(fs1.append(fs2, fs2.size() + 2, 4), std::out_of_range);
 }
 
 // @todo 21.4.7 операции со строками

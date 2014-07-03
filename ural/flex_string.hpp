@@ -387,16 +387,6 @@ namespace ural
             return this->append(x.data() + pos, std::min(n, x.size() - pos));
         }
 
-        /** Дописывает С-строку @c s в конец данной строки. Эквивалентно
-        <tt> append(s, traits_type::length(s)) </tt>.
-        @param s строка
-        @return <tt> *this </tt>
-        */
-        flex_string & append(value_type const * s)
-        {
-            return this->append(s, traits_type::length(s));
-        }
-
         /** @brief Записывает C-массив в конец данной строки
         @param s указатель на начало массива
         @param n количество элементов массива, которые должны быть дописаны
@@ -408,6 +398,16 @@ namespace ural
         {
             data_.insert(this->end(), s, s+n);
             return *this;
+        }
+
+        /** Дописывает С-строку @c s в конец данной строки. Эквивалентно
+        <tt> append(s, traits_type::length(s)) </tt>.
+        @param s строка
+        @return <tt> *this </tt>
+        */
+        flex_string & append(value_type const * s)
+        {
+            return this->append(s, traits_type::length(s));
         }
 
         /** @brief Дописывает @c n копий символа @c c в конец строки
