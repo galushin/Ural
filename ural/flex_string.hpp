@@ -327,6 +327,16 @@ namespace ural
             return this->append(x);
         }
 
+        /** Дописывает С-строку @c s в конец данной строки. Эквивалентно
+        <tt> this->append(x) </tt>.
+        @param s строка
+        @return <tt> *this </tt>
+        */
+        flex_string & operator+=(value_type const * s)
+        {
+            return this->append(s);
+        }
+
         // 21.4.6.2 append
         /** Дописывает строку @c x в конец данной строки. Эквивалентно
         <tt> this->append(x.data(), x.size()) </tt>.
@@ -336,6 +346,16 @@ namespace ural
         flex_string & append(flex_string const & x)
         {
             return this->append(x.data(), x.size());
+        }
+
+        /** Дописывает С-строку @c s в конец данной строки. Эквивалентно
+        <tt> append(s, traits_type::length(s)) </tt>.
+        @param s строка
+        @return <tt> *this </tt>
+        */
+        flex_string & append(value_type const * s)
+        {
+            return this->append(s, traits_type::length(s));
         }
 
         /** @brief Записывает C-массив в конец данной строки
