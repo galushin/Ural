@@ -144,7 +144,17 @@ namespace ural
             return data_.begin();
         }
 
+        iterator begin()
+        {
+            return data_.begin();
+        }
+
         const_iterator end() const
+        {
+            return data_.end() - 1;
+        }
+
+        iterator end()
         {
             return data_.end() - 1;
         }
@@ -306,6 +316,42 @@ namespace ural
         //@}
 
         // 21.4.6 Модификаторы
+        // 21.4.6.1 Оператор +=
+        /** Дописывает строку @c x в конец данной строки. Эквивалентно
+        <tt> this->append(x) </tt>.
+        @param x строка
+        @return <tt> *this </tt>
+        */
+        flex_string & operator+=(flex_string const & x)
+        {
+            return this->append(x);
+        }
+
+        // 21.4.6.2 append
+        /** Дописывает строку @c x в конец данной строки. Эквивалентно
+        <tt> this->append(x.data(), x.size()) </tt>.
+        @param x строка
+        @return <tt> *this </tt>
+        */
+        flex_string & append(flex_string const & x)
+        {
+            return this->append(x.data(), x.size());
+        }
+
+        /** @brief Записывает C-массив в конец данной строки
+        @param s указатель на начало массива
+        @param n количество элементов массива, которые должны быть дописаны
+        @pre @c s должен указывать на массив длины не меньше @c n
+        @return <tt> *this </tt>
+        @todo генерация исключения, если <tt> size() + n > max_size() </tt>
+        */
+        flex_string & append(value_type const * s, size_type n)
+        {
+            data_.insert(this->end(), s, s+n);
+            return *this;
+        }
+
+        // 21.4.6.5 erase
         iterator erase(const_iterator first, const_iterator last)
         {
             return data_.erase(data_.begin() + (first - data_.begin()),

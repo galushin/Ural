@@ -347,8 +347,7 @@ BOOST_AUTO_TEST_CASE(flex_string_empty)
     BOOST_CHECK(!s1.empty());
 }
 
-// @todo 21.4.5 доступ к элементам
-// @todo оператор[]
+// 21.4.5 доступ к элементам
 BOOST_AUTO_TEST_CASE(flex_string_index_access_operator)
 {
     const char * cs = "Stepanov";
@@ -414,6 +413,20 @@ BOOST_AUTO_TEST_CASE(flex_string_back)
 }
 
 // @todo 21.4.6 модификаторы
+BOOST_AUTO_TEST_CASE(felx_string_append_string)
+{
+    std::string s1 = "Step";
+    std::string const s2 = "anov";
+
+    String fs1{s1.c_str()};
+    String const fs2{s2.c_str()};
+
+    s1 += s2;
+    fs1 += fs2;
+
+    BOOST_CHECK_EQUAL(s1.c_str(), fs1.c_str());
+}
+
 // @todo 21.4.7 операции со строками
 // @todo 21.4.8 вспомогательные функции
 
