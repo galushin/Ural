@@ -362,6 +362,20 @@ BOOST_AUTO_TEST_CASE(flex_string_at_const)
     BOOST_CHECK_THROW(src.at(src.size()), std::out_of_range);
 }
 
+BOOST_AUTO_TEST_CASE(flex_string_at)
+{
+    String src = "Stepanov";
+
+    for(size_t i = 0; i != src.size(); ++ i)
+    {
+        char const value = 'Q';
+        src.at(i) = value;
+        BOOST_CHECK_EQUAL(value, src[i]);
+    }
+
+    BOOST_CHECK_THROW(src.at(src.size() + 2), std::out_of_range);
+}
+
 // @todo 21.4.6 модификаторы
 // @todo 21.4.7 операции со строками
 // @todo 21.4.8 вспомогательные функции

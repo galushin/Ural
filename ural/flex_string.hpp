@@ -250,6 +250,13 @@ namespace ural
 
             return (*this)[pos];
         }
+
+        reference at(size_type pos)
+        {
+            auto const & c_self = static_cast<const flex_string&>(*this);
+
+            return const_cast<reference>(c_self.at(pos));
+        }
         //@}
 
         // 21.4.6 Модификаторы
