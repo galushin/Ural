@@ -259,6 +259,36 @@ namespace ural
         }
         //@}
 
+        //@{
+        const_reference front() const
+        {
+            assert(!this->empty());
+            return (*this)[0];
+        }
+
+        reference front()
+        {
+            auto const & c_self = static_cast<const flex_string&>(*this);
+
+            return const_cast<reference>(c_self.front());
+        }
+        //@}
+
+        //@{
+        const_reference back() const
+        {
+            assert(!this->empty());
+            return (*this)[this->size() - 1];
+        }
+
+        reference back()
+        {
+            auto const & c_self = static_cast<const flex_string&>(*this);
+
+            return const_cast<reference>(c_self.back());
+        }
+        //@}
+
         // 21.4.6 Модификаторы
         iterator erase(const_iterator first, const_iterator last)
         {

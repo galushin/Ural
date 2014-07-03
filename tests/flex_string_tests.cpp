@@ -376,6 +376,32 @@ BOOST_AUTO_TEST_CASE(flex_string_at)
     BOOST_CHECK_THROW(src.at(src.size() + 2), std::out_of_range);
 }
 
+BOOST_AUTO_TEST_CASE(flex_string_front)
+{
+    String s = "stepanov";
+
+    String const & cr = s;
+
+    BOOST_CHECK_EQUAL(s[0], cr.front());
+
+    auto const value = 'S';
+    s.front() = value;
+    BOOST_CHECK_EQUAL(cr.front(), value);
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_back)
+{
+    String s = "Stepanov";
+
+    String const & cr = s;
+
+    BOOST_CHECK_EQUAL(s[s.size() - 1], cr.back());
+
+    auto const value = 'V';
+    s.back() = value;
+    BOOST_CHECK_EQUAL(cr.back(), value);
+}
+
 // @todo 21.4.6 модификаторы
 // @todo 21.4.7 операции со строками
 // @todo 21.4.8 вспомогательные функции
