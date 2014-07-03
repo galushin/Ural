@@ -368,6 +368,25 @@ namespace ural
             return this->append(x.data(), x.size());
         }
 
+        /** Эквивалентно <tt> append(x.data() + pos, rlen) </tt>, где
+        <tt> rlen = min(n, x.size() - pos) </tt>.
+        @param x строка
+        @param pos индекс первого символа, который должен быть добавлен
+        @param n количество элементов, которые должны быть добавлены
+        @pre <tt> pos <= x.size() </tt>
+        @throw std::out_of_range, если <tt> pos > x.size() </tt>
+        @return <tt> *this </tt>
+        */
+        flex_string & append(flex_string const & x, size_type pos, size_type n)
+        {
+            if(pos > x.size())
+            {
+                throw std::out_of_range("flex_string::append");
+            }
+
+            return this->append(x.data() + pos, std::min(n, x.size() - pos));
+        }
+
         /** Дописывает С-строку @c s в конец данной строки. Эквивалентно
         <tt> append(s, traits_type::length(s)) </tt>.
         @param s строка

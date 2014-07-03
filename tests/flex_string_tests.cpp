@@ -412,7 +412,7 @@ BOOST_AUTO_TEST_CASE(flex_string_back)
     BOOST_CHECK_EQUAL(cr.back(), value);
 }
 
-// 21.4.6 модификаторы
+// @todo 21.4.6 модификаторы
 BOOST_AUTO_TEST_CASE(felx_string_append_string)
 {
     std::string s1 = "Step";
@@ -460,6 +460,21 @@ BOOST_AUTO_TEST_CASE(flex_string_append_init_list)
 
     s1 += {'a', 'n', 'o', 'v'};
     fs1 += {'a', 'n', 'o', 'v'};
+
+    BOOST_CHECK_EQUAL(s1.c_str(), fs1.c_str());
+}
+
+// 21.4.6.2 Append
+BOOST_AUTO_TEST_CASE(flex_string_append_sunstring)
+{
+    std::string s1 = "Step";
+    std::string const s2 = "Ivanovich";
+
+    String fs1{s1.c_str()};
+    String const fs2{s2.c_str()};
+
+    s1.append(s2, 2, 4);
+    fs1.append(fs2, 2, 4);
 
     BOOST_CHECK_EQUAL(s1.c_str(), fs1.c_str());
 }
