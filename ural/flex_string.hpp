@@ -222,6 +222,14 @@ namespace ural
 
         // 21.4.5 Доступ к элементам
         //@{
+        /** @brief Доступ к символу строки по индексу
+        @param pos номер символа
+        @pre <tt> pos <= this->size() </tt>
+        @return Если <tt> pos < this->size() </tt>, возвращает символ с индексом
+        @c pos, если <tt> pos == this->size() </tt>, то возвращает ссылку на
+        объект, равный <tt> charT{} </tt>, причём модификация этого объекта
+        приводит к неопределённому поведению.
+        */
         reference operator[](size_type pos)
         {
             return const_cast<reference>(static_cast<flex_string const&>(*this)[pos]);
@@ -229,7 +237,7 @@ namespace ural
 
         const_reference operator[](size_type pos) const
         {
-            assert(pos < this->size());
+            assert(pos <= this->size());
 
             return data_[pos];
         }
@@ -260,6 +268,10 @@ namespace ural
         //@}
 
         //@{
+        /** @brief Доступ к первому символу строки
+        @pre <tt> !this->empty() </tt>
+        @return Ссылка на первый элемент строки
+        */
         const_reference front() const
         {
             assert(!this->empty());
@@ -275,6 +287,10 @@ namespace ural
         //@}
 
         //@{
+         /** @brief Доступ к последнему элементу строки
+        @pre <tt> !this->empty() </tt>
+        @return Ссылка на последний элемент строки
+        */
         const_reference back() const
         {
             assert(!this->empty());

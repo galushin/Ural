@@ -349,6 +349,17 @@ BOOST_AUTO_TEST_CASE(flex_string_empty)
 
 // @todo 21.4.5 доступ к элементам
 // @todo оператор[]
+BOOST_AUTO_TEST_CASE(flex_string_index_access_operator)
+{
+    const char * cs = "Stepanov";
+
+    String const s(cs);
+
+    for(size_t i = 0; i <= s.size(); ++ i)
+    {
+        BOOST_CHECK_EQUAL(cs[i], s[i]);
+    }
+}
 
 BOOST_AUTO_TEST_CASE(flex_string_at_const)
 {
