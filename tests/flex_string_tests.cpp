@@ -440,6 +440,19 @@ BOOST_AUTO_TEST_CASE(felx_string_append_c_string)
     BOOST_CHECK_EQUAL(s1.c_str(), fs1.c_str());
 }
 
+BOOST_AUTO_TEST_CASE(felx_string_append_char)
+{
+    std::string s1 = "Step";
+    char const c = 's';
+
+    String fs1{s1.c_str()};
+
+    s1 += c;
+    fs1 += c;
+
+    BOOST_CHECK_EQUAL(s1.c_str(), fs1.c_str());
+}
+
 // @todo 21.4.7 операции со строками
 // @todo 21.4.8 вспомогательные функции
 

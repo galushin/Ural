@@ -337,6 +337,17 @@ namespace ural
             return this->append(s);
         }
 
+        /** Дописывает символ @c c в конец данной строки. Эквивалентно
+        <tt> push_back(x) </tt>.
+        @param c символ
+        @return <tt> *this </tt>
+        */
+        flex_string & operator+=(value_type c)
+        {
+            this->push_back(c);
+            return *this;
+        }
+
         // 21.4.6.2 append
         /** Дописывает строку @c x в конец данной строки. Эквивалентно
         <tt> this->append(x.data(), x.size()) </tt>.
@@ -369,6 +380,26 @@ namespace ural
         {
             data_.insert(this->end(), s, s+n);
             return *this;
+        }
+
+        /** @brief Дописывает @c n копий символа @c c в конец строки
+        @param n количество копий символа, которые должны быть дописаны
+        @param c значение дописываемых символов
+        @return <tt> *this </tt>
+        */
+        flex_string & append(size_type n, value_type c)
+        {
+            data_.insert(this->end(), n, c);
+            return *this;
+        }
+
+        /** Дописывает символ @c c в конец данной строки.
+        @param c символ
+        @return <tt> *this </tt>
+        */
+        void push_back(value_type c)
+        {
+            this->append(size_type{1}, c);
         }
 
         // 21.4.6.5 erase
