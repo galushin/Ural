@@ -496,6 +496,20 @@ BOOST_AUTO_TEST_CASE(flex_string_assign_string)
     BOOST_CHECK_EQUAL(s1.c_str(), fs1.c_str());
 }
 
+BOOST_AUTO_TEST_CASE(flex_string_assign_rvalue_string)
+{
+    String s1 = "Ivanovich";
+    String s2 = "Step";
+
+    String const s1_old = s1;
+
+    s2.assign(std::move(s1));
+
+    BOOST_CHECK_EQUAL(s2.c_str(), s1_old.c_str());
+
+    static_assert(noexcept(s2.assign(std::move(s1))), "");
+}
+
 // @todo 21.4.7 операции со строками
 // @todo 21.4.8 вспомогательные функции
 

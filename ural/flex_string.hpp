@@ -464,6 +464,16 @@ namespace ural
             return this->assign(s, 0, npos);
         }
 
+        /** @brief Присваивание временной строки
+        @param s присваиваемая временная строка
+        @return <tt> *this </tt>
+        */
+        flex_string & assign(flex_string && s) noexcept
+        {
+            this->swap(s);
+            return *this;
+        }
+
         /** @brief Копирует подстроку строки @c s, начинающуюся с индекса
         @c pos, длинной <tt> min(n, s.size() - pos) </tt>.
         @param s строка
@@ -496,6 +506,15 @@ namespace ural
         {
             return data_.erase(data_.begin() + (first - data_.begin()),
                                data_.begin() + (last - data_.begin()));
+        }
+
+        // 21.4.6.8 swap
+        /** @brief Обмен содержимого @c s и <tt> *this </tt>
+        @param s строка, с которой будет обменяно содержимое <tt> *this </tt>
+        */
+        void swap(flex_string & s)
+        {
+            data_.swap(s.data_);
         }
 
         // 21.4.7 Операции со строками
