@@ -72,6 +72,8 @@ namespace ural
         /// @brief Тип итератора констант
         typedef typename Container::const_iterator const_iterator;
 
+        static const size_type npos = -1;
+
         // 21.4.2 Конструкторы и присваивание
         /** @brief Конструктор без аргументов
         @post <tt> size() == 0 </tt>
@@ -450,6 +452,43 @@ namespace ural
         void push_back(value_type c)
         {
             this->append(size_type{1}, c);
+        }
+
+        // 21.4.6.3 assign
+        /** @brief Эквивалент <tt> assign(s, 0, npos) </tt>
+        @param s присваиваемая строка
+        @return <tt> *this </tt>
+        */
+        flex_string & assign(flex_string const & s)
+        {
+            return this->assign(s, 0, npos);
+        }
+
+        /** @brief Копирует подстроку строки @c s, начинающуюся с индекса
+        @c pos, длинной <tt> min(n, s.size() - pos) </tt>.
+        @param s строка
+        @param pos начальный индекс
+        @param n количество копируемых элементов
+        @return <tt> *this </tt>
+        */
+        flex_string & assign(flex_string const & s, size_type pos, size_type n)
+        {
+            return this->assign(s.data(), std::min(n, s.size() - pos));
+        }
+
+        /** Заменяет строку, управляемую <tt> *this </tt> строкой длинны
+        @c n, элементы которой равны соответствующим элементам массива, на
+        который указывает @c s.
+        @brief Копирование C-массива символов
+        @param s указатель на начало массива
+        @param n количество элементов
+        @pre @c s указывает на массив длинны не меньше @c n
+        @todo генерировать исключение, если <tt> n > max_size() </tt>
+        */
+        flex_string & assign(const value_type * s, size_type n)
+        {
+            this->clear();
+            return this->append(s, n);
         }
 
         // 21.4.6.5 erase

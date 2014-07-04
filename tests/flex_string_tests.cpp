@@ -481,6 +481,21 @@ BOOST_AUTO_TEST_CASE(flex_string_append_sunstring)
     BOOST_CHECK_THROW(fs1.append(fs2, fs2.size() + 2, 4), std::out_of_range);
 }
 
+// 21.4.6.3 assign
+BOOST_AUTO_TEST_CASE(flex_string_assign_string)
+{
+    std::string s1 = "Ivanovich";
+    std::string const s2 = "Step";
+
+    String fs1(s1.c_str());
+    String const fs2(s2.c_str());
+
+    s1.assign(s2);
+    fs1.assign(fs2);
+
+    BOOST_CHECK_EQUAL(s1.c_str(), fs1.c_str());
+}
+
 // @todo 21.4.7 операции со строками
 // @todo 21.4.8 вспомогательные функции
 
