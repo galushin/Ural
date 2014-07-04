@@ -501,6 +501,17 @@ namespace ural
             return this->append(s, n);
         }
 
+        /** @brief Присваивание C-строку
+        @param s указатель на C-строку
+        @pre @c s указывает на массив символов длинной не менее
+        <tt> traits_type::length(s) + 1</tt>
+        @return <tt> *this </tt>
+        */
+        flex_string & assign(const value_type * s)
+        {
+            return this->assign(s, traits_type::length(s));
+        }
+
         // 21.4.6.5 erase
         iterator erase(const_iterator first, const_iterator last)
         {

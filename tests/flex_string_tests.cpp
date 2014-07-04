@@ -510,6 +510,16 @@ BOOST_AUTO_TEST_CASE(flex_string_assign_rvalue_string)
     static_assert(noexcept(s2.assign(std::move(s1))), "");
 }
 
+BOOST_AUTO_TEST_CASE(flex_string_assign_c_string)
+{
+    std::string const s = "Stepanov";
+
+    String fs;
+    fs.assign(s.c_str());
+
+    BOOST_CHECK_EQUAL(s.c_str(), fs.c_str());
+}
+
 // @todo 21.4.7 операции со строками
 // @todo 21.4.8 вспомогательные функции
 
