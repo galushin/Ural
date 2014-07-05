@@ -520,8 +520,50 @@ BOOST_AUTO_TEST_CASE(flex_string_assign_c_string)
     BOOST_CHECK_EQUAL(s.c_str(), fs.c_str());
 }
 
+BOOST_AUTO_TEST_CASE(flex_string_assign_init_list)
+{
+    std::string s1 = "Step";
+    String fs1 {s1.c_str()};
+
+    s1.assign({'a', 'n', 'o', 'v'});
+    fs1.assign({'a', 'n', 'o', 'v'});
+
+    BOOST_CHECK_EQUAL(s1.c_str(), fs1.c_str());
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_assign_n_chars)
+{
+    std::string s1 = "Step";
+    String fs1 {s1.c_str()};
+
+    s1.assign(7, 'a');
+    fs1.assign(7, 'a');
+
+    BOOST_CHECK_EQUAL(s1.c_str(), fs1.c_str());
+}
+
 // @todo 21.4.7 операции со строками
 // @todo 21.4.8 вспомогательные функции
+
+// 21.4.8.2 Оператор ==
+BOOST_AUTO_TEST_CASE(flex_string_equality)
+{
+    String const s1{"Paper"};
+    String const s2{"Pair"};
+    String const s3(s2);
+
+    BOOST_CHECK(s1 == s1);
+    BOOST_CHECK(s1 != s2);
+    BOOST_CHECK(s1 != s3);
+
+    BOOST_CHECK(s2 != s1);
+    BOOST_CHECK(s2 == s2);
+    BOOST_CHECK(s2 == s3);
+
+    BOOST_CHECK(s3 != s1);
+    BOOST_CHECK(s3 == s2);
+    BOOST_CHECK(s3 == s3);
+}
 
 // 21.4.8.9 Потоковые операторы
 // @todo Оператор ввода

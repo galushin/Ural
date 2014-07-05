@@ -34,6 +34,7 @@ namespace ural
     @tparam traits класс характеристик символов
     @tparam Allocator распределитель памяти
     @todo добавить Storage --- стратегия хранения
+    @todo Оптимизация, в частности - избегать создания временных строк
     */
     template <class charT,
               class traits = use_default,
@@ -512,6 +513,39 @@ namespace ural
             return this->assign(s, traits_type::length(s));
         }
 
+        /** @brief Присваивание символов из списка инициализации
+        @param il список инициализации
+        @return <tt> *this </tt>
+        */
+        flex_string & assign(std::initializer_list<value_type> il)
+        {
+            return this->assign(il.begin(), il.end());
+        }
+
+        /** @brief Эквивалент <tt> this->assign(flex_string(n, c)) </tt>
+        @param n количество символов
+        @param c символ
+        @return <tt> *this </tt>
+        */
+        flex_string & assign(size_type n, value_type c)
+        {
+            return this->assign(flex_string(n, c));
+        }
+
+        /** @brief Присваивание символов из интервала, заданного итераторами
+        @param first итератор начала интервала
+        @param last итератор конца интервала
+        @pre <tt> [first; last) </tt> должен быть корректным интервалом
+        @return <tt> *this </tt>
+        */
+        template <class InputIterator>
+        flex_string & assign(InputIterator first, InputIterator last)
+        {
+            return this->assign(flex_string(first, last));
+        }
+
+        // 21.4.6.4 insert
+
         // 21.4.6.5 erase
         iterator erase(const_iterator first, const_iterator last)
         {
@@ -545,6 +579,32 @@ namespace ural
         }
         //@}
 
+        // 21.4.7.9 compare
+        /** @brief Сравнение строк
+        @param s строка, с которой сравнивается данная строка
+        @return <tt> traits_type::compare(data(), s.data(), rlen) </tt>, где
+        <tt> rlen == std::min(size(), s.size()) </tt>
+        @todo Рефакторинг
+        */
+        int compare(flex_string const & s) const noexcept
+        {
+            auto const rlen = std::min(this->size(), s.size());
+            auto const r = traits_type::compare(this->data(), s.data(), rlen);
+
+            if(r == 0)
+            {
+                if(this->size() < s.size())
+                {
+                    return -1;
+                }
+                if(this->size() > s.size())
+                {
+                    return  +1;
+                }
+            }
+            return r;
+        }
+
         /** @brief Распределитель памяти
         @return Копия распределителя памяти, заданного при конструировании, или,
         если он был заменён, копия самой последней замены.
@@ -565,6 +625,18 @@ namespace ural
     private:
         Container data_;
     };
+
+    // 21.4.8.2 Оператор ==
+    /** @brief Оператор "равно"
+    @param x левый операнд
+    @param y правый операнд
+    */
+    template <class charT, class traits, class Allocator>
+    bool operator==(flex_string<charT, traits, Allocator> const & x,
+                    flex_string<charT, traits, Allocator> const & y) noexcept
+    {
+        return x.compare(y) == 0;
+    }
 }
 // namespace ural
 
