@@ -605,6 +605,15 @@ namespace ural
             return r;
         }
 
+        /** @brief Сравнение строк
+        @param s строка, с которой сравнивается данная строка
+        @return <tt> this->compare(flex_string(s)) </tt>
+        */
+        int compare(value_type const * s) const noexcept
+        {
+            return this->compare(flex_string(s));
+        }
+
         /** @brief Распределитель памяти
         @return Копия распределителя памяти, заданного при конструировании, или,
         если он был заменён, копия самой последней замены.
@@ -637,6 +646,27 @@ namespace ural
     {
         return x.compare(y) == 0;
     }
+
+    //@{
+    /** @brief Проверка на равенство с c-строкой
+    @param str строка
+    @param s строковый литерал
+    @return <tt> str.compare(s) == 0 </tt>
+    */
+    template <class charT, class traits, class Allocator>
+    bool operator==(charT const * s,
+                    flex_string<charT, traits, Allocator> const & str) noexcept
+    {
+        return str == s;
+    }
+
+    template <class charT, class traits, class Allocator>
+    bool operator==(flex_string<charT, traits, Allocator> const & str,
+                    charT const * s) noexcept
+    {
+        return str.compare(s) == 0;
+    }
+    //@}
 }
 // namespace ural
 

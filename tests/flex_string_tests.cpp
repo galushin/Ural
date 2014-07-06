@@ -565,6 +565,19 @@ BOOST_AUTO_TEST_CASE(flex_string_equality)
     BOOST_CHECK(s3 == s3);
 }
 
+BOOST_AUTO_TEST_CASE(flex_string_equality_with_c_str)
+{
+    const char * cs1 = "Paper";
+    const char * cs2 = "Pair";
+    String const s{cs2};
+
+    BOOST_CHECK(s != cs1);
+    BOOST_CHECK(s == cs2);
+
+    BOOST_CHECK(cs1 != s);
+    BOOST_CHECK(cs2 == s);
+}
+
 // 21.4.8.9 Потоковые операторы
 // @todo Оператор ввода
 
