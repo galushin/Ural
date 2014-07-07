@@ -542,6 +542,21 @@ BOOST_AUTO_TEST_CASE(flex_string_assign_n_chars)
     BOOST_CHECK_EQUAL(s1.c_str(), fs1.c_str());
 }
 
+// 21.4.6.4 insert
+BOOST_AUTO_TEST_CASE(flex_string_insert_string)
+{
+    std::string s1 = "Stov";
+    std::string const s2 = "epan";
+
+    String fs1(s1.c_str());
+    String const fs2(s2.c_str());
+
+    s1.insert(2, s2);
+    fs1.insert(2, fs2);
+
+    BOOST_CHECK_EQUAL(s1.c_str(), fs1);
+}
+
 // @todo 21.4.7 операции со строками
 // @todo 21.4.8 вспомогательные функции
 

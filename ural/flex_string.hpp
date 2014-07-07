@@ -545,6 +545,34 @@ namespace ural
         }
 
         // 21.4.6.4 insert
+        /** @brief Вставка одной строки в другую
+        @param pos номер символа, с которого осуществляется вставка
+        @param str вставляемая строка
+        @pre <tt> pos <= this->size() </tt>
+        @throw out_of_range, если <tt> pos > this->size() </tt>
+        @return <tt> *this </tt>
+        */
+        flex_string & insert(size_type pos, flex_string const & str)
+        {
+            assert(pos <= this->size());
+            return this->insert(pos, str.data(), str.size());
+        }
+
+        /** @brief Вставка массива символов в строку
+        @param pos номер символа, с которого осуществляется вставка
+        @param s указатель на начало массива символов
+        @param n количество элементов массива, которое должно быть вставлено
+        @pre @c s указывает на массив длинной не менее @c n
+        @throw out_of_range, если <tt> pos > this->size() </tt>,
+        length_error, если <tt> size() + n > max_size </tt>
+        @return <tt> *this </tt>
+        */
+        flex_string & insert(size_type pos, value_type const * s, size_type n)
+        {
+            this->append(s, n);
+            std::rotate(this->begin() + pos, this->end() - n, this->end());
+            return *this;
+        }
 
         // 21.4.6.5 erase
         iterator erase(const_iterator first, const_iterator last)
