@@ -625,15 +625,65 @@ namespace ural
             return *this;
         }
 
-        /** @brief Вставка заданного числа копий символа в точку строки,
-        заданную итератором
+        /** @brief Вставка символа перед позицией, заданной итератором
+        @param p итератор, задающий точку вставки
+        @param c вставляемый символ
+        @pre @c p действительный итератор для <tt> *this </tt>
+        @return Итератор, ссылающийся на вставленный элемент
+        */
+        iterator insert(const_iterator p, value_type c)
+        {
+            return this->insert(p, size_type{1}, c);
+        }
+
+        /** @brief Вставка заданного числа копий символа перед позицией,
+        заданной итератором
         @param p итератор, задающий точку вставки
         @param n количество копий символа
         @param c вставляемый символ
+        @pre @c p действительный итератор для <tt> *this </tt>
         @return Итератор, ссылающийся на первую вставленную копию символа или
         @c p, если <tt> n == 0 </tt>.
         */
-        iterator insert(const_iterator p, size_type n, value_type c);
+        iterator insert(const_iterator p, size_type n, value_type c)
+        {
+            auto const pos = p - this->cbegin();
+            this->insert(pos, n, c);
+            return this->begin() + pos;
+        }
+
+        /** @brief Вставка символов из интервала, заданого парой итераторлов, в
+        точку, заданную итератором
+        @param p итератор, задающий точку вставки
+        @param first итератор начала интервала
+        @param last итератор конца интервала
+        @pre <tt> [first; last) </tt> должен быть корректным интервалом
+        @return Итератор, ссылающийся на копию первого вставленного символа, или
+        @c p, если <tt> first == last </tt>
+        */
+        template <class InputIterator>
+        iterator
+        insert(const_iterator p, InputIterator first, InputIterator last)
+        {
+            // @todo Реализация для более слабых категорий итераторов
+            auto const n = std::distance(first, last);
+            auto const pos = p - this->begin();
+            this->append(first, last);
+            std::rotate(this->begin() + pos, this->end() - n, this->end());
+            return this->begin() + pos;
+        }
+
+        /** @brief Вставка символов из списка инициализации в точку, заданную
+        итератором
+        @param p итератор, задающий точку вставки
+        @param il список инициализации
+        @return Итератор, ссылающийся на копию первого вставленного символа, или
+        @c p, если @c il пуст.
+        */
+        iterator insert(const_iterator p, std::initializer_list<value_type> il)
+        {
+            return this->insert(p, il.begin(), il.end());
+        }
 
         // 21.4.6.5 erase
         iterator erase(const_iterator first, const_iterator last)

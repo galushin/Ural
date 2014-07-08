@@ -584,13 +584,35 @@ BOOST_AUTO_TEST_CASE(flex_string_insert_c_string)
     BOOST_CHECK_EQUAL(s.c_str(), fs);
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_insert_n_chars)
+BOOST_AUTO_TEST_CASE(flex_string_insert_char_at_iterator)
 {
     std::string s = "ABC";
     String fs{s.c_str()};
 
-    s.insert(2, 5, 'z');
-    fs.insert(2, 5, 'z');
+    s.insert(s.begin() + 2, 'z');
+    fs.insert(fs.cbegin() + 2, 'z');
+
+    BOOST_CHECK_EQUAL(s.c_str(), fs);
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_insert_n_chars_at_iterator)
+{
+    std::string s = "ABC";
+    String fs{s.c_str()};
+
+    s.insert(s.begin() + 2, 5, 'z');
+    fs.insert(fs.cbegin() + 2, 5, 'z');
+
+    BOOST_CHECK_EQUAL(s.c_str(), fs);
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_insert_init_list_at_iterator)
+{
+    std::string s = "ABC";
+    String fs{s.c_str()};
+
+    s.insert(s.begin() + 2, {'a', 'n', 'o', 'v'});
+    fs.insert(fs.cbegin() + 2, {'a', 'n', 'o', 'v'});
 
     BOOST_CHECK_EQUAL(s.c_str(), fs);
 }
