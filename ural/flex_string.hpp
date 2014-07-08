@@ -142,10 +142,17 @@ namespace ural
         }
 
         // 21.4.3 Итераторы
+        //@{
         const_iterator begin() const
         {
             return data_.begin();
         }
+
+        const_iterator cbegin() const
+        {
+            return this->begin();
+        }
+        //@}
 
         iterator begin()
         {
@@ -554,8 +561,25 @@ namespace ural
         */
         flex_string & insert(size_type pos, flex_string const & str)
         {
-            assert(pos <= this->size());
             return this->insert(pos, str.data(), str.size());
+        }
+
+        /** @brief Вставка подстроки одной строки в другую
+        @param pos1 номер символа, с которого осуществляется вставка
+        @param str строка, подстрока которой должна быть вставлена
+        @param pos2 номер символа, с которого начинается вставляемая подстрока
+        @param n максимальная длина подстроки, которая должна быть вставлена
+        @pre <tt> pos1 <= this->size() </tt>
+        @pre <tt> pos2 <= str.size() </tt>
+        @throw out_of_range, если <tt> pos1 > this->size() </tt> или
+        <tt> pos2 > str.size() </tt>
+        @return <tt> *this </tt>
+        */
+        flex_string & insert(size_type pos1, flex_string const & str,
+                             size_type pos2, size_type n)
+        {
+            return this->insert(pos1, str.data() + pos2,
+                                std::min(n, str.size() - pos2));
         }
 
         /** @brief Вставка массива символов в строку
@@ -585,6 +609,31 @@ namespace ural
         {
             return this->insert(pos, s, traits_type::length(s));
         }
+
+        /** @brief Вставка заданного числа копий символа в строку
+        @param pos номер символа, с которого осуществляется вставка
+        @param n количество копий символа
+        @param c вставляемый символ
+        @return <tt> *this </tt>
+
+        Эквивалентно <tt> insert(pos, flex_string(n, c)) </tt>
+        */
+        flex_string & insert(size_type pos, size_type n, value_type c)
+        {
+            this->append(n, c);
+            std::rotate(this->begin() + pos, this->end() - n, this->end());
+            return *this;
+        }
+
+        /** @brief Вставка заданного числа копий символа в точку строки,
+        заданную итератором
+        @param p итератор, задающий точку вставки
+        @param n количество копий символа
+        @param c вставляемый символ
+        @return Итератор, ссылающийся на первую вставленную копию символа или
+        @c p, если <tt> n == 0 </tt>.
+        */
+        iterator insert(const_iterator p, size_type n, value_type c);
 
         // 21.4.6.5 erase
         iterator erase(const_iterator first, const_iterator last)

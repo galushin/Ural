@@ -557,6 +557,20 @@ BOOST_AUTO_TEST_CASE(flex_string_insert_string)
     BOOST_CHECK_EQUAL(s1.c_str(), fs1);
 }
 
+BOOST_AUTO_TEST_CASE(flex_string_insert_substring)
+{
+    std::string s = "Stov";
+    std::string const s2 = "Depande";
+
+    String fs(s.c_str());
+    String fs2(s2.c_str());
+
+    s.insert(2, s2, 1, 4);
+    fs.insert(2, fs2, 1, 4);
+
+    BOOST_CHECK_EQUAL(s.c_str(), fs);
+}
+
 BOOST_AUTO_TEST_CASE(flex_string_insert_c_string)
 {
     std::string s = "Stov";
@@ -566,6 +580,17 @@ BOOST_AUTO_TEST_CASE(flex_string_insert_c_string)
 
     s.insert(2, cs);
     fs.insert(2, cs);
+
+    BOOST_CHECK_EQUAL(s.c_str(), fs);
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_insert_n_chars)
+{
+    std::string s = "ABC";
+    String fs{s.c_str()};
+
+    s.insert(2, 5, 'z');
+    fs.insert(2, 5, 'z');
 
     BOOST_CHECK_EQUAL(s.c_str(), fs);
 }
