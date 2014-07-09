@@ -617,6 +617,18 @@ BOOST_AUTO_TEST_CASE(flex_string_insert_init_list_at_iterator)
     BOOST_CHECK_EQUAL(s.c_str(), fs);
 }
 
+// 21.4.6.5 erase
+BOOST_AUTO_TEST_CASE(flex_string_pop_back)
+{
+    std::string s = "ABC";
+    String fs{s.c_str()};
+
+    s.pop_back();
+    fs.pop_back();
+
+    BOOST_CHECK_EQUAL(s.c_str(), fs);
+}
+
 // @todo 21.4.7 операции со строками
 // @todo 21.4.8 вспомогательные функции
 

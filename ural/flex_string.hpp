@@ -692,6 +692,26 @@ namespace ural
                                data_.begin() + (last - data_.begin()));
         }
 
+        /** @brief Удаляет элемент строки, на который ссылается итератор @c p
+        @param p итератор, ссылающийся на элемент, который должен быть удалён
+        @return Итератор, ссылающийся на элемент, непосредственно следовавший за
+        @c p до того, как элемент был удалён. Если такого элемента нет, то
+        возвращает <tt> this->end() </tt>
+        */
+        iterator erase(const_iterator p)
+        {
+            return data_.erase(data_.begin() + (p - data_.begin()));
+        }
+
+        /** @brief Удаление последнего элемента строки
+        @pre <tt> !this->empty() </tt>
+        */
+        void pop_back()
+        {
+            assert(!this->empty());
+            this->erase(this->end() - 1);
+        }
+
         // 21.4.6.8 swap
         /** @brief Обмен содержимого @c s и <tt> *this </tt>
         @param s строка, с которой будет обменяно содержимое <tt> *this </tt>
