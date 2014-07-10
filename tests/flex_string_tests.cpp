@@ -618,6 +618,17 @@ BOOST_AUTO_TEST_CASE(flex_string_insert_init_list_at_iterator)
 }
 
 // 21.4.6.5 erase
+BOOST_AUTO_TEST_CASE(flex_string_erase_iterator_range)
+{
+    std::string s = "Stepanov";
+    String fs{s.c_str()};
+
+    s.erase(s.begin() + 2, s.end() - 1);
+    fs.erase(fs.begin() + 2, fs.end() - 1);
+
+    BOOST_CHECK_EQUAL(s.c_str(), fs);
+}
+
 BOOST_AUTO_TEST_CASE(flex_string_pop_back)
 {
     std::string s = "ABC";

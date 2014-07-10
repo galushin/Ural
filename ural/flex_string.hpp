@@ -686,10 +686,19 @@ namespace ural
         }
 
         // 21.4.6.5 erase
-        iterator erase(const_iterator first, const_iterator last)
+        /** @brief Удаляет не более @c n элементов, начиная с номера @c pos
+        @param pos номер первого элемента, который должен быть удалён
+        @param n количество элементов, которые должны быть удалены
+        @pre <tt> pos <= this->size() </tt>
+        @throw out_of_range, если <tt> pos > this->size() </tt>.
+        @return <tt> *this </tt>
+        */
+        flex_string & erase(size_type pos = 0, size_type n = npos)
         {
-            return data_.erase(data_.begin() + (first - data_.begin()),
-                               data_.begin() + (last - data_.begin()));
+            auto const xlen = std::min(n, this->size() - pos);
+            data_.erase(data_.begin() + pos, data_.begin() + pos + xlen);
+            return *this;
+
         }
 
         /** @brief Удаляет элемент строки, на который ссылается итератор @c p
@@ -701,6 +710,24 @@ namespace ural
         iterator erase(const_iterator p)
         {
             return data_.erase(data_.begin() + (p - data_.begin()));
+        }
+
+        /** @brief Удаляет элементы строки, определяемые интервалом
+        <tt> [first; last) </tt>
+        @param first итератор, задающий начало интервала удаляемых символов
+        @param last итератор, задающий конец интервала удаляемых символов
+        @pre @c first и @c last является действительными итераторами для
+        <tt> *this </tt>, определяющими действительный интервал
+        <tt> [first; last) </tt>
+        @return Итератор, ссылающийся на элемент, на который ссылался @c last
+        до вызова. Если такого элемента нет, то возвращает
+        <tt> this->end() </tt>
+        */
+        iterator erase(const_iterator first, const_iterator last)
+        {
+            auto const pos = first - this->begin();
+            this->erase(pos, last - first);
+            return this->begin() + pos;
         }
 
         /** @brief Удаление последнего элемента строки
