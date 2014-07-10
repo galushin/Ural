@@ -643,6 +643,60 @@ BOOST_AUTO_TEST_CASE(flex_string_pop_back)
 // @todo 21.4.7 операции со строками
 // @todo 21.4.8 вспомогательные функции
 
+// 21.4.8.1 Оператор +
+BOOST_AUTO_TEST_CASE(flex_string_plus)
+{
+    String const fs1{"Paper"};
+    String const fs2{"clip"};
+
+    std::string const s1{fs1.c_str()};
+    std::string const s2{fs2.c_str()};
+
+    String const fs = fs1 + fs2;
+    std::string const s = s1 + s2;
+
+    BOOST_CHECK_EQUAL(s.c_str(), fs.c_str());
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_plus_rvalue_first)
+{
+    String fs1{"Paper"};
+    String fs2{"clip"};
+
+    String const fs = fs1 + fs2;
+    String const fs_moved = std::move(fs1) + fs2;
+
+    BOOST_CHECK_EQUAL(fs, fs_moved);
+
+    BOOST_CHECK(fs1.empty());
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_plus_rvalue_second)
+{
+    String fs1{"Paper"};
+    String fs2{"clip"};
+
+    String const fs = fs1 + fs2;
+    String const fs_moved = fs1 + std::move(fs2);
+
+    BOOST_CHECK_EQUAL(fs, fs_moved);
+
+    BOOST_CHECK(fs2.empty());
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_plus_rvalue_both)
+{
+    String fs1{"Paper"};
+    String fs2{"clip"};
+
+    String const fs = fs1 + fs2;
+    String const fs_moved = std::move(fs1) + std::move(fs2);
+
+    BOOST_CHECK_EQUAL(fs, fs_moved);
+
+    BOOST_CHECK(fs1.empty() || fs2.empty());
+}
+
 // 21.4.8.2 Оператор ==
 BOOST_AUTO_TEST_CASE(flex_string_equality)
 {
@@ -674,6 +728,21 @@ BOOST_AUTO_TEST_CASE(flex_string_equality_with_c_str)
 
     BOOST_CHECK(cs1 != s);
     BOOST_CHECK(cs2 == s);
+}
+
+// 21.4.8.8 swap
+BOOST_AUTO_TEST_CASE(flex_string_swap)
+{
+    const char * cs1 = "Paper";
+    const char * cs2 = "Pair";
+
+    String fs1(cs1);
+    String fs2(cs2);
+
+    ::ural::swap(fs1, fs2);
+
+    BOOST_CHECK_EQUAL(cs2, fs1.c_str());
+    BOOST_CHECK_EQUAL(cs1, fs2.c_str());
 }
 
 // 21.4.8.9 Потоковые операторы

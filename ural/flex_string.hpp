@@ -98,6 +98,14 @@ namespace ural
          : data_(1, value_type{}, a)
         {}
 
+        flex_string(flex_string const &) = default;
+
+        flex_string(flex_string && str)
+         : flex_string{}
+        {
+            this->swap(str);
+        }
+
         /** @brief Конструктор на основе строкового литерала
         @param s строковый литерал
         @param a распределитель памяти
@@ -698,7 +706,6 @@ namespace ural
             auto const xlen = std::min(n, this->size() - pos);
             data_.erase(data_.begin() + pos, data_.begin() + pos + xlen);
             return *this;
-
         }
 
         /** @brief Удаляет элемент строки, на который ссылается итератор @c p
@@ -809,6 +816,7 @@ namespace ural
             return data_.get_allocator();
         }
 
+        // 21.4.8.9
         friend std::basic_ostream<value_type, traits_type> &
         operator<<(std::basic_ostream<value_type, traits_type> & os,
                    flex_string const & x)
@@ -825,6 +833,7 @@ namespace ural
     /** @brief Оператор "равно"
     @param x левый операнд
     @param y правый операнд
+    @return <tt> x.compare(y) == 0 </tt>
     */
     template <class charT, class traits, class Allocator>
     bool operator==(flex_string<charT, traits, Allocator> const & x,
@@ -853,6 +862,52 @@ namespace ural
         return str.compare(s) == 0;
     }
     //@}
+
+    // 21.4.8.1 operator+
+    /** @brief Конкатенация строк
+    @param x левый операнд
+    @param y правый операнд
+    @return <tt> flex_string<charT, traits, Allocator>(x).append(y) </tt>
+    */
+    template <class charT, class traits, class Allocator>
+    flex_string<charT, traits, Allocator>
+    operator+(flex_string<charT, traits, Allocator> const & x,
+              flex_string<charT, traits, Allocator> const & y)
+    {
+        return flex_string<charT, traits, Allocator>(x).append(y);
+    }
+
+    template <class charT, class traits, class Allocator>
+    flex_string<charT, traits, Allocator>
+    operator+(flex_string<charT, traits, Allocator> && x,
+              flex_string<charT, traits, Allocator> const & y)
+    {
+        return std::move(x.append(y));
+    }
+
+    template <class charT, class traits, class Allocator>
+    flex_string<charT, traits, Allocator>
+    operator+(flex_string<charT, traits, Allocator> const & x,
+              flex_string<charT, traits, Allocator> && y)
+    {
+        return std::move(y.insert(0, x));
+    }
+
+    template <class charT, class traits, class Allocator>
+    flex_string<charT, traits, Allocator>
+    operator+(flex_string<charT, traits, Allocator> && x,
+              flex_string<charT, traits, Allocator> && y)
+    {
+        return std::move(x.append(y));
+    }
+
+    // 21.4.8.8 swap
+    template <class charT, class traits, class Allocator>
+    void swap(flex_string<charT, traits, Allocator> & x,
+              flex_string<charT, traits, Allocator> & y)
+    {
+        return x.swap(y);
+    }
 }
 // namespace ural
 
