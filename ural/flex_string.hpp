@@ -185,7 +185,7 @@ namespace ural
         size_type size() const noexcept
         {
             assert(!data_.empty());
-            return data_.size() - 1;
+            return (this->end() - this->begin());
         }
 
         size_type length() const noexcept
@@ -267,7 +267,7 @@ namespace ural
         {
             assert(pos <= this->size());
 
-            return data_[pos];
+            return *(this->data() + pos);
         }
         //@}
 
@@ -704,7 +704,7 @@ namespace ural
         flex_string & erase(size_type pos = 0, size_type n = npos)
         {
             auto const xlen = std::min(n, this->size() - pos);
-            data_.erase(data_.begin() + pos, data_.begin() + pos + xlen);
+            data_.erase(this->begin() + pos, this->begin() + pos + xlen);
             return *this;
         }
 
@@ -768,7 +768,7 @@ namespace ural
 
         const charT * c_str() const noexcept
         {
-            return data_.data();
+            return this->data();
         }
         //@}
 
