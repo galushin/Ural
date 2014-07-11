@@ -697,6 +697,18 @@ BOOST_AUTO_TEST_CASE(flex_string_plus_rvalue_both)
     BOOST_CHECK(fs1.empty() || fs2.empty());
 }
 
+BOOST_AUTO_TEST_CASE(flex_string_plus_c_str_left)
+{
+    char const * s1 = "Paper";
+    String const fs2{"clip"};
+    std::string s2{fs2.c_str()};
+
+    std::string const s = s1 + s2;
+    String const fs = s1 + fs2;
+
+    BOOST_CHECK_EQUAL(s.c_str(), fs.c_str());
+}
+
 // 21.4.8.2 Оператор ==
 BOOST_AUTO_TEST_CASE(flex_string_equality)
 {
