@@ -817,6 +817,11 @@ namespace ural
         }
 
         // 21.4.8.9
+        /** @brief Оператор вывода в поток
+        @param os поток вывода
+        @param x выводимая в поток строка
+        @return @c os
+        */
         friend std::basic_ostream<value_type, traits_type> &
         operator<<(std::basic_ostream<value_type, traits_type> & os,
                    flex_string const & x)
@@ -843,6 +848,11 @@ namespace ural
         return flex_string<charT, traits, Allocator>(x).append(y);
     }
 
+    /** @brief Конкатенация строк
+    @param x левый операнд
+    @param y правый операнд
+    @return <tt> std::move(x.append(y)) </tt>
+    */
     template <class charT, class traits, class Allocator>
     flex_string<charT, traits, Allocator>
     operator+(flex_string<charT, traits, Allocator> && x,
@@ -851,6 +861,11 @@ namespace ural
         return std::move(x.append(y));
     }
 
+    /** @brief Конкатенация строк
+    @param x левый операнд
+    @param y правый операнд
+    @return <tt> std::move(y.insert(0, x)) </tt>
+    */
     template <class charT, class traits, class Allocator>
     flex_string<charT, traits, Allocator>
     operator+(flex_string<charT, traits, Allocator> const & x,
@@ -859,6 +874,11 @@ namespace ural
         return std::move(y.insert(0, x));
     }
 
+    /** @brief Конкатенация строк
+    @param x левый операнд
+    @param y правый операнд
+    @return <tt> std::move(x.append(y)) </tt>
+    */
     template <class charT, class traits, class Allocator>
     flex_string<charT, traits, Allocator>
     operator+(flex_string<charT, traits, Allocator> && x,
@@ -867,6 +887,11 @@ namespace ural
         return std::move(x.append(y));
     }
 
+    /** @brief Конкатенация c-строки и строки
+    @param x с-строка
+    @param y строка
+    @return <tt> flex_string<charT, traits, Allocator>(y).insert(0, x) </tt>
+    */
     template <class charT, class traits, class Allocator>
     flex_string<charT, traits, Allocator>
     operator+(charT const * x, flex_string<charT, traits, Allocator> const & y)
@@ -874,6 +899,11 @@ namespace ural
         return flex_string<charT, traits, Allocator>(y).insert(0, x);
     }
 
+    /** @brief Конкатенация c-строки и строки
+    @param x с-строка
+    @param y строка
+    @return <tt> std::move(y.insert(0, x)) </tt>
+    */
     template <class charT, class traits, class Allocator>
     flex_string<charT, traits, Allocator>
     operator+(charT const * x, flex_string<charT, traits, Allocator> && y)
@@ -881,6 +911,11 @@ namespace ural
         return std::move(y.insert(0, x));
     }
 
+    /** @brief Конкатенация символа и строки
+    @param x символ
+    @param y строка
+    @return <tt> flex_string<charT, traits, Allocator>(1U, x) + y </tt>
+    */
     template <class charT, class traits, class Allocator>
     flex_string<charT, traits, Allocator>
     operator+(charT x, flex_string<charT, traits, Allocator> const & y)
@@ -888,6 +923,11 @@ namespace ural
         return flex_string<charT, traits, Allocator>(1U, x) + y;
     }
 
+    /** @brief Конкатенация символа и строки
+    @param x символ
+    @param y строка
+    @return <tt> std::move(y.insert(0, 1, x)) </tt>
+    */
     template <class charT, class traits, class Allocator>
     flex_string<charT, traits, Allocator>
     operator+(charT x, flex_string<charT, traits, Allocator> && y)
@@ -895,6 +935,11 @@ namespace ural
         return std::move(y.insert(0, 1, x));
     }
 
+    /** @brief Конкатенация строки и c-строки
+    @param x строка
+    @param y c-строка
+    @return <tt> flex_string<charT, traits, Allocator>(x).append(y) </tt>
+    */
     template <class charT, class traits, class Allocator>
     flex_string<charT, traits, Allocator>
     operator+(flex_string<charT, traits, Allocator> const & x,
@@ -903,6 +948,11 @@ namespace ural
         return flex_string<charT, traits, Allocator>(x).append(y);
     }
 
+    /** @brief Конкатенация строки и c-строки
+    @param x строка
+    @param y c-строка
+    @return <tt> std::move(x.append(y)) </tt>
+    */
     template <class charT, class traits, class Allocator>
     flex_string<charT, traits, Allocator>
     operator+(flex_string<charT, traits, Allocator> && x,
@@ -911,6 +961,11 @@ namespace ural
         return std::move(x.append(y));
     }
 
+    /** @brief Конкатенация строки и символа
+    @param x строка
+    @param y символ
+    @return <tt> flex_string<charT, traits, Allocator>(x).append(1, y) </tt>
+    */
     template <class charT, class traits, class Allocator>
     flex_string<charT, traits, Allocator>
     operator+(flex_string<charT, traits, Allocator> const & x,
@@ -919,6 +974,11 @@ namespace ural
         return flex_string<charT, traits, Allocator>(x).append(1, y);
     }
 
+    /** @brief Конкатенация строки и символа
+    @param x строка
+    @param y символ
+    @return <tt> std::move(x.append(1, y)) </tt>
+    */
     template <class charT, class traits, class Allocator>
     flex_string<charT, traits, Allocator>
     operator+(flex_string<charT, traits, Allocator> && x,
@@ -962,6 +1022,11 @@ namespace ural
     //@}
 
     // 21.4.8.8 swap
+    /** @brief Обмен значениями двух строк
+    @param x первый аргумент
+    @param y второй аргумент
+    Эквивалентно <tt> x.swap(y) </tt>
+    */
     template <class charT, class traits, class Allocator>
     void swap(flex_string<charT, traits, Allocator> & x,
               flex_string<charT, traits, Allocator> & y)
