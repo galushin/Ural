@@ -709,6 +709,18 @@ BOOST_AUTO_TEST_CASE(flex_string_plus_c_str_left)
     BOOST_CHECK_EQUAL(s.c_str(), fs.c_str());
 }
 
+BOOST_AUTO_TEST_CASE(flex_string_plus_c_str_left_rvalue)
+{
+    char const * s1 = "Paper";
+    String fs2{"clip"};
+
+    String const fs = s1 + fs2;
+    String const fs_moved = s1 + std::move(fs2);
+
+    BOOST_CHECK(fs2.empty());
+    BOOST_CHECK_EQUAL(fs, fs_moved);
+}
+
 // 21.4.8.2 Оператор ==
 BOOST_AUTO_TEST_CASE(flex_string_equality)
 {

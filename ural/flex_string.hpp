@@ -908,6 +908,13 @@ namespace ural
         return flex_string<charT, traits, Allocator>(y).insert(0, x);
     }
 
+    template <class charT, class traits, class Allocator>
+    flex_string<charT, traits, Allocator>
+    operator+(charT const * x, flex_string<charT, traits, Allocator> && y)
+    {
+        return std::move(y.insert(0, x));
+    }
+
     // 21.4.8.8 swap
     template <class charT, class traits, class Allocator>
     void swap(flex_string<charT, traits, Allocator> & x,
