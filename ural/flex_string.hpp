@@ -23,7 +23,12 @@
 
 #include <ural/defs.hpp>
 
+#include <algorithm>
 #include <ostream>
+#include <vector>
+#include <stdexcept>
+
+#include <cassert>
 
 // @todo Интеграция с std::string
 

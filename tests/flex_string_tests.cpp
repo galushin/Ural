@@ -14,9 +14,10 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <boost/test/unit_test.hpp>
-
 #include <ural/flex_string.hpp>
+
+#include <boost/test/unit_test.hpp>
+#include <boost/mpl/list.hpp>
 
 #include <sstream>
 
@@ -55,6 +56,8 @@ private:
 
 typedef ural::flex_string<char, ural::use_default, test_allocator<char>>
     String;
+
+typedef boost::mpl::list<String> Strings_list;
 
 BOOST_AUTO_TEST_CASE(flex_string_default_ctor)
 {
