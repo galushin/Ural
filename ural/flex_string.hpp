@@ -98,17 +98,49 @@ namespace ural
          : data_(1, value_type{}, a)
         {}
 
+        /// @brief Конструктор копий
         flex_string(flex_string const &) = default;
 
+        /** @brief Конструктор с перемещением
+        @param str строка
+        */
         flex_string(flex_string && str)
          : flex_string{}
         {
             this->swap(str);
         }
 
+        /** @brief Конструктор, копирующий подстроку
+        @param str строка, фрагмент которой должен быть скопирован
+        @param pos номер элемента, с которого начинается копируемая подстрока
+        @param n количество символов, которые должны быть скопированы
+        @param a распределитель памяти
+        @pre <tt> pos <= this->size() </tt>
+        @throw out_of_range, если <tt> pos > this->size() </tt>
+        */
+        flex_string(flex_string const & str,
+                    size_type pos,
+                    size_type n = npos,
+                    allocator_type const & a = allocator_type{})
+         : flex_string{a}
+        {
+            if(pos > str.size())
+            {
+                throw std::out_of_range{"flex_string::ctor"};
+            }
+
+            auto const rlen = std::min(n, str.size() - pos);
+
+            this->resize(rlen+1, value_type{});
+
+            std::copy(str.begin() + pos, str.begin() + pos + rlen,
+                      this->begin());
+        }
+
         /** @brief Конструктор на основе массива
         @param s указатель на начало массива
         @param n количество элементов массива
+        @param a распределитель памяти
         @pre <tt> s != nullptr </tt>
         @pre <tt> n < npos </tt>
         */

@@ -80,7 +80,6 @@ BOOST_AUTO_TEST_CASE(flex_string_allocator_ctor)
 // Конструктор копирования
 BOOST_AUTO_TEST_CASE(flex_string_copy_ctor)
 {
-    String::allocator_type a{42};
     char const * cs = "Hello, world";
     String s1(cs);
     String const s2 = s1;
@@ -92,7 +91,45 @@ BOOST_AUTO_TEST_CASE(flex_string_copy_ctor)
     BOOST_CHECK_EQUAL(s2.c_str(), cs);
 }
 
-// @todo Копирование фрагмента строки
+// Копирование фрагмента строки
+BOOST_AUTO_TEST_CASE(flex_string_ctor_from_pos)
+{
+    char const * cs = "Hello, world";
+
+    std::string const s(cs);
+    String const fs(cs);
+
+    std::string const s1{s, 2};
+    String const fs1(fs, 2);
+
+    BOOST_CHECK_EQUAL(s1.c_str(), fs1.c_str());
+
+    BOOST_CHECK_THROW(String(fs, fs.size() + 2), std::out_of_range);
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_ctor_from_pos_npos)
+{
+    char const * cs = "Hello, world";
+
+    std::string const s(cs);
+    String const fs(cs);
+
+    std::string const s1{s, 2, 2};
+    String const fs1(fs, 2, 2);
+
+    BOOST_CHECK_EQUAL(s1.c_str(), fs1.c_str());
+
+    std::string const s2{s, 2, s.size()};
+    String const fs2(fs, 2, fs.size());
+
+    BOOST_CHECK_EQUAL(s2.c_str(), fs2.c_str());
+
+    String::allocator_type a{42};
+    String fsa(fs, 2, 2, a);
+
+    BOOST_CHECK_EQUAL(s1.c_str(), fsa.c_str());
+    BOOST_CHECK_EQUAL(a.id(), fsa.get_allocator().id());
+}
 
 BOOST_AUTO_TEST_CASE(flex_string_from_c_str_n)
 {
