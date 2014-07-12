@@ -79,6 +79,9 @@ namespace ural
         /// @brief Тип обратного константного итератора
         typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
+        /** @brief константа, обозначающая "максимально возможное количество
+        символов"
+        */
         static const size_type npos = -1;
 
         // 21.4.2 Конструкторы и присваивание
@@ -205,6 +208,9 @@ namespace ural
 
         // 21.4.3 Итераторы
         //@{
+        /** @brief Константный итератор, ссылающийся на первый символ строки
+        @return Константный итератор, ссылающийся на первый символ строки
+        */
         const_iterator begin() const
         {
             return data_.begin();
@@ -216,12 +222,20 @@ namespace ural
         }
         //@}
 
+        /** @brief Итератор, ссылающийся на первый символ строки
+        @return Итератор, ссылающийся на первый символ строки
+        */
         iterator begin()
         {
             return data_.begin();
         }
 
         //@{
+        /** @brief Константный итератор, ссылающийся на элемент, следующий за
+        последним элементом
+        @return Константный итератор, ссылающийся на элемент, следующий за
+        последним элементом
+        */
         const_iterator end() const
         {
             return data_.end() - 1;
@@ -233,17 +247,29 @@ namespace ural
         }
         //@}
 
+        /** @brief Итератор, ссылающийся на элемент, следующий за последним
+        элементом
+        @return Итератор, ссылающийся на элемент, следующий за последним
+        элементом
+        */
         iterator end()
         {
             return data_.end() - 1;
         }
 
+        /** @brief Итератор, ссылающийся на первый в обратном порядке символ
+        @return <tt> {this->end()} </tt>
+        */
         reverse_iterator rbegin()
         {
             return reverse_iterator{this->end()};
         }
 
         //@{
+        /** @brief Константный итератор, ссылающийся на первый в обратном
+        порядке символ
+        @return <tt> {this->end()} </tt>
+        */
         const_reverse_iterator rbegin() const
         {
             return const_reverse_iterator{this->end()};
@@ -255,12 +281,20 @@ namespace ural
         }
         //@}
 
+        /** @brief Итератор, ссылающийся на символ, следующий за последним,
+        в обратном порядке.
+        @return <tt> {this->begin()} </tt>
+        */
         reverse_iterator rend()
         {
             return reverse_iterator{this->begin()};
         }
 
         //@{
+        /** @brief Константныйы итератор, ссылающийся на символ, следующий за
+        последним, в обратном порядке.
+        @return <tt> {this->begin()} </tt>
+        */
         const_reverse_iterator rend() const
         {
             return const_reverse_iterator{this->begin()};
