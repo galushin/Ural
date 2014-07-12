@@ -826,6 +826,22 @@ BOOST_AUTO_TEST_CASE(flex_string_equality_with_c_str)
     BOOST_CHECK(cs2 == s);
 }
 
+// 21.4.8.4
+BOOST_AUTO_TEST_CASE(flex_string_less)
+{
+    String const s1{"Paper"};
+    String const s2{"Pair"};
+
+    BOOST_CHECK_EQUAL(s1 < s2, false);
+    BOOST_CHECK_EQUAL(s2 < s1, true);
+
+    BOOST_CHECK_EQUAL(s1 < s2.c_str(), false);
+    BOOST_CHECK_EQUAL(s2 < s1.c_str(), true);
+
+    BOOST_CHECK_EQUAL(s1.c_str() < s2, false);
+    BOOST_CHECK_EQUAL(s2.c_str() < s1, true);
+}
+
 // 21.4.8.8 swap
 BOOST_AUTO_TEST_CASE(flex_string_swap)
 {

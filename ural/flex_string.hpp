@@ -1021,6 +1021,43 @@ namespace ural
     }
     //@}
 
+    // 21.4.8.4
+    /** @brief Оператор "меньше"
+    @param x левый операнд
+    @param y правый операнд
+    @return <tt> x.compare(y) < 0 </tt>
+    */
+    template <class charT, class traits, class Allocator>
+    bool operator<(flex_string<charT, traits, Allocator> const & x,
+                   flex_string<charT, traits, Allocator> const & y) noexcept
+    {
+        return x.compare(y) < 0;
+    }
+
+    /** @brief Оператор "меньше"
+    @param x левый операнд
+    @param y правый операнд
+    @return <tt> y.compare(x) > 0 </tt>
+    */
+    template <class charT, class traits, class Allocator>
+    bool operator<(charT const * x,
+                   flex_string<charT, traits, Allocator> const & y) noexcept
+    {
+        return y.compare(x) > 0;
+    }
+
+    /** @brief Оператор "меньше"
+    @param x левый операнд
+    @param y правый операнд
+    @return <tt> x.compare(y) < 0 </tt>
+    */
+    template <class charT, class traits, class Allocator>
+    bool operator<(flex_string<charT, traits, Allocator> const & x,
+                   charT const * y) noexcept
+    {
+        return x.compare(y) < 0;
+    }
+
     // 21.4.8.8 swap
     /** @brief Обмен значениями двух строк
     @param x первый аргумент
