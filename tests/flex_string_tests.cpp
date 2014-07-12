@@ -28,7 +28,11 @@ class test_allocator
 public:
     typedef typename Base::value_type value_type;
     typedef typename Base::size_type size_type;
+    typedef typename Base::difference_type difference_type;
+    typedef typename Base::const_reference const_reference;
+    typedef typename Base::reference reference;
     typedef typename Base::pointer pointer;
+    typedef typename Base::const_pointer const_pointer;
 
     explicit test_allocator(int id = 0)
      : id_{id}
@@ -49,6 +53,12 @@ public:
         return this->id_;
     }
 
+    template <class U>
+    struct rebind
+    {
+        typedef test_allocator<U> other;
+    };
+
 private:
     int id_;
     std::allocator<T> a_;
@@ -59,6 +69,16 @@ typedef ural::flex_string<char, ural::use_default, test_allocator<char>>
 
 typedef boost::mpl::list<String> Strings_list;
 
+// Интеграция с std::string
+BOOST_AUTO_TEST_CASE(flex_string_from_std_string)
+{
+    std::string const s{"Stepanov"};
+    String const fs{s};
+
+    BOOST_CHECK_EQUAL(s.c_str(), fs.c_str());
+}
+
+// 21.4.2 Конструкторы
 BOOST_AUTO_TEST_CASE(flex_string_default_ctor)
 {
     String s;
@@ -275,10 +295,55 @@ BOOST_AUTO_TEST_CASE(flex_string_from_iterators_and_allocator)
     }
 }
 
-// @todo Конструктор на основе списка инициализации
+BOOST_AUTO_TEST_CASE(flex_string_from_init_list)
+{
+    String const fs{'a', 'B', 'c'};
+    std::string const s{'a', 'B', 'c'};
+
+    BOOST_CHECK_EQUAL(s.c_str(), fs.c_str());
+
+    String::allocator_type a{42};
+
+    String const fsa{{'a', 'B', 'c'}, a};
+    BOOST_CHECK_EQUAL(fsa.c_str(), s);
+    BOOST_CHECK_EQUAL(a.id(), fsa.get_allocator().id());
+}
+
 // @todo Конструктор на основе строки и распределителя памяти
 // @todo Конструктор на основе временной строки и распределителя памяти
-// @todo операторы присваивания
+
+BOOST_AUTO_TEST_CASE(flex_string_operator_assign)
+{
+    String const s{"Step"};
+    String s0{"Alpha"};
+
+    s0 = s;
+
+    BOOST_CHECK_EQUAL(s, s0);
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_operator_move_assign)
+{
+    String s{"Step"};
+    String s0{"Alpha"};
+    String const s0_copy = s0;
+
+    s = std::move(s0);
+
+    BOOST_CHECK_EQUAL(s, s0_copy);
+
+    // @todo проверить, что копирование не производится
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_operator_assign_c_str)
+{
+    char const * s= "Step";
+    String s0{"Alpha"};
+
+    s0 = s;
+
+    BOOST_CHECK_EQUAL(s, s0.c_str());
+}
 
 // @todo 21.4.3 Поддержка итераторов
 

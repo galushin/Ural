@@ -115,6 +115,23 @@ namespace ural
         /// @brief Конструктор копий
         flex_string(flex_string const &) = default;
 
+        /** @brief Конструктор на основе <tt> std::string </tt>
+        @param s исходная строка
+        */
+        template <class A1>
+        flex_string(std::basic_string<value_type, traits_type, A1> const & s)
+         : flex_string{s.begin(), s.end()}
+        {}
+
+        /** @brief Конструктор на основе списка инициализации
+        @param il список инициализации
+        @param a распределитель памяти
+        */
+        flex_string(std::initializer_list<value_type> il,
+                    allocator_type const & a = allocator_type{})
+         : flex_string{il.begin(), il.end(), a}
+        {}
+
         /** @brief Конструктор с перемещением
         @param str строка
         */
@@ -209,6 +226,37 @@ namespace ural
          : data_(first, last, a)
         {
             data_.push_back(value_type{});
+        }
+
+        /** @brief Оператор присваивания
+        @param s присваемая строка
+        @return <tt> *this </tt>
+        @post <tt> *this == s </tt>
+        */
+        flex_string & operator=(flex_string const & s)
+        {
+            flex_string{s}.swap(*this);
+            return *this;
+        }
+
+        /** @brief Оператор присваивания c-строки
+        @param s строка
+        @return <tt> *this <tt>
+        @post <tt> *this == s </tt>
+        */
+        flex_string & operator=(value_type const * s)
+        {
+            return this->assign(s);
+        }
+
+        /** @brief Оператор присваивания с перемещением
+        @param s строка, содержимое которой, будет перемещено
+        @return <tt> *this </tt>
+        */
+        flex_string & operator=(flex_string && s)
+        {
+            s.swap(*this);
+            return *this;
         }
 
         // 21.4.3 Итераторы
