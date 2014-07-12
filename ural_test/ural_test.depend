@@ -723,7 +723,7 @@
 	<ural/functional/replace.hpp>
 	<ural/tuple.hpp>
 
-1402738752 c:\pavel\ural_repo\ural\ural\tuple.hpp
+1405149653 c:\pavel\ural_repo\ural\ural\tuple.hpp
 	<tuple>
 	<ural/utility.hpp>
 	<ural/placeholders.hpp>
@@ -773,7 +773,7 @@
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/insertion.hpp>
 
-1401073448 c:\pavel\ural_repo\ural\ural\sequence\iterator_sequence.hpp
+1405149653 c:\pavel\ural_repo\ural\ural\sequence\iterator_sequence.hpp
 	<ural/sequence/base.hpp>
 	<ural/tuple.hpp>
 	<ural/utility.hpp>
@@ -857,19 +857,21 @@
 	<cassert>
 	<memory>
 
-1398066381 c:\pavel\ural_repo\ural\ural\utility\tracers.hpp
+1405149653 c:\pavel\ural_repo\ural\ural\utility\tracers.hpp
 	<ural/defs.hpp>
 	<ural/thread.hpp>
 	<ural/functional.hpp>
 
-1393903294 c:\pavel\ural_repo\ural\ural\thread.hpp
+1405149653 c:\pavel\ural_repo\ural\ural\thread.hpp
+	<cstddef>
 
-1402950628 source:c:\pavel\ural_repo\ural\tests\functional_test.cpp
-	"rnd.hpp"
-	<boost/test/unit_test.hpp>
+1405149653 source:c:\pavel\ural_repo\ural\tests\functional_test.cpp
 	<ural/utility/tracers.hpp>
 	<ural/functional.hpp>
 	<ural/memory.hpp>
+	<ural/functional/memoize.hpp>
+	"rnd.hpp"
+	<boost/test/unit_test.hpp>
 	<boost/mpl/list.hpp>
 
 1396013770 source:c:\pavel\ural_repo\ural\tests\iterator_sequence_test.cpp
@@ -901,7 +903,7 @@
 	<ural/functional.hpp>
 	<ural/sequence/base.hpp>
 
-1402955896 source:c:\pavel\ural_repo\ural\tests\numeric_tests.cpp
+1405149653 source:c:\pavel\ural_repo\ural\tests\numeric_tests.cpp
 	<ural/numeric/matrix.hpp>
 	<ural/algorithm.hpp>
 	<ural/numeric.hpp>
@@ -6445,15 +6447,16 @@
 	<forward_list>
 	<sstream>
 
-1402738752 c:\pavel\ural_repo\ural\ural\sequence\by_line.hpp
+1405149653 c:\pavel\ural_repo\ural\ural\sequence\by_line.hpp
 	<ural/sequence/base.hpp>
 	<string>
 
-1394005488 source:c:\pavel\ural_repo\ural\tests\math_tests.cpp
+1405149653 source:c:\pavel\ural_repo\ural\tests\math_tests.cpp
 	<boost/test/unit_test.hpp>
 	<boost/mpl/list.hpp>
 	<boost/operators.hpp>
 	<ural/math/common_factor.hpp>
+	<ural/math.hpp>
 
 1401073448 c:\pavel\ural_repo\ural\ural\math\common_factor.hpp
 	<cmath>
@@ -6496,11 +6499,12 @@
 	<boost/test/unit_test.hpp>
 	<ural/utility/tracers.hpp>
 
-1402738752 c:\pavel\ural_repo\ural\ural\utility.hpp
+1405149653 c:\pavel\ural_repo\ural\ural\utility.hpp
 	<ural/placeholders.hpp>
 	<ural/defs.hpp>
 	<ural/type_traits.hpp>
 	<boost/compressed_pair.hpp>
+	<complex>
 
 1402738752 c:\pavel\ural_repo\ural\ural\sequence\iostream.hpp
 
@@ -9794,7 +9798,7 @@
 1401073448 c:\pavel\ural_repo\ural\tests\rnd.hpp
 	<random>
 
-1402738752 source:c:\pavel\ural_repo\ural\tests\statistics_tests.cpp
+1405149653 source:c:\pavel\ural_repo\ural\tests\statistics_tests.cpp
 	<ural/math.hpp>
 	<ural/statistics.hpp>
 	<ural/math/rational.hpp>
@@ -9809,7 +9813,7 @@
 	<boost/numeric/ublas/vector.hpp>
 	<boost/numeric/ublas/symmetric.hpp>
 
-1402952071 c:\pavel\ural_repo\ural\ural\statistics.hpp
+1405149653 c:\pavel\ural_repo\ural\ural\statistics.hpp
 	<ural/math.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/transform.hpp>
@@ -9818,13 +9822,18 @@
 	<ural/meta/list.hpp>
 	<ural/defs.hpp>
 	<boost/numeric/ublas/symmetric.hpp>
+	<boost/math/distributions/chi_squared.hpp>
+	<boost/math/distributions/normal.hpp>
 	<stdexcept>
 
 1401073448 c:\pavel\ural_repo\ural\ural\numeric\interpolation.hpp
 
-1402966624 c:\pavel\ural_repo\ural\ural\math.hpp
+1405149653 c:\pavel\ural_repo\ural\ural\math.hpp
+	<ural/functional/cpp_operators.hpp>
 	<cassert>
 	<cstddef>
+	<utility>
+	<stdexcept>
 
 1402960728 c:\pavel\ural_repo\ural\ural\sequence\progression.hpp
 
@@ -9886,7 +9895,7 @@
 
 1401073448 c:\pavel\ural_repo\ural\ural\meta\hierarchy.hpp
 
-1398103786 source:c:\pavel\ural_repo\ural\tests\utility_test.cpp
+1405149653 source:c:\pavel\ural_repo\ural\tests\utility_test.cpp
 	<ural/utility.hpp>
 	<ural/placeholders.hpp>
 	<boost/test/unit_test.hpp>
@@ -12031,7 +12040,7 @@
 	<sstream>
 	<sstream>
 
-1402968793 c:\pavel\ural_repo\ural\ural\numeric\matrix.hpp
+1405149653 c:\pavel\ural_repo\ural\ural\numeric\matrix.hpp
 	<ural/utility.hpp>
 	<ural/sequence/base.hpp>
 	<ural/functional/compare_by.hpp>
@@ -12039,7 +12048,7 @@
 	<boost/numeric/ublas/matrix.hpp>
 	<algorithm>
 
-1402953685 c:\pavel\ural_repo\ural\ural\numeric\matrix_decomposition.hpp
+1405149653 c:\pavel\ural_repo\ural\ural\numeric\matrix_decomposition.hpp
 	<ural/math.hpp>
 	<boost/numeric/ublas/triangular.hpp>
 
@@ -12098,6 +12107,19 @@
 	<sstream>
 
 1405142249 c:\devtools\github\ural\ural\flex_string.hpp
+	<ural/defs.hpp>
+	<ostream>
+
+1405149653 c:\pavel\ural_repo\ural\ural\functional\memoize.hpp
+	<map>
+	<mutex>
+
+1405164367 source:c:\pavel\ural_repo\ural\tests\flex_string_tests.cpp
+	<boost/test/unit_test.hpp>
+	<ural/flex_string.hpp>
+	<sstream>
+
+1405164699 c:\pavel\ural_repo\ural\ural\flex_string.hpp
 	<ural/defs.hpp>
 	<ostream>
 

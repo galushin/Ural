@@ -721,6 +721,78 @@ BOOST_AUTO_TEST_CASE(flex_string_plus_c_str_left_rvalue)
     BOOST_CHECK_EQUAL(fs, fs_moved);
 }
 
+BOOST_AUTO_TEST_CASE(flex_string_plus_char_left)
+{
+    char const c = 'c';
+    String const fs2{"lip"};
+    std::string s2{fs2.c_str()};
+
+    std::string const s = c + s2;
+    String const fs = c + fs2;
+
+    BOOST_CHECK_EQUAL(s.c_str(), fs.c_str());
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_plus_char_left_rvalue)
+{
+    char const c = 'c';
+    String fs2{"lip"};
+
+    String const fs = c + fs2;
+    String const fs_moved = c + std::move(fs2);
+
+    BOOST_CHECK(fs2.empty());
+    BOOST_CHECK_EQUAL(fs, fs_moved);
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_plus_c_str_right)
+{
+    char const * s1 = "Paper";
+    String const fs2{"clip"};
+    std::string s2{fs2.c_str()};
+
+    std::string const s = s2 + s1;
+    String const fs = fs2 + s1;
+
+    BOOST_CHECK_EQUAL(s.c_str(), fs.c_str());
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_plus_c_str_right_rvalue)
+{
+    char const * s1 = "Paper";
+    String fs2{"clip"};
+
+    String const fs = fs2 + s1;
+    String const fs_moved =  std::move(fs2) + s1;
+
+    BOOST_CHECK(fs2.empty());
+    BOOST_CHECK_EQUAL(fs, fs_moved);
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_plus_char_right)
+{
+    char const c = 'c';
+    String const fs2{"lip"};
+    std::string s2{fs2.c_str()};
+
+    std::string const s = s2 + c;
+    String const fs = fs2 + c;
+
+    BOOST_CHECK_EQUAL(s.c_str(), fs.c_str());
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_plus_char_right_rvalue)
+{
+    char const c = 'c';
+    String fs2{"lip"};
+
+    String const fs = fs2 + c;
+    String const fs_moved = std::move(fs2) + c;
+
+    BOOST_CHECK(fs2.empty());
+    BOOST_CHECK_EQUAL(fs, fs_moved);
+}
+
 // 21.4.8.2 Оператор ==
 BOOST_AUTO_TEST_CASE(flex_string_equality)
 {

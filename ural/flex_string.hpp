@@ -829,40 +829,6 @@ namespace ural
         Container data_;
     };
 
-    // 21.4.8.2 Оператор ==
-    /** @brief Оператор "равно"
-    @param x левый операнд
-    @param y правый операнд
-    @return <tt> x.compare(y) == 0 </tt>
-    */
-    template <class charT, class traits, class Allocator>
-    bool operator==(flex_string<charT, traits, Allocator> const & x,
-                    flex_string<charT, traits, Allocator> const & y) noexcept
-    {
-        return x.compare(y) == 0;
-    }
-
-    //@{
-    /** @brief Проверка на равенство с c-строкой
-    @param str строка
-    @param s строковый литерал
-    @return <tt> str.compare(s) == 0 </tt>
-    */
-    template <class charT, class traits, class Allocator>
-    bool operator==(charT const * s,
-                    flex_string<charT, traits, Allocator> const & str) noexcept
-    {
-        return str == s;
-    }
-
-    template <class charT, class traits, class Allocator>
-    bool operator==(flex_string<charT, traits, Allocator> const & str,
-                    charT const * s) noexcept
-    {
-        return str.compare(s) == 0;
-    }
-    //@}
-
     // 21.4.8.1 operator+
     /** @brief Конкатенация строк
     @param x левый операнд
@@ -914,6 +880,86 @@ namespace ural
     {
         return std::move(y.insert(0, x));
     }
+
+    template <class charT, class traits, class Allocator>
+    flex_string<charT, traits, Allocator>
+    operator+(charT x, flex_string<charT, traits, Allocator> const & y)
+    {
+        return flex_string<charT, traits, Allocator>(1U, x) + y;
+    }
+
+    template <class charT, class traits, class Allocator>
+    flex_string<charT, traits, Allocator>
+    operator+(charT x, flex_string<charT, traits, Allocator> && y)
+    {
+        return std::move(y.insert(0, 1, x));
+    }
+
+    template <class charT, class traits, class Allocator>
+    flex_string<charT, traits, Allocator>
+    operator+(flex_string<charT, traits, Allocator> const & x,
+              charT const * y)
+    {
+        return flex_string<charT, traits, Allocator>(x).append(y);
+    }
+
+    template <class charT, class traits, class Allocator>
+    flex_string<charT, traits, Allocator>
+    operator+(flex_string<charT, traits, Allocator> && x,
+              charT const * y)
+    {
+        return std::move(x.append(y));
+    }
+
+    template <class charT, class traits, class Allocator>
+    flex_string<charT, traits, Allocator>
+    operator+(flex_string<charT, traits, Allocator> const & x,
+              charT y)
+    {
+        return flex_string<charT, traits, Allocator>(x).append(1, y);
+    }
+
+    template <class charT, class traits, class Allocator>
+    flex_string<charT, traits, Allocator>
+    operator+(flex_string<charT, traits, Allocator> && x,
+              charT y)
+    {
+        return std::move(x.append(1, y));
+    }
+
+    // 21.4.8.2 Оператор ==
+    /** @brief Оператор "равно"
+    @param x левый операнд
+    @param y правый операнд
+    @return <tt> x.compare(y) == 0 </tt>
+    */
+    template <class charT, class traits, class Allocator>
+    bool operator==(flex_string<charT, traits, Allocator> const & x,
+                    flex_string<charT, traits, Allocator> const & y) noexcept
+    {
+        return x.compare(y) == 0;
+    }
+
+    //@{
+    /** @brief Проверка на равенство с c-строкой
+    @param str строка
+    @param s строковый литерал
+    @return <tt> str.compare(s) == 0 </tt>
+    */
+    template <class charT, class traits, class Allocator>
+    bool operator==(charT const * s,
+                    flex_string<charT, traits, Allocator> const & str) noexcept
+    {
+        return str == s;
+    }
+
+    template <class charT, class traits, class Allocator>
+    bool operator==(flex_string<charT, traits, Allocator> const & str,
+                    charT const * s) noexcept
+    {
+        return str.compare(s) == 0;
+    }
+    //@}
 
     // 21.4.8.8 swap
     template <class charT, class traits, class Allocator>
