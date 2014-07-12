@@ -73,6 +73,12 @@ namespace ural
         /// @brief Тип итератора констант
         typedef typename Container::const_iterator const_iterator;
 
+        /// @brief Тип обратного итератора
+        typedef std::reverse_iterator<iterator> reverse_iterator;
+
+        /// @brief Тип обратного константного итератора
+        typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+
         static const size_type npos = -1;
 
         // 21.4.2 Конструкторы и присваивание
@@ -231,6 +237,40 @@ namespace ural
         {
             return data_.end() - 1;
         }
+
+        reverse_iterator rbegin()
+        {
+            return reverse_iterator{this->end()};
+        }
+
+        //@{
+        const_reverse_iterator rbegin() const
+        {
+            return const_reverse_iterator{this->end()};
+        }
+
+        const_reverse_iterator crbegin() const
+        {
+            return this->rbegin();
+        }
+        //@}
+
+        reverse_iterator rend()
+        {
+            return reverse_iterator{this->begin()};
+        }
+
+        //@{
+        const_reverse_iterator rend() const
+        {
+            return const_reverse_iterator{this->begin()};
+        }
+
+        const_reverse_iterator crend() const
+        {
+            return this->rend();
+        }
+        //@}
 
         // 21.4.4. Размер и ёмкость
         //@{

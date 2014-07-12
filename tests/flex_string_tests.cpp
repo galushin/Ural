@@ -279,6 +279,23 @@ BOOST_AUTO_TEST_CASE(flex_string_from_iterators_and_allocator)
 
 // @todo 21.4.3 Поддержка итераторов
 
+BOOST_AUTO_TEST_CASE(flex_string_reverse_iterators)
+{
+    String s1 = "Stepanov";
+
+    String::const_reverse_iterator crb = s1.crbegin();
+    String::const_reverse_iterator cre = s1.crend();
+
+    String const s2{crb, cre};
+
+    String::reverse_iterator rb = s1.rbegin();
+    String::reverse_iterator re = s1.rend();
+
+    std::reverse(rb, re);
+
+    BOOST_CHECK_EQUAL(s1, s2);
+}
+
 // @todo 21.4.4 Ёмкость
 BOOST_AUTO_TEST_CASE(flex_string_size)
 {
