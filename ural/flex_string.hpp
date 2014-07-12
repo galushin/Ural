@@ -106,7 +106,23 @@ namespace ural
             this->swap(str);
         }
 
-        /** @brief Конструктор на основе строкового литерала
+        /** @brief Конструктор на основе массива
+        @param s указатель на начало массива
+        @param n количество элементов массива
+        @pre <tt> s != nullptr </tt>
+        @pre <tt> n < npos </tt>
+        */
+        flex_string(charT const * s, size_type n,
+                    allocator_type const & a = allocator_type{})
+         : data_{a}
+        {
+            // todo устранить дублирование
+            data_.resize(n+1, value_type{});
+
+            traits_type::copy(data_.data(), s, n);
+        }
+
+        /** @brief Конструктор на основе c-строки
         @param s строковый литерал
         @param a распределитель памяти
         @post <tt> std::strcmp(s, this->c_str()) == 0 </tt>
@@ -771,6 +787,26 @@ namespace ural
             return this->data();
         }
         //@}
+
+        // 21.4.7.8 substr
+        /** @brief Выделение подстроки
+        @param pos номер элемента, с которого начинается подстрока
+        @param n длина подстроки
+        @pre <tt> pos <= this->size() </tt>
+        @throw std::out_of_range, если <tt> pos > this->size() </tt>
+        @return <tt> flex_string(this->data() + pos, rlen) </tt>, где
+        <tt> rlen = std::min(n, this->size() - pos) </tt>
+        */
+        flex_string substr(size_type pos, size_type n = npos) const
+        {
+            if(pos > this->size())
+            {
+                throw std::out_of_range("flex_string::substr");
+            }
+
+            return flex_string(this->data() + pos,
+                               std::min(n, this->size() - pos));
+        }
 
         // 21.4.7.9 compare
         /** @brief Сравнение строк

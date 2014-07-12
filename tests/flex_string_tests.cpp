@@ -29,7 +29,7 @@ public:
     typedef typename Base::size_type size_type;
     typedef typename Base::pointer pointer;
 
-    test_allocator(int id = 0)
+    explicit test_allocator(int id = 0)
      : id_{id}
     {}
 
@@ -92,9 +92,26 @@ BOOST_AUTO_TEST_CASE(flex_string_copy_ctor)
     BOOST_CHECK_EQUAL(s2.c_str(), cs);
 }
 
-// @todo Конструктор перемещения
 // @todo Копирование фрагмента строки
-// @todo Конструктор на основе указателя и количества элементов c-массива
+
+BOOST_AUTO_TEST_CASE(flex_string_from_c_str_n)
+{
+    char const * cs = "Hello, world";
+    String const fs(cs, 4);
+    std::string const s(cs, 4);
+
+    typedef String::allocator_type Alloc;
+
+    BOOST_CHECK_EQUAL(s.c_str(), fs.c_str());
+    BOOST_CHECK_EQUAL(Alloc{}.id(), fs.get_allocator().id());
+
+    String::allocator_type a{42};
+
+    String const fsa(cs, 4, a);
+
+    BOOST_CHECK_EQUAL(s.c_str(), fsa.c_str());
+    BOOST_CHECK_EQUAL(a.id(), fsa.get_allocator().id());
+}
 
 BOOST_AUTO_TEST_CASE(flex_string_from_c_str)
 {
@@ -641,6 +658,26 @@ BOOST_AUTO_TEST_CASE(flex_string_pop_back)
 }
 
 // @todo 21.4.7 операции со строками
+
+// 21.4.7.8 substr
+BOOST_AUTO_TEST_CASE(flex_string_substr)
+{
+    std::string const s = "Stepanov";
+    String const fs{s.c_str()};
+
+    std::string const sub_s = s.substr(2, 2);
+    String const sub_fs = fs.substr(2, 2);
+
+    BOOST_CHECK_EQUAL(sub_s.c_str(), sub_fs.c_str());
+
+    std::string const sub_s_2 = s.substr(2, s.size());
+    String const sub_fs_2 = fs.substr(2, fs.size());
+
+    BOOST_CHECK_EQUAL(sub_s_2.c_str(), sub_fs_2.c_str());
+
+    BOOST_CHECK_THROW(fs.substr(fs.size() + 1), std::out_of_range);
+}
+
 // @todo 21.4.8 вспомогательные функции
 
 // 21.4.8.1 Оператор +
