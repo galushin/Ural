@@ -215,10 +215,17 @@ namespace ural
             return data_.begin();
         }
 
+        //@{
         const_iterator end() const
         {
             return data_.end() - 1;
         }
+
+        const_iterator cend() const
+        {
+            return this->end();
+        }
+        //@}
 
         iterator end()
         {
@@ -792,6 +799,27 @@ namespace ural
         {
             assert(!this->empty());
             this->erase(this->end() - 1);
+        }
+
+        // 21.4.6.7 copy
+        /** @brief Копирование подстроки в массив
+        @param s указатель на начало массива
+        @param n размер массива
+        @param pos номер элемента, с которого начинается копирование
+        @return Количество символов, которое было скопировано
+        */
+        size_type copy(charT * s, size_type n, size_type pos = 0) const
+        {
+            if(pos > this->size())
+            {
+                throw std::out_of_range("flex_string::copy");
+            }
+
+            auto const rlen = std::min(n, this->size() - pos);
+
+            std::copy(this->begin() + pos, this->begin() + pos + rlen, s);
+
+            return rlen;
         }
 
         // 21.4.6.8 swap

@@ -694,6 +694,61 @@ BOOST_AUTO_TEST_CASE(flex_string_pop_back)
     BOOST_CHECK_EQUAL(s.c_str(), fs);
 }
 
+// @todo 21.4.6.6 replace
+
+// 21.4.6.7 copy
+BOOST_AUTO_TEST_CASE(flex_string_copy_from_0)
+{
+    String const fs{"Stepanov"};
+
+    std::vector<String::value_type> s(5, 'x');
+
+    auto const rlen = fs.copy(s.data(), s.size());
+
+    auto const fs_sub = fs.substr(0, rlen);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(fs_sub.cbegin(), fs_sub.cend(),
+                                  s.cbegin(), s.cend());
+
+    BOOST_CHECK_THROW(fs.copy(s.data(), s.size(), fs.size() + 1),
+                      std::out_of_range);
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_copy)
+{
+    String const fs{"Stepanov"};
+
+    std::vector<String::value_type> s(5, 'x');
+
+    auto const pos = 0;
+
+    auto const rlen = fs.copy(s.data(), s.size(), pos);
+
+    auto const fs_sub = fs.substr(pos, rlen);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(fs_sub.cbegin(), fs_sub.cend(),
+                                  s.cbegin(), s.cend());
+
+    BOOST_CHECK_THROW(fs.copy(s.data(), s.size(), fs.size() + 1),
+                      std::out_of_range);
+}
+
+BOOST_AUTO_TEST_CASE(flex_string_copy_to_end)
+{
+    String const fs{"Stepanov"};
+
+    std::vector<String::value_type> s(fs.size() * 2, 'x');
+
+    auto const pos = fs.size() - 1;
+
+    auto const rlen = fs.copy(s.data(), fs.size(), pos);
+
+    auto const fs_sub = fs.substr(pos, rlen);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(fs_sub.cbegin(), fs_sub.cend(),
+                                  s.cbegin(), s.cbegin() + rlen);
+}
+
 // @todo 21.4.7 операции со строками
 
 // 21.4.7.8 substr
