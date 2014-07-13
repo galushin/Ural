@@ -48,16 +48,16 @@ public:
         return a_.deallocate(p, n);
     }
 
-    int id() const
-    {
-        return this->id_;
-    }
-
     template <class U>
     struct rebind
     {
         typedef test_allocator<U> other;
     };
+
+    int id() const
+    {
+        return this->id_;
+    }
 
 private:
     int id_;
@@ -309,7 +309,17 @@ BOOST_AUTO_TEST_CASE(flex_string_from_init_list)
     BOOST_CHECK_EQUAL(a.id(), fsa.get_allocator().id());
 }
 
-// @todo Конструктор на основе строки и распределителя памяти
+BOOST_AUTO_TEST_CASE(flex_string_from_flex_string_and_allocator)
+{
+    String::allocator_type a{42};
+    String const s1{"Step"};
+
+    String const s2{s1, a};
+
+    BOOST_CHECK_EQUAL(a.id(), s2.get_allocator().id());
+    BOOST_CHECK_EQUAL(s1, s2);
+}
+
 // @todo Конструктор на основе временной строки и распределителя памяти
 
 BOOST_AUTO_TEST_CASE(flex_string_operator_assign)

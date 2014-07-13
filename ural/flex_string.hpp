@@ -228,6 +228,16 @@ namespace ural
             data_.push_back(value_type{});
         }
 
+        /** @brief Конструктор
+        @param str строка, содержимое которой должно быть скопировано.
+        @param a распределитель памяти
+        @post <tt> this->get_allocator() == a </tt>
+        @post <tt> *this == str </tt>
+        */
+        flex_string(flex_string const & str, allocator_type const & a)
+         : flex_string{str.data(), str.size(), a}
+        {}
+
         /** @brief Оператор присваивания
         @param s присваемая строка
         @return <tt> *this </tt>
