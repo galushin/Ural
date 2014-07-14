@@ -1066,6 +1066,24 @@ BOOST_AUTO_TEST_CASE(flex_string_less)
     BOOST_CHECK_EQUAL(s2.c_str() < s1, true);
 }
 
+BOOST_AUTO_TEST_CASE(flex_string_less_equal)
+{
+    String const s1{"Paper"};
+    String const s2{"Pair"};
+
+    BOOST_CHECK_EQUAL(s1 <= s2, false);
+    BOOST_CHECK_EQUAL(s2 <= s1, true);
+
+    BOOST_CHECK_EQUAL(s1 <= s1, true);
+    BOOST_CHECK_EQUAL(s2 <= s2, true);
+
+    BOOST_CHECK_EQUAL(s1 <= s2.c_str(), false);
+    BOOST_CHECK_EQUAL(s2 <= s1.c_str(), true);
+
+    BOOST_CHECK_EQUAL(s1.c_str() <= s2, false);
+    BOOST_CHECK_EQUAL(s2.c_str() <= s1, true);
+}
+
 BOOST_AUTO_TEST_CASE(flex_string_greater)
 {
     String const s1{"Paper"};
