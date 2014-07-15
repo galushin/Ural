@@ -865,13 +865,43 @@ namespace ural
         iterator
         insert(const_iterator p, InputIterator first, InputIterator last)
         {
-            // @todo Реализация для более слабых категорий итераторов
+            typename std::iterator_traits<InputIterator>::iterator_category tag{};
+            return this->insert_helper(p, first, last, tag);
+        }
+
+    private:
+        template <class InputIterator>
+        iterator
+        insert_helper(const_iterator p, InputIterator first, InputIterator last,
+               std::input_iterator_tag)
+        {
+            size_type n = 0;
+            auto const pos = p - this->begin();
+
+            for(; first != last; ++ first, ++ n)
+            {
+                this->push_back(*first);
+            }
+
+            std::rotate(this->begin() + pos, this->end() - n, this->end());
+            return this->begin() + pos;
+
+            // @todo Устранить дублирование
+        }
+
+        template <class InputIterator>
+        iterator
+        insert_helper(const_iterator p, InputIterator first, InputIterator last,
+               std::forward_iterator_tag)
+        {
             auto const n = std::distance(first, last);
             auto const pos = p - this->begin();
             this->append(first, last);
             std::rotate(this->begin() + pos, this->end() - n, this->end());
             return this->begin() + pos;
         }
+
+    public:
 
         /** @brief Вставка символов из списка инициализации в точку, заданную
         итератором

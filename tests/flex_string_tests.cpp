@@ -766,6 +766,22 @@ BOOST_AUTO_TEST_CASE(flex_string_insert_init_list_at_iterator)
     BOOST_CHECK_EQUAL(s.c_str(), fs);
 }
 
+BOOST_AUTO_TEST_CASE(flex_string_insert_range)
+{
+    std::istringstream is_1("ABC");
+    std::istringstream is_2("ABC");
+
+    String fs{"Memory"};
+    std::string s{fs.c_str()};
+
+    typedef std::istream_iterator<char> Iterator;
+
+    s.insert(s.begin() + 2, Iterator(is_1), Iterator{});
+    fs.insert(fs.begin() + 2, Iterator(is_2), Iterator{});
+
+    BOOST_CHECK_EQUAL(s.c_str(), fs);
+}
+
 // 21.4.6.5 erase
 BOOST_AUTO_TEST_CASE(flex_string_erase_iterator_range)
 {

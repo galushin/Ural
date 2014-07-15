@@ -12088,14 +12088,19 @@
 	<map>
 	<mutex>
 
-1405040482 source:c:\devtools\ural_repo\ural\tests\flex_string_tests.cpp
-	<boost/test/unit_test.hpp>
+1405401320 source:c:\devtools\ural_repo\ural\tests\flex_string_tests.cpp
 	<ural/flex_string.hpp>
+	<boost/test/unit_test.hpp>
+	<boost/mpl/list.hpp>
 	<sstream>
 
-1405040671 c:\devtools\ural_repo\ural\ural\flex_string.hpp
+1405401732 c:\devtools\ural_repo\ural\ural\flex_string.hpp
 	<ural/defs.hpp>
+	<algorithm>
 	<ostream>
+	<vector>
+	<stdexcept>
+	<cassert>
 
 1403867902 c:\devtools\github\ural\ural\functional\memoize.hpp
 	<map>
