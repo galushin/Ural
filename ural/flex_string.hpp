@@ -641,7 +641,13 @@ namespace ural
         template <class InputIterator>
         flex_string & append(InputIterator first, InputIterator last)
         {
-            return this->append(flex_string{first, last});
+            // @todo reserve, если позволяет категория итераторов
+            for(; first != last; ++ first)
+            {
+                this->push_back(*first);
+            }
+
+            return *this;
         }
 
         /** Дописывает символы списка инициализации в конец данной строки
@@ -865,38 +871,13 @@ namespace ural
         iterator
         insert(const_iterator p, InputIterator first, InputIterator last)
         {
-            typename std::iterator_traits<InputIterator>::iterator_category tag{};
-            return this->insert_helper(p, first, last, tag);
-        }
-
-    private:
-        template <class InputIterator>
-        iterator
-        insert_helper(const_iterator p, InputIterator first, InputIterator last,
-               std::input_iterator_tag)
-        {
-            size_type n = 0;
             auto const pos = p - this->begin();
+            auto const old_size = this->size();
 
-            for(; first != last; ++ first, ++ n)
-            {
-                this->push_back(*first);
-            }
-
-            std::rotate(this->begin() + pos, this->end() - n, this->end());
-            return this->begin() + pos;
-
-            // @todo Устранить дублирование
-        }
-
-        template <class InputIterator>
-        iterator
-        insert_helper(const_iterator p, InputIterator first, InputIterator last,
-               std::forward_iterator_tag)
-        {
-            auto const n = std::distance(first, last);
-            auto const pos = p - this->begin();
             this->append(first, last);
+
+            auto const n = this->size() - old_size;
+
             std::rotate(this->begin() + pos, this->end() - n, this->end());
             return this->begin() + pos;
         }
