@@ -338,11 +338,12 @@ BOOST_AUTO_TEST_CASE(flex_string_operator_move_assign)
     String s0{"Alpha"};
     String const s0_copy = s0;
 
+    auto * data_old = s0.data();
+
     s = std::move(s0);
 
     BOOST_CHECK_EQUAL(s, s0_copy);
-
-    // @todo проверить, что копирование не производится
+    BOOST_CHECK_EQUAL(data_old, s.data());
 }
 
 BOOST_AUTO_TEST_CASE(flex_string_operator_assign_c_str)

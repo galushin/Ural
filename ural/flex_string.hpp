@@ -238,6 +238,12 @@ namespace ural
          : flex_string{str.data(), str.size(), a}
         {}
 
+        /** @brief Конструктор
+        @param str строка, содержимое которой должно быть перемещено
+        @param a распределитель памяти
+        */
+        flex_string(flex_string && str, allocator_type const & a);
+
         /** @brief Оператор присваивания
         @param s присваемая строка
         @return <tt> *this </tt>
