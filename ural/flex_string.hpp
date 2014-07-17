@@ -34,16 +34,107 @@
 
 namespace ural
 {
+    template <class T, class A>
+    class string_vector_storage
+    {
+        typedef std::vector<T, A> Container;
+
+    public:
+        // Типы
+        typedef typename Container::size_type size_type;
+        typedef typename Container::iterator iterator;
+        typedef typename Container::const_iterator const_iterator;
+
+        // Конструкторы
+        string_vector_storage(size_type n, A const & a)
+         : data_{n+1, T{}, a}
+        {}
+
+        // Свойства
+        A get_allocator() const
+        {
+            return data_.get_allocator();
+        }
+
+        size_type size() const
+        {
+            return data_.size();
+        }
+
+        size_type capacity() const
+        {
+            return data_.capacity();
+        }
+
+        T const * data() const
+        {
+            return data_.data();
+        }
+
+        // Итераторы
+        iterator begin()
+        {
+            return data_.begin();
+        }
+
+        const_iterator begin() const
+        {
+            return data_.begin();
+        }
+
+        iterator end()
+        {
+            assert(!data_.empty());
+            return data_.end() - 1;
+        }
+
+        const_iterator end() const
+        {
+            assert(!data_.empty());
+            return data_.end() - 1;
+        }
+
+        // Модификаторы
+        void resize(size_type n, T const & c)
+        {
+            data_.pop_back();
+
+            data_.resize(n, c);
+
+            // @todo Убедиться, что инвариант сохраняется, даже если выше
+            // произошло исключение
+            data_.push_back(T{});
+        }
+
+        void swap(string_vector_storage & x)
+        {
+            data_.swap(x.data_);
+        }
+
+        void append(size_type n, T const & c)
+        {
+            data_.insert(this->end(), n, c);
+        }
+
+        void pop_back(size_type n)
+        {
+            data_.erase(this->end() - n, this->end());
+        }
+
+    private:
+        Container data_;
+    };
+
     /** @brief Реализация строк, основанная на стратегиях
     @tparam charT тип символов
     @tparam traits класс характеристик символов
     @tparam Allocator распределитель памяти
-    @todo добавить Storage --- стратегия хранения
     @todo Оптимизация, в частности - избегать создания временных строк
     */
     template <class charT,
               class traits = use_default,
-              class Allocator = use_default>
+              class Allocator = use_default,
+              class Storage = use_default>
     class flex_string
     {
     public:
@@ -59,7 +150,8 @@ namespace ural
         typedef typename traits_type::char_type value_type;
 
     private:
-        typedef std::vector<value_type, allocator_type> Container;
+        typedef typename default_helper<Storage, string_vector_storage<charT, allocator_type>>::type
+            storage_type;
 
     public:
         /// @brief Тип ссылки
@@ -73,10 +165,10 @@ namespace ural
             size_type;
 
         /// @brief Тип итератора
-        typedef typename Container::iterator iterator;
+        typedef typename storage_type::iterator iterator;
 
         /// @brief Тип итератора констант
-        typedef typename Container::const_iterator const_iterator;
+        typedef typename storage_type::const_iterator const_iterator;
 
         /// @brief Тип обратного итератора
         typedef std::reverse_iterator<iterator> reverse_iterator;
@@ -99,7 +191,7 @@ namespace ural
         может потребоваться выделение памяти
         */
         explicit flex_string()
-         : data_(1, value_type{})
+         : data_(0, allocator_type{})
         {}
 
         /** @brief Конструктор без аргументов
@@ -109,7 +201,7 @@ namespace ural
         @post <tt> this->get_allocator() == a </tt>
         */
         explicit flex_string(Allocator const & a)
-         : data_(1, value_type{}, a)
+         : data_(0, a)
         {}
 
         /// @brief Конструктор копий
@@ -120,7 +212,7 @@ namespace ural
         */
         template <class A1>
         flex_string(std::basic_string<value_type, traits_type, A1> const & s)
-         : flex_string{s.begin(), s.end()}
+         : flex_string{s.data(), s.size()}
         {}
 
         /** @brief Конструктор на основе списка инициализации
@@ -177,12 +269,9 @@ namespace ural
         */
         flex_string(charT const * s, size_type n,
                     allocator_type const & a = allocator_type{})
-         : data_{a}
+         : data_{n, a}
         {
-            // todo устранить дублирование
-            data_.resize(n+1, value_type{});
-
-            traits_type::copy(data_.data(), s, n);
+            traits_type::copy(&(*this)[0], s, n);
         }
 
         /** @brief Конструктор на основе c-строки
@@ -192,12 +281,9 @@ namespace ural
         */
         flex_string(charT const * s,
                     allocator_type const & a = allocator_type{})
-         : data_{a}
+         : data_{traits_type::length(s), a}
         {
-            auto const n = traits_type::length(s);
-            data_.resize(n+1);
-
-            traits_type::copy(data_.data(), s, n+1);
+            traits_type::copy(&(*this)[0], s, this->size()+1);
         }
 
         /** @brief Создание строки одинаковых символов
@@ -210,9 +296,9 @@ namespace ural
         */
         flex_string(size_type n, value_type c,
                     allocator_type const & a = allocator_type{})
-         : data_(n+1, c, a)
+         : data_(n, a)
         {
-            data_.back() = value_type{};
+            std::fill(this->begin(), this->end(), c);
         }
 
         /** @brief Создание строки на оснвое пары итераторов
@@ -223,9 +309,9 @@ namespace ural
         template <class InputIterator>
         flex_string(InputIterator first, InputIterator last,
                     allocator_type const & a = allocator_type{})
-         : data_(first, last, a)
+         : data_{0, a}
         {
-            data_.push_back(value_type{});
+            this->append(first, last);
         }
 
         /** @brief Конструктор
@@ -307,7 +393,7 @@ namespace ural
         */
         const_iterator end() const
         {
-            return data_.end() - 1;
+            return data_.end();
         }
 
         const_iterator cend() const
@@ -323,7 +409,7 @@ namespace ural
         */
         iterator end()
         {
-            return data_.end() - 1;
+            return data_.end();
         }
 
         /** @brief Итератор, ссылающийся на первый в обратном порядке символ
@@ -382,7 +468,6 @@ namespace ural
         */
         size_type size() const noexcept
         {
-            assert(!data_.empty());
             return (this->end() - this->begin());
         }
 
@@ -400,11 +485,7 @@ namespace ural
         */
         void resize(size_type n, value_type c)
         {
-            data_.pop_back();
-
             data_.resize(n, c);
-
-            data_.push_back(value_type{});
         }
 
         /** @brief Изменение размера строки
@@ -425,7 +506,7 @@ namespace ural
         */
         size_type capacity() const
         {
-            assert(!data_.empty());
+            assert(data_.size() != 0);
             return data_.capacity() - 1;
         }
 
@@ -612,7 +693,9 @@ namespace ural
         */
         flex_string & append(value_type const * s, size_type n)
         {
-            data_.insert(this->end(), s, s+n);
+            data_.append(n, value_type{});
+            std::copy(s, s+n, this->end() - n);
+
             return *this;
         }
 
@@ -633,7 +716,7 @@ namespace ural
         */
         flex_string & append(size_type n, value_type c)
         {
-            data_.insert(this->end(), n, c);
+            data_.append(n, c);
             return *this;
         }
 
@@ -913,7 +996,9 @@ namespace ural
         flex_string & erase(size_type pos = 0, size_type n = npos)
         {
             auto const xlen = std::min(n, this->size() - pos);
-            data_.erase(this->begin() + pos, this->begin() + pos + xlen);
+            std::move(this->begin() + pos + xlen, this->end(),
+                      this->begin() + pos);
+            data_.pop_back(xlen);
             return *this;
         }
 
@@ -925,7 +1010,11 @@ namespace ural
         */
         iterator erase(const_iterator p)
         {
-            return data_.erase(data_.begin() + (p - data_.begin()));
+            assert(p != this->end());
+
+            auto const pos = p - this->begin();
+            this->erase(pos, 1);
+            return this->begin() + pos;
         }
 
         /** @brief Удаляет элементы строки, определяемые интервалом
@@ -1023,29 +1112,36 @@ namespace ural
         }
 
         // 21.4.7.9 compare
-        /** @brief Сравнение строк
-        @param s строка, с которой сравнивается данная строка
-        @return <tt> traits_type::compare(data(), s.data(), rlen) </tt>, где
-        <tt> rlen == std::min(size(), s.size()) </tt>
-        @todo Рефакторинг
-        */
-        int compare(flex_string const & s) const noexcept
+    private:
+        int compare_impl(value_type const * s, size_t n) const noexcept
         {
-            auto const rlen = std::min(this->size(), s.size());
-            auto const r = traits_type::compare(this->data(), s.data(), rlen);
+            // @todo Рефакторинг
+            auto const rlen = std::min(this->size(), n);
+            auto const r = traits_type::compare(this->data(), s, rlen);
 
             if(r == 0)
             {
-                if(this->size() < s.size())
+                if(this->size() < n)
                 {
                     return -1;
                 }
-                if(this->size() > s.size())
+                if(this->size() > n)
                 {
                     return  +1;
                 }
             }
             return r;
+        }
+
+    public:
+        /** @brief Сравнение строк
+        @param s строка, с которой сравнивается данная строка
+        @return <tt> traits_type::compare(data(), s.data(), rlen) </tt>, где
+        <tt> rlen == std::min(size(), s.size()) </tt>
+        */
+        int compare(flex_string const & s) const noexcept
+        {
+            return this->compare_impl(s.data(), s.size());
         }
 
         /** @brief Сравнение строк
@@ -1054,7 +1150,7 @@ namespace ural
         */
         int compare(value_type const * s) const noexcept
         {
-            return this->compare(flex_string(s));
+            return this->compare_impl(s, traits_type::length(s));
         }
 
         /** @brief Распределитель памяти
@@ -1081,7 +1177,7 @@ namespace ural
         }
 
     private:
-        Container data_;
+        storage_type data_;
     };
 
     // 21.4.8.1 operator+

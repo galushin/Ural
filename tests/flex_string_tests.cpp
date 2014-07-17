@@ -70,7 +70,7 @@ typedef ural::flex_string<char, ural::use_default, test_allocator<char>>
 typedef boost::mpl::list<String> Strings_list;
 
 // Интеграция с std::string
-BOOST_AUTO_TEST_CASE(flex_string_from_std_string)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_std_string, String, Strings_list)
 {
     std::string const s{"Stepanov"};
     String const fs{s};
@@ -221,6 +221,7 @@ BOOST_AUTO_TEST_CASE(flex_string_from_n_char)
     auto const C = 'a';
 
     String const s(n, C);
+    std::string const s0(n, C);
 
     typedef String::allocator_type Alloc;
     typedef String::traits_type Traits;
@@ -228,11 +229,15 @@ BOOST_AUTO_TEST_CASE(flex_string_from_n_char)
     BOOST_CHECK_EQUAL(Alloc{}.id(), s.get_allocator().id());
     BOOST_CHECK(nullptr != s.data());
     BOOST_CHECK_EQUAL(n, s.size());
+    BOOST_CHECK_EQUAL(n, s0.size());
     BOOST_CHECK_GE(s.capacity(), s.size());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(s0.begin(), s0.end(), s.begin(), s.end());
 
     for(size_t i = 0; i != n; ++ i)
     {
-        BOOST_CHECK(Traits::eq(s[i], C));
+        BOOST_CHECK_EQUAL(C, s[i]);
+        BOOST_CHECK(Traits::eq(C, s[i]));
     }
 }
 
