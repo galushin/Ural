@@ -129,7 +129,9 @@ namespace ural
     @tparam charT тип символов
     @tparam traits класс характеристик символов
     @tparam Allocator распределитель памяти
+    @tparam Storage стратегия хранения
     @todo Оптимизация, в частности - избегать создания временных строк
+    @todo Использовать по умолчанию более эффективную стратегию хранения
     */
     template <class charT,
               class traits = use_default,
