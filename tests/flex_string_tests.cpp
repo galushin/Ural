@@ -483,6 +483,29 @@ BOOST_AUTO_TEST_CASE(flex_string_resize_greater_default)
 
 // @todo capacity, reserve, shrink_to_fit
 
+BOOST_AUTO_TEST_CASE(flex_string_reserve)
+{
+    String fs;
+    std::string s;
+
+    auto const n = 10;
+    fs.reserve(n);
+
+    const void * const old_data = fs.data();
+
+    for(; fs.size() < n;)
+    {
+        char c = 'a';
+        fs.push_back(c);
+        s.push_back(c);
+
+        BOOST_CHECK_EQUAL(fs, s.c_str());
+
+        const void * const new_data = fs.data();
+        BOOST_CHECK_EQUAL(old_data, new_data);
+    }
+}
+
 BOOST_AUTO_TEST_CASE(flex_string_clear)
 {
     String s = "Stepanov";

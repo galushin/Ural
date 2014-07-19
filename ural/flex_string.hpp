@@ -106,6 +106,11 @@ namespace ural
             data_.push_back(T{});
         }
 
+        void reserve(size_type n)
+        {
+            data_.reserve(n+1);
+        }
+
         void swap(string_vector_storage & x)
         {
             data_.swap(x.data_);
@@ -510,6 +515,15 @@ namespace ural
         {
             assert(data_.size() != 0);
             return data_.capacity() - 1;
+        }
+
+        /** @brief Резервирует достаточно памяти для @c n символов
+        @param n гарантированный размер, до которого может расти строка без
+        перераспределения памяти
+        */
+        void reserve(size_t n)
+        {
+            return data_.reserve(n);
         }
 
         /** @brief Очистка содержимого строки.
