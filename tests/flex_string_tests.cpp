@@ -48,6 +48,17 @@ public:
         return a_.deallocate(p, n);
     }
 
+    template <class... Args>
+    void construct(pointer p, Args && ... args)
+    {
+        a_.construct(p, std::forward<Args>(args)...);
+    }
+
+    void destroy(pointer p)
+    {
+        a_.destroy(p);
+    }
+
     template <class U>
     struct rebind
     {
@@ -64,11 +75,16 @@ private:
     std::allocator<T> a_;
 };
 
+typedef ural::flex_string<char, ural::use_default, test_allocator<char>,
+                          ural::string_vector_storage<char, test_allocator<char>>>
+    Vector_string;
+
 typedef ural::flex_string<char, ural::use_default, test_allocator<char>>
     String;
 
-typedef boost::mpl::list<String> Strings_list;
+typedef boost::mpl::list<String, Vector_string> Strings_list;
 
+// @todo заменять тесты на шаблоны
 // Интеграция с std::string
 BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_std_string, String, Strings_list)
 {
@@ -275,10 +291,8 @@ BOOST_AUTO_TEST_CASE(flex_string_from_iterators)
     BOOST_CHECK_EQUAL(src.size(), s.size());
     BOOST_CHECK_EQUAL(src.c_str(), s.c_str());
 
-     for(size_t i = 0; i != src.size(); ++ i)
-    {
-        BOOST_CHECK_EQUAL(src[i], s[i]);
-    }
+    BOOST_CHECK_EQUAL_COLLECTIONS(src.begin(), src.end(),
+                                  s.begin(), s.end());
 }
 
 BOOST_AUTO_TEST_CASE(flex_string_from_iterators_and_allocator)
@@ -325,6 +339,17 @@ BOOST_AUTO_TEST_CASE(flex_string_from_flex_string_and_allocator)
     BOOST_CHECK_EQUAL(s1, s2);
 }
 
+BOOST_AUTO_TEST_CASE(flex_string_move_ctor)
+{
+    String s{"Alpha"};
+    String const s_old = s;
+
+    String s1(std::move(s));
+
+    BOOST_CHECK_EQUAL(s1, s_old);
+    BOOST_CHECK(s.empty());
+}
+
 // @todo Конструктор на основе временной строки и распределителя памяти
 
 BOOST_AUTO_TEST_CASE(flex_string_operator_assign)
@@ -334,6 +359,8 @@ BOOST_AUTO_TEST_CASE(flex_string_operator_assign)
 
     s0 = s;
 
+    BOOST_CHECK_EQUAL_COLLECTIONS(s.begin(), s.end(),
+                                  s0.begin(), s0.end());
     BOOST_CHECK_EQUAL(s, s0);
 }
 
@@ -395,9 +422,11 @@ BOOST_AUTO_TEST_CASE(flex_string_resize_less)
 {
     String s = "Stepanov";
 
-    s.resize(4, 'a');
+    auto const n = 4;
 
-    BOOST_CHECK_EQUAL(4, s.size());
+    s.resize(n, 'a');
+
+    BOOST_CHECK_EQUAL(n, s.size());
 
     BOOST_CHECK_EQUAL("Step", s.c_str());
 }
@@ -490,6 +519,8 @@ BOOST_AUTO_TEST_CASE(flex_string_reserve)
 
     auto const n = 10;
     fs.reserve(n);
+
+    BOOST_CHECK_GE(fs.capacity(), n);
 
     const void * const old_data = fs.data();
 
@@ -845,7 +876,11 @@ BOOST_AUTO_TEST_CASE(flex_string_copy_from_0)
 
     auto const rlen = fs.copy(s.data(), s.size());
 
+    BOOST_CHECK_EQUAL(rlen, s.size());
+
     auto const fs_sub = fs.substr(0, rlen);
+
+    BOOST_CHECK_EQUAL(rlen, fs_sub.size());
 
     BOOST_CHECK_EQUAL_COLLECTIONS(fs_sub.cbegin(), fs_sub.cend(),
                                   s.cbegin(), s.cend());
@@ -1011,6 +1046,7 @@ BOOST_AUTO_TEST_CASE(flex_string_plus_char_left_rvalue)
     String const fs_moved = c + std::move(fs2);
 
     BOOST_CHECK(fs2.empty());
+    BOOST_CHECK_EQUAL(fs2, "");
     BOOST_CHECK_EQUAL(fs, fs_moved);
 }
 

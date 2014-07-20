@@ -19,6 +19,8 @@
 
 /** @file ural/flex_string.hpp
  @brief Реализация строк, основанная на стратегиях
+ @note открытым остаётся вопрос, где целесообразнее обрабатывать терминальный
+ символ строки
 */
 
 #include <ural/defs.hpp>
@@ -31,9 +33,166 @@
 #include <cassert>
 
 // @todo Интеграция с std::string
+// @todo Согласовать size и capacity с begin и end
 
 namespace ural
 {
+    template <class T, class A>
+    class string_allocator_storage
+     : private A
+    {
+    public:
+        // @todo Для пустой строки не выделять память
+
+        // Типы
+        typedef typename A::size_type size_type;
+        typedef typename A::pointer iterator;
+        typedef typename A::const_pointer const_iterator;
+
+        // Создание, копирование, уничтожение
+        string_allocator_storage(size_type n, A const & a)
+         : A{a}
+        {
+            begin_ = A::allocate(n);
+            end_of_storage_ = begin_ + n;
+            end_ = begin_;
+
+            // @todo можно ли присваивать без конструирования?
+            for(; n > 0; -- n, ++ end_)
+            {
+                A::construct(end_);
+            }
+        }
+
+        string_allocator_storage(string_allocator_storage const & x)
+         : string_allocator_storage{x.size(), x.get_allocator()}
+        {
+            std::copy(x.begin(), x.end(), this->begin());
+        }
+
+        string_allocator_storage & operator=(string_allocator_storage const & x);
+
+        ~string_allocator_storage()
+        {
+            for(auto p = begin_; p != end_; ++ p)
+            {
+                A::destroy(p);
+            }
+
+            A::deallocate(begin_, this->size());
+        }
+
+        // Свойства
+        A get_allocator() const
+        {
+            return static_cast<A>(*this);
+        }
+
+        T const * data() const
+        {
+            return this->begin_;
+        }
+
+        size_type size() const
+        {
+            return this->end() - this->begin();
+        }
+
+        size_type capacity() const
+        {
+            return this->end_of_storage_ - this->begin();
+        }
+
+        iterator begin()
+        {
+            return this->begin_;
+        }
+
+        const_iterator begin() const
+        {
+            return this->begin_;
+        }
+
+        iterator end()
+        {
+            return this->end_;
+        }
+
+        const_iterator end() const
+        {
+            return this->end_;
+        }
+
+        // Модификаторы
+        void resize(size_type n, T const & c)
+        {
+            if(n > this->size())
+            {
+                this->append(n - this->size(), c);
+            }
+            else
+            {
+                this->pop_back(this->size() - n);
+            }
+        }
+
+        void reserve(size_type n)
+        {
+            if(n > this->capacity())
+            {
+                string_allocator_storage tmp(n, this->get_allocator());
+
+                assert(tmp.size() > this->size());
+
+                tmp.pop_back(tmp.size() - this->size());
+
+                assert(tmp.size() == this->size());
+                assert(tmp.capacity() >= n);
+
+                std::move(begin_, end_, tmp.begin_);
+
+                tmp.swap(*this);
+            }
+
+            assert(this->capacity() >= n);
+        }
+
+        void swap(string_allocator_storage & x)
+        {
+            // @todo обменивать распределители?
+            std::swap(this->begin_, x.begin_);
+            std::swap(this->end_, x.end_);
+            std::swap(this->end_of_storage_, x.end_of_storage_);
+        }
+
+        void append(size_type n, T const & c)
+        {
+            this->reserve(this->size() + n);
+
+            assert(this->size() + n <= this->capacity());
+
+            for(; n > 0; -- n, ++end_)
+            {
+                A::construct(end_ - 1, c);
+            }
+        }
+
+        void pop_back(size_type n)
+        {
+            for(; n > 0; -- n, -- end_)
+            {
+                A::destroy(end_ - 1);
+            }
+        }
+
+    private:
+        typedef typename A::pointer pointer;
+
+        pointer begin_;
+        pointer end_;
+        pointer end_of_storage_;
+    };
+
     template <class T, class A>
     class string_vector_storage
     {
@@ -157,7 +316,7 @@ namespace ural
         typedef typename traits_type::char_type value_type;
 
     private:
-        typedef typename default_helper<Storage, string_vector_storage<charT, allocator_type>>::type
+        typedef typename default_helper<Storage, string_allocator_storage<charT, allocator_type>>::type
             storage_type;
 
     public:
@@ -198,7 +357,7 @@ namespace ural
         может потребоваться выделение памяти
         */
         explicit flex_string()
-         : data_(0, allocator_type{})
+         : data_(1, allocator_type{})
         {}
 
         /** @brief Конструктор без аргументов
@@ -208,7 +367,7 @@ namespace ural
         @post <tt> this->get_allocator() == a </tt>
         */
         explicit flex_string(Allocator const & a)
-         : data_(0, a)
+         : data_(1, a)
         {}
 
         /// @brief Конструктор копий
@@ -276,9 +435,10 @@ namespace ural
         */
         flex_string(charT const * s, size_type n,
                     allocator_type const & a = allocator_type{})
-         : data_{n, a}
+         : data_{n+1, a}
         {
             traits_type::copy(&(*this)[0], s, n);
+            *this->end() = value_type{};
         }
 
         /** @brief Конструктор на основе c-строки
@@ -288,7 +448,7 @@ namespace ural
         */
         flex_string(charT const * s,
                     allocator_type const & a = allocator_type{})
-         : data_{traits_type::length(s), a}
+         : data_{traits_type::length(s)+1, a}
         {
             traits_type::copy(&(*this)[0], s, this->size()+1);
         }
@@ -303,9 +463,10 @@ namespace ural
         */
         flex_string(size_type n, value_type c,
                     allocator_type const & a = allocator_type{})
-         : data_(n, a)
+         : data_(n+1, a)
         {
             std::fill(this->begin(), this->end(), c);
+            *this->end() = value_type{};
         }
 
         /** @brief Создание строки на оснвое пары итераторов
@@ -316,7 +477,7 @@ namespace ural
         template <class InputIterator>
         flex_string(InputIterator first, InputIterator last,
                     allocator_type const & a = allocator_type{})
-         : data_{0, a}
+         : data_{1, a}
         {
             this->append(first, last);
         }
@@ -400,7 +561,7 @@ namespace ural
         */
         const_iterator end() const
         {
-            return data_.end();
+            return data_.end() - 1;
         }
 
         const_iterator cend() const
@@ -416,7 +577,7 @@ namespace ural
         */
         iterator end()
         {
-            return data_.end();
+            return data_.end() - 1;
         }
 
         /** @brief Итератор, ссылающийся на первый в обратном порядке символ
@@ -492,7 +653,15 @@ namespace ural
         */
         void resize(size_type n, value_type c)
         {
-            data_.resize(n, c);
+            if(n > this->size())
+            {
+                this->append(n - this->size(), c);
+            }
+            else
+            {
+                data_.pop_back(this->size() - n);
+                *this->end() = value_type{};
+            }
         }
 
         /** @brief Изменение размера строки
@@ -523,7 +692,7 @@ namespace ural
         */
         void reserve(size_t n)
         {
-            return data_.reserve(n);
+            return data_.reserve(n+1);
         }
 
         /** @brief Очистка содержимого строки.
@@ -712,6 +881,8 @@ namespace ural
             data_.append(n, value_type{});
             std::copy(s, s+n, this->end() - n);
 
+            *this->end() = value_type{};
+
             return *this;
         }
 
@@ -722,6 +893,7 @@ namespace ural
         */
         flex_string & append(value_type const * s)
         {
+            // @todo +1
             return this->append(s, traits_type::length(s));
         }
 
@@ -767,6 +939,7 @@ namespace ural
         /** Дописывает символ @c c в конец данной строки.
         @param c символ
         @return <tt> *this </tt>
+        @todo Обеспечить, чтобы сложность была амортизированнной постоянной
         */
         void push_back(value_type c)
         {
@@ -1012,7 +1185,7 @@ namespace ural
         flex_string & erase(size_type pos = 0, size_type n = npos)
         {
             auto const xlen = std::min(n, this->size() - pos);
-            std::move(this->begin() + pos + xlen, this->end(),
+            std::move(this->begin() + pos + xlen, this->end() + 1,
                       this->begin() + pos);
             data_.pop_back(xlen);
             return *this;
@@ -1294,7 +1467,8 @@ namespace ural
     flex_string<charT, traits, Allocator>
     operator+(charT x, flex_string<charT, traits, Allocator> && y)
     {
-        return std::move(y.insert(0, 1, x));
+        y.insert(y.begin(), 1, x);
+        return std::move(y);
     }
 
     /** @brief Конкатенация строки и c-строки
