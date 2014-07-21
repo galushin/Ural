@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_std_string, String, Strings_list)
 }
 
 // 21.4.2 Конструкторы
-BOOST_AUTO_TEST_CASE(flex_string_default_ctor)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_default_ctor, String, Strings_list)
 {
     String s;
 
@@ -104,9 +104,9 @@ BOOST_AUTO_TEST_CASE(flex_string_default_ctor)
     BOOST_CHECK_GE(s.capacity(), s.size());
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_allocator_ctor)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_allocator_ctor, String, Strings_list)
 {
-    String::allocator_type a{42};
+    typename String::allocator_type a{42};
 
     String s{a};
 
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(flex_string_allocator_ctor)
 }
 
 // Конструктор копирования
-BOOST_AUTO_TEST_CASE(flex_string_copy_ctor)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_copy_ctor, String, Strings_list)
 {
     char const * cs = "Hello, world";
     String s1(cs);
@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE(flex_string_copy_ctor)
 }
 
 // Копирование фрагмента строки
-BOOST_AUTO_TEST_CASE(flex_string_ctor_from_pos)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_ctor_from_pos, String, Strings_list)
 {
     char const * cs = "Hello, world";
 
@@ -146,7 +146,7 @@ BOOST_AUTO_TEST_CASE(flex_string_ctor_from_pos)
     BOOST_CHECK_THROW(String(fs, fs.size() + 2), std::out_of_range);
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_ctor_from_pos_npos)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_ctor_from_pos_npos, String, Strings_list)
 {
     char const * cs = "Hello, world";
 
@@ -163,25 +163,25 @@ BOOST_AUTO_TEST_CASE(flex_string_ctor_from_pos_npos)
 
     BOOST_CHECK_EQUAL(s2.c_str(), fs2.c_str());
 
-    String::allocator_type a{42};
+    typename String::allocator_type a{42};
     String fsa(fs, 2, 2, a);
 
     BOOST_CHECK_EQUAL(s1.c_str(), fsa.c_str());
     BOOST_CHECK_EQUAL(a.id(), fsa.get_allocator().id());
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_from_c_str_n)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_c_str_n, String, Strings_list)
 {
     char const * cs = "Hello, world";
     String const fs(cs, 4);
     std::string const s(cs, 4);
 
-    typedef String::allocator_type Alloc;
+    typedef typename String::allocator_type Alloc;
 
     BOOST_CHECK_EQUAL(s.c_str(), fs.c_str());
     BOOST_CHECK_EQUAL(Alloc{}.id(), fs.get_allocator().id());
 
-    String::allocator_type a{42};
+    Alloc a{42};
 
     String const fsa(cs, 4, a);
 
@@ -189,13 +189,13 @@ BOOST_AUTO_TEST_CASE(flex_string_from_c_str_n)
     BOOST_CHECK_EQUAL(a.id(), fsa.get_allocator().id());
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_from_c_str)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_c_str, String, Strings_list)
 {
     char const * cs = "Hello, world";
     String s(cs);
 
-    typedef String::allocator_type Alloc;
-    typedef String::traits_type Traits;
+    typedef typename String::allocator_type Alloc;
+    typedef typename String::traits_type Traits;
 
     BOOST_CHECK_EQUAL(Alloc{}.id(), s.get_allocator().id());
 
@@ -209,15 +209,15 @@ BOOST_AUTO_TEST_CASE(flex_string_from_c_str)
     BOOST_CHECK(std::strcmp(cs, s.c_str()) == 0);
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_from_c_str_with_allocator)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_c_str_with_allocator, String, Strings_list)
 {
-    String::allocator_type a{42};
+    typedef typename String::allocator_type Alloc;
+    typedef typename String::traits_type Traits;
+
+    Alloc a{42};
     char const * cs = "Hello, world";
 
     String const s{cs, a};
-
-    typedef String::allocator_type Alloc;
-    typedef String::traits_type Traits;
 
     BOOST_CHECK_EQUAL(a.id(), s.get_allocator().id());
 
@@ -231,7 +231,7 @@ BOOST_AUTO_TEST_CASE(flex_string_from_c_str_with_allocator)
     BOOST_CHECK(std::strcmp(cs, s.c_str()) == 0);
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_from_n_char)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_n_char, String, Strings_list)
 {
     auto const n = 13;
     auto const C = 'a';
@@ -239,8 +239,8 @@ BOOST_AUTO_TEST_CASE(flex_string_from_n_char)
     String const s(n, C);
     std::string const s0(n, C);
 
-    typedef String::allocator_type Alloc;
-    typedef String::traits_type Traits;
+    typedef typename String::allocator_type Alloc;
+    typedef typename String::traits_type Traits;
 
     BOOST_CHECK_EQUAL(Alloc{}.id(), s.get_allocator().id());
     BOOST_CHECK(nullptr != s.data());
@@ -1190,6 +1190,7 @@ BOOST_AUTO_TEST_CASE(flex_string_swap)
     String fs2(cs2);
 
     ::ural::swap(fs1, fs2);
+    // @todo проверить обмен распределителями
 
     BOOST_CHECK_EQUAL(cs2, fs1.c_str());
     BOOST_CHECK_EQUAL(cs1, fs2.c_str());
