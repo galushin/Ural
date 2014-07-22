@@ -21,6 +21,8 @@
  @brief Реализация строк, основанная на стратегиях
  @note открытым остаётся вопрос, где целесообразнее обрабатывать терминальный
  символ строки
+ @todo проверка, что в конце всех операций data_.size() + 1 == this->size() и
+ data_[this->size()] = 0
 */
 
 #include <ural/defs.hpp>
@@ -173,7 +175,7 @@ namespace ural
 
             for(; n > 0; -- n, ++end_)
             {
-                A::construct(end_ - 1, c);
+                A::construct(end_, c);
             }
         }
 
@@ -206,7 +208,7 @@ namespace ural
 
         // Конструкторы
         string_vector_storage(size_type n, A const & a)
-         : data_{n+1, T{}, a}
+         : data_{n, T{}, a}
         {}
 
         // Свойства
@@ -243,31 +245,23 @@ namespace ural
 
         iterator end()
         {
-            assert(!data_.empty());
-            return data_.end() - 1;
+            return data_.end();
         }
 
         const_iterator end() const
         {
-            assert(!data_.empty());
-            return data_.end() - 1;
+            return data_.end();
         }
 
         // Модификаторы
         void resize(size_type n, T const & c)
         {
-            data_.pop_back();
-
             data_.resize(n, c);
-
-            // @todo Убедиться, что инвариант сохраняется, даже если выше
-            // произошло исключение
-            data_.push_back(T{});
         }
 
         void reserve(size_type n)
         {
-            data_.reserve(n+1);
+            data_.reserve(n);
         }
 
         void swap(string_vector_storage & x)
@@ -413,17 +407,7 @@ namespace ural
                     allocator_type const & a = allocator_type{})
          : flex_string{a}
         {
-            if(pos > str.size())
-            {
-                throw std::out_of_range{"flex_string::ctor"};
-            }
-
-            auto const rlen = std::min(n, str.size() - pos);
-
-            this->resize(rlen+1, value_type{});
-
-            std::copy(str.begin() + pos, str.begin() + pos + rlen,
-                      this->begin());
+            this->append(str, pos, n);
         }
 
         /** @brief Конструктор на основе массива
@@ -477,7 +461,7 @@ namespace ural
         template <class InputIterator>
         flex_string(InputIterator first, InputIterator last,
                     allocator_type const & a = allocator_type{})
-         : data_{1, a}
+         : flex_string{a}
         {
             this->append(first, last);
         }
@@ -904,7 +888,12 @@ namespace ural
         */
         flex_string & append(size_type n, value_type c)
         {
+            assert(data_.size() > 0);
+
+            data_.pop_back(1);
             data_.append(n, c);
+            data_.append(1, value_type{});
+
             return *this;
         }
 
@@ -919,10 +908,12 @@ namespace ural
         flex_string & append(InputIterator first, InputIterator last)
         {
             // @todo reserve, если позволяет категория итераторов
+            data_.pop_back(1);
             for(; first != last; ++ first)
             {
-                this->push_back(*first);
+                data_.append(1, *first);
             }
+            data_.append(1, value_type{});
 
             return *this;
         }

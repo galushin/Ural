@@ -123,6 +123,10 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_copy_ctor, String, Strings_list)
     String s1(cs);
     String const s2 = s1;
 
+    typedef typename String::traits_type Traits;
+
+    BOOST_CHECK_EQUAL(s1.size(), Traits::length(cs));
+    BOOST_CHECK_EQUAL(s1.c_str(), s2.c_str());
     BOOST_CHECK_EQUAL(s1.c_str(), s2.c_str());
 
     s1[0] = 'W';
@@ -138,12 +142,15 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_ctor_from_pos, String, Strings_list)
     std::string const s(cs);
     String const fs(cs);
 
+    BOOST_CHECK_THROW(String(fs, fs.size() + 2), std::out_of_range);
+
+    BOOST_CHECK_EQUAL(s.size(), fs.size());
+
     std::string const s1{s, 2};
     String const fs1(fs, 2);
 
+    BOOST_CHECK_EQUAL(s1.size(), fs1.size());
     BOOST_CHECK_EQUAL(s1.c_str(), fs1.c_str());
-
-    BOOST_CHECK_THROW(String(fs, fs.size() + 2), std::out_of_range);
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_ctor_from_pos_npos, String, Strings_list)
@@ -257,17 +264,17 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_n_char, String, Strings_list)
     }
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_from_n_char_and_allocator)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_n_char_and_allocator, String, Strings_list)
 {
-    String::allocator_type a{42};
+    typename String::allocator_type a{42};
 
     auto const n = 13;
     auto const C = 'a';
 
     String const s(n, C, a);
 
-    typedef String::allocator_type Alloc;
-    typedef String::traits_type Traits;
+    typedef typename String::allocator_type Alloc;
+    typedef typename String::traits_type Traits;
 
     BOOST_CHECK_EQUAL(a.id(), s.get_allocator().id());
     BOOST_CHECK(nullptr != s.data());
