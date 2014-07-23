@@ -1520,9 +1520,9 @@ namespace ural
     @param y правый операнд
     @return <tt> x.compare(y) == 0 </tt>
     */
-    template <class charT, class traits, class Allocator>
-    bool operator==(flex_string<charT, traits, Allocator> const & x,
-                    flex_string<charT, traits, Allocator> const & y) noexcept
+    template <class charT, class traits, class Allocator, class S>
+    bool operator==(flex_string<charT, traits, Allocator, S> const & x,
+                    flex_string<charT, traits, Allocator, S> const & y) noexcept
     {
         return x.compare(y) == 0;
     }

@@ -287,7 +287,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_n_char_and_allocator, String, Str
     }
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_from_iterators)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_iterators, String, Strings_list)
 {
     std::string const src = "Stepanov";
     std::istringstream is(src);
@@ -302,9 +302,9 @@ BOOST_AUTO_TEST_CASE(flex_string_from_iterators)
                                   s.begin(), s.end());
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_from_iterators_and_allocator)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_iterators_and_allocator, String, Strings_list)
 {
-    String::allocator_type a{42};
+    typename String::allocator_type a{42};
     std::string const src = "Stepanov";
     std::istringstream is(src);
 
@@ -315,29 +315,29 @@ BOOST_AUTO_TEST_CASE(flex_string_from_iterators_and_allocator)
     BOOST_CHECK_EQUAL(src.size(), s.size());
     BOOST_CHECK_EQUAL(src.c_str(), s.c_str());
 
-     for(size_t i = 0; i != src.size(); ++ i)
+    for(size_t i = 0; i != src.size(); ++ i)
     {
         BOOST_CHECK_EQUAL(src[i], s[i]);
     }
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_from_init_list)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_init_list, String, Strings_list)
 {
     String const fs{'a', 'B', 'c'};
     std::string const s{'a', 'B', 'c'};
 
     BOOST_CHECK_EQUAL(s.c_str(), fs.c_str());
 
-    String::allocator_type a{42};
+    typename String::allocator_type a{42};
 
     String const fsa{{'a', 'B', 'c'}, a};
     BOOST_CHECK_EQUAL(fsa.c_str(), s);
     BOOST_CHECK_EQUAL(a.id(), fsa.get_allocator().id());
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_from_flex_string_and_allocator)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_flex_string_and_allocator, String, Strings_list)
 {
-    String::allocator_type a{42};
+    typename String::allocator_type a{42};
     String const s1{"Step"};
 
     String const s2{s1, a};
@@ -346,7 +346,7 @@ BOOST_AUTO_TEST_CASE(flex_string_from_flex_string_and_allocator)
     BOOST_CHECK_EQUAL(s1, s2);
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_move_ctor)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_move_ctor, String, Strings_list)
 {
     String s{"Alpha"};
     String const s_old = s;
@@ -359,7 +359,7 @@ BOOST_AUTO_TEST_CASE(flex_string_move_ctor)
 
 // @todo Конструктор на основе временной строки и распределителя памяти
 
-BOOST_AUTO_TEST_CASE(flex_string_operator_assign)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_operator_assign, String, Strings_list)
 {
     String const s{"Step"};
     String s0{"Alpha"};
@@ -371,7 +371,7 @@ BOOST_AUTO_TEST_CASE(flex_string_operator_assign)
     BOOST_CHECK_EQUAL(s, s0);
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_operator_move_assign)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_operator_move_assign, String, Strings_list)
 {
     String s{"Step"};
     String s0{"Alpha"};
@@ -385,7 +385,7 @@ BOOST_AUTO_TEST_CASE(flex_string_operator_move_assign)
     BOOST_CHECK_EQUAL(data_old, s.data());
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_operator_assign_c_str)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_operator_assign_c_str, String, Strings_list)
 {
     char const * s= "Step";
     String s0{"Alpha"};
