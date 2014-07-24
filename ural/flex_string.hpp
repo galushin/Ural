@@ -1533,15 +1533,15 @@ namespace ural
     @param s строковый литерал
     @return <tt> str.compare(s) == 0 </tt>
     */
-    template <class charT, class traits, class Allocator>
+    template <class charT, class traits, class Allocator, class S>
     bool operator==(charT const * s,
-                    flex_string<charT, traits, Allocator> const & str) noexcept
+                    flex_string<charT, traits, Allocator, S> const & str) noexcept
     {
         return str == s;
     }
 
-    template <class charT, class traits, class Allocator>
-    bool operator==(flex_string<charT, traits, Allocator> const & str,
+    template <class charT, class traits, class Allocator, class S>
+    bool operator==(flex_string<charT, traits, Allocator, S> const & str,
                     charT const * s) noexcept
     {
         return str.compare(s) == 0;

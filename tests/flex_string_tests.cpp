@@ -397,17 +397,17 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_operator_assign_c_str, String, Strings
 
 // @todo 21.4.3 Поддержка итераторов
 
-BOOST_AUTO_TEST_CASE(flex_string_reverse_iterators)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_reverse_iterators, String, Strings_list)
 {
     String s1 = "Stepanov";
 
-    String::const_reverse_iterator crb = s1.crbegin();
-    String::const_reverse_iterator cre = s1.crend();
+    typename String::const_reverse_iterator crb = s1.crbegin();
+    typename String::const_reverse_iterator cre = s1.crend();
 
     String const s2{crb, cre};
 
-    String::reverse_iterator rb = s1.rbegin();
-    String::reverse_iterator re = s1.rend();
+    typename String::reverse_iterator rb = s1.rbegin();
+    typename String::reverse_iterator re = s1.rend();
 
     std::reverse(rb, re);
 
@@ -415,7 +415,7 @@ BOOST_AUTO_TEST_CASE(flex_string_reverse_iterators)
 }
 
 // @todo 21.4.4 Ёмкость
-BOOST_AUTO_TEST_CASE(flex_string_size)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_size, String, Strings_list)
 {
     String const s = "Stepanov";
 
@@ -425,7 +425,7 @@ BOOST_AUTO_TEST_CASE(flex_string_size)
 
 // @todo max_size
 
-BOOST_AUTO_TEST_CASE(flex_string_resize_less)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_resize_less, String, Strings_list)
 {
     String s = "Stepanov";
 
@@ -438,7 +438,7 @@ BOOST_AUTO_TEST_CASE(flex_string_resize_less)
     BOOST_CHECK_EQUAL("Step", s.c_str());
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_resize_equal)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_resize_equal, String, Strings_list)
 {
     String s = "Stepanov";
     String const s_old = s;
@@ -449,7 +449,7 @@ BOOST_AUTO_TEST_CASE(flex_string_resize_equal)
     BOOST_CHECK_EQUAL(s_old.c_str(), s.c_str());
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_resize_greater)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_resize_greater, String, Strings_list)
 {
     String s = "Stepanov";
     String const s_old = s;
@@ -472,7 +472,7 @@ BOOST_AUTO_TEST_CASE(flex_string_resize_greater)
     BOOST_CHECK_EQUAL(char{}, s.data()[s.size()]);
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_resize_less_default)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_resize_less_default, String, Strings_list)
 {
     String s = "Stepanov";
 
@@ -483,7 +483,7 @@ BOOST_AUTO_TEST_CASE(flex_string_resize_less_default)
     BOOST_CHECK_EQUAL("Step", s.c_str());
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_resize_equal_default)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_resize_equal_default, String, Strings_list)
 {
     String s = "Stepanov";
     String const s_old = s;
@@ -494,7 +494,7 @@ BOOST_AUTO_TEST_CASE(flex_string_resize_equal_default)
     BOOST_CHECK_EQUAL(s_old.c_str(), s.c_str());
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_resize_greater_default)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_resize_greater_default, String, Strings_list)
 {
     String s = "Stepanov";
     String const s_old = s;
@@ -519,7 +519,7 @@ BOOST_AUTO_TEST_CASE(flex_string_resize_greater_default)
 
 // @todo capacity, reserve, shrink_to_fit
 
-BOOST_AUTO_TEST_CASE(flex_string_reserve)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_reserve, String, Strings_list)
 {
     String fs;
     std::string s;
@@ -544,7 +544,7 @@ BOOST_AUTO_TEST_CASE(flex_string_reserve)
     }
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_clear)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_clear, String, Strings_list)
 {
     String s = "Stepanov";
     s.clear();
@@ -554,7 +554,7 @@ BOOST_AUTO_TEST_CASE(flex_string_clear)
     BOOST_CHECK_EQUAL("", s.c_str());
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_empty)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_empty, String, Strings_list)
 {
     String const s0 {};
     String const s1 = {"Stepanov"};
