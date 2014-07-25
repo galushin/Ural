@@ -1366,12 +1366,12 @@ namespace ural
     @param y правый операнд
     @return <tt> flex_string<charT, traits, Allocator>(x).append(y) </tt>
     */
-    template <class charT, class traits, class Allocator>
-    flex_string<charT, traits, Allocator>
-    operator+(flex_string<charT, traits, Allocator> const & x,
-              flex_string<charT, traits, Allocator> const & y)
+    template <class charT, class traits, class Allocator, class S>
+    flex_string<charT, traits, Allocator, S>
+    operator+(flex_string<charT, traits, Allocator, S> const & x,
+              flex_string<charT, traits, Allocator, S> const & y)
     {
-        return flex_string<charT, traits, Allocator>(x).append(y);
+        return flex_string<charT, traits, Allocator, S>(x).append(y);
     }
 
     /** @brief Конкатенация строк
@@ -1379,10 +1379,10 @@ namespace ural
     @param y правый операнд
     @return <tt> std::move(x.append(y)) </tt>
     */
-    template <class charT, class traits, class Allocator>
-    flex_string<charT, traits, Allocator>
-    operator+(flex_string<charT, traits, Allocator> && x,
-              flex_string<charT, traits, Allocator> const & y)
+    template <class charT, class traits, class Allocator, class S>
+    flex_string<charT, traits, Allocator, S>
+    operator+(flex_string<charT, traits, Allocator, S> && x,
+              flex_string<charT, traits, Allocator, S> const & y)
     {
         return std::move(x.append(y));
     }
@@ -1392,10 +1392,10 @@ namespace ural
     @param y правый операнд
     @return <tt> std::move(y.insert(0, x)) </tt>
     */
-    template <class charT, class traits, class Allocator>
-    flex_string<charT, traits, Allocator>
-    operator+(flex_string<charT, traits, Allocator> const & x,
-              flex_string<charT, traits, Allocator> && y)
+    template <class charT, class traits, class Allocator, class S>
+    flex_string<charT, traits, Allocator, S>
+    operator+(flex_string<charT, traits, Allocator, S> const & x,
+              flex_string<charT, traits, Allocator, S> && y)
     {
         return std::move(y.insert(0, x));
     }
@@ -1405,10 +1405,10 @@ namespace ural
     @param y правый операнд
     @return <tt> std::move(x.append(y)) </tt>
     */
-    template <class charT, class traits, class Allocator>
-    flex_string<charT, traits, Allocator>
-    operator+(flex_string<charT, traits, Allocator> && x,
-              flex_string<charT, traits, Allocator> && y)
+    template <class charT, class traits, class Allocator, class S>
+    flex_string<charT, traits, Allocator, S>
+    operator+(flex_string<charT, traits, Allocator, S> && x,
+              flex_string<charT, traits, Allocator, S> && y)
     {
         return std::move(x.append(y));
     }
@@ -1418,11 +1418,11 @@ namespace ural
     @param y строка
     @return <tt> flex_string<charT, traits, Allocator>(y).insert(0, x) </tt>
     */
-    template <class charT, class traits, class Allocator>
-    flex_string<charT, traits, Allocator>
-    operator+(charT const * x, flex_string<charT, traits, Allocator> const & y)
+    template <class charT, class traits, class Allocator, class S>
+    flex_string<charT, traits, Allocator, S>
+    operator+(charT const * x, flex_string<charT, traits, Allocator, S> const & y)
     {
-        return flex_string<charT, traits, Allocator>(y).insert(0, x);
+        return flex_string<charT, traits, Allocator, S>(y).insert(0, x);
     }
 
     /** @brief Конкатенация c-строки и строки
@@ -1430,9 +1430,9 @@ namespace ural
     @param y строка
     @return <tt> std::move(y.insert(0, x)) </tt>
     */
-    template <class charT, class traits, class Allocator>
-    flex_string<charT, traits, Allocator>
-    operator+(charT const * x, flex_string<charT, traits, Allocator> && y)
+    template <class charT, class traits, class Allocator, class S>
+    flex_string<charT, traits, Allocator, S>
+    operator+(charT const * x, flex_string<charT, traits, Allocator, S> && y)
     {
         return std::move(y.insert(0, x));
     }
@@ -1442,11 +1442,11 @@ namespace ural
     @param y строка
     @return <tt> flex_string<charT, traits, Allocator>(1U, x) + y </tt>
     */
-    template <class charT, class traits, class Allocator>
-    flex_string<charT, traits, Allocator>
-    operator+(charT x, flex_string<charT, traits, Allocator> const & y)
+    template <class charT, class traits, class Allocator, class S>
+    flex_string<charT, traits, Allocator, S>
+    operator+(charT x, flex_string<charT, traits, Allocator, S> const & y)
     {
-        return flex_string<charT, traits, Allocator>(1U, x) + y;
+        return flex_string<charT, traits, Allocator, S>(1U, x) + y;
     }
 
     /** @brief Конкатенация символа и строки
@@ -1454,9 +1454,9 @@ namespace ural
     @param y строка
     @return <tt> std::move(y.insert(0, 1, x)) </tt>
     */
-    template <class charT, class traits, class Allocator>
-    flex_string<charT, traits, Allocator>
-    operator+(charT x, flex_string<charT, traits, Allocator> && y)
+    template <class charT, class traits, class Allocator, class S>
+    flex_string<charT, traits, Allocator, S>
+    operator+(charT x, flex_string<charT, traits, Allocator, S> && y)
     {
         y.insert(y.begin(), 1, x);
         return std::move(y);
@@ -1467,12 +1467,12 @@ namespace ural
     @param y c-строка
     @return <tt> flex_string<charT, traits, Allocator>(x).append(y) </tt>
     */
-    template <class charT, class traits, class Allocator>
-    flex_string<charT, traits, Allocator>
-    operator+(flex_string<charT, traits, Allocator> const & x,
+    template <class charT, class traits, class Allocator, class S>
+    flex_string<charT, traits, Allocator, S>
+    operator+(flex_string<charT, traits, Allocator, S> const & x,
               charT const * y)
     {
-        return flex_string<charT, traits, Allocator>(x).append(y);
+        return flex_string<charT, traits, Allocator, S>(x).append(y);
     }
 
     /** @brief Конкатенация строки и c-строки
@@ -1480,9 +1480,9 @@ namespace ural
     @param y c-строка
     @return <tt> std::move(x.append(y)) </tt>
     */
-    template <class charT, class traits, class Allocator>
-    flex_string<charT, traits, Allocator>
-    operator+(flex_string<charT, traits, Allocator> && x,
+    template <class charT, class traits, class Allocator, class S>
+    flex_string<charT, traits, Allocator, S>
+    operator+(flex_string<charT, traits, Allocator, S> && x,
               charT const * y)
     {
         return std::move(x.append(y));
@@ -1493,12 +1493,12 @@ namespace ural
     @param y символ
     @return <tt> flex_string<charT, traits, Allocator>(x).append(1, y) </tt>
     */
-    template <class charT, class traits, class Allocator>
-    flex_string<charT, traits, Allocator>
-    operator+(flex_string<charT, traits, Allocator> const & x,
+    template <class charT, class traits, class Allocator, class S>
+    flex_string<charT, traits, Allocator, S>
+    operator+(flex_string<charT, traits, Allocator, S> const & x,
               charT y)
     {
-        return flex_string<charT, traits, Allocator>(x).append(1, y);
+        return flex_string<charT, traits, Allocator, S>(x).append(1, y);
     }
 
     /** @brief Конкатенация строки и символа
@@ -1506,9 +1506,9 @@ namespace ural
     @param y символ
     @return <tt> std::move(x.append(1, y)) </tt>
     */
-    template <class charT, class traits, class Allocator>
-    flex_string<charT, traits, Allocator>
-    operator+(flex_string<charT, traits, Allocator> && x,
+    template <class charT, class traits, class Allocator, class S>
+    flex_string<charT, traits, Allocator, S>
+    operator+(flex_string<charT, traits, Allocator, S> && x,
               charT y)
     {
         return std::move(x.append(1, y));
@@ -1554,9 +1554,9 @@ namespace ural
     @param y правый операнд
     @return <tt> x.compare(y) < 0 </tt>
     */
-    template <class charT, class traits, class Allocator>
-    bool operator<(flex_string<charT, traits, Allocator> const & x,
-                   flex_string<charT, traits, Allocator> const & y) noexcept
+    template <class charT, class traits, class Allocator, class S>
+    bool operator<(flex_string<charT, traits, Allocator, S> const & x,
+                   flex_string<charT, traits, Allocator, S> const & y) noexcept
     {
         return x.compare(y) < 0;
     }
@@ -1566,9 +1566,9 @@ namespace ural
     @param y правый операнд
     @return <tt> y.compare(x) > 0 </tt>
     */
-    template <class charT, class traits, class Allocator>
+    template <class charT, class traits, class Allocator, class S>
     bool operator<(charT const * x,
-                   flex_string<charT, traits, Allocator> const & y) noexcept
+                   flex_string<charT, traits, Allocator, S> const & y) noexcept
     {
         return y.compare(x) > 0;
     }
@@ -1578,8 +1578,8 @@ namespace ural
     @param y правый операнд
     @return <tt> x.compare(y) < 0 </tt>
     */
-    template <class charT, class traits, class Allocator>
-    bool operator<(flex_string<charT, traits, Allocator> const & x,
+    template <class charT, class traits, class Allocator, class S>
+    bool operator<(flex_string<charT, traits, Allocator, S> const & x,
                    charT const * y) noexcept
     {
         return x.compare(y) < 0;
@@ -1591,9 +1591,9 @@ namespace ural
     @param y второй аргумент
     Эквивалентно <tt> x.swap(y) </tt>
     */
-    template <class charT, class traits, class Allocator>
-    void swap(flex_string<charT, traits, Allocator> & x,
-              flex_string<charT, traits, Allocator> & y)
+    template <class charT, class traits, class Allocator, class S>
+    void swap(flex_string<charT, traits, Allocator, S> & x,
+              flex_string<charT, traits, Allocator, S> & y)
     {
         return x.swap(y);
     }

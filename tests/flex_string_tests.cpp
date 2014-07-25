@@ -564,7 +564,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_empty, String, Strings_list)
 }
 
 // 21.4.5 доступ к элементам
-BOOST_AUTO_TEST_CASE(flex_string_index_access_operator)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_index_access_operator, String, Strings_list)
 {
     const char * cs = "Stepanov";
 
@@ -576,7 +576,7 @@ BOOST_AUTO_TEST_CASE(flex_string_index_access_operator)
     }
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_at_const)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_at_const, String, Strings_list)
 {
     String const src = "Stepanov";
 
@@ -588,7 +588,7 @@ BOOST_AUTO_TEST_CASE(flex_string_at_const)
     BOOST_CHECK_THROW(src.at(src.size()), std::out_of_range);
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_at)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_at, String, Strings_list)
 {
     String src = "Stepanov";
 
@@ -602,7 +602,7 @@ BOOST_AUTO_TEST_CASE(flex_string_at)
     BOOST_CHECK_THROW(src.at(src.size() + 2), std::out_of_range);
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_front)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_front, String, Strings_list)
 {
     String s = "stepanov";
 
@@ -615,7 +615,7 @@ BOOST_AUTO_TEST_CASE(flex_string_front)
     BOOST_CHECK_EQUAL(cr.front(), value);
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_back)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_back, String, Strings_list)
 {
     String s = "Stepanov";
 
@@ -629,7 +629,7 @@ BOOST_AUTO_TEST_CASE(flex_string_back)
 }
 
 // @todo 21.4.6 модификаторы
-BOOST_AUTO_TEST_CASE(felx_string_append_string)
+BOOST_AUTO_TEST_CASE_TEMPLATE(felx_string_append_string, String, Strings_list)
 {
     std::string s1 = "Step";
     std::string const s2 = "anov";
@@ -643,7 +643,7 @@ BOOST_AUTO_TEST_CASE(felx_string_append_string)
     BOOST_CHECK_EQUAL(s1.c_str(), fs1.c_str());
 }
 
-BOOST_AUTO_TEST_CASE(felx_string_append_c_string)
+BOOST_AUTO_TEST_CASE_TEMPLATE(felx_string_append_c_string, String, Strings_list)
 {
     std::string s1 = "Step";
     char const * s2 = "anov";
@@ -656,7 +656,7 @@ BOOST_AUTO_TEST_CASE(felx_string_append_c_string)
     BOOST_CHECK_EQUAL(s1.c_str(), fs1.c_str());
 }
 
-BOOST_AUTO_TEST_CASE(felx_string_append_char)
+BOOST_AUTO_TEST_CASE_TEMPLATE(felx_string_append_char, String, Strings_list)
 {
     std::string s1 = "Step";
     char const c = 's';
@@ -669,7 +669,7 @@ BOOST_AUTO_TEST_CASE(felx_string_append_char)
     BOOST_CHECK_EQUAL(s1.c_str(), fs1.c_str());
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_append_init_list)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_append_init_list, String, Strings_list)
 {
     std::string s1 = "Step";
     String fs1 {s1.c_str()};
@@ -681,7 +681,7 @@ BOOST_AUTO_TEST_CASE(flex_string_append_init_list)
 }
 
 // 21.4.6.2 Append
-BOOST_AUTO_TEST_CASE(flex_string_append_sunstring)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_append_sunstring, String, Strings_list)
 {
     std::string s1 = "Step";
     std::string const s2 = "Ivanovich";
@@ -698,7 +698,7 @@ BOOST_AUTO_TEST_CASE(flex_string_append_sunstring)
 }
 
 // 21.4.6.3 assign
-BOOST_AUTO_TEST_CASE(flex_string_assign_string)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_assign_string, String, Strings_list)
 {
     std::string s1 = "Ivanovich";
     std::string const s2 = "Step";
@@ -712,7 +712,7 @@ BOOST_AUTO_TEST_CASE(flex_string_assign_string)
     BOOST_CHECK_EQUAL(s1.c_str(), fs1.c_str());
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_assign_rvalue_string)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_assign_rvalue_string, String, Strings_list)
 {
     String s1 = "Ivanovich";
     String s2 = "Step";
@@ -726,7 +726,7 @@ BOOST_AUTO_TEST_CASE(flex_string_assign_rvalue_string)
     static_assert(noexcept(s2.assign(std::move(s1))), "");
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_assign_c_string)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_assign_c_string, String, Strings_list)
 {
     std::string const s = "Stepanov";
 
@@ -736,7 +736,7 @@ BOOST_AUTO_TEST_CASE(flex_string_assign_c_string)
     BOOST_CHECK_EQUAL(s.c_str(), fs.c_str());
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_assign_init_list)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_assign_init_list, String, Strings_list)
 {
     std::string s1 = "Step";
     String fs1 {s1.c_str()};
@@ -747,7 +747,7 @@ BOOST_AUTO_TEST_CASE(flex_string_assign_init_list)
     BOOST_CHECK_EQUAL(s1.c_str(), fs1.c_str());
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_assign_n_chars)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_assign_n_chars, String, Strings_list)
 {
     std::string s1 = "Step";
     String fs1 {s1.c_str()};
@@ -759,7 +759,7 @@ BOOST_AUTO_TEST_CASE(flex_string_assign_n_chars)
 }
 
 // 21.4.6.4 insert
-BOOST_AUTO_TEST_CASE(flex_string_insert_string)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_insert_string, String, Strings_list)
 {
     std::string s1 = "Stov";
     std::string const s2 = "epan";
@@ -773,7 +773,7 @@ BOOST_AUTO_TEST_CASE(flex_string_insert_string)
     BOOST_CHECK_EQUAL(s1.c_str(), fs1);
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_insert_substring)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_insert_substring, String, Strings_list)
 {
     std::string s = "Stov";
     std::string const s2 = "Depande";
@@ -787,7 +787,7 @@ BOOST_AUTO_TEST_CASE(flex_string_insert_substring)
     BOOST_CHECK_EQUAL(s.c_str(), fs);
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_insert_c_string)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_insert_c_string, String, Strings_list)
 {
     std::string s = "Stov";
     char const * cs = "epan";
@@ -800,7 +800,7 @@ BOOST_AUTO_TEST_CASE(flex_string_insert_c_string)
     BOOST_CHECK_EQUAL(s.c_str(), fs);
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_insert_char_at_iterator)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_insert_char_at_iterator, String, Strings_list)
 {
     std::string s = "ABC";
     String fs{s.c_str()};
@@ -811,7 +811,7 @@ BOOST_AUTO_TEST_CASE(flex_string_insert_char_at_iterator)
     BOOST_CHECK_EQUAL(s.c_str(), fs);
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_insert_n_chars_at_iterator)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_insert_n_chars_at_iterator, String, Strings_list)
 {
     std::string s = "ABC";
     String fs{s.c_str()};
@@ -822,7 +822,7 @@ BOOST_AUTO_TEST_CASE(flex_string_insert_n_chars_at_iterator)
     BOOST_CHECK_EQUAL(s.c_str(), fs);
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_insert_init_list_at_iterator)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_insert_init_list_at_iterator, String, Strings_list)
 {
     std::string s = "ABC";
     String fs{s.c_str()};
@@ -833,7 +833,7 @@ BOOST_AUTO_TEST_CASE(flex_string_insert_init_list_at_iterator)
     BOOST_CHECK_EQUAL(s.c_str(), fs);
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_insert_range)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_insert_range, String, Strings_list)
 {
     std::istringstream is_1("ABC");
     std::istringstream is_2("ABC");
@@ -850,7 +850,7 @@ BOOST_AUTO_TEST_CASE(flex_string_insert_range)
 }
 
 // 21.4.6.5 erase
-BOOST_AUTO_TEST_CASE(flex_string_erase_iterator_range)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_erase_iterator_range, String, Strings_list)
 {
     std::string s = "Stepanov";
     String fs{s.c_str()};
@@ -861,7 +861,7 @@ BOOST_AUTO_TEST_CASE(flex_string_erase_iterator_range)
     BOOST_CHECK_EQUAL(s.c_str(), fs);
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_pop_back)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_pop_back, String, Strings_list)
 {
     std::string s = "ABC";
     String fs{s.c_str()};
@@ -875,11 +875,11 @@ BOOST_AUTO_TEST_CASE(flex_string_pop_back)
 // @todo 21.4.6.6 replace
 
 // 21.4.6.7 copy
-BOOST_AUTO_TEST_CASE(flex_string_copy_from_0)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_copy_from_0, String, Strings_list)
 {
     String const fs{"Stepanov"};
 
-    std::vector<String::value_type> s(5, 'x');
+    std::vector<typename String::value_type> s(5, 'x');
 
     auto const rlen = fs.copy(s.data(), s.size());
 
@@ -896,11 +896,11 @@ BOOST_AUTO_TEST_CASE(flex_string_copy_from_0)
                       std::out_of_range);
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_copy)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_copy, String, Strings_list)
 {
     String const fs{"Stepanov"};
 
-    std::vector<String::value_type> s(5, 'x');
+    std::vector<typename String::value_type> s(5, 'x');
 
     auto const pos = 0;
 
@@ -915,11 +915,11 @@ BOOST_AUTO_TEST_CASE(flex_string_copy)
                       std::out_of_range);
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_copy_to_end)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_copy_to_end, String, Strings_list)
 {
     String const fs{"Stepanov"};
 
-    std::vector<String::value_type> s(fs.size() * 2, 'x');
+    std::vector<typename String::value_type> s(fs.size() * 2, 'x');
 
     auto const pos = fs.size() - 1;
 
@@ -934,7 +934,7 @@ BOOST_AUTO_TEST_CASE(flex_string_copy_to_end)
 // @todo 21.4.7 операции со строками
 
 // 21.4.7.8 substr
-BOOST_AUTO_TEST_CASE(flex_string_substr)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_substr, String, Strings_list)
 {
     std::string const s = "Stepanov";
     String const fs{s.c_str()};
@@ -955,7 +955,7 @@ BOOST_AUTO_TEST_CASE(flex_string_substr)
 // @todo 21.4.8 вспомогательные функции
 
 // 21.4.8.1 Оператор +
-BOOST_AUTO_TEST_CASE(flex_string_plus)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_plus, String, Strings_list)
 {
     String const fs1{"Paper"};
     String const fs2{"clip"};
@@ -969,7 +969,7 @@ BOOST_AUTO_TEST_CASE(flex_string_plus)
     BOOST_CHECK_EQUAL(s.c_str(), fs.c_str());
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_plus_rvalue_first)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_plus_rvalue_first, String, Strings_list)
 {
     String fs1{"Paper"};
     String fs2{"clip"};
@@ -982,7 +982,7 @@ BOOST_AUTO_TEST_CASE(flex_string_plus_rvalue_first)
     BOOST_CHECK(fs1.empty());
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_plus_rvalue_second)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_plus_rvalue_second, String, Strings_list)
 {
     String fs1{"Paper"};
     String fs2{"clip"};
@@ -995,7 +995,7 @@ BOOST_AUTO_TEST_CASE(flex_string_plus_rvalue_second)
     BOOST_CHECK(fs2.empty());
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_plus_rvalue_both)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_plus_rvalue_both, String, Strings_list)
 {
     String fs1{"Paper"};
     String fs2{"clip"};
@@ -1008,7 +1008,7 @@ BOOST_AUTO_TEST_CASE(flex_string_plus_rvalue_both)
     BOOST_CHECK(fs1.empty() || fs2.empty());
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_plus_c_str_left)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_plus_c_str_left, String, Strings_list)
 {
     char const * s1 = "Paper";
     String const fs2{"clip"};
@@ -1020,7 +1020,7 @@ BOOST_AUTO_TEST_CASE(flex_string_plus_c_str_left)
     BOOST_CHECK_EQUAL(s.c_str(), fs.c_str());
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_plus_c_str_left_rvalue)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_plus_c_str_left_rvalue, String, Strings_list)
 {
     char const * s1 = "Paper";
     String fs2{"clip"};
@@ -1032,7 +1032,7 @@ BOOST_AUTO_TEST_CASE(flex_string_plus_c_str_left_rvalue)
     BOOST_CHECK_EQUAL(fs, fs_moved);
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_plus_char_left)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_plus_char_left, String, Strings_list)
 {
     char const c = 'c';
     String const fs2{"lip"};
@@ -1044,7 +1044,7 @@ BOOST_AUTO_TEST_CASE(flex_string_plus_char_left)
     BOOST_CHECK_EQUAL(s.c_str(), fs.c_str());
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_plus_char_left_rvalue)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_plus_char_left_rvalue, String, Strings_list)
 {
     char const c = 'c';
     String fs2{"lip"};
@@ -1057,7 +1057,7 @@ BOOST_AUTO_TEST_CASE(flex_string_plus_char_left_rvalue)
     BOOST_CHECK_EQUAL(fs, fs_moved);
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_plus_c_str_right)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_plus_c_str_right, String, Strings_list)
 {
     char const * s1 = "Paper";
     String const fs2{"clip"};
@@ -1069,7 +1069,7 @@ BOOST_AUTO_TEST_CASE(flex_string_plus_c_str_right)
     BOOST_CHECK_EQUAL(s.c_str(), fs.c_str());
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_plus_c_str_right_rvalue)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_plus_c_str_right_rvalue, String, Strings_list)
 {
     char const * s1 = "Paper";
     String fs2{"clip"};
@@ -1081,7 +1081,7 @@ BOOST_AUTO_TEST_CASE(flex_string_plus_c_str_right_rvalue)
     BOOST_CHECK_EQUAL(fs, fs_moved);
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_plus_char_right)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_plus_char_right, String, Strings_list)
 {
     char const c = 'c';
     String const fs2{"lip"};
@@ -1093,7 +1093,7 @@ BOOST_AUTO_TEST_CASE(flex_string_plus_char_right)
     BOOST_CHECK_EQUAL(s.c_str(), fs.c_str());
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_plus_char_right_rvalue)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_plus_char_right_rvalue, String, Strings_list)
 {
     char const c = 'c';
     String fs2{"lip"};
@@ -1106,7 +1106,7 @@ BOOST_AUTO_TEST_CASE(flex_string_plus_char_right_rvalue)
 }
 
 // 21.4.8.2 Оператор ==
-BOOST_AUTO_TEST_CASE(flex_string_equality)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_equality, String, Strings_list)
 {
     String const s1{"Paper"};
     String const s2{"Pair"};
@@ -1125,7 +1125,7 @@ BOOST_AUTO_TEST_CASE(flex_string_equality)
     BOOST_CHECK(s3 == s3);
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_equality_with_c_str)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_equality_with_c_str, String, Strings_list)
 {
     const char * cs1 = "Paper";
     const char * cs2 = "Pair";
@@ -1139,7 +1139,7 @@ BOOST_AUTO_TEST_CASE(flex_string_equality_with_c_str)
 }
 
 // 21.4.8.4
-BOOST_AUTO_TEST_CASE(flex_string_less)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_less, String, Strings_list)
 {
     String const s1{"Paper"};
     String const s2{"Pair"};
@@ -1154,7 +1154,7 @@ BOOST_AUTO_TEST_CASE(flex_string_less)
     BOOST_CHECK_EQUAL(s2.c_str() < s1, true);
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_less_equal)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_less_equal, String, Strings_list)
 {
     String const s1{"Paper"};
     String const s2{"Pair"};
@@ -1172,7 +1172,7 @@ BOOST_AUTO_TEST_CASE(flex_string_less_equal)
     BOOST_CHECK_EQUAL(s2.c_str() <= s1, true);
 }
 
-BOOST_AUTO_TEST_CASE(flex_string_greater)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_greater, String, Strings_list)
 {
     String const s1{"Paper"};
     String const s2{"Pair"};
@@ -1188,7 +1188,7 @@ BOOST_AUTO_TEST_CASE(flex_string_greater)
 }
 
 // 21.4.8.8 swap
-BOOST_AUTO_TEST_CASE(flex_string_swap)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_swap, String, Strings_list)
 {
     const char * cs1 = "Paper";
     const char * cs2 = "Pair";
@@ -1206,7 +1206,7 @@ BOOST_AUTO_TEST_CASE(flex_string_swap)
 // 21.4.8.9 Потоковые операторы
 // @todo Оператор ввода
 
-BOOST_AUTO_TEST_CASE(flex_string_ostreaming)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_ostreaming, String, Strings_list)
 {
     std::string const src = "Stepanov";
 
