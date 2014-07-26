@@ -161,7 +161,10 @@ namespace ural
 
         void swap(string_allocator_storage & x)
         {
-            // @todo обменивать распределители?
+            // @todo обмен в зависимости от allocator_traits<A>::propagate_on_swap
+            using std::swap;
+            swap(static_cast<A&>(*this), static_cast<A&>(x));
+
             std::swap(this->begin_, x.begin_);
             std::swap(this->end_, x.end_);
             std::swap(this->end_of_storage_, x.end_of_storage_);

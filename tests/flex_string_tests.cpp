@@ -34,6 +34,8 @@ public:
     typedef typename Base::pointer pointer;
     typedef typename Base::const_pointer const_pointer;
 
+    typedef std::true_type propagate_on_container_swap;
+
     explicit test_allocator(int id = 0)
      : id_{id}
     {}
@@ -1190,17 +1192,21 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_greater, String, Strings_list)
 // 21.4.8.8 swap
 BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_swap, String, Strings_list)
 {
-    const char * cs1 = "Paper";
-    const char * cs2 = "Pair";
+    typedef typename String::allocator_type Alloc;
 
-    String fs1(cs1);
-    String fs2(cs2);
+    String fs1("Paper", Alloc{13});
+    String fs2("Pair", Alloc{42});
+
+    auto fs1_old = fs1;
+    auto fs2_old = fs2;
 
     ::ural::swap(fs1, fs2);
-    // @todo проверить обмен распределителями
 
-    BOOST_CHECK_EQUAL(cs2, fs1.c_str());
-    BOOST_CHECK_EQUAL(cs1, fs2.c_str());
+    BOOST_CHECK_EQUAL(fs1_old, fs2);
+    BOOST_CHECK_EQUAL(fs2_old, fs1);
+
+    BOOST_CHECK_EQUAL(fs1_old.get_allocator().id(), fs2.get_allocator().id());
+    BOOST_CHECK_EQUAL(fs2_old.get_allocator().id(), fs1.get_allocator().id());
 }
 
 // 21.4.8.9 Потоковые операторы
