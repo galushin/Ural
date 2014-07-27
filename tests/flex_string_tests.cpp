@@ -1209,6 +1209,20 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_swap, String, Strings_list)
     BOOST_CHECK_EQUAL(fs2_old.get_allocator().id(), fs1.get_allocator().id());
 }
 
+BOOST_AUTO_TEST_CASE(flex_string_swap_default_allocator)
+{
+    ural::flex_string<char> fs1("Paper");
+    ural::flex_string<char> fs2("Pair");
+
+    auto fs1_old = fs1;
+    auto fs2_old = fs2;
+
+    ::ural::swap(fs1, fs2);
+
+    BOOST_CHECK_EQUAL(fs1_old, fs2);
+    BOOST_CHECK_EQUAL(fs2_old, fs1);
+}
+
 // 21.4.8.9 Потоковые операторы
 // @todo Оператор ввода
 

@@ -25,6 +25,7 @@
  data_[this->size()] = 0
 */
 
+#include <ural/utility.hpp>
 #include <ural/defs.hpp>
 
 #include <algorithm>
@@ -45,6 +46,9 @@ namespace ural
     {
     public:
         // @todo Для пустой строки не выделять память
+        /* @todo Использовать характеристика распределителей памяти, в чатсности,
+        чтобы определить, нужно ли их копировать/перемещать
+        */
 
         // Типы
         typedef typename A::size_type size_type;
@@ -161,9 +165,7 @@ namespace ural
 
         void swap(string_allocator_storage & x)
         {
-            // @todo обмен в зависимости от allocator_traits<A>::propagate_on_swap
-            using std::swap;
-            swap(static_cast<A&>(*this), static_cast<A&>(x));
+            ural::swap_allocators{}(static_cast<A&>(*this), static_cast<A&>(x));
 
             std::swap(this->begin_, x.begin_);
             std::swap(this->end_, x.end_);

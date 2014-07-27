@@ -6525,7 +6525,7 @@
 	<ural/utility.hpp>
 	<ural/functional/make_functor.hpp>
 
-1403335297 c:\devtools\github\ural\ural\utility.hpp
+1406430749 c:\devtools\github\ural\ural\utility.hpp
 	<ural/placeholders.hpp>
 	<ural/defs.hpp>
 	<ural/type_traits.hpp>
@@ -12106,13 +12106,14 @@
 	<map>
 	<mutex>
 
-1406350798 source:c:\devtools\github\ural\tests\flex_string_tests.cpp
+1406429605 source:c:\devtools\github\ural\tests\flex_string_tests.cpp
 	<ural/flex_string.hpp>
 	<boost/test/unit_test.hpp>
 	<boost/mpl/list.hpp>
 	<sstream>
 
-1406350994 c:\devtools\github\ural\ural\flex_string.hpp
+1406429256 c:\devtools\github\ural\ural\flex_string.hpp
+	<ural/utility.hpp>
 	<ural/defs.hpp>
 	<algorithm>
 	<ostream>

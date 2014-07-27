@@ -356,6 +356,30 @@ namespace ural
     {
         return x.second();
     }
+
+    class swap_allocators
+    {
+    private:
+        template <class A>
+        static void do_swap(A & x, A & y, std::true_type)
+        {
+            using std::swap;
+            swap(x, y);
+        }
+
+        template <class A>
+        static void do_swap(A &, A &, std::false_type)
+        {}
+
+    public:
+        template <class A>
+        void operator()(A & x, A & y) const
+        {
+            auto constexpr tag = typename std::allocator_traits<A>::propagate_on_container_swap{};
+
+            return this->do_swap(x, y, tag);
+        }
+    };
 }
 // namespace ural
 
