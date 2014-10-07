@@ -15,13 +15,13 @@
  *  extended, by Paul Moore, with permission.
  */
 
+#include <ural/math/rational.hpp>
+
 #include <ostream>
 
 #include <boost/test/unit_test.hpp>
 #include <boost/mpl/list.hpp>
 #include <boost/operators.hpp>
-
-#include <ural/math/rational.hpp>
 
 namespace {
 
@@ -806,6 +806,17 @@ BOOST_AUTO_TEST_CASE( rational_less_overflow_test )
     BOOST_CHECK( r1 < r2 );
     BOOST_CHECK( !(r1 < r1) );
     BOOST_CHECK( !(r2 < r1) );
+}
+
+BOOST_AUTO_TEST_CASE(less_operator_regression_07102014)
+{
+    typedef int T;
+    typedef ural::rational<T> Rational;
+
+    Rational constexpr f1{5, 12};
+    Rational constexpr f2{2, 5};
+
+    BOOST_CHECK(!(f1 < f2));
 }
 
 // "rational::operator< fails for unsigned value types"

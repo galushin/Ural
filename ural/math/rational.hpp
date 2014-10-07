@@ -29,6 +29,7 @@
 #include <istream>
 #include <ostream>
 #include <utility>
+#include <stdexcept>
 
 namespace ural
 {
@@ -374,7 +375,7 @@ namespace ural
     operator<(mixed_fraction<T> const & x, mixed_fraction<T> const & y)
     {
         return x.whole == y.whole
-               ? (x.num == T(0) ? T(0) < y.num : y.next() < x.next())
+               ? (x.num == T{0} || y.num == T{0} ? x.num < y.num : y.next() < x.next())
                : x.whole < y.whole;
     }
 

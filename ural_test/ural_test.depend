@@ -6362,30 +6362,32 @@
 	<ural/math/common_factor.hpp>
 	<ural/math.hpp>
 
-1399538992 c:\devtools\ural_repo\ural\ural\math\common_factor.hpp
+1412672937 c:\devtools\ural_repo\ural\ural\math\common_factor.hpp
 	<cmath>
+	<utility>
 
 1392699171 source:c:\devtools\ural_repo\ural\ural\math\rational.hpp
 	<utility>
 	<ural/math/common_factor.hpp>
 	<ural/defs.hpp>
 
-1396315233 source:c:\devtools\ural_repo\ural\tests\rational_tests.cpp
+1412672809 source:c:\devtools\ural_repo\ural\tests\rational_tests.cpp
+	<ural/math/rational.hpp>
 	<ostream>
 	<boost/test/unit_test.hpp>
 	<boost/mpl/list.hpp>
 	<boost/operators.hpp>
-	<ural/math/rational.hpp>
 
-1401943780 c:\devtools\ural_repo\ural\ural\math\rational.hpp
+1412672967 c:\devtools\ural_repo\ural\ural\math\rational.hpp
 	<ural/math/common_factor.hpp>
 	<ural/defs.hpp>
 	<boost/operators.hpp>
 	<istream>
 	<ostream>
 	<utility>
+	<stdexcept>
 
-1403151724 c:\devtools\ural_repo\ural\ural\utility.hpp
+1410487283 c:\devtools\ural_repo\ural\ural\utility.hpp
 	<ural/placeholders.hpp>
 	<ural/defs.hpp>
 	<ural/type_traits.hpp>
@@ -12088,13 +12090,14 @@
 	<map>
 	<mutex>
 
-1405909335 source:c:\devtools\ural_repo\ural\tests\flex_string_tests.cpp
+1410487283 source:c:\devtools\ural_repo\ural\tests\flex_string_tests.cpp
 	<ural/flex_string.hpp>
 	<boost/test/unit_test.hpp>
 	<boost/mpl/list.hpp>
 	<sstream>
 
-1405899589 c:\devtools\ural_repo\ural\ural\flex_string.hpp
+1410487283 c:\devtools\ural_repo\ural\ural\flex_string.hpp
+	<ural/utility.hpp>
 	<ural/defs.hpp>
 	<algorithm>
 	<ostream>
