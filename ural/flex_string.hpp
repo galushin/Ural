@@ -289,14 +289,14 @@ namespace ural
     };
 
     /** @brief Реализация строк, основанная на стратегиях
-    @tparam charT тип символов
+    @tparam Char тип символов
     @tparam traits класс характеристик символов
     @tparam Allocator распределитель памяти
     @tparam Storage стратегия хранения
     @todo Оптимизация, в частности - избегать создания временных строк
     @todo Использовать по умолчанию более эффективную стратегию хранения
     */
-    template <class charT,
+    template <class Char = use_default,
               class traits = use_default,
               class Allocator = use_default,
               class Storage = use_default>
@@ -304,18 +304,18 @@ namespace ural
     {
     public:
         /// @brief Класс характеристик символов
-        typedef typename default_helper<traits, std::char_traits<charT>>::type
+        typedef typename default_helper<traits, std::char_traits<typename default_helper<Char, char>::type>>::type
             traits_type;
-
-        /// @brief Класс распределителя памяти
-        typedef typename default_helper<Allocator, std::allocator<charT>>::type
-            allocator_type;
 
         /// @brief Тип значения
         typedef typename traits_type::char_type value_type;
 
+        /// @brief Класс распределителя памяти
+        typedef typename default_helper<Allocator, std::allocator<value_type>>::type
+            allocator_type;
+
     private:
-        typedef typename default_helper<Storage, string_allocator_storage<charT, allocator_type>>::type
+        typedef typename default_helper<Storage, string_allocator_storage<value_type, allocator_type>>::type
             storage_type;
 
     public:
@@ -422,7 +422,7 @@ namespace ural
         @pre <tt> s != nullptr </tt>
         @pre <tt> n < npos </tt>
         */
-        flex_string(charT const * s, size_type n,
+        flex_string(value_type const * s, size_type n,
                     allocator_type const & a = allocator_type{})
          : data_{n+1, a}
         {
@@ -435,7 +435,7 @@ namespace ural
         @param a распределитель памяти
         @post <tt> std::strcmp(s, this->c_str()) == 0 </tt>
         */
-        flex_string(charT const * s,
+        flex_string(value_type const * s,
                     allocator_type const & a = allocator_type{})
          : data_{traits_type::length(s)+1, a}
         {
@@ -1229,6 +1229,116 @@ namespace ural
             this->erase(this->end() - 1);
         }
 
+        // 21.4.6.6 replace
+        /** @brief Замена подстроки строкой @c str
+        @param pos1 индекс первого символа, который должен быть заменён
+        @param n1 длина подстроки, которая должна быть заменена
+        @param str строка, которая должна быть записана вместо заменяемой
+        подстроки
+        @pre <tt> pos1 <= this->size() </tt>
+        @throw std::out_of_range, если <tt> pos1 > this->size() </tt>
+        @return <tt> this->replace(pos1, n1, str.data(), str.size()) </tt>
+        */
+        flex_string &
+        replace(size_type pos1, size_type n1, flex_string const & str)
+        {
+            return this->replace(pos1, n1, str.data(), str.size());
+        }
+
+        /** @brief Замена подстроки подстрокой строки @c str
+        @param pos1 индекс первого символа, который должен быть заменён
+        @param n1 длина подстроки, которая должна быть заменена
+        @param str строка, которая должна быть записана вместо заменяемой
+        подстроки
+        @param pos2 индекс первого символа заменяющей подстроки
+        @param n2 длина заменяющей подстроки
+        @pre <tt> pos1 <= this->size() </tt>
+        @pre <tt> pos2 <= str->size() </tt>
+        @throw std::out_of_range, если <tt> pos1 > this->size() </tt>
+        @throw std::out_of_range, если <tt> pos2 > str->size() </tt>
+
+        Определяет эффективную длину заменяющей подстроки
+        <tt> rlen = std::min(n2, str.size() - pos2) </tt>
+        и выполняет <tt> this->replace(pos1, n1, str.data() + pos2, rlen) </tt>
+        @return <tt> *this </tt>
+        */
+        flex_string &
+        replace(size_type pos1, size_type n1, flex_string const & str,
+                size_type pos2, size_type n2)
+        {
+            if(pos2 > str.size())
+            {
+                throw std::out_of_range("flex_string::replace");
+            }
+            auto const rlen = std::min(n2, str.size() - pos2);
+            return this->replace(pos1, n1, str.data() + pos2, rlen);
+        }
+
+        /** @brief Замена подстроки элементами массива символов
+        @param pos1 индекс первого символа, который должен быть заменён
+        @param n1 длина подстроки, которая должна быть заменена
+        @param s указатель на начало массива символов
+        @param n2 количество символов в массиве символов
+        @pre <tt> pos1 <= this->size() </tt>
+        @pre @c s указывает на массив символов длинной не меньше @c n2
+        @throw std::out_of_range, если <tt> pos1 > this->size() </tt>
+        @return <tt> *this </tt>
+
+        Определяет эффектинвую длину заменяемой подстроки как
+        <tt> xlen = std::min(n1, this->size() - pos1) <tt>
+        и заменяет данную строку на строку длинной
+        <tt> this->size() - xlen + n2 </tt>, первые @c pos1 элементов которой
+        являются копиями исходных символов данной строки, следующие @c n2
+        символов являются копиями элементов массива @c s, а оставшиеся символы
+        являются копиями символов исходной строки, начиная с позиции
+        <tt> pos1 + xlen </tt>.
+        */
+        flex_string &
+        replace(size_type pos1, size_type n1,
+                value_type const * s, size_type n2)
+        {
+            if(pos1 > this->size())
+            {
+                throw std::out_of_range("flex_string::replace");
+            }
+
+            // @todo оптимизация
+            auto const xlen = std::min(n1, this->size() - pos1);
+            this->reserve(this->size() - xlen + n2);
+            this->erase(pos1, xlen);
+            this->insert(pos1, s, n2);
+            return *this;
+        }
+
+        /** @brief Замена подстроки элементами массива символов
+        @param pos1 индекс первого символа, который должен быть заменён
+        @param n1 длина подстроки, которая должна быть заменена
+        @return <tt> *this </tt>
+        */
+        flex_string &
+        replace(size_type pos1, size_type n1, value_type const * s)
+        {
+            return this->replace(pos1, n1, s, traits_type::length(s));
+        }
+
+        /** @brief Замена подстроки элементами массива символов
+        @param pos1 индекс первого символа, который должен быть заменён
+        @param n1 длина подстроки, которая должна быть заменена
+        @return <tt> *this </tt>
+        */
+        flex_string & replace(size_type pos1, size_type n1,
+                              size_type n2, value_type c)
+        {
+            // @todo оптимизация
+            return this->replace(pos1, n1, flex_string(n2, c));
+        }
+
+        flex_string & replace(const_iterator i1, const_iterator i2,
+                              flex_string const & str)
+        {
+            return this->replace(i1 - this->begin(), i2 - i1, str);
+        }
+
         // 21.4.6.7 copy
         /** @brief Копирование подстроки в массив
         @param s указатель на начало массива
@@ -1236,7 +1346,7 @@ namespace ural
         @param pos номер элемента, с которого начинается копирование
         @return Количество символов, которое было скопировано
         */
-        size_type copy(charT * s, size_type n, size_type pos = 0) const
+        size_type copy(value_type * s, size_type n, size_type pos = 0) const
         {
             if(pos > this->size())
             {
@@ -1265,12 +1375,12 @@ namespace ural
         @return Указатель @c p такой, что <tt> p + i == &operator[](i) </tt>
         для любого @c i из <tt> [0,size()] </tt>
         */
-        const charT * data() const noexcept
+        const value_type * data() const noexcept
         {
             return data_.data();
         }
 
-        const charT * c_str() const noexcept
+        const value_type * c_str() const noexcept
         {
             return this->data();
         }

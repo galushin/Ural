@@ -875,6 +875,60 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_pop_back, String, Strings_list)
 }
 
 // @todo 21.4.6.6 replace
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_replace_pos_n, String, Strings_list)
+{
+    // основано на http://www.cplusplus.com/reference/string/string/replace/
+    std::string s{"this is a test string"};
+    std::string const s2{"n example"};
+    std::string const s3{"sample phrase"};
+
+    String fs{s};
+    String const fs2{s2};
+    String const fs3{s3};
+
+    s.replace(9, 5, s2);
+    fs.replace(9, 5, fs2);
+
+    BOOST_CHECK_EQUAL(s, fs.c_str());
+    BOOST_CHECK_THROW(fs.replace(fs.size() + 1, 2, fs2), std::out_of_range);
+
+    s.replace(19,6,s3,7,6);
+    fs.replace(19,6,fs3,7,6);
+
+    BOOST_CHECK_EQUAL(s, fs.c_str());
+    BOOST_CHECK_THROW(fs.replace(fs.size() + 1, 2, fs3, 7, 6), std::out_of_range);
+    BOOST_CHECK_THROW(fs.replace(19, 6, fs3, fs3.size() + 1, 6), std::out_of_range);
+
+    s.replace(8,10,"just a");
+    fs.replace(8,10,"just a");
+
+    BOOST_CHECK_EQUAL(s, fs.c_str());
+    BOOST_CHECK_THROW(fs.replace(fs.size() + 1,10,"just a"), std::out_of_range);
+
+    s.replace(s.size(),1,3,'!');
+    fs.replace(fs.size(),1,3,'!');
+
+    BOOST_CHECK_EQUAL(s, fs.c_str());
+    BOOST_CHECK_THROW(fs.replace(fs.size()+1,1,3,'!');, std::out_of_range);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_replace_iterators, String, Strings_list)
+{
+    // основано на http://www.cplusplus.com/reference/string/string/replace/
+    std::string s{"this is a test string"};
+    std::string const s2{"n example"};
+    std::string const s3{"sample phrase"};
+
+    String fs{s};
+    String const fs2{s2};
+    String const fs3{s3};
+
+    s.replace(9, 5, s2);
+    fs.replace(fs.begin() + 9, fs.begin() + 14, fs2);
+
+    BOOST_CHECK_EQUAL(s, fs.c_str());
+    BOOST_CHECK_THROW(fs.replace(fs.size() + 1, 2, fs2), std::out_of_range);
+}
 
 // 21.4.6.7 copy
 BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_copy_from_0, String, Strings_list)
