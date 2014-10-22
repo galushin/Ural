@@ -22,6 +22,10 @@
  значение.
 */
 
+#include <ural/defs.hpp>
+#include <ural/sequence/function_output.hpp>
+#include <boost/call_traits.hpp>
+
 namespace ural
 {
     /** @brief Шаблон класса функционального объекта, который принимает один

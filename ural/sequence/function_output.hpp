@@ -22,6 +22,7 @@
  аргумент заданной функции.
 */
 
+#include <ural/functional/make_functor.hpp>
 #include <ural/sequence/base.hpp>
 
 namespace ural

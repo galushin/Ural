@@ -15,11 +15,11 @@
 */
 
 #include <ural/abi.hpp>
+#include <ural/sequence/sink.hpp>
 #include <ural/algorithm.hpp>
 #include <ural/sequence/all.hpp>
 #include <ural/sequence/zip.hpp>
 #include <ural/sequence/map.hpp>
-#include <ural/sequence/sink.hpp>
 #include <ural/sequence/progression.hpp>
 
 #include <boost/test/unit_test.hpp>

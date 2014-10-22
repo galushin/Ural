@@ -500,7 +500,8 @@
 	<ural/functional.hpp>
 	<cassert>
 
-1397100591 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
+1413948870 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
+	<ural/functional/make_functor.hpp>
 	<ural/sequence/base.hpp>
 
 1402035875 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
@@ -6351,7 +6352,10 @@
 1401774696 c:\devtools\ural_repo\ural\ural\sequence\remove.hpp
 	<ural/algorithm/details/algo_base.hpp>
 
-1398839162 c:\devtools\ural_repo\ural\ural\sequence\sink.hpp
+1413948829 c:\devtools\ural_repo\ural\ural\sequence\sink.hpp
+	<ural/defs.hpp>
+	<ural/sequence/function_output.hpp>
+	<boost/call_traits.hpp>
 
 1398739770 c:\devtools\ural_repo\ural\ural\sequence\partition.hpp
 
