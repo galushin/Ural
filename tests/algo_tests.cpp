@@ -388,21 +388,6 @@ BOOST_AUTO_TEST_CASE(filtered_getters_test)
     BOOST_CHECK(s1 != s3);
 }
 
-BOOST_AUTO_TEST_CASE(copy_backward_test)
-{
-    std::vector<int> x_std = {1, 2, 3, 4, 5};
-    std::vector<int> x_ural = x_std;
-
-    std::copy_backward(x_std.begin(), x_std.end() - 1, x_std.end());
-
-    auto src = ural::make_iterator_sequence(x_ural.begin(), x_ural.end() - 1);
-
-    ural::copy(src | ural::reversed, x_ural | ural::reversed);
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
-}
-
 // 25.3.2
 BOOST_AUTO_TEST_CASE(moved_test)
 {
@@ -432,36 +417,6 @@ BOOST_AUTO_TEST_CASE(moved_test)
     BOOST_CHECK(ural::equal(r_std, r_ural,
                            [](Type const & x, Type const & y)
                                 { return *x == *y;}));
-}
-
-BOOST_AUTO_TEST_CASE(moved_backward_test_unique_ptr)
-{
-    typedef std::unique_ptr<int> Type;
-
-    std::vector<int> const ys = {25, -15, 5, -5, 15};
-    std::vector<Type> xs1;
-    std::vector<Type> xs2;
-
-    for(auto & y : ys)
-    {
-        xs1.emplace_back(ural::make_unique<int>(y));
-        xs2.emplace_back(ural::make_unique<int>(y));
-    }
-
-    std::move_backward(xs1.begin(), xs1.end() - 1, xs1.end());
-
-    auto src = ural::make_iterator_sequence(xs2.begin(), xs2.end() - 1);
-    ural::copy(src | ural::moved | ural::reversed, xs2 | ural::reversed);
-
-    for(size_t i = 0; i < xs1.size(); ++ i)
-    {
-        BOOST_CHECK(!xs1.at(i) == !xs2.at(i));
-
-        if(!!xs1.at(i))
-        {
-            BOOST_CHECK_EQUAL(*xs1.at(i), *xs2.at(i));
-        }
-    }
 }
 
 // 25.3.3

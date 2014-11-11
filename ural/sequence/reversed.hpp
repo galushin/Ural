@@ -22,6 +22,9 @@
  в обратном порядке.
 */
 
+#include <ural/sequence/make.hpp>
+#include <ural/sequence/base.hpp>
+
 namespace ural
 {
     /** @brief Адаптор последовательности, посещающий элементы исходной

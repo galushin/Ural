@@ -14,7 +14,6 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <ural/abi.hpp>
 #include <ural/sequence/sink.hpp>
 #include <ural/algorithm.hpp>
 #include <ural/sequence/all.hpp>
@@ -96,41 +95,6 @@ BOOST_AUTO_TEST_CASE(ostream_sequence_test_auto_no_delim)
     ural::copy(xs, ural::make_ostream_sequence(os_ural));
 
     BOOST_CHECK_EQUAL(os_std.str(), os_ural.str());
-}
-
-BOOST_AUTO_TEST_CASE(reversed_reversed_test)
-{
-    std::vector<int> const xs = {1, 2, 3, 4, 5};
-    auto s = ural::sequence(xs);
-    auto rr = s | ural::reversed | ural::reversed;
-
-    BOOST_CHECK_EQUAL(ural::abi::demangle_name(typeid(s).name()),
-                      ural::abi::demangle_name(typeid(rr).name()));
-    BOOST_CHECK(typeid(s).name() == typeid(rr).name());
-    BOOST_CHECK(typeid(s) == typeid(rr));
-}
-
-BOOST_AUTO_TEST_CASE(reversed_iterators_to_sequence_test)
-{
-    std::vector<int> const xs = {1, 2, 3, 4, 5};
-    auto r_begin = xs.rbegin();
-    auto r_end = xs.rend();
-
-    auto rs = ural::make_iterator_sequence(r_begin, r_end);
-
-    typedef ural::reverse_sequence<ural::iterator_sequence<decltype(xs.begin())>>
-        RSequence;
-
-    static_assert(std::is_same<decltype(rs), RSequence>::value, "");
-
-    BOOST_CHECK(r_begin.base() == rs.base().end());
-    BOOST_CHECK(r_end.base() == rs.base().begin());
-
-    std::vector<int> result;
-    ural::copy(rs, std::back_inserter(result));
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(xs.begin(), xs.end(),
-                                  result.rbegin(), result.rend());
 }
 
 BOOST_AUTO_TEST_CASE(move_iterators_to_sequence_test)
@@ -395,58 +359,4 @@ BOOST_AUTO_TEST_CASE(set_inserter_test)
 
     BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
                                   z_ural.begin(), z_ural.end());
-}
-
-BOOST_AUTO_TEST_CASE(reversed_seq_concept_check)
-{
-    std::list<int> bi_c;
-    std::vector<int> ra_c;
-
-    using ural::sequence;
-
-    typedef decltype(sequence(bi_c) | ural::reversed) Bi;
-    typedef decltype(sequence(ra_c) | ural::reversed) Ra;
-
-    BOOST_CONCEPT_ASSERT((ural::concepts::BidirectionalSequence<Bi>));
-
-    BOOST_CONCEPT_ASSERT((ural::concepts::BidirectionalSequence<Ra>));
-    BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<Ra>));
-}
-
-
-BOOST_AUTO_TEST_CASE(reversed_pop_back_n_test)
-{
-    auto const xs = ural::make_arithmetic_progression(0, 1)
-                  | ural::taken(10) | ural::to_container<std::vector>{};
-
-    auto s = ural::sequence(xs);
-    auto s_r = s | ural::reversed;
-
-    auto const n = xs.size() / 3;
-
-    s += n;
-    s_r.pop_back(n);
-
-    BOOST_CHECK(s == s_r.base());
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(s.begin(), s.end(),
-                                  s_r.base().begin(), s_r.base().end());
-
-    s.pop_back(n);
-    s_r += n;
-
-    BOOST_CHECK(s == s_r.base());
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(s.begin(), s.end(),
-                                  s_r.base().begin(), s_r.base().end());
-
-    auto b   = s.traversed_front();
-    auto b_r = s_r.traversed_back();
-
-    BOOST_CHECK(b == b_r.base());
-
-    s.shrink_front();
-    s_r.shrink_back();
-
-    BOOST_CHECK(s == s_r.base());
 }
