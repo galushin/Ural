@@ -41,7 +41,7 @@
 
 1382674135 c:\devtools\ural_repo\ural\\ural\sequence\insertion.hpp
 
-1403763792 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
+1417584150 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
 	<ural/numeric/matrix.hpp>
 	<ural/algorithm.hpp>
 	<ural/numeric.hpp>
@@ -56,6 +56,8 @@
 	<ural/numeric/matrix_decomposition.hpp>
 	<ural/numeric/matrix.hpp>
 	<boost/numeric/ublas/matrix.hpp>
+	<ural/numeric/mp/integer_10.hpp>
+	<ural/sequence/progression.hpp>
 
 1382760303 c:\devtools\ural_repo\ural\\ural\numeric.hpp
 	<ural/functional.hpp>
@@ -12157,4 +12159,8 @@
 	<ural/sequence/to.hpp>
 	<ural/memory.hpp>
 	<ural/sequence/moved.hpp>
+
+1417584224 c:\devtools\ural_repo\ural\ural\numeric\mp\integer_10.hpp
+	<ural/algorithm.hpp>
+	<ural/sequence/reversed.hpp>
 

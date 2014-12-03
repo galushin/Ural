@@ -492,3 +492,43 @@ BOOST_AUTO_TEST_CASE(square_constexpr_test)
 
     static_assert(x*x == xx, "");
 }
+
+// Числа произвольной точности
+#include <ural/numeric/mp/integer_10.hpp>
+typedef ural::integer_10 integer;
+
+integer digit_sum(integer const & x)
+{
+    integer result{0};
+
+    // @todo assert(x > 0)
+    // @todo заменить на алгоритм
+
+    for(auto d : x.digits())
+    {
+        assert(0 <= d && d < 10);
+        result += integer{d};
+    }
+
+    return result;
+}
+
+#include <ural/sequence/progression.hpp>
+BOOST_AUTO_TEST_CASE(MP_integer_10_PE_56)
+{
+    auto const a_max = 100;
+    auto const b_max = 100;
+
+    integer max_digit_sum{0};
+
+    for(auto a : ural::make_arithmetic_progression(1, 1) | ural::taken(a_max))
+    for(auto b : ural::make_arithmetic_progression(1, 1) | ural::taken(b_max))
+    {
+        auto const r = ural::natural_power(integer{a}, b);
+        auto const new_value = digit_sum(r);
+
+        max_digit_sum = std::max(max_digit_sum, new_value);
+    }
+
+    BOOST_CHECK_EQUAL(max_digit_sum, integer{972});
+}
