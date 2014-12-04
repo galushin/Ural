@@ -115,7 +115,8 @@ namespace ural
         {
             assert(init_value >= 0);
 
-            // @todo убедиться, что T - целочисленный типы
+            static_assert(std::is_integral<T>::value, "Must be integral");
+
             for(; init_value > 0; init_value /= 10)
             {
                 digits_.push_back(init_value % 10);
@@ -136,6 +137,7 @@ namespace ural
                 digits_.resize(x.digits().size(), 0);
             }
 
+            // @note не может ли при таком типе возникнуть переполнение
             Digit carry = 0;
 
             for(size_t i = 0; i < x.digits().size(); ++ i)
