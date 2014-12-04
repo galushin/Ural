@@ -1,6 +1,27 @@
 #ifndef Z_URAL_NUMERIC_MP_INTEGER_10_HPP_INCLUDED
 #define Z_URAL_NUMERIC_MP_INTEGER_10_HPP_INCLUDED
 
+/*  This file is part of Ural.
+
+    Ural is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Ural is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Ural.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/** @file ural/numeric/mp/integer_10.hpp
+ @brief Числа произвольной точности, представленные как последовательность
+ (десятичных) цифр
+*/
+
 #include <ural/algorithm.hpp>
 #include <ural/sequence/reversed.hpp>
 
@@ -11,8 +32,42 @@ namespace ural
     // @todo заменить циклы на алгоритмы
     // @todo выделить функции
     // @todo смешанные операции (с встроенными целыми числами)
+    // @todo тест integer_10{} == integer_10{0};
+    /** @brief Класс чисел с произвольной точностью, представленный как
+    последовательность (десятичных) цифр
+    */
     class integer_10
     {
+    // Операторы сравнения
+    friend bool operator==(integer_10 const & x, integer_10 const & y)
+    {
+        return x.digits() == y.digits();
+    }
+
+    friend bool operator<(integer_10 const & x, integer_10 const & y)
+    {
+        if(x.digits().size() < y.digits().size())
+        {
+            return true;
+        }
+
+        return ural::lexicographical_compare(x.digits() | ural::reversed,
+                                             y.digits() | ural::reversed);
+    }
+
+    // Ввод/вывод
+    // @todo для любых потоков
+    friend std::ostream & operator<<(std::ostream & os, integer_10 const & x)
+    {
+        for(auto const & d : x.digits() | ural::reversed)
+        {
+            assert(0 <= d && d < 10);
+            os << d;
+        }
+        return os;
+    }
+
+    // Арифметические операции
     friend integer_10 operator*(integer_10 const & x, integer_10 const & y)
     {
         // @todo оптимизация
@@ -44,37 +99,15 @@ namespace ural
         return result;
     }
 
-    friend bool operator<(integer_10 const & x, integer_10 const & y)
-    {
-        if(x.digits().size() < y.digits().size())
-        {
-            return true;
-        }
-
-        return ural::lexicographical_compare(x.digits() | ural::reversed,
-                                             y.digits() | ural::reversed);
-    }
-
-    // @todo для любых потоков
-    friend std::ostream & operator<<(std::ostream & os, integer_10 const & x)
-    {
-        for(auto const & d : x.digits() | ural::reversed)
-        {
-            assert(0 <= d && d < 10);
-            os << d;
-        }
-        return os;
-    }
-
-    friend bool operator==(integer_10 const & x, integer_10 const & y)
-    {
-        return x.digits() == y.digits();
-    }
-
     public:
+        // Типы
         typedef short Digit;
         typedef std::vector<Digit> Digits_container;
 
+        // Создание, копирование, уничтожение
+        /** @brief Конструктор без параметров
+        @post <tt> *this == 0 </tt>
+        */
         integer_10() = default;
 
         template <class T>
@@ -89,11 +122,13 @@ namespace ural
             }
         }
 
+        // Доступ к цифрам
         Digits_container const & digits() const
         {
             return this->digits_;
         }
 
+        // Операции составного присваивания
         integer_10 & operator+=(integer_10 const & x)
         {
             if(digits_.size() < x.digits_.size())

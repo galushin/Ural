@@ -528,6 +528,7 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_PE_56)
         auto const new_value = digit_sum(r);
 
         max_digit_sum = std::max(max_digit_sum, new_value);
+        // @todo max_digit_sum (std::max)= new_value
     }
 
     BOOST_CHECK_EQUAL(max_digit_sum, integer{972});
