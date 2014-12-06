@@ -50,6 +50,10 @@ namespace ural
         {
             return true;
         }
+        if(x.digits().size() > y.digits().size())
+        {
+            return false;
+        }
 
         return ural::lexicographical_compare(x.digits() | ural::reversed,
                                              y.digits() | ural::reversed);
@@ -68,6 +72,12 @@ namespace ural
     }
 
     // Арифметические операции
+    friend integer_10 operator-(integer_10 x, integer_10 const & y)
+    {
+        x -= y;
+        return x;
+    }
+
     friend integer_10 operator*(integer_10 const & x, integer_10 const & y)
     {
         // @todo оптимизация
@@ -97,6 +107,16 @@ namespace ural
         }
 
         return result;
+    }
+
+    friend integer_10 operator%(integer_10 x, integer_10 const & d)
+    {
+        // @todo оптимизация
+        // @todo assert(x >= 0)
+        for(; x > d; x -= d)
+        {}
+
+        return x;
     }
 
     public:
@@ -158,6 +178,29 @@ namespace ural
             {
                 digits_.push_back(carry);
             }
+
+            return *this;
+        }
+
+        integer_10 & operator-=(integer_10 const & x)
+        {
+            assert(*this >= x);
+
+            for(auto k = x.digits_.size(); k > 0; -- k)
+            {
+                if(this->digits_[k-1] < x.digits_[k-1])
+                {
+                    this->digits_[k] -= 1;
+                    this->digits_[k-1] += 10 - x.digits_[k-1];
+                }
+                else
+                {
+                    this->digits_[k-1] -= x.digits_[k-1];
+                }
+            }
+
+            for(; digits_.back() == 0; digits_.pop_back())
+            {}
 
             return *this;
         }

@@ -533,3 +533,25 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_PE_56)
 
     BOOST_CHECK_EQUAL(max_digit_sum, integer{972});
 }
+
+BOOST_AUTO_TEST_CASE(MP_integer_10_x_minus_x_equals_zero)
+{
+    auto const x = 128;
+    auto const x_mp = integer{x};
+
+    BOOST_CHECK_EQUAL(x_mp - x_mp, integer{0});
+}
+
+BOOST_AUTO_TEST_CASE(MP_integer_10_reminder)
+{
+    auto const x = 128;
+    auto const d = 13;
+    auto const r = x % d;
+
+    auto const x_mp = integer{x};
+    auto const d_mp = integer{d};
+
+    auto const r_mp = x_mp % d_mp;
+
+    BOOST_CHECK_EQUAL(r_mp, integer{r});
+}
