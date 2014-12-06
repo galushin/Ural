@@ -63,6 +63,11 @@ namespace ural
     // @todo для любых потоков
     friend std::ostream & operator<<(std::ostream & os, integer_10 const & x)
     {
+        if(x.digits().empty())
+        {
+            return os << '0';
+        }
+
         for(auto const & d : x.digits() | ural::reversed)
         {
             assert(0 <= d && d < 10);
@@ -169,6 +174,7 @@ namespace ural
 
             for(size_t i = x.digits().size(); i < this->digits().size(); ++ i)
             {
+                // @todo if(carry == 0) break;
                 auto new_value = digits_[i] + carry;
                 digits_[i] = (new_value % 10);
                 carry = new_value / 10;
@@ -186,16 +192,35 @@ namespace ural
         {
             assert(*this >= x);
 
-            for(auto k = x.digits_.size(); k > 0; -- k)
+            Digit carry = 0;
+
+            for(size_t k = 0; k < x.digits_.size(); ++ k)
             {
-                if(this->digits_[k-1] < x.digits_[k-1])
+                this->digits_[k] -= x.digits_[k] + carry;
+
+                if(this->digits_[k] < 0)
                 {
-                    this->digits_[k] -= 1;
-                    this->digits_[k-1] += 10 - x.digits_[k-1];
+                    this->digits_[k] += 10;
+                    carry = 1;
                 }
                 else
                 {
-                    this->digits_[k-1] -= x.digits_[k-1];
+                    carry = 0;
+                }
+            }
+
+            for(size_t k = x.digits().size(); carry > 0; ++ k)
+            {
+                this->digits_[k] -= carry;
+
+                if(this->digits_[k] < 0)
+                {
+                    this->digits_[k] += 10;
+                    carry = 1;
+                }
+                else
+                {
+                    carry = 0;
                 }
             }
 
