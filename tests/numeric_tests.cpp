@@ -555,3 +555,11 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_reminder)
 
     BOOST_CHECK_EQUAL(r_mp, integer{r});
 }
+
+BOOST_AUTO_TEST_CASE(MP_integer_10_reminder_zero_regression)
+{
+    auto const x = 128;
+    auto const x_mp = integer{x};
+
+    BOOST_CHECK_EQUAL(x_mp % x_mp, integer{0});
+}

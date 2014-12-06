@@ -113,7 +113,7 @@ namespace ural
     {
         // @todo оптимизация
         // @todo assert(x >= 0)
-        for(; x > d; x -= d)
+        for(; x >= d; x -= d)
         {}
 
         return x;
