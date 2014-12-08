@@ -49,6 +49,9 @@ namespace ural
         /// @brief Категория обхода
         typedef single_pass_traversal_tag traversal_tag;
 
+        /// @brief Тип расстояния
+        typedef size_t distance_type;
+
         // Конструкторы
         /** @brief Конструктор
         @param is ссылка на поток ввода

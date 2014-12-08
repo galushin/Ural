@@ -45,6 +45,27 @@ BOOST_AUTO_TEST_CASE(istream_sequence_test)
                                   r_ural.begin(), r_ural.end());
 }
 
+BOOST_AUTO_TEST_CASE(istream_sequence_regression_1)
+{
+    std::istringstream str1("0.1 0.2 0.3 0.4");
+    std::istringstream str2("0.1 0.2 0.3 0.4");
+
+    std::vector<double> r_std;
+    std::copy(std::istream_iterator<double>(str1),
+              std::istream_iterator<double>(),
+              r_std | ural::back_inserter);
+
+    std::vector<double> r_ural;
+
+    for(auto const & x : ural::make_istream_sequence<double>(str2))
+    {
+        r_ural.push_back(x);
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
+                                  r_ural.begin(), r_ural.end());
+}
+
 BOOST_AUTO_TEST_CASE(ostream_sequence_test)
 {
     std::vector<int> const xs = {1, 2, 3, 4, 5};
