@@ -32,7 +32,6 @@ namespace ural
     // @todo заменить циклы на алгоритмы
     // @todo выделить функции
     // @todo смешанные операции (с встроенными целыми числами)
-    // @todo тест integer_10{} == integer_10{0};
     /** @brief Класс чисел с произвольной точностью, представленный как
     последовательность (десятичных) цифр
     */
@@ -172,9 +171,9 @@ namespace ural
                 carry = new_value / 10;
             }
 
-            for(size_t i = x.digits().size(); i < this->digits().size(); ++ i)
+            for(size_t i = x.digits().size();
+                i < this->digits().size() && carry > 0; ++ i)
             {
-                // @todo if(carry == 0) break;
                 auto new_value = digits_[i] + carry;
                 digits_[i] = (new_value % 10);
                 carry = new_value / 10;
