@@ -35,15 +35,18 @@ namespace ural
     /** @brief Класс чисел с произвольной точностью, представленный как
     последовательность (десятичных) цифр
     */
-    class integer_10
+    template <long base>
+    class integer
     {
+        typedef integer self_type;
+
     // Операторы сравнения
-    friend bool operator==(integer_10 const & x, integer_10 const & y)
+    friend bool operator==(integer const & x, integer const & y)
     {
         return x.digits() == y.digits();
     }
 
-    friend bool operator<(integer_10 const & x, integer_10 const & y)
+    friend bool operator<(integer const & x, integer const & y)
     {
         if(x.digits().size() < y.digits().size())
         {
@@ -60,7 +63,7 @@ namespace ural
 
     // Ввод/вывод
     // @todo для любых потоков
-    friend std::ostream & operator<<(std::ostream & os, integer_10 const & x)
+    friend std::ostream & operator<<(std::ostream & os, integer const & x)
     {
         if(x.digits().empty())
         {
@@ -69,27 +72,27 @@ namespace ural
 
         for(auto const & d : x.digits() | ural::reversed)
         {
-            assert(0 <= d && d < 10);
+            assert(0 <= d && d < base);
             os << d;
         }
         return os;
     }
 
     // Арифметические операции
-    friend integer_10 operator-(integer_10 x, integer_10 const & y)
+    friend integer operator-(integer x, integer const & y)
     {
         x -= y;
         return x;
     }
 
-    friend integer_10 operator*(integer_10 const & x, integer_10 const & y)
+    friend integer operator*(integer const & x, integer const & y)
     {
         // @todo оптимизация
-        integer_10 result;
+        integer result;
 
         for(size_t i = 0; i != y.digits().size(); ++ i)
         {
-            integer_10 a;
+            integer a;
 
             a.digits_.resize(i, 0);
 
@@ -98,8 +101,8 @@ namespace ural
             for(size_t j = 0; j != x.digits().size(); ++ j)
             {
                 auto new_value = carry + x.digits()[j] * y.digits()[i];
-                a.digits_.push_back(new_value % 10);
-                carry = new_value / 10;
+                a.digits_.push_back(new_value % base);
+                carry = new_value / base;
             }
 
             if(carry > 0)
@@ -113,7 +116,7 @@ namespace ural
         return result;
     }
 
-    friend integer_10 operator%(integer_10 x, integer_10 const & d)
+    friend integer operator%(integer x, integer const & d)
     {
         // @todo оптимизация
         // @todo assert(x >= 0)
@@ -132,18 +135,18 @@ namespace ural
         /** @brief Конструктор без параметров
         @post <tt> *this == 0 </tt>
         */
-        integer_10() = default;
+        integer() = default;
 
         template <class T>
-        explicit integer_10(T init_value)
+        explicit integer(T init_value)
         {
             assert(init_value >= 0);
 
             static_assert(std::is_integral<T>::value, "Must be integral");
 
-            for(; init_value > 0; init_value /= 10)
+            for(; init_value > 0; init_value /= base)
             {
-                digits_.push_back(init_value % 10);
+                digits_.push_back(init_value % base);
             }
         }
 
@@ -154,7 +157,7 @@ namespace ural
         }
 
         // Операции составного присваивания
-        integer_10 & operator+=(integer_10 const & x)
+        integer & operator+=(integer const & x)
         {
             if(digits_.size() < x.digits_.size())
             {
@@ -167,16 +170,16 @@ namespace ural
             for(size_t i = 0; i < x.digits().size(); ++ i)
             {
                 auto new_value = digits_[i] + x.digits_[i] + carry;
-                digits_[i] = (new_value % 10);
-                carry = new_value / 10;
+                digits_[i] = (new_value % base);
+                carry = new_value / base;
             }
 
             for(size_t i = x.digits().size();
                 i < this->digits().size() && carry > 0; ++ i)
             {
                 auto new_value = digits_[i] + carry;
-                digits_[i] = (new_value % 10);
-                carry = new_value / 10;
+                digits_[i] = (new_value % base);
+                carry = new_value / base;
             }
 
             if(carry > 0)
@@ -187,7 +190,7 @@ namespace ural
             return *this;
         }
 
-        integer_10 & operator-=(integer_10 const & x)
+        integer & operator-=(integer const & x)
         {
             assert(*this >= x);
 
@@ -199,7 +202,7 @@ namespace ural
 
                 if(this->digits_[k] < 0)
                 {
-                    this->digits_[k] += 10;
+                    this->digits_[k] += base;
                     carry = 1;
                 }
                 else
@@ -214,7 +217,7 @@ namespace ural
 
                 if(this->digits_[k] < 0)
                 {
-                    this->digits_[k] += 10;
+                    this->digits_[k] += base;
                     carry = 1;
                 }
                 else
@@ -232,6 +235,8 @@ namespace ural
     private:
         Digits_container digits_;
     };
+
+    typedef integer<10> integer_10;
 }
 // namespace ural
 
