@@ -265,6 +265,7 @@ BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_AUTO_TEST_CASE(natural_power_constexpr_test)
 {
+    static_assert(ural::natural_power(2, 0) == 1, "");
     static_assert(ural::natural_power(2, 1) == 2, "");
     static_assert(ural::natural_power(2, 2) == 4, "");
     static_assert(ural::natural_power(2, 3) == 8, "");

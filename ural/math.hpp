@@ -64,7 +64,9 @@ namespace ural
         template <class T>
         constexpr T operator()(T const & x, size_t n) const
         {
-            return (*this)(x, enforce_positive(n), ural::multiplies<>{});
+            return n == 0
+                   ? T{1}
+                   : (*this)(x, enforce_positive(n), ural::multiplies<>{});
         }
 
         /** @brief Возведение числа в натуральную степень
@@ -72,6 +74,7 @@ namespace ural
         @param n степень
         @param op ассоциативная бинарная операция, используемая в качестве
         умножения
+        @pre <tt> n > 0 </tt>
         @return @c x в степени @c n
         */
         template <class T, class AssocBinOp>
