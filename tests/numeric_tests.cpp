@@ -584,3 +584,16 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_reminder_regression_1)
 
     BOOST_CHECK_EQUAL(x_mp % d_mp, integer{43});
 }
+
+BOOST_AUTO_TEST_CASE(MP_integer_10_plus_plus_test)
+{
+    auto x = 100;
+    auto x_mp = integer{x};
+
+    ++ x;
+    ++ x_mp;
+
+    auto const z_mp = integer{x};
+
+    BOOST_CHECK_EQUAL(z_mp, x_mp);
+}

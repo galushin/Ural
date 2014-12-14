@@ -156,6 +156,32 @@ namespace ural
             return this->digits_;
         }
 
+        // Инкремент и декремент
+        integer & operator++()
+        {
+            // @todo устранить дублирование
+            assert(digits_.empty() == false);
+
+            auto new_value = digits_.front() + 1;
+            auto carry = new_value / base;
+            digits_.front() = new_value % base;
+
+            for(size_t i = 1; carry > 0 && i < digits_.size(); ++ i)
+            {
+                auto new_value = digits_[i] + carry;
+                carry = new_value / base;
+                digits_[i] = new_value % base;
+            }
+
+            if(carry > 0)
+            {
+                digits_.push_back(carry);
+            }
+
+            return *this;
+
+        }
+
         // Операции составного присваивания
         integer & operator+=(integer const & x)
         {
