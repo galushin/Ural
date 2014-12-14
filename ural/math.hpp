@@ -59,6 +59,7 @@ namespace ural
         /** @brief Возведение числа в натуральную степень
         @param x число
         @param n степень
+        @pre <tt> n >= 0 </tt>
         @return @c x в степени @c n
         */
         template <class T>
@@ -83,6 +84,20 @@ namespace ural
             return this->compute(x, enforce_positive(n), std::move(op));
         }
 
+        /** @brief Возведение числа в натуральную степень
+        @param x число
+        @param n степень
+        @param op ассоциативная бинарная операция, используемая в качестве
+        умножения
+        @pre <tt> n >= 0 </tt>
+        @return Если <tt> n > 0 </tt> @c x в степени @c n, иначе --- @c unit
+        */
+        template <class T, class AssocBinOp>
+        constexpr T operator()(T const & x, size_t n, AssocBinOp op, T const & unit) const
+        {
+            return this->compute(x, n, op, unit);
+        }
+
     private:
         template <class T, class AssocBinOp>
         constexpr T adjust(T value, T const & x, bool is_odd, AssocBinOp op) const
@@ -96,6 +111,12 @@ namespace ural
             return (n == 1)
                     ? x
                     : adjust(ural::square((*this)(x, n / 2), op), x, n % 2 != 0, op);
+        }
+
+        template <class T, class AssocBinOp>
+        constexpr T compute(T const & x, size_t n, AssocBinOp op, T const & unit) const
+        {
+            return (n == 0) ? unit : compute(x, n, op);
         }
 
         static constexpr size_t enforce_positive(size_t n)
