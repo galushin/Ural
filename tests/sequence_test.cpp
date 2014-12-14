@@ -167,6 +167,11 @@ BOOST_AUTO_TEST_CASE(istream_sequence_no_default_ctor_test)
     ural::istream_sequence<std::reference_wrapper<int>, std::istream>
         seq{is, std::ref(var)};
 
+    typedef decltype(seq) Sequence;
+
+    BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Sequence>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Sequence>));
+
     std::ref(var) = *seq;
 
     BOOST_CHECK_EQUAL(42, var);

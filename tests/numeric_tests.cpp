@@ -564,6 +564,11 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_reminder_zero_regression)
     BOOST_CHECK_EQUAL(x_mp % x_mp, integer{0});
 }
 
+BOOST_AUTO_TEST_CASE(MP_integer_10_zero_consitency)
+{
+    BOOST_CHECK_EQUAL(integer{0}, integer{});
+}
+
 BOOST_AUTO_TEST_CASE(MP_integer_10_ostreaming_zero)
 {
     std::ostringstream os;
