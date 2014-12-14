@@ -54,7 +54,7 @@ namespace ural
         */
         void update(X const & x, Y const & y)
         {
-            auto denom = X{1.0};
+            auto denom = X{1};
 
             for(auto & d : data_)
             {
@@ -85,7 +85,7 @@ namespace ural
         {
             if(data_.empty())
             {
-                return result_type{0.0};
+                return result_type{0};
             }
 
             auto i = ural::sequence(data_);
