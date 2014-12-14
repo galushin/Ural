@@ -53,6 +53,35 @@ namespace ural
         return op(x, x);
     }
 
+    template <class T, class F>
+    struct unit_element_traits;
+
+    template <class T>
+    struct unit_element_traits<T, ural::multiplies<>>
+    {
+    public:
+        constexpr static T make(ural::multiplies<> const &)
+        {
+            return T{1};
+        }
+    };
+
+    template <class T>
+    struct unit_element_traits<T, ural::plus<>>
+    {
+    public:
+        constexpr static T make(ural::plus<> const &)
+        {
+            return T{0};
+        }
+    };
+
+    template <class T, class F>
+    constexpr T make_unit_element(F const & f)
+    {
+        return unit_element_traits<T, F>::make(f);
+    }
+
     class natural_power_f
     {
     public:
@@ -65,9 +94,7 @@ namespace ural
         template <class T>
         constexpr T operator()(T const & x, size_t n) const
         {
-            return n == 0
-                   ? T{1}
-                   : (*this)(x, enforce_positive(n), ural::multiplies<>{});
+            return (*this)(x, n, ural::multiplies<>{});
         }
 
         /** @brief Возведение числа в натуральную степень
@@ -81,7 +108,7 @@ namespace ural
         template <class T, class AssocBinOp>
         constexpr T operator()(T const & x, size_t n, AssocBinOp op) const
         {
-            return this->compute(x, enforce_positive(n), std::move(op));
+            return (*this)(x, n, std::move(op), make_unit_element<T>(op));
         }
 
         /** @brief Возведение числа в натуральную степень
@@ -116,7 +143,7 @@ namespace ural
         template <class T, class AssocBinOp>
         constexpr T compute(T const & x, size_t n, AssocBinOp op, T const & unit) const
         {
-            return (n == 0) ? unit : compute(x, n, op);
+            return (n == 0) ? unit : compute(x, enforce_positive(n), op);
         }
 
         static constexpr size_t enforce_positive(size_t n)
