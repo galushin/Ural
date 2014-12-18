@@ -182,6 +182,33 @@ namespace ural
 
         }
 
+        integer & operator--()
+        {
+            // @todo устранить дублирование
+            assert(digits_.empty() == false);
+
+            // Вычитаем, пока есть перенос
+            for(size_t i = 0; i < digits_.size(); ++ i)
+            {
+                if(digits_[i] == 0)
+                {
+                    digits_[i] = base - 1;
+                }
+                else
+                {
+                    digits_[i] -= 1;
+                    break;
+                }
+            }
+
+            // Удаляем ведущие нули
+            for(; digits_.back() == 0; digits_.pop_back())
+            {}
+
+            return *this;
+
+        }
+
         // Операции составного присваивания
         integer & operator+=(integer const & x)
         {

@@ -620,3 +620,33 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_postfix_plus_plus_test)
     BOOST_CHECK_EQUAL(z_mp, x_mp);
     BOOST_CHECK_EQUAL(integer{x_old}, x_mp_old);
 }
+
+BOOST_AUTO_TEST_CASE(MP_integer_10_minus_minus_test)
+{
+    for(int n = 1; n <= 100; ++ n)
+    {
+        auto x = n;
+        auto x_mp = integer{x};
+
+        -- x;
+        -- x_mp;
+
+        auto const z_mp = integer{x};
+
+        BOOST_CHECK_EQUAL(z_mp, x_mp);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(MP_integer_10_postfix_minus_minus_test)
+{
+    auto x = 100;
+    auto x_mp = integer{x};
+
+    auto const x_old = -- x;
+    auto const x_mp_old = -- x_mp;
+
+    auto const z_mp = integer{x};
+
+    BOOST_CHECK_EQUAL(z_mp, x_mp);
+    BOOST_CHECK_EQUAL(integer{x_old}, x_mp_old);
+}
