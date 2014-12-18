@@ -53,6 +53,18 @@ namespace ural
         return op(x, x);
     }
 
+    template <class T, class BinOp>
+    constexpr T cube(T const & x, BinOp op)
+    {
+        return op(ural::square(x, op), x);
+    }
+
+    template <class T>
+    constexpr T cube(T const & x)
+    {
+        return ural::cube(x, ural::multiplies<>{});
+    }
+
     template <class T, class F>
     struct unit_element_traits;
 

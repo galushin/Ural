@@ -493,6 +493,15 @@ BOOST_AUTO_TEST_CASE(square_constexpr_test)
     static_assert(x*x == xx, "");
 }
 
+BOOST_AUTO_TEST_CASE(cube_constexpr_test)
+{
+    constexpr auto x = 4;
+
+    constexpr auto xxx = ural::cube(x);
+
+    static_assert(x*x*x == xxx, "");
+}
+
 // Числа произвольной точности
 #include <ural/numeric/mp/integer_10.hpp>
 typedef ural::integer_10 integer;
