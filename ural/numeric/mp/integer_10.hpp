@@ -79,6 +79,12 @@ namespace ural
     }
 
     // Арифметические операции
+    friend integer operator+(integer x, integer const & y)
+    {
+        x += y;
+        return x;
+    }
+
     friend integer operator-(integer x, integer const & y)
     {
         x -= y;

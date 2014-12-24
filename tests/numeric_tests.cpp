@@ -650,3 +650,14 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_postfix_minus_minus_test)
     BOOST_CHECK_EQUAL(z_mp, x_mp);
     BOOST_CHECK_EQUAL(integer{x_old}, x_mp_old);
 }
+
+BOOST_AUTO_TEST_CASE(MP_integer_10_operator_plus)
+{
+    int const a = 67;
+    int const b = 63;
+
+    auto const a_mp = integer{a};
+    auto const b_mp = integer{b};
+
+    BOOST_CHECK_EQUAL(integer{a+b}, a_mp + b_mp);
+}
