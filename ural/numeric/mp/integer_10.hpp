@@ -168,11 +168,9 @@ namespace ural
             // @todo устранить дублирование
             assert(digits_.empty() == false);
 
-            auto new_value = digits_.front() + 1;
-            auto carry = new_value / base;
-            digits_.front() = new_value % base;
+            auto carry = Digit{1};
 
-            for(size_t i = 1; carry > 0 && i < digits_.size(); ++ i)
+            for(size_t i = 0; carry > 0 && i < digits_.size(); ++ i)
             {
                 auto new_value = digits_[i] + carry;
                 carry = new_value / base;
