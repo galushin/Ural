@@ -352,13 +352,11 @@ BOOST_AUTO_TEST_CASE(filtered_test)
     BOOST_CHECK_EQUAL(sizeof(Sequence), sizeof(boost::compressed_pair<Sequence, decltype(pred)>));
 
     std::vector<Type> r_std;
-    std::vector<Type> r_ural;
 
     std::copy_if (xs.begin(), xs.end(), std::back_inserter(r_std) , pred);
 
-    auto seq = xs | ural::filtered(pred);
-
-    ural::copy(seq, r_ural | ural::back_inserter);
+    auto const r_ural
+        = xs | ural::filtered(pred) | ural::to_container<std::vector>{};
 
     BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
                                   r_ural.begin(), r_ural.end());
@@ -657,8 +655,8 @@ BOOST_AUTO_TEST_CASE(unique_test)
     auto const last = std::unique(v1.begin(), v1.end());
     std::forward_list<int> r_std(v1.begin(), last);
 
-    std::forward_list<int> r_ural;
-    ural::copy(v2 | ural::uniqued, r_ural | ural::front_inserter);
+    auto const r_ural
+        = v2 | ural::uniqued | ural::to_container<std::forward_list>{};
 
     BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(), r_ural.begin(),
                                   r_ural.end());
@@ -673,8 +671,8 @@ BOOST_AUTO_TEST_CASE(unique_test_custom_predicate)
     std::string s_std;
     std::unique_copy(src.begin(), src.end(), std::back_inserter(s_std), pred);
 
-    auto const s_ural = src | ural::uniqued(pred)
-                            | ural::to_container<std::basic_string>{};
+    auto const s_ural
+        = src | ural::uniqued(pred) | ural::to_container<std::basic_string>{};
 
     BOOST_CHECK_EQUAL(s_std, s_ural);
 }
@@ -1288,8 +1286,8 @@ BOOST_AUTO_TEST_CASE(merge_test)
     std::merge(v1.begin(), v1.end(), v2.begin(), v2.end(),
                std::back_inserter(std_merge));
 
-    std::vector<int> ural_merge;
-    ural::copy(ural::merge(v1, v2), std::back_inserter(ural_merge));
+    auto const ural_merge
+        = ural::merge(v1, v2) | ural::to_container<std::vector>{};
 
     BOOST_CHECK_EQUAL_COLLECTIONS(std_merge.begin(), std_merge.end(),
                                   ural_merge.begin(), ural_merge.end());
@@ -1454,8 +1452,8 @@ BOOST_AUTO_TEST_CASE(set_union_test)
     std::set_union(v1.begin(), v1.end(), v2.begin(), v2.end(),
                    std::back_inserter(r_std));
 
-    std::vector<int> r_ural;
-    ural::copy(ural::set_union(v1, v2), std::back_inserter(r_ural));
+    auto const r_ural
+        = ural::set_union(v1, v2) | ural::to_container<std::vector>{};
 
     BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
                                   r_ural.begin(), r_ural.end());
@@ -1471,9 +1469,8 @@ BOOST_AUTO_TEST_CASE(set_intersection_test)
                           v2.begin(), v2.end(),
                           std::back_inserter(std_intersection));
 
-    std::vector<int> ural_intersection;
-    ural::copy(ural::set_intersection(v1, v2),
-               std::back_inserter(ural_intersection));
+    auto const ural_intersection
+        = ural::set_intersection(v1, v2) | ural::to_container<std::vector>{};
 
     BOOST_CHECK_EQUAL_COLLECTIONS(std_intersection.begin(),
                                   std_intersection.end(),
@@ -1489,8 +1486,8 @@ BOOST_AUTO_TEST_CASE(set_difference_test)
     std::vector<int> std_diff;
     std::set_difference(v1.begin(), v1.end(), v2.begin(), v2.end(),
                         std::back_inserter(std_diff));
-    std::vector<int> ural_diff;
-    ural::copy(ural::set_difference(v1, v2), std::back_inserter(ural_diff));
+    auto const ural_diff
+        = ural::set_difference(v1, v2) | ural::to_container<std::vector>{};
 
     BOOST_CHECK_EQUAL_COLLECTIONS(std_diff.begin(), std_diff.end(),
                                   ural_diff.begin(), ural_diff.end());
@@ -1505,9 +1502,8 @@ BOOST_AUTO_TEST_CASE(set_symmetric_difference_test)
     std::set_symmetric_difference(v1.begin(), v1.end(), v2.begin(), v2.end(),
                                   std::back_inserter(std_intersection));
 
-    std::vector<int> ural_intersection;
-    ural::copy(ural::set_symmetric_difference(v1, v2),
-               std::back_inserter(ural_intersection));
+    auto const ural_intersection
+        = ural::set_symmetric_difference(v1, v2) | ural::to_container<std::vector>{};
 
     BOOST_CHECK_EQUAL_COLLECTIONS(std_intersection.begin(), std_intersection.end(),
                                   ural_intersection.begin(), ural_intersection.end());

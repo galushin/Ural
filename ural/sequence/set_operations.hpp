@@ -75,6 +75,10 @@ namespace ural
         typedef typename std::common_type<typename Input1::pointer,
                                           typename Input2::pointer>::type pointer;
 
+        /// @brief Тип расстояния
+        typedef typename std::common_type<typename Input1::distance_type,
+                                          typename Input2::distance_type>::type distance_type;
+
         /** @brief Конструктор
         @param in1 первая входная последовательность
         @param in2 вторая входная последовательность
@@ -241,6 +245,9 @@ namespace ural
         /// @brief Тип указателя
         typedef typename Input1::pointer pointer;
 
+        /// @brief Тип расстояния
+        typedef typename Input1::distance_type distance_type;
+
         /** @brief Конструктор
         @param in1 первая входная последовательность
         @param in2 вторая входная последовательность
@@ -375,6 +382,9 @@ namespace ural
 
         /// @brief Тип указателя
         typedef typename Input1::pointer pointer;
+
+        /// @brief Тип расстояния
+        typedef typename Input1::distance_type distance_type;
 
         /** @brief Конструктор
         @param in1 первая входная последовательность
@@ -514,6 +524,10 @@ namespace ural
         /// @brief Тип указателя
         typedef typename std::common_type<typename Input1::pointer,
                                           typename Input2::pointer>::type pointer;
+
+        /// @brief Тип расстояния
+        typedef typename std::common_type<typename Input1::distance_type,
+                                          typename Input2::distance_type>::type distance_type;
 
         /** @brief Конструктор
         @param in1 первая входная последовательность
@@ -690,6 +704,10 @@ namespace ural
         /// @brief Тип указателя
         typedef typename std::common_type<typename Input1::pointer,
                                           typename Input2::pointer>::type pointer;
+
+        /// @brief Тип расстояния
+        typedef typename std::common_type<typename Input1::distance_type,
+                                          typename Input2::distance_type>::type distance_type;
 
         /** @brief Конструктор
         @param in1 первая входная последовательность

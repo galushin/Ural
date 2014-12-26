@@ -509,7 +509,7 @@
 	<ural/functional/make_functor.hpp>
 	<ural/sequence/base.hpp>
 
-1419563067 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
+1419584105 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<forward_list>
 	<list>
@@ -530,7 +530,7 @@
 	<ural/sequence/base.hpp>
 	<boost/compressed_pair.hpp>
 
-1401771485 c:\devtools\ural_repo\ural\ural\sequence\set_operations.hpp
+1419584327 c:\devtools\ural_repo\ural\ural\sequence\set_operations.hpp
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
