@@ -674,7 +674,7 @@ BOOST_AUTO_TEST_CASE(unique_test_custom_predicate)
     std::unique_copy(src.begin(), src.end(), std::back_inserter(s_std), pred);
 
     std::string s_ural;
-    ural::copy(ural::make_unique_sequence(src, pred),
+    ural::copy(src | ural::uniqued(pred),
                s_ural | ural::back_inserter);
 
     BOOST_CHECK_EQUAL(s_std, s_ural);

@@ -140,13 +140,37 @@ namespace ural
          return Result{sequence(std::forward<Forward>(in))};
     }
 
-    struct uniqued_helper{};
+    template <class Predicate>
+    class uniqued_helper_custom
+    {
+    public:
+        Predicate predicate;
+    };
+
+    struct uniqued_helper
+    {
+    public:
+        template <class Predicate>
+        auto operator()(Predicate pred) const
+        -> uniqued_helper_custom<decltype(make_functor(std::move(pred)))>
+        {
+            return {std::move(pred)};
+        }
+    };
 
     template <class Forward>
     auto operator|(Forward && in, uniqued_helper)
     -> unique_sequence<decltype(sequence(std::forward<Forward>(in)))>
     {
         return ::ural::make_unique_sequence(std::forward<Forward>(in));
+    }
+
+    template <class Forward, class Predicate>
+    auto operator|(Forward && in, uniqued_helper_custom<Predicate> helper)
+    -> unique_sequence<decltype(sequence(std::forward<Forward>(in))), Predicate>
+    {
+        return ::ural::make_unique_sequence(std::forward<Forward>(in),
+                                            helper.predicate);
     }
 
     constexpr auto uniqued = uniqued_helper{};
