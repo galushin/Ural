@@ -329,8 +329,9 @@
 1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
 	<boost/test/impl/xml_report_formatter.ipp>
 
-1401763494 c:\devtools\ural_repo\ural\ural\algorithm.hpp
+1419558674 c:\devtools\ural_repo\ural\ural\algorithm.hpp
 	<ural/sequence/make.hpp>
+	<ural/sequence/uniqued.hpp>
 	<ural/functional.hpp>
 	<ural/random/c_rand_engine.hpp>
 	<ural/functional/make_functor.hpp>
@@ -357,7 +358,7 @@
 	<ural/sequence/transform.hpp>
 	<ural/sequence/uniqued.hpp>
 
-1403223286 c:\devtools\ural_repo\ural\ural\sequence\iterator_sequence.hpp
+1419557709 c:\devtools\ural_repo\ural\ural\sequence\iterator_sequence.hpp
 	<ural/sequence/base.hpp>
 	<ural/tuple.hpp>
 	<ural/utility.hpp>
@@ -508,7 +509,7 @@
 	<ural/functional/make_functor.hpp>
 	<ural/sequence/base.hpp>
 
-1415691840 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
+1419556684 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<forward_list>
 	<list>
@@ -6398,7 +6399,7 @@
 	<utility>
 	<stdexcept>
 
-1410483683 c:\devtools\ural_repo\ural\ural\utility.hpp
+1419557694 c:\devtools\ural_repo\ural\ural\utility.hpp
 	<ural/placeholders.hpp>
 	<ural/defs.hpp>
 	<ural/type_traits.hpp>

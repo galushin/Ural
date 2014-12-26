@@ -1706,3 +1706,24 @@ BOOST_AUTO_TEST_CASE(prev_permutation_test)
     BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
                                   r_ural.begin(), r_ural.end());
 }
+
+// Комбинирование вызовов модифицирующих алгоритмов с erase
+BOOST_AUTO_TEST_CASE(unique_erase_combination_test)
+{
+    std::vector<int> v_std{1,2,3,1,2,3,3,4,5,4,5,6,7};
+    std::sort(v_std.begin(), v_std.end());
+
+    auto v_ural = v_std;
+
+    // std
+    auto const last = std::unique(v_std.begin(), v_std.end());
+    v_std.erase(last, v_std.end());
+
+    // ural
+    auto const to_erase = ural::unique(v_ural);
+    ural::erase(v_ural, to_erase);
+
+    // Сравнение результатов
+    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
+                                  v_ural.begin(), v_ural.end());
+}

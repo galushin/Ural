@@ -22,6 +22,7 @@
 */
 
 #include <ural/sequence/make.hpp>
+#include <ural/sequence/uniqued.hpp>
 
 #include <ural/functional.hpp>
 #include <ural/random/c_rand_engine.hpp>
@@ -32,6 +33,56 @@
 
 namespace ural
 {
+namespace details
+{
+    // Модифицирующие алгоритмы
+    class unique_functor_t
+    {
+    public:
+        template <class ForwardSequence>
+        auto operator()(ForwardSequence && seq) const
+        -> decltype(sequence(std::forward<ForwardSequence>(seq)))
+        {
+            return (*this)(std::forward<ForwardSequence>(seq), ural::equal_to<>{});
+        }
+
+        template <class ForwardSequence, class BinaryPredicate>
+        auto operator()(ForwardSequence && seq, BinaryPredicate pred) const
+        -> decltype(sequence(std::forward<ForwardSequence>(seq)))
+        {
+            return this->impl(sequence(std::forward<ForwardSequence>(seq)),
+                              make_functor(std::move(pred)));
+        }
+
+    private:
+        template <class ForwardSequence, class BinaryPredicate>
+        ForwardSequence
+        impl(ForwardSequence seq, BinaryPredicate pred) const
+        {
+            // @todo Оптимизация
+            auto us = ural::make_unique_sequence(seq, std::move(pred));
+
+            auto result = ural::details::copy(us, seq);
+
+            return result[ural::_2];
+        }
+    };
+
+    // Алгоритмы над контейнерами
+    class erase_functor_t
+    {
+    public:
+        template <class Container>
+        auto operator()(Container & c,
+                        iterator_sequence<typename Container::iterator> seq) const
+        -> typename Container::iterator
+        {
+            return c.erase(seq.begin(), seq.end());
+        }
+    };
+}
+// namespace details
+
     /** @brief Применяет функциональный объект к каждому элементу
     последовательности
     @param in входная последовательность
@@ -353,6 +404,8 @@ namespace ural
                                            make_functor(std::move(pred)),
                                            new_value);
     }
+
+    constexpr auto unique = ::ural::details::unique_functor_t{};
 
     // Тусовка
     template <class RASequence, class URNG>
@@ -797,6 +850,9 @@ namespace ural
     {
         return ural::prev_permutation(std::forward<BiSequence>(s), ural::less<>{});
     }
+
+    // Алгоритмы над контейнерами
+    auto constexpr erase = ::ural::details::erase_functor_t{};
 }
 // namespace ural
 
