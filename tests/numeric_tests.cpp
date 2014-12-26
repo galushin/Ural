@@ -541,6 +541,9 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_PE_56)
     }
 
     BOOST_CHECK_EQUAL(max_digit_sum, integer{972});
+
+    BOOST_CHECK_EQUAL(max_digit_sum, 972);
+    BOOST_CHECK_EQUAL(972, max_digit_sum);
 }
 
 BOOST_AUTO_TEST_CASE(MP_integer_10_x_minus_x_equals_zero)

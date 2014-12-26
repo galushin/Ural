@@ -335,6 +335,20 @@ namespace ural
         Digits_container digits_;
     };
 
+    template <class T, long radix>
+    typename std::enable_if<std::is_integral<T>::value, bool>::type
+    operator==(integer<radix> const & x, T const & a)
+    {
+        return ural::equal(x.digits(), ural::digits_sequence<T, radix>{a});
+    }
+
+    template <class T, long radix>
+    typename std::enable_if<std::is_integral<T>::value, bool>::type
+    operator==(T const & a, integer<radix> const & x)
+    {
+        return x == a;
+    }
+
     typedef integer<10> integer_10;
 }
 // namespace ural
