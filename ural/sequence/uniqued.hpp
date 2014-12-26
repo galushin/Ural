@@ -49,6 +49,9 @@ namespace ural
         /// @brief Тип указателя
         typedef typename Forward::pointer pointer;
 
+        /// @brief Тип расстояния
+        typedef typename Forward::distance_type distance_type;
+
         // Конструкторы
         /** @brief Конструктор
         @param in входная последовательность

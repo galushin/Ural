@@ -673,9 +673,8 @@ BOOST_AUTO_TEST_CASE(unique_test_custom_predicate)
     std::string s_std;
     std::unique_copy(src.begin(), src.end(), std::back_inserter(s_std), pred);
 
-    std::string s_ural;
-    ural::copy(src | ural::uniqued(pred),
-               s_ural | ural::back_inserter);
+    auto const s_ural = src | ural::uniqued(pred)
+                            | ural::to_container<std::basic_string>{};
 
     BOOST_CHECK_EQUAL(s_std, s_ural);
 }
