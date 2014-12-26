@@ -1300,8 +1300,8 @@ BOOST_AUTO_TEST_CASE(inplace_merge_test_empty)
 
     auto pos = x_std.size() / 2;
 
-    std::inplace_merge(x_std.begin(), x_std.begin() + pos,
-                       x_std.end());
+    std::inplace_merge(x_std.begin(), x_std.begin() + pos, x_std.end());
+
     auto s = ::ural::sequence(x_ural);
     s += pos;
     ural::inplace_merge(s);

@@ -611,6 +611,8 @@ BOOST_AUTO_TEST_CASE(value_functor_equality_test)
     static_assert(f2 == f2, "");
     static_assert(f2 != f1, "");
     static_assert(f1 != f2, "");
+
+    BOOST_CHECK(true);
 }
 
 BOOST_AUTO_TEST_CASE(replace_functor_cref_test)
@@ -638,6 +640,8 @@ BOOST_AUTO_TEST_CASE(replace_functor_custom_predicate_test)
     static_assert(12 == f(12), "");
     static_assert(new_value == f(13), "");
     static_assert(new_value == f(14), "");
+
+    BOOST_CHECK(true);
 }
 
 namespace
@@ -674,6 +678,8 @@ BOOST_AUTO_TEST_CASE(replace_functor_equal_test)
     static_assert(f1 != f2, "");
     static_assert(f1 != f3, "");
     static_assert(f1 != f4, "");
+
+    BOOST_CHECK(true);
 }
 
 BOOST_AUTO_TEST_CASE(min_element_accumulator_default_functor_test)
