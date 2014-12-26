@@ -27,6 +27,42 @@
 
 namespace ural
 {
+    template <class IntType, long radix>
+    class digits_sequence
+     : public ural::sequence_base<digits_sequence<IntType, radix>>
+    {
+    public:
+        typedef ural::single_pass_traversal_tag traversal_tag;
+
+        typedef IntType value_type;
+        typedef value_type reference;
+        typedef IntType * pointer;
+
+        explicit digits_sequence(IntType value)
+         : value_{std::move(value)}
+        {
+            assert(value_ >= 0);
+        }
+
+        bool operator!() const
+        {
+            return value_ == 0;
+        }
+
+        reference front() const
+        {
+            return value_ % radix;
+        }
+
+        void pop_front()
+        {
+            value_ /= radix;
+        }
+
+    private:
+        IntType value_;
+    };
+
     // @todo учёт знака
     // @todo устранить дублирование
     // @todo заменить циклы на алгоритмы
@@ -48,11 +84,11 @@ namespace ural
 
     friend bool operator<(integer const & x, integer const & y)
     {
-        if(x.digits().size() < y.digits().size())
+        if(x.size() < y.size())
         {
             return true;
         }
-        if(x.digits().size() > y.digits().size())
+        if(x.size() > y.size())
         {
             return false;
         }
@@ -96,7 +132,7 @@ namespace ural
         // @todo оптимизация
         integer result;
 
-        for(size_t i = 0; i != y.digits().size(); ++ i)
+        for(size_t i = 0; i != y.size(); ++ i)
         {
             integer a;
 
@@ -104,7 +140,7 @@ namespace ural
 
             Digit carry = 0;
 
-            for(size_t j = 0; j != x.digits().size(); ++ j)
+            for(size_t j = 0; j != x.size(); ++ j)
             {
                 auto new_value = carry + x.digits()[j] * y.digits()[i];
                 a.digits_.push_back(new_value % base);
@@ -136,6 +172,7 @@ namespace ural
         // Типы
         typedef short Digit;
         typedef std::vector<Digit> Digits_container;
+        typedef typename Digits_container::size_type size_type;
 
         // Создание, копирование, уничтожение
         /** @brief Конструктор без параметров
@@ -150,10 +187,8 @@ namespace ural
 
             static_assert(std::is_integral<T>::value, "Must be integral");
 
-            for(; init_value > 0; init_value /= base)
-            {
-                digits_.push_back(init_value % base);
-            }
+            ural::copy(digits_sequence<T, base>{std::move(init_value)},
+                       digits_ | ural::back_inserter);
         }
 
         // Доступ к цифрам
@@ -166,11 +201,9 @@ namespace ural
         integer & operator++()
         {
             // @todo устранить дублирование
-            assert(digits_.empty() == false);
-
             auto carry = Digit{1};
 
-            for(size_t i = 0; carry > 0 && i < digits_.size(); ++ i)
+            for(size_t i = 0; carry > 0 && i < this->size(); ++ i)
             {
                 auto new_value = digits_[i] + carry;
                 carry = new_value / base;
@@ -192,7 +225,7 @@ namespace ural
             assert(digits_.empty() == false);
 
             // Вычитаем, пока есть перенос
-            for(size_t i = 0; i < digits_.size(); ++ i)
+            for(size_t i = 0; i < this->size(); ++ i)
             {
                 if(digits_[i] == 0)
                 {
@@ -205,9 +238,7 @@ namespace ural
                 }
             }
 
-            // Удаляем ведущие нули
-            for(; digits_.back() == 0; digits_.pop_back())
-            {}
+            this->strip_leading_zeroes();
 
             return *this;
 
@@ -216,23 +247,23 @@ namespace ural
         // Операции составного присваивания
         integer & operator+=(integer const & x)
         {
-            if(digits_.size() < x.digits_.size())
+            if(this->size() < x.size())
             {
-                digits_.resize(x.digits().size(), 0);
+                digits_.resize(x.size(), 0);
             }
 
             // @note не может ли при таком типе возникнуть переполнение
             Digit carry = 0;
 
-            for(size_t i = 0; i < x.digits().size(); ++ i)
+            for(size_t i = 0; i < x.size(); ++ i)
             {
                 auto new_value = digits_[i] + x.digits_[i] + carry;
                 digits_[i] = (new_value % base);
                 carry = new_value / base;
             }
 
-            for(size_t i = x.digits().size();
-                i < this->digits().size() && carry > 0; ++ i)
+            for(size_t i = x.size();
+                i < this->size() && carry > 0; ++ i)
             {
                 auto new_value = digits_[i] + carry;
                 digits_[i] = (new_value % base);
@@ -253,7 +284,7 @@ namespace ural
 
             Digit carry = 0;
 
-            for(size_t k = 0; k < x.digits_.size(); ++ k)
+            for(size_t k = 0; k < x.size(); ++ k)
             {
                 this->digits_[k] -= x.digits_[k] + carry;
 
@@ -268,7 +299,7 @@ namespace ural
                 }
             }
 
-            for(size_t k = x.digits().size(); carry > 0; ++ k)
+            for(size_t k = x.size(); carry > 0; ++ k)
             {
                 this->digits_[k] -= carry;
 
@@ -283,10 +314,21 @@ namespace ural
                 }
             }
 
-            for(; digits_.back() == 0; digits_.pop_back())
-            {}
+            this->strip_leading_zeroes();
 
             return *this;
+        }
+
+        size_type size() const
+        {
+            return this->digits().size();
+        }
+
+    private:
+        void strip_leading_zeroes()
+        {
+            for(; digits_.back() == 0; digits_.pop_back())
+            {}
         }
 
     private:

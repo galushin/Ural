@@ -179,6 +179,7 @@ namespace concepts
         static Seq seq;
         typedef typename Seq::reference reference;
         typedef typename Seq::value_type value_type;
+        // @todo typedef typename Seq::distance_type distance_type;
         typedef typename Seq::pointer pointer;
 
         static void consume_ref(reference);

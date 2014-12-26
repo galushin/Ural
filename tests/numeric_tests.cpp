@@ -596,15 +596,18 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_reminder_regression_1)
 
 BOOST_AUTO_TEST_CASE(MP_integer_10_plus_plus_test)
 {
-    auto x = 100;
-    auto x_mp = integer{x};
+    for(int n = 0; n <= 100; ++ n)
+    {
+        auto x = n;
+        auto x_mp = integer{x};
 
-    ++ x;
-    ++ x_mp;
+        ++ x;
+        ++ x_mp;
 
-    auto const z_mp = integer{x};
+        auto const z_mp = integer{x};
 
-    BOOST_CHECK_EQUAL(z_mp, x_mp);
+        BOOST_CHECK_EQUAL(z_mp, x_mp);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(MP_integer_10_postfix_plus_plus_test)
