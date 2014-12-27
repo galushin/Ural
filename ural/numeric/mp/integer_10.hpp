@@ -68,6 +68,7 @@ namespace ural
     // @todo заменить циклы на алгоритмы
     // @todo выделить функции
     // @todo смешанные операции (с встроенными целыми числами)
+    // @todo Шаблоны выражений
     /** @brief Класс чисел с произвольной точностью, представленный как
     последовательность (десятичных) цифр
     */
@@ -79,10 +80,10 @@ namespace ural
     // Операторы сравнения
     friend bool operator==(integer const & x, integer const & y)
     {
-        return x.digits() == y.digits();
+        return x.members_ == y.members_;
     }
 
-    friend bool operator<(integer const & x, integer const & y)
+    friend bool abs_less(integer const & x, integer const & y)
     {
         if(x.size() < y.size())
         {
@@ -97,6 +98,22 @@ namespace ural
                                              y.digits() | ural::reversed);
     }
 
+    friend bool operator<(integer const & x, integer const & y)
+    {
+        if(x.is_not_negative() == false && y.is_not_negative() == true)
+        {
+            return true;
+        }
+
+        if(x.is_not_negative() == true && y.is_not_negative() == false)
+        {
+            return false;
+        }
+
+        // Здесь x и y имеют одинаковый знак
+        return x.is_not_negative() ? abs_less(x, y) : abs_less(y, x);
+    }
+
     // Ввод/вывод
     // @todo для любых потоков
     friend std::ostream & operator<<(std::ostream & os, integer const & x)
@@ -104,6 +121,11 @@ namespace ural
         if(x.digits().empty())
         {
             return os << '0';
+        }
+
+        if(x.members_[ural::_2] == false)
+        {
+            os << '-';
         }
 
         for(auto const & d : x.digits() | ural::reversed)
@@ -132,10 +154,15 @@ namespace ural
         // @todo оптимизация
         integer result;
 
-        for(size_t i = 0; i != y.size(); ++ i)
+        if(x.size() > 0 && y.size() > 0)
         {
+            for(size_t i = 0; i != y.size(); ++ i)
+            {
+                result += integer::multiply_by_digit(x, y.digits()[i], i);
+            }
 
-            result += integer::multiply_by_digit(x, y.digits()[i], i);
+            result.is_positive_ref()
+                = (x.is_not_negative() == y.is_not_negative());
         }
 
         return result;
@@ -161,41 +188,65 @@ namespace ural
         /** @brief Конструктор без параметров
         @post <tt> *this == 0 </tt>
         */
-        integer() = default;
+        integer()
+         : members_{}
+        {
+            is_positive_ref() = true;
+        }
 
         template <class T>
         explicit integer(T init_value)
         {
-            assert(init_value >= 0);
+            if(init_value < 0)
+            {
+                is_positive_ref() = false;
+                init_value = -init_value;
+            }
+            else
+            {
+                is_positive_ref() = true;
+            }
 
             static_assert(std::is_integral<T>::value, "Must be integral");
 
+            assert(init_value >= 0);
+
             ural::copy(digits_sequence<T, base>{std::move(init_value)},
-                       digits_ | ural::back_inserter);
+                       this->digits_ref() | ural::back_inserter);
         }
 
         // Доступ к цифрам
         Digits_container const & digits() const
         {
-            return this->digits_;
+            return members_[ural::_1];
         }
 
         // Инкремент и декремент
         integer & operator++()
         {
             // @todo устранить дублирование
+
+            if(this->is_positive_ref() == false)
+            {
+                this->is_positive_ref() = true;
+                -- *this;
+                this->is_positive_ref() = this->digits().empty();
+
+                return *this;
+            }
+
             auto carry = Digit{1};
 
             for(size_t i = 0; carry > 0 && i < this->size(); ++ i)
             {
-                auto new_value = digits_[i] + carry;
+                auto new_value = this->digits()[i] + carry;
                 carry = new_value / base;
-                digits_[i] = new_value % base;
+                digits_ref()[i] = new_value % base;
             }
 
             if(carry > 0)
             {
-                digits_.push_back(carry);
+                digits_ref().push_back(carry);
             }
 
             return *this;
@@ -205,18 +256,26 @@ namespace ural
         integer & operator--()
         {
             // @todo устранить дублирование
-            assert(digits_.empty() == false);
+
+            if(this->is_positive_ref() == false || this->digits().empty())
+            {
+                this->is_positive_ref() = true;
+                ++ *this;
+                this->is_positive_ref() = false;
+
+                return *this;
+            }
 
             // Вычитаем, пока есть перенос
             for(size_t i = 0; i < this->size(); ++ i)
             {
-                if(digits_[i] == 0)
+                if(digits()[i] == 0)
                 {
-                    digits_[i] = base - 1;
+                    digits_ref()[i] = base - 1;
                 }
                 else
                 {
-                    digits_[i] -= 1;
+                    digits_ref()[i] -= 1;
                     break;
                 }
             }
@@ -227,12 +286,30 @@ namespace ural
 
         }
 
+        // Унарные операции
+        integer operator+() const
+        {
+            return *this;
+        }
+
+        integer operator-() const
+        {
+            auto result = *this;
+            result.is_positive_ref() = !result.is_positive_ref();
+            return result;
+        }
+
         // Операции составного присваивания
         integer & operator+=(integer const & x)
         {
+            if(this->is_not_negative() != x.is_not_negative())
+            {
+                return *this -= (-x);
+            }
+
             if(this->size() < x.size())
             {
-                digits_.resize(x.size(), 0);
+                digits_ref().resize(x.size(), 0);
             }
 
             // @note не может ли при таком типе возникнуть переполнение
@@ -240,22 +317,22 @@ namespace ural
 
             for(size_t i = 0; i < x.size(); ++ i)
             {
-                auto new_value = digits_[i] + x.digits_[i] + carry;
-                digits_[i] = (new_value % base);
+                auto new_value = digits()[i] + x.digits()[i] + carry;
+                digits_ref()[i] = (new_value % base);
                 carry = new_value / base;
             }
 
             for(size_t i = x.size();
                 i < this->size() && carry > 0; ++ i)
             {
-                auto new_value = digits_[i] + carry;
-                digits_[i] = (new_value % base);
+                auto new_value = digits()[i] + carry;
+                digits_ref()[i] = (new_value % base);
                 carry = new_value / base;
             }
 
             if(carry > 0)
             {
-                digits_.push_back(carry);
+                digits_ref().push_back(carry);
             }
 
             return *this;
@@ -263,17 +340,26 @@ namespace ural
 
         integer & operator-=(integer const & x)
         {
-            assert(*this >= x);
+            if(this->is_not_negative() != x.is_not_negative())
+            {
+                return *this += (-x);
+            }
+
+            if(abs_less(*this, x))
+            {
+                *this = - (x - *this);
+                return *this;
+            }
 
             Digit carry = 0;
 
             for(size_t k = 0; k < x.size(); ++ k)
             {
-                this->digits_[k] -= x.digits_[k] + carry;
+                this->digits_ref()[k] -= x.digits()[k] + carry;
 
-                if(this->digits_[k] < 0)
+                if(this->digits()[k] < 0)
                 {
-                    this->digits_[k] += base;
+                    this->digits_ref()[k] += base;
                     carry = 1;
                 }
                 else
@@ -284,11 +370,11 @@ namespace ural
 
             for(size_t k = x.size(); carry > 0; ++ k)
             {
-                this->digits_[k] -= carry;
+                this->digits_ref()[k] -= carry;
 
-                if(this->digits_[k] < 0)
+                if(this->digits()[k] < 0)
                 {
-                    this->digits_[k] += base;
+                    this->digits_ref()[k] += base;
                     carry = 1;
                 }
                 else
@@ -307,47 +393,78 @@ namespace ural
             return this->digits().size();
         }
 
-    private:
-        void strip_leading_zeroes()
+        bool is_not_negative() const
         {
-            for(; digits_.back() == 0; digits_.pop_back())
-            {}
+            return members_[ural::_2];
         }
 
     private:
+        void strip_leading_zeroes()
+        {
+            for(; !digits().empty() && digits().back() == 0; digits_ref().pop_back())
+            {}
+
+            if(digits().empty())
+            {
+                this->is_positive_ref() = true;
+            }
+        }
+
         static integer
         multiply_by_digit(integer const & x, Digit const & d, size_type i)
         {
             integer a;
 
-            a.digits_.resize(i, 0);
+            a.digits_ref().resize(i, 0);
 
             Digit carry = 0;
 
             for(size_t j = 0; j != x.size(); ++ j)
             {
                 auto new_value = carry + x.digits()[j] * d;
-                a.digits_.push_back(new_value % base);
+                a.digits_ref().push_back(new_value % base);
                 carry = new_value / base;
             }
 
             if(carry > 0)
             {
-                a.digits_.push_back(carry);
+                a.digits_ref().push_back(carry);
             }
 
             return a;
         }
 
+        Digits_container & digits_ref()
+        {
+            return members_[ural::_1];
+        }
+
+        bool & is_positive_ref()
+        {
+            return members_[ural::_2];
+        }
+
     private:
-        Digits_container digits_;
+        ural::tuple<Digits_container, bool> members_;
+
     };
+
+    template <class T, long radix>
+    typename std::enable_if<std::is_integral<T>::value, bool>::type
+    operator<(integer<radix> const & x, T const & a);
+
+    template <class T, long radix>
+    typename std::enable_if<std::is_integral<T>::value, bool>::type
+    operator<(T const & a, integer<radix> const & x);
 
     template <class T, long radix>
     typename std::enable_if<std::is_integral<T>::value, bool>::type
     operator==(integer<radix> const & x, T const & a)
     {
-        return ural::equal(x.digits(), ural::digits_sequence<T, radix>{a});
+        using std::abs;
+
+        return x.is_not_negative() == (a >= 0)
+                && ural::equal(x.digits(), digits_sequence<T, radix>{abs(a)});
     }
 
     template <class T, long radix>

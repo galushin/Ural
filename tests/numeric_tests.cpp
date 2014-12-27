@@ -546,6 +546,25 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_PE_56)
     BOOST_CHECK_EQUAL(972, max_digit_sum);
 }
 
+BOOST_AUTO_TEST_CASE(MP_integer_10_init_negative)
+{
+    auto const x = - 142;
+
+    auto const x_mp = integer{x};
+
+    BOOST_CHECK_EQUAL(x, x_mp);
+
+    auto const x_s = boost::lexical_cast<std::string>(x);
+    auto const x_mp_s = boost::lexical_cast<std::string>(x_mp);
+
+    BOOST_CHECK_EQUAL(x_s, x_mp_s);
+
+    BOOST_CHECK_EQUAL(-x, -x_mp);
+    BOOST_CHECK_EQUAL(+x, +x_mp);
+    BOOST_CHECK_EQUAL(x_mp, +x_mp);
+    BOOST_CHECK_NE(-x_mp, +x_mp);
+}
+
 BOOST_AUTO_TEST_CASE(MP_integer_10_x_minus_x_equals_zero)
 {
     auto const x = 128;
@@ -599,7 +618,8 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_reminder_regression_1)
 
 BOOST_AUTO_TEST_CASE(MP_integer_10_plus_plus_test)
 {
-    for(int n = 0; n <= 100; ++ n)
+    auto const N_max = 100;
+    for(int n = - N_max; n <= N_max; ++ n)
     {
         auto x = n;
         auto x_mp = integer{x};
@@ -629,7 +649,8 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_postfix_plus_plus_test)
 
 BOOST_AUTO_TEST_CASE(MP_integer_10_minus_minus_test)
 {
-    for(int n = 1; n <= 100; ++ n)
+    auto const N_max = 100;
+    for(int n = -N_max; n <= N_max; ++ n)
     {
         auto x = n;
         auto x_mp = integer{x};
@@ -667,3 +688,81 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_operator_plus)
 
     BOOST_CHECK_EQUAL(integer{a+b}, a_mp + b_mp);
 }
+
+BOOST_AUTO_TEST_CASE(MP_integer_10_less_test)
+{
+    auto const N_max = 100;
+
+    for(auto a = -N_max; a <= N_max; ++ a)
+    for(auto b = -N_max; b <= N_max; ++ b)
+    {
+        auto const a_mp = integer{a};
+        auto const b_mp = integer{b};
+
+        BOOST_CHECK_EQUAL(a < b, a_mp < b_mp);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(MP_integer_10_abs_less_test)
+{
+    auto const N_max = 100;
+
+    for(auto a = -N_max; a <= N_max; ++ a)
+    for(auto b = -N_max; b <= N_max; ++ b)
+    {
+        auto const a_mp = integer{a};
+        auto const b_mp = integer{b};
+
+        BOOST_CHECK_EQUAL(abs(a) < abs(b), abs_less(a_mp, b_mp));
+    }
+}
+
+BOOST_AUTO_TEST_CASE(MP_integer_10_mixed_equality_regression_1)
+{
+    BOOST_CHECK_EQUAL(boost::lexical_cast<std::string>(-100),
+                      boost::lexical_cast<std::string>(integer{-100}));
+}
+
+BOOST_AUTO_TEST_CASE(MP_integer_10_multiplies_test)
+{
+    auto const N_max = 100;
+
+    for(auto a = -N_max; a <= N_max; ++ a)
+    for(auto b = -N_max; b <= N_max; ++ b)
+    {
+        auto const a_mp = integer{a};
+        auto const b_mp = integer{b};
+
+        BOOST_CHECK_EQUAL(a*b, a_mp * b_mp);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(MP_integer_10_plus_test)
+{
+    auto const N_max = 100;
+
+    for(auto a = -N_max; a <= N_max; ++ a)
+    for(auto b = -N_max; b <= N_max; ++ b)
+    {
+        auto const a_mp = integer{a};
+        auto const b_mp = integer{b};
+
+        BOOST_CHECK_EQUAL(a+b, a_mp + b_mp);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(MP_integer_10_minus_test)
+{
+    auto const N_max = 100;
+
+    for(auto a = -N_max; a <= N_max; ++ a)
+    for(auto b = -N_max; b <= N_max; ++ b)
+    {
+        auto const a_mp = integer{a};
+        auto const b_mp = integer{b};
+
+        BOOST_CHECK_EQUAL(a-b, a_mp - b_mp);
+    }
+}
+
+// @todo деление и взятие остатка
