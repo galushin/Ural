@@ -134,25 +134,8 @@ namespace ural
 
         for(size_t i = 0; i != y.size(); ++ i)
         {
-            integer a;
 
-            a.digits_.resize(i, 0);
-
-            Digit carry = 0;
-
-            for(size_t j = 0; j != x.size(); ++ j)
-            {
-                auto new_value = carry + x.digits()[j] * y.digits()[i];
-                a.digits_.push_back(new_value % base);
-                carry = new_value / base;
-            }
-
-            if(carry > 0)
-            {
-                a.digits_.push_back(carry);
-            }
-
-            result += a;
+            result += integer::multiply_by_digit(x, y.digits()[i], i);
         }
 
         return result;
@@ -329,6 +312,31 @@ namespace ural
         {
             for(; digits_.back() == 0; digits_.pop_back())
             {}
+        }
+
+    private:
+        static integer
+        multiply_by_digit(integer const & x, Digit const & d, size_type i)
+        {
+            integer a;
+
+            a.digits_.resize(i, 0);
+
+            Digit carry = 0;
+
+            for(size_t j = 0; j != x.size(); ++ j)
+            {
+                auto new_value = carry + x.digits()[j] * d;
+                a.digits_.push_back(new_value % base);
+                carry = new_value / base;
+            }
+
+            if(carry > 0)
+            {
+                a.digits_.push_back(carry);
+            }
+
+            return a;
         }
 
     private:
