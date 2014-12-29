@@ -301,8 +301,7 @@ namespace ural
                 carry = new_value / base;
             }
 
-            for(size_t i = x.size();
-                i < this->size() && carry > 0; ++ i)
+            for(size_t i = x.size(); i < this->size() && carry > 0; ++ i)
             {
                 auto new_value = digits()[i] + carry;
                 digits_ref()[i] = (new_value % base);
@@ -447,6 +446,7 @@ namespace ural
     operator*(integer<radix> const & x, T const & a)
     {
         // @todo оптимизация
+        // @todo устранить дублирование
         integer<radix> result;
 
         if(x.size() > 0 && a != 0)

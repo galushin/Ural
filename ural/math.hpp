@@ -65,6 +65,10 @@ namespace ural
         return ural::cube(x, ural::multiplies<>{});
     }
 
+    /** @brief Класс-характеристика единичного элемента относительно операции
+    @tparam T тип элемента
+    @tparam F тип функционального объекта
+    */
     template <class T, class F>
     struct unit_element_traits;
 
