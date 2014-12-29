@@ -606,6 +606,28 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_ostreaming_zero)
     os << integer{0};
 
     BOOST_CHECK_EQUAL(os.str(), "0");
+
+    std::wostringstream wos;
+    wos << integer{0};
+
+    BOOST_CHECK(wos.str() == L"0");
+}
+
+BOOST_AUTO_TEST_CASE(MP_integer_10_wide_ostreaming_test)
+{
+    auto const N_max = 100;
+    for(int n = -N_max; n <= N_max; ++ n)
+    {
+        auto const n_mp = integer{n};
+
+        std::wostringstream wos;
+        wos << n;
+
+        std::wostringstream wos_mp;
+        wos_mp << n_mp;
+
+        BOOST_CHECK(wos.str() == wos_mp.str());
+    }
 }
 
 BOOST_AUTO_TEST_CASE(MP_integer_10_reminder_regression_1)

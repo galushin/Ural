@@ -63,7 +63,6 @@ namespace ural
         IntType value_;
     };
 
-    // @todo учёт знака
     // @todo устранить дублирование
     // @todo заменить циклы на алгоритмы
     // @todo выделить функции
@@ -100,11 +99,13 @@ namespace ural
 
     friend bool operator<(integer const & x, integer const & y)
     {
+        // Отрицательные всегда меньше не отрицательных
         if(x.is_not_negative() == false && y.is_not_negative() == true)
         {
             return true;
         }
 
+        // Неотрицательные всегда больше отрицательных
         if(x.is_not_negative() == true && y.is_not_negative() == false)
         {
             return false;
@@ -112,28 +113,6 @@ namespace ural
 
         // Здесь x и y имеют одинаковый знак
         return x.is_not_negative() ? abs_less(x, y) : abs_less(y, x);
-    }
-
-    // Ввод/вывод
-    // @todo для любых потоков
-    friend std::ostream & operator<<(std::ostream & os, integer const & x)
-    {
-        if(x.digits().empty())
-        {
-            return os << '0';
-        }
-
-        if(x.members_[ural::_2] == false)
-        {
-            os << '-';
-        }
-
-        for(auto const & d : x.digits() | ural::reversed)
-        {
-            assert(0 <= d && d < base);
-            os << d;
-        }
-        return os;
     }
 
     // Арифметические операции
@@ -505,6 +484,31 @@ namespace ural
     operator==(T const & a, integer<radix> const & x)
     {
         return x == a;
+    }
+
+    // Ввод/вывод
+    template <class Char, class Traits, long radix>
+    std::basic_ostream<Char, Traits> &
+    operator<<(std::basic_ostream<Char, Traits> & os, integer<radix> const & x)
+    {
+        static_assert(1 < radix && radix <= 10, "Unsupported radix");
+
+        if(x.digits().empty())
+        {
+            return os << '0';
+        }
+
+        if(x.is_not_negative() == false)
+        {
+            os << '-';
+        }
+
+        for(auto const & d : x.digits() | ural::reversed)
+        {
+            assert(0 <= d && d < radix);
+            os << d;
+        }
+        return os;
     }
 
     typedef integer<10> integer_10;
