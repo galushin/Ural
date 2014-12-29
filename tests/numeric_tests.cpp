@@ -737,6 +737,21 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_multiplies_test)
     }
 }
 
+BOOST_AUTO_TEST_CASE(MP_integer_10_mixed_multiplies_test)
+{
+    auto const N_max = 100;
+
+    for(auto a = -N_max; a <= N_max; ++ a)
+    for(auto b = -N_max; b <= N_max; ++ b)
+    {
+        auto const a_mp = integer{a};
+        auto const b_mp = integer{b};
+
+        BOOST_CHECK_EQUAL(a*b, a * b_mp);
+        BOOST_CHECK_EQUAL(a*b, a_mp * b);
+    }
+}
+
 BOOST_AUTO_TEST_CASE(MP_integer_10_plus_test)
 {
     auto const N_max = 100;

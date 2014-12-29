@@ -398,18 +398,6 @@ namespace ural
             return members_[ural::_2];
         }
 
-    private:
-        void strip_leading_zeroes()
-        {
-            for(; !digits().empty() && digits().back() == 0; digits_ref().pop_back())
-            {}
-
-            if(digits().empty())
-            {
-                this->is_positive_ref() = true;
-            }
-        }
-
         static integer
         multiply_by_digit(integer const & x, Digit const & d, size_type i)
         {
@@ -434,6 +422,18 @@ namespace ural
             return a;
         }
 
+    private:
+        void strip_leading_zeroes()
+        {
+            for(; !digits().empty() && digits().back() == 0; digits_ref().pop_back())
+            {}
+
+            if(digits().empty())
+            {
+                this->is_positive_ref() = true;
+            }
+        }
+
         Digits_container & digits_ref()
         {
             return members_[ural::_1];
@@ -448,6 +448,39 @@ namespace ural
         ural::tuple<Digits_container, bool> members_;
 
     };
+
+    template <class T, long radix>
+    typename std::enable_if<std::is_integral<T>::value, integer<radix>>::type
+    operator*(integer<radix> const & x, T const & a)
+    {
+        // @todo оптимизация
+        integer<radix> result;
+
+        if(x.size() > 0 && a != 0)
+        {
+            using std::abs;
+            auto seq = digits_sequence<T, radix>(abs(a));
+
+            for(size_t i = 0; !!seq; ++ i, ++ seq)
+            {
+                result += integer<radix>::multiply_by_digit(x, *seq, i);
+            }
+
+            if(x.is_not_negative() != (a >= 0))
+            {
+                result = -result;
+            }
+        }
+
+        return result;
+    }
+
+    template <class T, long radix>
+    typename std::enable_if<std::is_integral<T>::value, integer<radix>>::type
+    operator*(T const & a, integer<radix> const & x)
+    {
+        return x * a;
+    }
 
     template <class T, long radix>
     typename std::enable_if<std::is_integral<T>::value, bool>::type
