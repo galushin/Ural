@@ -856,7 +856,77 @@ namespace details
     }
 
     // Алгоритмы над контейнерами
+namespace details
+{
+    class remove_functor_t
+    {
+    public:
+        template <class ForwardSequence, class Value>
+        auto operator()(ForwardSequence && seq, Value const & value) const
+        -> decltype(sequence(std::forward<ForwardSequence>(seq)))
+        {
+            return (*this)(std::forward<ForwardSequence>(seq), value,
+                           ural::equal_to<>{});
+        }
+
+        template <class ForwardSequence, class Value, class BinaryPredicate>
+        auto operator()(ForwardSequence && seq, Value const & value,
+                        BinaryPredicate pred) const
+        -> decltype(sequence(std::forward<ForwardSequence>(seq)))
+        {
+            return this->impl(sequence(std::forward<ForwardSequence>(seq)),
+                              value, make_functor(std::move(pred)));
+        }
+
+    private:
+        template <class ForwardSequence, class Value, class BinaryPredicate>
+        ForwardSequence
+        impl(ForwardSequence in, Value const & value,
+             BinaryPredicate pred) const
+        {
+            // @todo устранить дублирование, выделить алгоритмы
+            auto out = ural::find(in, value, pred);
+
+            if(!out)
+            {
+                return out;
+            }
+
+            in = out;
+            ++ in;
+
+            for(; !!in; ++ in)
+            {
+                if(pred(*in, value) == false)
+                {
+                    *out = *in;
+                    ++ out;
+                }
+            }
+
+            return out;
+        }
+    };
+
+    class remove_erase_functor_t
+    {
+    public:
+        template <class Container, class Value>
+        Container & operator()(Container & target, Value const & value) const
+        {
+            auto to_erase = remove_functor_t{}(target, value);
+
+            erase_functor_t{}(target, to_erase);
+
+            return target;
+        }
+    };
+}
+// namespace details
+
     auto constexpr erase = ::ural::details::erase_functor_t{};
+    auto const remove_erase = ::ural::details::remove_erase_functor_t{};
+    auto const remove = ::ural::details::remove_functor_t{};
 }
 // namespace ural
 
