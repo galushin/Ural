@@ -665,6 +665,35 @@ BOOST_AUTO_TEST_CASE(remove_erase_test)
     BOOST_CHECK_EQUAL(s_std, s_ural);
 }
 
+BOOST_AUTO_TEST_CASE(inplace_remove_if_test)
+{
+    std::string s_std = "Text\n with\tsome \t  whitespaces\n\n";
+    auto s_ural = s_std;
+
+    auto const pred = [](char x){return std::isspace(x);};
+
+    s_std.erase(std::remove_if(s_std.begin(), s_std.end(), pred), s_std.end());
+
+    auto s = ural::remove_if(s_ural, pred);
+    ural::erase(s_ural, s);
+
+    BOOST_CHECK_EQUAL(s_std, s_ural);
+}
+
+BOOST_AUTO_TEST_CASE(remove_if_erase_test)
+{
+    std::string s_std = "Text\n with\tsome \t  whitespaces\n\n";
+    auto s_ural = s_std;
+
+    auto const pred = [](char x){return std::isspace(x);};
+
+    s_std.erase(std::remove_if(s_std.begin(), s_std.end(), pred), s_std.end());
+
+    ural::remove_if_erase(s_ural, pred);
+
+    BOOST_CHECK_EQUAL(s_std, s_ural);
+}
+
 BOOST_AUTO_TEST_CASE(remove_if_sequence_test)
 {
     std::string s_std = "Text\n with\tsome \t  whitespaces\n\n";

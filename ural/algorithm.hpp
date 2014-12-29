@@ -428,8 +428,6 @@ namespace details
                                            new_value);
     }
 
-    constexpr auto unique = ::ural::details::unique_functor_t{};
-
     // Тусовка
     template <class RASequence, class URNG>
     void shuffle(RASequence && s, URNG && g)
@@ -927,6 +925,60 @@ namespace details
         }
     };
 
+    class remove_if_functor_t
+    {
+    public:
+        template <class ForwardSequence, class Predicate>
+        auto operator()(ForwardSequence && seq, Predicate pred) const
+        -> decltype(sequence(std::forward<ForwardSequence>(seq)))
+        {
+            return this->impl(sequence(std::forward<ForwardSequence>(seq)),
+                              ural::make_functor(std::move(pred)));
+        }
+
+    private:
+        template <class ForwardSequence, class Predicate>
+        ForwardSequence
+        impl(ForwardSequence in, Predicate pred) const
+        {
+            // @todo устранить дублирование, выделить алгоритмы
+            auto out = ::ural::details::find_if(std::move(in), pred);
+
+            if(!out)
+            {
+                return out;
+            }
+
+            in = out;
+            ++ in;
+
+            for(; !!in; ++ in)
+            {
+                if(pred(*in) == false)
+                {
+                    *out = std::move(*in);
+                    ++ out;
+                }
+            }
+
+            return out;
+        }
+    };
+
+    class remove_if_erase_functor_t
+    {
+    public:
+        template <class Container, class Predicate>
+        Container & operator()(Container & c, Predicate pred) const
+        {
+            auto to_erase = remove_if_functor_t{}(c, pred);
+            erase_functor_t{}(c, to_erase);
+            return c;
+        }
+
+    private:
+    };
+
     class remove_erase_functor_t
     {
     public:
@@ -943,10 +995,16 @@ namespace details
 }
 // namespace details
 
-    auto constexpr erase = ::ural::details::erase_functor_t{};
-    auto const remove_erase = ::ural::details::remove_erase_functor_t{};
-    auto const remove = ::ural::details::remove_functor_t{};
-    auto const unique_erase = ::ural::details::unique_erase_t{};
+    auto constexpr const erase = ::ural::details::erase_functor_t{};
+
+    auto constexpr const remove = ::ural::details::remove_functor_t{};
+    auto constexpr const remove_erase = ::ural::details::remove_erase_functor_t{};
+
+    auto constexpr const remove_if = ::ural::details::remove_if_functor_t{};
+    auto constexpr const remove_if_erase = ::ural::details::remove_if_erase_functor_t{};
+
+    auto constexpr const unique = ::ural::details::unique_functor_t{};
+    auto constexpr const unique_erase = ::ural::details::unique_erase_t{};
 }
 // namespace ural
 
