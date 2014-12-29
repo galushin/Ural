@@ -330,7 +330,7 @@
 1382920056 source:c:\devtools\ural_repo\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
 	<boost/test/impl/xml_report_formatter.ipp>
 
-1419847330 c:\devtools\ural_repo\ural\ural\algorithm.hpp
+1419848350 c:\devtools\ural_repo\ural\ural\algorithm.hpp
 	<ural/sequence/make.hpp>
 	<ural/sequence/uniqued.hpp>
 	<ural/functional.hpp>
@@ -510,7 +510,7 @@
 	<ural/functional/make_functor.hpp>
 	<ural/sequence/base.hpp>
 
-1419845623 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
+1419848058 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<forward_list>
 	<list>

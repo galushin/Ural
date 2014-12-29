@@ -629,6 +629,9 @@ BOOST_AUTO_TEST_CASE(remove_test)
     BOOST_CHECK_EQUAL(r_ural.begin() - s_ural.begin(), r_std - s_std.begin());
     BOOST_CHECK_EQUAL(r_ural.traversed_begin() - s_ural.begin(), 0);
     BOOST_CHECK_EQUAL(r_ural.end() - s_ural.begin(), s_ural.size());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_ural.traversed_begin(), r_ural.begin(),
+                                  s_std.begin(), r_std);
 }
 
 BOOST_AUTO_TEST_CASE(remove_sequence_test)
@@ -679,6 +682,18 @@ BOOST_AUTO_TEST_CASE(remove_if_sequence_test)
 }
 
 // 25.3.9
+BOOST_AUTO_TEST_CASE(eager_unique_test)
+{
+    std::forward_list<int> s_std{1, 2, 2, 2, 3, 3, 2, 2, 1};
+    auto s_ural = s_std;
+
+    auto const r_std = std::unique(s_std.begin(), s_std.end());
+    auto const r_ural = ural::unique(s_ural);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(s_std.begin(), r_std,
+                                  r_ural.traversed_begin(), r_ural.begin());
+}
+
 BOOST_AUTO_TEST_CASE(unique_test)
 {
     std::forward_list<int> v1{1, 2, 2, 2, 3, 3, 2, 2, 1};
@@ -1749,6 +1764,25 @@ BOOST_AUTO_TEST_CASE(unique_erase_combination_test)
     // ural
     auto const to_erase = ural::unique(v_ural);
     ural::erase(v_ural, to_erase);
+
+    // Сравнение результатов
+    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
+                                  v_ural.begin(), v_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(unique_erase_test)
+{
+    std::vector<int> v_std{1,2,3,1,2,3,3,4,5,4,5,6,7};
+    std::sort(v_std.begin(), v_std.end());
+
+    auto v_ural = v_std;
+
+    // std
+    auto const last = std::unique(v_std.begin(), v_std.end());
+    v_std.erase(last, v_std.end());
+
+    // ural
+    ural::unique_erase(v_ural);
 
     // Сравнение результатов
     BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),

@@ -84,6 +84,25 @@ namespace details
             return c.erase(seq.begin(), seq.end());
         }
     };
+
+    class unique_erase_t
+    {
+    public:
+        template <class Container>
+        Container & operator()(Container & c) const
+        {
+            return (*this)(c, ural::equal_to<>{});
+        }
+
+        template <class Container, class BinaryPredicate>
+        Container &
+        operator()(Container & c, BinaryPredicate bin_pred) const
+        {
+            auto to_erase = unique_functor_t{}(c, std::move(bin_pred));
+            erase_functor_t{}(c, to_erase);
+            return c;
+        }
+    };
 }
 // namespace details
 
@@ -899,7 +918,7 @@ namespace details
             {
                 if(pred(*in, value) == false)
                 {
-                    *out = *in;
+                    *out = std::move(*in);
                     ++ out;
                 }
             }
@@ -927,6 +946,7 @@ namespace details
     auto constexpr erase = ::ural::details::erase_functor_t{};
     auto const remove_erase = ::ural::details::remove_erase_functor_t{};
     auto const remove = ::ural::details::remove_functor_t{};
+    auto const unique_erase = ::ural::details::unique_erase_t{};
 }
 // namespace ural
 
