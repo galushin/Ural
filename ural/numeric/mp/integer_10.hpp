@@ -367,6 +367,20 @@ namespace ural
             return *this;
         }
 
+        integer & operator*=(integer const & y)
+        {
+            *this = *this * y;
+            return *this;
+        }
+
+        template <class T>
+        typename std::enable_if<std::is_integral<T>::value, integer &>::type
+        operator*=(T const & a)
+        {
+            *this = *this * a;
+            return *this;
+        }
+
         size_type size() const
         {
             return this->digits().size();

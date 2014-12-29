@@ -759,6 +759,27 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_multiplies_test)
     }
 }
 
+BOOST_AUTO_TEST_CASE(MP_integer_10_multiplies_assign)
+{
+    auto const N_max = 100;
+
+    for(auto a = -N_max; a <= N_max; ++ a)
+    for(auto b = -N_max; b <= N_max; ++ b)
+    {
+        auto a_mp = integer{a};
+        auto const b_mp = integer{b};
+
+        a_mp *= b_mp;
+
+        BOOST_CHECK_EQUAL(a*b, a_mp);
+
+        auto a_mp_1 = integer{a};
+        a_mp_1 *= b;
+
+        BOOST_CHECK_EQUAL(a*b, a_mp_1);
+    }
+}
+
 BOOST_AUTO_TEST_CASE(MP_integer_10_mixed_multiplies_test)
 {
     auto const N_max = 100;
