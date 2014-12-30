@@ -52,6 +52,9 @@ namespace ural
         /// @brief Тип указателя
         typedef value_type const & pointer;
 
+        /// @brief Тип расстояния
+        typedef typename Input::distance_type distance_type;
+
         /// @brief Тип операции, используемой для вычисления суммы
         typedef BinaryOperation operation_type;
 

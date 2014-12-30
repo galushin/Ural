@@ -55,6 +55,10 @@ namespace ural
         // @todo Более разумный тип указателя
         typedef void pointer;
 
+        /// @brief Тип расстояния
+        typedef typename std::common_type<typename Inputs::distance_type...>::type
+            distance_type;
+
         // Конструкторы
         /** @brief Конструктор
         @param ins базовые последовательности

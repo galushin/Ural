@@ -27,6 +27,7 @@ namespace ural
     /** @brief Адаптор последовательности, возвращающий в качестве значения
     исходную последовательность
     @tparam Sequence последовательность
+    @todo Уточнить тип расстояния
     */
     template <class Sequence>
     class outdirected_sequence
@@ -45,6 +46,9 @@ namespace ural
 
         /// @brief Тип указателя
         typedef value_type pointer;
+
+        /// @brief Тип расстояния
+        typedef size_t distance_type;
 
         // Конструктор
         explicit outdirected_sequence(Sequence s)

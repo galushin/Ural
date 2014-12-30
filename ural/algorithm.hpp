@@ -59,6 +59,13 @@ namespace details
         ForwardSequence
         impl(ForwardSequence seq, BinaryPredicate pred) const
         {
+            typedef typename ForwardSequence::value_type Value;
+
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::WritableSequence<ForwardSequence, Value>));
+            BOOST_CONCEPT_ASSERT((concepts::Callable<BinaryPredicate, bool(Value, Value)>));
+
             // @todo Оптимизация
             auto us = ural::make_unique_sequence(seq, std::move(pred));
 

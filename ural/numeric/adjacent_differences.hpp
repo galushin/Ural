@@ -49,6 +49,9 @@ namespace ural
         /// @brief Тип указателя
         typedef typename Input::pointer pointer;
 
+        /// @brief Тип расстояния
+        typedef typename Input::distance_type distance_type;
+
         /** @brief Конструктор
         @param in исходная последовательность
         @param op операция, используемая для вычисления разности

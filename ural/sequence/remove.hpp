@@ -53,6 +53,9 @@ namespace ural
         /// @brief Тип указателя
         typedef typename Input::pointer pointer;
 
+        /// @brief Тип расстояния
+        typedef typename Input::distance_type distance_type;
+
         // Конструкторы
         /** @brief Конструктор
         @param input входая последовательность
@@ -154,6 +157,9 @@ namespace ural
 
         /// @brief Тип указателя
         typedef typename Input::pointer pointer;
+
+        /// @brief Тип расстояния
+        typedef typename Input::distance_type distance_type;
 
         // Конструкторы
         /** @brief Конструктор

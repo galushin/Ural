@@ -37,6 +37,7 @@ namespace ural
         typedef IntType value_type;
         typedef value_type reference;
         typedef IntType * pointer;
+        typedef IntType distance_type;
 
         explicit digits_sequence(IntType value)
          : value_{std::move(value)}
