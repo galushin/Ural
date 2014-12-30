@@ -440,14 +440,14 @@ BOOST_AUTO_TEST_CASE(transform_test)
 {
     std::string const s("hello");
     std::string x_std;
-    std::string x_ural;
 
     auto f = std::ptr_fun<int, int>(std::toupper);
 
     std::transform(s.begin(), s.end(), std::back_inserter(x_std), f);
 
-    ural::copy(ural::make_transform_sequence(f, s),
-               std::back_inserter(x_ural));
+    auto const x_ural
+        = ural::make_transform_sequence(f, s)
+        | ural::to_container<std::basic_string>{};
 
     BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
                                   x_ural.begin(), x_ural.end());
@@ -587,6 +587,7 @@ BOOST_AUTO_TEST_CASE(generate_test)
     std::generate(r_std.begin(), r_std.end(), gen);
 
     counter = 0;
+
     ural::copy(ural::make_generator_sequence(gen), r_ural);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
@@ -789,10 +790,11 @@ BOOST_AUTO_TEST_CASE(reversed_copy_test)
     std::list<int> const src = {1, 2, 3, 4, 5, 6};
 
     std::list<int> r_std;
-    std::list<int> r_ural;
 
     std::reverse_copy(src.begin(), src.end(), std::back_inserter(r_std));
-    ural::copy(src | ural::reversed, r_ural | ural::back_inserter);
+
+    auto const r_ural
+        = src | ural::reversed | ural::to_container<std::list>{};
 
     BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
                                   r_ural.begin(), r_ural.end());
@@ -1701,6 +1703,19 @@ BOOST_AUTO_TEST_CASE(max_element_test_custom_compare)
     std::vector<int> const v{ 3, 1, -14, 1, 5, 9 };
     auto std_result = std::max_element(v.begin(), v.end(), +abs_compare);
     auto ural_result = ural::max_element(v, +abs_compare);
+
+    BOOST_CHECK_EQUAL(std::distance(std_result, v.end()), ural_result.size());
+}
+
+#include <ural/math.hpp>
+
+BOOST_AUTO_TEST_CASE(max_element_using_compare_by)
+{
+    auto const sq_cmp = ural::compare_by(ural::square);
+
+    std::vector<int> const v{ 3, 1, -14, 1, 5, 9 };
+    auto std_result = std::max_element(v.begin(), v.end(), sq_cmp);
+    auto ural_result = ural::max_element(v, sq_cmp);
 
     BOOST_CHECK_EQUAL(std::distance(std_result, v.end()), ural_result.size());
 }

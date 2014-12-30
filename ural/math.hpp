@@ -31,27 +31,37 @@
 
 namespace ural
 {
-    /** @brief Функция вычисления квадрата
-    @param x аргумент
-    @return <tt> x * x</tt>
-    */
-    template <class T>
-    constexpr T square(T const & x)
+namespace details
+{
+    class square_functor
     {
-        return x * x;
-    }
+    public:
+        /** @brief Функция вычисления квадрата
+        @param x аргумент
+        @return <tt> x * x</tt>
+        */
+        template <class T>
+        constexpr T operator()(T const & x) const
+        {
+            return x * x;
+        }
 
-    /** @brief Функция вычисления квадрата
-    @param x аргумент
-    @param op ассоциативная бинарная операция, используемая в качестве
-        умножения
-    @return <tt> op(x, x) </tt>
-    */
-    template <class T, class BinOp>
-    constexpr T square(T const & x, BinOp op)
-    {
-        return op(x, x);
-    }
+        /** @brief Функция вычисления квадрата
+        @param x аргумент
+        @param op ассоциативная бинарная операция, используемая в качестве
+            умножения
+        @return <tt> op(x, x) </tt>
+        */
+        template <class T, class BinOp>
+        constexpr T operator()(T const & x, BinOp op) const
+        {
+            return op(x, x);
+        }
+    };
+}
+// namespace details
+
+    auto constexpr square = ::ural::details::square_functor{};
 
     template <class T, class BinOp>
     constexpr T cube(T const & x, BinOp op)
