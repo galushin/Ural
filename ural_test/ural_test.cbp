@@ -94,6 +94,7 @@
 		<Unit filename="../ural/functional/replace.hpp" />
 		<Unit filename="../ural/math.hpp" />
 		<Unit filename="../ural/math/common_factor.hpp" />
+		<Unit filename="../ural/math/continued_fraction.hpp" />
 		<Unit filename="../ural/math/rational.hpp" />
 		<Unit filename="../ural/memory.hpp" />
 		<Unit filename="../ural/meta/algo.hpp" />

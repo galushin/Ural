@@ -824,3 +824,29 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_minus_test)
 }
 
 // @todo деление и взятие остатка
+
+// Цепные дроби
+#include <ural/math/continued_fraction.hpp>
+
+BOOST_AUTO_TEST_CASE(continued_fraction_sqrt_2_convergents)
+{
+    typedef int Integer;
+    typedef ural::rational<Integer> Rational;
+
+    ural::convergent<Integer> as;
+
+    as.update(1);
+    BOOST_CHECK_EQUAL(as.value(), Rational{1});
+
+    as.update(2);
+    BOOST_CHECK_EQUAL(as.value(), (Rational{3, 2}));
+
+    as.update(2);
+    BOOST_CHECK_EQUAL(as.value(), (Rational{7, 5}));
+
+    as.update(2);
+    BOOST_CHECK_EQUAL(as.value(), (Rational{17, 12}));
+
+    as.update(2);
+    BOOST_CHECK_EQUAL(as.value(), (Rational{41, 29}));
+}
