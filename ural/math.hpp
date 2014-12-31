@@ -163,7 +163,7 @@ namespace details
         {
             return (n == 1)
                     ? x
-                    : adjust(ural::square((*this)(x, n / 2), op), x, n % 2 != 0, op);
+                    : adjust(ural::square(this->compute(x, n / 2, op), op), x, n % 2 != 0, op);
         }
 
         template <class T, class AssocBinOp>

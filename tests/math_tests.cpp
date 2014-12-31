@@ -273,12 +273,14 @@ BOOST_AUTO_TEST_CASE(natural_power_constexpr_test)
     BOOST_CHECK(true);
 }
 
-BOOST_AUTO_TEST_CASE(natural_power_constexpr_with_plus_eplicit_unit_test)
+BOOST_AUTO_TEST_CASE(natural_power_constexpr_with_plus_explicit_unit)
 {
     static_assert(ural::natural_power(3, 0, ural::plus<>{}, 0) == 0, "");
     static_assert(ural::natural_power(3, 1, ural::plus<>{}, 0) == 3, "");
     static_assert(ural::natural_power(3, 2, ural::plus<>{}, 0) == 6, "");
     static_assert(ural::natural_power(3, 3, ural::plus<>{}, 0) == 9, "");
+    static_assert(ural::natural_power(3, 4, ural::plus<>{}, 0) == 12, "");
+    static_assert(ural::natural_power(3, 5, ural::plus<>{}, 0) == 15, "");
 
     BOOST_CHECK(true);
 }
@@ -289,6 +291,8 @@ BOOST_AUTO_TEST_CASE(natural_power_constexpr_with_plus_test)
     static_assert(ural::natural_power(3, 1, ural::plus<>{}) == 3, "");
     static_assert(ural::natural_power(3, 2, ural::plus<>{}) == 6, "");
     static_assert(ural::natural_power(3, 3, ural::plus<>{}) == 9, "");
+    static_assert(ural::natural_power(3, 4, ural::plus<>{}) == 12, "");
+    static_assert(ural::natural_power(3, 5, ural::plus<>{}) == 15, "");
 
     BOOST_CHECK(true);
 }
