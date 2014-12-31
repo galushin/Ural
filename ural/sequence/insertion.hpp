@@ -125,7 +125,7 @@ namespace ural
 
     template <class Container>
     class set_insert_sequence
-     : sequence_base<set_insert_sequence<Container>>
+     : public sequence_base<set_insert_sequence<Container>>
     {
     public:
         typedef single_pass_traversal_tag traversal_tag;

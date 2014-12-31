@@ -770,7 +770,7 @@
 	<ural/sequence/transform.hpp>
 	<ural/sequence/uniqued.hpp>
 
-1401073448 c:\pavel\ural_repo\ural\ural\sequence\base.hpp
+1420042547 c:\pavel\ural_repo\ural\ural\sequence\base.hpp
 	<ural/defs.hpp>
 	<utility>
 	<ural/sequence/sequence_iterator.hpp>
@@ -790,11 +790,11 @@
 	<ural/utility.hpp>
 	<ural/meta/map.hpp>
 
-1399379076 c:\pavel\ural_repo\ural\ural\sequence\insertion.hpp
+1420040559 c:\pavel\ural_repo\ural\ural\sequence\insertion.hpp
 	<iterator>
 	<ural/sequence/base.hpp>
 
-1402738752 c:\pavel\ural_repo\ural\ural\sequence\moved.hpp
+1420039179 c:\pavel\ural_repo\ural\ural\sequence\moved.hpp
 	<ural/sequence/base.hpp>
 
 1402738752 c:\pavel\ural_repo\ural\ural\sequence\filtered.hpp
@@ -970,7 +970,7 @@
 1394807792 source:c:\pavel\ural_repo\ural\ural_test\main.cpp
 	<boost/test/unit_test.hpp>
 
-1416484565 c:\pavel\ural_repo\ural\ural\sequence\reversed.hpp
+1420042554 c:\pavel\ural_repo\ural\ural\sequence\reversed.hpp
 	<ural/sequence/make.hpp>
 	<ural/sequence/base.hpp>
 
@@ -12110,7 +12110,7 @@
 	<utility>
 	<boost/math/distributions/detail/derived_accessors.hpp>
 
-1402738752 c:\pavel\ural_repo\ural\ural\sequence\to.hpp
+1420040356 c:\pavel\ural_repo\ural\ural\sequence\to.hpp
 	<ural/sequence/insertion.hpp>
 	<ural/algorithm/details/copy.hpp>
 
