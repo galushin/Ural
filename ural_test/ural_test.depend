@@ -897,7 +897,7 @@
 	<ural/numeric.hpp>
 	<ural/sequence/all.hpp>
 
-1396619420 c:\pavel\ural_repo\ural\ural\numeric.hpp
+1420026952 c:\pavel\ural_repo\ural\ural\numeric.hpp
 	<ural/functional.hpp>
 	<ural/sequence/all.hpp>
 	<ural/numeric/partial_sums.hpp>
@@ -950,13 +950,12 @@
 	<unordered_set>
 	<ural/utility/tracers.hpp>
 
-1402956076 source:c:\pavel\ural_repo\ural\tests\sequence_test.cpp
-	<ural/abi.hpp>
+1419996737 source:c:\pavel\ural_repo\ural\tests\sequence_test.cpp
+	<ural/sequence/sink.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/all.hpp>
 	<ural/sequence/zip.hpp>
 	<ural/sequence/map.hpp>
-	<ural/sequence/sink.hpp>
 	<ural/sequence/progression.hpp>
 	<boost/test/unit_test.hpp>
 	<iterator>
@@ -6476,7 +6475,7 @@
 	<ural/sequence/base.hpp>
 	<string>
 
-1405149653 source:c:\pavel\ural_repo\ural\tests\math_tests.cpp
+1420023037 source:c:\pavel\ural_repo\ural\tests\math_tests.cpp
 	<boost/test/unit_test.hpp>
 	<boost/mpl/list.hpp>
 	<boost/operators.hpp>
@@ -6504,12 +6503,12 @@
 	<boost/math/distributions/chi_squared.hpp>
 	<sstream>
 
-1396619420 source:c:\pavel\ural_repo\ural\tests\rational_tests.cpp
+1420022816 source:c:\pavel\ural_repo\ural\tests\rational_tests.cpp
+	<ural/math/rational.hpp>
 	<ostream>
 	<boost/test/unit_test.hpp>
 	<boost/mpl/list.hpp>
 	<boost/operators.hpp>
-	<ural/math/rational.hpp>
 
 1416484565 c:\pavel\ural_repo\ural\ural\math\rational.hpp
 	<ural/math/common_factor.hpp>
@@ -12219,4 +12218,15 @@
 1419996859 c:\pavel\ural_repo\ural\ural\math\continued_fraction.hpp
 	<ural/math/rational.hpp>
 	<cassert>
+
+1416484565 source:c:\pavel\ural_repo\ural\tests\sequence\reversed.cpp
+	<boost/test/unit_test.hpp>
+	<ural/sequence/reversed.hpp>
+	<ural/abi.hpp>
+	<ural/algorithm.hpp>
+	<ural/sequence/progression.hpp>
+	<ural/sequence/taken.hpp>
+	<ural/sequence/to.hpp>
+	<ural/memory.hpp>
+	<ural/sequence/moved.hpp>
 

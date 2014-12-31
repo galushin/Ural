@@ -125,6 +125,29 @@ namespace ural
         }
     }
     constexpr inner_product{};
+
+    class discrete_convolution_functor
+    {
+    public:
+        template <class Vector>
+        Vector operator()(Vector const & x, Vector const & y) const
+        {
+            // @todo Оптимизированная версия
+            Vector result(x.size() + y.size() - 1, 0);
+
+            typedef typename Vector::size_type size_type;
+
+            for(size_type i = 0; i != x.size(); ++ i)
+            for(size_type j = 0; j != y.size(); ++ j)
+            {
+                result[i+j] += x[i] * y[j];
+            }
+
+            return result;
+        }
+    };
+
+    auto constexpr const discrete_convolution = discrete_convolution_functor{};
 }
 // namespace ural
 
