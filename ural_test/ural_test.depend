@@ -897,7 +897,7 @@
 	<ural/numeric.hpp>
 	<ural/sequence/all.hpp>
 
-1420026952 c:\pavel\ural_repo\ural\ural\numeric.hpp
+1420033791 c:\pavel\ural_repo\ural\ural\numeric.hpp
 	<ural/functional.hpp>
 	<ural/sequence/all.hpp>
 	<ural/numeric/partial_sums.hpp>
@@ -915,7 +915,7 @@
 	<ural/functional.hpp>
 	<ural/sequence/base.hpp>
 
-1419996859 source:c:\pavel\ural_repo\ural\tests\numeric_tests.cpp
+1420027028 source:c:\pavel\ural_repo\ural\tests\numeric_tests.cpp
 	<ural/numeric/matrix.hpp>
 	<ural/algorithm.hpp>
 	<ural/numeric.hpp>

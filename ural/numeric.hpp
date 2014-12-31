@@ -126,6 +126,105 @@ namespace ural
     }
     constexpr inner_product{};
 
+    /**
+    @todo Можно ли ослабить требования к входным последовательностям
+    */
+    template <class RASequence1, class RASequence2>
+    class convolution_sequence
+     : public sequence_base<convolution_sequence<RASequence1, RASequence2> >
+    {
+    public:
+        /// @brief Категория обхода
+        typedef forward_traversal_tag traversal_tag;
+
+        /// @brief Тип расстояния
+        typedef typename std::common_type<typename RASequence1::distance_type,
+                                          typename RASequence2::distance_type>::type distance_type;
+
+        /// @brief Тип значения
+        typedef decltype(*std::declval<RASequence1>() * *std::declval<RASequence2>())
+            value_type;
+
+        /// @brief Тип ссылки
+        typedef value_type const & reference;
+
+        /// @brief Тип указателя
+        typedef value_type const * pointer;
+
+        convolution_sequence(RASequence1 s1, RASequence2 s2)
+         : members_(std::move(s1), std::move(s2), 0, value_type{0})
+        {
+            this->calc();
+        }
+
+        // Однопроходная последовательность
+        bool operator!() const
+        {
+            auto const n = members_[ural::_1].size() + members_[ural::_2].size();
+            return members_[ural::_3] + 1 >= n;
+        }
+
+        reference front() const
+        {
+            return members_[ural::_4];
+        }
+
+        void pop_front()
+        {
+            ++ members_[ural::_3];
+            this->calc();
+        }
+
+    private:
+        void calc()
+        {
+            if(!members_[ural::_1] || !members_[ural::_2])
+            {
+                return;
+            }
+
+            auto const pos = members_[ural::_3];
+
+            members_[ural::_4] = 0;
+
+            // j = pos - i
+            // 0 <= i <= n1 - 1
+            // 0 <= pos - i <= n2-1
+            // - pos <= -i <= n2-1 - pos
+            // pos-n2+1 <= i <= pos
+
+            auto const n2 = members_[ural::_2].size();
+            auto const i_min = std::max(pos - n2 + 1, 0LL);
+            auto const i_max = std::min(members_[ural::_1].size(), pos+1);
+
+            for(size_t i = i_min; i < i_max; ++ i)
+            {
+                assert(pos >= i);
+
+                auto const j = pos - i;
+
+                assert(i >= 0);
+                assert(i < members_[ural::_1].size());
+
+                assert(j >= 0);
+                assert(j < members_[ural::_2].size());
+
+                members_[ural::_4] += members_[ural::_1][i]* members_[ural::_2][j];
+            }
+        }
+
+        ural::tuple<RASequence1, RASequence2, distance_type, value_type> members_;
+    };
+
+    template <class RASequence1, class RASequence2>
+    auto make_convolution_sequence(RASequence1 && s1, RASequence2 && s2)
+    -> convolution_sequence<decltype(sequence(std::forward<RASequence1>(s1))),
+                            decltype(sequence(std::forward<RASequence2>(s2)))>
+    {
+        return {sequence(std::forward<RASequence1>(s1)),
+                sequence(std::forward<RASequence2>(s2))};
+    }
+
     class discrete_convolution_functor
     {
     public:
@@ -133,15 +232,15 @@ namespace ural
         Vector operator()(Vector const & x, Vector const & y) const
         {
             // @todo Оптимизированная версия
-            Vector result(x.size() + y.size() - 1, 0);
+            // @todo Поддержка контейнеров без возможности изменения размера
+            assert(!x.empty() || !y.empty());
 
-            typedef typename Vector::size_type size_type;
+            Vector result;
 
-            for(size_type i = 0; i != x.size(); ++ i)
-            for(size_type j = 0; j != y.size(); ++ j)
-            {
-                result[i+j] += x[i] * y[j];
-            }
+            ural::copy(ural::make_convolution_sequence(x, y),
+                       result | ural::back_inserter);
+
+            assert(result.size() == x.size() + y.size() - 1);
 
             return result;
         }
