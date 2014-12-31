@@ -716,7 +716,7 @@
 	<ural/utility/tracers.hpp>
 	<ural/math.hpp>
 
-1419996859 c:\pavel\ural_repo\ural\ural\algorithm.hpp
+1420037375 c:\pavel\ural_repo\ural\ural\algorithm.hpp
 	<ural/sequence/make.hpp>
 	<ural/sequence/uniqued.hpp>
 	<ural/functional.hpp>
@@ -829,7 +829,7 @@
 1419996859 c:\pavel\ural_repo\ural\ural\sequence\uniqued.hpp
 	<ural/algorithm/details/algo_base.hpp>
 
-1402738752 c:\pavel\ural_repo\ural\ural\algorithm\details\algo_base.hpp
+1420037179 c:\pavel\ural_repo\ural\ural\algorithm\details\algo_base.hpp
 	<ural/sequence/base.hpp>
 	<ural/sequence/function_output.hpp>
 	<ural/sequence/generator.hpp>

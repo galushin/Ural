@@ -1189,49 +1189,6 @@ namespace details
         }
         return true;
     }
-
-    template <class BiSequence, class Compare>
-    bool next_permutation(BiSequence s, Compare cmp)
-    {
-        if(!s)
-        {
-            return false;
-        }
-
-        auto s1 = ural::next(s);
-
-        if(!s1)
-        {
-            return false;
-        }
-
-        auto r = ::ural::details::is_sorted_until(s | ural::reversed, cmp);
-
-        if(!r)
-        {
-            ::ural::details::reverse(std::move(s));
-            return false;
-        }
-        else
-        {
-            auto r1 = r;
-            auto r2 = s | ural::reversed;
-
-            for(; cmp(*r2, *r1); ++r2)
-            {}
-
-            ::ural::details::do_swap(*r1, *r2);
-            ural::details::reverse(r1.traversed_front().base());
-
-            return true;
-        }
-    }
-
-    template <class BiSequence, class Compare>
-    bool prev_permutation(BiSequence s, Compare cmp)
-    {
-        return ::ural::details::next_permutation(std::move(s), ::ural::not_fn(std::move(cmp)));
-    }
 }
 // namespace details
 }

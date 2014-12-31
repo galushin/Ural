@@ -851,37 +851,92 @@ namespace details
                                       ural::less<>{});
     }
 
-    template <class BiSequence, class Compare>
-    bool next_permutation(BiSequence && s, Compare cmp)
-    {
-        return ::ural::details::next_permutation(sequence(std::forward<BiSequence>(s)),
-                                                 ural::make_functor(std::move(cmp)));
-
-    }
-
-    template <class BiSequence>
-    bool next_permutation(BiSequence && s)
-    {
-        return ural::next_permutation(std::forward<BiSequence>(s), ural::less<>{});
-    }
-
-    template <class BiSequence, class Compare>
-    bool prev_permutation(BiSequence && s, Compare cmp)
-    {
-        return ::ural::details::prev_permutation(sequence(std::forward<BiSequence>(s)),
-                                                 ural::make_functor(std::move(cmp)));
-
-    }
-
-    template <class BiSequence>
-    bool prev_permutation(BiSequence && s)
-    {
-        return ural::prev_permutation(std::forward<BiSequence>(s), ural::less<>{});
-    }
-
-    // Алгоритмы над контейнерами
 namespace details
 {
+    // Перестановки
+    class next_permutation_functor
+    {
+    public:
+        template <class BiSequence>
+        bool operator()(BiSequence && s) const
+        {
+            return (*this)(std::forward<BiSequence>(s), ural::less<>{});
+        }
+
+        template <class BiSequence, class Compare>
+        bool operator()(BiSequence && s, Compare cmp) const
+        {
+            return this->impl(sequence(std::forward<BiSequence>(s)),
+                              ural::make_functor(std::move(cmp)));
+
+        }
+
+    private:
+        template <class BiSequence, class Compare>
+        bool impl(BiSequence s, Compare cmp) const
+        {
+            if(!s)
+            {
+                return false;
+            }
+
+            auto s1 = ural::next(s);
+
+            if(!s1)
+            {
+                return false;
+            }
+
+            auto r = ::ural::details::is_sorted_until(s | ural::reversed, cmp);
+
+            if(!r)
+            {
+                ::ural::details::reverse(std::move(s));
+                return false;
+            }
+            else
+            {
+                auto r1 = r;
+                auto r2 = s | ural::reversed;
+
+                for(; cmp(*r2, *r1); ++r2)
+                {}
+
+                ::ural::details::do_swap(*r1, *r2);
+                ural::details::reverse(r1.traversed_front().base());
+
+                return true;
+            }
+        }
+    };
+
+    class prev_permutation_functor
+    {
+    public:
+        template <class BiSequence>
+        bool operator()(BiSequence && s) const
+        {
+            return (*this)(std::forward<BiSequence>(s), ural::less<>{});
+        }
+
+        template <class BiSequence, class Compare>
+        bool operator()(BiSequence && s, Compare cmp) const
+        {
+            return this->impl(sequence(std::forward<BiSequence>(s)),
+                              ural::make_functor(std::move(cmp)));
+
+        }
+
+    private:
+        template <class BiSequence, class Compare>
+        bool impl(BiSequence s, Compare cmp) const
+        {
+            auto constexpr f = ::ural::details::next_permutation_functor{};
+            return f(std::move(s), ::ural::not_fn(std::move(cmp)));
+        }
+    };
+
+    // Алгоритмы над контейнерами
     class remove_functor_t
     {
     public:
@@ -1012,6 +1067,9 @@ namespace details
 
     auto constexpr const unique = ::ural::details::unique_functor_t{};
     auto constexpr const unique_erase = ::ural::details::unique_erase_t{};
+
+    auto constexpr const next_permutation = ::ural::details::next_permutation_functor{};
+    auto constexpr const prev_permutation = ::ural::details::prev_permutation_functor{};
 }
 // namespace ural
 
