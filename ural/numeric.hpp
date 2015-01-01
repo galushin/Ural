@@ -24,6 +24,7 @@
 #include <ural/functional.hpp>
 #include <ural/sequence/all.hpp>
 
+#include <ural/numeric/numbers_range.hpp>
 #include <ural/numeric/partial_sums.hpp>
 #include <ural/numeric/adjacent_differences.hpp>
 

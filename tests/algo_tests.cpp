@@ -22,6 +22,7 @@
 
 #include <boost/mpl/list.hpp>
 
+#include <ural/numeric/numbers_sequence.hpp>
 #include <ural/algorithm.hpp>
 #include <ural/memory.hpp>
 #include <ural/sequence/all.hpp>
@@ -289,7 +290,7 @@ BOOST_AUTO_TEST_CASE(search_n_test)
 {
     const std::string xs = "1001010100010101001010101";
 
-    for(size_t i = 0; i < 5; ++ i)
+    for(auto i : ural::numbers(0, 5))
     {
         BOOST_CHECK_EQUAL(std::search_n(xs.begin(), xs.end(), i, '0') == xs.end(),
                           !ural::search_n(xs, i, '0'));

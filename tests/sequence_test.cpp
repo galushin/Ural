@@ -386,3 +386,19 @@ BOOST_AUTO_TEST_CASE(set_inserter_test)
     BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
                                   z_ural.begin(), z_ural.end());
 }
+
+#include <ural/numeric/numbers_sequence.hpp>
+
+BOOST_AUTO_TEST_CASE(numbers_range_test)
+{
+    std::vector<int> const z = {0, 1, 2, 3, 4, 5, 6};
+
+    std::vector<int> x;
+
+    for(auto i : ural::numbers(0, 7))
+    {
+        x.push_back(i);
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(), x.begin(), x.end());
+}

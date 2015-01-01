@@ -85,6 +85,8 @@ BOOST_AUTO_TEST_CASE(by_line_test_custom_separator)
     BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(), x.begin(), x.end());
 }
 
+#include <ural/numeric/numbers_sequence.hpp>
+
 BOOST_AUTO_TEST_CASE(table_io_test)
 {
     typedef double Type;
@@ -105,7 +107,7 @@ BOOST_AUTO_TEST_CASE(table_io_test)
 
     BOOST_CHECK_EQUAL(data_src.size(), data.size());
 
-    for(auto i = 0U; i != data.size(); ++ i)
+    for(auto i : ural::numbers(0, data.size()))
     {
         BOOST_CHECK_EQUAL(data_src[i].size(), data[i].size());
         BOOST_CHECK(data_src[i] == data[i]);

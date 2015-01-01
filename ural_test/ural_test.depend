@@ -704,12 +704,13 @@
 1390362855 source:c:\pavel\ural_repo\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
 	<boost/test/impl/xml_report_formatter.ipp>
 
-1420073126 source:c:\pavel\ural_repo\ural\tests\algo_tests.cpp
+1420080911 source:c:\pavel\ural_repo\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<forward_list>
 	<list>
 	<vector>
 	<boost/mpl/list.hpp>
+	<ural/numeric/numbers_sequence.hpp>
 	<ural/algorithm.hpp>
 	<ural/memory.hpp>
 	<ural/sequence/all.hpp>
@@ -880,7 +881,7 @@
 1405149653 c:\pavel\ural_repo\ural\ural\thread.hpp
 	<cstddef>
 
-1420043329 source:c:\pavel\ural_repo\ural\tests\functional_test.cpp
+1420075794 source:c:\pavel\ural_repo\ural\tests\functional_test.cpp
 	<ural/utility/tracers.hpp>
 	<ural/functional.hpp>
 	<ural/memory.hpp>
@@ -900,9 +901,10 @@
 	<ural/numeric.hpp>
 	<ural/sequence/all.hpp>
 
-1420033791 c:\pavel\ural_repo\ural\ural\numeric.hpp
+1420079720 c:\pavel\ural_repo\ural\ural\numeric.hpp
 	<ural/functional.hpp>
 	<ural/sequence/all.hpp>
+	<ural/numeric/numbers_range.hpp>
 	<ural/numeric/partial_sums.hpp>
 	<ural/numeric/adjacent_differences.hpp>
 
@@ -953,7 +955,7 @@
 	<unordered_set>
 	<ural/utility/tracers.hpp>
 
-1419996737 source:c:\pavel\ural_repo\ural\tests\sequence_test.cpp
+1420080876 source:c:\pavel\ural_repo\ural\tests\sequence_test.cpp
 	<ural/sequence/sink.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/all.hpp>
@@ -964,6 +966,7 @@
 	<iterator>
 	<set>
 	<map>
+	<ural/numeric/numbers_sequence.hpp>
 
 1394005431 source:c:\pavel\ural_repo\ural\tests\tuple_tests.cpp
 	<boost/test/unit_test.hpp>
@@ -6464,7 +6467,7 @@
 1402738752 c:\pavel\ural_repo\ural\ural\archetypes.hpp
 	<ural/sequence/base.hpp>
 
-1402738752 source:c:\pavel\ural_repo\ural\tests\io_tests.cpp
+1420082238 source:c:\pavel\ural_repo\ural\tests\io_tests.cpp
 	<ural/format.hpp>
 	<ural/sequence/to.hpp>
 	<ural/sequence/by_line.hpp>
@@ -6473,6 +6476,7 @@
 	<boost/test/unit_test.hpp>
 	<forward_list>
 	<sstream>
+	<ural/numeric/numbers_sequence.hpp>
 
 1405149653 c:\pavel\ural_repo\ural\ural\sequence\by_line.hpp
 	<ural/sequence/base.hpp>
@@ -12232,4 +12236,11 @@
 	<ural/sequence/to.hpp>
 	<ural/memory.hpp>
 	<ural/sequence/moved.hpp>
+
+1420080585 c:\pavel\ural_repo\ural\ural\numeric\numbers_range.hpp
+	<ural/tuple.hpp>
+
+1420082319 c:\pavel\ural_repo\ural\ural\numeric\numbers_sequence.hpp
+	<ural/tuple.hpp>
+	<ural/sequence/base.hpp>
 
