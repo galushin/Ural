@@ -876,6 +876,13 @@ namespace details
         template <class BiSequence, class Compare>
         bool impl(BiSequence s, Compare cmp) const
         {
+            typedef typename BiSequence::value_type Value;
+
+            BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequence<BiSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<BiSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::WritableSequence<BiSequence, Value>));
+            BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, bool(Value, Value)>));
+
             if(!s)
             {
                 return false;
@@ -964,6 +971,13 @@ namespace details
         impl(ForwardSequence in, Value const & value,
              BinaryPredicate pred) const
         {
+            typedef typename ForwardSequence::value_type Value;
+
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::WritableSequence<ForwardSequence, Value>));
+            BOOST_CONCEPT_ASSERT((concepts::Callable<BinaryPredicate, bool(Value, Value)>));
+
             // @todo устранить дублирование, выделить алгоритмы
             auto out = ural::find(in, value, pred);
 
@@ -1004,6 +1018,13 @@ namespace details
         ForwardSequence
         impl(ForwardSequence in, Predicate pred) const
         {
+            typedef typename ForwardSequence::value_type Value;
+
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::WritableSequence<ForwardSequence, Value>));
+            BOOST_CONCEPT_ASSERT((concepts::Callable<Predicate, bool(Value)>));
+
             // @todo устранить дублирование, выделить алгоритмы
             auto out = ::ural::details::find_if(std::move(in), pred);
 

@@ -33,7 +33,8 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 			<Add directory=".." />
-			<Add directory="C:/DevTools/boost_1_54_0" />
+			<Add directory="C:/DevTools/boost_1_55_0" />
+			<Add directory="C:/Pavel/ural_repo/Ural/" />
 		</Compiler>
 		<Unit filename="../README.md" />
 		<Unit filename="../boost_1_54/libs/test/src/compiler_log_formatter.cpp" />

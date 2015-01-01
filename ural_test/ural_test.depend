@@ -717,7 +717,7 @@
 	<ural/utility/tracers.hpp>
 	<ural/math.hpp>
 
-1420050942 c:\pavel\ural_repo\ural\ural\algorithm.hpp
+1420104095 c:\pavel\ural_repo\ural\ural\algorithm.hpp
 	<ural/sequence/moved.hpp>
 	<ural/sequence/make.hpp>
 	<ural/sequence/uniqued.hpp>
@@ -920,7 +920,7 @@
 	<ural/functional.hpp>
 	<ural/sequence/base.hpp>
 
-1420095564 source:c:\pavel\ural_repo\ural\tests\numeric_tests.cpp
+1420097331 source:c:\pavel\ural_repo\ural\tests\numeric_tests.cpp
 	<ural/numeric/matrix.hpp>
 	<ural/algorithm.hpp>
 	<ural/numeric.hpp>
