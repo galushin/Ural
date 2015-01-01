@@ -66,6 +66,18 @@ namespace ural
                             std::unique_ptr<T>>::type
     make_unique(size_t size) = delete;
 
+    class to_unqiue_ptr_functor
+    {
+    public:
+        template <class T>
+        std::unique_ptr<T> operator()(T value) const
+        {
+            return make_unique<T>(std::move(value));
+        }
+    };
+
+    auto constexpr to_unique_ptr = to_unqiue_ptr_functor{};
+
     /** @brief Создание копии в динамической памяти
     @param x копируемое значение
     @return <tt> ural::make_unique<T>(std::move(x)) </tt>

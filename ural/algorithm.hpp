@@ -21,6 +21,7 @@
  @brief Обобщённые алгоритмы
 */
 
+#include <ural/sequence/moved.hpp>
 #include <ural/sequence/make.hpp>
 #include <ural/sequence/uniqued.hpp>
 
@@ -69,7 +70,7 @@ namespace details
             // @todo Оптимизация
             auto us = ural::make_unique_sequence(seq, std::move(pred));
 
-            auto result = ural::details::copy(us, seq);
+            auto result = ural::details::copy(us | ural::moved, seq);
 
             return result[ural::_2];
         }

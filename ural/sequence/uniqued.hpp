@@ -59,8 +59,12 @@ namespace ural
         @post <tt> this->predicate() == BinaryPredicate{} </tt>
         */
         explicit unique_sequence(Forward in)
-         : data_(std::move(in))
-        {}
+         : cur_{std::move(in)}
+         , eq_{}
+         , next_{cur_}
+        {
+            this->seek();
+        }
 
         /** @brief Конструктор
         @param in входная последовательность
@@ -69,8 +73,12 @@ namespace ural
         @post <tt> this->predicate() == pred </tt>
         */
         explicit unique_sequence(Forward in, BinaryPredicate pred)
-         : data_(std::move(in), std::move(pred))
-        {}
+         : cur_{std::move(in)}
+         , eq_(std::move(pred))
+         , next_{cur_}
+        {
+            this->seek();
+        }
 
         // Адаптор последовательности
         /** @brief Базовая последовательность
@@ -78,7 +86,7 @@ namespace ural
         */
         Forward const & base() const
         {
-            return this->data_.first();
+            return this->cur_;
         }
 
         /** @brief Используемый предикат
@@ -86,7 +94,7 @@ namespace ural
         */
         BinaryPredicate const & predicate() const
         {
-            return this->data_.second();
+            return this->eq_;
         }
 
         // Однопроходная последовательность
@@ -112,15 +120,23 @@ namespace ural
         */
         void pop_front()
         {
-            auto s = this->base();
-            ++ s;
-
-            data_.first() = ::ural::details::find(s, *this->base(),
-                                                  not_fn(this->predicate()));
+           cur_ = next_;
+           this->seek();
         }
 
     private:
-        boost::compressed_pair<Forward, BinaryPredicate> data_;
+        void seek()
+        {
+            if(!!next_)
+            {
+                ++ next_;
+                next_ = ::ural::details::find(next_, *cur_, not_fn(this->predicate()));
+            }
+        }
+
+        Forward cur_;
+        BinaryPredicate eq_;
+        Forward next_;
     };
 
     template <class Forward, class BinaryPredicate>

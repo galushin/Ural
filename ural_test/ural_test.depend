@@ -704,7 +704,7 @@
 1390362855 source:c:\pavel\ural_repo\ural\boost_1_54\libs\test\src\xml_report_formatter.cpp
 	<boost/test/impl/xml_report_formatter.ipp>
 
-1419996859 source:c:\pavel\ural_repo\ural\tests\algo_tests.cpp
+1420073126 source:c:\pavel\ural_repo\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<forward_list>
 	<list>
@@ -716,7 +716,8 @@
 	<ural/utility/tracers.hpp>
 	<ural/math.hpp>
 
-1420037375 c:\pavel\ural_repo\ural\ural\algorithm.hpp
+1420050942 c:\pavel\ural_repo\ural\ural\algorithm.hpp
+	<ural/sequence/moved.hpp>
 	<ural/sequence/make.hpp>
 	<ural/sequence/uniqued.hpp>
 	<ural/functional.hpp>
@@ -794,7 +795,9 @@
 	<iterator>
 	<ural/sequence/base.hpp>
 
-1420039179 c:\pavel\ural_repo\ural\ural\sequence\moved.hpp
+1420044903 c:\pavel\ural_repo\ural\ural\sequence\moved.hpp
+	<ural/sequence/make.hpp>
+	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/base.hpp>
 
 1402738752 c:\pavel\ural_repo\ural\ural\sequence\filtered.hpp
@@ -826,7 +829,7 @@
 1402738752 c:\pavel\ural_repo\ural\ural\sequence\taken.hpp
 	<ural/utility.hpp>
 
-1419996859 c:\pavel\ural_repo\ural\ural\sequence\uniqued.hpp
+1420075430 c:\pavel\ural_repo\ural\ural\sequence\uniqued.hpp
 	<ural/algorithm/details/algo_base.hpp>
 
 1420037179 c:\pavel\ural_repo\ural\ural\algorithm\details\algo_base.hpp
@@ -862,7 +865,7 @@
 	<boost/type_traits.hpp>
 	<type_traits>
 
-1402738752 c:\pavel\ural_repo\ural\ural\memory.hpp
+1420043780 c:\pavel\ural_repo\ural\ural\memory.hpp
 	<ural/defs.hpp>
 	<ural/utility.hpp>
 	<boost/throw_exception.hpp>
@@ -877,7 +880,7 @@
 1405149653 c:\pavel\ural_repo\ural\ural\thread.hpp
 	<cstddef>
 
-1419996859 source:c:\pavel\ural_repo\ural\tests\functional_test.cpp
+1420043329 source:c:\pavel\ural_repo\ural\tests\functional_test.cpp
 	<ural/utility/tracers.hpp>
 	<ural/functional.hpp>
 	<ural/memory.hpp>

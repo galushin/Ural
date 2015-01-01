@@ -397,8 +397,10 @@ BOOST_AUTO_TEST_CASE(moved_test)
 
     for(auto & y : ys)
     {
-        xs1.emplace_back(ural::make_unique<int>(y));
-        xs2.emplace_back(ural::make_unique<int>(y));
+        auto constexpr f = ural::to_unique_ptr;
+
+        xs1.emplace_back(f(y));
+        xs2.emplace_back(f(y));
     }
 
     std::vector<Type> r_std;
@@ -752,6 +754,41 @@ BOOST_AUTO_TEST_CASE(unique_test_custom_predicate)
         = src | ural::uniqued(pred) | ural::to_container<std::basic_string>{};
 
     BOOST_CHECK_EQUAL(s_std, s_ural);
+}
+
+BOOST_AUTO_TEST_CASE(unique_sequence_move_only)
+{
+    std::forward_list<int> src{1, 2, 2, 2, 3, 3, 2, 2, 1};
+
+    typedef std::unique_ptr<int> Pointer;
+
+    std::vector<Pointer> v1;
+    std::vector<Pointer> v2;
+
+    for(auto & y : src)
+    {
+        auto constexpr f = ural::to_unique_ptr;
+
+        v1.emplace_back(f(y));
+        v2.emplace_back(f(y));
+    }
+
+    auto const eq = [](Pointer const & x, Pointer const & y)
+    {
+        return (!!x && !!y) ? (*x == *y) : (!x && !y);
+    };
+
+    auto const last = std::unique(v1.begin(), v1.end(), eq);
+
+    auto const r_ural
+        = v2 | ural::uniqued(eq) | ural::moved | ural::to_container<std::vector>{};
+
+    BOOST_CHECK_EQUAL(last - v1.begin(), r_ural.end() - r_ural.begin());
+
+    for(int i = 0; i < last - v1.begin(); ++ i)
+    {
+        BOOST_CHECK_EQUAL(*v1[i], *r_ural[i]);
+    }
 }
 
 // 25.3.10

@@ -22,6 +22,8 @@
  rvalue-ссылки
 */
 
+#include <ural/sequence/make.hpp>
+#include <ural/sequence/iterator_sequence.hpp>
 #include <ural/sequence/base.hpp>
 
 namespace ural
