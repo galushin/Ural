@@ -195,7 +195,7 @@ namespace ural
             // pos-n2+1 <= i <= pos
 
             auto const n2 = members_[ural::_2].size();
-            auto const i_min = std::max(pos - n2 + 1, 0LL);
+            auto const i_min = std::max(pos - n2 + 1, decltype(pos){0});
             auto const i_max = std::min(members_[ural::_1].size(), pos+1);
 
             for(size_t i = i_min; i < i_max; ++ i)

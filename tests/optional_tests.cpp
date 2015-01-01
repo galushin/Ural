@@ -1508,7 +1508,7 @@ BOOST_AUTO_TEST_CASE(optional_test)
 
         BOOST_CHECK(!x0);
 
-        BOOST_CHECK_EQUAL(0, Type::active_objects());
+        BOOST_CHECK_EQUAL(0U, Type::active_objects());
     }
     BOOST_CHECK_EQUAL(destroyed_old, Type::destroyed_objects());
 

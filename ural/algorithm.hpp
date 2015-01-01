@@ -971,12 +971,12 @@ namespace details
         impl(ForwardSequence in, Value const & value,
              BinaryPredicate pred) const
         {
-            typedef typename ForwardSequence::value_type Value;
+            typedef typename ForwardSequence::value_type value_type;
 
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
             BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<ForwardSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::WritableSequence<ForwardSequence, Value>));
-            BOOST_CONCEPT_ASSERT((concepts::Callable<BinaryPredicate, bool(Value, Value)>));
+            BOOST_CONCEPT_ASSERT((concepts::WritableSequence<ForwardSequence, value_type>));
+            BOOST_CONCEPT_ASSERT((concepts::Callable<BinaryPredicate, bool(value_type, Value)>));
 
             // @todo устранить дублирование, выделить алгоритмы
             auto out = ural::find(in, value, pred);

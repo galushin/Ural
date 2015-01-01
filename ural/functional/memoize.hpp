@@ -95,7 +95,6 @@ namespace ural
             {
                 auto y = this->target()(std::forward<As>(args)...);
                 pos = cache().insert(pos, std::make_pair(x, y));
-
             }
 
             return pos->second;
