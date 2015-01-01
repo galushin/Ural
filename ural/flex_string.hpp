@@ -25,6 +25,7 @@
  data_[this->size()] = 0
 */
 
+#include <ural/algorithm.hpp>
 #include <ural/utility.hpp>
 #include <ural/defs.hpp>
 
@@ -73,7 +74,7 @@ namespace ural
         string_allocator_storage(string_allocator_storage const & x)
          : string_allocator_storage{x.size(), x.get_allocator()}
         {
-            std::copy(x.begin(), x.end(), this->begin());
+            ural::copy(x, *this);
         }
 
         string_allocator_storage & operator=(string_allocator_storage const & x);

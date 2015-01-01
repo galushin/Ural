@@ -17,6 +17,8 @@ along with URAL.  If not, see <http://www.gnu.org/licenses/>.
 https://github.com/akrzemi1/Optional/blob/master/test_optional.cpp
 */
 
+#include <ural/algorithm.hpp>
+
 #include <boost/test/unit_test.hpp>
 #include <boost/concept/assert.hpp>
 
@@ -1841,7 +1843,7 @@ BOOST_AUTO_TEST_CASE(optional_inplace_ctor)
     BOOST_CHECK(!!y);
     BOOST_CHECK_EQUAL(n, y.value().size());
 
-    BOOST_CHECK(std::all_of(y->begin(), y->end(), [=](int x){ return x == filler; }));
+    BOOST_CHECK(ural::all_of(*y, [=](int x){ return x == filler; }));
 }
 
 BOOST_AUTO_TEST_CASE(optional_emplace_test)
