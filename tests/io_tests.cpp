@@ -16,6 +16,7 @@
 
 #include <ural/format.hpp>
 
+#include <ural/numeric/numbers_sequence.hpp>
 #include <ural/sequence/to.hpp>
 #include <ural/sequence/by_line.hpp>
 #include <ural/sequence/make.hpp>
@@ -25,6 +26,19 @@
 
 #include <forward_list>
 #include <sstream>
+
+BOOST_AUTO_TEST_CASE(to_string_test)
+{
+    for(auto n : ural::numbers(-100, 101))
+    {
+        std::ostringstream os;
+        os << n;
+
+        auto const s = ural::to_string(n);
+
+        BOOST_CHECK_EQUAL(s, os.str());
+    }
+}
 
 BOOST_AUTO_TEST_CASE(by_line_test)
 {

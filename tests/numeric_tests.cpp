@@ -739,10 +739,11 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_abs_less_test)
     }
 }
 
+#include <ural/format.hpp>
+
 BOOST_AUTO_TEST_CASE(MP_integer_10_mixed_equality_regression_1)
 {
-    BOOST_CHECK_EQUAL(boost::lexical_cast<std::string>(-100),
-                      boost::lexical_cast<std::string>(integer{-100}));
+    BOOST_CHECK_EQUAL(ural::to_string(-100), ural::to_string(integer{-100}));
 }
 
 BOOST_AUTO_TEST_CASE(MP_integer_10_multiplies_test)

@@ -232,6 +232,33 @@ namespace ural
 
         return result;
     }
+
+namespace details
+{
+    template <class T>
+    std::string to_string_impl(T const & x)
+    {
+        std::ostringstream os;
+        os << x;
+        return os.str();
+    }
+}
+//namespace details
+
+    /** @todo Оптимизированные перегрузки для отдельных типов, например, для
+    целых чисел
+    */
+    class to_string_functor
+    {
+    public:
+        template <class T>
+        std::string operator()(T const & x) const
+        {
+            return ::ural::details::to_string_impl(x);
+        }
+    };
+
+    auto constexpr to_string = to_string_functor{};
 }
 // namespace ural
 
