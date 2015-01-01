@@ -901,10 +901,10 @@
 	<ural/numeric.hpp>
 	<ural/sequence/all.hpp>
 
-1420079720 c:\pavel\ural_repo\ural\ural\numeric.hpp
+1420087759 c:\pavel\ural_repo\ural\ural\numeric.hpp
 	<ural/functional.hpp>
 	<ural/sequence/all.hpp>
-	<ural/numeric/numbers_range.hpp>
+	<ural/numeric/numbers_sequence.hpp>
 	<ural/numeric/partial_sums.hpp>
 	<ural/numeric/adjacent_differences.hpp>
 
@@ -6482,12 +6482,14 @@
 	<ural/sequence/base.hpp>
 	<string>
 
-1420023037 source:c:\pavel\ural_repo\ural\tests\math_tests.cpp
+1420089796 source:c:\pavel\ural_repo\ural\tests\math_tests.cpp
 	<boost/test/unit_test.hpp>
 	<boost/mpl/list.hpp>
 	<boost/operators.hpp>
 	<ural/math/common_factor.hpp>
 	<ural/math.hpp>
+	<ural/math/continued_fraction.hpp>
+	<ural/sequence/insertion.hpp>
 
 1416484565 c:\pavel\ural_repo\ural\ural\math\common_factor.hpp
 	<cmath>
@@ -12222,7 +12224,7 @@
 	<ural/algorithm.hpp>
 	<ural/sequence/reversed.hpp>
 
-1419996859 c:\pavel\ural_repo\ural\ural\math\continued_fraction.hpp
+1420089744 c:\pavel\ural_repo\ural\ural\math\continued_fraction.hpp
 	<ural/math/rational.hpp>
 	<cassert>
 
