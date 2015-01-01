@@ -426,11 +426,50 @@ namespace ural
         /// @brief Тип параметра
         class param_type
         {
+        friend class iid_adaptor;
+
+        friend bool operator==(param_type const & x, param_type const & y)
+        {
+            return x.base() == y.base() && x.count() == y.count();
+        }
+
         public:
             /// @brief Тип распределения
             typedef iid_adaptor distribution_type;
 
+            param_type()
+             : d_{}
+             , n_{1}
+            {}
+
+            explicit param_type(size_type n)
+             : d_{}
+             , n_{std::move(n)}
+            {}
+
+            explicit param_type(size_type n, Distribution const & d)
+             : d_{d}
+             , n_{std::move(n)}
+            {}
+
+            size_type count() const
+            {
+                return this->n_;
+            }
+
+            Distribution const & base() const
+            {
+                return this->d_;
+            }
+
         private:
+            void do_reset()
+            {
+                d_.reset();
+            }
+
+            Distribution d_;
+            size_type n_;
         };
 
         /** @brief Конструктор по-умолчанию
@@ -438,8 +477,7 @@ namespace ural
         @post <tt> this->base() == Distribution{} </tt>
         */
         iid_adaptor()
-         : result_{size_type{1}}
-         , d_{}
+         : param_{}
         {}
 
         /** @brief Конструктор
@@ -448,8 +486,7 @@ namespace ural
         @post <tt> this->base() == Distribution{} </tt>
         */
         explicit iid_adaptor(size_type n)
-         : result_(n)
-         , d_{}
+         : param_(n)
         {}
 
         /** @brief Конструктор
@@ -459,15 +496,14 @@ namespace ural
         @post <tt> this->base() == d </tt>
         */
         iid_adaptor(size_type n, Distribution const & d)
-         : result_(n)
-         , d_{d}
+         : param_(n, d)
         {}
 
         explicit iid_adaptor(param_type const & p);
 
         void reset()
         {
-            d_.reset();
+            param_.do_reset();
         }
 
         /** @brief Порождение значения
@@ -476,14 +512,17 @@ namespace ural
         с распределением <tt> this->base_distibution() </tt>
         */
         template <class URNG>
-        result_type const & operator()(URNG & g)
+        result_type operator()(URNG & g)
         {
-            ural::generate(result_, std::bind(std::ref(d_), std::ref(g)));
+            result_type result_(this->count());
+
+            ural::generate(result_, std::bind(std::ref(param_.d_), std::ref(g)));
+
             return result_;
         }
 
         template <class URNG>
-        result_type const & operator()(URNG & g, param_type const & p);
+        result_type operator()(URNG & g, param_type const & p);
 
         // Свойства
         result_type min URAL_PREVENT_MACRO_SUBSTITUTION () const;
@@ -494,20 +533,19 @@ namespace ural
         */
         size_type count() const
         {
-            return result_.size();
+            return param_.count();
         }
 
         Distribution const & base() const
         {
-            return d_;
+            return param_.base();
         }
 
         param_type param() const;
         void param(param_type const & p);
 
     private:
-        result_type result_;
-        Distribution d_;
+        param_type param_;
     };
 
     /** @brief Многомерное нормальное распределение
