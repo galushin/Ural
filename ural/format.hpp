@@ -235,10 +235,11 @@ namespace ural
 
 namespace details
 {
-    template <class T>
-    std::string to_string_impl(T const & x)
+    template <class OStream, class T>
+    decltype(std::declval<OStream>().str())
+    to_string_impl(T const & x)
     {
-        std::ostringstream os;
+        OStream os;
         os << x;
         return os.str();
     }
@@ -248,17 +249,21 @@ namespace details
     /** @todo Оптимизированные перегрузки для отдельных типов, например, для
     целых чисел
     */
+    template <class Char, class Traits = std::char_traits<Char>>
     class to_string_functor
     {
     public:
         template <class T>
-        std::string operator()(T const & x) const
+        std::basic_string<Char, Traits>
+        operator()(T const & x) const
         {
-            return ::ural::details::to_string_impl(x);
+            typedef std::basic_ostringstream<Char, Traits> OStream;
+            return ::ural::details::to_string_impl<OStream>(x);
         }
     };
 
-    auto constexpr to_string = to_string_functor{};
+    auto constexpr to_string = to_string_functor<char>{};
+    auto constexpr to_wstring = to_string_functor<wchar_t>{};
 }
 // namespace ural
 

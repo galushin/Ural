@@ -600,17 +600,14 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_zero_consitency)
     BOOST_CHECK_EQUAL(integer{0}, integer{});
 }
 
+#include <ural/format.hpp>
+
 BOOST_AUTO_TEST_CASE(MP_integer_10_ostreaming_zero)
 {
-    std::ostringstream os;
-    os << integer{0};
+    auto const zero = integer{0};
 
-    BOOST_CHECK_EQUAL(os.str(), "0");
-
-    std::wostringstream wos;
-    wos << integer{0};
-
-    BOOST_CHECK(wos.str() == L"0");
+    BOOST_CHECK_EQUAL(ural::to_string(zero), "0");
+    BOOST_CHECK(ural::to_wstring(zero) == L"0");
 }
 
 BOOST_AUTO_TEST_CASE(MP_integer_10_wide_ostreaming_test)
@@ -620,13 +617,7 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_wide_ostreaming_test)
     {
         auto const n_mp = integer{n};
 
-        std::wostringstream wos;
-        wos << n;
-
-        std::wostringstream wos_mp;
-        wos_mp << n_mp;
-
-        BOOST_CHECK(wos.str() == wos_mp.str());
+        BOOST_CHECK(ural::to_wstring(n) == ural::to_wstring(n_mp));
     }
 }
 
@@ -738,8 +729,6 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_abs_less_test)
         BOOST_CHECK_EQUAL(abs(a) < abs(b), abs_less(a_mp, b_mp));
     }
 }
-
-#include <ural/format.hpp>
 
 BOOST_AUTO_TEST_CASE(MP_integer_10_mixed_equality_regression_1)
 {

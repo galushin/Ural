@@ -40,6 +40,19 @@ BOOST_AUTO_TEST_CASE(to_string_test)
     }
 }
 
+BOOST_AUTO_TEST_CASE(to_wstring_test)
+{
+    for(auto n : ural::numbers(-100, 101))
+    {
+        std::wostringstream os;
+        os << n;
+
+        auto const s = ural::to_wstring(n);
+
+        BOOST_CHECK(s == os.str());
+    }
+}
+
 BOOST_AUTO_TEST_CASE(by_line_test)
 {
     std::vector<std::string> const z = {"Occupation", "Carpenter", "Blacksmith"};
