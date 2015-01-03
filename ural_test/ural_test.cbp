@@ -23,6 +23,7 @@
 				<Compiler>
 					<Add option="-fexpensive-optimizations" />
 					<Add option="-O3" />
+					<Add option="-std=gnu++11" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />

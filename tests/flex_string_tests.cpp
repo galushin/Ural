@@ -275,7 +275,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_n_char_and_allocator, String, Str
 
     String const s(n, C, a);
 
-    typedef typename String::allocator_type Alloc;
     typedef typename String::traits_type Traits;
 
     BOOST_CHECK_EQUAL(a.id(), s.get_allocator().id());
@@ -480,7 +479,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_resize_less_default, String, Strings_l
 
     s.resize(4);
 
-    BOOST_CHECK_EQUAL(4, s.size());
+    BOOST_CHECK_EQUAL(4U, s.size());
 
     BOOST_CHECK_EQUAL("Step", s.c_str());
 }

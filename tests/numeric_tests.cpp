@@ -14,6 +14,7 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <ural/format.hpp>
 #include <ural/numeric/matrix.hpp>
 #include <ural/algorithm.hpp>
 #include <ural/numeric.hpp>
@@ -202,7 +203,7 @@ BOOST_AUTO_TEST_CASE(polynomial_init_test_leading_zeros)
     typedef ural::polynomial<int, double> Polynom;
     auto const P = Polynom{0, 1, 2};
 
-    BOOST_CHECK_EQUAL(1, P.degree());
+    BOOST_CHECK_EQUAL(1U, P.degree());
     BOOST_CHECK_EQUAL(2, P[0]);
     BOOST_CHECK_EQUAL(1, P[1]);
 }
@@ -321,7 +322,7 @@ BOOST_AUTO_TEST_CASE(polynomial_unary_minus_test)
     BOOST_CHECK(P1 != P);
 
     BOOST_CHECK_EQUAL(P1.degree(), P.degree());
-    BOOST_CHECK_EQUAL(P1.degree(), 1);
+    BOOST_CHECK_EQUAL(P1.degree(), 1U);
     BOOST_CHECK_EQUAL(P1[0], -P[0]);
     BOOST_CHECK_EQUAL(P1[1], -P[1]);
 }
@@ -344,7 +345,7 @@ BOOST_AUTO_TEST_CASE(newton_interpolation_test)
 
     ural::newton_polynomial<double> P{};
 
-    BOOST_CHECK_EQUAL(0, P.degree());
+    BOOST_CHECK_EQUAL(0U, P.degree());
 
     BOOST_CHECK_EQUAL(0.0, P(x1));
     BOOST_CHECK_EQUAL(0.0, P(x2));
@@ -554,8 +555,8 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_init_negative)
 
     BOOST_CHECK_EQUAL(x, x_mp);
 
-    auto const x_s = boost::lexical_cast<std::string>(x);
-    auto const x_mp_s = boost::lexical_cast<std::string>(x_mp);
+    auto const x_s = ural::to_string(x);
+    auto const x_mp_s = ural::to_string(x_mp);
 
     BOOST_CHECK_EQUAL(x_s, x_mp_s);
 

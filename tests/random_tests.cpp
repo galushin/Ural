@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_default_ctor_test)
     typedef ural::discrete_distribution<> D;
     D d;
     std::vector<double> p = d.probabilities();
-    BOOST_CHECK_EQUAL(1, p.size());
+    BOOST_CHECK_EQUAL(1U, p.size());
     BOOST_CHECK_EQUAL(1, p[0]);
 }
 
@@ -256,7 +256,7 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_ctor_init_list_test)
     {
         D d = {};
         std::vector<double> p = d.probabilities();
-        BOOST_CHECK_EQUAL(p.size(), 1);
+        BOOST_CHECK_EQUAL(p.size(), 1U);
         BOOST_CHECK_EQUAL(p[0], 1);
     }
     {
@@ -388,7 +388,7 @@ namespace
 
         std::vector<typename Distribution::result_type> u(d.max()+1);
 
-        for (int i = 0; i < N; ++i)
+        for (size_t i = 0; i < N; ++i)
         {
             typename Distribution::result_type v = d(g);
             BOOST_CHECK(d.min() <= v && v <= d.max());
@@ -396,7 +396,7 @@ namespace
         }
 
         std::vector<double> prob = d.probabilities();
-        for (int i = 0; i <= d.max(); ++i)
+        for (size_t i = 0; i <= d.max(); ++i)
             BOOST_CHECK_EQUAL((double)u[i]/N, prob[i]);
     }
 
@@ -411,7 +411,7 @@ namespace
         {
             auto v = *s;
 
-            assert(0 <= v && v < prob.size());
+            assert(0U <= v && v < prob.size());
 
             ++ u[v];
             ++ N;
@@ -419,7 +419,7 @@ namespace
 
         double chi_square = {0.0};
 
-        for(int i = 0; i < u.size(); ++i)
+        for(size_t i = 0; i < u.size(); ++i)
         {
             if(prob[i] != 0)
             {
@@ -466,7 +466,7 @@ namespace
 BOOST_AUTO_TEST_CASE(discrete_distribution_eval_test)
 {
     typedef ural::discrete_distribution<> D;
-    typedef std::minstd_rand G;
+    // typedef std::minstd_rand G;
 
     test_discrete_distribution_exact(D{}, 100);
     test_discrete_distribution_exact(D{.3}, 100);
