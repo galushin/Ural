@@ -327,3 +327,17 @@ BOOST_AUTO_TEST_CASE(nth_prime_test_PE_7)
     BOOST_CHECK_EQUAL(primes[6-1], 13);
     BOOST_CHECK_EQUAL(primes.back(), 104743);
 }
+
+#include <ural/numeric.hpp>
+BOOST_AUTO_TEST_CASE(primes_below_PE_10)
+{
+    typedef long long Integer;
+
+    auto const primes_10 = ural::make_primes_below(Integer{10});
+
+    BOOST_CHECK_EQUAL(ural::accumulate(primes_10, Integer{0}), 17);
+
+    auto const primes_2M = ural::make_primes_below(Integer{2000000});
+
+    BOOST_CHECK_EQUAL(ural::accumulate(primes_2M, Integer{0}), 142913828922);
+}
