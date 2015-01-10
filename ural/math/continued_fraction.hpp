@@ -47,8 +47,8 @@ namespace ural
 
         void update(IntType const & a)
         {
-            auto h = a * h_1 + h_2;
-            auto k = a * k_1 + k_2;
+            IntType h = a * h_1 + h_2;
+            IntType k = a * k_1 + k_2;
 
             h_2 = std::move(h_1);
             k_2 = std::move(k_1);
