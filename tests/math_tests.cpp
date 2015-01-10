@@ -341,3 +341,31 @@ BOOST_AUTO_TEST_CASE(square_root_23_as_continued_fraction)
     BOOST_CHECK_EQUAL_COLLECTIONS(a.begin(), a.end(),
                                   a_expected.begin(), a_expected.end());
 }
+
+#include <ural/math/primes.hpp>
+BOOST_AUTO_TEST_CASE(nth_prime_test_PE_7)
+{
+    typedef long Integer;
+
+    auto const N = 10001U;
+
+    auto const primes = ural::make_first_n_primes<Integer>(N);
+
+    BOOST_CHECK_EQUAL(primes.size(), N);
+    BOOST_CHECK_EQUAL(primes[6-1], 13);
+    BOOST_CHECK_EQUAL(primes.back(), 104743);
+}
+
+#include <ural/numeric.hpp>
+BOOST_AUTO_TEST_CASE(primes_below_PE_10)
+{
+    typedef long long Integer;
+
+    auto const primes_10 = ural::make_primes_below(Integer{10});
+
+    BOOST_CHECK_EQUAL(ural::accumulate(primes_10, Integer{0}), 17);
+
+    auto const primes_2M = ural::make_primes_below(Integer{2000000});
+
+    BOOST_CHECK_EQUAL(ural::accumulate(primes_2M, Integer{0}), 142913828922);
+}

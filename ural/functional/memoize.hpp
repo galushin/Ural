@@ -34,6 +34,7 @@ namespace ural
 
     @todo Тесты с различными типами аргументов
     @todo Возможность очищать кэш и управлять его ёмкостью
+    @todo Использовать по умолчанию в качестве контейнера boost::flat_map или аналог
     */
     template <class Signature, class F,
               class Threading = use_default,
@@ -94,7 +95,7 @@ namespace ural
             if(pos == this->cache().end() || pos->first != x)
             {
                 auto y = this->target()(std::forward<As>(args)...);
-                pos = cache().insert(pos, std::make_pair(x, y));
+                pos = cache().emplace_hint(pos, std::move(x), std::move(y));
             }
 
             return pos->second;

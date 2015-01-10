@@ -208,7 +208,7 @@ namespace ural
         {
             assert(typeid(E) == typeid(e));
 
-            return expected::from_exception(std::copy_exception(e));
+            return expected::from_exception(std::make_exception_ptr<E>(e));
         }
         //@}
 

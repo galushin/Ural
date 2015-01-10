@@ -149,7 +149,7 @@ BOOST_AUTO_TEST_CASE(moved_backward_test_unique_ptr)
     std::move_backward(xs1.begin(), xs1.end() - 1, xs1.end());
 
     auto src = ural::make_iterator_sequence(xs2.begin(), xs2.end() - 1);
-    ural::copy(src | ural::moved | ural::reversed, xs2 | ural::reversed);
+    ural::copy(src | ural::reversed | ural::moved, xs2 | ural::reversed);
 
     for(size_t i = 0; i < xs1.size(); ++ i)
     {

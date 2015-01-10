@@ -224,8 +224,11 @@ namespace concepts
         /// @brief Примеры использования
         BOOST_CONCEPT_USAGE(Callable)
         {
-            typedef decltype(static_cast<R>(f_(std::declval<Args>()...)))
-                result_type;
+            // @todo Убрать static_cast, чтобы требовать неявное преобразование
+            typedef decltype(static_cast<R>(f_(std::declval<Args>()...))) result_type;
+
+            // Подавляем предупреждение компилятора
+            static_assert(std::is_convertible<result_type, R>::value, "");
         }
 
     private:

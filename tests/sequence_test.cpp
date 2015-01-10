@@ -215,7 +215,7 @@ BOOST_AUTO_TEST_CASE(all_tuples_test)
         r2.insert(t[ural::_1] * 10 + t[ural::_2]);
     }
 
-    BOOST_CHECK_EQUAL(100, r2.size());
+    BOOST_CHECK_EQUAL(100U, r2.size());
     BOOST_CHECK_EQUAL(0,  *r2.begin());
     BOOST_CHECK_EQUAL(99, *r2.rbegin());
 }

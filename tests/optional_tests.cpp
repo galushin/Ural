@@ -1051,8 +1051,8 @@ BOOST_AUTO_TEST_CASE(optional_ref_assign)
 BOOST_AUTO_TEST_CASE(optional_vector_swap_member)
 {
     typedef std::vector<int> Type;
-    std::vector<int> const z1 = {1, 3, 5};
-    std::vector<int> const z2 = {2, 4};
+    Type const z1 = {1, 3, 5};
+    Type const z2 = {2, 4};
 
     auto o1 = ural::make_optional(z1);
     auto o2 = ural::make_optional(z2);
@@ -1066,8 +1066,8 @@ BOOST_AUTO_TEST_CASE(optional_vector_swap_member)
 BOOST_AUTO_TEST_CASE(optional_vector_swap_free)
 {
     typedef std::vector<int> Type;
-    std::vector<int> const z1 = {1, 3, 5};
-    std::vector<int> const z2 = {2, 4};
+    Type const z1 = {1, 3, 5};
+    Type const z2 = {2, 4};
 
     auto o1 = ural::make_optional(z1);
     auto o2 = ural::make_optional(z2);
@@ -1082,8 +1082,8 @@ BOOST_AUTO_TEST_CASE(optional_vector_swap_free)
 BOOST_AUTO_TEST_CASE(optional_vector_swap_free_strict)
 {
     typedef std::vector<int> Type;
-    std::vector<int> const z1 = {1, 3, 5};
-    std::vector<int> const z2 = {2, 4};
+    Type const z1 = {1, 3, 5};
+    Type const z2 = {2, 4};
 
     auto o1 = ural::make_optional(z1);
     auto o2 = ural::make_optional(z2);
@@ -1518,7 +1518,7 @@ BOOST_AUTO_TEST_CASE(optional_test)
 
         BOOST_CHECK(!!x0);
 
-        BOOST_CHECK_EQUAL(1, Type::active_objects());
+        BOOST_CHECK_EQUAL(1U, Type::active_objects());
     }
     BOOST_CHECK_EQUAL(destroyed_old + 1, Type::destroyed_objects());
 }
