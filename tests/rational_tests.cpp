@@ -15,6 +15,7 @@
  *  extended, by Paul Moore, with permission.
  */
 
+#include <ural/format.hpp>
 #include <ural/math/rational.hpp>
 
 #include <ostream>
@@ -670,6 +671,17 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_output_test, T, all_signed_test_types )
 
     oss << ural::rational<T>( 44, 14 );
     BOOST_CHECK_EQUAL( oss.str(), "22/7" );
+
+    // n/1 выводится как n
+    auto const n = T{42};
+    auto const x = ural::rational<T>{n};
+
+    auto const n_s = ural::to_string(n);
+
+    std::ostringstream x_os;
+    x_os << x;
+
+    BOOST_CHECK_EQUAL(n_s, x_os.str());
 }
 
 // Input test, failing

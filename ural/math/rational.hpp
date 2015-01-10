@@ -530,7 +530,14 @@ namespace ural
     std::basic_ostream<Char, Tr> &
     operator<<(std::basic_ostream<Char, Tr> & os, rational<T> const & x)
     {
-        return os << x.numerator() << "/" << x.denominator();
+        os << x.numerator();
+
+        if(x.denominator() != 1)
+        {
+            os << "/" << x.denominator();
+        }
+
+        return os;
     }
 
     // Преобразование
