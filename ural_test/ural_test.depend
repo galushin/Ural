@@ -6606,7 +6606,7 @@
 	<ural/sequence/base.hpp>
 	<string>
 
-1420110641 source:c:\devtools\github\ural\tests\math_tests.cpp
+1420877115 source:c:\devtools\github\ural\tests\math_tests.cpp
 	<boost/test/unit_test.hpp>
 	<boost/mpl/list.hpp>
 	<boost/operators.hpp>
@@ -12233,7 +12233,8 @@
 
 1418693863 source:c:\devtools\ural_repo\ural\tests\rational_tests_2.cpp
 
-1420110641 c:\devtools\github\ural\ural\math\continued_fraction.hpp
+1420877450 c:\devtools\github\ural\ural\math\continued_fraction.hpp
+	<ural/sequence/make.hpp>
 	<ural/math/rational.hpp>
 	<cassert>
 

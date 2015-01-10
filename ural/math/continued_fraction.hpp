@@ -21,6 +21,7 @@
  @brief Классы и функции, связанные с цепными дробями.
 */
 
+#include <ural/sequence/make.hpp>
 #include <ural/math/rational.hpp>
 #include <cassert>
 
@@ -63,39 +64,63 @@ namespace ural
         IntType k_2;
     };
 
-    template <class IntType, class Output>
-    Output sqrt_as_continued_fraction(IntType N, Output out)
+    class sqrt_as_continued_fraction_functor
     {
-        // @todo обойтись без вещественных функций
-        using std::sqrt;
-        IntType const a_0 = sqrt(N);
-
-        *out = a_0;
-
-        IntType x = a_0;
-        IntType denom = 1;
-
-        for(;;)
+    public:
+        template <class IntType, class OutputTraversable>
+        auto operator()(IntType N, OutputTraversable && out) const
+        -> decltype(sequence(std::forward<OutputTraversable>(out)))
         {
-            // denom / (sqrt(N) - x) = (sqrt(N) + x) * denom / (N - x^2)
-            auto const new_denom = (N - x * x) / denom;
-
-            auto const a_new = (a_0 + x) / new_denom;
-
-            *out = a_new;
-
-            x = (a_new * new_denom - x);
-
-            denom = new_denom;
-
-            if(denom == 1 && x == a_0)
-            {
-                break;
-            }
+            return impl(std::move(N), sequence(std::forward<OutputTraversable>(out)));
         }
 
-        return out;
-    }
+    private:
+        template <class IntType, class Output>
+        Output impl(IntType N, Output out) const
+        {
+            // @todo обойтись без вещественных функций
+            using std::sqrt;
+            IntType const a_0 = sqrt(N);
+
+            assert(!!out);
+            *out = a_0;
+            ++ out;
+
+            IntType x = a_0;
+            IntType denom = 1;
+
+            if(ural::square(x) == N)
+            {
+                return out;
+            }
+
+            for(;;)
+            {
+                // denom / (sqrt(N) - x) = (sqrt(N) + x) * denom / (N - x^2)
+                auto const new_denom = (N - x * x) / denom;
+
+                auto const a_new = (a_0 + x) / new_denom;
+
+                assert(!!out);
+                *out = a_new;
+                ++ out;
+
+                x = (a_new * new_denom - x);
+
+                denom = new_denom;
+
+                if(denom == 1 && x == a_0)
+                {
+                    break;
+                }
+            }
+
+            return out;
+        }
+    };
+
+    auto constexpr sqrt_as_continued_fraction
+        = sqrt_as_continued_fraction_functor{};
 }
 // namespace ural
 

@@ -300,7 +300,7 @@ BOOST_AUTO_TEST_CASE(natural_power_constexpr_with_plus_test)
 #include <ural/math/continued_fraction.hpp>
 #include <ural/sequence/insertion.hpp>
 
-BOOST_AUTO_TEST_CASE(square_root_23_as_continued_fraction)
+BOOST_AUTO_TEST_CASE(square_root_23_as_continued_fraction_back_inserter)
 {
     auto const N = 23;
 
@@ -309,6 +309,34 @@ BOOST_AUTO_TEST_CASE(square_root_23_as_continued_fraction)
     std::vector<int> const a_expected = {4, 1, 3, 1, 8};
 
     ural::sqrt_as_continued_fraction(N, a | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(a.begin(), a.end(),
+                                  a_expected.begin(), a_expected.end());
+}
+
+BOOST_AUTO_TEST_CASE(square_root_16_as_continued_fraction_back_inserter)
+{
+    auto const N = 16;
+
+    std::vector<int> a;
+
+    std::vector<int> const a_expected = {4};
+
+    ural::sqrt_as_continued_fraction(N, a | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(a.begin(), a.end(),
+                                  a_expected.begin(), a_expected.end());
+}
+
+BOOST_AUTO_TEST_CASE(square_root_23_as_continued_fraction)
+{
+    auto const N = 23;
+
+    std::vector<int> const a_expected = {4, 1, 3, 1, 8};
+
+    std::vector<int> a(a_expected.size(), 0);
+
+    ural::sqrt_as_continued_fraction(N, a);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(a.begin(), a.end(),
                                   a_expected.begin(), a_expected.end());
