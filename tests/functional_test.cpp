@@ -122,8 +122,8 @@ BOOST_AUTO_TEST_CASE(replace_functor_test_custom_predicate)
 BOOST_AUTO_TEST_CASE(compare_by_test)
 {
     auto tr = [](int a) { return std::abs(a); };
-    auto cmp1 = [=](int a, int b) {return tr(a) < tr(b);};
-    auto cmp2 = ural::compare_by(tr);
+    auto const cmp1 = [=](int a, int b) {return tr(a) < tr(b);};
+    auto const cmp2 = ural::compare_by(tr);
 
     BOOST_CHECK(cmp2 == cmp2);
     BOOST_CHECK(!(cmp2 != cmp2));

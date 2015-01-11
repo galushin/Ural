@@ -74,3 +74,37 @@ BOOST_AUTO_TEST_CASE(complex_tuple_access_assign_test)
     BOOST_CHECK_EQUAL(x_new, ural::get(z, ural::_1));
     BOOST_CHECK_EQUAL(y_new, ural::get(z, ural::_2));
 }
+
+BOOST_AUTO_TEST_CASE(tuple_uniform_access_test)
+{
+    auto const n = 42;
+    auto const s = "abc";
+    auto const c = "!";
+
+    auto const x = std::make_tuple(n, s, c);
+
+    BOOST_CHECK_EQUAL(n, ural::get(x, ural::_1));
+    BOOST_CHECK_EQUAL(s, ural::get(x, ural::_2));
+    BOOST_CHECK_EQUAL(c, ural::get(x, ural::_3));
+}
+
+BOOST_AUTO_TEST_CASE(tuple_uniform_nonconst_access_test)
+{
+    auto const n = 42;
+    auto const s = "abc";
+    auto const c = "!";
+
+    auto x = std::make_tuple(n, s, c);
+
+    BOOST_CHECK_EQUAL(n, ural::get(x, ural::_1));
+    BOOST_CHECK_EQUAL(s, ural::get(x, ural::_2));
+    BOOST_CHECK_EQUAL(c, ural::get(x, ural::_3));
+
+    auto const n_new = 13;
+
+    ural::get(x, ural::_1) = n_new;
+
+    BOOST_CHECK_EQUAL(n_new, ural::get(x, ural::_1));
+    BOOST_CHECK_EQUAL(s, ural::get(x, ural::_2));
+    BOOST_CHECK_EQUAL(c, ural::get(x, ural::_3));
+}

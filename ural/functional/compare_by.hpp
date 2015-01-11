@@ -38,7 +38,10 @@ namespace ural
         typedef boost::compressed_pair<UnaryFunction, Compare> Base;
 
     public:
+        /// @brief Тип функции сравнения (для свойства)
         typedef Compare compare_type;
+
+        /// @brief Тип возвращаемого значения
         typedef bool result_type;
 
         /** @brief Конструктор
@@ -48,7 +51,7 @@ namespace ural
         @post <tt> this->compare() == compare_type{} </tt>
         */
         explicit comparer_by(UnaryFunction f)
-         : Base{std::move(f)}
+         : Base{std::move(f), compare_type{}}
         {}
 
         /** @brief Конструктор
@@ -82,7 +85,7 @@ namespace ural
         */
         UnaryFunction const & transformation() const
         {
-            return Base::first();
+            return ural::get(static_cast<Base const &>(*this), ural::_1);
         }
 
         /** @brief Функциональный объект, сравнивающий свойства объектов.
@@ -90,7 +93,7 @@ namespace ural
         */
         Compare const & compare() const
         {
-            return Base::second();
+            return ural::get(static_cast<Base const &>(*this), ural::_2);
         }
     };
 

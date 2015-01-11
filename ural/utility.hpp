@@ -264,11 +264,17 @@ namespace ural
     */
     template <class... Types, size_t Index>
     typename std::tuple_element<Index, std::tuple<Types...>>::type &
-    get(std::tuple<Types...> & t, placeholder<Index>);
+    get(std::tuple<Types...> & t, placeholder<Index>)
+    {
+        return std::get<Index>(t);
+    }
 
     template <class... Types, size_t Index>
     typename std::tuple_element<Index, std::tuple<Types...>>::type const &
-    get(std::tuple<Types...> const & t, placeholder<Index>);
+    get(std::tuple<Types...> const & t, placeholder<Index>)
+    {
+        return std::get<Index>(t);
+    }
 
     template <class... Types, size_t Index>
     typename std::tuple_element<Index, std::tuple<Types...>>::type &&
