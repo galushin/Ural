@@ -144,7 +144,7 @@ namespace ural
         */
         explicit constexpr rational(IntegerType num, IntegerType denom)
          : Base(denom < 0 ? - std::move(num) : std::move(num),
-                denom != 0 ? absolute_value(denom) : throw bad_rational{},
+                denom != 0 ? absolute_value(std::move(denom)) : throw bad_rational{},
                 ural::gcd(num, denom))
         {}
 
@@ -296,9 +296,8 @@ namespace ural
     template <class T>
     constexpr rational<T> abs(rational<T> x)
     {
-        // @todo Оптимизация
-        return rational<T>(x.numerator() < T{0} ? - x.numerator() : x.numerator(),
-                           x.denominator());
+        // @todo Оптимизация - модуль вместо условной конструкции?
+        return x.numerator() < T{0} ? -std::move(x) : std::move(x);
     }
 
     /** @brief Унарный плюс
@@ -316,7 +315,7 @@ namespace ural
     template <class T>
     constexpr rational<T> operator-(rational<T> x)
     {
-        // @todo Оптимизация?
+        // @todo Оптимизация - сокращение точно не нужно
         return rational<T>(-x.numerator(), x.denominator());
     }
 

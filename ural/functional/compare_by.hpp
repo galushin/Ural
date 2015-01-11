@@ -135,6 +135,18 @@ namespace ural
         typedef comparer_by<decltype(make_functor(std::move(f)))> Functor;
         return Functor(make_functor(std::move(f)));
     }
+
+    /** @brief Создание функционального объекта, проверяющего равенство двух
+    объектов по заданному свойству
+    @param f функциональный объект, задающая свойство, по которому
+    сравниваются аргументы.
+    */
+    template <class UnaryFunction>
+    auto equal_by(UnaryFunction f)
+    -> decltype(compare_by(std::move(f), ural::equal_to<>{}))
+    {
+        return compare_by(std::move(f), ural::equal_to<>{});
+    }
 }
 // namespace ural
 

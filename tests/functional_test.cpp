@@ -135,6 +135,24 @@ BOOST_AUTO_TEST_CASE(compare_by_test)
     }
 }
 
+BOOST_AUTO_TEST_CASE(equals_by_test)
+{
+    typedef std::pair<int, int> Pair;
+
+    auto eq = ural::equal_by(&Pair::first);
+
+    Pair p11{1, 1};
+    Pair p21{2, 1};
+    Pair p12{1, 2};
+    Pair p22{2, 2};
+
+    BOOST_CHECK(eq(p11, p12) == true);
+    BOOST_CHECK(eq(p11, p21) == false);
+
+    BOOST_CHECK(eq(p21, p22) == true);
+    BOOST_CHECK(eq(p12, p22) == false);
+}
+
 BOOST_AUTO_TEST_CASE(compare_by_test_custom_compare)
 {
     auto tr = [](int a) { return std::abs(a); };
