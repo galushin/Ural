@@ -107,6 +107,7 @@
 		<Unit filename="../ural/numeric/interpolation.hpp" />
 		<Unit filename="../ural/numeric/matrix.hpp" />
 		<Unit filename="../ural/numeric/matrix_decomposition.hpp" />
+		<Unit filename="../ural/numeric/mp/integer.hpp" />
 		<Unit filename="../ural/numeric/mp/integer_10.hpp" />
 		<Unit filename="../ural/numeric/numbers_sequence.hpp" />
 		<Unit filename="../ural/numeric/partial_sums.hpp" />

@@ -622,6 +622,30 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_wide_ostreaming_test)
     }
 }
 
+BOOST_AUTO_TEST_CASE(MP_integer_16_ostreaming)
+{
+    auto const n = 0xA7;
+    auto const n_mp = ural::integer<16>(n);
+
+    std::ostringstream os;
+    os << std::hex << n;
+
+    BOOST_CHECK_EQUAL(os.str(), ural::to_string(n_mp));
+}
+
+BOOST_AUTO_TEST_CASE(MP_integer_16_ostreaming_negative)
+{
+    auto const n = -0xA7;
+    auto const n_mp = ural::integer<16>(n);
+
+    BOOST_CHECK(n < 0);
+
+    std::ostringstream os;
+    os << std::hex << abs(n);
+
+    BOOST_CHECK_EQUAL('-' + os.str(), ural::to_string(n_mp));
+}
+
 BOOST_AUTO_TEST_CASE(MP_integer_10_reminder_regression_1)
 {
     auto x_mp = integer{10143};
