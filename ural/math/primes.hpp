@@ -37,6 +37,63 @@
 
 namespace ural
 {
+    /** @brief Функциональный объект, для проверки того, что число является
+    простым
+
+    Заметим, что эту функцию не следует использовать во всех случаях. Если
+    нужно проверять простоту большого количества чисел, то может оказаться более
+    целесообразным построение списка простых чисел.
+    */
+    class is_prime_f
+    {
+    public:
+        /** @brief Проверка простоты числа
+        @eturn @b true, если @c x --- простое число, иначе --- @b false
+        */
+        template <class IntType>
+        bool operator()(IntType const & x) const
+        {
+            if(x == IntType{1})
+            {
+                return false;
+            }
+
+            if(x == IntType{2} || x == IntType{3})
+            {
+                return true;
+            }
+
+            if(x % IntType(2) == 0)
+            {
+                return false;
+            }
+
+            if(x % IntType(3) == 0)
+            {
+                return false;
+            }
+
+            auto const step = IntType{2};
+
+            for(auto d = IntType(5);; d += step)
+            {
+                if(ural::square(d) > x)
+                {
+                    break;
+                }
+
+                if(x % d == 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    };
+
+    auto constexpr is_prime = is_prime_f{};
+
     /** @brief Проверяет, что @c x является взаимно простым с элементами
     @c ds
     @param x число
@@ -61,7 +118,7 @@ namespace ural
                     break;
                 }
 
-                if(ural::gcd(x, value) != IntType{1})
+                if((x % value) == 0)
                 {
                     return false;
                 }

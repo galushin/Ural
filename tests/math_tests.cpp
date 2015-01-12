@@ -369,3 +369,41 @@ BOOST_AUTO_TEST_CASE(primes_below_PE_10)
 
     BOOST_CHECK_EQUAL(ural::accumulate(primes_2M, Integer{0}), 142913828922);
 }
+
+BOOST_AUTO_TEST_CASE(is_prime_test_PE_58)
+{
+    typedef long long Integer;
+
+    Integer n_max_old = 1;
+
+    size_t primes_on_diagonal = 0;
+
+    auto lenght = Integer{1};
+
+    for(auto h = Integer{1};; ++ h)
+    {
+        lenght = 2 * h + 1;
+        auto const step   = 2 * h;
+        auto const n_max = ural::square(lenght);
+
+        auto const diagonals = 1 + 4 * h;
+
+        // Проверяем диагонали
+        for(size_t k = 1; k <= 4; ++ k)
+        {
+            primes_on_diagonal += ural::is_prime(n_max_old + k * step);
+        }
+
+        auto const r = double(primes_on_diagonal) / diagonals;
+
+        if(r < 0.1)
+        {
+            break;
+        }
+
+        // Переход к следующей итерации
+        n_max_old = n_max;
+    }
+
+    BOOST_CHECK_EQUAL(26241, lenght);
+}
