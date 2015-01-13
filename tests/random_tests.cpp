@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_param_default_ctor_test)
     typedef D::param_type P;
     P pa = {1};
     std::vector<double> p = pa.probabilities();
-    BOOST_CHECK_EQUAL(1, p.size());
+    BOOST_CHECK_EQUAL(1U, p.size());
     BOOST_CHECK_EQUAL(1, p[0]);
 }
 
@@ -224,7 +224,7 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_func_ctor_test)
     {
         D d(0, 0, 1, fw);
         std::vector<double> p = d.probabilities();
-        BOOST_CHECK_EQUAL(1, p.size());
+        BOOST_CHECK_EQUAL(1U, p.size());
         BOOST_CHECK_EQUAL(1, p[0]);
     }
     {
@@ -262,27 +262,27 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_ctor_init_list_test)
     {
         D d = {10};
         std::vector<double> p = d.probabilities();
-        BOOST_CHECK_EQUAL(p.size(), 1);
+        BOOST_CHECK_EQUAL(p.size(), 1U);
         BOOST_CHECK_EQUAL(p[0], 1);
     }
     {
         D d = {10, 30};
         std::vector<double> p = d.probabilities();
-        BOOST_CHECK_EQUAL(p.size(), 2);
+        BOOST_CHECK_EQUAL(p.size(), 2U);
         BOOST_CHECK_EQUAL(p[0], 0.25);
         BOOST_CHECK_EQUAL(p[1], 0.75);
     }
     {
         D d = {30, 10};
         std::vector<double> p = d.probabilities();
-        BOOST_CHECK_EQUAL(p.size(), 2);
+        BOOST_CHECK_EQUAL(p.size(), 2U);
         BOOST_CHECK_EQUAL(p[0], 0.75);
         BOOST_CHECK_EQUAL(p[1], 0.25);
     }
     {
         D d = {30, 0, 10};
         std::vector<double> p = d.probabilities();
-        BOOST_CHECK_EQUAL(p.size(), 3);
+        BOOST_CHECK_EQUAL(p.size(), 3U);
         BOOST_CHECK_EQUAL(p[0], 0.75);
         BOOST_CHECK_EQUAL(p[1], 0);
         BOOST_CHECK_EQUAL(p[2], 0.25);
@@ -471,7 +471,7 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_eval_test)
     test_discrete_distribution_exact(D{}, 100);
     test_discrete_distribution_exact(D{.3}, 100);
 
-    const int N = 100;
+    auto const N = 100U;
     const double eps = 1e-6;
     typedef std::vector<double> Weights;
     test_discrete_distribution_approx(Weights{.75, .25}, N, eps);

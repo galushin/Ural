@@ -430,7 +430,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_resize_less, String, Strings_list)
 {
     String s = "Stepanov";
 
-    auto const n = 4;
+    auto const n = 4U;
 
     s.resize(n, 'a');
 
@@ -525,7 +525,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_reserve, String, Strings_list)
     String fs;
     std::string s;
 
-    auto const n = 10;
+    auto const n = 10U;
     fs.reserve(n);
 
     BOOST_CHECK_GE(fs.capacity(), n);

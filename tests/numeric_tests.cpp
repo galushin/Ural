@@ -428,8 +428,8 @@ BOOST_AUTO_TEST_CASE(qr_decomposition_test_init_list)
     ural::matrix<double> const A
         = {{12, -51, 4}, {6, 167, -68}, {-4, 24, -41}};
 
-    BOOST_CHECK_EQUAL(3, A.size1());
-    BOOST_CHECK_EQUAL(3, A.size2());
+    BOOST_CHECK_EQUAL(3U, A.size1());
+    BOOST_CHECK_EQUAL(3U, A.size2());
 
     auto QR = ural::QR_decomposition(A);
     auto Q = QR[ural::_1];
