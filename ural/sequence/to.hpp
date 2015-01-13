@@ -50,6 +50,7 @@ namespace ural
 
         auto s = sequence(std::forward<Sequence>(seq));
 
+        // @todo Можно ли здесь использовать begin(move(s))?
         return Container<Value>(begin(s), end(s));
     }
 

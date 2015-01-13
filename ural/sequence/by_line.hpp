@@ -21,6 +21,7 @@
  @brief Последовательность строк потока ввода
 */
 
+#include <ural/format/stream_traits.hpp>
 #include <ural/sequence/base.hpp>
 
 #include <string>
@@ -41,14 +42,19 @@ namespace ural
     class by_line_sequence
      : public sequence_base<by_line_sequence<IStream>>
     {
-        typedef typename IStream::char_type char_type;
     public:
         // Типы
+        /// @brief Тип потока ввода
+        typedef typename std::remove_reference<IStream>::type stream_type;
+
+        /// @brief Тип символа
+        typedef typename stream_traits<stream_type>::char_type char_type;
+
         /// @brief Категория обхода
         typedef single_pass_traversal_tag traversal_tag;
 
         /// @brief Тип значения
-        typedef std::basic_string<char_type> value_type;
+        typedef typename stream_traits<stream_type>::string_type value_type;
 
         /// @brief Тип ссылки
         typedef value_type const & reference;
@@ -57,7 +63,7 @@ namespace ural
         typedef value_type const * pointer;
 
         /// @brief Тип расстояния
-        typedef typename IStream::off_type distance_type;
+        typedef typename stream_type::off_type distance_type;
 
         // Конструкторы
         /** @brief Конструктор
@@ -66,15 +72,18 @@ namespace ural
         @param kd флаг, показывающий, нужно ли сохранять символ-разделитель в
         конце строки.
         */
-        explicit by_line_sequence(IStream & is,
+        explicit by_line_sequence(IStream && is,
                                   char_type delimeter = char_type('\n'),
                                   keep_delimeter kd = keep_delimeter::no)
-         : is_{is}
+         : is_{std::forward<IStream>(is)}
          , delim_(std::move(delimeter))
          , kd_{kd}
         {
             this->seek();
         }
+
+        by_line_sequence(by_line_sequence const &) = default;
+        by_line_sequence(by_line_sequence &&) = default;
 
         // Однопроходная последовательность
         /** @brief Провекра исчерпания последовательности
@@ -114,7 +123,10 @@ namespace ural
         }
 
     private:
-        std::reference_wrapper<IStream> is_;
+        typedef typename std::conditional<std::is_reference<IStream>::value,
+                                          std::reference_wrapper<stream_type>,
+                                          IStream>::type Holder;
+        Holder is_;
         value_type reader_;
         char_type delim_;
         keep_delimeter kd_;
@@ -126,9 +138,9 @@ namespace ural
     */
     template <class IStream>
     by_line_sequence<IStream>
-    by_line(IStream & is)
+    by_line(IStream && is)
     {
-        return by_line_sequence<IStream>(is);
+        return by_line_sequence<IStream>(std::forward<IStream>(is));
     }
 
     /** @brief Создание последовательности, читающей поток ввода блоками,
@@ -139,9 +151,11 @@ namespace ural
     */
     template <class IStream>
     by_line_sequence<IStream>
-    by_line(IStream & is, typename IStream::char_type delimeter)
+    by_line(IStream && is,
+            typename std::remove_reference<IStream>::type::char_type delimeter)
     {
-        return by_line_sequence<IStream>(is, std::move(delimeter));
+        return by_line_sequence<IStream>(std::forward<IStream>(is),
+                                         std::move(delimeter));
     }
 
      /** @brief Создание последовательности, читающей поток ввода блоками,
@@ -153,10 +167,12 @@ namespace ural
     */
     template <class IStream>
     by_line_sequence<IStream>
-    by_line(IStream & is, typename IStream::char_type delimeter,
+    by_line(IStream && is,
+            typename std::remove_reference<IStream>::type::char_type delimeter,
             keep_delimeter kd)
     {
-        return by_line_sequence<IStream>(is, std::move(delimeter), kd);
+        return by_line_sequence<IStream>(std::forward<IStream>(is),
+                                         std::move(delimeter), kd);
     }
 }
 // namespace ural

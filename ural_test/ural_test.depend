@@ -41,7 +41,7 @@
 
 1382674135 c:\devtools\ural_repo\ural\\ural\sequence\insertion.hpp
 
-1421031470 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
+1421130769 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
 	<ural/format.hpp>
 	<ural/numeric/matrix.hpp>
 	<ural/algorithm.hpp>
@@ -384,7 +384,7 @@
 	<ural/concepts.hpp>
 	<ural/tuple.hpp>
 
-1420765094 c:\devtools\ural_repo\ural\ural\numeric.hpp
+1421129755 c:\devtools\ural_repo\ural\ural\numeric.hpp
 	<ural/functional.hpp>
 	<ural/algorithm/details/copy.hpp>
 	<ural/sequence/all.hpp>
@@ -6452,12 +6452,12 @@
 	<boost/compressed_pair.hpp>
 	<complex>
 
-1399952217 c:\devtools\ural_repo\ural\ural\type_traits.hpp
+1421127694 c:\devtools\ural_repo\ural\ural\type_traits.hpp
 	<type_traits>
 
 1394151640 c:\devtools\ural_repo\ural\ural\sequence\iota.hpp
 
-1420765094 source:c:\devtools\ural_repo\ural\tests\io_tests.cpp
+1421130599 source:c:\devtools\ural_repo\ural\tests\io_tests.cpp
 	<ural/format.hpp>
 	<ural/numeric/numbers_sequence.hpp>
 	<ural/sequence/to.hpp>
@@ -6469,7 +6469,8 @@
 	<sstream>
 	<ural/numeric/numbers_sequence.hpp>
 
-1403737690 c:\devtools\ural_repo\ural\ural\sequence\by_line.hpp
+1421130720 c:\devtools\ural_repo\ural\ural\sequence\by_line.hpp
+	<ural/format/stream_traits.hpp>
 	<ural/sequence/base.hpp>
 	<string>
 
@@ -10007,7 +10008,8 @@
 	<sstream>
 	<sstream>
 
-1420765094 c:\devtools\ural_repo\ural\ural\format.hpp
+1421127678 c:\devtools\ural_repo\ural\ural\format.hpp
+	<ural/format/stream_traits.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/to.hpp>
 	<ural/sequence/insertion.hpp>
@@ -12135,7 +12137,7 @@
 	<ural/math.hpp>
 	<boost/numeric/ublas/triangular.hpp>
 
-1403737690 c:\devtools\ural_repo\ural\ural\sequence\to.hpp
+1421130423 c:\devtools\ural_repo\ural\ural\sequence\to.hpp
 	<ural/sequence/insertion.hpp>
 	<ural/algorithm/details/copy.hpp>
 
@@ -21952,4 +21954,7 @@
 	<ural/algorithm.hpp>
 	<ural/sequence/reversed.hpp>
 	<boost/io/ios_state.hpp>
+
+1421128620 c:\devtools\ural_repo\ural\ural\format\stream_traits.hpp
+	<string>
 
