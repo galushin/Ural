@@ -46,45 +46,22 @@ namespace ural
         {}
     };
 
-    /// @cond false
-    template <class IntegerType>
-    class rational_base
-    {
-    public:
-        constexpr rational_base(IntegerType x)
-         : numerator{std::move(x)}
-         , denominator{1}
-        {}
-
-        constexpr explicit rational_base(IntegerType num, IntegerType denom, IntegerType g)
-         : numerator(std::move(num) / g)
-         , denominator(std::move(denom) / g)
-        {}
-
-        IntegerType numerator;
-        IntegerType denominator;
-    };
-    /// @endcond
-
     /** @brief Класс для представления рациональных чисел
     @tparam IntegerType Целочисленный тип
     */
     template <class IntegerType>
     class rational
-     : private rational_base<IntegerType>
-     , boost::incrementable<rational<IntegerType>
+     : boost::incrementable<rational<IntegerType>
      , boost::decrementable<rational<IntegerType>>>
     {
-        typedef rational_base<IntegerType> Base;
-
     template <class Char, class Tr>
     friend std::basic_istream<Char, Tr> &
     operator>>(std::basic_istream<Char, Tr> & is, rational & x)
     {
+        // @todo Устранить временный объект?
         rational t;
-        auto & base = static_cast<Base &>(t);
 
-        is >> base.numerator;
+        is >> t.numerator();
 
         if(!is)
         {
@@ -110,10 +87,25 @@ namespace ural
             is.putback(reader);
         }
 
-        is >> base.denominator;
+        is >> t.denominator();
         x.assign(t.numerator(), t.denominator());
         return is;
     }
+
+    /** @brief Унарный минус
+    @return <tt> rational<T>(-x.numerator(), x.denominator()) </tt>
+    @todo Реализовать версию с перемещением?
+    */
+    friend constexpr rational operator-(rational const & x)
+    {
+        return rational(-x.numerator(), x.denominator(), IntegerType{1});
+    }
+
+    private:
+        // @pre <tt> НОД(num / g, denom / g) == 1 </tt>
+        constexpr rational(IntegerType num, IntegerType denom, IntegerType g)
+         : members_{std::move(num) / g, std::move(denom) / g}
+        {}
 
     public:
         // Конструкторы и присваивание
@@ -122,7 +114,7 @@ namespace ural
         @post <tt> this->denominator() == 1 </tt>
         */
         constexpr rational()
-         : Base(IntegerType{0})
+         : rational(IntegerType{0}, IntegerType{1}, IntegerType{1})
         {}
 
         /** @brief Конструктор на основе целого числа
@@ -131,7 +123,7 @@ namespace ural
         @post <tt> this->denominator() == 1 </tt>
         */
         explicit constexpr rational(IntegerType x)
-         : Base{std::move(x)}
+         : rational(IntegerType{std::move(x)}, IntegerType{1}, IntegerType{1})
         {}
 
         /** @brief Конструктор на основе числителя и знаменателя
@@ -143,9 +135,9 @@ namespace ural
         @post <tt> this->denominator() == abs(denom) / g </tt>
         */
         explicit constexpr rational(IntegerType num, IntegerType denom)
-         : Base(denom < 0 ? - std::move(num) : std::move(num),
-                denom != 0 ? absolute_value(std::move(denom)) : throw bad_rational{},
-                ural::gcd(num, denom))
+         : rational(denom < 0 ? - std::move(num) : std::move(num),
+                    denom != 0 ? absolute_value(std::move(denom)) : throw bad_rational{},
+                    ural::gcd(num, denom))
         {}
 
         /** @brief Оператор присваивания с целым аргументом
@@ -156,8 +148,9 @@ namespace ural
         */
         rational & operator=(IntegerType x)
         {
-            Base::numerator = std::move(x);
-            Base::denominator = IntegerType{1};
+            members_[ural::_1] = std::move(x);
+            members_[ural::_2] = IntegerType{1};
+
             return *this;
         }
 
@@ -191,8 +184,8 @@ namespace ural
                 denom = - denom;
             }
 
-            Base::numerator = std::move(num);
-            Base::denominator = std::move(denom);
+            this->numerator() = std::move(num);
+            this->denominator() = std::move(denom);
         }
 
         // Инкремент и декремент
@@ -201,7 +194,7 @@ namespace ural
         */
         rational & operator++()
         {
-            Base::numerator += Base::denominator;
+            this->numerator() += this->denominator();
             return *this;
         }
 
@@ -210,26 +203,40 @@ namespace ural
         */
         rational & operator--()
         {
-            Base::numerator -= Base::denominator;
+            this->numerator() -= this->denominator();
             return *this;
         }
 
         // Числитель и знаменатель
+        //@{
         /** @brief Числитель
         @return Числитель
         */
-        constexpr IntegerType const & numerator() const
+        IntegerType & numerator()
         {
-            return Base::numerator;
+            return members_[ural::_1];
         }
 
+        constexpr IntegerType const & numerator() const
+        {
+            return members_[ural::_1];
+        }
+        //@}
+
+        //@{
         /** @brief Знаменатель
         @return Знаменатель
         */
+        IntegerType & denominator()
+        {
+            return members_[ural::_2];
+        }
+
         constexpr IntegerType const & denominator() const
         {
-            return Base::denominator;
+            return members_[ural::_2];
         }
+        //@}
 
         constexpr explicit operator bool() const
         {
@@ -244,7 +251,7 @@ namespace ural
 
         rational & operator+=(IntegerType const & x)
         {
-            Base::numerator += x * this->denominator();
+            this->numerator() += x * this->denominator();
             return *this;
         }
 
@@ -255,7 +262,7 @@ namespace ural
 
         rational & operator-=(IntegerType const & x)
         {
-            Base::numerator -= x * this->denominator();
+            this->numerator() -= x * this->denominator();
             return *this;
         }
 
@@ -278,6 +285,8 @@ namespace ural
         {
             return *this /= rational{x};
         }
+    private:
+        ural::tuple<IntegerType, IntegerType> members_;
     };
 
     /** @brief Проверка равенства нулю
@@ -297,7 +306,9 @@ namespace ural
     constexpr rational<T> abs(rational<T> x)
     {
         // @todo Оптимизация - модуль вместо условной конструкции?
-        return x.numerator() < T{0} ? -std::move(x) : std::move(x);
+        return static_cast<rational<T> const&>(x).numerator() < T{0}
+               ? -std::move(x)
+               : std::move(x);
     }
 
     /** @brief Унарный плюс
@@ -306,17 +317,7 @@ namespace ural
     template <class T>
     constexpr rational<T> operator+(rational<T> x)
     {
-        return x;
-    }
-
-    /** @brief Унарный минус
-    @return <tt> rational<T>(-x.numerator(), x.denominator()) </tt>
-    */
-    template <class T>
-    constexpr rational<T> operator-(rational<T> x)
-    {
-        // @todo Оптимизация - сокращение точно не нужно
-        return rational<T>(-x.numerator(), x.denominator());
+        return std::move(x);
     }
 
     /** @brief Оператор "равно"
