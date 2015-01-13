@@ -61,7 +61,7 @@ namespace ural
         // @todo Устранить временный объект?
         rational t;
 
-        is >> t.numerator();
+        is >> t.numerator_ref();
 
         if(!is)
         {
@@ -87,7 +87,7 @@ namespace ural
             is.putback(reader);
         }
 
-        is >> t.denominator();
+        is >> t.denominator_ref();
         x.assign(t.numerator(), t.denominator());
         return is;
     }
@@ -106,6 +106,17 @@ namespace ural
         constexpr rational(IntegerType num, IntegerType denom, IntegerType g)
          : members_{std::move(num) / g, std::move(denom) / g}
         {}
+
+        IntegerType & numerator_ref()
+        {
+            return members_[ural::_1];
+        }
+
+        IntegerType & denominator_ref()
+        {
+            return members_[ural::_2];
+        }
+
 
     public:
         // Конструкторы и присваивание
@@ -184,8 +195,8 @@ namespace ural
                 denom = - denom;
             }
 
-            this->numerator() = std::move(num);
-            this->denominator() = std::move(denom);
+            this->numerator_ref() = std::move(num);
+            this->denominator_ref() = std::move(denom);
         }
 
         // Инкремент и декремент
@@ -194,7 +205,7 @@ namespace ural
         */
         rational & operator++()
         {
-            this->numerator() += this->denominator();
+            this->numerator_ref() += this->denominator();
             return *this;
         }
 
@@ -203,40 +214,26 @@ namespace ural
         */
         rational & operator--()
         {
-            this->numerator() -= this->denominator();
+            this->numerator_ref() -= this->denominator();
             return *this;
         }
 
         // Числитель и знаменатель
-        //@{
         /** @brief Числитель
         @return Числитель
         */
-        IntegerType & numerator()
-        {
-            return members_[ural::_1];
-        }
-
         constexpr IntegerType const & numerator() const
         {
             return members_[ural::_1];
         }
-        //@}
 
-        //@{
         /** @brief Знаменатель
         @return Знаменатель
         */
-        IntegerType & denominator()
-        {
-            return members_[ural::_2];
-        }
-
         constexpr IntegerType const & denominator() const
         {
             return members_[ural::_2];
         }
-        //@}
 
         constexpr explicit operator bool() const
         {
@@ -251,7 +248,7 @@ namespace ural
 
         rational & operator+=(IntegerType const & x)
         {
-            this->numerator() += x * this->denominator();
+            this->numerator_ref() += x * this->denominator();
             return *this;
         }
 
@@ -262,7 +259,7 @@ namespace ural
 
         rational & operator-=(IntegerType const & x)
         {
-            this->numerator() -= x * this->denominator();
+            this->numerator_ref() -= x * this->denominator();
             return *this;
         }
 
