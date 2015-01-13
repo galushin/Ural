@@ -103,9 +103,11 @@ namespace ural
     @todo Выразить через all_of, при этом можно определить функциональный
     объект, который будет полезен и в других местах
     */
-    class is_not_divisible_by_all_f
+    class is_not_divisible_by_all_sorted_f
     {
     public:
+        /** @pre <tt> Input упорядоченная по возрастанию последовательность </tt>
+        */
         template <class IntType, class Input>
         bool operator()(IntType const & x, Input && ds) const
         {
@@ -128,7 +130,31 @@ namespace ural
         }
     };
 
-    auto constexpr is_not_divisible_by_all = is_not_divisible_by_all_f{};
+    auto constexpr is_not_divisible_by_all_sorted = is_not_divisible_by_all_sorted_f{};
+
+    /** @brief Функциональный объект, проверяющий, что число является
+    взаимно-простым со всеми числами последовательности
+    */
+    class is_coprime_with_all_f
+    {
+    public:
+        template <class IntType, class Input>
+        bool operator()(IntType const & x, Input && ds) const
+        {
+            for(auto seq = ural::sequence(std::forward<Input>(ds)); !!seq; ++ seq)
+            {
+                using ural::gcd;
+                if(gcd(x, *seq) != 1)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    };
+
+    auto constexpr is_coprime_with_all = is_coprime_with_all_f{};
 
     /** @brief Построение списка первых простых чисел
     @tparam IntType тип, используемый для представления целых чисел
@@ -151,7 +177,7 @@ namespace ural
 
         for(auto k = primes.back() + IntType{1}; primes.size() < n; k += IntType{2})
         {
-            if(::ural::is_not_divisible_by_all(k, primes))
+            if(::ural::is_not_divisible_by_all_sorted(k, primes))
             {
                 primes.push_back(k);
             }
@@ -162,7 +188,6 @@ namespace ural
 
     /** @brief Создание списка простых чисел, меньших данного
     @return вектор, содержащий простые числа, меньшие @c p_max
-    @todo Рассматривать только числа вида 6*k±1
     */
     template <class IntType>
     std::vector<IntType>

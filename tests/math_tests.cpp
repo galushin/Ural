@@ -1,15 +1,34 @@
 // Основано на
 // http://www.boost.org/doc/libs/1_55_0/libs/math/test/common_factor_test.cpp
 
+/*  This file is part of Ural.
+
+    Ural is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Ural is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Ural.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#include <ural/numeric.hpp>
+#include <ural/math/common_factor.hpp>
+
 #include <boost/test/unit_test.hpp>
+
+#include <forward_list>
 
 // TODO: add polynominal/non-real type; especially after any switch to the
 // binary-GCD algorithm for built-in types
 
 #include <boost/mpl/list.hpp>
 #include <boost/operators.hpp>
-
-#include <ural/math/common_factor.hpp>
 
 typedef ::boost::mpl::list<signed char, short, int, long>
     signed_test_types;
@@ -356,7 +375,6 @@ BOOST_AUTO_TEST_CASE(nth_prime_test_PE_7)
     BOOST_CHECK_EQUAL(primes.back(), 104743);
 }
 
-#include <ural/numeric.hpp>
 BOOST_AUTO_TEST_CASE(primes_below_PE_10)
 {
     typedef long long Integer;
@@ -406,4 +424,23 @@ BOOST_AUTO_TEST_CASE(is_prime_test_PE_58)
     }
 
     BOOST_CHECK_EQUAL(26241, lenght);
+}
+
+BOOST_AUTO_TEST_CASE(is_coprime_with_sequence_test)
+{
+    typedef int Integer;
+
+    Integer const x = 8;
+
+    std::forward_list<Integer> const v_true = {15, 49};
+
+    std::forward_list<Integer> const v_false_1 = {6, 9};
+    std::forward_list<Integer> const v_false_2 = {9, 6};
+    std::forward_list<Integer> const v_empty {};
+
+    BOOST_CHECK(ural::is_coprime_with_all(x, v_true));
+    BOOST_CHECK(ural::is_coprime_with_all(x, v_empty));
+
+    BOOST_CHECK(ural::is_coprime_with_all(x, v_false_1) == false);
+    BOOST_CHECK(ural::is_coprime_with_all(x, v_false_2) == false);
 }
