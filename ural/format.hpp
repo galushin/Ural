@@ -23,6 +23,7 @@
  @todo istringstream для произвольных строк, не обязательно basic_string<>
 */
 
+#include <ural/format/stream_traits.hpp>
 #include <ural/algorithm.hpp>
 #include <ural/sequence/to.hpp>
 #include <ural/sequence/insertion.hpp>
@@ -93,22 +94,6 @@ namespace ural
     {
         return {sequence(std::forward<Sequence>(seq)), std::move(delim)};
     }
-
-    /** @brief Класс-характеристика для потоков ввода и вывода
-    @tparam Stream поток ввода или вывода
-    */
-    template <class Stream>
-    struct stream_traits
-    {
-        /// @brief Тип символов
-        typedef typename Stream::char_type char_type;
-
-        /// @brief Класс-характеристика
-        typedef typename Stream::traits_type traits_type;
-
-        /// @brief Соответствующий класс строк
-        typedef typename std::basic_string<char_type, traits_type> string_type;
-    };
 
     /** @brief Вывод таблицы в поток
     @param os поток вывода

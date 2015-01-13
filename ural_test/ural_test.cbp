@@ -84,6 +84,7 @@
 		<Unit filename="../ural/defs.hpp" />
 		<Unit filename="../ural/flex_string.hpp" />
 		<Unit filename="../ural/format.hpp" />
+		<Unit filename="../ural/format/stream_traits.hpp" />
 		<Unit filename="../ural/functional.hpp" />
 		<Unit filename="../ural/functional/adjoin.hpp" />
 		<Unit filename="../ural/functional/compare_by.hpp" />
