@@ -353,7 +353,7 @@ BOOST_AUTO_TEST_CASE(newton_interpolation_test)
 
     P.update(x1, f1);
 
-    BOOST_CHECK_EQUAL(0, P.degree());
+    BOOST_CHECK_EQUAL(0U, P.degree());
 
     BOOST_CHECK_EQUAL(f1, P(x1));
     BOOST_CHECK_EQUAL(f1, P(x2));
@@ -361,7 +361,7 @@ BOOST_AUTO_TEST_CASE(newton_interpolation_test)
 
     P.update(x2, f(x2));
 
-    BOOST_CHECK_EQUAL(1, P.degree());
+    BOOST_CHECK_EQUAL(1U, P.degree());
 
     BOOST_CHECK_EQUAL(f1, P(x1));
     BOOST_CHECK_LE(std::abs(f2 - P(x2)), 1e-10);

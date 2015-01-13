@@ -199,7 +199,7 @@ namespace ural
             auto const i_min = std::max(pos - n2 + 1, decltype(pos){0});
             auto const i_max = std::min(members_[ural::_1].size(), pos+1);
 
-            for(size_t i = i_min; i < i_max; ++ i)
+            for(auto i = i_min; i < i_max; ++ i)
             {
                 assert(pos >= i);
 
