@@ -103,7 +103,7 @@ namespace ural
     @todo Выразить через all_of, при этом можно определить функциональный
     объект, который будет полезен и в других местах
     */
-    class is_divisible_by_all_f
+    class is_not_divisible_by_all_f
     {
     public:
         template <class IntType, class Input>
@@ -128,7 +128,7 @@ namespace ural
         }
     };
 
-    auto constexpr is_divisible_by_all = is_divisible_by_all_f{};
+    auto constexpr is_not_divisible_by_all = is_not_divisible_by_all_f{};
 
     /** @brief Построение списка первых простых чисел
     @tparam IntType тип, используемый для представления целых чисел
@@ -151,7 +151,7 @@ namespace ural
 
         for(auto k = primes.back() + IntType{1}; primes.size() < n; k += IntType{2})
         {
-            if(::ural::is_divisible_by_all(k, primes))
+            if(::ural::is_not_divisible_by_all(k, primes))
             {
                 primes.push_back(k);
             }
@@ -162,7 +162,7 @@ namespace ural
 
     /** @brief Создание списка простых чисел, меньших данного
     @return вектор, содержащий простые числа, меньшие @c p_max
-    @todo не вставлять в решето чётные числа
+    @todo Рассматривать только числа вида 6*k±1
     */
     template <class IntType>
     std::vector<IntType>
