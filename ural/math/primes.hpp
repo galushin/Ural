@@ -103,7 +103,7 @@ namespace ural
     @todo Выразить через all_of, при этом можно определить функциональный
     объект, который будет полезен и в других местах
     */
-    class is_coprime_with_sequence_functor
+    class is_divisible_by_all_f
     {
     public:
         template <class IntType, class Input>
@@ -113,7 +113,7 @@ namespace ural
             {
                 auto const & value = *seq;
 
-                if(value*value > x)
+                if(ural::square(value) > x)
                 {
                     break;
                 }
@@ -128,8 +128,7 @@ namespace ural
         }
     };
 
-    auto constexpr is_coprime_with_sequence
-        = is_coprime_with_sequence_functor{};
+    auto constexpr is_divisible_by_all = is_divisible_by_all_f{};
 
     /** @brief Построение списка первых простых чисел
     @tparam IntType тип, используемый для представления целых чисел
@@ -152,7 +151,7 @@ namespace ural
 
         for(auto k = primes.back() + IntType{1}; primes.size() < n; k += IntType{2})
         {
-            if(::ural::is_coprime_with_sequence(k, primes))
+            if(::ural::is_divisible_by_all(k, primes))
             {
                 primes.push_back(k);
             }
@@ -176,13 +175,23 @@ namespace ural
             return primes;
         }
 
-        std::vector<bool> seive(p_max - 2, true);
+        primes.emplace_back(2);
+
+        if(p_max == IntType{3})
+        {
+            return primes;
+        }
+
+        auto const x_min = IntType{3};
+
+        std::vector<bool> seive((p_max - x_min + 1)/2, true);
 
         for(auto pos = ural::sequence(seive); !!pos; pos = ural::find(pos, true))
         {
-            auto value = pos.traversed_front().size() + 2;
+            auto const index = pos.traversed_front().size();
+            auto value = 2 * index + x_min;
 
-            for(auto i = value - 2; i < seive.size(); i += value)
+            for(auto i = index; i < seive.size(); i += value)
             {
                 seive[i] = false;
             }
