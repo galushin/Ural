@@ -48,6 +48,9 @@ namespace ural
 
     /** @brief Класс для представления рациональных чисел
     @tparam IntegerType Целочисленный тип
+    @todo Добавить проверки предусловий в небезопасных конструкциях в отладочном
+    режиме
+    @todo Уровень безопасности --- через стратегии
     */
     template <class IntegerType>
     class rational
@@ -92,21 +95,7 @@ namespace ural
         return is;
     }
 
-    /** @brief Унарный минус
-    @return <tt> rational<T>(-x.numerator(), x.denominator()) </tt>
-    @todo Реализовать версию с перемещением?
-    */
-    friend constexpr rational operator-(rational const & x)
-    {
-        return rational(-x.numerator(), x.denominator(), IntegerType{1});
-    }
-
     private:
-        // @pre <tt> НОД(num / g, denom / g) == 1 </tt>
-        constexpr rational(IntegerType num, IntegerType denom, IntegerType g)
-         : members_{std::move(num) / g, std::move(denom) / g}
-        {}
-
         IntegerType & numerator_ref()
         {
             return members_[ural::_1];
@@ -119,13 +108,49 @@ namespace ural
 
 
     public:
+        // Типы
+        /** @brief Тип-тэг, используемый, чтобы показать, что вызывающая сторона
+        сама отвечает за то, что числитель и знаменатель образуют несократимую
+        дробь
+        */
+        struct unsafe_reduced_tag{};
+
         // Конструкторы и присваивание
+        /** @brief Конструктор с предусловием
+        @param num числитель
+        @param denom знаменатель
+        @pre <tt> НОД(num, denom) == 1 </tt>
+        @pre <tt> denom > 0 </tt>
+        @post <tt> this->numerator() == num / g * sign(denom) </tt>
+        @post <tt> this->denominator() == abs(denom) / g </tt>
+        */
+        constexpr rational(IntegerType num, IntegerType denom, unsafe_reduced_tag)
+         : members_{std::move(num), std::move(denom)}
+        {}
+
+        /** @brief Конструктор с предусловием
+        @param num числитель
+        @param denom знаменатель
+        @param g наибольший общий множитель @c num и @c denom
+        @pre <tt> НОД(num / g, denom / g) == 1 </tt>
+        @pre <tt> g > 0 </tt>
+        @pre <tt> denom > 0 </tt>
+        @post <tt> this->numerator() == num / g * sign(denom) </tt>
+        @post <tt> this->denominator() == abs(denom) / g </tt>
+        */
+        constexpr rational(IntegerType num, IntegerType denom, IntegerType g,
+                           unsafe_tag)
+         : rational{std::move(num) / g, std::move(denom) / g,
+                    unsafe_reduced_tag{}}
+        {}
+
         /** @brief Конструктор без параметров
         @post <tt> this->numerator() == 0 </tt>
         @post <tt> this->denominator() == 1 </tt>
         */
         constexpr rational()
-         : rational(IntegerType{0}, IntegerType{1}, IntegerType{1})
+         : rational(IntegerType{0}, IntegerType{1}, IntegerType{1},
+                    unsafe_tag{})
         {}
 
         /** @brief Конструктор на основе целого числа
@@ -134,7 +159,8 @@ namespace ural
         @post <tt> this->denominator() == 1 </tt>
         */
         explicit constexpr rational(IntegerType x)
-         : rational(IntegerType{std::move(x)}, IntegerType{1}, IntegerType{1})
+         : rational(IntegerType{std::move(x)}, IntegerType{1}, IntegerType{1},
+                    unsafe_tag{})
         {}
 
         /** @brief Конструктор на основе числителя и знаменателя
@@ -148,7 +174,8 @@ namespace ural
         explicit constexpr rational(IntegerType num, IntegerType denom)
          : rational(denom < 0 ? - std::move(num) : std::move(num),
                     denom != 0 ? absolute_value(std::move(denom)) : throw bad_rational{},
-                    ural::gcd(num, denom))
+                    ural::gcd(num, denom),
+                    unsafe_tag{})
         {}
 
         /** @brief Оператор присваивания с целым аргументом
@@ -303,9 +330,7 @@ namespace ural
     constexpr rational<T> abs(rational<T> x)
     {
         // @todo Оптимизация - модуль вместо условной конструкции?
-        return static_cast<rational<T> const&>(x).numerator() < T{0}
-               ? -std::move(x)
-               : std::move(x);
+        return x.numerator() < T{0} ? -std::move(x) : std::move(x);
     }
 
     /** @brief Унарный плюс
@@ -315,6 +340,16 @@ namespace ural
     constexpr rational<T> operator+(rational<T> x)
     {
         return std::move(x);
+    }
+
+    /** @brief Унарный минус
+    @return <tt> rational<T>(-x.numerator(), x.denominator()) </tt>
+    @todo Реализовать версию с перемещением?
+    */
+    template <class T>
+    constexpr rational<T> operator-(rational<T> const & x)
+    {
+        return rational<T>(-x.numerator(), x.denominator(), T{1}, unsafe_tag{});
     }
 
     /** @brief Оператор "равно"
