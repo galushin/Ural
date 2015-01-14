@@ -46,6 +46,11 @@ namespace ural
         {}
     };
 
+    class rational_policy_no_checks
+    {
+    public:
+    };
+
     /** @brief Класс для представления рациональных чисел
     @tparam IntegerType Целочисленный тип
     @todo Добавить проверки предусловий в небезопасных конструкциях в отладочном
@@ -106,6 +111,18 @@ namespace ural
             return members_[ural::_2];
         }
 
+        static constexpr IntegerType
+        prepare_numerator(IntegerType num, IntegerType denom)
+        {
+            return denom < 0 ? - std::move(num) : std::move(num);
+        }
+
+        static constexpr IntegerType
+        prepare_denominator(IntegerType denom)
+        {
+            return denom != 0 ? absolute_value(std::move(denom)) : throw bad_rational{};
+        }
+
 
     public:
         // Типы
@@ -121,8 +138,8 @@ namespace ural
         @param denom знаменатель
         @pre <tt> НОД(num, denom) == 1 </tt>
         @pre <tt> denom > 0 </tt>
-        @post <tt> this->numerator() == num / g * sign(denom) </tt>
-        @post <tt> this->denominator() == abs(denom) / g </tt>
+        @post <tt> this->numerator() == num </tt>
+        @post <tt> this->denominator() == denom </tt>
         */
         constexpr rational(IntegerType num, IntegerType denom, unsafe_reduced_tag)
          : members_{std::move(num), std::move(denom)}
@@ -135,8 +152,8 @@ namespace ural
         @pre <tt> НОД(num / g, denom / g) == 1 </tt>
         @pre <tt> g > 0 </tt>
         @pre <tt> denom > 0 </tt>
-        @post <tt> this->numerator() == num / g * sign(denom) </tt>
-        @post <tt> this->denominator() == abs(denom) / g </tt>
+        @post <tt> this->numerator() == num / g </tt>
+        @post <tt> this->denominator() == denom / g </tt>
         */
         constexpr rational(IntegerType num, IntegerType denom, IntegerType g,
                            unsafe_tag)
@@ -159,8 +176,8 @@ namespace ural
         @post <tt> this->denominator() == 1 </tt>
         */
         explicit constexpr rational(IntegerType x)
-         : rational(IntegerType{std::move(x)}, IntegerType{1}, IntegerType{1},
-                    unsafe_tag{})
+         : rational(IntegerType{std::move(x)}, IntegerType(1),
+                    unsafe_reduced_tag{})
         {}
 
         /** @brief Конструктор на основе числителя и знаменателя
@@ -170,10 +187,11 @@ namespace ural
         Пусть <tt> g = gcd(abs(num), abs(denom)) </tt>
         @post <tt> this->numerator() == num / g * sign(denom) </tt>
         @post <tt> this->denominator() == abs(denom) / g </tt>
+        @todo оптимизация
         */
         explicit constexpr rational(IntegerType num, IntegerType denom)
-         : rational(denom < 0 ? - std::move(num) : std::move(num),
-                    denom != 0 ? absolute_value(std::move(denom)) : throw bad_rational{},
+         : rational(prepare_numerator(num, denom),
+                    prepare_denominator(denom),
                     ural::gcd(num, denom),
                     unsafe_tag{})
         {}
@@ -191,6 +209,7 @@ namespace ural
 
             return *this;
         }
+
 
         /** @brief Задание числителя и знаменателя
         @param num числитель
@@ -212,18 +231,49 @@ namespace ural
                 throw bad_rational{};
             }
 
-            auto g = ural::gcd(num, denom);
-            num /= g;
-            denom /= g;
-
             if(denom < zero)
             {
                 num = - num;
                 denom = - denom;
             }
 
+            auto g = ural::gcd(num, denom);
+
+            return this->assign(std::move(num), std::move(denom), std::move(g),
+                                unsafe_tag{});
+        }
+
+        /** @brief Задание числителя и знаменателя с предусловием
+        @param num числитель
+        @param denom знаменатель
+        @pre <tt> НОД(num, denom) == 1 </tt>
+        @pre <tt> denom > 0 </tt>
+        @post <tt> this->numerator() == num </tt>
+        @post <tt> this->denominator() == denom </tt>
+        */
+        void assign(IntegerType num, IntegerType denom, unsafe_reduced_tag)
+        {
             this->numerator_ref() = std::move(num);
             this->denominator_ref() = std::move(denom);
+        }
+
+        /** @brief Задание числителя и знаменателя с предусловием
+        @param num числитель
+        @param denom знаменатель
+        @param g наибольший общий множитель @c num и @c denom
+        @pre <tt> НОД(num / g, denom / g) == 1 </tt>
+        @pre <tt> g > 0 </tt>
+        @pre <tt> denom > 0 </tt>
+        @post <tt> this->numerator() == num / g </tt>
+        @post <tt> this->denominator() == denom / g </tt>
+        */
+        void assign(IntegerType num, IntegerType denom, IntegerType g,
+                    unsafe_tag)
+        {
+            num /= g;
+            denom /= g;
+
+            this->assign(std::move(num), std::move(denom), unsafe_reduced_tag{});
         }
 
         // Инкремент и декремент

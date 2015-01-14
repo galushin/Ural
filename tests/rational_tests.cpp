@@ -780,19 +780,20 @@ BOOST_AUTO_TEST_CASE( rational_cast_test )
 // Dice tests (a non-main test)
 BOOST_AUTO_TEST_CASE_TEMPLATE( dice_roll_test, T, all_signed_test_types )
 {
+    // @todo Разобраться с предупреждением
     typedef ural::rational<T>  rational_type;
 
     // Determine the mean number of times a fair six-sided die
     // must be thrown until each side has appeared at least once.
-    rational_type  r {T( 0 )};
+    rational_type  r {static_cast<T>(0)};
 
     for ( int  i = 1 ; i <= 6 ; ++i )
     {
-        r += rational_type( 1, i );
+        r += rational_type( T(1), i );
     }
     r *= static_cast<T>( 6 );
 
-    BOOST_CHECK_EQUAL( r, rational_type(147, 10) );
+    BOOST_CHECK_EQUAL( r, rational_type(T(147), 10) );
 }
 
 BOOST_AUTO_TEST_SUITE_END()
