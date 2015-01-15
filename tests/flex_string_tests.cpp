@@ -270,7 +270,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_n_char_and_allocator, String, Str
 {
     typename String::allocator_type a{42};
 
-    auto const n = 13;
+    auto const n = 13U;
     auto const C = 'a';
 
     String const s(n, C, a);

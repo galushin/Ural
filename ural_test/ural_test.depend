@@ -41,7 +41,7 @@
 
 1382674135 c:\devtools\ural_repo\ural\\ural\sequence\insertion.hpp
 
-1421290611 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
+1421295228 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
 	<ural/format.hpp>
 	<ural/numeric/matrix.hpp>
 	<ural/algorithm.hpp>
@@ -427,7 +427,8 @@
 	<unordered_set>
 	<ural/utility/tracers.hpp>
 
-1399952217 c:\devtools\ural_repo\ural\ural\optional.hpp
+1421297573 c:\devtools\ural_repo\ural\ural\optional.hpp
+	<ural/defs.hpp>
 	<ural/type_traits.hpp>
 	<cassert>
 	<stdexcept>
@@ -538,7 +539,7 @@
 	<ural/utility/tracers.hpp>
 	<ural/math.hpp>
 
-1421197535 c:\devtools\ural_repo\ural\ural\defs.hpp
+1421296930 c:\devtools\ural_repo\ural\ural\defs.hpp
 	<ural/type_traits.hpp>
 
 1401776803 c:\devtools\ural_repo\ural\ural\sequence\transform.hpp
@@ -623,7 +624,7 @@
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
-1421289417 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
+1421291451 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
 	<ural/sequence/sink.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/all.hpp>
@@ -6437,7 +6438,8 @@
 	<boost/mpl/list.hpp>
 	<boost/operators.hpp>
 
-1421208011 c:\devtools\ural_repo\ural\ural\math\rational.hpp
+1421302160 c:\devtools\ural_repo\ural\ural\math\rational.hpp
+	<ural/tuple.hpp>
 	<ural/math/common_factor.hpp>
 	<ural/defs.hpp>
 	<boost/operators.hpp>
@@ -6446,7 +6448,7 @@
 	<utility>
 	<stdexcept>
 
-1421023158 c:\devtools\ural_repo\ural\ural\utility.hpp
+1421302708 c:\devtools\ural_repo\ural\ural\utility.hpp
 	<ural/placeholders.hpp>
 	<ural/defs.hpp>
 	<ural/type_traits.hpp>
@@ -6475,7 +6477,7 @@
 	<ural/sequence/base.hpp>
 	<string>
 
-1421289674 source:c:\devtools\ural_repo\ural\tests\random_tests.cpp
+1421300316 source:c:\devtools\ural_repo\ural\tests\random_tests.cpp
 	"rnd.hpp"
 	<ural/algorithm.hpp>
 	<ural/statistics.hpp>
@@ -9948,10 +9950,11 @@
 	<typeinfo>
 	<utility>
 
-1421023158 source:c:\devtools\ural_repo\ural\tests\utility_test.cpp
+1421302502 source:c:\devtools\ural_repo\ural\tests\utility_test.cpp
 	<ural/utility.hpp>
 	<ural/placeholders.hpp>
 	<boost/test/unit_test.hpp>
+	<ural/math/rational.hpp>
 
 1417845373 c:\devtools\github\ural\ural\meta\map.hpp
 
@@ -12174,7 +12177,7 @@
 	<map>
 	<mutex>
 
-1421142343 source:c:\devtools\ural_repo\ural\tests\flex_string_tests.cpp
+1421301402 source:c:\devtools\ural_repo\ural\tests\flex_string_tests.cpp
 	<ural/flex_string.hpp>
 	<boost/test/unit_test.hpp>
 	<boost/mpl/list.hpp>
@@ -21935,7 +21938,7 @@
 	<cassert>
 	<vector>
 
-1421289787 c:\devtools\ural_repo\ural\ural\numeric\numbers_sequence.hpp
+1421294764 c:\devtools\ural_repo\ural\ural\numeric\numbers_sequence.hpp
 	<ural/tuple.hpp>
 	<ural/sequence/base.hpp>
 
@@ -21951,7 +21954,7 @@
 	<cassert>
 	<vector>
 
-1421029965 c:\devtools\ural_repo\ural\ural\numeric\mp\integer.hpp
+1421295224 c:\devtools\ural_repo\ural\ural\numeric\mp\integer.hpp
 	<ural/algorithm.hpp>
 	<ural/sequence/reversed.hpp>
 	<boost/io/ios_state.hpp>

@@ -150,19 +150,81 @@ namespace ural
     {
     public:
         // Создание и присваивание
-        /** @brief Конструктор
+        /** @brief Конструктор без параметров
+        @param value значение
+        @post <tt> this->value() == T{} </tt>
+        @post <tt> this->old_value() == T{} </tt>
+        */
+        constexpr with_old_value() = default;
+
+        /** @brief Конструктор на основе значения
         @param value значение
         @post <tt> this->value() == value </tt>
         @post <tt> this->old_value() == value </tt>
         */
-        explicit with_old_value(T value)
+        constexpr explicit with_old_value(T const & value)
          : value_{value}
-         , old_value_(std::move(value))
+         , old_value_{value}
         {}
 
-        with_old_value & operator=(T new_value)
+        /** @brief Конструктор на основе временного значения
+        @param value значение
+        @post <tt> this->value() == value_old </tt>, где @c value_old ---
+        значение, которое переменаня @c value принимала до начала вызова
+        @post <tt> this->old_value() == value_old </tt>, где @c value_old ---
+        значение, которое переменаня @c value принимала до начала вызова
+        */
+        constexpr explicit with_old_value(T && value)
+         : value_{value}
+         , old_value_{std::move(value)}
+        {}
+
+        /** @brief Создаёт значение с помощью конструктора с аргументами @c args
+        @param args аргументы конструктора
+        @post <tt> this->value() == T{std::forward<Args>(args)...} </tt>
+        @post <tt> this->old_value() == this->old_value() </tt>
+        */
+        template <class... Args>
+        with_old_value(in_place_t, Args &&... args)
+         : value_(std::forward<Args>(args)...)
+         , old_value_(value_)
+        {}
+
+        //@{
+        /// @brief Конструкор копий
+        with_old_value(with_old_value const &) = default;
+        with_old_value(with_old_value &&) = default;
+        //@}
+
+        //@{
+        /// @brief Оператор присваивания копий
+        with_old_value & operator=(with_old_value const &) = default;
+        with_old_value & operator=(with_old_value &&) = default;
+        //@}
+
+        /** @brief Оператор присваивания значения
+        @param new_value новое значение
+        @post <tt> this->value() == new_value </tt>
+        @post Значение <tt> this->old_value() </tt> не изменяется.
+        @return <tt> *this </tt>
+        */
+        with_old_value & operator=(T const & new_value)
         {
-            this->value() = std::move(new_value);
+            this->value() = new_value;
+            return *this;
+        }
+
+        /** @brief Оператор присваивания значения с перемещением
+        @param x объект, содержимое которого должно быть передано текущему
+        значению
+        @post Значение <tt> this->old_value() </tt> не изменяется.
+        @post <tt> this->value() == x_old </tt>, где @c x_old --- значение,
+        которое переменная @c x принимала до вызова этого оператора
+        @return <tt> *this </tt>
+        */
+        with_old_value & operator=(T && x)
+        {
+            this->value() = std::move(x);
             return *this;
         }
 
@@ -176,7 +238,7 @@ namespace ural
             return value_;
         }
 
-        T const & value() const
+        constexpr T const & value() const
         {
             return value_;
         }
@@ -186,7 +248,7 @@ namespace ural
         @return Значение <tt> this->value() </tt> сразу после конструктора или
         последнего вызова <tt> this->commit() </tt>.
         */
-        T const & old_value() const
+        constexpr T const & old_value() const
         {
             return old_value_;
         }
@@ -224,6 +286,18 @@ namespace ural
     bool operator==(with_old_value<T1> const & x, with_old_value<T2> const & y)
     {
         return x.value() == y.value() && x.old_value() == y.old_value();
+    }
+
+    /** @brief Функция создания объекта со старым значением
+    @param x начальное значение
+    @return <tt> with_old_value<TD>{std::forward<T>(x)} </tt>, где @c TD есть
+    <tt> typename std::decay<T>::type </tt>
+    */
+    template <class T>
+    constexpr with_old_value<typename std::decay<T>::type>
+    make_with_old_value(T && x)
+    {
+        return with_old_value<typename std::decay<T>::type>{std::forward<T>(x)};
     }
 
     /** @brief Функция доступа к значению - реализация для обычных переменных

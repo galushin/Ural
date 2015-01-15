@@ -22,6 +22,7 @@
  отсутствовать.
 */
 
+#include <ural/defs.hpp>
 #include <ural/type_traits.hpp>
 
 #include <cassert>
@@ -32,10 +33,7 @@
 namespace ural
 {
     class nullopt_t{};
-    class in_place_t{};
-
     constexpr nullopt_t nullopt{};
-    constexpr in_place_t inplace{};
 
     template <class T>
     class optional;
@@ -345,19 +343,29 @@ namespace details
         @post <tt> !*this == false </tt>
         @post <tt> this->value() == value </tt>
         */
-        constexpr optional(T value)
+        constexpr optional(T const & value)
+         : impl_{value}
+        {}
+
+        /** @brief Создание на основе временного значения
+        @param value значение
+        @post <tt> !*this == false </tt>
+        @post <tt> this->value() == value_old </tt>, где @c value_old ---
+        значение, которое переменная @c value имела до начала выполнения
+        конструктора.
+        */
+        constexpr optional(T && value)
          : impl_{std::move(value)}
         {}
 
         /** @brief Создаёт значение с помощью конструктора с аргументами @c args
-        @param tag тэг
         @param args аргументы
         @post <tt> !*this == false </tt>
         @post <tt> this->value() == T(std::forward<Args>(args)...) </tt>
         */
         template <class... Args>
-        constexpr explicit optional(in_place_t tag, Args &&... args)
-         : impl_(tag, std::forward<Args>(args)...)
+        constexpr explicit optional(in_place_t, Args &&... args)
+         : impl_(in_place_t{}, std::forward<Args>(args)...)
         {}
 
         // @todo Запретить, если из таких аргументов нельзя создать T

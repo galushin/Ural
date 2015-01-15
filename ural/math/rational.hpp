@@ -21,6 +21,7 @@
  @brief Класс рациональных чисел (в том числе --- с поддержкой @b constexpr).
 */
 
+#include <ural/tuple.hpp>
 #include <ural/math/common_factor.hpp>
 #include <ural/defs.hpp>
 
