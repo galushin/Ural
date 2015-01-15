@@ -25,6 +25,7 @@
 #include <ural/meta/hierarchy.hpp>
 
 #include <ural/functional.hpp>
+#include <ural/sequence/make.hpp>
 #include <ural/sequence/base.hpp>
 
 #include <boost/compressed_pair.hpp>
@@ -93,6 +94,14 @@ namespace ural
         explicit transform_sequence(F f, Inputs... in)
          : impl_(std::move(f), Bases_tuple{std::move(in)...})
         {}
+
+        /** @brief Доступ к кортежу базовых последовательностей
+        @return Константная ссылка на кортеж базовых последовательностей
+        */
+        Bases_tuple const & bases() const
+        {
+            return impl_.second();
+        }
 
         // Однопроходная последовательность
         /** @brief Проверка исчерпания последовательностей

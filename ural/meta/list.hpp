@@ -25,6 +25,8 @@
 #include <ural/type_traits.hpp>
 #include <ural/defs.hpp>
 
+#include <cstddef>
+
 namespace ural
 {
 namespace meta
