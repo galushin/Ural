@@ -635,6 +635,35 @@ namespace ural
         return static_cast<To>(x.numerator()) / static_cast<To>(x.denominator());
     }
 
+    /** @brief Преобразование рационального числа в вещественное
+    @tparam RealType тип вещественного числа
+    @param r преобразуемое число
+    @param требуемая точность
+    @return такое вещественное число @c x, что <tt> abs(x - r) < eps </tt>
+    @todo Перегрузка, задающая "естественную" точность
+    @todo Обязательно ли использовать десятичную систему?
+    */
+    template <class RealType, class Rational>
+    RealType rational_to_real(Rational r, RealType const & eps)
+    {
+        // @todo Выделить вычисление целой части
+        auto result = RealType{0};
+
+        for(auto q = RealType{1.0}; q >= eps; q *= RealType{0.1})
+        {
+            auto const n = r.numerator() / r.denominator();
+            result += n * q;
+
+            r -= n;
+            r *= Rational{10};
+        }
+
+        return result;
+    }
+
+    /* @todo Преобразование рационального числа в обыкновенную (периодическую)
+    дробь в произвольном основании
+    */
 }
 // namespace ural
 

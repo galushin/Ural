@@ -41,7 +41,7 @@
 
 1382674135 c:\devtools\ural_repo\ural\\ural\sequence\insertion.hpp
 
-1421295228 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
+1421315707 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
 	<ural/format.hpp>
 	<ural/numeric/matrix.hpp>
 	<ural/algorithm.hpp>
@@ -527,7 +527,7 @@
 	<ural/functional/make_functor.hpp>
 	<ural/sequence/base.hpp>
 
-1421305042 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
+1421314198 source:c:\devtools\ural_repo\ural\tests\algo_tests.cpp
 	<boost/test/unit_test.hpp>
 	<forward_list>
 	<list>
@@ -1071,7 +1071,8 @@
 	<string>
 	<cstdlib>
 
-1420765094 c:\devtools\ural_repo\ural\ural\random.hpp
+1421311840 c:\devtools\ural_repo\ural\ural\random.hpp
+	<ural/numeric/numbers_sequence.hpp>
 	<ural/random/c_rand_engine.hpp>
 	<ural/algorithm.hpp>
 	<ural/numeric/matrix_decomposition.hpp>
@@ -6432,7 +6433,7 @@
 	<ural/math/common_factor.hpp>
 	<ural/defs.hpp>
 
-1421207300 source:c:\devtools\ural_repo\ural\tests\rational_tests.cpp
+1421318015 source:c:\devtools\ural_repo\ural\tests\rational_tests.cpp
 	<ural/format.hpp>
 	<ural/math/rational.hpp>
 	<ostream>
@@ -6440,7 +6441,7 @@
 	<boost/mpl/list.hpp>
 	<boost/operators.hpp>
 
-1421302160 c:\devtools\ural_repo\ural\ural\math\rational.hpp
+1421317815 c:\devtools\ural_repo\ural\ural\math\rational.hpp
 	<ural/tuple.hpp>
 	<ural/math/common_factor.hpp>
 	<ural/defs.hpp>
@@ -6479,7 +6480,7 @@
 	<ural/sequence/base.hpp>
 	<string>
 
-1421300316 source:c:\devtools\ural_repo\ural\tests\random_tests.cpp
+1421311962 source:c:\devtools\ural_repo\ural\tests\random_tests.cpp
 	"rnd.hpp"
 	<ural/algorithm.hpp>
 	<ural/statistics.hpp>
@@ -6692,7 +6693,7 @@
 
 1418010326 c:\devtools\ural_repo\ural\ural\sequence\iostream.hpp
 
-1397518128 c:\devtools\ural_repo\ural\ural\numeric\polynom.hpp
+1421311631 c:\devtools\ural_repo\ural\ural\numeric\polynom.hpp
 	<ural/sequence/sink.hpp>
 	<boost/operators.hpp>
 
@@ -6721,7 +6722,8 @@
 	<boost/numeric/ublas/vector.hpp>
 	<boost/numeric/ublas/symmetric.hpp>
 
-1403480988 c:\devtools\ural_repo\ural\ural\statistics.hpp
+1421311902 c:\devtools\ural_repo\ural\ural\statistics.hpp
+	<ural/numeric/numbers_sequence.hpp>
 	<ural/math.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/transform.hpp>
@@ -10015,7 +10017,7 @@
 	<sstream>
 	<sstream>
 
-1421127678 c:\devtools\ural_repo\ural\ural\format.hpp
+1421314953 c:\devtools\ural_repo\ural\ural\format.hpp
 	<ural/format/stream_traits.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/to.hpp>
@@ -12180,7 +12182,8 @@
 	<map>
 	<mutex>
 
-1421301402 source:c:\devtools\ural_repo\ural\tests\flex_string_tests.cpp
+1421311720 source:c:\devtools\ural_repo\ural\tests\flex_string_tests.cpp
+	<ural/numeric/numbers_sequence.hpp>
 	<ural/flex_string.hpp>
 	<boost/test/unit_test.hpp>
 	<boost/mpl/list.hpp>

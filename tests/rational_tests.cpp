@@ -787,6 +787,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( dice_roll_test, T, all_signed_test_types )
     // must be thrown until each side has appeared at least once.
     rational_type  r {static_cast<T>(0)};
 
+    // @todo Заменить на алгоритм
     for ( int  i = 1 ; i <= 6 ; ++i )
     {
         r += rational_type( T(1), i );
@@ -794,6 +795,41 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( dice_roll_test, T, all_signed_test_types )
     r *= static_cast<T>( 6 );
 
     BOOST_CHECK_EQUAL( r, rational_type(T(147), 10) );
+}
+
+// @todo builtin_signed_test_types -> all_signed_test_types
+BOOST_AUTO_TEST_CASE_TEMPLATE(rational_to_double_test, T, builtin_signed_test_types)
+{
+    typedef ural::rational<T> rational_type;
+
+    // @todo аналогичный тест с отрицательным r
+    rational_type const r{4, 3};
+
+    auto const eps = 1e-6;
+
+    typedef double Real;
+
+    auto const x = ural::rational_to_real<Real>(r, eps);
+
+    //BOOST_CHECK_CLOSE_FRACTION(r.numerator(), x * r.denominator(), eps);
+    BOOST_CHECK_CLOSE_FRACTION(Real(r.numerator()) / r.denominator(), x, eps);
+}
+
+// @todo builtin_signed_test_types -> all_signed_test_types
+BOOST_AUTO_TEST_CASE_TEMPLATE(negative_rational_to_double_test, T, builtin_signed_test_types)
+{
+    typedef ural::rational<T> rational_type;
+
+    rational_type const r{4, -3};
+
+    auto const eps = 1e-6;
+
+    typedef double Real;
+
+    auto const x = ural::rational_to_real<Real>(r, eps);
+
+    BOOST_CHECK_CLOSE_FRACTION(r.numerator(), x * r.denominator(), eps);
+    BOOST_CHECK_CLOSE_FRACTION(Real(r.numerator()) / r.denominator(), x, eps);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
