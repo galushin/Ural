@@ -21,6 +21,7 @@
  @brief Обобщённые численные операции
 */
 
+#include <ural/math.hpp>
 #include <ural/functional.hpp>
 #include <ural/algorithm/details/copy.hpp>
 #include <ural/sequence/all.hpp>
@@ -249,6 +250,48 @@ namespace ural
     };
 
     auto constexpr const discrete_convolution = discrete_convolution_functor{};
+
+    /** @brief Функциональный объект для вычисления приближённого значения
+    квадратого корня по итерационному методу Герона. Смотри, например
+    en.wikipedia.org/wiki/Methods_of_computing_square_roots#Babylonian_method
+    */
+    class sqrt_heron_f
+    {
+    public:
+        /** @brief S число, для которого вычисляется приближённое значение
+        квадратного корня
+        */
+        template <class RealType>
+        RealType
+        operator()(RealType S, RealType x0, RealType const & eps) const
+        {
+            assert(S >= 0);
+
+            if(S == RealType{0})
+            {
+                return S;
+            }
+
+            assert(x0 > 0);
+
+            for(;;)
+            {
+                auto const x_old = x0;
+
+                x0 = (x0 + S / x0) / RealType{2};
+
+                using std::abs;
+                if(abs(x0 - x_old) < eps)
+                {
+                    break;
+                }
+            }
+
+            return x0;
+        }
+    };
+
+    auto constexpr sqrt_heron = sqrt_heron_f{};
 }
 // namespace ural
 

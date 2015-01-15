@@ -402,3 +402,19 @@ BOOST_AUTO_TEST_CASE(numbers_range_test)
 
     BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(), x.begin(), x.end());
 }
+
+BOOST_AUTO_TEST_CASE(numbers_stride_range_test)
+{
+    std::vector<int> const z = {0, 2, 4, 6};
+
+    std::vector<int> x;
+
+    for(auto i : ural::numbers(0, 7, 2))
+    {
+        x.push_back(i);
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(), x.begin(), x.end());
+}
+
+// @todo Интервал чисел с отрицательным шагом?

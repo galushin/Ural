@@ -41,7 +41,7 @@
 
 1382674135 c:\devtools\ural_repo\ural\\ural\sequence\insertion.hpp
 
-1421142272 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
+1421290611 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
 	<ural/format.hpp>
 	<ural/numeric/matrix.hpp>
 	<ural/algorithm.hpp>
@@ -384,7 +384,8 @@
 	<ural/concepts.hpp>
 	<ural/tuple.hpp>
 
-1421129755 c:\devtools\ural_repo\ural\ural\numeric.hpp
+1421290999 c:\devtools\ural_repo\ural\ural\numeric.hpp
+	<ural/math.hpp>
 	<ural/functional.hpp>
 	<ural/algorithm/details/copy.hpp>
 	<ural/sequence/all.hpp>
@@ -622,7 +623,7 @@
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
-1421142233 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
+1421289417 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
 	<ural/sequence/sink.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/all.hpp>
@@ -6474,7 +6475,7 @@
 	<ural/sequence/base.hpp>
 	<string>
 
-1421142511 source:c:\devtools\ural_repo\ural\tests\random_tests.cpp
+1421289674 source:c:\devtools\ural_repo\ural\tests\random_tests.cpp
 	"rnd.hpp"
 	<ural/algorithm.hpp>
 	<ural/statistics.hpp>
@@ -21934,7 +21935,7 @@
 	<cassert>
 	<vector>
 
-1420765094 c:\devtools\ural_repo\ural\ural\numeric\numbers_sequence.hpp
+1421289787 c:\devtools\ural_repo\ural\ural\numeric\numbers_sequence.hpp
 	<ural/tuple.hpp>
 	<ural/sequence/base.hpp>
 

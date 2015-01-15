@@ -230,7 +230,7 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_func_ctor_test)
     {
         D d(1, 0, 1, fw);
         std::vector<double> p = d.probabilities();
-        BOOST_CHECK_EQUAL(1, p.size());
+        BOOST_CHECK_EQUAL(1U, p.size());
         BOOST_CHECK_EQUAL(1, p[0]);
     }
     {
@@ -290,7 +290,7 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_ctor_init_list_test)
     {
         D d = {0, 30, 10};
         std::vector<double> p = d.probabilities();
-        BOOST_CHECK_EQUAL(p.size(), 3);
+        BOOST_CHECK_EQUAL(p.size(), 3U);
         BOOST_CHECK_EQUAL(p[0], 0);
         BOOST_CHECK_EQUAL(p[1], 0.75);
         BOOST_CHECK_EQUAL(p[2], 0.25);
@@ -298,7 +298,7 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_ctor_init_list_test)
     {
         D d = {0, 0, 10};
         std::vector<double> p = d.probabilities();
-        BOOST_CHECK_EQUAL(p.size(), 3);
+        BOOST_CHECK_EQUAL(p.size(), 3U);
         BOOST_CHECK_EQUAL(p[0], 0);
         BOOST_CHECK_EQUAL(p[1], 0);
         BOOST_CHECK_EQUAL(p[2], 1);
