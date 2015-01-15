@@ -21,6 +21,7 @@
  @brief Средства генерации случайных чисел
 */
 
+#include <ural/numeric/numbers_sequence.hpp>
 #include <ural/random/c_rand_engine.hpp>
 #include <ural/algorithm.hpp>
 #include <ural/numeric/matrix_decomposition.hpp>
@@ -101,7 +102,7 @@ namespace ural
 
                     auto const delta = (xmax - xmin) / nw;
 
-                    for(size_t k = 0; k < nw; ++ k)
+                    for(auto k : numbers(0, nw))
                     {
                         ws.push_back(fw(xmin + k * delta + delta / 2));
                     }
@@ -155,7 +156,7 @@ namespace ural
 
                 data_.reserve(ws.size());
 
-                for(size_t k = 0; k < ws.size(); ++ k)
+                for(auto k : numbers(0, ws.size()))
                 {
                     ws[k] /= w_sum;
                     data_.emplace_back(1.0, k);
@@ -172,7 +173,7 @@ namespace ural
                 Stack small;
                 Stack large;
 
-                for(size_type i = 0; i != ws.size(); ++ i)
+                for(auto i : numbers(0, ws.size()))
                 {
                     if(ws[i] > w_uni)
                     {

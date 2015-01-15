@@ -14,6 +14,7 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <ural/numeric/numbers_sequence.hpp>
 #include <ural/flex_string.hpp>
 
 #include <boost/test/unit_test.hpp>
@@ -259,7 +260,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_n_char, String, Strings_list)
 
     BOOST_CHECK_EQUAL_COLLECTIONS(s0.begin(), s0.end(), s.begin(), s.end());
 
-    for(size_t i = 0; i != n; ++ i)
+    for(auto i : ural::numbers(0, n))
     {
         BOOST_CHECK_EQUAL(C, s[i]);
         BOOST_CHECK(Traits::eq(C, s[i]));
@@ -282,7 +283,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_n_char_and_allocator, String, Str
     BOOST_CHECK_EQUAL(n, s.size());
     BOOST_CHECK_GE(s.capacity(), s.size());
 
-    for(size_t i = 0; i != n; ++ i)
+    for(auto i : ural::numbers(0, s.size()))
     {
         BOOST_CHECK(Traits::eq(s[i], C));
     }
@@ -460,12 +461,12 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_resize_greater, String, Strings_list)
 
     BOOST_CHECK_EQUAL(2*s_old.size(), s.size());
 
-    for(size_t i = 0; i != s_old.size(); ++ i)
+    for(auto i : ural::numbers(0, s_old.size()))
     {
         BOOST_CHECK_EQUAL(s_old[i], s[i]);
     }
 
-    for(size_t i = s_old.size(); i != s.size(); ++ i)
+    for(auto i : ural::numbers(s_old.size(), s.size()))
     {
         BOOST_CHECK_EQUAL(filler, s[i]);
     }

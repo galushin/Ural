@@ -205,12 +205,11 @@ namespace ural
             ural::basic_istringstream<String> str_is(*seq);
             str_is >> std::ws;
 
-            auto cell_seq = ural::by_line(str_is, '\t');
-
             from_string_policy<String, T> constexpr converter{};
 
-            auto row = cell_seq | ural::transformed(converter)
-                       | ural::to_container<std::vector>{};
+            auto row = ural::by_line(str_is, '\t')
+                     | ural::transformed(converter)
+                     | ural::to_container<std::vector>{};
 
             result.push_back(std::move(row));
         }

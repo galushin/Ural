@@ -897,6 +897,21 @@ BOOST_AUTO_TEST_CASE(convolution_test)
     double const P = double(favor) / total;
 
     BOOST_CHECK_CLOSE_FRACTION(P, 0.5731441, 1e-7);
+
+    /* @todo
+    auto constexpr piramid_d = ural::distributions::uniform_int(1, 4);
+    auto constexpr cube_d = ural::distributions::uniform_int(1, 6);
+
+    auto constexpr n_piramid = 36 / (range(piramid_d) + 1);
+    auto constexpr n_cube = 36 / (range(cube_d) + 1);
+
+    auto const piramids_d = ural::distributions::iid_sum(piramid_d, n_piramid);
+    auto const cubes_d = ural::distributions::iid_sum(cube_d, n_cube);
+
+    auto const d = (piramids_d > cubes_d);
+
+    BOOST_CHECK_CLOSE_FRACTION(d.p(), 0.5731441, 1e-7);
+    */
 }
 
 // Метод Ньютона, вычисление квадратных корней

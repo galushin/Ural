@@ -199,7 +199,7 @@ namespace ural
             {
                 cs_.reserve(p.cs_.size());
 
-                for(size_t i = old_size; i != p.cs_.size(); ++ i)
+                for(auto i : numbers(old_size, p.cs_.size()))
                 {
                     cs_.push_back(-p.cs_[i]);
                 }

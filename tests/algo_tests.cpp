@@ -298,7 +298,7 @@ BOOST_AUTO_TEST_CASE(search_n_test)
 }
 
 // 25.3 Модифицирующие последовательность алгоритмы
-// 25.3.1
+// 25.3.1 Копирование
 BOOST_AUTO_TEST_CASE(copy_test)
 {
     std::vector<int> const xs = {1, 2, 3, 4};
@@ -387,7 +387,10 @@ BOOST_AUTO_TEST_CASE(filtered_getters_test)
     BOOST_CHECK(s1 != s3);
 }
 
-// 25.3.2
+// @todo copy_if
+// @todo copy_backward
+
+// 25.3.2 Перемещение
 BOOST_AUTO_TEST_CASE(moved_test)
 {
     typedef std::unique_ptr<int> Type;
@@ -420,7 +423,10 @@ BOOST_AUTO_TEST_CASE(moved_test)
                                 { return *x == *y;}));
 }
 
-// 25.3.3
+// @todo move
+// @todo move_backward
+
+// 25.3.3 Обмен интервалов
 BOOST_AUTO_TEST_CASE(swap_ranges_test)
 {
     std::vector<int> const x1 = {1, 2, 3, 4, 5};
@@ -438,7 +444,9 @@ BOOST_AUTO_TEST_CASE(swap_ranges_test)
     BOOST_CHECK_EQUAL_COLLECTIONS(y2.begin(), y2.end(), x1.begin(), x1.end());
 }
 
-// 25.3.4
+// @todo Аналог iter_swap
+
+// 25.3.4 Преобразование
 BOOST_AUTO_TEST_CASE(transform_test)
 {
     std::string const s("hello");
@@ -494,7 +502,9 @@ BOOST_AUTO_TEST_CASE(transform_2_test)
                                   z_ural.begin(), z_ural.end());
 }
 
-// 25.3.5
+// @todo Энергичный transform с двумя аргументами
+
+// 25.3.5 Замена
 BOOST_AUTO_TEST_CASE(replace_test)
 {
     std::vector<int> s_std = {5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
@@ -560,7 +570,7 @@ BOOST_AUTO_TEST_CASE(replace_sequence_if_test)
                                   x_ural.begin(), x_ural.end());
 }
 
-// 25.3.6
+// 25.3.6 Заполнение
 BOOST_AUTO_TEST_CASE(fill_test)
 {
     std::vector<int> x_std = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -596,7 +606,7 @@ BOOST_AUTO_TEST_CASE(fill_n_test)
                                   v_ural.begin(), v_ural.end());
 }
 
-// 25.3.7
+// 25.3.7 Порождение
 BOOST_AUTO_TEST_CASE(generate_test)
 {
     std::vector<int> r_std(5);
@@ -633,7 +643,7 @@ BOOST_AUTO_TEST_CASE(generate_n_test)
                                   r_ural.begin(), r_ural.end());
 }
 
-// 25.3.8
+// 25.3.8 Удаление
 BOOST_AUTO_TEST_CASE(remove_test)
 {
     std::string s_std = "Text with some   spaces";
@@ -731,7 +741,7 @@ BOOST_AUTO_TEST_CASE(remove_if_sequence_test)
     BOOST_CHECK_EQUAL(s_std, s_ural);
 }
 
-// 25.3.9
+// 25.3.9 Удаление повторов
 BOOST_AUTO_TEST_CASE(eager_unique_test)
 {
     std::forward_list<int> s_std{1, 2, 2, 2, 3, 3, 2, 2, 1};
@@ -803,13 +813,13 @@ BOOST_AUTO_TEST_CASE(unique_sequence_move_only)
 
     BOOST_CHECK_EQUAL(last - v1.begin(), r_ural.end() - r_ural.begin());
 
-    for(int i = 0; i < last - v1.begin(); ++ i)
+    for(auto i : ural::numbers(0, last - v1.begin()))
     {
         BOOST_CHECK_EQUAL(*v1[i], *r_ural[i]);
     }
 }
 
-// 25.3.10
+// 25.3.10 Обращение
 BOOST_AUTO_TEST_CASE(reverse_test)
 {
     std::list<int> const src = {1, 2, 3, 4, 5, 6};
@@ -855,12 +865,12 @@ BOOST_AUTO_TEST_CASE(reversed_copy_test)
                                   r_ural.begin(), r_ural.end());
 }
 
-// 25.3.11
+// 25.3.11 Вращение
 BOOST_AUTO_TEST_CASE(rotate_test)
 {
     std::vector<int> const v{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-    for(size_t i = 0; i != v.size(); ++ i)
+    for(auto i : ural::numbers(0, v.size()))
     {
         auto v_std = v;
         auto v_ural = v;
@@ -897,7 +907,7 @@ BOOST_AUTO_TEST_CASE(rotate_copy_test)
 {
     std::vector<int> const src{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-    for(size_t i = 0; i != src.size(); ++ i)
+    for(auto i : ural::numbers(0, src.size()))
     {
         std::forward_list<int> r_std;
         std::forward_list<int> r_ural;
@@ -919,7 +929,7 @@ BOOST_AUTO_TEST_CASE(rotate_copy_return_test)
 {
     std::vector<int> const src{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-    for(size_t i = 0; i != src.size(); ++ i)
+    for(auto i : ural::numbers(0, src.size()))
     {
         std::vector<int> d_std(src.size() + 5);
         std::vector<int> d_ural(src.size() + 5);
@@ -942,7 +952,7 @@ BOOST_AUTO_TEST_CASE(rotate_copy_return_test)
     }
 }
 
-// 25.3.12 Тусовка
+// @todo 25.3.12 Тусовка
 
 // 25.3.13 Разделение
 BOOST_AUTO_TEST_CASE(is_partitioned_test)
@@ -1647,7 +1657,7 @@ BOOST_AUTO_TEST_CASE(push_heap_test)
 {
     std::vector<int> v { 3, 1, 4, 1, 5, 9 };
 
-    for(size_t i = 0; i != v.size(); ++ i)
+    for(auto i : ural::numbers(0, v.size()))
     {
         BOOST_CHECK(std::is_heap(v.begin(), v.begin() + i));
         ural::push_heap(ural::make_iterator_sequence(v.begin(), v.begin()+i+1));

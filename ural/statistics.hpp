@@ -21,6 +21,7 @@
  @brief Средства математической статистики
 */
 
+#include <ural/numeric/numbers_sequence.hpp>
 #include <ural/math.hpp>
 #include <ural/algorithm.hpp>
 #include <ural/sequence/transform.hpp>
@@ -934,8 +935,8 @@ namespace tags
 
             auto d2 = (x - m_);
 
-            for(size_t i = 0; i != cov_.size1(); ++ i)
-            for(size_t j = 0; j != i+1; ++ j)
+            for(auto i : numbers(0, cov_.size1()))
+            for(auto j : numbers(0, i+1))
             {
                 cov_(i, j) += d1(i) * d2(j);
             }
