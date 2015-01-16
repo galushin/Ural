@@ -85,6 +85,12 @@ namespace ural
         void pop_front()
         {}
 
+        function_output_sequence &
+        operator=(function_output_sequence const &) = default;
+
+        function_output_sequence &
+        operator=(function_output_sequence &) = default;
+
         template <class Arg>
         function_output_sequence & operator=(Arg && arg)
         {

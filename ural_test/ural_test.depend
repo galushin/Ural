@@ -523,7 +523,7 @@
 	<ural/functional.hpp>
 	<cassert>
 
-1413945270 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
+1421376856 c:\devtools\ural_repo\ural\ural\sequence\function_output.hpp
 	<ural/functional/make_functor.hpp>
 	<ural/sequence/base.hpp>
 
@@ -626,7 +626,7 @@
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
-1421373570 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
+1421375027 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
 	<ural/sequence/sink.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/all.hpp>
@@ -6692,7 +6692,7 @@
 	<ural/utility.hpp>
 	<ural/functional/make_functor.hpp>
 
-1418010326 c:\devtools\ural_repo\ural\ural\sequence\iostream.hpp
+1421375993 c:\devtools\ural_repo\ural\ural\sequence\iostream.hpp
 
 1421311631 c:\devtools\ural_repo\ural\ural\numeric\polynom.hpp
 	<ural/sequence/sink.hpp>

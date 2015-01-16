@@ -68,28 +68,42 @@ BOOST_AUTO_TEST_CASE(istream_sequence_regression_1)
 
 BOOST_AUTO_TEST_CASE(ostream_sequence_test)
 {
-    std::vector<int> const xs = {1, 2, 3, 4, 5};
+    typedef int Value;
+    std::vector<Value> const xs = {1, 2, 3, 4, 5};
 
     std::ostringstream os_std;
     std::ostringstream os_ural;
 
-    std::copy(xs.begin(), xs.end(), std::ostream_iterator<int>(os_std, " "));
-    ural::copy(xs, ural::make_ostream_sequence<int>(os_ural, " "));
+    std::copy(xs.begin(), xs.end(), std::ostream_iterator<Value>(os_std, " "));
+
+    auto seq = ural::make_ostream_sequence<Value>(os_ural, " ");
+    ural::copy(xs, seq);
 
     BOOST_CHECK_EQUAL(os_std.str(), os_ural.str());
+
+    typedef decltype(seq) Sequence;
+
+    BOOST_CONCEPT_ASSERT((boost::OutputIterator<Sequence, Value>));
 }
 
 BOOST_AUTO_TEST_CASE(ostream_sequence_test_auto)
 {
-    std::vector<int> const xs = {1, 2, 3, 4, 5};
+    typedef int Value;
+    std::vector<Value> const xs = {1, 2, 3, 4, 5};
 
     std::ostringstream os_std;
     std::ostringstream os_ural;
 
-    std::copy(xs.begin(), xs.end(), std::ostream_iterator<int>(os_std, " "));
-    ural::copy(xs, ural::make_ostream_sequence(os_ural, " "));
+    std::copy(xs.begin(), xs.end(), std::ostream_iterator<Value>(os_std, " "));
+
+    auto seq = ural::make_ostream_sequence(os_ural, " ");
+    ural::copy(xs, seq);
 
     BOOST_CHECK_EQUAL(os_std.str(), os_ural.str());
+
+    typedef decltype(seq) Sequence;
+
+    BOOST_CONCEPT_ASSERT((boost::OutputIterator<Sequence, Value>));
 }
 
 BOOST_AUTO_TEST_CASE(ostream_sequence_test_no_delim)
@@ -142,20 +156,31 @@ BOOST_AUTO_TEST_CASE(sink_output_sequence_test_auto)
     static_assert(std::is_empty<decltype(sink)>::value, "too big");
     BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<decltype(sink)>));
     BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<decltype(sink), int>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<decltype(sink), std::string>));
 
     *sink = 42;
+    *sink = std::string("42");
+
+    typedef decltype(sink) Sequence;
+
+     BOOST_CONCEPT_ASSERT((boost::OutputIterator<Sequence, int>));
+     BOOST_CONCEPT_ASSERT((boost::OutputIterator<Sequence, std::string>));
 }
 
  BOOST_AUTO_TEST_CASE(sink_output_sequence_test)
 {
-    ural::sink_sequence<int> sink;
+    typedef int Value;
+    ural::sink_sequence<Value> sink;
 
     static_assert(std::is_empty<decltype(sink)>::value, "too big");
-
     BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<decltype(sink)>));
-    BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<decltype(sink), int>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<decltype(sink), Value>));
 
     *sink = 42;
+
+    typedef decltype(sink) Sequence;
+
+     BOOST_CONCEPT_ASSERT((boost::OutputIterator<Sequence, Value>));
 }
 
 BOOST_AUTO_TEST_CASE(istream_sequence_no_default_ctor_test)
