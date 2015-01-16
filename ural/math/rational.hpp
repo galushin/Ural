@@ -649,6 +649,9 @@ namespace ural
         // @todo Выделить вычисление целой части
         auto result = RealType{0};
 
+        // @todo заменить на геометрическую прогрессию
+        // с условием останова в виде предиката
+        // for(auto q : ural::geometric_progression(1.0, 0.1) | filtered(_1 >= eps))???
         for(auto q = RealType{1.0}; q >= eps; q *= RealType{0.1})
         {
             auto const n = r.numerator() / r.denominator();

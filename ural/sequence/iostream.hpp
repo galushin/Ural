@@ -75,16 +75,26 @@ namespace ural
         }
 
         // Однопроходная последовательность
+        /** @brief Проверка исчерпания
+        @return @b true, если последовательность исчерпана, иначе @b --- false
+        */
         bool operator!() const
         {
             return !is_.get();
         }
 
+        /** @brief Текущий элемент
+        @return Ссылка на текущий элемент
+        @pre <tt> !!*this </tt>
+        */
         reference front() const
         {
             return value_;
         }
 
+        /** @brief Переход к следующему элементу
+        @pre <tt> !!*this </tt>
+        */
         void pop_front()
         {
             assert(is_.get());
