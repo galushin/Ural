@@ -44,6 +44,7 @@ namespace ural
     {
         return std::move(seq.base_);
     }
+
     public:
         // Типы
         /// @brief Тип ссылки
@@ -182,6 +183,18 @@ namespace ural
 
     private:
         BidirectionalSequence base_;
+
+        friend auto begin(reverse_sequence const & x)
+        -> std::reverse_iterator<decltype(begin(x.base()))>
+        {
+            return std::reverse_iterator<decltype(begin(x.base()))>{end(x.base())};
+        }
+
+        friend auto end(reverse_sequence const & x)
+        -> std::reverse_iterator<decltype(begin(x.base()))>
+        {
+            return std::reverse_iterator<decltype(begin(x.base()))>{begin(x.base())};
+        }
     };
 
     /** @brief Оператор "равно"

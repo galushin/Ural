@@ -127,16 +127,6 @@ namespace ural
             return s;
         }
 
-        friend sequence_iterator<Seq> begin(Seq const & s)
-        {
-            return sequence_iterator<Seq>{s};
-        }
-
-        friend sequence_iterator<Seq> end(Seq const &)
-        {
-            return sequence_iterator<Seq>{};
-        }
-
     protected:
         /** @brief Конструктор
         @param args список аргументов для конструктора базового класса
@@ -150,6 +140,18 @@ namespace ural
 
         ~ sequence_base() = default;
     };
+
+    template <class Seq, class Base>
+    sequence_iterator<Seq> begin(sequence_base<Seq, Base> const & s)
+    {
+        return sequence_iterator<Seq>{static_cast<Seq const&>(s)};
+    }
+
+    template <class Seq, class Base>
+    sequence_iterator<Seq> end(sequence_base<Seq, Base> const &)
+    {
+        return sequence_iterator<Seq>{};
+    }
 
     /** @brief Ссылка на текущий элемент последовательности
     @param s последовательность

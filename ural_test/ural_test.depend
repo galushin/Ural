@@ -504,7 +504,7 @@
 	<utility>
 	<ural/sequence/sequence_iterator.hpp>
 
-1403737690 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
+1421372844 c:\devtools\ural_repo\ural\ural\sequence\base.hpp
 	<ural/defs.hpp>
 	<utility>
 	<ural/sequence/sequence_iterator.hpp>
@@ -626,7 +626,7 @@
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
-1421291451 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
+1421373570 source:c:\devtools\ural_repo\ural\tests\sequence_test.cpp
 	<ural/sequence/sink.hpp>
 	<ural/algorithm.hpp>
 	<ural/sequence/all.hpp>
@@ -638,6 +638,7 @@
 	<set>
 	<map>
 	<ural/numeric/numbers_sequence.hpp>
+	<ural/sequence/make.hpp>
 
 1401764755 c:\devtools\ural_repo\ural\ural\sequence\filtered.hpp
 	<ural/algorithm/details/algo_base.hpp>
@@ -656,7 +657,7 @@
 	<cassert>
 	<memory>
 
-1420765094 c:\devtools\ural_repo\ural\ural\sequence\moved.hpp
+1421374386 c:\devtools\ural_repo\ural\ural\sequence\moved.hpp
 	<ural/sequence/make.hpp>
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/base.hpp>
@@ -1062,7 +1063,7 @@
 	<map>
 	<ural/numeric/numbers_sequence.hpp>
 
-1415690211 c:\devtools\ural_repo\ural\ural\sequence\reversed.hpp
+1421373398 c:\devtools\ural_repo\ural\ural\sequence\reversed.hpp
 	<ural/sequence/make.hpp>
 	<ural/sequence/base.hpp>
 
@@ -6441,7 +6442,7 @@
 	<boost/mpl/list.hpp>
 	<boost/operators.hpp>
 
-1421317815 c:\devtools\ural_repo\ural\ural\math\rational.hpp
+1421319610 c:\devtools\ural_repo\ural\ural\math\rational.hpp
 	<ural/tuple.hpp>
 	<ural/math/common_factor.hpp>
 	<ural/defs.hpp>

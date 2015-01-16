@@ -418,3 +418,63 @@ BOOST_AUTO_TEST_CASE(numbers_stride_range_test)
 }
 
 // @todo Интервал чисел с отрицательным шагом?
+
+
+// Итераторы последовательностей
+#include <ural/sequence/make.hpp>
+BOOST_AUTO_TEST_CASE(iterator_sequence_iterators)
+{
+    typedef std::vector<int> Container;
+    Container v1 = {0, 2, 4, 6};
+    auto const v2 = v1;
+
+    auto const s1 = ural::sequence(v1);
+    auto const s2 = ural::sequence(v2);
+
+    static_assert(std::is_same<decltype(s1.begin()), Container::iterator>::value, "");
+    static_assert(std::is_same<decltype(s2.begin()), Container::const_iterator>::value, "");
+
+    BOOST_CHECK(s1.begin() == v1.begin());
+    BOOST_CHECK(s1.end() == v1.end());
+
+    BOOST_CHECK(s2.begin() == v2.begin());
+    BOOST_CHECK(s2.end() == v2.end());
+}
+
+BOOST_AUTO_TEST_CASE(reversed_iterator_sequence_iterators)
+{
+    typedef std::vector<int> Container;
+    Container v1 = {0, 2, 4, 6};
+    auto const v2 = v1;
+
+    auto const rs1 = ural::sequence(v1) | ural::reversed;
+    auto const rs2 = ural::sequence(v2) | ural::reversed;
+
+    static_assert(std::is_same<decltype(begin(rs1)), Container::reverse_iterator>::value, "");
+    static_assert(std::is_same<decltype(begin(rs2)), Container::const_reverse_iterator>::value, "");
+
+    BOOST_CHECK(begin(rs1) == v1.rbegin());
+    BOOST_CHECK(end(rs1) == v1.rend());
+
+    BOOST_CHECK(begin(rs2) == v2.rbegin());
+    BOOST_CHECK(end(rs2) == v2.rend());
+}
+
+BOOST_AUTO_TEST_CASE(moved_iterator_sequence_iterators)
+{
+    typedef std::vector<int> Container;
+    Container v1 = {0, 2, 4, 6};
+    auto const v2 = v1;
+
+    auto const rs1 = ural::sequence(v1) | ural::moved;
+    auto const rs2 = ural::sequence(v2) | ural::moved;
+
+    static_assert(std::is_same<decltype(begin(rs1)), std::move_iterator<Container::iterator>>::value, "");
+    static_assert(std::is_same<decltype(begin(rs2)), std::move_iterator<Container::const_iterator>>::value, "");
+
+    BOOST_CHECK(begin(rs1) == std::make_move_iterator(v1.begin()));
+    BOOST_CHECK(end(rs1) == std::make_move_iterator(v1.end()));
+
+    BOOST_CHECK(begin(rs2) == std::make_move_iterator(v2.begin()));
+    BOOST_CHECK(end(rs2) == std::make_move_iterator(v2.end()));
+}

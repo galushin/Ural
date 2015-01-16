@@ -41,6 +41,7 @@ namespace ural
         /// @brief Тип значения
         typedef typename Sequence::value_type value_type;
 
+        // @todo Уточнить этот тип (в С++17 move_iterator изменился)
         /// @brief Тип ссылки
         typedef value_type && reference;
 
@@ -111,6 +112,18 @@ namespace ural
 
     private:
         Sequence base_;
+
+        friend auto begin(move_sequence const & x)
+        -> std::move_iterator<decltype(begin(x.base()))>
+        {
+            return std::make_move_iterator(begin(x.base()));
+        }
+
+        friend auto end(move_sequence const & x)
+        -> std::move_iterator<decltype(begin(x.base()))>
+        {
+            return std::make_move_iterator(end(x.base()));
+        }
     };
 
     /** @brief Создание последовательности rvalue-ссылок базовой
