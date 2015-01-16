@@ -134,7 +134,7 @@ BOOST_AUTO_TEST_CASE(valarray_to_sequence_test)
     BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<decltype(sc)>));
 
     BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<decltype(s), int>));
-    BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<decltype(sc), int>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<decltype(s0), int>));
 
     BOOST_CHECK(s0.traversed_begin() == nullptr);
     BOOST_CHECK(s0.begin() == nullptr);

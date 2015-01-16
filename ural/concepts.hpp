@@ -197,7 +197,9 @@ namespace concepts
         /// @brief Примеры использования
         BOOST_CONCEPT_USAGE(WritableSequence)
         {
-            decltype(*seq = make_value());
+            typedef decltype(*seq = make_value()) AssignResult;
+
+//            @todo BOOST_CONCEPT_ASSERT((boost::OutputIterator<Seq, T>));
         }
 
     private:
