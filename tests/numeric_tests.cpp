@@ -529,7 +529,8 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_PE_56)
     auto const a_max = 100;
     auto const b_max = 100;
 
-    integer max_digit_sum{0};
+    auto max_digit_sum
+        = ural::make_min_element_accumulator(integer{0}, ural::greater<>{});
 
     for(auto a : ural::make_arithmetic_progression(1, 1) | ural::taken(a_max))
     for(auto b : ural::make_arithmetic_progression(1, 1) | ural::taken(b_max))
@@ -537,14 +538,12 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_PE_56)
         auto const r = ural::natural_power(integer{a}, b);
         auto const new_value = digit_sum(r);
 
-        max_digit_sum = std::max(max_digit_sum, new_value);
+        max_digit_sum.update(new_value);
         // @todo max_digit_sum (std::max)= new_value
     }
 
-    BOOST_CHECK_EQUAL(max_digit_sum, integer{972});
-
-    BOOST_CHECK_EQUAL(max_digit_sum, 972);
-    BOOST_CHECK_EQUAL(972, max_digit_sum);
+    BOOST_CHECK_EQUAL(max_digit_sum.result(), 972);
+    BOOST_CHECK_EQUAL(972, max_digit_sum.result());
 }
 
 BOOST_AUTO_TEST_CASE(MP_integer_10_init_negative)

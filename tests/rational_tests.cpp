@@ -802,7 +802,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(rational_to_double_test, T, builtin_signed_test_ty
 {
     typedef ural::rational<T> rational_type;
 
-    // @todo аналогичный тест с отрицательным r
     rational_type const r{4, 3};
 
     auto const eps = 1e-6;
@@ -811,7 +810,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(rational_to_double_test, T, builtin_signed_test_ty
 
     auto const x = ural::rational_to_real<Real>(r, eps);
 
-    //BOOST_CHECK_CLOSE_FRACTION(r.numerator(), x * r.denominator(), eps);
+    BOOST_CHECK_CLOSE_FRACTION(r.numerator(), x * r.denominator(), eps);
     BOOST_CHECK_CLOSE_FRACTION(Real(r.numerator()) / r.denominator(), x, eps);
 }
 

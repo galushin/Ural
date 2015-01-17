@@ -216,7 +216,7 @@ namespace ural
             auto const index = pos.traversed_front().size();
             auto value = 2 * index + x_min;
 
-            for(auto i = index; i < seive.size(); i += value)
+            for(auto i : ural::numbers(index, seive.size(), value))
             {
                 seive[i] = false;
             }

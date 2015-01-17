@@ -396,7 +396,8 @@ namespace
         }
 
         std::vector<double> prob = d.probabilities();
-        for (size_t i = 0; i <= d.max(); ++i)
+
+        for (auto i : ural::numbers(0, d.max() + 1))
             BOOST_CHECK_EQUAL((double)u[i]/N, prob[i]);
     }
 
@@ -788,7 +789,7 @@ BOOST_AUTO_TEST_CASE(iid_adaptor_default_ctor_test)
 
     ural::iid_adaptor<D> const d0{};
 
-    BOOST_CHECK_EQUAL(1, d0.count());
+    BOOST_CHECK_EQUAL(1U, d0.count());
     BOOST_CHECK(D{} == d0.base());
 }
 

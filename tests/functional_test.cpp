@@ -36,17 +36,17 @@ BOOST_AUTO_TEST_CASE(memoize_functor_test)
     auto const y1 = f(-1);
 
     BOOST_CHECK_EQUAL(1, y1);
-    BOOST_CHECK_EQUAL(1, f_tracer.calls());
+    BOOST_CHECK_EQUAL(1U, f_tracer.calls());
 
     auto const y2 = f(2);
 
     BOOST_CHECK_EQUAL(2, y2);
-    BOOST_CHECK_EQUAL(2, f_tracer.calls());
+    BOOST_CHECK_EQUAL(2U, f_tracer.calls());
 
     auto const y3 = f(-1);
 
     BOOST_CHECK_EQUAL(1, y3);
-    BOOST_CHECK_EQUAL(2, f_tracer.calls());
+    BOOST_CHECK_EQUAL(2U, f_tracer.calls());
 }
 
 BOOST_AUTO_TEST_CASE(functor_tracer_test)

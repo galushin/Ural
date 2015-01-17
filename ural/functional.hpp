@@ -21,8 +21,6 @@
  @brief Функциональные объекты и средства для работы с ними
 */
 
-#include <boost/compressed_pair.hpp>
-
 #include <ural/functional/adjoin.hpp>
 #include <ural/functional/compare_by.hpp>
 #include <ural/functional/cpp_operators.hpp>
@@ -134,7 +132,7 @@ namespace ural
         {
             if(this->compare()(new_value, this->result()))
             {
-                impl_.first() = std::forward<Arg>(new_value);
+                ural::get(impl_, ural::_1) = std::forward<Arg>(new_value);
                 return true;
             }
 
@@ -147,7 +145,7 @@ namespace ural
         */
         value_type const & result() const
         {
-            return impl_.first();
+            return ural::get(impl_, ural::_1);
         }
 
         /** @brief Используемая функция сравнения
@@ -155,12 +153,21 @@ namespace ural
         */
         Compare const & compare() const
         {
-            return impl_.second();
+            return ural::get(impl_, ural::_2);
         }
 
     private:
-        boost::compressed_pair<value_type, Compare> impl_;
+        tuple<value_type, Compare> impl_;
     };
+
+    template <class Value, class BinaryPredicate>
+    auto make_min_element_accumulator(Value init_value, BinaryPredicate pred)
+    -> min_element_accumulator<Value, decltype(ural::make_functor(std::move(pred)))>
+    {
+        typedef decltype(ural::make_functor(std::move(pred))) Functor;
+        typedef min_element_accumulator<Value, Functor> Result;
+        return Result{std::move(init_value), ural::make_functor(std::move(pred))};
+    }
 
     /** @brief Адаптор функционального объекта с двумя аргументами, меняющий
     порядок аргументов.

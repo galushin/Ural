@@ -158,7 +158,8 @@ namespace ural
         */
         constexpr rational(IntegerType num, IntegerType denom, IntegerType g,
                            unsafe_tag)
-         : rational{std::move(num) / g, std::move(denom) / g,
+         : rational{static_cast<IntegerType>(std::move(num) / g),
+                    static_cast<IntegerType>(std::move(denom) / g),
                     unsafe_reduced_tag{}}
         {}
 
@@ -390,7 +391,7 @@ namespace ural
     template <class T>
     constexpr rational<T> operator+(rational<T> x)
     {
-        return std::move(x);
+        return x;
     }
 
     /** @brief Унарный минус

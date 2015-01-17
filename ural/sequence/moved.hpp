@@ -112,19 +112,29 @@ namespace ural
 
     private:
         Sequence base_;
-
-        friend auto begin(move_sequence const & x)
-        -> std::move_iterator<decltype(begin(x.base()))>
-        {
-            return std::make_move_iterator(begin(x.base()));
-        }
-
-        friend auto end(move_sequence const & x)
-        -> std::move_iterator<decltype(begin(x.base()))>
-        {
-            return std::make_move_iterator(end(x.base()));
-        }
     };
+
+    /** @brief Итератор задающий начало последовательности
+    @param x последовательность
+    @return <tt> std::make_move_iterator(begin(x.base())) </tt>
+    */
+    template <class Sequence>
+    auto begin(move_sequence<Sequence> const & x)
+    -> std::move_iterator<decltype(begin(x.base()))>
+    {
+        return std::make_move_iterator(begin(x.base()));
+    }
+
+    /** @brief Итератор задающий конец последовательности
+    @param x последовательность
+    @return <tt> std::make_move_iterator(end(x.base())) </tt>
+    */
+    template <class Sequence>
+    auto end(move_sequence<Sequence> const & x)
+    -> std::move_iterator<decltype(begin(x.base()))>
+    {
+        return std::make_move_iterator(end(x.base()));
+    }
 
     /** @brief Создание последовательности rvalue-ссылок базовой
     последовательности.
