@@ -291,21 +291,21 @@ namespace ural
 
     /** @brief Реализация строк, основанная на стратегиях
     @tparam Char тип символов
-    @tparam traits класс характеристик символов
+    @tparam Traits класс характеристик символов
     @tparam Allocator распределитель памяти
     @tparam Storage стратегия хранения
     @todo Оптимизация, в частности - избегать создания временных строк
     @todo Использовать по умолчанию более эффективную стратегию хранения
     */
     template <class Char = use_default,
-              class traits = use_default,
+              class Traits = use_default,
               class Allocator = use_default,
               class Storage = use_default>
     class flex_string
     {
     public:
         /// @brief Класс характеристик символов
-        typedef typename default_helper<traits, std::char_traits<typename default_helper<Char, char>::type>>::type
+        typedef typename default_helper<Traits, std::char_traits<typename default_helper<Char, char>::type>>::type
             traits_type;
 
         /// @brief Тип значения
@@ -634,6 +634,12 @@ namespace ural
             return this->size();
         }
         //@}
+
+        size_type max_size() const
+        {
+            // @todo Уточнить
+            return (npos / sizeof(value_type) - 1) / 4;
+        }
 
         /** @brief Изменение размера строки
         @param n желаемое количество элементов
@@ -1458,20 +1464,6 @@ namespace ural
             return data_.get_allocator();
         }
 
-        // 21.4.8.9
-        /** @brief Оператор вывода в поток
-        @param os поток вывода
-        @param x выводимая в поток строка
-        @return @c os
-        */
-        friend std::basic_ostream<value_type, traits_type> &
-        operator<<(std::basic_ostream<value_type, traits_type> & os,
-                   flex_string const & x)
-        {
-            // @todo добавить выравнивание
-            return os << x.c_str();
-        }
-
     private:
         storage_type data_;
     };
@@ -1712,6 +1704,61 @@ namespace ural
               flex_string<charT, traits, Allocator, S> & y)
     {
         return x.swap(y);
+    }
+
+    // 21.4.8.9
+    /** @brief Оператор вывода в поток
+    @param os поток вывода
+    @param x выводимая в поток строка
+    @return @c os
+    */
+    template <class OStream, class Char, class Traits, class Allocator, class Storage>
+    OStream &
+    operator<<(OStream & os,
+               flex_string<Char, Traits, Allocator, Storage> const & x)
+    {
+        // @todo добавить выравнивание
+        os << x.c_str();
+        return os;
+    }
+
+    template <class IStream, class Char, class Traits, class Allocator, class Storage>
+    IStream &
+    operator>>(IStream & is,
+               flex_string<Char, Traits, Allocator, Storage> & str)
+    {
+        {
+            typename IStream::sentry s(is);
+
+            if(s)
+            {
+                str.erase();
+
+                auto n = is.width() > 0 ? is.width() : str.max_size();
+
+                for(; !is.eof() && n > 0; -- n)
+                {
+                    typename IStream::char_type c = is.get();
+
+                    if(std::isspace(c, is.getloc()))
+                    {
+                        is.putback(c);
+                        break;
+                    }
+
+                    str.push_back(c);
+                }
+            }
+
+            is.width(0);
+        }
+
+        if(str.empty())
+        {
+            is.setstate(std::ios::failbit);
+        }
+
+        return is;
     }
 }
 // namespace ural

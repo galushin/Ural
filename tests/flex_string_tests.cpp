@@ -20,6 +20,7 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/mpl/list.hpp>
 
+#include <string>
 #include <sstream>
 
 template <class T>
@@ -397,7 +398,42 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_operator_assign_c_str, String, Strings
     BOOST_CHECK_EQUAL(s, s0.c_str());
 }
 
-// @todo 21.4.3 Поддержка итераторов
+// 21.4.3 Поддержка итераторов
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_mutable_iterators, String, Strings_list)
+{
+    std::string const src{"Stepanov"};
+
+    String s(src.size(), 'x');
+
+    BOOST_CHECK_EQUAL(s.size(), src.size());
+
+    BOOST_CHECK(!ural::equal(src, s));
+
+    typedef typename String::iterator Iterator;
+
+    Iterator const res = std::copy(src.begin(), src.end(), s.begin());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(src.begin(), src.end(), s.begin(), s.end());
+    BOOST_CHECK(res == s.end());
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_const_iterators, String, Strings_list)
+{
+    std::string const src{"Stepanov"};
+
+    String const s(src.begin(), src.end());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(src.begin(), src.end(), s.begin(), s.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(src.begin(), src.end(), s.cbegin(), s.cend());
+
+    typedef typename String::const_iterator Iterator;
+
+    Iterator cb = s.begin();
+    Iterator ce = s.end();
+
+    BOOST_CHECK(cb == s.cbegin());
+    BOOST_CHECK(ce == s.end());
+}
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_reverse_iterators, String, Strings_list)
 {
@@ -1278,7 +1314,22 @@ BOOST_AUTO_TEST_CASE(flex_string_swap_default_allocator)
 }
 
 // 21.4.8.9 Потоковые операторы
-// @todo Оператор ввода
+// @todo Больше тестов ввода
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_istreaming, String, Strings_list)
+{
+    std::string const src{"Hello, world"};
+
+    std::istringstream is(src);
+
+    String reader{"Stepanov"};
+
+    is >> reader;
+
+    BOOST_CHECK_EQUAL(6, reader.size());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(src.begin(), src.begin() + reader.size(),
+                                  reader.begin(), reader.end());
+}
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_ostreaming, String, Strings_list)
 {

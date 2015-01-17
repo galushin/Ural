@@ -12216,14 +12216,15 @@
 	<map>
 	<mutex>
 
-1421338584 source:c:\devtools\github\ural\tests\flex_string_tests.cpp
+1421499239 source:c:\devtools\github\ural\tests\flex_string_tests.cpp
 	<ural/numeric/numbers_sequence.hpp>
 	<ural/flex_string.hpp>
 	<boost/test/unit_test.hpp>
 	<boost/mpl/list.hpp>
+	<string>
 	<sstream>
 
-1420110641 c:\devtools\github\ural\ural\flex_string.hpp
+1421499223 c:\devtools\github\ural\ural\flex_string.hpp
 	<ural/algorithm.hpp>
 	<ural/utility.hpp>
 	<ural/defs.hpp>
