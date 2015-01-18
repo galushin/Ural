@@ -6609,7 +6609,7 @@
 	<ural/utility.hpp>
 	<ural/functional/make_functor.hpp>
 
-1421338584 c:\devtools\github\ural\ural\utility.hpp
+1421556630 c:\devtools\github\ural\ural\utility.hpp
 	<ural/placeholders.hpp>
 	<ural/defs.hpp>
 	<ural/type_traits.hpp>
@@ -6748,7 +6748,8 @@
 1394704070 c:\devtools\ural_repo\ural\ural\operators.hpp
 	<ural/defs.hpp>
 
-1420979078 c:\devtools\github\ural\ural\functional\compare_by.hpp
+1421556573 c:\devtools\github\ural\ural\functional\compare_by.hpp
+	<ural/tuple.hpp>
 	<ural/functional/cpp_operators.hpp>
 
 1421338584 c:\devtools\github\ural\ural\statistics.hpp
@@ -12216,7 +12217,7 @@
 	<map>
 	<mutex>
 
-1421499239 source:c:\devtools\github\ural\tests\flex_string_tests.cpp
+1421555630 source:c:\devtools\github\ural\tests\flex_string_tests.cpp
 	<ural/numeric/numbers_sequence.hpp>
 	<ural/flex_string.hpp>
 	<boost/test/unit_test.hpp>
@@ -12224,7 +12225,7 @@
 	<string>
 	<sstream>
 
-1421499223 c:\devtools\github\ural\ural\flex_string.hpp
+1421555462 c:\devtools\github\ural\ural\flex_string.hpp
 	<ural/algorithm.hpp>
 	<ural/utility.hpp>
 	<ural/defs.hpp>

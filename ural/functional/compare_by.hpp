@@ -22,20 +22,23 @@
  свойству, а также вспомогательные функции.
 */
 
+#include <ural/tuple.hpp>
 #include <ural/functional/cpp_operators.hpp>
 
 namespace ural
 {
-    /** @brief Функциональный объект, сравнивающий свои аргументы по некоторому их
-    свойству.
+    /** @brief Функциональный объект, сравнивающий свои аргументы по некоторому
+    их свойству.
     @tparam UnaryFunction тип унарного фукнционального объекта
     @tparam Compare тип бинарного предиката
+    @todo Проверить, что является пустым, если UnaryFunction и Compare -- пустые
     */
     template <class UnaryFunction, class Compare = ural::less<> >
     class comparer_by
-     : boost::compressed_pair<UnaryFunction, Compare>
     {
-        typedef boost::compressed_pair<UnaryFunction, Compare> Base;
+        typedef tuple<UnaryFunction, Compare> Base;
+
+        Base base_;
 
     public:
         /// @brief Тип функции сравнения (для свойства)
@@ -50,8 +53,8 @@ namespace ural
         @post <tt> this->transformation() == f</tt>
         @post <tt> this->compare() == compare_type{} </tt>
         */
-        explicit comparer_by(UnaryFunction f)
-         : Base{std::move(f), compare_type{}}
+        constexpr explicit comparer_by(UnaryFunction f)
+         : comparer_by{std::move(f), compare_type{}}
         {}
 
         /** @brief Конструктор
@@ -61,8 +64,8 @@ namespace ural
         @post <tt> this->transformation() == f</tt>
         @post <tt> this->compare() == cmp </tt>
         */
-        explicit comparer_by(UnaryFunction f, Compare cmp)
-         : Base{std::move(f), std::move(cmp)}
+        constexpr explicit comparer_by(UnaryFunction f, Compare cmp)
+         : base_{std::move(f), std::move(cmp)}
         {}
 
         /** @brief Вычисление значения
@@ -72,7 +75,7 @@ namespace ural
                                      this->transformation()(y)) </tt>.
         */
         template <class T1, class T2>
-        bool operator()(T1 const & x, T2 const & y) const
+        constexpr bool operator()(T1 const & x, T2 const & y) const
         {
             return this->compare()(this->transformation()(x),
                                    this->transformation()(y));
@@ -83,17 +86,17 @@ namespace ural
         @return Функциональный объект, задающая свойство, по которому
         сравниваются аргументы.
         */
-        UnaryFunction const & transformation() const
+        constexpr UnaryFunction const & transformation() const
         {
-            return ural::get(static_cast<Base const &>(*this), ural::_1);
+            return ural::get(base_, ural::_1);
         }
 
         /** @brief Функциональный объект, сравнивающий свойства объектов.
         @return Функциональный объект, сравнивающий свойства объектов.
         */
-        Compare const & compare() const
+        constexpr Compare const & compare() const
         {
-            return ural::get(static_cast<Base const &>(*this), ural::_2);
+            return ural::get(base_, ural::_2);
         }
     };
 
@@ -117,7 +120,7 @@ namespace ural
     @param cmp функциональный объект, сравнивающий свойства объектов.
     */
     template <class UnaryFunction, class Compare>
-    auto compare_by(UnaryFunction f, Compare cmp)
+    constexpr auto compare_by(UnaryFunction f, Compare cmp)
     -> comparer_by<decltype(make_functor(std::move(f))),
                    decltype(make_functor(std::move(cmp)))>
     {
@@ -132,7 +135,7 @@ namespace ural
     сравниваются аргументы.
     */
     template <class UnaryFunction>
-    auto compare_by(UnaryFunction f)
+    constexpr auto compare_by(UnaryFunction f)
     -> comparer_by<decltype(make_functor(std::move(f)))>
     {
         typedef comparer_by<decltype(make_functor(std::move(f)))> Functor;

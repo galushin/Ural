@@ -14,6 +14,7 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <ural/math.hpp>
 #include <ural/utility/tracers.hpp>
 #include <ural/functional.hpp>
 #include <ural/memory.hpp>
@@ -133,6 +134,23 @@ BOOST_AUTO_TEST_CASE(compare_by_test)
     {
         BOOST_CHECK_EQUAL(cmp1(a, b), cmp2(a, b));
     }
+}
+
+BOOST_AUTO_TEST_CASE(compare_by_consexpr)
+{
+    auto constexpr cmp = ural::compare_by(ural::square);
+
+    static_assert(cmp(15, 11) == false, "");
+    static_assert(cmp(-15, 11) == false, "");
+    static_assert(cmp(15, -11) == false, "");
+    static_assert(cmp(-15, -11) == false, "");
+
+    static_assert(cmp(15, 17) == true, "");
+    static_assert(cmp(-15, 17) == true, "");
+    static_assert(cmp(15, -17) == true, "");
+    static_assert(cmp(-15, -17) == true, "");
+
+    BOOST_CHECK(true);
 }
 
 BOOST_AUTO_TEST_CASE(equals_by_test)
