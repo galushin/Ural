@@ -34,48 +34,52 @@ namespace ural
     */
     template <class T1, class T2, class F>
     class binary_operator_helper
-     : private F
     {
     public:
+        static_assert(std::is_empty<F>::value, "must be empty class");
+
         constexpr auto
         operator()(typename boost::call_traits<T1>::param_type x,
                    typename boost::call_traits<T2>::param_type y) const
         -> decltype(std::declval<F const>()(x, y))
         {
-            return F::operator()(x, y);
+            return F{}(x, y);
         }
     };
 
     template <class T1, class F>
     class binary_operator_helper<T1, void, F>
-     : private F
     {
     public:
+        static_assert(std::is_empty<F>::value, "must be empty class");
+
         template <class T2>
         constexpr auto
         operator()(typename boost::call_traits<T1>::param_type x,
                    T2 && y) const
         -> decltype(std::declval<F const>()(x, std::forward<T2>(y)))
         {
-            return static_cast<F const &>(*this)(x, std::forward<T2>(y));
+            return F{}(x, std::forward<T2>(y));
         }
     };
 
     template <class T2, class F>
     class binary_operator_helper<void, T2, F>
-     : private F
     {
     public:
+        static_assert(std::is_empty<F>::value, "must be empty class");
+
         template <class T1>
         constexpr auto
         operator()(T1 && x,
                    typename boost::call_traits<T2>::param_type y) const
         -> decltype(std::declval<F const>()(std::forward<T1>(x), y))
         {
-            return static_cast<F const &>(*this)(std::forward<T1>(x), y);
+            return F{}(std::forward<T1>(x), y);
         }
     };
 
+    // @todo Разобраться с этими шаблонами
     template <class T1, class T2, class F>
     class compound_assignment_helper
     {};
@@ -90,16 +94,17 @@ namespace ural
 
     template <class T, class F>
     class unary_operator_helper
-     : private F
     {
     public:
+        static_assert(std::is_empty<F>::value, "must be empty class");
+
         typedef T argument_type;
         typedef decltype(std::declval<F const>()(std::declval<T>())) result_type;
 
         constexpr result_type
         operator()(typename boost::call_traits<T>::param_type x) const
         {
-            return F::operator()(x);
+            return F{}(x);
         }
     };
 

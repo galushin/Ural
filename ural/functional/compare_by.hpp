@@ -35,11 +35,9 @@ namespace ural
     */
     template <class UnaryFunction, class Compare = ural::less<> >
     class comparer_by
+     : UnaryFunction
+     , Compare
     {
-        typedef tuple<UnaryFunction, Compare> Base;
-
-        Base base_;
-
     public:
         /// @brief Тип функции сравнения (для свойства)
         typedef Compare compare_type;
@@ -65,7 +63,8 @@ namespace ural
         @post <tt> this->compare() == cmp </tt>
         */
         constexpr explicit comparer_by(UnaryFunction f, Compare cmp)
-         : base_{std::move(f), std::move(cmp)}
+         : UnaryFunction(std::move(f))
+         , Compare(std::move(cmp))
         {}
 
         /** @brief Вычисление значения
@@ -88,7 +87,7 @@ namespace ural
         */
         constexpr UnaryFunction const & transformation() const
         {
-            return ural::get(base_, ural::_1);
+            return *this;
         }
 
         /** @brief Функциональный объект, сравнивающий свойства объектов.
@@ -96,7 +95,7 @@ namespace ural
         */
         constexpr Compare const & compare() const
         {
-            return ural::get(base_, ural::_2);
+            return *this;
         }
     };
 

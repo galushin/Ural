@@ -189,7 +189,7 @@
 	<ural/optional.hpp>
 	<ural/sequence/base.hpp>
 
-1417845372 source:c:\devtools\github\ural\tests\tuple_tests.cpp
+1421557676 source:c:\devtools\github\ural\tests\tuple_tests.cpp
 	<boost/test/unit_test.hpp>
 	<ural/tuple.hpp>
 	<ural/utility.hpp>
@@ -570,7 +570,8 @@
 	<ural/functional.hpp>
 	<ural/sequence/base.hpp>
 
-1421488561 source:c:\devtools\github\ural\tests\functional_test.cpp
+1421560577 source:c:\devtools\github\ural\tests\functional_test.cpp
+	<ural/math.hpp>
 	<ural/utility/tracers.hpp>
 	<ural/functional.hpp>
 	<ural/memory.hpp>
@@ -1013,7 +1014,7 @@
 	<ural/tuple.hpp>
 	<ural/functional/cpp_operators.hpp>
 
-1417845373 c:\devtools\github\ural\ural\functional\cpp_operators.hpp
+1421559210 c:\devtools\github\ural\ural\functional\cpp_operators.hpp
 	<ural/functional/make_functor.hpp>
 	<ural/functional/compose.hpp>
 
@@ -6604,7 +6605,7 @@
 1417845373 c:\devtools\github\ural\ural\type_traits.hpp
 	<type_traits>
 
-1417845373 c:\devtools\github\ural\ural\functional\adjoin.hpp
+1421558599 c:\devtools\github\ural\ural\functional\adjoin.hpp
 	<ural/tuple.hpp>
 	<ural/utility.hpp>
 	<ural/functional/make_functor.hpp>
@@ -6748,7 +6749,7 @@
 1394704070 c:\devtools\ural_repo\ural\ural\operators.hpp
 	<ural/defs.hpp>
 
-1421556573 c:\devtools\github\ural\ural\functional\compare_by.hpp
+1421560403 c:\devtools\github\ural\ural\functional\compare_by.hpp
 	<ural/tuple.hpp>
 	<ural/functional/cpp_operators.hpp>
 

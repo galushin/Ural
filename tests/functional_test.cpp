@@ -140,6 +140,8 @@ BOOST_AUTO_TEST_CASE(compare_by_consexpr)
 {
     auto constexpr cmp = ural::compare_by(ural::square);
 
+    static_assert(std::is_empty<decltype(cmp)>::value, "Must be empty class");
+
     static_assert(cmp(15, 11) == false, "");
     static_assert(cmp(-15, 11) == false, "");
     static_assert(cmp(15, -11) == false, "");
@@ -617,8 +619,14 @@ BOOST_AUTO_TEST_CASE(make_adjoint_functor_constexpr_test)
 
     auto constexpr f = ural::adjoin_functors(f1, f2, f3, f4);
 
-    // @todo constexpr
-    std::tuple<int, int, int, int> x = f(5, 2);
+    static_assert(std::is_empty<decltype(f)>::value, "Must be empty class");
+
+    constexpr std::tuple<int, int, int, int> x = f(5, 2);
+
+    static_assert(std::get<0>(x) == 2, "");
+    static_assert(std::get<1>(x) == 2, "");
+    static_assert(std::get<2>(x) == 2, "");
+    static_assert(std::get<3>(x) == 2, "");
 
     BOOST_CHECK_EQUAL(std::get<0>(x), 2);
     BOOST_CHECK_EQUAL(std::get<1>(x), 2);

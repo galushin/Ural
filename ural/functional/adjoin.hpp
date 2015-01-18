@@ -34,7 +34,10 @@ namespace ural
     */
     template <class... Fs>
     class adjoin_functor_type
+     : ural::tuple<Fs...>
     {
+        typedef ural::tuple<Fs...> Base;
+
     public:
         /// @brief Конструктор без параметров
         constexpr adjoin_functor_type() = default;
@@ -43,7 +46,7 @@ namespace ural
         @param fs базовые функциональные объекты
         */
         constexpr explicit adjoin_functor_type(Fs... fs)
-         : functors_{std::move(fs)...}
+         : Base{std::move(fs)...}
         {}
 
         /** @brief Оператор применения функционального объекта
@@ -60,16 +63,18 @@ namespace ural
         }
 
     private:
+        constexpr Base const & base() const
+        {
+            return static_cast<Base const &>(*this);
+        }
+
         template <class R, class Tuple, size_t... Is>
         constexpr
         R call_impl(declare_type<R>, Tuple && t,
                     integer_sequence<size_t, Is...>) const
         {
-            return R(apply(std::get<Is>(functors_), std::forward<Tuple>(t))...);
+            return R(apply(std::get<Is>(this->base()), std::forward<Tuple>(t))...);
         }
-
-    private:
-        ural::tuple<Fs...> functors_;
     };
 
     /** @brief Создание функционального объекта, формирующего кортеж результатов
