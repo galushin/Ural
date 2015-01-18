@@ -1325,7 +1325,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_istreaming, String, Strings_list)
 
     is >> reader;
 
-    BOOST_CHECK_EQUAL(6, reader.size());
+    BOOST_CHECK_EQUAL(6U, reader.size());
 
     BOOST_CHECK_EQUAL_COLLECTIONS(src.begin(), src.begin() + reader.size(),
                                   reader.begin(), reader.end());
@@ -1345,3 +1345,18 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_ostreaming, String, Strings_list)
 }
 
 // @todo get_line
+
+// Интеграция с std::string
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_equals_std_string_test, String, Strings_list)
+{
+    std::string const s_std = "Stepanov";
+    String const s_ural(s_std.begin(), s_std.end());
+
+    BOOST_CHECK(s_std == s_ural);
+    BOOST_CHECK(s_ural == s_std);
+
+    auto const z = String{};
+
+    BOOST_CHECK(s_std != z);
+    BOOST_CHECK(z != s_std);
+}

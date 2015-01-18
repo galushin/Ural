@@ -1464,6 +1464,29 @@ namespace ural
             return data_.get_allocator();
         }
 
+        //@{
+        /** @brief Проверка на равенство с <tt> std::string </tt>
+        @param f строка
+        @param s строка стандартной библиотеки
+        @return <tt> f.compare(s.c_str()) == 0 </tt>
+        */
+        template <class A2>
+        friend bool
+        operator==(flex_string const & f,
+                   std::basic_string<value_type, traits_type, A2> const & s)
+        {
+            return (f.compare(s.c_str()) == 0);
+        }
+
+        template <class A2>
+        friend bool
+        operator==(std::basic_string<value_type, traits_type, A2> const & s,
+                   flex_string const & f)
+        {
+            return (f == s);
+        }
+        //@}
+
     private:
         storage_type data_;
     };
