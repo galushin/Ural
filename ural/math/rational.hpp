@@ -121,7 +121,7 @@ namespace ural
         static constexpr IntegerType
         prepare_denominator(IntegerType denom)
         {
-            return denom != 0 ? absolute_value(std::move(denom)) : throw bad_rational{};
+            return denom != 0 ? abs_constexpr(std::move(denom)) : throw bad_rational{};
         }
 
 

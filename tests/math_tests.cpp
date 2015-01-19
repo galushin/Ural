@@ -444,3 +444,24 @@ BOOST_AUTO_TEST_CASE(is_coprime_with_sequence_test)
     BOOST_CHECK(ural::is_coprime_with_all(x, v_false_1) == false);
     BOOST_CHECK(ural::is_coprime_with_all(x, v_false_2) == false);
 }
+
+// Функциональный объект для модуля
+BOOST_AUTO_TEST_CASE(abs_fn_test)
+{
+    // @todo constexpr
+    auto constexpr abs_f = ural::abs();
+
+    BOOST_CHECK_EQUAL(abs_f(5), 5);
+    BOOST_CHECK_EQUAL(abs_f(-5), 5);
+    BOOST_CHECK_EQUAL(abs_f(4.5), 4.5);
+    BOOST_CHECK_EQUAL(abs_f(-4.5), 4.5);
+
+    auto constexpr r = ural::rational<int>{18, 12};
+
+    BOOST_CHECK(r >= 0);
+    BOOST_CHECK_EQUAL(abs_f(r), r);
+    BOOST_CHECK_EQUAL(abs_f(-r), r);
+
+    BOOST_CHECK_CLOSE(abs_f(std::complex<double>(3, 4)), 5.0, 1e-6);
+    BOOST_CHECK_CLOSE(abs_f(std::complex<double>(3, 4)), 5.0, 1e-6);
+}

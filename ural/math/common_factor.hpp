@@ -31,7 +31,7 @@ namespace ural
     @return <tt> (x < IntegerType(0)) ? -std::move(x) : x </tt>
     */
     template <class IntegerType>
-    constexpr IntegerType absolute_value(IntegerType x)
+    constexpr IntegerType abs_constexpr(IntegerType x)
     {
         return (x < IntegerType(0)) ? -std::move(x) : x;
     }
@@ -56,7 +56,7 @@ namespace ural
         */
         constexpr IntegerType operator()(IntegerType x, IntegerType y) const
         {
-            return absolute_value(euclidean(x, y));
+            return abs_constexpr(euclidean(x, y));
         }
     };
 
@@ -80,7 +80,7 @@ namespace ural
         */
         constexpr IntegerType operator()(IntegerType x, IntegerType y) const
         {
-            return absolute_value(impl(x, y));
+            return abs_constexpr(impl(x, y));
         }
     };
 

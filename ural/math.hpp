@@ -179,6 +179,30 @@ namespace details
     };
 
     auto constexpr natural_power = natural_power_f{};
+
+    // Абсолютное значение
+    namespace details
+    {
+        using std::abs;
+
+        class abs_fn
+        {
+        public:
+            template <class T>
+            auto operator()(T const & x) const
+            -> decltype(abs(x))
+            {
+                return abs(x);
+            }
+        };
+    }
+
+    using details::abs_fn;
+
+    constexpr abs_fn abs()
+    {
+        return abs_fn{};
+    }
 }
 // namespace ural
 

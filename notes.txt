@@ -98,3 +98,46 @@ between run-time performance and exception safety guarantees.
 
 http://akrzemi1.wordpress.com/2014/04/24/noexcept-what-for/
 */
+
+/**
+Функциональные объекты для математических функций
+
+1. В специальном пространстве имён details импортируем функцию (из std), которая
+ не может быть найдена с помощью ADL
+2. В пространстве имён details создаём класс функционального объекта,
+выполняющий неквалифицированный вызов, чтобы использовать ADL
+3. В основное пространство имён импортируем созданный класс функциональных
+объектов
+4. Создаём функцию без аргументов с тем же именем, что "моделируемая" функция,
+которая не получает параметров и возвращает нужный функциональный объект
+
+Пример:
+namespace ural
+{
+    namespace details
+    {
+        using std::abs;
+
+        class abs_fn
+        {
+        public:
+            template <class T>
+            auto operator()(T const & x) const
+            -> decltype(abs(x))
+            {
+                return abs(x);
+            }
+        };
+    }
+
+    using details::abs_fn;
+
+    constexpr abs_fn abs()
+    {
+        return abs_fn{};
+    }
+}
+
+ural::make_transform_sequence(xs, abs());
+
+*/
