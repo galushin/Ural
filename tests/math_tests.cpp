@@ -462,8 +462,12 @@ BOOST_AUTO_TEST_CASE(abs_fn_test)
     BOOST_CHECK_EQUAL(abs_f(r), r);
     BOOST_CHECK_EQUAL(abs_f(-r), r);
 
-    BOOST_CHECK_CLOSE(abs_f(std::complex<double>(3, 4)), 5.0, 1e-6);
-    BOOST_CHECK_CLOSE(abs_f(std::complex<double>(3, 4)), 5.0, 1e-6);
+    auto const z = std::complex<double>(0.6, 0.8);
+
+    BOOST_CHECK_CLOSE(abs_f(z), 1.0, 1e-6);
+    BOOST_CHECK_CLOSE(abs_f(conj(z)), 1.0, 1e-6);
+    BOOST_CHECK_CLOSE(abs_f(-z), 1.0, 1e-6);
+    BOOST_CHECK_CLOSE(abs_f(-conj(z)), 1.0, 1e-6);
 }
 
 // Треугольник Паскаля
@@ -483,15 +487,12 @@ BOOST_AUTO_TEST_CASE(pascal_triangle_PE_203)
 
         BOOST_CHECK_EQUAL(row.size(), i+1);
 
-        for(auto x : row)
-        {
-            r.insert(x);
-        }
-
-        ++ seq;
+        ural::copy(row, r | ural::set_inserter);
 
         BOOST_CHECK_EQUAL_COLLECTIONS(row.begin(), row.end(),
                                       row.rbegin(), row.rend());
+
+        ++ seq;
     }
 
     BOOST_CHECK_EQUAL_COLLECTIONS(r.begin(), r.end(), z.begin(), z.end());

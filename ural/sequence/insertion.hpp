@@ -104,6 +104,9 @@ namespace ural
         return helper(c);
     }
 
+    /** @brief Вспомогательный класс для создания
+    <tt> std::front_insert_iterator </tt>
+    */
     struct front_inserter_helper
     {
     template <class Container>
@@ -123,17 +126,35 @@ namespace ural
         return helper(c);
     }
 
+    /** @brief Выходная последовательность реализующая вставку в множество
+    @tparam Container тип контейнера, хранящего множество
+    @todo Доступ к контейнеру
+    */
     template <class Container>
     class set_insert_sequence
      : public sequence_base<set_insert_sequence<Container>>
     {
     public:
+        /// @brief Категория обхода
         typedef single_pass_traversal_tag traversal_tag;
 
+        /** @brief Конструктор
+        @param c контейнер, в который будет производится вставка
+        */
         explicit set_insert_sequence(Container & c)
          : c_{c}
         {}
 
+        /** @brief Доступ к контейнеру, в который производится вставка
+        @return Константная ссылка на контейнер, в который производится запись
+        @todo Нужен ли доступ к неконстантной ссылке
+        */
+        Container const & container() const
+        {
+            return c_.get();
+        }
+
+        // Однопроходная последовательность
         bool operator!() const
         {
             return false;
@@ -158,13 +179,21 @@ namespace ural
     };
 
     struct set_inserter_helper
-    {};
+    {
+    public:
+        template <class Container>
+        ural::set_insert_sequence<Container>
+        operator()(Container & c) const
+        {
+            return ural::set_insert_sequence<Container>{c};
+        }
+    };
 
     template <class Container>
     ural::set_insert_sequence<Container>
     operator|(Container & c, set_inserter_helper)
     {
-        return ural::set_insert_sequence<Container>{c};
+        return ural::set_inserter_helper{}(c);
     }
 
     constexpr auto set_inserter = set_inserter_helper{};

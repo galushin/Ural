@@ -399,6 +399,15 @@ BOOST_AUTO_TEST_CASE(map_keys_and_values_test)
     BOOST_CHECK(ural::equal(xy | ural::map_values, y));
 }
 
+BOOST_AUTO_TEST_CASE(set_inserter_container_access)
+{
+    std::set<int> s;
+
+    auto seq = s | ural::set_inserter;
+
+    BOOST_CHECK_EQUAL(&s, &seq.container());
+}
+
 BOOST_AUTO_TEST_CASE(set_inserter_test)
 {
     std::vector<int> const xs = {1, 2, 3, 4, 5, 1, 3, 5, 2, 4, 6};
