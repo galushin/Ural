@@ -489,6 +489,9 @@ BOOST_AUTO_TEST_CASE(pascal_triangle_PE_203)
         }
 
         ++ seq;
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(row.begin(), row.end(),
+                                      row.rbegin(), row.rend());
     }
 
     BOOST_CHECK_EQUAL_COLLECTIONS(r.begin(), r.end(), z.begin(), z.end());

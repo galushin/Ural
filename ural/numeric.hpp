@@ -327,9 +327,16 @@ namespace ural
         {
             Vector new_row(row_.size() + 1, 1);
 
-            for(auto i : ural::numbers(1, row_.size()))
+            auto const middle = (new_row.size() + 1) / 2;
+
+            for(auto i : ural::numbers(1, middle))
             {
                 new_row[i] = row_[i] + row_[i-1];
+            }
+
+            for(auto i : ural::numbers(middle, row_.size()))
+            {
+                new_row[i] = new_row[row_.size() - i];
             }
 
             row_.swap(new_row);
