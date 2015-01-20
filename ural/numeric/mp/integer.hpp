@@ -37,7 +37,7 @@ namespace ural
     @tparam IntType тип целых чисел
     @tparam radix основание системы счисления
     */
-    template <class IntType, long radix>
+    template <class IntType, IntType radix>
     class digits_sequence
      : public ural::sequence_base<digits_sequence<IntType, radix>>
     {
@@ -61,9 +61,9 @@ namespace ural
         @param value число
         */
         explicit digits_sequence(IntType value)
-         : value_{std::move(value)}
+         : state_(std::div(value, radix))
         {
-            assert(value_ >= 0);
+            assert(value >= 0);
         }
 
         // Однопроходная последовательность
@@ -72,7 +72,7 @@ namespace ural
         */
         bool operator!() const
         {
-            return value_ == 0;
+            return state_.quot == 0 && state_.rem == 0;
         }
 
         /** @brief Текущий элемент
@@ -80,19 +80,23 @@ namespace ural
         */
         reference front() const
         {
-            return value_ % radix;
+            return state_.rem;
         }
 
         /// @brief Переход к следующему разряду
         void pop_front()
         {
-            value_ /= radix;
+            using std::div;
+            state_ = div(state_.quot, radix);
         }
 
     private:
-        IntType value_;
+        typedef decltype(std::div(radix, radix)) div_type;
+
+        div_type state_;
     };
 
+    // @todo использовать std::div
     // @todo устранить дублирование
     // @todo заменить циклы на алгоритмы
     // @todo выделить функции
@@ -211,8 +215,9 @@ namespace ural
         static_assert(base > 1, "Unsupported radix");
 
         // Типы
+        // @todo Выбор типа цифры в зависимости от значения bases
         /// @brief Тип цифр
-        typedef short Digit;
+        typedef long Digit;
 
         /// @brief Тип контейнера, используемого для хранения цифр
         typedef std::vector<Digit> Digits_container;
@@ -270,9 +275,11 @@ namespace ural
 
             for(size_t i = 0; carry > 0 && i < this->size(); ++ i)
             {
-                auto new_value = this->digits()[i] + carry;
-                carry = new_value / base;
-                digits_ref()[i] = new_value % base;
+                using std::div;
+                auto qr = div(this->digits()[i] + carry, base);
+
+                carry = qr.quot;
+                digits_ref()[i] = qr.rem;
             }
 
             if(carry > 0)
@@ -348,16 +355,20 @@ namespace ural
 
             for(size_t i = 0; i < x.size(); ++ i)
             {
-                auto new_value = digits()[i] + x.digits()[i] + carry;
-                digits_ref()[i] = (new_value % base);
-                carry = new_value / base;
+                using std::div;
+                auto qr = div(digits()[i] + x.digits()[i] + carry, base);
+
+                digits_ref()[i] = qr.rem;
+                carry = qr.quot;
             }
 
             for(size_t i = x.size(); i < this->size() && carry > 0; ++ i)
             {
-                auto new_value = digits()[i] + carry;
-                digits_ref()[i] = (new_value % base);
-                carry = new_value / base;
+                using std::div;
+                auto qr = div(digits()[i] + carry, base);
+
+                digits_ref()[i] = qr.rem;
+                carry = qr.quot;
             }
 
             if(carry > 0)
@@ -453,9 +464,11 @@ namespace ural
 
             for(size_t j = 0; j != x.size(); ++ j)
             {
-                auto new_value = carry + x.digits()[j] * d;
-                a.digits_ref().push_back(new_value % base);
-                carry = new_value / base;
+                using std::div;
+                auto qr = div(carry + x.digits()[j] * d, base);
+
+                a.digits_ref().push_back(qr.rem);
+                carry = qr.quot;
             }
 
             if(carry > 0)

@@ -507,6 +507,25 @@ BOOST_AUTO_TEST_CASE(cube_constexpr_test)
 #include <ural/numeric/mp/integer_10.hpp>
 typedef ural::integer_10 integer;
 
+BOOST_AUTO_TEST_CASE(MP_integer_10_init_negative)
+{
+    auto const x = - 142;
+
+    auto const x_mp = integer{x};
+
+    BOOST_CHECK_EQUAL(x, x_mp);
+
+    auto const x_s = ural::to_string(x);
+    auto const x_mp_s = ural::to_string(x_mp);
+
+    BOOST_CHECK_EQUAL(x_s, x_mp_s);
+
+    BOOST_CHECK_EQUAL(-x, -x_mp);
+    BOOST_CHECK_EQUAL(+x, +x_mp);
+    BOOST_CHECK_EQUAL(x_mp, +x_mp);
+    BOOST_CHECK_NE(-x_mp, +x_mp);
+}
+
 integer digit_sum(integer const & x)
 {
     assert(x > 0);
@@ -535,25 +554,6 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_PE_56)
 
     BOOST_CHECK_EQUAL(max_digit_sum.result(), 972);
     BOOST_CHECK_EQUAL(972, max_digit_sum.result());
-}
-
-BOOST_AUTO_TEST_CASE(MP_integer_10_init_negative)
-{
-    auto const x = - 142;
-
-    auto const x_mp = integer{x};
-
-    BOOST_CHECK_EQUAL(x, x_mp);
-
-    auto const x_s = ural::to_string(x);
-    auto const x_mp_s = ural::to_string(x_mp);
-
-    BOOST_CHECK_EQUAL(x_s, x_mp_s);
-
-    BOOST_CHECK_EQUAL(-x, -x_mp);
-    BOOST_CHECK_EQUAL(+x, +x_mp);
-    BOOST_CHECK_EQUAL(x_mp, +x_mp);
-    BOOST_CHECK_NE(-x_mp, +x_mp);
 }
 
 BOOST_AUTO_TEST_CASE(MP_integer_10_x_minus_x_equals_zero)
