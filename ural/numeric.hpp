@@ -98,8 +98,8 @@ namespace ural
         T operator()(Input1 && in1, Input2 && in2, T init_value,
                      BinaryOperation1 add, BinaryOperation2 mult) const
         {
-            return impl(ural::sequence(std::forward<Input1>(in1)),
-                        ural::sequence(std::forward<Input2>(in2)),
+            return impl(sequence(std::forward<Input1>(in1)),
+                        sequence(std::forward<Input2>(in2)),
                         std::move(init_value),
                         ural::make_functor(std::move(add)),
                         ural::make_functor(std::move(mult)));
@@ -292,6 +292,52 @@ namespace ural
     };
 
     auto constexpr sqrt_heron = sqrt_heron_f{};
+
+    /** @brief Последовательность строк треугольника Паскаля
+    @tparam Vector тип массива, используемого для хранения строк
+    @todo Можно ли ослабить требования к контейнеру?
+    @todo Можно ли усилит категорию обхода?
+    */
+    template <class Vector>
+    class pascal_triangle_rows_sequence
+     : public sequence_base<pascal_triangle_rows_sequence<Vector>>
+    {
+    public:
+        // Типы
+        typedef Vector value_type;
+        typedef Vector const & reference;
+
+        // Конструкторы
+        pascal_triangle_rows_sequence()
+         : row_{1}
+        {}
+
+        // Однопроходная последовательность
+        bool operator!() const
+        {
+            return false;
+        }
+
+        reference front() const
+        {
+            return row_;
+        }
+
+        void pop_front()
+        {
+            Vector new_row(row_.size() + 1, 1);
+
+            for(auto i : ural::numbers(1, row_.size()))
+            {
+                new_row[i] = row_[i] + row_[i-1];
+            }
+
+            row_.swap(new_row);
+        }
+
+    private:
+        Vector row_;
+    };
 }
 // namespace ural
 

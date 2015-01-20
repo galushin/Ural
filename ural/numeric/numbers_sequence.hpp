@@ -121,7 +121,16 @@ namespace ural
         return Seq{std::move(x_min), std::move(x_max), std::move(step)};
     }
 
-
+    /** @brief Создание последовательности индексов массива
+    @param v массив
+    @return <tt> ural::numbers(0, v.size()) </tt>
+    */
+    template <class Vector>
+    auto indices_of(Vector const & v)
+    -> decltype(ural::numbers(0, v.size()))
+    {
+        return ural::numbers(0, v.size());
+    }
 }
 // namespace ural
 

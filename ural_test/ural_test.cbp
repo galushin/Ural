@@ -82,6 +82,7 @@
 		<Unit filename="../ural/archetypes.hpp" />
 		<Unit filename="../ural/concepts.hpp" />
 		<Unit filename="../ural/defs.hpp" />
+		<Unit filename="../ural/distributions/discrete.hpp" />
 		<Unit filename="../ural/flex_string.hpp" />
 		<Unit filename="../ural/format.hpp" />
 		<Unit filename="../ural/format/stream_traits.hpp" />

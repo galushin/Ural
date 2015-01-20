@@ -465,3 +465,31 @@ BOOST_AUTO_TEST_CASE(abs_fn_test)
     BOOST_CHECK_CLOSE(abs_f(std::complex<double>(3, 4)), 5.0, 1e-6);
     BOOST_CHECK_CLOSE(abs_f(std::complex<double>(3, 4)), 5.0, 1e-6);
 }
+
+// Треугольник Паскаля
+#include <ural/numeric.hpp>
+#include <set>
+BOOST_AUTO_TEST_CASE(pascal_triangle_PE_203)
+{
+    std::set<int> const z = {1, 2, 3, 4, 5, 6, 7, 10, 15, 20, 21, 35};
+
+    std::set<int> r;
+
+    auto seq = ural::pascal_triangle_rows_sequence<std::vector<int>>{};
+
+    for(auto i : ural::numbers(0, 8))
+    {
+        auto const & row = *seq;
+
+        BOOST_CHECK_EQUAL(row.size(), i+1);
+
+        for(auto x : row)
+        {
+            r.insert(x);
+        }
+
+        ++ seq;
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(r.begin(), r.end(), z.begin(), z.end());
+}

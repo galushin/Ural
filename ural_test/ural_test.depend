@@ -41,7 +41,7 @@
 
 1382674135 c:\devtools\ural_repo\ural\\ural\sequence\insertion.hpp
 
-1421315707 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
+1421721964 source:c:\devtools\ural_repo\ural\tests\numeric_tests.cpp
 	<ural/format.hpp>
 	<ural/numeric/matrix.hpp>
 	<ural/algorithm.hpp>
@@ -371,7 +371,7 @@
 	<ural/sequence/transform.hpp>
 	<ural/sequence/uniqued.hpp>
 
-1419557709 c:\devtools\ural_repo\ural\ural\sequence\iterator_sequence.hpp
+1421384282 c:\devtools\ural_repo\ural\ural\sequence\iterator_sequence.hpp
 	<ural/sequence/base.hpp>
 	<ural/tuple.hpp>
 	<ural/utility.hpp>
@@ -386,7 +386,7 @@
 	<ural/concepts.hpp>
 	<ural/tuple.hpp>
 
-1421290999 c:\devtools\ural_repo\ural\ural\numeric.hpp
+1421732936 c:\devtools\ural_repo\ural\ural\numeric.hpp
 	<ural/math.hpp>
 	<ural/functional.hpp>
 	<ural/algorithm/details/copy.hpp>
@@ -395,8 +395,7 @@
 	<ural/numeric/partial_sums.hpp>
 	<ural/numeric/adjacent_differences.hpp>
 
-1403140707 c:\devtools\ural_repo\ural\ural\functional.hpp
-	<boost/compressed_pair.hpp>
+1421630220 c:\devtools\ural_repo\ural\ural\functional.hpp
 	<ural/functional/adjoin.hpp>
 	<ural/functional/compare_by.hpp>
 	<ural/functional/cpp_operators.hpp>
@@ -557,7 +556,8 @@
 	<ural/functional.hpp>
 	<ural/optional.hpp>
 
-1421023158 source:c:\devtools\ural_repo\ural\tests\functional_test.cpp
+1421720636 source:c:\devtools\ural_repo\ural\tests\functional_test.cpp
+	<ural/math.hpp>
 	<ural/utility/tracers.hpp>
 	<ural/functional.hpp>
 	<ural/memory.hpp>
@@ -661,7 +661,7 @@
 	<cassert>
 	<memory>
 
-1421374386 c:\devtools\ural_repo\ural\ural\sequence\moved.hpp
+1421630220 c:\devtools\ural_repo\ural\ural\sequence\moved.hpp
 	<ural/sequence/make.hpp>
 	<ural/sequence/iterator_sequence.hpp>
 	<ural/sequence/base.hpp>
@@ -674,7 +674,7 @@
 	<ural/tuple.hpp>
 	<ural/functional/cpp_operators.hpp>
 
-1399538779 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
+1421630220 c:\devtools\ural_repo\ural\ural\functional\cpp_operators.hpp
 	<ural/functional/make_functor.hpp>
 	<ural/functional/compose.hpp>
 
@@ -6419,7 +6419,7 @@
 
 1398736170 c:\devtools\ural_repo\ural\ural\sequence\partition.hpp
 
-1421119475 source:c:\devtools\ural_repo\ural\tests\math_tests.cpp
+1421732410 source:c:\devtools\ural_repo\ural\tests\math_tests.cpp
 	<ural/numeric.hpp>
 	<ural/math/common_factor.hpp>
 	<boost/test/unit_test.hpp>
@@ -6430,8 +6430,10 @@
 	<ural/math/continued_fraction.hpp>
 	<ural/sequence/insertion.hpp>
 	<ural/math/primes.hpp>
+	<ural/numeric.hpp>
+	<set>
 
-1412669337 c:\devtools\ural_repo\ural\ural\math\common_factor.hpp
+1421658388 c:\devtools\ural_repo\ural\ural\math\common_factor.hpp
 	<cmath>
 	<utility>
 
@@ -6440,7 +6442,7 @@
 	<ural/math/common_factor.hpp>
 	<ural/defs.hpp>
 
-1421318015 source:c:\devtools\ural_repo\ural\tests\rational_tests.cpp
+1421657669 source:c:\devtools\ural_repo\ural\tests\rational_tests.cpp
 	<ural/format.hpp>
 	<ural/math/rational.hpp>
 	<ostream>
@@ -6448,7 +6450,7 @@
 	<boost/mpl/list.hpp>
 	<boost/operators.hpp>
 
-1421319610 c:\devtools\ural_repo\ural\ural\math\rational.hpp
+1421658409 c:\devtools\ural_repo\ural\ural\math\rational.hpp
 	<ural/tuple.hpp>
 	<ural/math/common_factor.hpp>
 	<ural/defs.hpp>
@@ -6458,7 +6460,7 @@
 	<utility>
 	<stdexcept>
 
-1421302708 c:\devtools\ural_repo\ural\ural\utility.hpp
+1421630220 c:\devtools\ural_repo\ural\ural\utility.hpp
 	<ural/placeholders.hpp>
 	<ural/defs.hpp>
 	<ural/type_traits.hpp>
@@ -6487,7 +6489,7 @@
 	<ural/sequence/base.hpp>
 	<string>
 
-1421311962 source:c:\devtools\ural_repo\ural\tests\random_tests.cpp
+1421630220 source:c:\devtools\ural_repo\ural\tests\random_tests.cpp
 	"rnd.hpp"
 	<ural/algorithm.hpp>
 	<ural/statistics.hpp>
@@ -6696,7 +6698,7 @@
 	<utility>
 	<stdexcept>
 
-1399536711 c:\devtools\ural_repo\ural\ural\functional\adjoin.hpp
+1421630220 c:\devtools\ural_repo\ural\ural\functional\adjoin.hpp
 	<ural/tuple.hpp>
 	<ural/utility.hpp>
 	<ural/functional/make_functor.hpp>
@@ -6707,17 +6709,20 @@
 	<ural/sequence/sink.hpp>
 	<boost/operators.hpp>
 
-1421023158 c:\devtools\ural_repo\ural\ural\functional\compare_by.hpp
+1421630220 c:\devtools\ural_repo\ural\ural\functional\compare_by.hpp
+	<ural/tuple.hpp>
 	<ural/functional/cpp_operators.hpp>
 
-1420765094 c:\devtools\ural_repo\ural\ural\math.hpp
+1421720579 c:\devtools\ural_repo\ural\ural\math.hpp
 	<ural/functional/cpp_operators.hpp>
 	<cassert>
 	<cstddef>
+	<cmath>
+	<cstdlib>
 	<utility>
 	<stdexcept>
 
-1420765094 source:c:\devtools\ural_repo\ural\tests\statistics_tests.cpp
+1421730639 source:c:\devtools\ural_repo\ural\tests\statistics_tests.cpp
 	<ural/math.hpp>
 	<ural/statistics.hpp>
 	<ural/math/rational.hpp>
@@ -6731,6 +6736,7 @@
 	<ural/numeric/matrix_decomposition.hpp>
 	<boost/numeric/ublas/vector.hpp>
 	<boost/numeric/ublas/symmetric.hpp>
+	<ural/distributions/discrete.hpp>
 
 1421311902 c:\devtools\ural_repo\ural\ural\statistics.hpp
 	<ural/numeric/numbers_sequence.hpp>
@@ -12197,14 +12203,15 @@
 	<map>
 	<mutex>
 
-1421311720 source:c:\devtools\ural_repo\ural\tests\flex_string_tests.cpp
+1421630220 source:c:\devtools\ural_repo\ural\tests\flex_string_tests.cpp
 	<ural/numeric/numbers_sequence.hpp>
 	<ural/flex_string.hpp>
 	<boost/test/unit_test.hpp>
 	<boost/mpl/list.hpp>
+	<string>
 	<sstream>
 
-1420765094 c:\devtools\ural_repo\ural\ural\flex_string.hpp
+1421630220 c:\devtools\ural_repo\ural\ural\flex_string.hpp
 	<ural/algorithm.hpp>
 	<ural/utility.hpp>
 	<ural/defs.hpp>
@@ -21960,26 +21967,28 @@
 	<cassert>
 	<vector>
 
-1421294764 c:\devtools\ural_repo\ural\ural\numeric\numbers_sequence.hpp
+1421731163 c:\devtools\ural_repo\ural\ural\numeric\numbers_sequence.hpp
 	<ural/tuple.hpp>
 	<ural/sequence/base.hpp>
 
-1421023158 c:\devtools\ural_repo\ural\ural\math\continued_fraction.hpp
+1421657669 c:\devtools\ural_repo\ural\ural\math\continued_fraction.hpp
 	<ural/sequence/make.hpp>
 	<ural/math/rational.hpp>
 	<cassert>
 
-1421119838 c:\devtools\ural_repo\ural\ural\math\primes.hpp
+1421715753 c:\devtools\ural_repo\ural\ural\math\primes.hpp
 	<ural/algorithm.hpp>
 	<ural/sequence/make.hpp>
 	<ural/math/common_factor.hpp>
 	<cassert>
 	<vector>
 
-1421295224 c:\devtools\ural_repo\ural\ural\numeric\mp\integer.hpp
+1421723424 c:\devtools\ural_repo\ural\ural\numeric\mp\integer.hpp
 	<ural/algorithm.hpp>
 	<ural/sequence/reversed.hpp>
 	<boost/io/ios_state.hpp>
+	<cmath>
+	<cstdlib>
 
 1421128620 c:\devtools\ural_repo\ural\ural\format\stream_traits.hpp
 	<string>
@@ -21991,4 +22000,15 @@
 	<ural/algorithm.hpp>
 	<ural/sequence/reversed.hpp>
 	<boost/io/ios_state.hpp>
+
+1421657326 c:\devtools\ural_repo\ural\ural\math\core.hpp
+	<ural/math/rational.hpp>
+	<ural/functional/cpp_operators.hpp>
+	<cassert>
+	<cstddef>
+	<cmath>
+	<utility>
+	<stdexcept>
+
+1421731371 c:\devtools\ural_repo\ural\ural\distributions\discrete.hpp
 
