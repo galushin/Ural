@@ -25,6 +25,8 @@
 
 #include <cassert>
 #include <cstddef>
+#include <cmath>
+#include <cstdlib>
 
 #include <utility>
 #include <stdexcept>

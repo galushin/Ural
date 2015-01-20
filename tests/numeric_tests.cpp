@@ -509,18 +509,9 @@ typedef ural::integer_10 integer;
 
 integer digit_sum(integer const & x)
 {
-    integer result{0};
+    assert(x > 0);
 
-    // @todo assert(x > 0)
-    // @todo заменить на алгоритм
-
-    for(auto d : x.digits())
-    {
-        assert(0 <= d && d < 10);
-        result += integer{d};
-    }
-
-    return result;
+    return ural::accumulate(x.digits(), integer{0});
 }
 
 #include <ural/sequence/progression.hpp>

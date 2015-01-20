@@ -27,6 +27,9 @@
 
 #include <boost/io/ios_state.hpp>
 
+#include <cmath>
+#include <cstdlib>
+
 namespace ural
 {
     /** @brief Представление числа в виде последовательности цифр по
@@ -97,6 +100,9 @@ namespace ural
     // @todo Шаблоны выражений
     /** @brief Класс чисел с произвольной точностью, представленный как
     последовательность (десятичных) цифр
+
+    Нужно обратить внимание, что ноль (по крайней мере --- потенциально),
+    не является уникально представленным
     */
     template <long base>
     class integer
@@ -104,11 +110,21 @@ namespace ural
         typedef integer self_type;
 
     // Операторы сравнения
+    /** @brief Оператор "равно"
+    @param x левый операнд
+    @param y правый операнд
+    @return @b true, если числа @c x и @c y равны, иначе --- @b false
+    */
     friend bool operator==(integer const & x, integer const & y)
     {
         return x.members_ == y.members_;
     }
 
+    /** @brief Функция сравнения целых чисел произвольной точности по модулю
+    @param x левый операнд
+    @param y правый операнд
+    @return @b true, если @c x меньше по модулю, чем @c y, иначе --- @b false
+    */
     friend bool abs_less(integer const & x, integer const & y)
     {
         if(x.size() < y.size())
@@ -124,6 +140,11 @@ namespace ural
                                              y.digits() | ural::reversed);
     }
 
+    /** @brief Оператор "меньше"
+    @param x левый операнд
+    @param y правый операнд
+    @return @b true, если @c x меньше, чем @c y, иначе --- @b false
+    */
     friend bool operator<(integer const & x, integer const & y)
     {
         // Отрицательные всегда меньше не отрицательных
@@ -157,19 +178,21 @@ namespace ural
 
     friend integer operator*(integer const & x, integer const & y)
     {
+        if(x.size() == 0 || y.size() == 0)
+        {
+            return integer{};
+        }
+
         // @todo оптимизация
         integer result;
 
-        if(x.size() > 0 && y.size() > 0)
+        for(size_t i = 0; i != y.size(); ++ i)
         {
-            for(size_t i = 0; i != y.size(); ++ i)
-            {
-                result += integer::multiply_by_digit(x, y.digits()[i], i);
-            }
-
-            result.is_positive_ref()
-                = (x.is_not_negative() == y.is_not_negative());
+            result += integer::multiply_by_digit(x, y.digits()[i], i);
         }
+
+        result.is_not_negative_ref()
+            = (x.is_not_negative() == y.is_not_negative());
 
         return result;
     }
@@ -188,8 +211,13 @@ namespace ural
         static_assert(base > 1, "Unsupported radix");
 
         // Типы
+        /// @brief Тип цифр
         typedef short Digit;
+
+        /// @brief Тип контейнера, используемого для хранения цифр
         typedef std::vector<Digit> Digits_container;
+
+        /// @brief Тип для представления размера
         typedef typename Digits_container::size_type size_type;
 
         // Создание, копирование, уничтожение
@@ -199,27 +227,22 @@ namespace ural
         integer()
          : members_{}
         {
-            is_positive_ref() = true;
+            is_not_negative_ref() = true;
         }
 
+        /** @brief Конструктор
+        @param init_value значение числа
+        @post <tt> *this == init_value </tt>
+        */
         template <class T>
         explicit integer(T init_value)
         {
-            if(init_value < 0)
-            {
-                is_positive_ref() = false;
-                init_value = -init_value;
-            }
-            else
-            {
-                is_positive_ref() = true;
-            }
-
             static_assert(std::is_integral<T>::value, "Must be integral");
 
-            assert(init_value >= 0);
+            is_not_negative_ref() = (init_value >= T{0});
 
-            ural::copy(digits_sequence<T, base>{std::move(init_value)},
+            using std::abs;
+            ural::copy(digits_sequence<T, base>{abs(std::move(init_value))},
                        this->digits_ref() | ural::back_inserter);
         }
 
@@ -234,11 +257,11 @@ namespace ural
         {
             // @todo устранить дублирование
 
-            if(this->is_positive_ref() == false)
+            if(this->is_not_negative_ref() == false)
             {
-                this->is_positive_ref() = true;
+                this->is_not_negative_ref() = true;
                 -- *this;
-                this->is_positive_ref() = this->digits().empty();
+                this->is_not_negative_ref() = this->digits().empty();
 
                 return *this;
             }
@@ -265,11 +288,11 @@ namespace ural
         {
             // @todo устранить дублирование
 
-            if(this->is_positive_ref() == false || this->digits().empty())
+            if(this->is_not_negative_ref() == false || this->digits().empty())
             {
-                this->is_positive_ref() = true;
+                this->is_not_negative_ref() = true;
                 ++ *this;
-                this->is_positive_ref() = false;
+                this->is_not_negative_ref() = false;
 
                 return *this;
             }
@@ -303,7 +326,7 @@ namespace ural
         integer operator-() const
         {
             auto result = *this;
-            result.is_positive_ref() = !result.is_positive_ref();
+            result.is_not_negative_ref() = !result.is_not_negative_ref();
             return result;
         }
 
@@ -451,7 +474,7 @@ namespace ural
 
             if(digits().empty())
             {
-                this->is_positive_ref() = true;
+                this->is_not_negative_ref() = true;
             }
         }
 
@@ -460,7 +483,7 @@ namespace ural
             return members_[ural::_1];
         }
 
-        bool & is_positive_ref()
+        bool & is_not_negative_ref()
         {
             return members_[ural::_2];
         }
@@ -469,6 +492,19 @@ namespace ural
         ural::tuple<Digits_container, bool> members_;
 
     };
+
+    template <class T, long radix>
+    typename std::enable_if<std::is_integral<T>::value, integer<radix>>::type
+    operator+(integer<radix> const & x, T const & a)
+    {
+        // @todo устранить дублирование
+        // @todo без временного объекта
+        return x + integer<radix>{a};
+    }
+
+    template <class T, long radix>
+    typename std::enable_if<std::is_integral<T>::value, integer<radix>>::type
+    operator+(T const & a, integer<radix> const & x);
 
     template <class T, long radix>
     typename std::enable_if<std::is_integral<T>::value, integer<radix>>::type
@@ -510,7 +546,11 @@ namespace ural
 
     template <class T, long radix>
     typename std::enable_if<std::is_integral<T>::value, bool>::type
-    operator<(T const & a, integer<radix> const & x);
+    operator<(T const & a, integer<radix> const & x)
+    {
+        // @todo без временного объекта
+        return integer<radix>{a} < x;
+    }
 
     template <class T, long radix>
     typename std::enable_if<std::is_integral<T>::value, bool>::type

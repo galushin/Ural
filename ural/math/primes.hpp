@@ -111,7 +111,7 @@ namespace ural
         template <class IntType, class Input>
         bool operator()(IntType const & x, Input && ds) const
         {
-            for(auto seq = ural::sequence(ds); !!seq; ++ seq)
+            for(auto seq = ural::sequence_fwd<Input>(ds); !!seq; ++ seq)
             {
                 auto const & value = *seq;
 
