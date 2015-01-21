@@ -101,13 +101,16 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(probability_bad_value_assign_test, T, Real_types)
 
 BOOST_AUTO_TEST_CASE(average_type_test)
 {
-    // typedef ural::rational<int> Rational;
+    typedef ural::rational<int> Rational;
 
     using std::is_same;
     using ural::average_type;
 
+    typedef std::common_type<int, size_t>::type int_and_size_t;
+
     static_assert(is_same<double, average_type<int, size_t>::type>::value, "");
     static_assert(is_same<double, average_type<double, size_t>::type>::value, "");
+    static_assert(is_same<Rational, average_type<Rational, int>::type>::value, "");
     // @todo static_assert(is_same<Rational, average_type<Rational, size_t>::type>::value, "");
 
     BOOST_CHECK(true);

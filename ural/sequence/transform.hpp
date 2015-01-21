@@ -57,14 +57,6 @@ namespace ural
 
         typedef tuple<Inputs...> Bases_tuple;
 
-//        typedef typename meta::make_list<static_fn<void(Inputs::*)(), &Inputs::pop_front>...>::type
-//            pop_front_types;
-//
-//        typedef typename meta::copy_without_duplicates<pop_front_types>::type
-//            uniq_pop_front_types;
-//
-//        @todo typedef meta::inherit_from<uniq_pop_front_types> pop_fronts_fn;
-
     public:
         /// @brief Тип ссылки
         typedef decltype(std::declval<F>()(*std::declval<Inputs>()...)) reference;

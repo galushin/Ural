@@ -131,7 +131,9 @@ namespace ural
     tuple<typename strip_ref_wrapper<typename std::decay<Ts>::type>::type...>
     make_tuple(Ts && ... args)
     {
-        return {std::forward<Ts>(args)...};
+        typedef tuple<typename strip_ref_wrapper<typename std::decay<Ts>::type>::type...>
+            Tuple;
+        return Tuple{std::forward<Ts>(args)...};
     }
 
 /// @cond false

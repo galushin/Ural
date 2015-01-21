@@ -363,6 +363,23 @@ BOOST_AUTO_TEST_CASE(filtered_test)
                                   r_ural.begin(), r_ural.end());
 }
 
+BOOST_AUTO_TEST_CASE(copy_if_test)
+{
+    typedef int Type;
+    std::vector<Type> const xs = {25, -15, 5, -5, 15};
+    auto const pred = [](Type i){return !(i<0);};
+
+    std::vector<Type> r_std;
+
+    std::copy_if (xs.begin(), xs.end(), std::back_inserter(r_std) , pred);
+
+    std::vector<Type> r_ural;
+    ural::copy_if(xs, r_ural | ural::back_inserter, pred);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
+                                  r_ural.begin(), r_ural.end());
+}
+
 BOOST_AUTO_TEST_CASE(filtered_getters_test)
 {
     typedef int Type;
@@ -387,7 +404,6 @@ BOOST_AUTO_TEST_CASE(filtered_getters_test)
     BOOST_CHECK(s1 != s3);
 }
 
-// @todo copy_if
 // @todo copy_backward
 
 // 25.3.2 Перемещение

@@ -88,7 +88,6 @@ typedef ural::flex_string<char, ural::use_default, test_allocator<char>>
 
 typedef boost::mpl::list<String, Vector_string> Strings_list;
 
-// @todo заменять тесты на шаблоны
 // Интеграция с std::string
 BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_std_string, String, Strings_list)
 {
@@ -244,7 +243,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_c_str_with_allocator, String, Str
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_n_char, String, Strings_list)
 {
-    auto const n = 13;
+    auto const n = 13U;
     auto const C = 'a';
 
     String const s(n, C);

@@ -26,8 +26,6 @@
 #include <ural/algorithm.hpp>
 #include <ural/sequence/transform.hpp>
 #include <ural/sequence/make.hpp>
-#include <ural/meta/hierarchy.hpp>
-#include <ural/meta/list.hpp>
 #include <ural/defs.hpp>
 
 #include <boost/numeric/ublas/symmetric.hpp>
@@ -38,35 +36,6 @@
 
 namespace ural
 {
-    /** @brief Класс-характеристика, определяющая, являются ли все типы пачки
-    целочисленными.
-    @tparam Ts пачка типов
-    */
-    template <class... Ts>
-    struct are_integral
-     : meta::all_of<typename meta::make_list<Ts...>::type, std::is_integral>
-    {};
-
-    /** @brief Класс-характеристика для определения типа среднего значения
-    @tparam T тип элементов выборки
-    @tparam N тип для представления количества элементов
-    @tparam Enabler вспомогательный тип для специализации на основе
-    <tt> std::enable_if </tt>
-    */
-    template <class T, class N, class Enabler = void>
-    struct average_type
-     : declare_type<decltype(std::declval<T>() / std::declval<N>())>
-    {};
-
-    /** @brief Специализация для целочисленных выборок
-    @tparam T тип элементов выборки
-    @tparam N тип для представления количества элементов
-    */
-    template <class T, class N>
-    struct average_type<T, N, typename std::enable_if<are_integral<T, N>::value>::type>
-     : declare_type<double>
-    {};
-
     /** @brief Класс исключения "некорректное значение вероятности"
     */
     class bad_probability

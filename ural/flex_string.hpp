@@ -915,11 +915,15 @@ namespace ural
         @param last конец интервала
         @pre <tt> [first; last)</tt>  --- допустимый интервал
         @return <tt> *this </tt>
+        @todo Тест случая, когда @c first и @c last --- целые типы
         */
         template <class InputIterator>
         flex_string & append(InputIterator first, InputIterator last)
         {
-            // @todo reserve, если позволяет категория итераторов
+            typedef typename std::iterator_traits<InputIterator>::iterator_category
+                Iterator_category;
+            this->try_reserve_to_append(first, last, Iterator_category{});
+
             data_.pop_back(1);
             for(; first != last; ++ first)
             {
@@ -942,10 +946,16 @@ namespace ural
         /** Дописывает символ @c c в конец данной строки.
         @param c символ
         @return <tt> *this </tt>
-        @todo Обеспечить, чтобы сложность была амортизированнной постоянной
         */
         void push_back(value_type c)
         {
+            // Экспоненциальный рост размера, чтобы количество копирований
+            // было амортизированной константой
+            if(this->size() == this->capacity())
+            {
+                this->reserve(2 * this->size());
+            }
+
             this->append(size_type{1}, c);
         }
 
@@ -1486,6 +1496,28 @@ namespace ural
             return (f == s);
         }
         //@}
+
+    private:
+        /* Для итераторов произвольного доступа вычисляется количество элементов
+        и вызывается reserve
+        Прямые и двусторонние итераторы, в принципе, позволяют узнать количество
+        элементов до начала вставки, но стоимость двойного прохода
+        непредсказуема. Если пользователю нужна оптимизация, то он может
+        выполнить её вручную
+        */
+        template <class InputIterator>
+        void try_reserve_to_append(InputIterator, InputIterator,
+                                   std::input_iterator_tag)
+        {
+            return;
+        }
+
+        template <class InputIterator>
+        void try_reserve_to_append(InputIterator first, InputIterator last,
+                                   std::random_access_iterator_tag)
+        {
+            this->reserve(this->size() + last - first);
+        }
 
     private:
         storage_type data_;

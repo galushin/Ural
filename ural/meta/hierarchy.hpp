@@ -21,6 +21,8 @@
  @brief Средства генерации иерархий
 */
 
+#include <ural/defs.hpp>
+
 namespace ural
 {
 namespace meta

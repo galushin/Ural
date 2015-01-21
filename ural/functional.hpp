@@ -160,6 +160,12 @@ namespace ural
         tuple<value_type, Compare> impl_;
     };
 
+    /** @brief Функция создания накопителя наименьшего значения
+    @param init_value начальное значение
+    @param pred бинарный предикат
+    @return <tt> min_element_accumulator<>(std::move(init_value),
+                                           ural::make_functor(std::move(pred)) </tt>
+    */
     template <class Value, class BinaryPredicate>
     auto make_min_element_accumulator(Value init_value, BinaryPredicate pred)
     -> min_element_accumulator<Value, decltype(ural::make_functor(std::move(pred)))>

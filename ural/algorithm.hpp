@@ -21,6 +21,7 @@
  @brief Обобщённые алгоритмы
 */
 
+#include <ural/sequence/filtered.hpp>
 #include <ural/sequence/transform.hpp>
 #include <ural/sequence/moved.hpp>
 #include <ural/sequence/make.hpp>
@@ -367,6 +368,26 @@ namespace details
                                    sequence_fwd<Output>(out));
     }
 
+    class copy_if_fn
+    {
+    public:
+        template <class Input, class Output, class Predicate>
+        auto operator()(Input && in, Output && out, Predicate pred) const
+        -> tuple<decltype(sequence_fwd<Input>(in)),
+                 decltype(sequence_fwd<Output>(out))>
+        {
+            auto in_f = sequence_fwd<Input>(in) | ural::filtered(pred);
+            auto res = ural::copy(std::move(in_f), sequence_fwd<Output>(out));
+
+            return ural::make_tuple(res[ural::_1].base(), res[ural::_2]);
+        }
+
+    private:
+    };
+
+    auto constexpr copy_if = copy_if_fn{};
+
+    // 25.3.4
     class transform_f
     {
     public:

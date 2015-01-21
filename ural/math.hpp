@@ -21,6 +21,9 @@
  @brief Математические функции и типы данных
 */
 
+#include <ural/meta/hierarchy.hpp>
+#include <ural/meta/list.hpp>
+
 #include <ural/functional/cpp_operators.hpp>
 
 #include <cassert>
@@ -65,12 +68,21 @@ namespace details
 
     auto constexpr square = ::ural::details::square_functor{};
 
+    /** @brief Функция вычисления обобщённого куба числа
+    @param x значение, для которого вычисляется куб
+    @param op операция, используемая в качестве умножения
+    @return <tt> op(ural::square(x, op), x) </tt>
+    */
     template <class T, class BinOp>
     constexpr T cube(T const & x, BinOp op)
     {
         return op(ural::square(x, op), x);
     }
 
+    /** @brief Функция вычисления куба числа
+    @param x значение, для которого вычисляется куб
+    @return <tt> ural::cube(x, ural::multiplies<>{}) </tt>
+    */
     template <class T>
     constexpr T cube(T const & x)
     {
@@ -84,6 +96,9 @@ namespace details
     template <class T, class F>
     struct unit_element_traits;
 
+    /** @brief Нейтральный элемент относительно умножения
+    @tparam T тип значений
+    */
     template <class T>
     struct unit_element_traits<T, ural::multiplies<>>
     {
@@ -94,6 +109,9 @@ namespace details
         }
     };
 
+    /** @brief Нейтральный элемент относительно сложения
+    @tparam T тип значений
+    */
     template <class T>
     struct unit_element_traits<T, ural::plus<>>
     {
@@ -205,6 +223,35 @@ namespace details
     {
         return abs_fn{};
     }
+
+    /** @brief Класс-характеристика, определяющая, являются ли все типы пачки
+    целочисленными.
+    @tparam Ts пачка типов
+    */
+    template <class... Ts>
+    struct are_integral
+     : meta::all_of<typename meta::make_list<Ts...>::type, std::is_integral>
+    {};
+
+    /** @brief Класс-характеристика для определения типа среднего значения
+    @tparam T тип элементов выборки
+    @tparam N тип для представления количества элементов
+    @tparam Enabler вспомогательный тип для специализации на основе
+    <tt> std::enable_if </tt>
+    */
+    template <class T, class N, class Enabler = void>
+    struct average_type
+     : declare_type<decltype(std::declval<T>() / std::declval<N>())>
+    {};
+
+    /** @brief Специализация для целочисленных выборок
+    @tparam T тип элементов выборки
+    @tparam N тип для представления количества элементов
+    */
+    template <class T, class N>
+    struct average_type<T, N, typename std::enable_if<are_integral<T, N>::value>::type>
+     : declare_type<double>
+    {};
 }
 // namespace ural
 

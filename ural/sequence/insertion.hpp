@@ -128,7 +128,6 @@ namespace ural
 
     /** @brief Выходная последовательность реализующая вставку в множество
     @tparam Container тип контейнера, хранящего множество
-    @todo Доступ к контейнеру
     */
     template <class Container>
     class set_insert_sequence
@@ -140,6 +139,8 @@ namespace ural
 
         /** @brief Конструктор
         @param c контейнер, в который будет производится вставка
+        @post Выражение вида <tt> **this = value </tt> будет эквивалентно
+        <tt> c.insert(value) </tt>
         */
         explicit set_insert_sequence(Container & c)
          : c_{c}
@@ -147,14 +148,16 @@ namespace ural
 
         /** @brief Доступ к контейнеру, в который производится вставка
         @return Константная ссылка на контейнер, в который производится запись
-        @todo Нужен ли доступ к неконстантной ссылке
         */
-        Container const & container() const
+        Container & container() const
         {
             return c_.get();
         }
 
         // Однопроходная последовательность
+        /** @brief Проверка исчерпания последовательности
+        @return @b false --- это бесконечная последовательность
+        */
         bool operator!() const
         {
             return false;

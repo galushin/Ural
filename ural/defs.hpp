@@ -21,7 +21,7 @@
  @brief Определения основных типов, используемых библиотекой
 */
 
-#include <ural/type_traits.hpp>
+#include <type_traits>
 
 /// @brief Макрос для предотвращения макро-подстановки при объявлении функции
 #define URAL_PREVENT_MACRO_SUBSTITUTION
