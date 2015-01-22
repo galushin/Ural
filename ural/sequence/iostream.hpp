@@ -163,6 +163,21 @@ namespace ural
         typedef typename default_delimeter_helper<ostream_type, Delimeter>::type
             delimeter_type;
 
+        /// @brief Категория итератора
+        typedef std::output_iterator_tag iterator_category;
+
+        /// @brief Тип значения
+        typedef void value_type;
+
+        /// @brief Тип расстояния
+        typedef void difference_type;
+
+        /// @brief Тип указателя
+        typedef void pointer;
+
+        /// @brief Тип ссылки
+        typedef void reference;
+
         // Конструктор
         /** @brief Конструктор
         @param os поток вывода

@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(ostream_sequence_test)
     std::copy(xs.begin(), xs.end(), std::ostream_iterator<Value>(os_std, " "));
 
     auto seq = ural::make_ostream_sequence<Value>(os_ural, " ");
-    ural::copy(xs, seq);
+    std::copy(xs.begin(), xs.end(), seq);
 
     BOOST_CHECK_EQUAL(os_std.str(), os_ural.str());
 
@@ -511,4 +511,22 @@ BOOST_AUTO_TEST_CASE(moved_iterator_sequence_iterators)
 
     BOOST_CHECK(begin(rs2) == std::make_move_iterator(v2.begin()));
     BOOST_CHECK(end(rs2) == std::make_move_iterator(v2.end()));
+}
+
+BOOST_AUTO_TEST_CASE(function_output_sequence_as_iterator)
+{
+    int result = 0;
+
+    std::function<void(int)> acc = [&result](int x) { result += x; };
+
+    auto out = ural::make_function_output_sequence(acc);
+
+    // Концепция
+    BOOST_CONCEPT_ASSERT((boost::OutputIterator<decltype(out), int>));
+
+    // Пример использования
+    std::vector<int> const xs = {1, 2, 3, 4, 5};
+    std::copy(xs.begin(), xs.end(), out);
+
+    BOOST_CHECK_EQUAL(15, result);
 }

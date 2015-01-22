@@ -42,6 +42,21 @@ namespace ural
         /// @brief Категория обхода
         typedef single_pass_traversal_tag traversal_tag;
 
+        /// @brief Категория итератора
+        typedef std::output_iterator_tag iterator_category;
+
+        /// @brief Тип значения
+        typedef void value_type;
+
+        /// @brief Тип расстояния
+        typedef void difference_type;
+
+        /// @brief Тип указателя
+        typedef void pointer;
+
+        /// @brief Тип ссылки
+        typedef void reference;
+
         // Конструкторы
         /** @brief Конструктор без аргументов
         @post <tt> this->functor() == UnaryFunction{} </tt>
