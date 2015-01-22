@@ -587,8 +587,6 @@ namespace ural
     std::basic_ostream<Char, Traits> &
     operator<<(std::basic_ostream<Char, Traits> & os, integer<radix> const & x)
     {
-        static_assert(1 < radix && radix <= 16, "Unsupported radix");
-
         if(x.digits().empty())
         {
             return os << '0';
@@ -606,11 +604,17 @@ namespace ural
             os << std::hex;
         }
 
-        for(auto const & d : x.digits() | ural::reversed)
+        if(radix <= 16)
         {
-            assert(0 <= d && d < radix);
-            os << d;
+            ural::copy(x.digits() | ural::reversed,
+                       ural::make_ostream_sequence(os));
         }
+        else
+        {
+            ural::write_delimeted(os, x.digits() | ural::reversed, ':');
+        }
+
+
         return os;
     }
 }

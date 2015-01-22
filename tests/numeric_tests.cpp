@@ -830,6 +830,21 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_minus_test)
 
 // @todo деление и взятие остатка
 
+BOOST_AUTO_TEST_CASE(MP_integer_60_output)
+{
+    ural::integer<60> const x(2*60*60 - 1);
+
+    BOOST_CHECK_EQUAL(x.digits()[0], 59);
+    BOOST_CHECK_EQUAL(x.digits()[1], 59);
+    BOOST_CHECK_EQUAL(x.digits()[2], 1);
+
+    std::string const z = "1:59:59";
+
+    auto const s = ural::to_string(x);
+
+    BOOST_CHECK_EQUAL(s, z);
+}
+
 // Цепные дроби
 #include <ural/math/continued_fraction.hpp>
 
