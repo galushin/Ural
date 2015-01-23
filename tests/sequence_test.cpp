@@ -530,3 +530,25 @@ BOOST_AUTO_TEST_CASE(function_output_sequence_as_iterator)
 
     BOOST_CHECK_EQUAL(15, result);
 }
+
+#include <boost/iterator/transform_iterator.hpp>
+BOOST_AUTO_TEST_CASE(transform_sequence_iterators)
+{
+    std::string const s("hello");
+
+    auto f = ural::function_ptr_functor<int(int)>(std::toupper);
+
+    auto const seq = ural::make_transform_sequence(f, s);
+
+    typedef boost::transform_iterator<decltype(f), decltype(s.begin())>
+        Iterator;
+
+    Iterator bf = begin(seq);
+    Iterator ef = end(seq);
+
+    BOOST_CHECK(bf.base() == s.begin());
+    BOOST_CHECK(ef.base() == s.end());
+
+    BOOST_CHECK(bf.functor() == f);
+    BOOST_CHECK(ef.functor() == f);
+}

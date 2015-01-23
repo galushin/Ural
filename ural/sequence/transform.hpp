@@ -28,6 +28,7 @@
 #include <ural/sequence/make.hpp>
 #include <ural/sequence/base.hpp>
 
+#include <boost/iterator/transform_iterator.hpp>
 #include <boost/compressed_pair.hpp>
 
 namespace ural
@@ -142,6 +143,20 @@ namespace ural
     private:
         boost::compressed_pair<F, Bases_tuple> impl_;
     };
+
+    template <class UnaryFunction, class Sequence>
+    auto begin(transform_sequence<UnaryFunction, Sequence> const & s)
+    -> boost::transform_iterator<UnaryFunction, decltype(begin(s.bases()[ural::_1]))>
+    {
+        return {begin(s.bases()[ural::_1]), s.functor()};
+    }
+
+    template <class UnaryFunction, class Sequence>
+    auto end(transform_sequence<UnaryFunction, Sequence> const & s)
+    -> boost::transform_iterator<UnaryFunction, decltype(begin(s.bases()[ural::_1]))>
+    {
+        return {end(s.bases()[ural::_1]), s.functor()};
+    }
 
     template <class UnaryFunction, class... Inputs>
     auto make_transform_sequence(UnaryFunction f, Inputs && ... in)
