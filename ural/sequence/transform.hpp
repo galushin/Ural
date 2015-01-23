@@ -33,16 +33,6 @@
 
 namespace ural
 {
-    class pop_fronts_fn
-    {
-    public:
-        template <class T>
-        void operator()(T & x) const
-        {
-            x.pop_front();
-        }
-    };
-
     /** @brief Реализация для произвольного количества входных
     последовательнсотей
     @tparam F тип функционального объекта
@@ -110,7 +100,7 @@ namespace ural
         */
         void pop_front()
         {
-            constexpr pop_fronts_fn fn{};
+            constexpr pop_front_fn fn{};
             ural::tuples::for_each(impl_.second(), fn);
         }
 
@@ -144,6 +134,10 @@ namespace ural
         boost::compressed_pair<F, Bases_tuple> impl_;
     };
 
+    /** @brief Итератор, задающий начало преобразующей последовательности
+    @param s последовательность
+    @return <tt> {begin(s.bases()[ural::_1]), s.functor()} </tt>
+    */
     template <class UnaryFunction, class Sequence>
     auto begin(transform_sequence<UnaryFunction, Sequence> const & s)
     -> boost::transform_iterator<UnaryFunction, decltype(begin(s.bases()[ural::_1]))>
@@ -151,6 +145,10 @@ namespace ural
         return {begin(s.bases()[ural::_1]), s.functor()};
     }
 
+    /** @brief Итератор, задающий конец преобразующей последовательности
+    @param s последовательность
+    @return <tt> {end(s.bases()[ural::_1]), s.functor()} </tt>
+    */
     template <class UnaryFunction, class Sequence>
     auto end(transform_sequence<UnaryFunction, Sequence> const & s)
     -> boost::transform_iterator<UnaryFunction, decltype(begin(s.bases()[ural::_1]))>
@@ -158,8 +156,13 @@ namespace ural
         return {end(s.bases()[ural::_1]), s.functor()};
     }
 
-    template <class UnaryFunction, class... Inputs>
-    auto make_transform_sequence(UnaryFunction f, Inputs && ... in)
+    /** @brief Функция создания @c make_transform_sequence
+    @param f функциональный объект, способный принимать <tt> sizeof...(in) </tt>
+    аргументов
+    @param in список входных последовательностей
+    */
+    template <class Function, class... Inputs>
+    auto make_transform_sequence(Function f, Inputs && ... in)
     -> transform_sequence<decltype(ural::make_functor(std::move(f))),
                           decltype(sequence(std::forward<Inputs>(in)))...>
     {
@@ -169,21 +172,34 @@ namespace ural
                       sequence(std::forward<Inputs>(in))...);
     }
 
-    template <class UnaryFunction>
+    /** @brief Вспомогательный объект для создания @c transform_sequence
+    конвейерным синтаксисом
+    @tparam Function тип функционального объекта
+    */
+    template <class Function>
     struct transformed_helper
     {
-        UnaryFunction f;
+        Function f;
     };
 
-    template <class Sequence, class UnaryFunction>
-    auto operator|(Sequence && in, transformed_helper<UnaryFunction> helper)
+    /** @brief Cоздания @c make_transform_sequence конвейерным синтаксисом
+    @param in входная последовательность
+    @param helper объект, хранящий функциональный объект
+    @return <tt> make_transform_sequence(helper.f, std::forward<Sequence>(in)) </tt>
+    */
+    template <class Sequence, class Function>
+    auto operator|(Sequence && in, transformed_helper<Function> helper)
     -> decltype(make_transform_sequence(helper.f, std::forward<Sequence>(in)))
     {
         return make_transform_sequence(helper.f, std::forward<Sequence>(in));
     }
 
-    template <class UnaryFunction>
-    auto transformed(UnaryFunction f)
+    /** @brief Создание элемента "конвейера", создающего @c transformed_sequence
+    @param f функциональный объект
+    @return <tt> {ural::make_functor(std::move(f))} </tt>
+    */
+    template <class Function>
+    auto transformed(Function f)
     -> transformed_helper<decltype(ural::make_functor(std::move(f)))>
     {
         return {ural::make_functor(std::move(f))};

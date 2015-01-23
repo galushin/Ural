@@ -257,6 +257,23 @@ namespace ural
             return (obj.*f)(args...);
         }
     };
+
+    // Функциональные объекты для операций контейнеров
+    /** @brief Функциональный объект, соответствующий функции-члену
+    @c pop_front
+    */
+    class pop_front_fn
+    {
+    public:
+        /** @brief Оператор применения <tt> x.pop_front() </tt>
+        @param x аргумент
+        */
+        template <class T>
+        void operator()(T & x) const
+        {
+            x.pop_front();
+        }
+    };
 }
 // namespace ural
 
