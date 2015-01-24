@@ -434,9 +434,7 @@ BOOST_AUTO_TEST_CASE(moved_test)
     BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.end(),
                              [](Type const & x) {return !x;}));
 
-    BOOST_CHECK(ural::equal(r_std, r_ural,
-                           [](Type const & x, Type const & y)
-                                { return *x == *y;}));
+    BOOST_CHECK(ural::equal(r_std, r_ural, ural::equal_by(ural::dereference<>{})));
 }
 
 // @todo move
@@ -518,7 +516,25 @@ BOOST_AUTO_TEST_CASE(transform_2_test)
                                   z_ural.begin(), z_ural.end());
 }
 
-// @todo Энергичный transform с двумя аргументами
+BOOST_AUTO_TEST_CASE(transform_2_test_eager)
+{
+    std::forward_list<int> const x1 = {1, 20, 30, 40, 50};
+    std::list<int> const x2 = {10, 2, 30, 4, 5};
+
+    std::vector<bool> z_std;
+    std::vector<bool> z_ural;
+
+    std::less_equal<int> constexpr f_std{};
+    ural::less_equal<> constexpr f_ural{};
+
+    std::transform(x1.begin(), x1.end(), x2.begin(),
+                   std::back_inserter(z_std), f_std);
+
+    ural::transform(x1, x2, std::back_inserter(z_ural), f_ural);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(z_std.begin(), z_std.end(),
+                                  z_ural.begin(), z_ural.end());
+}
 
 // 25.3.5 Замена
 BOOST_AUTO_TEST_CASE(replace_test)

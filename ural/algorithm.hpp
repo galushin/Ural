@@ -401,6 +401,19 @@ namespace details
                               ural::make_functor(std::move(f)));
         }
 
+        template <class Input1, class Input2, class Output, class BinaryFunction>
+        auto operator()(Input1 && in1, Input2 && in2, Output && out,
+                        BinaryFunction f) const
+        -> tuple<decltype(sequence_fwd<Input1>(in1)),
+                 decltype(sequence_fwd<Input2>(in2)),
+                 decltype(sequence_fwd<Output>(out))>
+        {
+            return this->impl(sequence_fwd<Input1>(in1),
+                              sequence_fwd<Input2>(in2),
+                              sequence_fwd<Output>(out),
+                              ural::make_functor(std::move(f)));
+        }
+
     private:
         template <class Input, class Output, class UnaryFunction>
         tuple<Input, Output>
@@ -413,6 +426,23 @@ namespace details
             typedef tuple<Input, Output> Tuple;
 
             return Tuple{std::move(r[ural::_1].bases()[ural::_1]),
+                         std::move(r[ural::_2])};
+        }
+
+        template <class Input1, class Input2, class Output, class UnaryFunction>
+        tuple<Input1, Input2, Output>
+        impl(Input1 in1, Input2 in2, Output out, UnaryFunction f) const
+        {
+            auto f_in = ural::make_transform_sequence(std::move(f),
+                                                      std::move(in1),
+                                                      std::move(in2));
+
+            auto r = ural::details::copy(std::move(f_in), std::move(out));
+
+            typedef tuple<Input1, Input2, Output> Tuple;
+
+            return Tuple{std::move(r[ural::_1].bases()[ural::_1]),
+                         std::move(r[ural::_1].bases()[ural::_2]),
                          std::move(r[ural::_2])};
         }
     };

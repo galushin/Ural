@@ -96,7 +96,6 @@ namespace ural
         div_type state_;
     };
 
-    // @todo использовать std::div
     // @todo устранить дублирование
     // @todo заменить циклы на алгоритмы
     // @todo выделить функции
@@ -204,7 +203,10 @@ namespace ural
     friend integer operator%(integer x, integer const & d)
     {
         // @todo оптимизация
-        // @todo assert(x >= 0)
+        // @todo Реализация для отрицательных чисел
+
+        assert(x >= 0);
+        assert(d > 0);
         for(; x >= d; x -= d)
         {}
 
@@ -252,6 +254,9 @@ namespace ural
         }
 
         // Доступ к цифрам
+        /** @brief Доступ к цифрам
+        @return Возвращает константную ссылку на контейнер, содержащий цифры
+        */
         Digits_container const & digits() const
         {
             return members_[ural::_1];
@@ -462,10 +467,10 @@ namespace ural
 
             Digit carry = 0;
 
-            for(size_t j = 0; j != x.size(); ++ j)
+            for(auto const & digit : x.digits())
             {
                 using std::div;
-                auto qr = div(carry + x.digits()[j] * d, base);
+                auto qr = div(carry + digit * d, base);
 
                 a.digits_ref().push_back(qr.rem);
                 carry = qr.quot;
@@ -555,7 +560,11 @@ namespace ural
 
     template <class T, long radix>
     typename std::enable_if<std::is_integral<T>::value, bool>::type
-    operator<(integer<radix> const & x, T const & a);
+    operator<(integer<radix> const & x, T const & a)
+    {
+        // @todo без временного объекта
+        return x < integer<radix>{a};
+    }
 
     template <class T, long radix>
     typename std::enable_if<std::is_integral<T>::value, bool>::type
