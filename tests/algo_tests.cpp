@@ -437,7 +437,26 @@ BOOST_AUTO_TEST_CASE(moved_test)
     BOOST_CHECK(ural::equal(r_std, r_ural, ural::equal_by(ural::dereference<>{})));
 }
 
-// @todo move
+// move
+BOOST_AUTO_TEST_CASE(eager_move_test)
+{
+    std::vector<std::string> src = {"Alpha", "Beta", "Gamma"};
+
+    auto const src_old = src;
+
+    std::vector<std::string> xs;
+
+    ural::move(src, xs | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(src_old.begin(), src_old.end(),
+                                  xs.begin(), xs.end());
+
+    for(auto const & s : src)
+    {
+        BOOST_CHECK(s.empty());
+    }
+}
+
 // @todo move_backward
 
 // 25.3.3 Обмен интервалов

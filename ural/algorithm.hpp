@@ -387,6 +387,22 @@ namespace details
 
     auto constexpr copy_if = copy_if_fn{};
 
+    class move_fn
+    {
+    public:
+        template <class Input, class Output>
+        auto operator()(Input && in, Output && out) const
+        -> tuple<decltype(sequence_fwd<Input>(in)),
+                 decltype(sequence_fwd<Output>(out))>
+        {
+            auto in_moved = ural::sequence_fwd<Input>(in) | ural::moved;
+            auto res = ural::copy(std::move(in_moved), sequence_fwd<Output>(out));
+            return ural::make_tuple(res[ural::_1].base(), res[ural::_2]);
+        }
+    };
+
+    auto constexpr move = move_fn{};
+
     // 25.3.4
     class transform_f
     {
