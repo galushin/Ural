@@ -32,6 +32,152 @@
 
 namespace ural
 {
+    template <long radix>
+    class digit_arithmetics_result;
+
+    /** @brief Класс для представления цифр числа произвольной точности
+    @tparam radix основание системы счисления
+    @todo constexpr?
+    */
+    template <long radix>
+    class digit
+    {
+    public:
+        // Типы
+        // @todo Минимизация размера: выбор типа цифры в зависимости от значения radix
+        typedef long value_type;
+
+        // Конструкторы
+        explicit digit(value_type init_value)
+         : value_(std::move(init_value))
+        {
+            assert(0 <= init_value && init_value < radix);
+        }
+
+        // Свйоства
+        value_type const & value() const
+        {
+            return value_;
+        }
+
+    private:
+        value_type value_;
+    };
+
+    template <long radix>
+    bool
+    operator==(digit<radix> const & x, digit<radix> const & y)
+    {
+        return x.value() == y.value();
+    }
+
+    template <class T, long radix>
+    typename std::enable_if<std::is_integral<T>::value, bool>::type
+    operator==(T const & n, digit<radix> const & d)
+    {
+        return n == d.value();
+    }
+
+    template <class T, long radix>
+    typename std::enable_if<std::is_integral<T>::value, bool>::type
+    operator==(digit<radix> const & d, T const & n)
+    {
+        return d.value() == n;
+    }
+
+    template <long radix>
+    bool
+    operator<(digit<radix> const & x, digit<radix> const & y)
+    {
+        return x.value() < y.value();
+    }
+
+    template <class T, long radix>
+    typename std::enable_if<std::is_integral<T>::value, bool>::type
+    operator<(T const & n, digit<radix> const & d)
+    {
+        return n < d.value();
+    }
+
+    template <class T, long radix>
+    typename std::enable_if<std::is_integral<T>::value, bool>::type
+    operator<(digit<radix> const & d, T const & n)
+    {
+        return d.value() < n;
+    }
+
+    /**
+    @todo Для любых потоков?
+    */
+    template <class Char, class Traits, long radix>
+    std::basic_ostream<Char, Traits> &
+    operator<<(std::basic_ostream<Char, Traits> & os, digit<radix> const & x)
+    {
+        return os << x.value();
+    }
+
+    /**
+    @todo value-range-propagaion вместо assert
+    @todo div вместо двух разных значений
+    */
+    template <long radix>
+    class digit_arithmetics_result
+    {
+    public:
+        // Типы
+        typedef digit<radix> value_type;
+
+        // Конструкторы
+        explicit digit_arithmetics_result(typename value_type::value_type word)
+         : value_{word % radix}
+         , carry_{word / radix}
+        {}
+
+        // Свойства
+        value_type const & value() const
+        {
+            return value_;
+        }
+
+        value_type const & carry() const
+        {
+            return carry_;
+        }
+
+    private:
+        value_type value_;
+        value_type carry_;
+    };
+
+    template <long radix>
+    digit_arithmetics_result<radix>
+    operator+(digit<radix> x, digit<radix> y)
+    {
+        return digit_arithmetics_result<radix>{x.value() + y.value()};
+    }
+
+    /**
+    @note Данная операция может быть хорошим кандидатам на оптимизацию,
+    см. ru.wikipedia.org/wiki/Умножение-сложение
+    */
+    template <long radix>
+    digit_arithmetics_result<radix>
+    multiply_add(digit<radix> a, digit<radix> b, digit<radix> c)
+    {
+        return digit_arithmetics_result<radix>{a.value() + b.value() * c.value()};
+    }
+
+    /**
+    @note Это аналог операции, выполняемой сумматором
+    см. https://ru.wikipedia.org/wiki/Сумматор
+    */
+    template <long radix>
+    digit_arithmetics_result<radix>
+    add_with_carry(digit<radix> a, digit<radix> b, digit<radix> c)
+    {
+        return digit_arithmetics_result<radix>{a.value() + b.value() + c.value()};
+    }
+
     /** @brief Представление числа в виде последовательности цифр по
     произвольному основанию, начиная с младшего разряда
     @tparam IntType тип целых чисел
@@ -46,7 +192,7 @@ namespace ural
         typedef ural::single_pass_traversal_tag traversal_tag;
 
         /// @brief Тип значения
-        typedef IntType value_type;
+        typedef digit<radix> value_type;
 
         /// @brief Тип ссылки
         typedef value_type reference;
@@ -80,7 +226,7 @@ namespace ural
         */
         reference front() const
         {
-            return state_.rem;
+            return value_type{state_.rem};
         }
 
         /// @brief Переход к следующему разряду
@@ -217,9 +363,8 @@ namespace ural
         static_assert(base > 1, "Unsupported radix");
 
         // Типы
-        // @todo Выбор типа цифры в зависимости от значения bases
         /// @brief Тип цифр
-        typedef long Digit;
+        typedef digit<base> Digit;
 
         /// @brief Тип контейнера, используемого для хранения цифр
         typedef std::vector<Digit> Digits_container;
@@ -276,20 +421,18 @@ namespace ural
                 return *this;
             }
 
-            auto carry = Digit{1};
+            auto added = Digit{1};
 
-            for(size_t i = 0; carry > 0 && i < this->size(); ++ i)
+            for(size_t i = 0; added > 0 && i < this->size(); ++ i)
             {
-                using std::div;
-                auto qr = div(this->digits()[i] + carry, base);
-
-                carry = qr.quot;
-                digits_ref()[i] = qr.rem;
+                auto sum = this->digits()[i] + added;
+                digits_ref()[i] = sum.value();
+                added = sum.carry();
             }
 
-            if(carry > 0)
+            if(added > 0)
             {
-                digits_ref().push_back(carry);
+                digits_ref().push_back(added);
             }
 
             return *this;
@@ -312,13 +455,14 @@ namespace ural
             // Вычитаем, пока есть перенос
             for(size_t i = 0; i < this->size(); ++ i)
             {
+                // @todo Более идиоматический код
                 if(digits()[i] == 0)
                 {
-                    digits_ref()[i] = base - 1;
+                    digits_ref()[i] = Digit{base - 1};
                 }
                 else
                 {
-                    digits_ref()[i] -= 1;
+                    digits_ref()[i] = Digit{digits()[i].value() - 1};
                     break;
                 }
             }
@@ -352,28 +496,25 @@ namespace ural
 
             if(this->size() < x.size())
             {
-                digits_ref().resize(x.size(), 0);
+                digits_ref().resize(x.size(), Digit{0});
             }
 
-            // @note не может ли при таком типе возникнуть переполнение
-            Digit carry = 0;
+            Digit carry{0};
 
             for(size_t i = 0; i < x.size(); ++ i)
             {
-                using std::div;
-                auto qr = div(digits()[i] + x.digits()[i] + carry, base);
+                auto sum = add_with_carry(digits()[i], x.digits()[i], carry);
 
-                digits_ref()[i] = qr.rem;
-                carry = qr.quot;
+                carry = sum.carry();
+                digits_ref()[i] = sum.value();
             }
 
             for(size_t i = x.size(); i < this->size() && carry > 0; ++ i)
             {
-                using std::div;
-                auto qr = div(digits()[i] + carry, base);
+                auto sum = digits()[i] + carry;
 
-                digits_ref()[i] = qr.rem;
-                carry = qr.quot;
+                digits_ref()[i] = sum.value();
+                carry = sum.carry();
             }
 
             if(carry > 0)
@@ -397,35 +538,42 @@ namespace ural
                 return *this;
             }
 
-            Digit carry = 0;
+            auto carry = Digit{0};
 
             for(size_t k = 0; k < x.size(); ++ k)
             {
-                this->digits_ref()[k] -= x.digits()[k] + carry;
+                // @todo Более идиоматический код
+                // 0 <= res < 2 * base
+                auto res = this->digits()[k].value() + base - x.digits()[k].value() - carry.value();
 
-                if(this->digits()[k] < 0)
+                assert(0 <= res && res < 2 * base);
+
+                if(res < base)
                 {
-                    this->digits_ref()[k] += base;
-                    carry = 1;
+                    this->digits_ref()[k] = Digit{res};
+                    carry = Digit{1};
                 }
                 else
                 {
-                    carry = 0;
+                    this->digits_ref()[k] = Digit{res - base};
+                    carry = Digit{0};
                 }
             }
 
             for(size_t k = x.size(); carry > 0; ++ k)
             {
-                this->digits_ref()[k] -= carry;
+                // @todo Более идиоматический код
+                auto res = this->digits()[k].value() + base - carry.value();
 
-                if(this->digits()[k] < 0)
+                if(res < base)
                 {
-                    this->digits_ref()[k] += base;
-                    carry = 1;
+                    this->digits_ref()[k] = Digit{res};
+                    carry = Digit{1};
                 }
                 else
                 {
-                    carry = 0;
+                    this->digits_ref()[k] = Digit{res - base};
+                    carry = Digit{0};
                 }
             }
 
@@ -463,17 +611,16 @@ namespace ural
         {
             integer a;
 
-            a.digits_ref().resize(i, 0);
+            a.digits_ref().resize(i, Digit{0});
 
-            Digit carry = 0;
+            Digit carry{0};
 
             for(auto const & digit : x.digits())
             {
-                using std::div;
-                auto qr = div(carry + digit * d, base);
+                auto res = multiply_add(carry, digit, d);
 
-                a.digits_ref().push_back(qr.rem);
-                carry = qr.quot;
+                a.digits_ref().push_back(res.value());
+                carry = res.carry();
             }
 
             if(carry > 0)
@@ -510,6 +657,18 @@ namespace ural
         ural::tuple<Digits_container, bool> members_;
 
     };
+
+    template <long radix>
+    integer<radix>
+    operator+(integer<radix> const & x, digit<radix> const & d)
+    {
+        // @todo Оптимизация
+        return x + d.value();
+    }
+
+    template <long radix>
+    integer<radix>
+    operator+(digit<radix> const & d, integer<radix> const & x);
 
     template <class T, long radix>
     typename std::enable_if<std::is_integral<T>::value, integer<radix>>::type
