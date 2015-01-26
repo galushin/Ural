@@ -774,8 +774,8 @@ namespace ural
 
         if(radix <= 16)
         {
-            ural::copy(x.digits() | ural::reversed,
-                       ural::make_ostream_sequence(os));
+            ural::write_delimeted(os, x.digits() | ural::reversed,
+                                  ural::no_delimeter{});
         }
         else
         {

@@ -71,6 +71,7 @@ namespace ural
     /** @brief Создание последовательности целых чисел <tt> [0; N) </tt>
     @tparam T тип целых чисел
     @tparam N количество индексов
+    @todo Можно ли здесь обойтись без "рекурсии"?
     */
     template<class T, T N>
     using make_integer_sequence = typename make_int_sequence_helper<T, 0, N>::type;

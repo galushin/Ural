@@ -51,6 +51,10 @@ namespace ural
         typedef size_t distance_type;
 
         // Конструктор
+        /** @brief Конструктор
+        @param s базовая последовательность
+        @post <tt> this->base() == s </tt>
+        */
         explicit outdirected_sequence(Sequence s)
          : base_{std::move(s)}
         {}
@@ -64,17 +68,26 @@ namespace ural
             return !this->base();
         }
 
+        /** @brief Текущий элемент
+        @return <tt> this->base() </tt>
+        */
         reference front() const
         {
             return this->base();
         }
 
+        /** @brief Переход к следующему элементу
+        @pre <tt> !!*this </tt>
+        */
         void pop_front()
         {
             ++ base_;
         }
 
         // Адаптор последовательности
+        /** @brief Базовая последовательность
+        @return Константная ссылка на базовую последовательность
+        */
         reference base() const
         {
             return this->base_;
@@ -84,6 +97,13 @@ namespace ural
         Sequence base_;
     };
 
+    /** Функция создания @c outdirected_sequence. Данная функция не преобразует
+    свой аргумент в последовательность, прежде чем применять адаптор. Это
+    связано с тем, что основное предназначение этой функции --- преобразовывать
+    типы с оператором ++ в последовательности.
+    @brief Функция создания @c outdirected_sequence
+    @return <tt> outdirected_sequence<Sequence>{std::move(x)} </tt>
+    */
     template <class Sequence>
     outdirected_sequence<Sequence>
     make_outdirected_sequence(Sequence x)
@@ -94,6 +114,10 @@ namespace ural
     struct outdirected_helper {};
     auto constexpr outdirected = outdirected_helper{};
 
+    /** @brief Создание @c outdirected_sequence в "конвейерном" стиле
+    @param seq базовая последовательность
+    @return <tt> make_outdirected_sequence(std::move(seq)) </tt>
+    */
     template <class Sequence>
     outdirected_sequence<Sequence>
     operator|(Sequence seq, outdirected_helper)
