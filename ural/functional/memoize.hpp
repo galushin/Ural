@@ -33,8 +33,12 @@ namespace ural
     @tparam Map шаблон ассоциативного контейнера, кэширующего значения
 
     @todo Тесты с различными типами аргументов
-    @todo Возможность очищать кэш и управлять его ёмкостью
+    @todo Возможность управлять ёмкостью и макс. размером кэша
     @todo Использовать по умолчанию в качестве контейнера boost::flat_map или аналог
+    @todo Операторы "равно" и "меньше"
+    @todo Нужно ли реализовать аналогичный класс, основанный на линейном поиске?
+    @todo Оптимизация пустого класса для target_
+    @todo Нужно ли копировать кэш при копировании класса
     */
     template <class Signature, class F,
               class Threading = use_default,
@@ -66,7 +70,8 @@ namespace ural
         @post <tt> this->target() == f </tt>
         */
         explicit memoize_functor(F f)
-         : members_{std::move(f), Cache{}}
+         : target_{std::move(f)}
+         , cache_{}
          , mutex_{}
         {}
 
@@ -84,18 +89,18 @@ namespace ural
         */
         template <class... As>
         result_type
-        operator()(As &&... args)
+        operator()(As &&... args) const
         {
             auto x = ural::forward_as_tuple(std::forward<As>(args)...);
 
-            std::lock_guard<mutex_type> lock(this->mutex_ref());
+            std::lock_guard<mutex_type> lock(this->mutex_);
 
-            auto pos = this->cache().lower_bound(x);
+            auto pos = this->cache_.lower_bound(x);
 
-            if(pos == this->cache().end() || pos->first != x)
+            if(pos == this->cache_.end() || pos->first != x)
             {
                 auto y = this->target()(std::forward<As>(args)...);
-                pos = cache().emplace_hint(pos, std::move(x), std::move(y));
+                pos = cache_.emplace_hint(pos, std::move(x), std::move(y));
             }
 
             return pos->second;
@@ -107,7 +112,18 @@ namespace ural
         */
         target_type const & target() const
         {
-            return members_[ural::_1];
+            return this->target_;
+        }
+
+        // Размер и ёмкость
+        /** @brief Очистка кэша предыдущих вызовов
+        @post Все вызовы оператора () будут приводит к вызову сохранённого
+        функционального объекта
+        */
+        void clear_cache()
+        {
+            std::lock_guard<mutex_type> lock(this->mutex_);
+            this->cache_.clear();
         }
 
     private:
@@ -119,20 +135,12 @@ namespace ural
 
         typedef typename threading_policy::mutex_type mutex_type;
 
-        Cache & cache()
-        {
-            return members_[ural::_2];
-        }
-
-        mutex_type & mutex_ref()
-        {
-            return mutex_;
-        }
-
     private:
-        // @todo Сделать этот элемент mutable, а оператор() - константым
-        ural::tuple<target_type, Cache> members_;
-        mutex_type mutex_;
+        target_type target_;
+
+        // @todo Можно ли объединить это (см. шаблон Монитор)?
+        mutable Cache cache_;
+        mutable mutex_type mutex_;
     };
 
     /** @brief Мемоизация функционального объекта

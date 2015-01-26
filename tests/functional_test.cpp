@@ -30,7 +30,11 @@ BOOST_AUTO_TEST_CASE(memoize_functor_test)
 
     typedef double(Signature)(double);
 
-    ural::functor_tracer<Signature*, Tag> f_tracer(std::abs);
+    typedef ural::abs_fn Target;
+
+    ural::functor_tracer<Target, Tag> f_tracer(ural::abs());
+
+    static_assert(std::is_empty<decltype(f_tracer)>::value, "Must be empty!");
 
     auto f = ural::memoize<Signature>(std::ref(f_tracer));
 
@@ -48,6 +52,13 @@ BOOST_AUTO_TEST_CASE(memoize_functor_test)
 
     BOOST_CHECK_EQUAL(1, y3);
     BOOST_CHECK_EQUAL(2U, f_tracer.calls());
+
+    f.clear_cache();
+
+    auto const y4 = f(-1);
+
+    BOOST_CHECK_EQUAL(1, y4);
+    BOOST_CHECK_EQUAL(3U, f_tracer.calls());
 }
 
 BOOST_AUTO_TEST_CASE(functor_tracer_test)
