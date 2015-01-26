@@ -31,7 +31,6 @@ namespace ural
     их свойству.
     @tparam UnaryFunction тип унарного фукнционального объекта
     @tparam Compare тип бинарного предиката
-    @todo Проверить, что является пустым, если UnaryFunction и Compare -- пустые
     */
     template <class UnaryFunction, class Compare = ural::less<> >
     class comparer_by

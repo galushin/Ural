@@ -1829,6 +1829,8 @@ BOOST_AUTO_TEST_CASE(max_element_using_compare_by)
 {
     auto const sq_cmp = ural::compare_by(ural::square);
 
+    static_assert(std::is_empty<decltype(sq_cmp)>::value, "Must be empty!");
+
     std::vector<int> const v{ 3, 1, -14, 1, 5, 9 };
     auto std_result = std::max_element(v.begin(), v.end(), sq_cmp);
     auto ural_result = ural::max_element(v, sq_cmp);

@@ -130,6 +130,7 @@ namespace ural
         }
 
     private:
+        // @todo Сделать этот элемент mutable, а оператор() - константым
         ural::tuple<target_type, Cache> members_;
         mutex_type mutex_;
     };

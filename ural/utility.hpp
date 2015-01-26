@@ -437,6 +437,21 @@ namespace ural
         return x.second();
     }
 
+    template <size_t Index>
+    class tuple_get
+    {
+    public:
+        template <class Tuple>
+        constexpr auto operator()(Tuple && x) const
+        -> decltype(get(std::forward<Tuple>(x), ural::placeholder<Index>{}))
+        {
+            return get(std::forward<Tuple>(x), ural::placeholder<Index>{});
+        }
+    };
+
+    /** @brief Функциональный объект, выполняющий обмен распределителей памяти,
+    если это необходимо.
+    */
     class swap_allocators
     {
     private:
