@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE(reversed_pop_back_n_test)
     BOOST_CHECK(s == s_r.base());
 }
 
-BOOST_AUTO_TEST_CASE(copy_backward_test)
+BOOST_AUTO_TEST_CASE(copy_reversed_to_reversed_vs_copy_backward)
 {
     std::vector<int> x_std = {1, 2, 3, 4, 5};
     std::vector<int> x_ural = x_std;

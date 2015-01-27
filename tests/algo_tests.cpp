@@ -404,7 +404,19 @@ BOOST_AUTO_TEST_CASE(filtered_getters_test)
     BOOST_CHECK(s1 != s3);
 }
 
-// @todo copy_backward
+BOOST_AUTO_TEST_CASE(copy_backward_test)
+{
+    std::vector<int> x_std = {1, 2, 3, 4, 5};
+    std::vector<int> x_ural = x_std;
+
+    std::copy_backward(x_std.begin(), x_std.end() - 1, x_std.end());
+
+    auto src = ural::make_iterator_sequence(x_ural.begin(), x_ural.end() - 1);
+    ural::copy_backward(src, x_ural);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
 
 // 25.3.2 Перемещение
 BOOST_AUTO_TEST_CASE(moved_test)
