@@ -114,6 +114,8 @@ namespace ural
             return s;
         }
 
+        /** @todo Не только для последовательностей
+        */
         friend Seq operator++(Seq & seq, int)
         {
             Seq seq_old = seq;

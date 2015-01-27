@@ -359,6 +359,16 @@ namespace ural
             return members_.second().old_value();
         }
 
+        friend iterator begin(iterator_sequence const & s)
+        {
+            return s.begin();
+        }
+
+        friend iterator end(iterator_sequence const & s)
+        {
+            return s.end();
+        }
+
     private:
         static auto constexpr is_forward
             = std::is_convertible<traversal_tag, forward_traversal_tag>::value;

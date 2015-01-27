@@ -97,6 +97,16 @@ namespace ural
             return *this;
         }
 
+        /**
+        @todo Обобщённая реализация
+        */
+        sequence_iterator operator++(int)
+        {
+            auto tmp = *this;
+            ++ *this;
+            return tmp;
+        }
+
     private:
         ural::optional<Sequence> impl_;
     };

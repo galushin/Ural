@@ -3,6 +3,7 @@
 *.exe
 *.html
 *.layout
+*.depend
 *.orig
 */docs/*
 ural_test/CppCheckResults.xml
