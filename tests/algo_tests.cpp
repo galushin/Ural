@@ -470,6 +470,19 @@ BOOST_AUTO_TEST_CASE(eager_move_test)
 }
 
 // @todo move_backward
+BOOST_AUTO_TEST_CASE(move_backward_test)
+{
+    std::vector<std::string> x_std = {"one", "two", "three", "four", "five"};
+    auto x_ural = x_std;
+
+    std::move_backward(x_std.begin(), x_std.end() - 1, x_std.end());
+
+    auto src = ural::make_iterator_sequence(x_ural.begin(), x_ural.end() - 1);
+    ural::move_backward(src, x_ural);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
 
 // 25.3.3 Обмен интервалов
 BOOST_AUTO_TEST_CASE(swap_ranges_test)

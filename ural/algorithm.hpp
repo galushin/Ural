@@ -431,6 +431,34 @@ namespace details
 
     auto constexpr copy_backward = copy_backward_fn{};
 
+    // move_backward
+    class move_backward_fn
+    {
+    public:
+        template <class Bidir1, class Bidir2>
+        auto operator()(Bidir1 && in, Bidir2 && out) const
+        -> tuple<decltype(sequence_fwd<Bidir1>(in)),
+                 decltype(sequence_fwd<Bidir2>(out))>
+        {
+            return this->impl(sequence_fwd<Bidir1>(in),
+                              sequence_fwd<Bidir2>(out));
+        }
+
+    private:
+        template <class Bidir1, class Bidir2>
+        tuple<Bidir1, Bidir2>
+        impl(Bidir1 in, Bidir2 out) const
+        {
+            auto res = ural::move(std::move(in) | ural::reversed | ural::moved,
+                                  std::move(out) | ural::reversed);
+
+            return ural::make_tuple(std::move(res[ural::_1].base().base()),
+                                    std::move(res[ural::_2].base()));
+        }
+    };
+
+    auto constexpr move_backward = move_backward_fn{};
+
     // 25.3.4
     class transform_f
     {
