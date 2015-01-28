@@ -321,6 +321,22 @@ BOOST_AUTO_TEST_CASE(all_tuples_is_sorted_test)
     BOOST_CHECK(std::is_sorted(r2.begin(), r2.end()));
 }
 
+BOOST_AUTO_TEST_CASE(all_tuples_regression_ctor)
+{
+    std::vector<int> const x_std = {1, 2, 3, 4, 5};
+
+    auto seq = ural::sequence(x_std);
+    ++ seq;
+
+    auto ts = ural::make_all_tuples_sequence(seq, seq);
+
+    for(; !!ts; ++ ts)
+    {
+        BOOST_CHECK_NE(1, (*ts)[ural::_1]);
+        BOOST_CHECK_NE(1, (*ts)[ural::_2]);
+    }
+}
+
 BOOST_AUTO_TEST_CASE(sequence_for_each_test)
 {
     std::vector<int> x_std = {1, 2, 3, 4, 5};

@@ -27,7 +27,9 @@ namespace ural
     /** @brief Адаптор последовательности, возвращающий в качестве значения
     исходную последовательность
     @tparam Sequence последовательность
-    @todo Уточнить тип расстояния
+    @todo Уточнить тип расстояния. Если в базе есть тип @c distance_type,
+    использовать его, если <tt> Sequence() - Sequence() </tt> --- корректное
+    выражение, то использовать его тип, иначе --- <tt> std::size_t </tt>
     */
     template <class Sequence>
     class outdirected_sequence

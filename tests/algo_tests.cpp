@@ -469,7 +469,6 @@ BOOST_AUTO_TEST_CASE(eager_move_test)
     }
 }
 
-// @todo move_backward
 BOOST_AUTO_TEST_CASE(move_backward_test)
 {
     std::vector<std::string> x_std = {"one", "two", "three", "four", "five"};

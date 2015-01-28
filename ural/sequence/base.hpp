@@ -28,40 +28,6 @@
 
 namespace ural
 {
-    struct single_pass_traversal_tag
-    {};
-
-    struct forward_traversal_tag
-     : single_pass_traversal_tag
-    {};
-
-    struct bidirectional_traversal_tag
-     : forward_traversal_tag
-    {};
-
-    struct random_access_traversal_tag
-     : forward_traversal_tag
-    {};
-
-    struct finite_random_access_traversal_tag
-     : random_access_traversal_tag
-    {
-    public:
-        constexpr operator bidirectional_traversal_tag() const;
-    };
-
-    single_pass_traversal_tag
-    decl_common_type(single_pass_traversal_tag, single_pass_traversal_tag);
-
-    forward_traversal_tag
-    decl_common_type(forward_traversal_tag, forward_traversal_tag);
-
-    bidirectional_traversal_tag
-    decl_common_type(bidirectional_traversal_tag, bidirectional_traversal_tag);
-
-    random_access_traversal_tag
-    decl_common_type(random_access_traversal_tag, random_access_traversal_tag);
-
     /** @brief Класс-характеристика для вычисления общего типа пачки тэгов
     @tparam Types типы-тэги
     */
@@ -112,15 +78,6 @@ namespace ural
         friend Seq sequence(Seq s)
         {
             return s;
-        }
-
-        /** @todo Не только для последовательностей
-        */
-        friend Seq operator++(Seq & seq, int)
-        {
-            Seq seq_old = seq;
-            ++ seq;
-            return seq_old;
         }
 
         friend Seq & operator++(Seq & s)

@@ -49,6 +49,11 @@ namespace ural
         /// @brief Тип расстояния
         typedef typename default_helper<D, Number>::type distance_type;
 
+        /** @brief Категория обхода
+        @todo Усилить категорию обхода?
+        */
+        typedef single_pass_traversal_tag traversal_tag;
+
         // Создание, уничтожение, копирование
         /** @brief Конструктор
         @param x_min наименьшее значение

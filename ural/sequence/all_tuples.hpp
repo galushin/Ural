@@ -51,8 +51,11 @@ namespace ural
         /// @brief Тип значения
         typedef tuple<typename Inputs::value_type...> value_type;
 
-        /// @brief Тип указателя
-        // @todo Более разумный тип указателя
+        /** @brief Тип указателя
+        У кортежей нет именованных функций-членов, поэтому предоставление
+        оператора <tt> -> </tt> нецелесообразно. Следовательно, в качестве типа
+        указателя можно взять @b void.
+        */
         typedef void pointer;
 
         /// @brief Тип расстояния
@@ -114,7 +117,8 @@ namespace ural
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Seq>));
             BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Seq>));
 
-            bases_[ural::_1].shrink_front();
+            bases_[placeholder<I>{}].shrink_front();
+
             return this->shrink_fronts(placeholder<I+1>{});
         }
 
