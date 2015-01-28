@@ -22,6 +22,7 @@
  @todo Возможность задавать дополнительные шаблонные параметры
 */
 
+#include <ural/sequence/make.hpp>
 #include <ural/sequence/insertion.hpp>
 #include <ural/algorithm/details/copy.hpp>
 
@@ -48,16 +49,28 @@ namespace ural
         typedef decltype(sequence(std::forward<Sequence>(seq))) Seq;
         typedef typename Seq::value_type Value;
 
-        auto s = sequence(std::forward<Sequence>(seq));
+        auto s = ural::sequence_fwd<Sequence>(seq);
 
-        // @todo Можно ли здесь использовать begin(move(s))?
-        return Container<Value>(begin(s), end(s));
+        /* begin с большей вероятностью может найти применение данным,
+        перемещённым из последовательности.
+        Порядок объявления важен.
+        Порядок вычисления аргументов функции может повлиять на корректность,
+        поэтому построение итераторов вынесено в отдельные объявления
+        */
+        auto last = end(s);
+        auto first = begin(std::move(s));
+
+        return Container<Value>(std::move(first), std::move(last));
     }
 
     template <template <class, class, class...> class Map>
     struct to_map
     {};
 
+    /** @brief Создание ассоциативного контейнера из последовательности
+    @param seq последовательность
+    @tparam Map шаблон типа ассоциативного контейнера
+    */
     template <class Sequence, template <class, class, class...> class Map>
     auto operator|(Sequence && seq, to_map<Map>)
     -> Map<typename std::tuple_element<0, typename decltype(sequence(std::forward<Sequence>(seq)))::value_type>::type,

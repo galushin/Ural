@@ -63,8 +63,14 @@ BOOST_AUTO_TEST_CASE(memoize_functor_test)
 
 BOOST_AUTO_TEST_CASE(functor_tracer_test)
 {
-    typedef ural::functor_tracer<double(*)(double)> Functor;
-    Functor f(std::abs);
+    typedef double(*Target)(double);
+
+    typedef ural::functor_tracer<Target> Functor;
+
+    // РЇРІРЅРѕРµ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ РЅСѓР¶РЅРѕ, С‚Р°Рє РєР°Рє std::abs --- РїРµСЂРµРіСЂСѓР¶РµРЅРЅР°СЏ С„СѓРЅРєС†РёСЏ
+    auto f = ural::make_function_tracer(Target(std::abs));
+
+    static_assert(std::is_same<decltype(f), Functor>::value, "");
 
     BOOST_CHECK_EQUAL(0U, Functor::calls());
 
@@ -751,7 +757,7 @@ BOOST_AUTO_TEST_CASE(min_element_accumulator_default_functor_test)
 
 BOOST_AUTO_TEST_CASE(min_element_accumulator_move_ops_test)
 {
-    // Подготовка
+    // РџРѕРґРіРѕС‚РѕРІРєР°
     typedef std::string Element;
     typedef ural::min_element_accumulator<Element> Accumulator;
 
@@ -759,12 +765,12 @@ BOOST_AUTO_TEST_CASE(min_element_accumulator_move_ops_test)
 
     auto const xs_old = xs;
 
-    // Инициализация
+    // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
     Accumulator acc(std::move(xs[0]));
 
     BOOST_CHECK(xs[0].empty());
 
-    // Обновление - оператор ()
+    // РћР±РЅРѕРІР»РµРЅРёРµ - РѕРїРµСЂР°С‚РѕСЂ ()
     BOOST_CHECK_LE(xs_old[1], acc.result());
 
     acc(std::move(xs[1]));
@@ -772,7 +778,7 @@ BOOST_AUTO_TEST_CASE(min_element_accumulator_move_ops_test)
     BOOST_CHECK_EQUAL(xs_old[1], acc.result());
     BOOST_CHECK_NE(xs_old[1], xs[1]);
 
-    // Обновление - update: true
+    // РћР±РЅРѕРІР»РµРЅРёРµ - update: true
     BOOST_CHECK_LE(xs_old[2], acc.result());
 
     bool const changed_1 = acc.update(std::move(xs[2]));
@@ -781,7 +787,7 @@ BOOST_AUTO_TEST_CASE(min_element_accumulator_move_ops_test)
     BOOST_CHECK_NE(xs_old[2], xs[2]);
     BOOST_CHECK(changed_1);
 
-    // Обновление - update: false
+    // РћР±РЅРѕРІР»РµРЅРёРµ - update: false
     bool const changed_2 = acc.update(std::move(xs[3]));
     BOOST_CHECK(!changed_2);
     BOOST_CHECK_EQUAL(xs_old[3], xs[3]);

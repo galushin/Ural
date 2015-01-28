@@ -23,6 +23,7 @@
 
 #include <ural/defs.hpp>
 #include <ural/utility.hpp>
+#include <ural/operators.hpp>
 
 #include <boost/throw_exception.hpp>
 

@@ -22,16 +22,47 @@
 */
 
 #include <ural/optional.hpp>
+#include <ural/operators.hpp>
 
 namespace ural
 {
-    /** Итератор последовательностей для интервалов. Основная цель ---
-    интеграция с циклом @c for для интервалов. Измерения показывают, что
-    данные интераторы имеют "плату за абстракцию" примерно 2,5.
-    @brief Итератор на базе последовательности.
+    struct single_pass_traversal_tag
+    {};
+
+    struct forward_traversal_tag
+     : single_pass_traversal_tag
+    {};
+
+    struct bidirectional_traversal_tag
+     : forward_traversal_tag
+    {};
+
+    struct random_access_traversal_tag
+     : forward_traversal_tag
+    {};
+
+    struct finite_random_access_traversal_tag
+     : random_access_traversal_tag
+    {
+    public:
+        constexpr operator bidirectional_traversal_tag() const;
+    };
+
+    single_pass_traversal_tag
+    decl_common_type(single_pass_traversal_tag, single_pass_traversal_tag);
+
+    forward_traversal_tag
+    decl_common_type(forward_traversal_tag, forward_traversal_tag);
+
+    bidirectional_traversal_tag
+    decl_common_type(bidirectional_traversal_tag, bidirectional_traversal_tag);
+
+    random_access_traversal_tag
+    decl_common_type(random_access_traversal_tag, random_access_traversal_tag);
+
     @param Sequence последовательность
-    @todo Усилить категорию итератора, когда это возможно
-    @todo макрос FOR_EACH для последовательностей
+    @todo Есть ли необходимость и возможность усиливать категорию итератора
+    до двунаправленного и/или произвольного доступа?
     */
     template <class Sequence>
     class sequence_iterator
@@ -49,10 +80,15 @@ namespace ural
             return !x.impl_.value();
         }
 
+        typedef std::is_same<typename Sequence::traversal_tag, single_pass_traversal_tag>
+            is_single_pass_t;
+
     public:
         // Типы
         /// @brief Категория итератора
-        typedef std::input_iterator_tag iterator_category;
+        typedef typename std::conditional<is_single_pass_t::value,
+                                          std::input_iterator_tag,
+                                          std::forward_iterator_tag>::type iterator_category;
 
         /// @brief Тип ссылки
         typedef typename Sequence::reference reference;
@@ -75,6 +111,8 @@ namespace ural
         {}
 
         /** @brief Создание начального итератора для последовательности
+        @param s последовательность
+        @post <tt> *this </tt> Будет посещать те же элементы, что и @c s
         */
         sequence_iterator(Sequence s)
          : impl_{std::move(s)}
@@ -98,16 +136,6 @@ namespace ural
             assert(!!impl_);
             ++*impl_;
             return *this;
-        }
-
-        /**
-        @todo Обобщённая реализация
-        */
-        sequence_iterator operator++(int)
-        {
-            auto tmp = *this;
-            ++ *this;
-            return tmp;
         }
 
     private:

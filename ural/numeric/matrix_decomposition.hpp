@@ -114,6 +114,26 @@ namespace ural
         return QR_decomposition(std::move(Q), inner_prod_functor{});
     }
 
+    template <class Matrix>
+    typename make_triangular_matrix<Matrix, boost::numeric::ublas::lower>::type
+    matrix_lower_trianle(Matrix const & A)
+    {
+        // @todo Ослабить это требование
+        assert(A.size1() == A.size2());
+
+        typedef boost::numeric::ublas::lower Lower;
+        typedef typename make_triangular_matrix<Matrix, Lower>::type Result;
+        Result L(A.size1(), A.size2());
+
+        for(size_t i = 0; i != A.size1(); ++ i)
+        for(size_t j = 0; j != i+1; ++ j)
+        {
+            L(i, j) = A(i, j);
+        }
+
+        return L;
+    }
+
     /** @brief Разложение Холецкого
     @param A исходная матрица
     @return Такая матрица @c L, что <tt> L * trans(L) == A </tt>
@@ -126,15 +146,7 @@ namespace ural
     {
         assert(A.size1() == A.size2());
 
-        typedef boost::numeric::ublas::lower Lower;
-        typedef typename make_triangular_matrix<SymMatrix, Lower>::type Result;
-        Result L(A.size1(), A.size2());
-
-        for(size_t i = 0; i != A.size1(); ++ i)
-        for(size_t j = 0; j != i+1; ++ j)
-        {
-            L(i, j) = A(i, j);
-        }
+        auto L = matrix_lower_trianle(A);
 
         for(size_t i = 0; i != A.size1(); ++ i)
         {

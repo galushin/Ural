@@ -136,6 +136,19 @@ namespace ural
         return Tuple{std::forward<Ts>(args)...};
     }
 
+    /** @brief Функциональный объект для создания кортежей из пачки аргументов
+    */
+    class make_tuple_functor
+    {
+    public:
+        template <class... Args>
+        constexpr auto operator()(Args &&... args) const
+        -> decltype(ural::make_tuple(args...))
+        {
+            return ural::make_tuple(args...);
+        }
+    };
+
 /// @cond false
 namespace details
 {

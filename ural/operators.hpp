@@ -25,6 +25,75 @@
 
 namespace ural
 {
+    /** @brief Оператор "равно" для пустых типов
+    @return true
+    */
+    template <class T>
+    constexpr typename std::enable_if<std::is_empty<T>::value, bool>::type
+    operator==(T const &, T const &)
+    {
+        return true;
+    }
+
+    /** @brief Естественное определение оператора "не равно"
+    @param x левый операнд
+    @param y правый операнд
+    @return <tt> !(x == y) </tt>
+    */
+    template <class T1, class T2>
+    constexpr bool operator!=(T1 const & x, T2 const & y)
+    {
+        return !(x == y);
+    }
+
+    /** @brief Естественное определение оператора "больше"
+    @param x левый операнд
+    @param y правый операнд
+    @return <tt> y < x </tt>
+    */
+    template <class T1, class T2>
+    constexpr bool operator>(T1 const & x, T2 const & y)
+    {
+        return y < x;
+    }
+
+    /** @brief Естественное определение оператора "меньше либо равно"
+    @param x левый операнд
+    @param y правый операнд
+    @return <tt> !(x > y) </tt>
+    */
+    template <class T1, class T2>
+    constexpr bool operator<=(T1 const & x, T2 const & y)
+    {
+        return !(y < x);
+    }
+
+    /** @brief Естественное определение оператора "больше либо равно"
+    @param x левый операнд
+    @param y правый операнд
+    @return <tt> !(x < y) </tt>
+    */
+    template <class T1, class T2>
+    constexpr bool operator>=(T1 const & x, T2 const & y)
+    {
+        return !(x < y);
+    }
+
+    /** Обобщённая реализация пост-инкремента. Применяет оператор пре-инкремента
+    и возвращает значение, которое объект имел до этого.
+    @brief Обобщённая реализация пост-инкремента
+    @param x аргмент
+    @return Значение, которое @c x имел до вызова
+    @todo Добавить требование наличия пре-инкремента в enable_if
+    */
+    template <class Incrementable>
+    typename std::enable_if<std::is_copy_constructible<Incrementable>::value, Incrementable>::type
+    operator++(Incrementable & x, int)
+    {
+        auto tmp = x;
+        ++ x;
+        return tmp;
+    }
 }
 // namespace ural
 

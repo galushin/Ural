@@ -27,19 +27,9 @@
 
 namespace ural
 {
-    /** @brief Функциональный объект для создания кортежей из пачки аргументов
+    /**
+    @todo Усилить категорию обхода?
     */
-    class make_tuple_functor
-    {
-    public:
-        template <class... Args>
-        constexpr auto operator()(Args &&... args) const
-        -> decltype(ural::make_tuple(args...))
-        {
-            return ural::make_tuple(args...);
-        }
-    };
-
     template <class... Inputs>
     class zip_sequence
      : public sequence_base<zip_sequence<Inputs...>>
@@ -58,6 +48,9 @@ namespace ural
 
         /// @brief Тип расстояния
         typedef typename Impl_seq::distance_type distance_type;
+
+        /// @brief Категория обхода
+        typedef single_pass_traversal_tag traversal_tag;
 
         // Конструкторы
         zip_sequence(Inputs... ins)

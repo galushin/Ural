@@ -469,7 +469,6 @@ BOOST_AUTO_TEST_CASE(eager_move_test)
     }
 }
 
-// @todo move_backward
 BOOST_AUTO_TEST_CASE(move_backward_test)
 {
     std::vector<std::string> x_std = {"one", "two", "three", "four", "five"};
@@ -532,11 +531,26 @@ BOOST_AUTO_TEST_CASE(eager_transform_test)
 
     std::transform(s.begin(), s.end(), std::back_inserter(x_std), f);
 
-    // @todo Проверка возвращаемого значения
-    ural::transform(s, x_ural | ural::back_inserter, f);
+    auto result = ural::transform(s, x_ural | ural::back_inserter, f);
+
+    BOOST_CHECK(!result[ural::_1]);
+    BOOST_CHECK(!!result[ural::_2]);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
                                   x_ural.begin(), x_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(eager_transform_test_return_value)
+{
+    std::string const s("hello");
+    std::string x_ural(s.size() / 2, '?');
+
+    auto f = std::ptr_fun<int, int>(std::toupper);
+
+    auto result = ural::transform(s, x_ural, f);
+
+    BOOST_CHECK(!!result[ural::_1]);
+    BOOST_CHECK(!result[ural::_2]);
 }
 
 BOOST_AUTO_TEST_CASE(transform_2_test)
