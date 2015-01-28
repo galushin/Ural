@@ -60,9 +60,14 @@ namespace ural
     random_access_traversal_tag
     decl_common_type(random_access_traversal_tag, random_access_traversal_tag);
 
+    /** Итератор последовательностей для интервалов. Основная цель ---
+    интеграция с циклом @c for для интервалов. Измерения показывают, что
+    данные интераторы имеют "плату за абстракцию" примерно 2,5.
+    @brief Итератор на базе последовательности.
     @param Sequence последовательность
     @todo Есть ли необходимость и возможность усиливать категорию итератора
     до двунаправленного и/или произвольного доступа?
+    @todo макрос FOR_EACH для последовательностей
     */
     template <class Sequence>
     class sequence_iterator
