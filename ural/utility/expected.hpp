@@ -24,6 +24,7 @@
 */
 
 #include <ural/defs.hpp>
+#include <ural/operators.hpp>
 
 #include <new>
 #include <cassert>

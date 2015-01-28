@@ -22,6 +22,7 @@
 */
 
 #include <ural/optional.hpp>
+#include <ural/operators.hpp>
 
 namespace ural
 {
@@ -95,16 +96,6 @@ namespace ural
             assert(!!impl_);
             ++*impl_;
             return *this;
-        }
-
-        /**
-        @todo Обобщённая реализация
-        */
-        sequence_iterator operator++(int)
-        {
-            auto tmp = *this;
-            ++ *this;
-            return tmp;
         }
 
     private:

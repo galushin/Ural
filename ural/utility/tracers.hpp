@@ -24,6 +24,7 @@
 #include <ural/defs.hpp>
 #include <ural/thread.hpp>
 #include <ural/functional.hpp>
+#include <ural/operators.hpp>
 
 namespace ural
 {
