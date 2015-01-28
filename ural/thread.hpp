@@ -23,20 +23,26 @@
 
 #include <cstddef>
 
+#include <atomic>
+#include <mutex>
+
 namespace ural
 {
     /** @brief Стратегия многопотоночти: многопоточная программа, использовать
     средства стандартной библиотеки C++11
-    @todo Реализовать
     */
     class cpp11_thread_policy
     {
     public:
+        /// @brief Тип потоково-безопасного счётчика
+        typedef std::atomic<std::size_t> atomic_counter_type;
+
+        /// @brief Тип мьютекса
+        typedef std::mutex mutex_type;
     };
 
     /** @brief Класс, реализующий синтаксические требования к мьютексу, но не
     выполняющий никакой синхронизации
-    @todo Реализовать
     */
     class single_thread_mutex
     {

@@ -259,10 +259,14 @@ namespace ural
         return os << x.value();
     }
 
-    /** @tparam F тип функционального объекта
+    /** Адаптер функционального объекта, подсчитывающий количество
+    вызовов. Подсчитывается количество вызовов на класс. Для более тонкого
+    подсчёта можно использовать тэг.
+    @brief Адаптер функционального объекта, подсчитывающий количество
+    вызовов.
+    @tparam F тип функционального объекта
     @tparam Tag тэг
     @tparam Threading тип, определяющий стратегию многопоточности
-    @todo функция создания
     */
     template <class F, class Tag = use_default, class Threading = use_default>
     class functor_tracer
@@ -338,6 +342,19 @@ namespace ural
             return var;
         }
     };
+
+    /** @brief Функция создания @c functor_tracer
+    @tparam Tag тэг
+    @tparam Threading стратегия многопоточности
+    @param f функциональный объект
+    @return functor_tracer<F>(f)
+    */
+    template <class F, class Tag = use_default, class Threading = use_default>
+    functor_tracer<F, Tag, Threading>
+    make_function_tracer(F f)
+    {
+        return functor_tracer<F, Tag, Threading>(std::move(f));
+    }
 }
 // namespace ural
 
