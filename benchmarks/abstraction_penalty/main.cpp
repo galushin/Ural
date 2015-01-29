@@ -60,6 +60,8 @@ Alex Stepanov
 15, 16 - обратные последовательности
 17, 18 - Итераторы последовательностей
 
+Количество повторов по умолчанию увеличено в 10 раз
+
 Pavel Galushin
 */
 
@@ -236,7 +238,7 @@ Number accumulate(Iterator first, Iterator last, Number result)
     return result;
 }
 
-int iterations = 25000;
+int iterations = 250000;
 #define SIZE 2000
 
 int current_test = 0;
