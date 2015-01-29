@@ -14,6 +14,8 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "rnd.hpp"
+
 #include <boost/test/unit_test.hpp>
 
 #include <forward_list>
@@ -1042,7 +1044,37 @@ BOOST_AUTO_TEST_CASE(rotate_copy_return_test)
     }
 }
 
-// @todo 25.3.12 Тусовка
+// 25.3.12 Тусовка
+BOOST_AUTO_TEST_CASE(shuffle_test)
+{
+    auto v = ural::numbers(1, 10) | ural::to_container<std::vector>{};
+
+    auto const v_old = v;
+
+    // @todo Проверить, насколько равномерно и случайно распределение
+    ural::shuffle(v, ural_test::random_engine());
+
+    BOOST_CHECK_EQUAL(v.size(), v_old.size());
+
+    BOOST_CHECK(std::is_permutation(v.begin(), v.end(), v_old.begin()));
+
+    BOOST_CHECK(ural::is_permutation(v, v_old));
+}
+
+BOOST_AUTO_TEST_CASE(random_shuffle_test)
+{
+    auto v = ural::numbers(1, 10) | ural::to_container<std::vector>{};
+
+    auto const v_old = v;
+
+    ural::random_shuffle(v);
+
+    BOOST_CHECK_EQUAL(v.size(), v_old.size());
+
+    BOOST_CHECK(std::is_permutation(v.begin(), v.end(), v_old.begin()));
+
+    BOOST_CHECK(ural::is_permutation(v, v_old));
+}
 
 // 25.3.13 Разделение
 BOOST_AUTO_TEST_CASE(is_partitioned_test)
