@@ -510,6 +510,29 @@ BOOST_AUTO_TEST_CASE(reversed_iterator_sequence_iterators)
     BOOST_CHECK(end(rs2) == v2.rend());
 }
 
+BOOST_AUTO_TEST_CASE(moved_from_value_cpp_17_test)
+{
+    std::string const s("hello");
+    std::string x_std;
+    auto x_ural = x_std;
+
+    auto f = std::ptr_fun<int, int>(std::toupper);
+
+    std::transform(s.begin(), s.end(), std::back_inserter(x_std), f);
+
+    auto seq = ural::make_transform_sequence(f, s)
+             | ural::moved;
+
+    using Sequence = decltype(seq);
+
+    static_assert(std::is_same<Sequence::reference, int>::value, "");
+
+    ural::copy(seq, x_ural | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
+
 BOOST_AUTO_TEST_CASE(moved_iterator_sequence_iterators)
 {
     typedef std::vector<int> Container;

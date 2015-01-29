@@ -93,6 +93,10 @@ namespace ural
          , mutex_{}
         {}
 
+        /** @brief Конструктор копий
+        @param x копируемый объект
+        @post <tt> *this == x </tt>
+        */
         memoize_functor(memoize_functor const & x)
          : target_{x.target()}
         {}

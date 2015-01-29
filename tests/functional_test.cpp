@@ -70,8 +70,8 @@ BOOST_AUTO_TEST_CASE(memoize_functor_equality)
     auto const v1 = f1(-42);
     BOOST_CHECK(v1 == 42);
 
-    BOOST_CHECK_EQUAL(1, f1.cache_size());
-    BOOST_CHECK_EQUAL(0, f2.cache_size());
+    BOOST_CHECK_EQUAL(1U, f1.cache_size());
+    BOOST_CHECK_EQUAL(0U, f2.cache_size());
     BOOST_CHECK(f1 == f2);
 }
 

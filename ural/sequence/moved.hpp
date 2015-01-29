@@ -36,6 +36,7 @@ namespace ural
     class move_sequence
      : public sequence_base<move_sequence<Sequence>>
     {
+        typedef typename Sequence::reference Base_reference;
     public:
         // Типы
         /// @brief Тип значения
@@ -43,7 +44,8 @@ namespace ural
 
         // @todo Уточнить этот тип (в С++17 move_iterator изменился)
         /// @brief Тип ссылки
-        typedef value_type && reference;
+        typedef typename std::conditional<std::is_reference<Base_reference>::value,
+                                          value_type &&, value_type>::type reference;
 
         /// @brief Тип расстояния
         typedef typename Sequence::distance_type distance_type;
