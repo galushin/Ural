@@ -22,6 +22,7 @@
  заданному предикату.
 */
 
+#include <ural/sequence/remove.hpp>
 #include <ural/algorithm/details/algo_base.hpp>
 
 #include <boost/compressed_pair.hpp>
@@ -30,7 +31,7 @@ namespace ural
 {
     /** @brief Последовательность элементов базовой последовательности,
     удовлетворяющих заданному предикату.
-    @todo Усилить категорию обхода
+    @todo Можно ли описать только отличия от @c remove_if_sequence?
     */
     template <class Sequence, class Predicate>
     class filter_sequence
@@ -39,25 +40,30 @@ namespace ural
         friend bool operator==(filter_sequence const & x,
                                filter_sequence const & y)
         {
-            return x.data_ == y.data_;
+            return x.impl_ == y.impl_;
         }
+
+        typedef ural::not_functor<Predicate> NegatedPredicate;
+
+        typedef ural::remove_if_sequence<Sequence, NegatedPredicate>
+            Impl;
 
     public:
         // Типы
         /// @brief Тип ссылки
-        typedef typename Sequence::reference reference;
+        typedef typename Impl::reference reference;
 
         /// @brief Тип значения
-        typedef typename Sequence::value_type value_type;
+        typedef typename Impl::value_type value_type;
 
         /// @brief Тип указателя
-        typedef typename Sequence::pointer pointer;
+        typedef typename Impl::pointer pointer;
 
         //// @brief Тип расстояния
-        typedef typename Sequence::distance_type distance_type;
+        typedef typename Impl::distance_type distance_type;
 
         /// @brief Категория обхода
-        typedef typename std::common_type<typename Sequence::traversal_tag,
+        typedef typename std::common_type<typename Impl::traversal_tag,
                                           forward_traversal_tag>::type
             traversal_tag;
 
@@ -69,10 +75,8 @@ namespace ural
         @post <tt> this->predicate() == pred </tt>
         */
         explicit filter_sequence(Sequence seq, Predicate pred)
-         : data_{std::move(seq), std::move(pred)}
-        {
-            this->seek();
-        }
+         : impl_{std::move(seq), ural::not_fn(std::move(pred))}
+        {}
 
         // Однопроходная последовательность
         /** @brief Проверка того, что последовательность исчерпана
@@ -80,7 +84,7 @@ namespace ural
         */
         bool operator!() const
         {
-            return !this->base();
+            return !impl_;
         }
 
         /** @brief Первый элемент последовательности
@@ -88,14 +92,13 @@ namespace ural
         */
         reference front() const
         {
-            return *data_[ural::_1];
+            return impl_.front();
         }
 
         /// @brief Переход к следующему элементу
         void pop_front()
         {
-            ++ data_[ural::_1];
-            this->seek();
+            return impl_.pop_front();
         }
 
         // Адаптор последовательности
@@ -104,7 +107,7 @@ namespace ural
         */
         Predicate const & predicate() const
         {
-            return data_[ural::_2];
+            return impl_.predicate().target();
         }
 
         /** @brief Базовая последовательность
@@ -112,18 +115,11 @@ namespace ural
         */
         Sequence const & base() const
         {
-            return data_[ural::_1];
+            return impl_.base();
         }
 
     private:
-        void seek()
-        {
-            data_[ural::_1]
-                = ::ural::details::find_if(data_[ural::_1], this->predicate());
-        }
-
-    private:
-        ural::tuple<Sequence, Predicate> data_;
+        Impl impl_;
     };
 
     template <class Sequence, class Predicate>

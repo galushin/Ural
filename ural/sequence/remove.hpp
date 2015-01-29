@@ -40,7 +40,6 @@ namespace ural
     предикату
     @tparam Input тип входной последовательности
     @tparam Predicate тип унарного предиката
-    @todo Унифицировать с filter (который, в свою очередь, нужно переименовать)
     @todo Рассмотреть целесообразность реализации возможностей двунаправленной
     последовательности
     @todo Решить: алгоритмы реализуются через последовательности или
@@ -50,6 +49,11 @@ namespace ural
     class remove_if_sequence
      : public sequence_base<remove_if_sequence<Input, Predicate>>
     {
+    friend bool operator==(remove_if_sequence const & x,
+                           remove_if_sequence const & y)
+    {
+        return x.members_ == y.members_;
+    }
     public:
         // Типы
         /// @brief Тип ссылки
@@ -105,7 +109,8 @@ namespace ural
         */
         void pop_front()
         {
-            members_.first().pop_front();
+            ::ural::get(members_, ::ural::_1).pop_front();
+
             this->seek();
         }
 
@@ -115,7 +120,7 @@ namespace ural
         */
         Input const & base() const
         {
-            return members_.first();
+            return ural::get(members_, ural::_1);
         }
 
         /** @brief Используемый предикат
@@ -123,18 +128,18 @@ namespace ural
         */
         Predicate const & predicate() const
         {
-            return members_.second();
+            return ural::get(members_, ural::_2);
         }
 
     private:
         void seek()
         {
-            members_.first()
+            ural::get(members_, ural::_1)
                 =  ::ural::details::find_if_not(this->base(), this->predicate());
         }
 
     private:
-        boost::compressed_pair<Input, Predicate> members_;
+        tuple<Input, Predicate> members_;
     };
 
     template <class Input, class Predicate>

@@ -584,14 +584,14 @@ namespace ural
     class not_functor
      : private compose_functor<ural::logical_not<>, Predicate>
     {
-    friend constexpr bool
-    operator==(not_functor const & x, not_functor const & y)
-    {
-        return static_cast<Base const &>(x) ==
-                static_cast<Base const &>(y);
-    }
-
         typedef compose_functor<ural::logical_not<>, Predicate> Base;
+
+        friend constexpr bool
+        operator==(not_functor const & x, not_functor const & y)
+        {
+            return static_cast<Base const &>(x) ==
+                    static_cast<Base const &>(y);
+        }
 
     public:
         /// @brief Тип базового функционального объекта

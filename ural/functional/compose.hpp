@@ -22,6 +22,7 @@
  объектов
 */
 
+#include <ural/utility.hpp>
 #include <boost/compressed_pair.hpp>
 
 namespace ural
@@ -32,12 +33,16 @@ namespace ural
     окончательное значение
     @tparam Functor тип функционального объекта, применяемого непосредственно к
     аргументам
+    @todo Проверка, что класс пустой, если пусты оба шаблонных параметра
     */
     template <class UnaryFunctor, class Functor>
     class compose_functor
-     : boost::compressed_pair<decltype(ural::make_functor(std::declval<UnaryFunctor>())),
-                              decltype(ural::make_functor(std::declval<Functor>()))>
     {
+    friend bool operator==(compose_functor const & x, compose_functor const & y)
+    {
+        return x.first_functor() == y.first_functor()
+                && x.second_functor() == y.second_functor();
+    }
     public:
         /** @brief тип унарного функционального объекта, вычисляющего
         окончательное значение
@@ -63,7 +68,7 @@ namespace ural
         @post <tt> this->second_functor() == f2 </tt>
         */
         explicit compose_functor(UnaryFunctor f1, Functor f2)
-         : Base{std::move(f1), std::move(f2)}
+         : base_{std::move(f1), std::move(f2)}
         {}
 
         /** @brief Первый функциональный объект
@@ -71,7 +76,7 @@ namespace ural
         */
         first_functor_type const & first_functor() const
         {
-            return Base::first();
+            return ::ural::get(base_, ural::_1);
         }
 
         /** @brief Второй функциональный объект
@@ -79,7 +84,7 @@ namespace ural
         */
         second_functor_type const & second_functor() const
         {
-            return Base::second();
+            return ::ural::get(base_, ural::_2);
         }
 
         /** @brief Применение функционального объекта
@@ -91,6 +96,9 @@ namespace ural
         {
             return this->first_functor()(this->second_functor()(std::forward<Args>(args)...));
         }
+
+    private:
+        Base base_;
     };
 }
 // namespace ural
