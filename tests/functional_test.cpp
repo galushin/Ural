@@ -61,6 +61,20 @@ BOOST_AUTO_TEST_CASE(memoize_functor_test)
     BOOST_CHECK_EQUAL(3U, f_tracer.calls());
 }
 
+BOOST_AUTO_TEST_CASE(memoize_functor_equality)
+{
+    typedef double(Signature)(double);
+    auto const f1 = ural::memoize<Signature>((Signature*)(std::abs));
+    auto const f2 = f1;
+
+    auto const v1 = f1(-42);
+    BOOST_CHECK(v1 == 42);
+
+    BOOST_CHECK_EQUAL(1, f1.cache_size());
+    BOOST_CHECK_EQUAL(0, f2.cache_size());
+    BOOST_CHECK(f1 == f2);
+}
+
 BOOST_AUTO_TEST_CASE(functor_tracer_test)
 {
     typedef double(*Target)(double);

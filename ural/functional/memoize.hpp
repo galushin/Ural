@@ -56,13 +56,31 @@ namespace ural
               class Threading, template <class...> class Map>
     class memoize_functor<R(Args...), F, Threading, Map>
     {
+    friend bool operator==(memoize_functor const & x, memoize_functor const & y)
+    {
+        return x.target() == y.target();
+    }
+
     public:
         // Типы
         /// @brief Тип возвращаемого значения
         typedef R result_type;
 
+        /// @brief Тип кортежа аргументов
+        typedef ural::tuple<Args...> args_tuple;
+
+        /// @brief Тип кэша
+        typedef Map<args_tuple, result_type> Cache;
+
+        /// @brief Тип размера кэша
+        typedef typename Cache::size_type size_type;
+
         /// @brief Тип функционального объекта
         typedef decltype(ural::make_functor(std::declval<F>())) target_type;
+
+        /// @brief Стратегия работы с многопоточьностью
+        typedef typename default_helper<Threading, single_thread_policy>::type
+            threading_policy;
 
         // Конструкторы
         /** @brief Конструктор
@@ -75,7 +93,11 @@ namespace ural
          , mutex_{}
         {}
 
-        memoize_functor(memoize_functor const &);
+        memoize_functor(memoize_functor const & x)
+         : target_{x.target()}
+        {}
+
+        // @todo Реализовать
         memoize_functor(memoize_functor &&);
 
         memoize_functor & operator=(memoize_functor const &);
@@ -126,17 +148,18 @@ namespace ural
             this->cache_.clear();
         }
 
-    private:
-        typedef ural::tuple<Args...> args_tuple;
-        typedef Map<args_tuple, result_type> Cache;
-
-        typedef typename default_helper<Threading, single_thread_policy>::type
-            threading_policy;
-
-        typedef typename threading_policy::mutex_type mutex_type;
+        /** @brief Размер кэша
+        @return Количество элементов, помещённых в кэш.
+        */
+        size_type cache_size() const
+        {
+            return cache_.size();
+        }
 
     private:
         target_type target_;
+
+        typedef typename threading_policy::mutex_type mutex_type;
 
         // @todo Можно ли объединить это (см. шаблон Монитор)?
         mutable Cache cache_;
