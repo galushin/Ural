@@ -22,6 +22,7 @@
  rvalue-ссылки
 */
 
+#include <ural/iterator/move.hpp>
 #include <ural/sequence/make.hpp>
 #include <ural/sequence/iterator_sequence.hpp>
 #include <ural/sequence/base.hpp>
@@ -37,6 +38,7 @@ namespace ural
      : public sequence_base<move_sequence<Sequence>>
     {
         typedef typename Sequence::reference Base_reference;
+
     public:
         // Типы
         /// @brief Тип значения
@@ -122,9 +124,9 @@ namespace ural
     */
     template <class Sequence>
     auto begin(move_sequence<Sequence> const & x)
-    -> std::move_iterator<decltype(begin(x.base()))>
+    -> ural::move_iterator<decltype(begin(x.base()))>
     {
-        return std::make_move_iterator(begin(x.base()));
+        return ural::make_move_iterator(begin(x.base()));
     }
 
     /** @brief Итератор задающий конец последовательности
@@ -133,9 +135,9 @@ namespace ural
     */
     template <class Sequence>
     auto end(move_sequence<Sequence> const & x)
-    -> std::move_iterator<decltype(begin(x.base()))>
+    -> ural::move_iterator<decltype(begin(x.base()))>
     {
-        return std::make_move_iterator(end(x.base()));
+        return ural::make_move_iterator(end(x.base()));
     }
 
     /** @brief Создание последовательности rvalue-ссылок базовой
@@ -155,6 +157,7 @@ namespace ural
     @param first итератор, задающий начало последовательности.
     @param last итератор, задающий конец последовательности.
     @return <tt> make_move_sequence(make_iterator_sequence(first.base(), last.base())) </tt>
+    @todo Добавить перегрузку, принимающую ural::move_iterator
     */
     template <class Iterator>
     auto make_iterator_sequence(std::move_iterator<Iterator> first,

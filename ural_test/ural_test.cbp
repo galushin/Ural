@@ -62,6 +62,7 @@
 		<Unit filename="../tests/functional_test.cpp" />
 		<Unit filename="../tests/io_tests.cpp" />
 		<Unit filename="../tests/iterator_sequence_test.cpp" />
+		<Unit filename="../tests/iterator_test.cpp" />
 		<Unit filename="../tests/math_tests.cpp" />
 		<Unit filename="../tests/memory_test.cpp" />
 		<Unit filename="../tests/numeric_tests.cpp" />
@@ -96,6 +97,7 @@
 		<Unit filename="../ural/functional/make_functor.hpp" />
 		<Unit filename="../ural/functional/memoize.hpp" />
 		<Unit filename="../ural/functional/replace.hpp" />
+		<Unit filename="../ural/iterator/move.hpp" />
 		<Unit filename="../ural/math.hpp" />
 		<Unit filename="../ural/math/common_factor.hpp" />
 		<Unit filename="../ural/math/continued_fraction.hpp" />

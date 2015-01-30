@@ -94,6 +94,22 @@ namespace ural
         ++ x;
         return tmp;
     }
+
+    /** Обобщённая реализация пост-декремента. Применяет оператор пре-декремента
+    и возвращает значение, которое объект имел до этого.
+    @brief Обобщённая реализация пост-декремента
+    @param x аргмент
+    @return Значение, которое @c x имел до вызова
+    @todo Добавить требование наличия пре-декремента в enable_if
+    */
+    template <class Decrementable>
+    typename std::enable_if<std::is_copy_constructible<Decrementable>::value, Decrementable>::type
+    operator--(Decrementable & x, int)
+    {
+        auto tmp = x;
+        -- x;
+        return tmp;
+    }
 }
 // namespace ural
 

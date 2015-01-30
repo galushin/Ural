@@ -533,6 +533,28 @@ BOOST_AUTO_TEST_CASE(moved_from_value_cpp_17_test)
                                   x_ural.begin(), x_ural.end());
 }
 
+BOOST_AUTO_TEST_CASE(move_iterator_cpp_11_moving_from_return_by_value_regression)
+{
+    std::string const s("hello");
+    std::string x_std;
+
+    auto f = std::ptr_fun<int, int>(std::toupper);
+
+    std::transform(s.begin(), s.end(), std::back_inserter(x_std), f);
+
+    auto seq = ural::make_transform_sequence(f, s)
+             | ural::moved;
+
+    using Sequence = decltype(seq);
+
+    static_assert(std::is_same<Sequence::reference, int>::value, "");
+
+    auto x_ural = seq | ural::to_container<std::basic_string>{};
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
+
 BOOST_AUTO_TEST_CASE(moved_iterator_sequence_iterators)
 {
     typedef std::vector<int> Container;
@@ -542,14 +564,14 @@ BOOST_AUTO_TEST_CASE(moved_iterator_sequence_iterators)
     auto const rs1 = ural::sequence(v1) | ural::moved;
     auto const rs2 = ural::sequence(v2) | ural::moved;
 
-    static_assert(std::is_same<decltype(begin(rs1)), std::move_iterator<Container::iterator>>::value, "");
-    static_assert(std::is_same<decltype(begin(rs2)), std::move_iterator<Container::const_iterator>>::value, "");
+    static_assert(std::is_same<decltype(begin(rs1)), ural::move_iterator<Container::iterator>>::value, "");
+    static_assert(std::is_same<decltype(begin(rs2)), ural::move_iterator<Container::const_iterator>>::value, "");
 
-    BOOST_CHECK(begin(rs1) == std::make_move_iterator(v1.begin()));
-    BOOST_CHECK(end(rs1) == std::make_move_iterator(v1.end()));
+    BOOST_CHECK(begin(rs1) == ural::make_move_iterator(v1.begin()));
+    BOOST_CHECK(end(rs1) == ural::make_move_iterator(v1.end()));
 
-    BOOST_CHECK(begin(rs2) == std::make_move_iterator(v2.begin()));
-    BOOST_CHECK(end(rs2) == std::make_move_iterator(v2.end()));
+    BOOST_CHECK(begin(rs2) == ural::make_move_iterator(v2.begin()));
+    BOOST_CHECK(end(rs2) == ural::make_move_iterator(v2.end()));
 }
 
 BOOST_AUTO_TEST_CASE(function_output_sequence_as_iterator)
