@@ -115,3 +115,30 @@ BOOST_AUTO_TEST_CASE(move_iterator_member_access)
         BOOST_CHECK_EQUAL(xs[i - first].size(), i->size());
     }
 }
+
+namespace
+{
+    class Base_class
+    {
+    public:
+        int value;
+    };
+
+    class Derived_class
+     : public Base_class
+    {};
+}
+
+BOOST_AUTO_TEST_CASE(move_iterator_compatible_ctor)
+{
+    std::vector<Derived_class> const xs(5, Derived_class{});
+
+    ural::move_iterator<Base_class const*>
+        iter(ural::make_move_iterator(xs.data()));
+
+    BOOST_CHECK_EQUAL(iter.base(), xs.data());
+
+    iter = ural::make_move_iterator(xs.data() + xs.size());
+
+    BOOST_CHECK_EQUAL(iter.base(), xs.data() + xs.size());
+}

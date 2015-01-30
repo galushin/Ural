@@ -19,7 +19,6 @@
 
 /** @file ural/iterator/move.hpp
  @brief Итераторы с перемещением из С++17
- @todo Заменить на @c STL, если реализованы требования C++ 17
 */
 
 #include <ural/operators.hpp>
@@ -36,6 +35,8 @@ namespace ural
     @brief Итератор с перемещением
     @tparam Тип итератора
     @todo Нужны ли преобразования в/из std::move_iterator?
+    @note Можно заменить на <tt> std::move_iterator </tt>, если реализованы
+    требования C++ 17.
     */
     template <class Iterator>
     class move_iterator
@@ -85,8 +86,26 @@ namespace ural
          : base_{i}
         {}
 
-        // @todo Создание из совместимого типа
-        // @todo Присваивание совместимого типа
+        /** @brief Конструктор на основе совместимого типа
+        @param u исходный итератора
+        @post <tt> this->base() == iterator_type{u.base()} </tt>
+        */
+        template <class U>
+        move_iterator(move_iterator<U> const & u)
+         : base_{u.base()}
+        {}
+
+        /** @brief Присваивание совместимого итератора
+        @param u присваиваемый итератор
+        @return <tt> *this </tt>
+        @post <tt> this->base() == iterator_type{u.base()} </tt>
+        */
+        template <class U>
+        move_iterator & operator=(move_iterator<U> const & u)
+        {
+            base_ = u.base();
+            return *this;
+        }
 
         // Адаптор итератора
         /** @brief Базовый итератор
