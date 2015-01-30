@@ -24,6 +24,55 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <boost/mpl/list.hpp>
+namespace
+{
+
+    typedef boost::mpl::list<ural::not_equal_to<int>,
+                         ural::not_equal_to<>,
+                         ural::not_equal_to<int, void>,
+                         ural::not_equal_to<void, int>> Neq_functors;
+
+    typedef boost::mpl::list<ural::logical_not<bool>, ural::logical_not<>>
+        Not_functors;
+
+    typedef boost::mpl::list<ural::logical_and<bool>,
+                         ural::logical_and<>,
+                         ural::logical_and<bool, void>,
+                         ural::logical_and<void, bool>> And_functors;
+
+    typedef boost::mpl::list<ural::logical_or<bool>,
+                         ural::logical_or<>,
+                         ural::logical_or<bool, void>,
+                         ural::logical_or<void, bool>> Or_functors;
+
+    typedef boost::mpl::list<ural::bit_and<int>,
+                         ural::bit_and<int, void>,
+                         ural::bit_and<void, int>,
+                         ural::bit_and<void, void>> Bit_and_functors;
+
+    typedef boost::mpl::list<ural::bit_or<int>,
+                         ural::bit_or<int, void>,
+                         ural::bit_or<void, int>,
+                         ural::bit_or<void, void>> Bit_or_functors;
+
+    typedef boost::mpl::list<ural::bit_xor<int>,
+                         ural::bit_xor<int, void>,
+                         ural::bit_xor<void, int>,
+                         ural::bit_xor<void, void>> Bit_xor_functors;
+
+    typedef boost::mpl::list<ural::logical_implication<bool>,
+                         ural::logical_implication<bool, void>,
+                         ural::logical_implication<void, bool>,
+                         ural::logical_implication<void, void>>
+        Implication_functors;
+
+    typedef boost::mpl::list<ural::modulus<int>,
+                         ural::modulus<>,
+                         ural::modulus<int, void>,
+                         ural::modulus<void, int>> Modulus_functors;
+}
+
 BOOST_AUTO_TEST_CASE(memoize_functor_test)
 {
     struct Tag;
@@ -222,14 +271,6 @@ BOOST_AUTO_TEST_CASE(compare_by_test_custom_compare)
     }
 }
 
-#include <boost/mpl/list.hpp>
-
-typedef boost::mpl::list<ural::not_equal_to<int>,
-                         ural::not_equal_to<>,
-                         ural::not_equal_to<int, void>,
-                         ural::not_equal_to<void, int>>
-    Neq_functors;
-
 BOOST_AUTO_TEST_CASE_TEMPLATE(not_equal_to_test, Functor, Neq_functors)
 {
     constexpr Functor neq {};
@@ -248,9 +289,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(not_equal_to_test, Functor, Neq_functors)
     BOOST_CHECK_EQUAL(false, neq(1, 1));
 }
 
-typedef boost::mpl::list<ural::logical_not<bool>, ural::logical_not<>>
-    Not_functors;
-
 BOOST_AUTO_TEST_CASE_TEMPLATE(logical_not_test, Functor, Not_functors)
 {
     constexpr Functor not_ {};
@@ -264,12 +302,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(logical_not_test, Functor, Not_functors)
     BOOST_CHECK_EQUAL(true, not_(false));
     BOOST_CHECK_EQUAL(false, not_(true));
 }
-
-typedef boost::mpl::list<ural::logical_and<bool>,
-                         ural::logical_and<>,
-                         ural::logical_and<bool, void>,
-                         ural::logical_and<void, bool>>
-    And_functors;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(logical_and_test, Functor, And_functors)
 {
@@ -289,12 +321,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(logical_and_test, Functor, And_functors)
     BOOST_CHECK_EQUAL(true, and_(true, true));
 }
 
-typedef boost::mpl::list<ural::logical_or<bool>,
-                         ural::logical_or<>,
-                         ural::logical_or<bool, void>,
-                         ural::logical_or<void, bool>>
-    Or_functors;
-
 BOOST_AUTO_TEST_CASE_TEMPLATE(logical_or_test, Functor, Or_functors)
 {
     constexpr Functor or_ {};
@@ -313,12 +339,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(logical_or_test, Functor, Or_functors)
     BOOST_CHECK_EQUAL(true, or_(true, true));
 }
 
-typedef boost::mpl::list<ural::bit_and<int>,
-                         ural::bit_and<int, void>,
-                         ural::bit_and<void, int>,
-                         ural::bit_and<void, void>>
-    Bit_and_functors;
-
 BOOST_AUTO_TEST_CASE_TEMPLATE(bit_and_test, Functor, Bit_and_functors)
 {
     constexpr auto f = Functor{};
@@ -330,12 +350,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(bit_and_test, Functor, Bit_and_functors)
 
     BOOST_CHECK_EQUAL((x & y), f(x, y));
 }
-
-typedef boost::mpl::list<ural::bit_or<int>,
-                         ural::bit_or<int, void>,
-                         ural::bit_or<void, int>,
-                         ural::bit_or<void, void>>
-    Bit_or_functors;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(bit_or_test, Functor, Bit_or_functors)
 {
@@ -349,12 +363,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(bit_or_test, Functor, Bit_or_functors)
     BOOST_CHECK_EQUAL((x | y), f(x, y));
 }
 
-typedef boost::mpl::list<ural::bit_xor<int>,
-                         ural::bit_xor<int, void>,
-                         ural::bit_xor<void, int>,
-                         ural::bit_xor<void, void>>
-    Bit_xor_functors;
-
 BOOST_AUTO_TEST_CASE_TEMPLATE(bit_xor_test, Functor, Bit_xor_functors)
 {
     constexpr auto f = Functor{};
@@ -366,12 +374,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(bit_xor_test, Functor, Bit_xor_functors)
 
     BOOST_CHECK_EQUAL((x ^ y), f(x, y));
 }
-
-typedef boost::mpl::list<ural::logical_implication<bool>,
-                         ural::logical_implication<bool, void>,
-                         ural::logical_implication<void, bool>,
-                         ural::logical_implication<void, void>>
-    Implication_functors;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(logic_implication_test, Functor, Implication_functors)
 {
@@ -412,12 +414,6 @@ BOOST_AUTO_TEST_CASE(negate_test_auto)
 
     BOOST_CHECK_EQUAL(-value, r);
 }
-
-typedef boost::mpl::list<ural::modulus<int>,
-                         ural::modulus<>,
-                         ural::modulus<int, void>,
-                         ural::modulus<void, int>>
-    Modulus_functors;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(modulus_test, Modulus, Modulus_functors)
 {
@@ -805,4 +801,81 @@ BOOST_AUTO_TEST_CASE(min_element_accumulator_move_ops_test)
     bool const changed_2 = acc.update(std::move(xs[3]));
     BOOST_CHECK(!changed_2);
     BOOST_CHECK_EQUAL(xs_old[3], xs[3]);
+}
+
+namespace
+{
+    using Plus_assigns = boost::mpl::list<ural::plus_assign<int, int>,
+                                          ural::plus_assign<int, void>,
+                                          ural::plus_assign<void, int>,
+                                          ural::plus_assign<>>;
+
+    using Minus_assigns = boost::mpl::list<ural::minus_assign<int, int>,
+                                           ural::minus_assign<int, void>,
+                                           ural::minus_assign<void, int>,
+                                           ural::minus_assign<>>;
+
+    using Mult_assigns = boost::mpl::list<ural::multiplies_assign<int, int>,
+                                          ural::multiplies_assign<int, void>,
+                                          ural::multiplies_assign<void, int>,
+                                          ural::multiplies_assign<>>;
+
+    using Divides_assigns = boost::mpl::list<ural::divides_assign<int, int>,
+                                             ural::divides_assign<int, void>,
+                                             ural::divides_assign<void, int>,
+                                             ural::divides_assign<>>;
+
+    using Modulus_assigns = boost::mpl::list<ural::modulus_assign<int, int>,
+                                             ural::modulus_assign<int, void>,
+                                             ural::modulus_assign<void, int>,
+                                             ural::modulus_assign<>>;
+}
+BOOST_AUTO_TEST_CASE_TEMPLATE(plus_assign_functor_test, Function, Plus_assigns)
+{
+    auto x = 4;
+    auto const y = 3;
+
+    Function{}(x, y);
+
+    BOOST_CHECK_EQUAL(7, x);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(minus_assign_functor_test, Function, Minus_assigns)
+{
+    auto x = 4;
+    auto const y = 3;
+
+    Function{}(x, y);
+
+    BOOST_CHECK_EQUAL(1, x);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(mult_assign_functor_test, Function, Mult_assigns)
+{
+    auto x = 4;
+    auto const y = 3;
+
+    Function{}(x, y);
+
+    BOOST_CHECK_EQUAL(12, x);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(divides_assign_functor_test, Function, Divides_assigns)
+{
+    auto x = 18;
+    auto const y = 7;
+
+    Function{}(x, y);
+
+    BOOST_CHECK_EQUAL(2, x);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(modulus_assign_functor_test, Function, Modulus_assigns)
+{
+    auto x = 18;
+    auto const y = 7;
+
+    Function{}(x, y);
+
+    BOOST_CHECK_EQUAL(4, x);
 }

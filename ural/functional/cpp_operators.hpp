@@ -19,6 +19,8 @@
 
 /** @file ural/functional/cpp_operators.hpp
  @brief Функциональные объекты, аналогичные определённым в @< functional @>
+ @todo Добавить во вспомогательные классы требование к функциональным объектам:
+ они должны быть "прозрачными"
 */
 
 #include <ural/functional/make_functor.hpp>
@@ -79,19 +81,49 @@ namespace ural
         }
     };
 
-    // @todo Разобраться с этими шаблонами
     template <class T1, class T2, class F>
     class compound_assignment_helper
-    {};
+    {
+    public:
+        static_assert(std::is_empty<F>::value, "Must be empty!");
+
+        T1 & operator()(T1 & x, T2 const & y) const
+        {
+            return F{}(x, y);
+        }
+    };
 
     template <class T1, class F>
     class compound_assignment_helper<T1, void, F>
-    {};
+    {
+    public:
+        static_assert(std::is_empty<F>::value, "Must be empty!");
+
+        template <class T2>
+        T1 & operator()(T1 & x, T2 && y) const
+        {
+            return F{}(x, std::forward<T2>(y));
+        }
+    };
 
     template <class T2, class F>
     class compound_assignment_helper<void, T2, F>
-    {};
+    {
+    public:
+        static_assert(std::is_empty<F>::value, "Must be empty!");
 
+        template <class T1>
+        T1 & operator()(T1 & x, T2 const & y) const
+        {
+            return F{}(x, y);
+        }
+    };
+
+    /** @brief Вспомогательный класс для определения функциональных объектов
+    для унарных операторов
+    @tparam T тип аргумента
+    @tparam F тип "прозрачного" функционального объекта
+    */
     template <class T, class F>
     class unary_operator_helper
     {
@@ -653,7 +685,7 @@ namespace ural
     */
     template <class T1 = void, class T2 = T1>
     class plus_assign
-     : compound_assignment_helper<T1, T2, plus_assign<>>
+     : public compound_assignment_helper<T1, T2, plus_assign<>>
     {};
 
     template <>
@@ -675,7 +707,7 @@ namespace ural
     */
     template <class T1 = void, class T2 = T1>
     class minus_assign
-     : compound_assignment_helper<T1, T2, plus_assign<>>
+     : public compound_assignment_helper<T1, T2, minus_assign<>>
     {};
 
     template <>
@@ -689,6 +721,58 @@ namespace ural
         }
     };
 
+    template <class T1 = void, class T2 = T1>
+    class multiplies_assign
+     : public compound_assignment_helper<T1, T2, multiplies_assign<>>
+    {};
+
+    template <>
+    class multiplies_assign<void, void>
+    {
+    public:
+        template <class T1, class T2>
+        constexpr T1 & operator()(T1 & x, T2 && y) const
+        {
+            return x *= std::forward<T2>(y);
+        }
+    };
+
+    template <class T1 = void, class T2 = T1>
+    class divides_assign
+     : public compound_assignment_helper<T1, T2, divides_assign<>>
+    {};
+
+    template <>
+    class divides_assign<void, void>
+    {
+    public:
+        template <class T1, class T2>
+        constexpr T1 & operator()(T1 & x, T2 && y) const
+        {
+            return x /= std::forward<T2>(y);
+        }
+    };
+
+    template <class T1 = void, class T2 = T1>
+    class modulus_assign
+     : public compound_assignment_helper<T1, T2, modulus_assign<>>
+    {};
+
+    template <>
+    class modulus_assign<void, void>
+    {
+    public:
+        template <class T1, class T2>
+        constexpr T1 & operator()(T1 & x, T2 && y) const
+        {
+            return x %= std::forward<T2>(y);
+        }
+    };
+
+    /** @brief Функциональный объект для унарного оператора * (разыменования)
+    @tparam T тип аргумента, если этот тип совпадает с @b void, то тип аргумента
+    будет выводится по фактическим параметрам
+    */
     template <class T = void>
     class dereference
      : public unary_operator_helper<T, dereference<>>
