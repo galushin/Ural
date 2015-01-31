@@ -21,6 +21,7 @@
  @brief Итераторы с перемещением из С++17
 */
 
+#include <ural/type_traits.hpp>
 #include <ural/operators.hpp>
 
 #include <type_traits>
@@ -34,7 +35,12 @@ namespace ural
     с такими итераторами, чтобы заменить копирование на перемещение (24.5.3)
     @brief Итератор с перемещением
     @tparam Тип итератора
-    @todo Нужны ли преобразования в/из std::move_iterator?
+    @note Преобразования из/в <tt> std::move_iterator </tt> реализовывать
+    нецелесообразно. Во-первых, их всегда можно выполнить с помощью вызовов
+    вида <tt> make_itearator(m_iter.base()) </tt>. Во-вторых, обобщённые
+    алгоритмы параметризированы типом итератора. В-третьих, данный класс введён
+    из-за дефекта С++11/14, исправленного в С++17, так что преобразование в
+    <tt> std::move_iterator </tt> может быть просто небезопасным.
     @note Можно заменить на <tt> std::move_iterator </tt>, если реализованы
     требования C++ 17.
     */
@@ -43,8 +49,6 @@ namespace ural
     {
         typedef typename std::iterator_traits<Iterator>::reference
             Base_reference;
-        typedef typename std::remove_reference<Base_reference>::type Base_value_type;
-
     public:
         // Типы
         /// @brief Тип базового итератора
@@ -65,10 +69,8 @@ namespace ural
         typedef Iterator pointer;
 
         /// @brief Тип ссылки
-        // @todo Устранить дублирование с move_sequence
-        typedef typename std::conditional<std::is_reference<Base_reference>::value,
-                                          Base_value_type &&,
-                                          Base_reference>::type reference;
+        typedef typename moved_type<Base_reference>::type
+            reference;
 
         // Конструкторы
         /** @brief Конструктор без аргументов

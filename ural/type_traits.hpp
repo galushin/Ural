@@ -79,6 +79,13 @@ namespace ural
         /// @brief Значение-результат
         constexpr static auto value = type::value;
     };
+
+    template <class T>
+    struct moved_type
+     : std::conditional<std::is_reference<T>::value,
+                        typename std::remove_reference<T>::type &&,
+                        T>
+    {};
 }
 // namespace ural
 

@@ -44,10 +44,9 @@ namespace ural
         /// @brief Тип значения
         typedef typename Sequence::value_type value_type;
 
-        // @todo Уточнить этот тип (в С++17 move_iterator изменился)
         /// @brief Тип ссылки
-        typedef typename std::conditional<std::is_reference<Base_reference>::value,
-                                          value_type &&, value_type>::type reference;
+        typedef typename moved_type<Base_reference>::type
+            reference;
 
         /// @brief Тип расстояния
         typedef typename Sequence::distance_type distance_type;
@@ -157,11 +156,25 @@ namespace ural
     @param first итератор, задающий начало последовательности.
     @param last итератор, задающий конец последовательности.
     @return <tt> make_move_sequence(make_iterator_sequence(first.base(), last.base())) </tt>
-    @todo Добавить перегрузку, принимающую ural::move_iterator
     */
     template <class Iterator>
     auto make_iterator_sequence(std::move_iterator<Iterator> first,
                                 std::move_iterator<Iterator> last)
+    -> move_sequence<decltype(make_iterator_sequence(first.base(), last.base()))>
+    {
+        return make_move_sequence(make_iterator_sequence(first.base(),
+                                                         last.base()));
+    }
+
+    /** @brief Создание последовательности на основе
+    <tt> ural::move_iterator </tt>.
+    @param first итератор, задающий начало последовательности.
+    @param last итератор, задающий конец последовательности.
+    @return <tt> make_move_sequence(make_iterator_sequence(first.base(), last.base())) </tt>
+    */
+    template <class Iterator>
+    auto make_iterator_sequence(ural::move_iterator<Iterator> first,
+                                ural::move_iterator<Iterator> last)
     -> move_sequence<decltype(make_iterator_sequence(first.base(), last.base()))>
     {
         return make_move_sequence(make_iterator_sequence(first.base(),

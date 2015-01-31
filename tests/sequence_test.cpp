@@ -149,6 +149,23 @@ BOOST_AUTO_TEST_CASE(move_iterators_to_sequence_test)
     BOOST_CHECK(m_end.base() == ms.base().end());
 }
 
+BOOST_AUTO_TEST_CASE(ural_move_iterators_to_sequence_test)
+{
+    std::vector<int> xs = {1, 2, 3, 4, 5};
+    auto m_begin = ural::make_move_iterator(xs.begin());
+    auto m_end = ural::make_move_iterator(xs.end());
+
+    auto ms = ural::make_iterator_sequence(m_begin, m_end);
+
+    typedef ural::move_sequence<ural::iterator_sequence<decltype(xs.begin())>>
+        MSequence;
+
+    static_assert(std::is_same<decltype(ms), MSequence>::value, "");
+
+    BOOST_CHECK(m_begin.base() == ms.base().begin());
+    BOOST_CHECK(m_end.base() == ms.base().end());
+}
+
 BOOST_AUTO_TEST_CASE(sink_output_sequence_test_auto)
 {
     ural::sink_sequence<> sink {};
