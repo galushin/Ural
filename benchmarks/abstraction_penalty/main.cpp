@@ -59,13 +59,17 @@ Alex Stepanov
 13, 14 - прямые последовательности
 15, 16 - обратные последовательности
 
-Количество повторов по умолчанию увеличено в 10 раз
+Количество повторов по умолчанию увеличено в 10 раз.
+Встроенный массив результатов заменён на vector, я надеюсь, что компилятором,
+который не способен обработать STL, никому пользоваться больше не придётся.
 
 Pavel Galushin
 */
 
 #include <ural/numeric.hpp>
 #include <ural/sequence/all.hpp>
+
+#include <vector>
 
 #include <stddef.h>
 #include <stdio.h>
@@ -240,17 +244,18 @@ Number accumulate(Iterator first, Iterator last, Number result)
 int iterations = 250000;
 #define SIZE 2000
 
-int current_test = 0;
-
-double result_times[20];
+std::vector<double> result_times;
 
 void summarize()
 {
+    int const current_test = result_times.size();
+
     printf("\ntest      absolute   additions      ratio with\n");
     printf("number    time       per second     test0\n\n");
-    int i;
+
     double millions = (double(SIZE) * iterations)/1000000.;
-    for (i = 0; i < current_test; ++i)
+
+    for (int i = 0; i < current_test; ++i)
     {
         if(i == 13)
         {
@@ -269,7 +274,7 @@ void summarize()
     double total_absolute_times = 0.;  // sam added 12/05/95
     double gmean_rate = 0.;
     double gmean_ratio = 0.;
-    for (i = 0; i < current_test; ++i)
+    for (int i = 0; i < current_test; ++i)
     {
         total_absolute_times += result_times[i];  // sam added 12/05/95
         gmean_times += log(result_times[i]);
@@ -307,6 +312,8 @@ Double Data[SIZE];
 
 inline void check(double result)
 {
+    auto const current_test = static_cast<int>(result_times.size());
+
     if (result != SIZE * init_value) printf("test %i failed\n", current_test);
 }
 
@@ -319,18 +326,18 @@ void test0(double* first, double* last)
         for (int n = 0; n < last - first; ++n) result += first[n];
         check(result);
     }
-    result_times[current_test++] = timer();
+
+    result_times.push_back(timer());
 }
 
 
 template <class Iterator, class T>
 void test(Iterator first, Iterator last, T zero)
 {
-    int i;
     start_timer();
-    for(i = 0; i < iterations; ++i)
+    for(int i = 0; i < iterations; ++i)
         check(double(::accumulate(first, last, zero)));
-    result_times[current_test++] = timer();
+    result_times.push_back(timer());
 }
 
 template <class Iterator, class T>
@@ -342,11 +349,10 @@ void fill(Iterator first, Iterator last, T value)
 template <class Sequence, class T>
 void test_seq(Sequence seq, T zero)
 {
-    int i;
     start_timer();
-    for(i = 0; i < iterations; ++i)
+    for(int i = 0; i < iterations; ++i)
         check(double(ural::accumulate(std::move(seq), zero)));
-    result_times[current_test++] = timer();
+    result_times.push_back(timer());
 }
 
 double d = 0.;
