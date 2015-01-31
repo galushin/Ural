@@ -58,7 +58,6 @@ Alex Stepanov
 Добавлены тесты для ural
 13, 14 - прямые последовательности
 15, 16 - обратные последовательности
-17, 18 - Итераторы последовательностей
 
 Количество повторов по умолчанию увеличено в 10 раз
 
@@ -414,17 +413,11 @@ int main(int argv, char** argc)
     auto r_seq = seq | ural::reversed;
     auto r_Seq = Seq | ural::reversed;
 
+    // Последовательности и обратные последовательности
     test_seq(seq, d);
     test_seq(Seq, D);
     test_seq(r_seq, d);
     test_seq(r_Seq, D);
-
-    test(begin(seq), end(seq), d);
-    test(begin(Seq), end(Seq), D);
-
-// @todo Можно ли реализовать это?
-//    test(begin(r_seq), end(r_seq), d);
-//    test(begin(r_Seq), end(r_Seq), D);
 
     summarize();
     return 0;
