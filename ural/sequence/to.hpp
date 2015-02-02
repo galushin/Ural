@@ -19,7 +19,6 @@
 
 /** @file ural/sequence/to.hpp
  @brief Преобразование последовательностей в контейнер
- @todo Возможность задавать дополнительные шаблонные параметры
 */
 
 #include <ural/sequence/make.hpp>
@@ -31,20 +30,25 @@ namespace ural
     /** @brief Вспомогательный тип для преобразования последовательностей
     в контейнер
     @tparam Container шаблон контейнера
+    @tparam Args дополнительные аругменты, например: тип функции сравнения,
+    распределителя памяти и т.д.
     */
-    template <template <class...> class Container>
+    template <template <class...> class Container, class... Args>
     struct to_container
     {};
 
     /** @brief Создание контейнера по последовательности
+    @tparam Container шаблон контейнера
+    @tparam Args дополнительные аругменты, например: тип функции сравнения,
+    распределителя памяти и т.д.
     @param seq последовательность
     @return <tt> Container<Value>(begin(s), end(s)) </tt>, где @c s есть
     <tt> sequence(std::forward<Sequence>(seq)) </tt>, а @c Value --- тип
     значений последовательности @c s.
     */
-    template <class Sequence, template <class...> class Container>
-    auto operator|(Sequence && seq, to_container<Container>)
-    -> Container<typename decltype(sequence(std::forward<Sequence>(seq)))::value_type>
+    template <class Sequence, template <class...> class Container, class... Args>
+    auto operator|(Sequence && seq, to_container<Container, Args...>)
+    -> Container<typename decltype(sequence(std::forward<Sequence>(seq)))::value_type, Args...>
     {
         typedef decltype(sequence(std::forward<Sequence>(seq))) Seq;
         typedef typename Seq::value_type Value;
@@ -60,31 +64,41 @@ namespace ural
         auto last = end(s);
         auto first = begin(std::move(s));
 
-        return Container<Value>(std::move(first), std::move(last));
+        return Container<Value, Args...>(std::move(first), std::move(last));
     }
 
-    template <template <class, class, class...> class Map>
+    /** @brief Вспомогательный тип для преобразования последовательностей
+    в ассоцитивный контейнер
+    @tparam Map шаблон типа ассоциативного контейнера
+    @tparam Args дополнительные аругменты, например: тип функции сравнения,
+    распределителя памяти и т.д.
+    */
+    template <template <class, class, class...> class Map, class... Args>
     struct to_map
     {};
 
     /** @brief Создание ассоциативного контейнера из последовательности
     @param seq последовательность
     @tparam Map шаблон типа ассоциативного контейнера
+    @tparam Args дополнительные аругменты, например: тип функции сравнения,
+    распределителя памяти и т.д.
     */
-    template <class Sequence, template <class, class, class...> class Map>
-    auto operator|(Sequence && seq, to_map<Map>)
-    -> Map<typename std::tuple_element<0, typename decltype(sequence(std::forward<Sequence>(seq)))::value_type>::type,
-           typename std::tuple_element<1, typename decltype(sequence(std::forward<Sequence>(seq)))::value_type>::type>
+    template <class Sequence, template <class, class, class...> class Map, class... Args>
+    auto operator|(Sequence && seq, to_map<Map, Args...>)
+    -> Map<typename std::tuple_element<0, typename decltype(ural::sequence_fwd<Sequence>(seq))::value_type>::type,
+           typename std::tuple_element<1, typename decltype(ural::sequence_fwd<Sequence>(seq))::value_type>::type,
+           Args...>
     {
-        typedef decltype(sequence(std::forward<Sequence>(seq))) Seq;
+        typedef decltype(ural::sequence_fwd<Sequence>(seq)) Seq;
         typedef typename Seq::value_type Value;
         typedef typename std::tuple_element<0, Value>::type Key;
         typedef typename std::tuple_element<1, Value>::type Mapped;
 
-        Map<Key, Mapped> result;
+        Map<Key, Mapped, Args...> result;
 
         for(auto && x : sequence(std::forward<Sequence>(seq)))
         {
+            // @todo Оптимизация
             result.emplace(get(std::forward<decltype(x)>(x), ural::_1),
                            get(std::forward<decltype(x)>(x), ural::_2));
         }

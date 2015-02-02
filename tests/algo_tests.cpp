@@ -503,8 +503,6 @@ BOOST_AUTO_TEST_CASE(swap_ranges_test)
     BOOST_CHECK_EQUAL_COLLECTIONS(y2.begin(), y2.end(), x1.begin(), x1.end());
 }
 
-// @todo Аналог iter_swap
-
 // 25.3.4 Преобразование
 BOOST_AUTO_TEST_CASE(transform_test)
 {
@@ -1051,7 +1049,6 @@ BOOST_AUTO_TEST_CASE(shuffle_test)
 
     auto const v_old = v;
 
-    // @todo Проверить, насколько равномерно и случайно распределение
     ural::shuffle(v, ural_test::random_engine());
 
     BOOST_CHECK_EQUAL(v.size(), v_old.size());

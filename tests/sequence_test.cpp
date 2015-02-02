@@ -630,3 +630,28 @@ BOOST_AUTO_TEST_CASE(transform_sequence_iterators)
     BOOST_CHECK(bf.functor() == f);
     BOOST_CHECK(ef.functor() == f);
 }
+
+BOOST_AUTO_TEST_CASE(to_container_additional_parameters)
+{
+    typedef ural::greater<> Compare;
+
+    auto const ns = ural::numbers(1, 10)
+                  | ural::to_container<std::set, Compare>{};
+
+    static_assert(std::is_same<Compare, decltype(ns)::key_compare>::value, "");
+
+    BOOST_CHECK(true);
+}
+
+BOOST_AUTO_TEST_CASE(to_map_additional_parameters)
+{
+    typedef ural::greater<> Compare;
+
+    std::map<int, char> f;
+
+    auto f1 = ural::sequence(f) | ural::to_map<std::map, Compare>{};
+
+    static_assert(std::is_same<Compare, decltype(f1)::key_compare>::value, "");
+
+    BOOST_CHECK(true);
+}

@@ -27,8 +27,8 @@
 
 namespace ural
 {
-    /**
-    @todo Усилить категорию обхода?
+    /** @brief Последовательность кортежей значений базовых последовательностей
+    @tparam Inputs базовые последовательности
     */
     template <class... Inputs>
     class zip_sequence
@@ -50,7 +50,7 @@ namespace ural
         typedef typename Impl_seq::distance_type distance_type;
 
         /// @brief Категория обхода
-        typedef single_pass_traversal_tag traversal_tag;
+        typedef typename Impl_seq::traversal_tag traversal_tag;
 
         // Конструкторы
         zip_sequence(Inputs... ins)
