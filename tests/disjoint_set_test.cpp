@@ -33,6 +33,7 @@ BOOST_AUTO_TEST_CASE(disjoint_set_singletons)
     {
         BOOST_CHECK_EQUAL(i, ds.root(i));
         BOOST_CHECK_EQUAL(i, ds.parent(i));
+        BOOST_CHECK(ds.is_united(i, i));
     }
 }
 
@@ -45,14 +46,20 @@ BOOST_AUTO_TEST_CASE(disjoint_set_odd_and_even)
     for(auto i : ural::numbers(2, ds.size()))
     {
         ds.unite(i, i-2);
+
+        BOOST_CHECK(ds.is_united(i, i-2));
     }
 
     for(auto i : ural::indices_of(ds))
     {
-        for(auto j : ural::numbers(i % 2, ds.size(), 2))
+        for(auto j : ural::indices_of(ds))
         {
-            ds.is_united(i, j);
+            BOOST_CHECK_EQUAL(ds.is_united(i, j), i % 2 == j % 2);
+            BOOST_CHECK_EQUAL(ds.is_united(j, i), i % 2 == j % 2);
         }
     }
 }
 // @todo Тест на основе случайной выборки
+
+// @todo Объединить слева на право и проверить высоту
+// @todo Объединить справа на лево и проверить высоту

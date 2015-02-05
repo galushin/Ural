@@ -123,8 +123,8 @@ namespace ural
             /* Преобразование из константной ссылки в неконстантную безопасно,
             так как мы знаем, что исходно данный объект является не константым
             */
-            auto const & cr = this->root(p);
-            return const_cast<value_type &>(cr);
+            auto r = this->root(p);
+            return data_[r][ural::_1];
         }
 
     private:

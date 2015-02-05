@@ -28,6 +28,7 @@
  - Похоже, что пользователю в любом случае придётся задавать тип целых чисел
 */
 
+#include <ural/numeric/numbers_sequence.hpp>
 #include <ural/algorithm.hpp>
 #include <ural/sequence/make.hpp>
 #include <ural/math/common_factor.hpp>
