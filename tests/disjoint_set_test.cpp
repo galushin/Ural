@@ -61,5 +61,65 @@ BOOST_AUTO_TEST_CASE(disjoint_set_odd_and_even)
 }
 // @todo Тест на основе случайной выборки
 
-// @todo Объединить слева на право и проверить высоту
-// @todo Объединить справа на лево и проверить высоту
+namespace
+{
+    size_t height(ural::disjoint_set<size_t> const & ds, size_t index)
+    {
+        size_t h = 0;
+
+        for(;;)
+        {
+            auto p = ds.parent(index);
+
+            if(p != index)
+            {
+                h += 1;
+                index = p;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        return h;
+    }
+}
+
+BOOST_AUTO_TEST_CASE(disjoint_set_left_to_right)
+{
+    auto const n = 16;
+
+    ural::disjoint_set<size_t> ds(n);
+
+    for(auto i : ural::indices_of(ds))
+    {
+        ds.unite(0, i);
+
+        BOOST_CHECK(ds.is_united(0, i));
+    }
+
+    for(auto i : ural::indices_of(ds))
+    {
+        BOOST_CHECK_LE(height(ds, i), 1);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(disjoint_set_right_to_left)
+{
+    auto const n = 16;
+
+    ural::disjoint_set<size_t> ds(n);
+
+    for(size_t i = ds.size(); i > 0; -- i)
+    {
+        ds.unite(n-1, i-1);
+
+        BOOST_CHECK(ds.is_united(n-1, i-1));
+    }
+
+    for(auto i : ural::indices_of(ds))
+    {
+        BOOST_CHECK_LE(height(ds, i), 1);
+    }
+}

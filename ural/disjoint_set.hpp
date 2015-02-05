@@ -57,7 +57,7 @@ namespace ural
 
             for(auto i : ural::numbers(0, n))
             {
-                data_.emplace_back(i, IntType{0});
+                data_.emplace_back(i, IntType{1});
             }
         }
 
@@ -114,7 +114,20 @@ namespace ural
         */
         void unite(value_type const & p, value_type const & q)
         {
-            this->root_ref(p) = this->root(q);
+            auto const p_root = this->root(p);
+            auto const q_root = this->root(q);
+
+            if(data_[p_root][ural::_2] < data_[q_root][ural::_2])
+            {
+                // @todo Устранить дублирование
+                data_[p_root][ural::_1] = q_root;
+                data_[q_root][ural::_2] += data_[p_root][ural::_2];
+            }
+            else
+            {
+                data_[q_root][ural::_1] = p_root;
+                data_[p_root][ural::_2] += data_[q_root][ural::_2];
+            }
         }
 
     private:
