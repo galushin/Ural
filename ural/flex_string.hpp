@@ -145,21 +145,24 @@ namespace ural
 
         void reserve(size_type n)
         {
-            if(n > this->capacity())
+            if(n <= this->capacity())
             {
-                string_allocator_storage tmp(n, this->get_allocator());
-
-                assert(tmp.size() > this->size());
-
-                tmp.pop_back(tmp.size() - this->size());
-
-                assert(tmp.size() == this->size());
-                assert(tmp.capacity() >= n);
-
-                std::move(begin_, end_, tmp.begin_);
-
-                tmp.swap(*this);
+                // @todo Заменить на assert
+                return;
             }
+
+            string_allocator_storage tmp(n, this->get_allocator());
+
+            assert(tmp.size() > this->size());
+
+            tmp.pop_back(tmp.size() - this->size());
+
+            assert(tmp.size() == this->size());
+            assert(tmp.capacity() >= n);
+
+            std::move(begin_, end_, tmp.begin_);
+
+            tmp.swap(*this);
 
             assert(this->capacity() >= n);
         }
@@ -688,7 +691,37 @@ namespace ural
         */
         void reserve(size_t n)
         {
-            return data_.reserve(n+1);
+            if(n > this->max_size())
+            {
+                // @todo Более подробная диагностика
+                throw std::length_error("flex_string::reserve");
+            }
+
+            if(n+1 > data_.capacity())
+            {
+                return data_.reserve(n+1);
+            }
+            else if(n > this->size())
+            {
+                // @todo Решить, что нужно делать тут
+            }
+            else
+            {
+                flex_string(*this).swap(*this);
+            }
+        }
+
+        void shrink_to_fit()
+        {
+            if(this->capacity() > this->size())
+            {
+                try
+                {
+                    this->reserve(0);
+                }
+                catch(...)
+                {}
+            }
         }
 
         /** @brief Очистка содержимого строки.
@@ -1350,6 +1383,17 @@ namespace ural
             return this->replace(pos1, n1, flex_string(n2, c));
         }
 
+        /** Замена подстроки
+        <tt> this->replace(i1 - this->begin(), i2 - i1, str) </tt>
+        @brief Замена подстроки, заданной парой итераторов, на данную
+        строку
+        @pre <tt> [this->begin(), i1) </tt> действительный интервал
+        @pre <tt> [i1, i2) </tt> действительный интервал
+        @param i1 итератор, задающий начало заменяемой подстоки
+        @param i2 итератор, задающий конец заменяемой подстроки
+        @param str строка, на которую заменяется подстрока <tt> [i1, i2) </tt>
+        @return <tt> *this </tt>
+        */
         flex_string & replace(const_iterator i1, const_iterator i2,
                               flex_string const & str)
         {

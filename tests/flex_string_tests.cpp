@@ -23,70 +23,73 @@
 #include <string>
 #include <sstream>
 
-template <class T>
-class test_allocator
+namespace
 {
-    typedef std::allocator<T> Base;
-public:
-    typedef typename Base::value_type value_type;
-    typedef typename Base::size_type size_type;
-    typedef typename Base::difference_type difference_type;
-    typedef typename Base::const_reference const_reference;
-    typedef typename Base::reference reference;
-    typedef typename Base::pointer pointer;
-    typedef typename Base::const_pointer const_pointer;
-
-    typedef std::true_type propagate_on_container_swap;
-
-    explicit test_allocator(int id = 0)
-     : id_{id}
-    {}
-
-    pointer allocate(size_type n)
+    template <class T>
+    class test_allocator
     {
-        return a_.allocate(n);
-    }
+        typedef std::allocator<T> Base;
+    public:
+        typedef typename Base::value_type value_type;
+        typedef typename Base::size_type size_type;
+        typedef typename Base::difference_type difference_type;
+        typedef typename Base::const_reference const_reference;
+        typedef typename Base::reference reference;
+        typedef typename Base::pointer pointer;
+        typedef typename Base::const_pointer const_pointer;
 
-    void deallocate(pointer p, size_type n)
-    {
-        return a_.deallocate(p, n);
-    }
+        typedef std::true_type propagate_on_container_swap;
 
-    template <class... Args>
-    void construct(pointer p, Args && ... args)
-    {
-        a_.construct(p, std::forward<Args>(args)...);
-    }
+        explicit test_allocator(int id = 0)
+         : id_{id}
+        {}
 
-    void destroy(pointer p)
-    {
-        a_.destroy(p);
-    }
+        pointer allocate(size_type n)
+        {
+            return a_.allocate(n);
+        }
 
-    template <class U>
-    struct rebind
-    {
-        typedef test_allocator<U> other;
+        void deallocate(pointer p, size_type n)
+        {
+            return a_.deallocate(p, n);
+        }
+
+        template <class... Args>
+        void construct(pointer p, Args && ... args)
+        {
+            a_.construct(p, std::forward<Args>(args)...);
+        }
+
+        void destroy(pointer p)
+        {
+            a_.destroy(p);
+        }
+
+        template <class U>
+        struct rebind
+        {
+            typedef test_allocator<U> other;
+        };
+
+        int id() const
+        {
+            return this->id_;
+        }
+
+    private:
+        int id_;
+        std::allocator<T> a_;
     };
 
-    int id() const
-    {
-        return this->id_;
-    }
+    typedef ural::flex_string<char, ural::use_default, test_allocator<char>,
+                              ural::string_vector_storage<char, test_allocator<char>>>
+        Vector_string;
 
-private:
-    int id_;
-    std::allocator<T> a_;
-};
+    typedef ural::flex_string<char, ural::use_default, test_allocator<char>>
+        String;
 
-typedef ural::flex_string<char, ural::use_default, test_allocator<char>,
-                          ural::string_vector_storage<char, test_allocator<char>>>
-    Vector_string;
-
-typedef ural::flex_string<char, ural::use_default, test_allocator<char>>
-    String;
-
-typedef boost::mpl::list<String, Vector_string> Strings_list;
+    typedef boost::mpl::list<String, Vector_string> Strings_list;
+}
 
 // Интеграция с std::string
 BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_std_string, String, Strings_list)
@@ -451,8 +454,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_reverse_iterators, String, Strings_lis
     BOOST_CHECK_EQUAL(s1, s2);
 }
 
-// @todo 21.4.4 Ёмкость
-BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_size, String, Strings_list)
+// 21.4.4 Ёмкость
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_size_and_lenght, String, Strings_list)
 {
     String const s = "Stepanov";
 
@@ -460,7 +463,15 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_size, String, Strings_list)
     BOOST_CHECK_EQUAL(s.size(), s.length());
 }
 
-// @todo max_size
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_max_size, String, Strings_list)
+{
+    String s;
+
+    std::allocator<typename String::value_type> a;
+
+    BOOST_CHECK_GE(s.max_size(), 0U);
+    BOOST_CHECK_GE(a.max_size(), s.max_size());
+}
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_resize_less, String, Strings_list)
 {
@@ -554,7 +565,24 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_resize_greater_default, String, String
     BOOST_CHECK_EQUAL(char{}, s.data()[s.size()]);
 }
 
-// @todo capacity, reserve, shrink_to_fit
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_shrink_to_fit, String, Strings_list)
+{
+    auto const n = 100U;
+
+    String fs(n, 'a');
+
+    fs.resize(fs.size() / 2);
+
+    BOOST_CHECK_GE(fs.capacity(), fs.size());
+    BOOST_CHECK_GE(fs.capacity(), n);
+
+    auto const fs_old = fs;
+
+    fs.shrink_to_fit();
+
+    BOOST_CHECK_EQUAL(fs_old, fs);
+    BOOST_CHECK_EQUAL(fs.capacity(), fs.size());
+}
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_reserve, String, Strings_list)
 {
@@ -909,7 +937,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_pop_back, String, Strings_list)
     BOOST_CHECK_EQUAL(s.c_str(), fs);
 }
 
-// @todo 21.4.6.6 replace
+// replace
 BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_replace_pos_n, String, Strings_list)
 {
     // основано на http://www.cplusplus.com/reference/string/string/replace/
@@ -1022,7 +1050,17 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_copy_to_end, String, Strings_list)
                                   s.cbegin(), s.cbegin() + rlen);
 }
 
-// @todo 21.4.7 операции со строками
+// 21.4.7 операции со строками
+
+// @todo 21.4.7.1 Функции доступа
+
+// @todo 21.4.7.2 find
+
+// @todo 21.4.7.3
+// @todo 21.4.7.4
+// @todo 21.4.7.5
+// @todo 21.4.7.6
+// @todo 21.4.7.7
 
 // 21.4.7.8 substr
 BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_substr, String, Strings_list)
@@ -1042,6 +1080,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_substr, String, Strings_list)
 
     BOOST_CHECK_THROW(fs.substr(fs.size() + 1), std::out_of_range);
 }
+
+// @todo 21.4.7.9 compare
 
 // @todo 21.4.8 вспомогательные функции
 

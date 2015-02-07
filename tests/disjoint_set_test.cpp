@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(disjoint_set_left_to_right)
 
     for(auto i : ural::indices_of(ds))
     {
-        BOOST_CHECK_LE(height(ds, i), 1);
+        BOOST_CHECK_LE(height(ds, i), 1U);
     }
 }
 
