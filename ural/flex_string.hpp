@@ -697,13 +697,16 @@ namespace ural
                 throw std::length_error("flex_string::reserve");
             }
 
-            if(n+1 > data_.capacity())
+            if(n > this->capacity())
             {
                 return data_.reserve(n+1);
             }
             else if(n > this->size())
             {
-                // @todo Решить, что нужно делать тут
+                flex_string tmp;
+                tmp.reserve(n);
+                tmp.append(*this);
+                tmp.swap(*this);
             }
             else
             {

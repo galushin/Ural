@@ -584,6 +584,21 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_shrink_to_fit, String, Strings_list)
     BOOST_CHECK_EQUAL(fs.capacity(), fs.size());
 }
 
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_reserve_shrink_capacity, String, Strings_list)
+{
+    auto const n = 100U;
+
+    String fs(n, 'h');
+
+    fs.resize(n / 4);
+
+    BOOST_CHECK_GE(fs.capacity(), n);
+
+    fs.reserve(n / 2);
+
+    BOOST_CHECK_EQUAL(fs.capacity(), n / 2);
+}
+
 BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_reserve, String, Strings_list)
 {
     String fs;
