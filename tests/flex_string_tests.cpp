@@ -307,6 +307,17 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_iterators, String, Strings_list)
                                   s.begin(), s.end());
 }
 
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_iterators_given_numbers, String, Strings_list)
+{
+    auto const n = int(42);
+    auto const c = int('a');
+
+    std::string s(n, c);
+    String const fs(n, c);
+
+    BOOST_CHECK_EQUAL(s, fs);
+}
+
 BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_iterators_and_allocator, String, Strings_list)
 {
     typename String::allocator_type a{42};

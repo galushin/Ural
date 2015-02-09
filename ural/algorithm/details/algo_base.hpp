@@ -686,6 +686,7 @@ namespace details
     template <class RASequence, class T, class Compare>
     bool binary_search(RASequence in, T const & value, Compare cmp)
     {
+        // @todo Добавить проверки концепций
         in = ::ural::details::lower_bound(std::move(in), value, cmp);
 
         return !!in && !cmp(value, *in);

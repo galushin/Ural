@@ -462,10 +462,13 @@ namespace ural
             *this->end() = value_type{};
         }
 
-        /** @brief Создание строки на оснвое пары итераторов
+        /** Создание строки на оснвое пары итераторов. Если @c InputIterator ---
+        целочисленный тип, то эквивалентно
+        <tt> flex_string(static_cast<size_type>(first), static_cast<value_type>(last)) </tt>
+        @brief Создание строки на оснвое пары итераторов
         @param first итератор начала последовательности символов
         @param last итератор конца последовательности символов
-        @todo Тест, когда @c InputIterator --- целочисленный тип
+        @param a распределитель памяти
         */
         template <class InputIterator>
         flex_string(InputIterator first, InputIterator last,
@@ -638,6 +641,9 @@ namespace ural
         }
         //@}
 
+        /** @brief Максимальный размер
+        @return Максимальный размер
+        */
         size_type max_size() const
         {
             // @todo Уточнить
@@ -714,6 +720,7 @@ namespace ural
             }
         }
 
+        /// @brief Не обязательный запрос на освободжение незанятой памяти
         void shrink_to_fit()
         {
             if(this->capacity() > this->size())
@@ -906,10 +913,15 @@ namespace ural
         @param n количество элементов массива, которые должны быть дописаны
         @pre @c s должен указывать на массив длины не меньше @c n
         @return <tt> *this </tt>
-        @todo генерация исключения, если <tt> size() + n > max_size() </tt>
         */
         flex_string & append(value_type const * s, size_type n)
         {
+            if(this->size() + n > this->max_size())
+            {
+                // @todo Более подробная диагностика
+                throw std::length_error("flex_string::append");
+            }
+
             data_.append(n, value_type{});
             std::copy(s, s+n, this->end() - n);
 
@@ -945,16 +957,10 @@ namespace ural
             return *this;
         }
 
-        /** @brief Дописывает элементы интервала <tt> [first; last)</tt> в конец
-        данной строки.
-        @param first начало интервала
-        @param last конец интервала
-        @pre <tt> [first; last)</tt>  --- допустимый интервал
-        @return <tt> *this </tt>
-        @todo Тест случая, когда @c first и @c last --- целые типы
-        */
+    private:
         template <class InputIterator>
-        flex_string & append(InputIterator first, InputIterator last)
+        flex_string & append_impl(InputIterator first, InputIterator last,
+                                  std::false_type)
         {
             typedef typename std::iterator_traits<InputIterator>::iterator_category
                 Iterator_category;
@@ -969,6 +975,31 @@ namespace ural
 
             return *this;
         }
+
+        template <class InputIterator>
+        flex_string & append_impl(InputIterator first, InputIterator last,
+                                  std::true_type)
+        {
+            return this->append(static_cast<size_type>(std::move(first)),
+                                static_cast<value_type>(std::move(last)));
+
+        }
+
+    public:
+        /** @brief Дописывает элементы интервала <tt> [first; last)</tt> в конец
+        данной строки.
+        @param first начало интервала
+        @param last конец интервала
+        @pre <tt> [first; last)</tt>  --- допустимый интервал
+        @return <tt> *this </tt>
+        @todo Тест случая, когда @c first и @c last --- целые типы
+        */
+        template <class InputIterator>
+        flex_string & append(InputIterator first, InputIterator last)
+        {
+            return this->append_impl(first, last, std::is_integral<InputIterator>{});
+        }
+
 
         /** Дописывает символы списка инициализации в конец данной строки
         @param il список инициализации
