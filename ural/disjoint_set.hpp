@@ -23,19 +23,24 @@
 namespace ural
 {
     /** @brief Тип для представления непересекающихся множеств
-    @todo Проверка и обработка ошибок
-    @todo Оптимизация (сжатие путей, сбалансированность дерева)
-    @todo Тесты сложности алгоритмов
-    @todo Выделить алгоритмы
     @tparam IntType Тип элементов
+    @tparam Allocator Тип распределителя памяти
+    @todo Проверка и обработка ошибок
+    @todo Оптимизация (сжатие путей)
+    @todo Настройка типа контейнера
+    @todo Конструкторы с распределителями памяти
     */
-    template <class IntType>
+    template <class IntType,
+              class Allocator = use_default
+              >
     class disjoint_set
     {
         static_assert(std::is_integral<IntType>::value, "Must be integeral");
 
         typedef tuple<IntType, IntType> Element;
-        typedef std::vector<Element> Container;
+        typedef typename default_helper<Allocator, std::allocator<Element>>::type
+            allocator_type;
+        typedef std::vector<Element, allocator_type> Container;
 
     public:
         // Типы
@@ -74,6 +79,7 @@ namespace ural
         /** @brief Корневой элемент множества
         @param p элемент
         @return Корень множества, в которое входит элемент @c p
+        @todo Выделить алгоритм
         */
         value_type root(value_type p) const
         {
@@ -119,25 +125,19 @@ namespace ural
 
             if(data_[p_root][ural::_2] < data_[q_root][ural::_2])
             {
-                // @todo Устранить дублирование
-                data_[p_root][ural::_1] = q_root;
-                data_[q_root][ural::_2] += data_[p_root][ural::_2];
+                this->unite_helper(p_root, q_root);
             }
             else
             {
-                data_[q_root][ural::_1] = p_root;
-                data_[p_root][ural::_2] += data_[q_root][ural::_2];
+                this->unite_helper(q_root, p_root);
             }
         }
 
     private:
-        value_type & root_ref(value_type p)
+        void unite_helper(value_type const & p, value_type const & q)
         {
-            /* Преобразование из константной ссылки в неконстантную безопасно,
-            так как мы знаем, что исходно данный объект является не константым
-            */
-            auto r = this->root(p);
-            return data_[r][ural::_1];
+            data_[p][ural::_1] = q;
+            data_[q][ural::_2] += data_[p][ural::_2];
         }
 
     private:
