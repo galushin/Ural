@@ -133,6 +133,9 @@ namespace ural
         */
         struct unsafe_reduced_tag{};
 
+        /// @brief Типы числителя и знаменателя
+        typedef IntegerType int_type;
+
         // Конструкторы и присваивание
         /** @brief Конструктор с предусловием
         @param num числитель
@@ -659,7 +662,7 @@ namespace ural
             result += n * q;
 
             r -= n;
-            r *= Rational{10};
+            r *= typename Rational::int_type{10};
         }
 
         return result;

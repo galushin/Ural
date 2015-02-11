@@ -99,15 +99,27 @@ namespace ural
             new(&ex_) unexpected_type(std::move(ue.move_out()));
         }
 
-        /** @brief Коструктор
+        /** @brief Коструктор на основе значения
         @param init_value значение
         @post <tt> this->has_value() == true </tt>
         @post <tt> this->value() == init_value </tt>
         */
-        expected(T init_value)
+        expected(T const & init_value)
          : has_value_(true)
         {
-            new(&value_)T(std::move(init_value));
+            new(&value_) T(init_value);
+        }
+
+        /** @brief Коструктор на основе временного объекта
+        @param x объект, содержимое которого будет передано создаваемогу объекту
+        @post <tt> this->has_value() == true </tt>
+        @post <tt> this->value() </tt> будет иметь значение, которое @c x имел
+        до начала выполнения конструктора
+        */
+        expected(T && x)
+         : has_value_(true)
+        {
+            new(&value_) T(std::move(x));
         }
 
         /** @brief Конструктор копий

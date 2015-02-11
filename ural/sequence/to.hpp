@@ -98,9 +98,9 @@ namespace ural
 
         for(auto && x : sequence(std::forward<Sequence>(seq)))
         {
-            // @todo Оптимизация
-            result.emplace(get(std::forward<decltype(x)>(x), ural::_1),
-                           get(std::forward<decltype(x)>(x), ural::_2));
+            result.emplace_hint(result.end(),
+                                get(std::forward<decltype(x)>(x), ural::_1),
+                                get(std::forward<decltype(x)>(x), ural::_2));
         }
 
         return result;
