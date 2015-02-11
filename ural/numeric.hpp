@@ -130,7 +130,11 @@ namespace ural
     constexpr inner_product{};
 
     /**
-    @todo Можно ли ослабить требования к входным последовательностям
+    @todo Можно ли ослабить требования к входным последовательностям?
+    @todo Настройка операций сложения и умножения?
+    @todo Проверка случая пустых контейнеров и контейнеров с одним элементом
+    @tparam RASequence1 тип первой последовательности
+    @tparam RASequence2 тип второй последовательности
     */
     template <class RASequence1, class RASequence2>
     class convolution_sequence
@@ -154,6 +158,10 @@ namespace ural
         /// @brief Тип указателя
         typedef value_type const * pointer;
 
+        /** @brief Конструктор
+        @param s1 первая последовательность
+        @param s2 вторая последовательность
+        */
         convolution_sequence(RASequence1 s1, RASequence2 s2)
          : members_(std::move(s1), std::move(s2), 0, value_type{0})
         {
@@ -234,16 +242,13 @@ namespace ural
         template <class Vector>
         Vector operator()(Vector const & x, Vector const & y) const
         {
-            // @todo Оптимизированная версия
-            // @todo Поддержка контейнеров без возможности изменения размера
-            assert(!x.empty() || !y.empty());
+            // @todo Оптимизированная версия (быстрое преобразование Фурье)
+            assert(x.size() != 0 || y.size() != 0);
 
-            Vector result;
+            Vector result(x.size() + y.size() - 1);
 
             ural::details::copy(ural::make_convolution_sequence(x, y),
-                                ural::sequence(result | ural::back_inserter));
-
-            assert(result.size() == x.size() + y.size() - 1);
+                                ural::sequence(result));
 
             return result;
         }

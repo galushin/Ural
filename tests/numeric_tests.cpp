@@ -919,6 +919,38 @@ BOOST_AUTO_TEST_CASE(convolution_test)
     */
 }
 
+BOOST_AUTO_TEST_CASE(convolution_test_valarray)
+{
+    // PE 205
+    typedef long long Integer;
+
+    typedef std::valarray<Integer> Vector;
+
+    Vector const p0(1, 4);
+    Vector const c0(1, 6);
+
+    auto const n_p = 36 / p0.size();
+    auto const n_c = 36 / c0.size();
+
+    auto const p = ural::natural_power(p0, n_p, ural::discrete_convolution, Vector{});
+    auto const c = ural::natural_power(c0, n_c, ural::discrete_convolution, Vector{});
+
+    auto total = Integer{0};
+    auto favor = Integer{0};
+
+    for(size_t i = 0; i != p.size(); ++ i)
+    for(size_t j = 0; j != c.size(); ++ j)
+    {
+        auto const value = p[i] * c[j];
+        total += value;
+        favor += value * (i + n_p > j + n_c);
+    }
+
+    double const P = double(favor) / total;
+
+    BOOST_CHECK_CLOSE_FRACTION(P, 0.5731441, 1e-7);
+}
+
 // Метод Ньютона, вычисление квадратных корней
 BOOST_AUTO_TEST_CASE(square_root_iterative_zero_test)
 {
