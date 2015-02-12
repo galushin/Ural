@@ -23,7 +23,7 @@
 
 #include <ural/sequence/make.hpp>
 #include <ural/sequence/insertion.hpp>
-#include <ural/algorithm/details/copy.hpp>
+#include <ural/algorithm/copy.hpp>
 
 namespace ural
 {

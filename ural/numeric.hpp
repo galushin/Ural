@@ -23,7 +23,7 @@
 
 #include <ural/math.hpp>
 #include <ural/functional.hpp>
-#include <ural/algorithm/details/copy.hpp>
+#include <ural/algorithm/copy.hpp>
 #include <ural/sequence/all.hpp>
 
 #include <ural/numeric/numbers_sequence.hpp>
@@ -247,8 +247,8 @@ namespace ural
 
             Vector result(x.size() + y.size() - 1);
 
-            ural::details::copy(ural::make_convolution_sequence(x, y),
-                                ural::sequence(result));
+            copy_fn{}(ural::make_convolution_sequence(x, y),
+                      ural::sequence(result));
 
             return result;
         }

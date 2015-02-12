@@ -24,7 +24,7 @@
 #include <ural/sequence/reversed.hpp>
 #include <ural/sequence/partition.hpp>
 
-#include <ural/algorithm/details/copy.hpp>
+#include <ural/algorithm/copy.hpp>
 #include <ural/functional.hpp>
 
 #include <cassert>
@@ -127,7 +127,7 @@ namespace details
         BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
         BOOST_CONCEPT_ASSERT((ural::concepts::Callable<UnaryFunction, void(decltype(*in))>));
 
-        auto r = ural::details::copy(in, ural::make_function_output_sequence(std::move(f)));
+        auto r = ural::copy_fn{}(in, ural::make_function_output_sequence(std::move(f)));
         return r[ural::_2].functor();
     }
 
@@ -500,8 +500,8 @@ namespace details
         auto in_orig = ural::next(in.original(), n);
 
         auto in_1 = in.traversed_front();
-        auto r1 = ::ural::details::copy(std::move(in), std::move(out));
-        auto r2 = ::ural::details::copy(in_1, std::move(r1[ural::_2]));
+        auto r1 = copy_fn{}(std::move(in), std::move(out));
+        auto r2 = copy_fn{}(in_1, std::move(r1[ural::_2]));
 
         return ural::tuple<Forward, Output>{std::move(in_orig),
                                             std::move(r2[ural::_2])};
@@ -533,8 +533,8 @@ namespace details
         BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<ForwardSequence>));
         BOOST_CONCEPT_ASSERT((concepts::WritableSequence<ForwardSequence, result_type>));
 
-        auto r = ural::details::copy(ural::make_generator_sequence(std::move(gen)),
-                                     std::move(seq));
+        auto r = copy_fn{}(ural::make_generator_sequence(std::move(gen)),
+                           std::move(seq));
         return r[ural::_2];
     }
 
@@ -651,7 +651,7 @@ namespace details
         auto out = ural::make_partition_sequence(std::move(out_true),
                                                  std::move(out_false),
                                                  std::move(pred));
-        auto r = ::ural::details::copy(std::move(in), std::move(out));
+        auto r = copy_fn{}(std::move(in), std::move(out));
 
         typedef ural::tuple<Input, Output1, Output2> Tuple;
         return Tuple(r[ural::_1], r[ural::_2].true_sequence(),
@@ -965,7 +965,7 @@ namespace details
     partial_sort_copy(Input in, RASequence out, Compare cmp)
     {
         out.shrink_front();
-        std::tie(in, out) = ::ural::details::copy(std::move(in), std::move(out));
+        std::tie(in, out) = copy_fn{}(std::move(in), std::move(out));
 
         auto to_sort = out.traversed_front();
         auto const part = to_sort.size();

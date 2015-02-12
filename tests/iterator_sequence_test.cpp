@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_CASE(copy_sequence_test_via_details)
 
     std::vector<int> x1(xs.size());
 
-    ural::details::copy(ural::sequence(xs), ural::sequence(x1));
+    ural::copy_fn{}(ural::sequence(xs), ural::sequence(x1));
 
     BOOST_CHECK(ural::sequence(xs) == ural::sequence(xs));
     BOOST_CHECK(ural::sequence(x1) == ural::sequence(x1));

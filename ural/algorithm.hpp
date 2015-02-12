@@ -31,7 +31,7 @@
 #include <ural/random/c_rand_engine.hpp>
 #include <ural/functional/make_functor.hpp>
 
-#include <ural/algorithm/details/copy.hpp>
+#include <ural/algorithm/copy.hpp>
 #include <ural/algorithm/details/algo_base.hpp>
 
 namespace ural
@@ -72,7 +72,7 @@ namespace details
             // @todo Оптимизация
             auto us = ural::make_unique_sequence(std::move(seq), std::move(pred));
 
-            auto result = ural::details::copy(us | ural::moved, seq);
+            auto result = copy_fn{}(us | ural::moved, seq);
 
             return result[ural::_2];
         }
@@ -359,14 +359,7 @@ namespace details
     }
 
     // Модифицирующие последовательность алгоритмы
-    template <class Input, class Output>
-    auto copy(Input && in, Output && out)
-    -> decltype(ural::details::copy(sequence_fwd<Input>(in),
-                                    sequence_fwd<Output>(out)))
-    {
-        return ural::details::copy(sequence_fwd<Input>(in),
-                                   sequence_fwd<Output>(out));
-    }
+    auto constexpr copy = copy_fn{};
 
     class copy_if_fn
     {
@@ -493,7 +486,7 @@ namespace details
         {
             auto f_in = ural::make_transform_sequence(std::move(f), std::move(in));
 
-            auto r = ural::details::copy(std::move(f_in), std::move(out));
+            auto r = copy_fn{}(std::move(f_in), std::move(out));
 
             typedef tuple<Input, Output> Tuple;
 
@@ -509,7 +502,7 @@ namespace details
                                                       std::move(in1),
                                                       std::move(in2));
 
-            auto r = ural::details::copy(std::move(f_in), std::move(out));
+            auto r = copy_fn{}(std::move(f_in), std::move(out));
 
             typedef tuple<Input1, Input2, Output> Tuple;
 
