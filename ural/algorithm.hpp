@@ -800,35 +800,8 @@ namespace details
                                    ural::less<>{});
     }
 
-    template <class ForwardSequence, class Compare>
-    bool is_sorted(ForwardSequence && in, Compare cmp)
-    {
-        return ::ural::details::is_sorted(sequence_fwd<ForwardSequence>(in),
-                                          ural::make_functor(std::move(cmp)));
-    }
-
-    template <class ForwardSequence>
-    bool is_sorted(ForwardSequence && in)
-    {
-        return ::ural::is_sorted(sequence_fwd<ForwardSequence>(in),
-                                 ural::less<>{});
-    }
-
-    template <class ForwardSequence, class Compare>
-    auto is_sorted_until(ForwardSequence && in, Compare cmp)
-    -> decltype(sequence_fwd<ForwardSequence>(in))
-    {
-        return ::ural::details::is_sorted_until(sequence_fwd<ForwardSequence>(in),
-                                                ural::make_functor(std::move(cmp)));
-    }
-
-    template <class ForwardSequence>
-    auto is_sorted_until(ForwardSequence && in)
-    -> decltype(sequence_fwd<ForwardSequence>(in))
-    {
-        return ::ural::is_sorted_until(sequence_fwd<ForwardSequence>(in),
-                                       ural::less<>{});
-    }
+    auto constexpr is_sorted_until = is_sorted_until_fn{};
+    auto constexpr is_sorted = is_sorted_fn{};
 
     template <class RASequence, class Compare>
     void sort(RASequence && s, Compare cmp)
@@ -1102,7 +1075,7 @@ namespace details
                 return false;
             }
 
-            auto r = ::ural::details::is_sorted_until(s | ural::reversed, cmp);
+            auto r = ::ural::is_sorted_until_fn{}(s | ural::reversed, cmp);
 
             if(!r)
             {

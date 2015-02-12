@@ -31,6 +31,81 @@
 
 namespace ural
 {
+    class is_sorted_until_fn
+    {
+    private:
+        template <class ForwardSequence, class Compare>
+        static ForwardSequence
+        impl(ForwardSequence in, Compare cmp)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<decltype(in)>));
+            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<decltype(in)>));
+            BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, bool(decltype(*in), decltype(*in))>));
+
+            if(!in)
+            {
+                return in;
+            }
+
+            auto in_next = ural::next(in);
+
+            for(; !!in_next; ++in_next, ++ in)
+            {
+                if(cmp(*in_next, *in))
+                {
+                    break;
+                }
+            }
+
+            return in_next;
+        }
+
+    public:
+        template <class ForwardSequence, class Compare>
+        auto operator()(ForwardSequence && in, Compare cmp) const
+        -> decltype(sequence_fwd<ForwardSequence>(in))
+        {
+            return this->impl(sequence_fwd<ForwardSequence>(in),
+                              ural::make_functor(std::move(cmp)));
+        }
+
+        template <class ForwardSequence>
+        auto operator()(ForwardSequence && in) const
+        -> decltype(sequence_fwd<ForwardSequence>(in))
+        {
+            return (*this)(sequence_fwd<ForwardSequence>(in), ural::less<>{});
+        }
+    };
+
+    class is_sorted_fn
+    {
+    private:
+        template <class ForwardSequence, class Compare>
+        static bool
+        impl(ForwardSequence in, Compare cmp)
+        {
+            BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<decltype(in)>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<decltype(in)>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*in), decltype(*in))>));
+
+            return !is_sorted_until_fn{}(std::move(in), std::move(cmp));
+        }
+
+    public:
+        template <class ForwardSequence, class Compare>
+        bool operator()(ForwardSequence && in, Compare cmp) const
+        {
+            return this->impl(sequence_fwd<ForwardSequence>(in),
+                              ural::make_functor(std::move(cmp)));
+        }
+
+        template <class ForwardSequence>
+        bool operator()(ForwardSequence && in) const
+        {
+            return (*this)(sequence_fwd<ForwardSequence>(in), ural::less<>{});
+        }
+    };
+
 namespace details
 {
     template <class T>
@@ -40,42 +115,6 @@ namespace details
         // @todo using ural::swap;
         using boost::swap;
         return swap(x, y);
-    }
-
-    template <class ForwardSequence, class Compare>
-    ForwardSequence
-    is_sorted_until(ForwardSequence in, Compare cmp)
-    {
-        BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<decltype(in)>));
-        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<decltype(in)>));
-        BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, bool(decltype(*in), decltype(*in))>));
-
-        if(!in)
-        {
-            return in;
-        }
-
-        auto in_next = ural::next(in);
-
-        for(; !!in_next; ++in_next, ++ in)
-        {
-            if(cmp(*in_next, *in))
-            {
-                break;
-            }
-        }
-
-        return in_next;
-    }
-
-    template <class ForwardSequence, class Compare>
-    bool is_sorted(ForwardSequence in, Compare cmp)
-    {
-        BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<decltype(in)>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<decltype(in)>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*in), decltype(*in))>));
-
-        return !::ural::details::is_sorted_until(std::move(in), std::move(cmp));
     }
 
     template <class RASequence, class Compare>
@@ -695,8 +734,8 @@ namespace details
             return;
         }
 
-        assert(::ural::details::is_sorted(s1, cmp));
-        assert(::ural::details::is_sorted(s2, cmp));
+        assert(::ural::is_sorted_fn{}(s1, cmp));
+        assert(::ural::is_sorted_fn{}(s2, cmp));
 
         if(n1 + n2 == 2)
         {
@@ -923,7 +962,7 @@ namespace details
             seq.pop_back();
         }
 
-        assert(::ural::details::is_sorted(seq, cmp));
+        assert(::ural::is_sorted_fn{}(seq, cmp));
     }
 
     // Сортировка
