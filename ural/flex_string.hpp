@@ -1886,7 +1886,7 @@ namespace ural
             is.width(0);
         }
 
-        if(str.empty())
+        if(ural::empty(str))
         {
             is.setstate(std::ios::failbit);
         }

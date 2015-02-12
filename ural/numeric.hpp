@@ -243,7 +243,7 @@ namespace ural
         Vector operator()(Vector const & x, Vector const & y) const
         {
             // @todo Оптимизированная версия (быстрое преобразование Фурье)
-            assert(x.size() != 0 || y.size() != 0);
+            assert(!ural::empty(x) || !ural::empty(y));
 
             Vector result(x.size() + y.size() - 1);
 

@@ -21,7 +21,7 @@
  @brief Определения основных типов, используемых библиотекой
 */
 
-#include <type_traits>
+#include <ural/type_traits.hpp>
 
 /// @brief Макрос для предотвращения макро-подстановки при объявлении функции
 #define URAL_PREVENT_MACRO_SUBSTITUTION
@@ -85,6 +85,38 @@ namespace ural
         void operator=(T const &)
         {}
     };
+
+    class empty_fn
+    {
+    private:
+        template <class Container>
+        static bool empty_impl(Container const & x,
+                               declare_type<decltype(x.empty())> *)
+        {
+            return x.empty();
+        }
+
+        template <class Container>
+        static bool empty_impl(Container const & x, ...)
+        {
+            return x.size() == 0;
+        }
+
+        template <class T, std::size_t N>
+        static bool empty_impl(T (&x)[N], std::nullptr_t )
+        {
+            return N == 0;
+        }
+
+    public:
+        template <class Container>
+        bool operator()(Container const & x) const
+        {
+            return this->empty_impl(x, nullptr);
+        }
+    };
+
+    auto constexpr empty = empty_fn{};
 }
 // namespace ural
 

@@ -172,6 +172,7 @@ namespace ural
             s += n;
         }
     }
+    // namespace details
 
     template <class Sequence>
     typename Sequence::distance_type

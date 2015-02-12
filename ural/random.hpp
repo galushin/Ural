@@ -185,7 +185,7 @@ namespace ural
                     }
                 }
 
-                for(; !large.empty() && !small.empty(); )
+                for(; !ural::empty(large) && !ural::empty(small); )
                 {
                     auto large_index = large.back();
                     large.pop_back();

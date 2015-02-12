@@ -778,7 +778,7 @@ BOOST_AUTO_TEST_CASE(min_element_accumulator_move_ops_test)
     // Инициализация
     Accumulator acc(std::move(xs[0]));
 
-    BOOST_CHECK(xs[0].empty());
+    BOOST_CHECK(ural::empty(xs[0]));
 
     // Обновление - оператор ()
     BOOST_CHECK_LE(xs_old[1], acc.result());
@@ -878,4 +878,11 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(modulus_assign_functor_test, Function, Modulus_ass
     Function{}(x, y);
 
     BOOST_CHECK_EQUAL(4, x);
+}
+
+BOOST_AUTO_TEST_CASE(non_member_empty_for_c_array)
+{
+    int xs[] = {1, 2, 3, 4, 5};
+
+    BOOST_CHECK(!ural::empty(xs));
 }

@@ -370,7 +370,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_move_ctor, String, Strings_list)
     String s1(std::move(s));
 
     BOOST_CHECK_EQUAL(s1, s_old);
-    BOOST_CHECK(s.empty());
+    BOOST_CHECK(ural::empty(s));
 }
 
 // @todo Конструктор на основе временной строки и распределителя памяти
@@ -650,8 +650,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_empty, String, Strings_list)
     String const s0 {};
     String const s1 = {"Stepanov"};
 
-    BOOST_CHECK(s0.empty());
-    BOOST_CHECK(!s1.empty());
+    BOOST_CHECK(ural::empty(s0));
+    BOOST_CHECK(!ural::empty(s1));
 }
 
 // 21.4.5 доступ к элементам
@@ -1136,7 +1136,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_plus_rvalue_first, String, Strings_lis
 
     BOOST_CHECK_EQUAL(fs, fs_moved);
 
-    BOOST_CHECK(fs1.empty());
+    BOOST_CHECK(ural::empty(fs1));
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_plus_rvalue_second, String, Strings_list)
@@ -1149,7 +1149,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_plus_rvalue_second, String, Strings_li
 
     BOOST_CHECK_EQUAL(fs, fs_moved);
 
-    BOOST_CHECK(fs2.empty());
+    BOOST_CHECK(ural::empty(fs2));
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_plus_rvalue_both, String, Strings_list)
@@ -1185,7 +1185,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_plus_c_str_left_rvalue, String, String
     String const fs = s1 + fs2;
     String const fs_moved = s1 + std::move(fs2);
 
-    BOOST_CHECK(fs2.empty());
+    BOOST_CHECK(ural::empty(fs2));
     BOOST_CHECK_EQUAL(fs, fs_moved);
 }
 
@@ -1209,7 +1209,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_plus_char_left_rvalue, String, Strings
     String const fs = c + fs2;
     String const fs_moved = c + std::move(fs2);
 
-    BOOST_CHECK(fs2.empty());
+    BOOST_CHECK(ural::empty(fs2));
     BOOST_CHECK_EQUAL(fs2, "");
     BOOST_CHECK_EQUAL(fs, fs_moved);
 }
@@ -1234,7 +1234,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_plus_c_str_right_rvalue, String, Strin
     String const fs = fs2 + s1;
     String const fs_moved =  std::move(fs2) + s1;
 
-    BOOST_CHECK(fs2.empty());
+    BOOST_CHECK(ural::empty(fs2));
     BOOST_CHECK_EQUAL(fs, fs_moved);
 }
 
@@ -1258,7 +1258,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_plus_char_right_rvalue, String, String
     String const fs = fs2 + c;
     String const fs_moved = std::move(fs2) + c;
 
-    BOOST_CHECK(fs2.empty());
+    BOOST_CHECK(ural::empty(fs2));
     BOOST_CHECK_EQUAL(fs, fs_moved);
 }
 

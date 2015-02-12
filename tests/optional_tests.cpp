@@ -1749,13 +1749,13 @@ BOOST_AUTO_TEST_CASE(optional_ref_default_init_test)
 {
     ural::optional<int&> x0;
 
-    BOOST_CHECK(x0.empty());
+    BOOST_CHECK(ural::empty(x0));
     BOOST_CHECK(!x0);
     BOOST_CHECK(!x0.get_pointer());
 
     ural::optional<int&> x1(ural::nullopt);
 
-    BOOST_CHECK(x1.empty());
+    BOOST_CHECK(ural::empty(x1));
     BOOST_CHECK(!x1);
     BOOST_CHECK(!x1.get_pointer());
 }
@@ -1771,13 +1771,13 @@ BOOST_AUTO_TEST_CASE(optional_ref_value_init_test)
     ural::optional<Ref> x1(value);
     ural::optional<Ref> x2(r_value);
 
-    BOOST_CHECK(!x1.empty());
+    BOOST_CHECK(!ural::empty(x1));
     BOOST_CHECK(!!x1);
     BOOST_CHECK(!!x1.get_pointer());
     BOOST_CHECK_EQUAL(&value, x2.get_pointer());
     BOOST_CHECK_EQUAL(value, x2.value());
 
-    BOOST_CHECK(!x2.empty());
+    BOOST_CHECK(!ural::empty(x2));
     BOOST_CHECK(!!x2);
     BOOST_CHECK(!!x2.get_pointer());
     BOOST_CHECK_EQUAL(&r_value, x1.get_pointer());

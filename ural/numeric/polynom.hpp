@@ -258,7 +258,7 @@ namespace ural
         // Свойства
         size_type degree() const
         {
-            assert(cs_.empty() == false);
+            assert(!ural::empty(cs_));
             return cs_.size() - 1;
         }
 

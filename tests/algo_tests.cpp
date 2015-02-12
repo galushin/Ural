@@ -467,7 +467,7 @@ BOOST_AUTO_TEST_CASE(eager_move_test)
 
     for(auto const & s : src)
     {
-        BOOST_CHECK(s.empty());
+        BOOST_CHECK(ural::empty(s));
     }
 }
 
@@ -1789,7 +1789,7 @@ BOOST_AUTO_TEST_CASE(pop_heap_test)
     std::vector<int> v { 3, 1, 4, 1, 5, 9 };
     ural::make_heap(v);
 
-    while(v.empty() == false)
+    while(!ural::empty(v))
     {
         auto const old_top = v.front();
         ural::pop_heap(v);

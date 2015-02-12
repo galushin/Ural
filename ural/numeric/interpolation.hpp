@@ -97,7 +97,7 @@ namespace ural
         */
         size_type degree() const
         {
-            return data_.empty() ? 0 : data_.size() - 1;
+            return ural::empty(data_) ? 0 : data_.size() - 1;
         }
 
         /** @brief Вычисление значения многочлена в точке

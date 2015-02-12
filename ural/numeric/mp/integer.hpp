@@ -634,7 +634,7 @@ namespace ural
     private:
         void strip_leading_zeroes()
         {
-            for(; !digits().empty() && digits().back() == 0; digits_ref().pop_back())
+            for(; !ural::empty(digits()) && digits().back() == 0; digits_ref().pop_back())
             {}
 
             if(digits().empty())

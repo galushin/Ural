@@ -311,7 +311,7 @@ BOOST_AUTO_TEST_CASE(expected_move_assign_to_value)
 
     BOOST_CHECK(e.has_value());
     BOOST_CHECK(new_value == e.value());
-    BOOST_CHECK(e_good.value().empty());
+    BOOST_CHECK(ural::empty(e_good.value()));
 
     e = std::move(e_bad);
 
@@ -334,7 +334,7 @@ BOOST_AUTO_TEST_CASE(expected_move_assign_to_exception)
 
     BOOST_CHECK(e.has_value());
     BOOST_CHECK(new_value == e.value());
-    BOOST_CHECK(e_good.value().empty());
+    BOOST_CHECK(ural::empty(e_good.value()));
 
     e = std::move(e_bad);
 
