@@ -120,17 +120,6 @@ namespace details
         return ::ural::details::insertion_sort(std::move(s), std::move(cmp));
     }
 
-    template <class Input, class UnaryFunction>
-    UnaryFunction for_each(Input in, UnaryFunction f)
-    {
-        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<UnaryFunction, void(decltype(*in))>));
-
-        auto r = ural::copy_fn{}(in, ural::make_function_output_sequence(std::move(f)));
-        return r[ural::_2].functor();
-    }
-
     template <class Input, class UnaryPredicate>
     typename Input::distance_type
     count_if(Input in, UnaryPredicate pred)
@@ -1078,37 +1067,6 @@ namespace details
     }
 
     // Поиск наибольшего и наименьшего
-    template <class ForwardSequence, class Compare>
-    ForwardSequence
-    min_element(ForwardSequence in, Compare cmp)
-    {
-        if(!in)
-        {
-            return in;
-        }
-
-        auto cmp_s = ural::compare_by(ural::dereference<>{}, std::move(cmp));
-
-        ::ural::min_element_accumulator<ForwardSequence, decltype(cmp_s)>
-            acc(in++, cmp_s);
-
-        auto seq = in | ural::outdirected;
-
-        acc = ::ural::details::for_each(std::move(seq), std::move(acc));
-
-        return acc.result();
-    }
-
-    template <class ForwardSequence, class Compare>
-    ForwardSequence
-    max_element(ForwardSequence in, Compare cmp)
-    {
-        auto transposed_cmp = ural::make_binary_reverse_args(std::move(cmp));
-
-        return ::ural::details::min_element(std::move(in),
-                                            std::move(transposed_cmp));
-    }
-
     template <class ForwardSequence, class Compare>
     tuple<ForwardSequence, ForwardSequence>
     minmax_element(ForwardSequence in, Compare cmp)

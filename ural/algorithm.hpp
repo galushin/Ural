@@ -116,19 +116,37 @@ namespace details
 }
 // namespace details
 
-    /** @brief Применяет функциональный объект к каждому элементу
-    последовательности
-    @param in входная последовательность
-    @param f функциональный объект
-    @return @c f
-    */
-    template <class Input, class UnaryFunction>
-    auto for_each(Input && in, UnaryFunction f)
-    -> decltype(ural::make_functor(std::move(f)))
+    class for_each_fn
     {
-        return ural::details::for_each(sequence_fwd<Input>(in),
-                                       ural::make_functor(std::move(f)));
-    }
+    private:
+        template <class Input, class UnaryFunction>
+        static UnaryFunction impl(Input in, UnaryFunction f)
+        {
+            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<UnaryFunction, void(decltype(*in))>));
+
+            auto r = ural::copy_fn{}(in, ural::make_function_output_sequence(std::move(f)));
+            return r[ural::_2].functor();
+        }
+
+    public:
+        /** @brief Применяет функциональный объект к каждому элементу
+        последовательности
+        @param in входная последовательность
+        @param f функциональный объект
+        @return @c f
+        */
+        template <class Input, class UnaryFunction>
+        auto operator()(Input && in, UnaryFunction f) const
+        -> decltype(ural::make_functor(std::move(f)))
+        {
+            return for_each_fn::impl(sequence_fwd<Input>(in),
+                                     ural::make_functor(std::move(f)));
+        }
+    };
+
+    auto constexpr for_each = for_each_fn{};
 
     template <class Input, class Predicate>
     auto find_if(Input && in, Predicate pred)
@@ -949,37 +967,79 @@ namespace details
     }
 
     // Поиск наибольшего и наименьшего
-    template <class ForwardSequence, class Compare>
-    auto min_element(ForwardSequence && in, Compare cmp)
-    -> decltype(sequence_fwd<ForwardSequence>(in))
+    class min_element_fn
     {
-        return ::ural::details::min_element(sequence_fwd<ForwardSequence>(in),
-                                            ural::make_functor(std::move(cmp)));
-    }
+    private:
+        template <class ForwardSequence, class Compare>
+        static ForwardSequence
+        impl(ForwardSequence in, Compare cmp)
+        {
+            if(!in)
+            {
+                return in;
+            }
 
-    template <class ForwardSequence>
-    auto min_element(ForwardSequence && in)
-    -> decltype(sequence_fwd<ForwardSequence>(in))
-    {
-        return ::ural::min_element(sequence_fwd<ForwardSequence>(in),
-                                   ural::less<>{});
-    }
+            auto cmp_s = ural::compare_by(ural::dereference<>{}, std::move(cmp));
 
-    template <class ForwardSequence, class Compare>
-    auto max_element(ForwardSequence && in, Compare cmp)
-    -> decltype(sequence_fwd<ForwardSequence>(in))
-    {
-        return ::ural::details::max_element(sequence_fwd<ForwardSequence>(in),
-                                            ural::make_functor(std::move(cmp)));
-    }
+            ::ural::min_element_accumulator<ForwardSequence, decltype(cmp_s)>
+                acc(in++, cmp_s);
 
-    template <class ForwardSequence>
-    auto max_element(ForwardSequence && in)
-    -> decltype(sequence_fwd<ForwardSequence>(in))
+            auto seq = in | ural::outdirected;
+
+            acc = ::ural::for_each(std::move(seq), std::move(acc));
+
+            return acc.result();
+        }
+    public:
+        template <class ForwardSequence, class Compare>
+        auto operator()(ForwardSequence && in, Compare cmp) const
+        -> decltype(sequence_fwd<ForwardSequence>(in))
+        {
+            return this->impl(sequence_fwd<ForwardSequence>(in),
+                              ural::make_functor(std::move(cmp)));
+        }
+
+        template <class ForwardSequence>
+        auto operator()(ForwardSequence && in) const
+        -> decltype(sequence_fwd<ForwardSequence>(in))
+        {
+            return (*this)(sequence_fwd<ForwardSequence>(in), ural::less<>{});
+        }
+    };
+
+    auto constexpr min_element = min_element_fn{};
+
+    class max_element_fn
     {
-        return ::ural::max_element(sequence_fwd<ForwardSequence>(in),
-                                   ural::less<>{});
-    }
+    private:
+        template <class ForwardSequence, class Compare>
+        static ForwardSequence
+        impl(ForwardSequence in, Compare cmp)
+        {
+            auto transposed_cmp = ural::make_binary_reverse_args(std::move(cmp));
+
+            return ::ural::min_element(std::move(in),
+                                       std::move(transposed_cmp));
+        }
+
+    public:
+        template <class ForwardSequence, class Compare>
+        auto operator()(ForwardSequence && in, Compare cmp) const
+        -> decltype(sequence_fwd<ForwardSequence>(in))
+        {
+            return this->impl(sequence_fwd<ForwardSequence>(in),
+                              ural::make_functor(std::move(cmp)));
+        }
+
+        template <class ForwardSequence>
+        auto operator()(ForwardSequence && in) const
+        -> decltype(sequence_fwd<ForwardSequence>(in))
+        {
+            return (*this)(sequence_fwd<ForwardSequence>(in), ural::less<>{});
+        }
+    };
+
+    auto constexpr max_element = max_element_fn{};
 
     template <class ForwardSequence, class Compare>
     auto minmax_element(ForwardSequence && in, Compare cmp)
