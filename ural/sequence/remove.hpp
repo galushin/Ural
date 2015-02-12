@@ -241,9 +241,9 @@ namespace ural
         void seek()
         {
             members_[ural::_1]
-                = ural::details::find(std::move(members_[ural::_1]),
-                                      std::cref(this->removed_value()),
-                                      ural::not_fn(this->predicate()));
+                = find_fn{}(std::move(members_[ural::_1]),
+                            std::cref(this->removed_value()),
+                            ural::not_fn(this->predicate()));
         }
 
     private:

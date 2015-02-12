@@ -130,7 +130,7 @@ namespace ural
             if(!!next_)
             {
                 ++ next_;
-                next_ = ::ural::details::find(next_, *cur_, not_fn(this->predicate()));
+                next_ = find_fn{}(next_, *cur_, not_fn(this->predicate()));
             }
         }
 

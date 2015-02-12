@@ -148,79 +148,19 @@ namespace details
 
     auto constexpr for_each = for_each_fn{};
 
-    template <class Input, class Predicate>
-    auto find_if(Input && in, Predicate pred)
-    -> decltype(sequence_fwd<Input>(in))
-    {
-        return ::ural::details::find_if(sequence_fwd<Input>(in),
-                                        ural::make_functor(std::move(pred)));
-    }
+    auto constexpr find = find_fn{};
+    auto constexpr find_if = find_if_fn{};
 
     template <class Input, class Predicate>
     auto find_if_not(Input && in, Predicate pred)
     -> decltype(sequence_fwd<Input>(in))
     {
-        return ::ural::details::find_if(sequence_fwd<Input>(in),
-                                        ural::not_fn(std::move(pred)));
+        return find_if_fn{}(sequence_fwd<Input>(in),
+                            ural::not_fn(std::move(pred)));
     }
 
-    template <class Input, class T, class BinaryPredicate>
-    auto find(Input && in, T const & value, BinaryPredicate pred)
-    -> decltype(sequence_fwd<Input>(in))
-    {
-        return ::ural::find_if(std::forward<Input>(in),
-                               std::bind(ural::make_functor(std::move(pred)),
-                                         std::placeholders::_1,
-                                         std::ref(value)));
-    }
-
-    template <class Input, class T>
-    auto find(Input && in, T const & value)
-    -> decltype(sequence_fwd<Input>(in))
-    {
-        return ::ural::find(std::forward<Input>(in), value,
-                            ural::equal_to<T>{});
-    }
-
-    /** @brief Подсчитывает количество элементов последовательности,
-    удовлетворяющих предикату.
-    @param in входная последовтельность
-    @param pred предикат
-    @return Количество элементов @c x последовательности @c in, таких, что
-    <tt> pred(x) != false </tt>.
-    */
-    template <class Input, class UnaryPredicate>
-    auto count_if(Input && in, UnaryPredicate pred)
-    -> typename decltype(sequence_fwd<Input>(in))::distance_type
-    {
-        return ::ural::details::count_if(sequence_fwd<Input>(in),
-                                         ural::make_functor(std::move(pred)));
-    }
-
-    template <class Input, class T, class BinaryPredicate>
-    auto count(Input && in, T const & value, BinaryPredicate pred)
-    -> typename decltype(sequence_fwd<Input>(in))::distance_type
-    {
-         return ::ural::count_if(std::forward<Input>(in),
-                                 std::bind(ural::make_functor(std::move(pred)),
-                                           std::placeholders::_1,
-                                           std::ref(value)));
-    }
-
-    /** @brief Подсчитывает количество элементов последовательности, равных
-    заданному значению.
-    @param in входная последовтельность
-    @param value значение
-    @return Количество элементов @c x последовательности @c in, таких, что
-    <tt> x == value </tt>.
-    */
-    template <class Input, class T>
-    auto count(Input && in, T const & value)
-    -> typename decltype(sequence_fwd<Input>(in))::distance_type
-    {
-        return ::ural::count(std::forward<Input>(in), value,
-                             ural::equal_to<T>{});
-    }
+    auto constexpr count = count_fn{};
+    auto constexpr count_if = count_if_fn{};
 
     /** @brief Проверяет, что все элементы последовательности удовлетворяют
     заданному предикату
@@ -1206,7 +1146,7 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::Callable<Predicate, bool(Value)>));
 
             // @todo устранить дублирование, выделить алгоритмы
-            auto out = ::ural::details::find_if(std::move(in), pred);
+            auto out = find_if_fn{}(std::move(in), pred);
 
             if(!out)
             {

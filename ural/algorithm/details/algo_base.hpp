@@ -106,6 +106,153 @@ namespace ural
         }
     };
 
+    class count_if_fn
+    {
+    private:
+        template <class Input, class UnaryPredicate>
+        static typename Input::distance_type
+        impl(Input in, UnaryPredicate pred)
+        {
+            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<UnaryPredicate, bool(decltype(*in))>));
+
+            typename Input::distance_type result{0};
+
+            for(; !!in; ++ in)
+            {
+                if (pred(*in))
+                {
+                    ++ result;
+                }
+            }
+            return result;
+        }
+
+    public:
+        /** @brief Подсчитывает количество элементов последовательности,
+        удовлетворяющих предикату.
+        @param in входная последовтельность
+        @param pred предикат
+        @return Количество элементов @c x последовательности @c in, таких, что
+        <tt> pred(x) != false </tt>.
+        */
+        template <class Input, class UnaryPredicate>
+        auto operator()(Input && in, UnaryPredicate pred) const
+        -> typename decltype(sequence_fwd<Input>(in))::distance_type
+        {
+            return this->impl(sequence_fwd<Input>(in),
+                              ural::make_functor(std::move(pred)));
+        }
+    };
+
+    class count_fn
+    {
+    private:
+        template <class Input, class T, class BinaryPredicate>
+        static typename Input::distance_type
+        impl(Input in, T const & value, BinaryPredicate pred)
+        {
+            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate,
+                                                           bool(decltype(*in), T const &)>));
+
+            return count_if_fn{}(std::move(in),
+                                 std::bind(std::move(pred),
+                                           std::placeholders::_1,
+                                           std::ref(value)));
+        }
+
+    public:
+        /** @brief Подсчитывает количество элементов последовательности, равных
+        заданному значению.
+        @param in входная последовтельность
+        @param value значение
+        @return Количество элементов @c x последовательности @c in, таких, что
+        <tt> x == value </tt>.
+        */
+        template <class Input, class T>
+        auto operator()(Input && in, T const & value) const
+        -> typename decltype(sequence_fwd<Input>(in))::distance_type
+        {
+            return (*this)(std::forward<Input>(in), value, ural::equal_to<T>{});
+        }
+
+        template <class Input, class T, class BinaryPredicate>
+        auto operator()(Input && in, T const & value, BinaryPredicate pred) const
+        -> typename decltype(sequence_fwd<Input>(in))::distance_type
+        {
+            return this->impl(sequence_fwd<Input>(in), value,
+                              ural::make_functor(std::move(pred)));
+        }
+    };
+
+    class find_if_fn
+    {
+    private:
+        template <class Input, class Predicate>
+        static Input
+        impl(Input in, Predicate pred)
+        {
+            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Predicate, bool(decltype(*in))>));
+
+            for(; !!in; ++ in)
+            {
+                if(pred(*in))
+                {
+                    return in;
+                }
+            }
+            return in;
+        }
+
+    public:
+        template <class Input, class Predicate>
+        auto operator()(Input && in, Predicate pred) const
+        -> decltype(sequence_fwd<Input>(in))
+        {
+            return this->impl(sequence_fwd<Input>(in),
+                              ural::make_functor(std::move(pred)));
+        }
+    };
+
+    class find_fn
+    {
+    private:
+        template <class Input, class T, class BinaryPredicate>
+        static Input
+        impl(Input in, T const & value, BinaryPredicate bin_pred)
+        {
+            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate,
+                                                           bool(decltype(*in), T const &)>));
+
+            auto pred = std::bind(std::move(bin_pred), ural::_1, std::cref(value));
+
+            return find_if_fn{}(std::move(in), std::move(pred));
+        }
+
+    public:
+        template <class Input, class T>
+        auto operator()(Input && in, T const & value) const
+        -> decltype(sequence_fwd<Input>(in))
+        {
+            return (*this)(std::forward<Input>(in), value, ural::equal_to<T>{});
+        }
+
+        template <class Input, class T, class BinaryPredicate>
+        auto operator()(Input && in, T const & value, BinaryPredicate pred) const
+        -> decltype(sequence_fwd<Input>(in))
+        {
+            return this->impl(sequence_fwd<Input>(in), value,
+                              ural::make_functor(std::move(pred)));
+        }
+    };
+
 namespace details
 {
     template <class T>
@@ -159,71 +306,6 @@ namespace details
         return ::ural::details::insertion_sort(std::move(s), std::move(cmp));
     }
 
-    template <class Input, class UnaryPredicate>
-    typename Input::distance_type
-    count_if(Input in, UnaryPredicate pred)
-    {
-        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<UnaryPredicate, bool(decltype(*in))>));
-
-        typename Input::distance_type result{0};
-
-        for(; !!in; ++ in)
-        {
-            if (pred(*in))
-            {
-                ++ result;
-            }
-        }
-        return result;
-    }
-
-    template <class Input, class T, class BinaryPredicate>
-    typename Input::distance_type
-    count(Input in, T const & value, BinaryPredicate pred)
-    {
-        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate,
-                                                       bool(decltype(*in), T const &)>));
-
-        return ::ural::details::count_if(std::move(in),
-                                         std::bind(ural::make_functor(std::move(pred)),
-                                                   std::placeholders::_1,
-                                                   std::ref(value)));
-    }
-
-    template <class Input, class Predicate>
-    Input find_if(Input in, Predicate pred)
-    {
-        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Predicate, bool(decltype(*in))>));
-
-        for(; !!in; ++ in)
-        {
-            if(pred(*in))
-            {
-                return in;
-            }
-        }
-        return in;
-    }
-
-    template <class Input, class T, class BinaryPredicate>
-    Input find(Input in, T const & value, BinaryPredicate bin_pred)
-    {
-        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate,
-                                                       bool(decltype(*in), T const &)>));
-
-        auto pred = std::bind(std::move(bin_pred), ural::_1, std::cref(value));
-
-        return ::ural::details::find_if(std::move(in), std::move(pred));
-    }
-
     template <class Input, class Predicate>
     Input find_if_not(Input in, Predicate pred)
     {
@@ -231,7 +313,7 @@ namespace details
         BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
         BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Predicate, bool(decltype(*in))>));
 
-        return ::ural::details::find_if(std::move(in), ural::not_fn(std::move(pred)));
+        return find_if_fn{}(std::move(in), ural::not_fn(std::move(pred)));
     }
 
     template<class Forward1, class Forward2, class BinaryPredicate>
@@ -352,7 +434,7 @@ namespace details
     {
         for(; !!in; ++ in)
         {
-            auto r = ::ural::details::find(s, *in, bin_pred);
+            auto r = find_fn{}(s, *in, bin_pred);
 
             if(!!r)
             {
@@ -582,7 +664,7 @@ namespace details
     bool is_partitioned(Input in, UnaryPredicate pred)
     {
         auto tail = ural::details::find_if_not(std::move(in), pred);
-        return !::ural::details::find_if(std::move(tail), std::move(pred));
+        return !find_if_fn{}(std::move(tail), std::move(pred));
     }
 
     template <class ForwardSequence, class UnaryPredicate>
@@ -594,7 +676,7 @@ namespace details
 
         in = sink;
         ++ in;
-        in = ural::details::find_if(std::move(in), pred);
+        in = find_if_fn{}(std::move(in), pred);
 
         for(; !!in; ++ in)
         {
@@ -1171,15 +1253,15 @@ namespace details
         for(; !!s1; ++ s1)
         {
             // Пропускаем элементы, которые уже встречались
-            if(!!::ural::details::find(s1.traversed_front(), *s1, pred))
+            if(!!find_fn{}(s1.traversed_front(), *s1, pred))
             {
                 continue;
             }
 
             auto s = s1;
             ++ s;
-            auto const n1 = 1 + ::ural::details::count(s, *s1, pred);
-            auto const n2 = ::ural::details::count(s2, *s1, pred);
+            auto const n1 = 1 + count_fn{}(s, *s1, pred);
+            auto const n2 = count_fn{}(s2, *s1, pred);
 
             if(n1 != n2)
             {
