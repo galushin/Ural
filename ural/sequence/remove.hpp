@@ -135,7 +135,7 @@ namespace ural
         void seek()
         {
             ural::get(members_, ural::_1)
-                =  ::ural::details::find_if_not(this->base(), this->predicate());
+                =  find_if_not_fn{}(this->base(), this->predicate());
         }
 
     private:

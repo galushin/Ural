@@ -150,14 +150,7 @@ namespace details
 
     auto constexpr find = find_fn{};
     auto constexpr find_if = find_if_fn{};
-
-    template <class Input, class Predicate>
-    auto find_if_not(Input && in, Predicate pred)
-    -> decltype(sequence_fwd<Input>(in))
-    {
-        return find_if_fn{}(sequence_fwd<Input>(in),
-                            ural::not_fn(std::move(pred)));
-    }
+    auto constexpr find_if_not = find_if_not_fn{};
 
     auto constexpr count = count_fn{};
     auto constexpr count_if = count_if_fn{};

@@ -253,6 +253,28 @@ namespace ural
         }
     };
 
+    class find_if_not_fn
+    {
+    private:
+        template <class Input, class Predicate>
+        static Input impl(Input in, Predicate pred)
+        {
+            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Predicate, bool(decltype(*in))>));
+
+            return find_if_fn{}(std::move(in), ural::not_fn(std::move(pred)));
+        }
+
+    public:
+        template <class Input, class Predicate>
+        auto operator()(Input && in, Predicate pred) const
+        -> decltype(sequence_fwd<Input>(in))
+        {
+            return this->impl(sequence_fwd<Input>(in), std::move(pred));
+        }
+    };
+
 namespace details
 {
     template <class T>
@@ -304,16 +326,6 @@ namespace details
     void stable_sort(RASequence s, Compare cmp)
     {
         return ::ural::details::insertion_sort(std::move(s), std::move(cmp));
-    }
-
-    template <class Input, class Predicate>
-    Input find_if_not(Input in, Predicate pred)
-    {
-        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Predicate, bool(decltype(*in))>));
-
-        return find_if_fn{}(std::move(in), ural::not_fn(std::move(pred)));
     }
 
     template<class Forward1, class Forward2, class BinaryPredicate>
@@ -663,7 +675,7 @@ namespace details
     template <class Input, class UnaryPredicate>
     bool is_partitioned(Input in, UnaryPredicate pred)
     {
-        auto tail = ural::details::find_if_not(std::move(in), pred);
+        auto tail = find_if_not_fn{}(std::move(in), pred);
         return !find_if_fn{}(std::move(tail), std::move(pred));
     }
 
@@ -672,7 +684,7 @@ namespace details
     partition(ForwardSequence in, UnaryPredicate pred)
     {
         // пропускаем ведущие "хорошие" элеменнов
-        auto sink = ::ural::details::find_if_not(std::move(in), pred);
+        auto sink = find_if_not_fn{}(std::move(in), pred);
 
         in = sink;
         ++ in;
@@ -714,7 +726,7 @@ namespace details
         auto r_left = ::ural::details::inplace_stable_partition(s.traversed_front(), pred);
 
         // Разделяем вторую половину
-        auto s_right = ::ural::details::find_if_not(ural::shrink_front(s), pred);
+        auto s_right = find_if_not_fn{}(ural::shrink_front(s), pred);
 
         if(!!s_right)
         {
@@ -738,7 +750,7 @@ namespace details
     stable_partition(ForwardSequence in, UnaryPredicate pred)
     {
         in.shrink_front();
-        in = ::ural::details::find_if_not(std::move(in), pred);
+        in = find_if_not_fn{}(std::move(in), pred);
 
         if(!in)
         {
@@ -773,7 +785,7 @@ namespace details
     partition_point(ForwardSequence in, Predicate pred)
     {
         in.shrink_front();
-        return ::ural::details::find_if_not(std::move(in), std::move(pred));
+        return find_if_not_fn{}(std::move(in), std::move(pred));
     }
 
     template <class RASequence, class T, class Compare>
