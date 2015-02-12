@@ -146,6 +146,27 @@ namespace details
         }
     };
 
+    class all_of_fn
+    {
+    public:
+        /** @brief Проверяет, что все элементы последовательности удовлетворяют
+        заданному предикату
+        @param in входная последовтельность
+        @param pred предикат
+        @return @b true, если для всех элементов @c x последовательности @c in
+        выполняется <tt> pred(x) != false </tt>
+        */
+        template <class Input, class UnaryPredicate>
+        bool operator()(Input && in, UnaryPredicate pred) const
+        {
+            return !find_if_not_fn{}(std::forward<Input>(in), std::move(pred));
+        }
+    };
+
+    auto constexpr all_of = all_of_fn{};
+    auto constexpr none_of = none_of_fn{};
+    auto constexpr any_of = any_of_fn{};
+
     auto constexpr for_each = for_each_fn{};
 
     auto constexpr find = find_fn{};
@@ -154,38 +175,6 @@ namespace details
 
     auto constexpr count = count_fn{};
     auto constexpr count_if = count_if_fn{};
-
-    /** @brief Проверяет, что все элементы последовательности удовлетворяют
-    заданному предикату
-    @param in входная последовтельность
-    @param pred предикат
-    @return @b true, если для всех элементов @c x последовательности @c in
-    выполняется <tt> pred(x) != false </tt>
-    */
-    template <class Input, class UnaryPredicate>
-    bool all_of(Input && in, UnaryPredicate pred)
-    {
-        return !::ural::find_if_not(std::forward<Input>(in), std::move(pred));
-    }
-
-    template <class Input, class UnaryPredicate>
-    bool none_of(Input && in, UnaryPredicate pred)
-    {
-        return !::ural::find_if(std::forward<Input>(in), std::move(pred));
-    }
-
-    /** @brief Проверяет, что хотя бы один элемент последовательности
-    удовлетворяет заданному предикату.
-    @param in входная последовтельность
-    @param pred предикат
-    @return @b true, если для хотя бы одного элемента @c x последовательности
-    @c in выполняется <tt> pred(x) != false </tt>
-    */
-    template <class Input, class UnaryPredicate>
-    bool any_of(Input && in, UnaryPredicate pred)
-    {
-        return !none_of(std::forward<Input>(in), std::move(pred));
-    }
 
     template <class Forward1, class Forward2, class BinaryPredicate>
     auto find_end(Forward1 && in, Forward2 && s, BinaryPredicate bin_pred)

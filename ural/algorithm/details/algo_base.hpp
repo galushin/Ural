@@ -212,7 +212,7 @@ namespace ural
     public:
         template <class Input, class Predicate>
         auto operator()(Input && in, Predicate pred) const
-        -> decltype(sequence_fwd<Input>(in))
+        -> decltype(ural::sequence_fwd<Input>(in))
         {
             return this->impl(sequence_fwd<Input>(in),
                               ural::make_functor(std::move(pred)));
@@ -272,6 +272,33 @@ namespace ural
         -> decltype(sequence_fwd<Input>(in))
         {
             return this->impl(sequence_fwd<Input>(in), std::move(pred));
+        }
+    };
+
+    class none_of_fn
+    {
+    public:
+        template <class Input, class UnaryPredicate>
+        bool operator()(Input && in, UnaryPredicate pred) const
+        {
+            return !find_if_fn{}(std::forward<Input>(in), std::move(pred));
+        }
+    };
+
+    class any_of_fn
+    {
+    public:
+        /** @brief Проверяет, что хотя бы один элемент последовательности
+        удовлетворяет заданному предикату.
+        @param in входная последовтельность
+        @param pred предикат
+        @return @b true, если для хотя бы одного элемента @c x последовательности
+        @c in выполняется <tt> pred(x) != false </tt>
+        */
+        template <class Input, class UnaryPredicate>
+        bool operator()(Input && in, UnaryPredicate pred) const
+        {
+            return !none_of_fn{}(std::forward<Input>(in), std::move(pred));
         }
     };
 
@@ -530,6 +557,7 @@ namespace details
     void replace(ForwardSequence seq, T const & old_value, T const & new_value,
                  BinaryPredicate bin_pred)
     {
+        // @todo Выразить через replace_if
         for(; !!seq; ++ seq)
         {
             if(bin_pred(*seq, old_value))

@@ -92,7 +92,7 @@ namespace ural
         */
         bool operator!() const
         {
-            return ural::any_of(impl_.second(), ural::logical_not<>{});
+            return ural::tuples::any_of(impl_.second(), ural::logical_not<>{});
         }
 
         /** @brief Переход к следующему элементу в передней части

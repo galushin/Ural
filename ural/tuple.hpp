@@ -149,7 +149,8 @@ namespace ural
         }
     };
 
-/// @cond false
+namespace tuples
+{
 namespace details
 {
     template <class Tuple, class UnaryPredicate, size_t Index>
@@ -165,31 +166,10 @@ namespace details
                 placeholder<Last> last)
     {
         return pred(std::get<First>(x))
-             || ::ural::details::any_of(x, std::move(pred),
-                                        placeholder<First+1>{}, last);
-    }
-}
-// namespace details
-/// @endcond
-
-    /** @brief Проверка того, что все элементы кортежа удовлетворяют предикату
-    @param x кортеж
-    @param pred предикат
-    @return @b true, если все элементы кортежа @c x удовлетворяют предикату
-    @c pred, иначе --- @b false.
-    */
-    template <class Tuple, class UnaryPredicate>
-    typename std::enable_if<(std::tuple_size<Tuple>::value > 0), bool>::type
-    any_of(Tuple const & x, UnaryPredicate pred)
-    {
-        return ural::details::any_of(x, pred, placeholder<0>{},
-                                     placeholder<std::tuple_size<Tuple>::value>{});
+             || ::ural::tuples::details::any_of(x, std::move(pred),
+                                                placeholder<First+1>{}, last);
     }
 
-namespace tuples
-{
-namespace details
-{
     template <class Tuple, class F, size_t Last>
     F for_each(Tuple &&, F f, placeholder<Last>, placeholder<Last>)
     {
@@ -220,6 +200,20 @@ namespace details
                                                  std::move(f),
                                                  ural::placeholder<0>{},
                                                  ural::placeholder<N>{});
+    }
+
+    /** @brief Проверка того, что все элементы кортежа удовлетворяют предикату
+    @param x кортеж
+    @param pred предикат
+    @return @b true, если все элементы кортежа @c x удовлетворяют предикату
+    @c pred, иначе --- @b false.
+    */
+    template <class Tuple, class UnaryPredicate>
+    typename std::enable_if<(std::tuple_size<Tuple>::value > 0), bool>::type
+    any_of(Tuple const & x, UnaryPredicate pred)
+    {
+        return ural::tuples::details::any_of(x, pred, placeholder<0>{},
+                                             placeholder<std::tuple_size<Tuple>::value>{});
     }
 }
 // namespace tuples
