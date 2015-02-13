@@ -36,10 +36,8 @@
 
 namespace ural
 {
-namespace details
-{
     // Модифицирующие алгоритмы
-    class unique_functor_t
+    class unique_fn
     {
     public:
         template <class ForwardSequence>
@@ -83,7 +81,7 @@ namespace details
     @todo Принимать в качестве аргументов последовательность на основе
     константных итераторов, как этого требует стандарт C++11
     */
-    class erase_functor_t
+    class erase_fn
     {
     public:
         template <class Container>
@@ -95,7 +93,7 @@ namespace details
         }
     };
 
-    class unique_erase_t
+    class unique_erase_fn
     {
     public:
         template <class Container>
@@ -108,13 +106,11 @@ namespace details
         Container &
         operator()(Container & c, BinaryPredicate bin_pred) const
         {
-            auto to_erase = unique_functor_t{}(c, std::move(bin_pred));
-            erase_functor_t{}(c, to_erase);
+            auto to_erase = unique_fn{}(c, std::move(bin_pred));
+            erase_fn{}(c, to_erase);
             return c;
         }
     };
-}
-// namespace details
 
     class for_each_fn
     {
@@ -434,9 +430,9 @@ namespace details
                          std::move(r[ural::_2])};
         }
 
-        template <class Input1, class Input2, class Output, class UnaryFunction>
+        template <class Input1, class Input2, class Output, class BinaryFunction>
         tuple<Input1, Input2, Output>
-        impl(Input1 in1, Input2 in2, Output out, UnaryFunction f) const
+        impl(Input1 in1, Input2 in2, Output out, BinaryFunction f) const
         {
             auto f_in = ural::make_transform_sequence(std::move(f),
                                                       std::move(in1),
@@ -824,18 +820,30 @@ namespace details
                                          ural::less<>{});
     }
 
-    template <class RASequence, class Compare>
-    void nth_element(RASequence && s, Compare cmp)
+    class nth_element_fn
     {
-        return ::ural::details::nth_element(sequence_fwd<RASequence>(s),
-                                            ural::make_functor(std::move(cmp)));
-    }
+    public:
+        template <class RASequence, class Compare>
+        void operator()(RASequence && s, Compare cmp) const
+        {
+            return this->impl(sequence_fwd<RASequence>(s),
+                              ural::make_functor(std::move(cmp)));
+        }
 
-    template <class RASequence>
-    void nth_element(RASequence && s)
-    {
-        return ::ural::nth_element(std::forward<RASequence>(s), ural::less<>{});
-    }
+        template <class RASequence>
+        void operator()(RASequence && s) const
+        {
+            return (*this)(std::forward<RASequence>(s), ural::less<>{});
+        }
+
+    private:
+        template <class RASequence, class Compare>
+        static void impl(RASequence s, Compare cmp)
+        {
+            return ::ural::details::heap_select(std::move(s), std::move(cmp));
+        }
+    };
+    auto constexpr nth_element = nth_element_fn{};
 
     template <class BidirectionalSequence, class Compare>
     void inplace_merge(BidirectionalSequence && s, Compare cmp)
@@ -1156,10 +1164,8 @@ namespace details
 
     auto constexpr minmax_element = minmax_element_fn{};
 
-namespace details
-{
     // Перестановки
-    class next_permutation_functor
+    class next_permutation_fn
     {
     public:
         template <class BiSequence>
@@ -1222,7 +1228,7 @@ namespace details
         }
     };
 
-    class prev_permutation_functor
+    class prev_permutation_fn
     {
     public:
         template <class BiSequence>
@@ -1243,13 +1249,13 @@ namespace details
         template <class BiSequence, class Compare>
         bool impl(BiSequence s, Compare cmp) const
         {
-            auto constexpr f = ::ural::details::next_permutation_functor{};
+            auto constexpr f = next_permutation_fn{};
             return f(std::move(s), ::ural::not_fn(std::move(cmp)));
         }
     };
 
     // Алгоритмы над контейнерами
-    class remove_functor_t
+    class remove_fn
     {
     public:
         template <class ForwardSequence, class Value>
@@ -1306,7 +1312,7 @@ namespace details
         }
     };
 
-    class remove_if_functor_t
+    class remove_if_fn
     {
     public:
         template <class ForwardSequence, class Predicate>
@@ -1353,49 +1359,47 @@ namespace details
         }
     };
 
-    class remove_if_erase_functor_t
+    class remove_if_erase_fn
     {
     public:
         template <class Container, class Predicate>
         Container & operator()(Container & c, Predicate pred) const
         {
-            auto to_erase = remove_if_functor_t{}(c, pred);
-            erase_functor_t{}(c, to_erase);
+            auto to_erase = remove_if_fn{}(c, pred);
+            erase_fn{}(c, to_erase);
             return c;
         }
 
     private:
     };
 
-    class remove_erase_functor_t
+    class remove_erase_fn
     {
     public:
         template <class Container, class Value>
         Container & operator()(Container & target, Value const & value) const
         {
-            auto to_erase = remove_functor_t{}(target, value);
+            auto to_erase = remove_fn{}(target, value);
 
-            erase_functor_t{}(target, to_erase);
+            erase_fn{}(target, to_erase);
 
             return target;
         }
     };
-}
-// namespace details
 
-    auto constexpr const erase = ::ural::details::erase_functor_t{};
+    auto constexpr const erase = erase_fn{};
 
-    auto constexpr const remove = ::ural::details::remove_functor_t{};
-    auto constexpr const remove_erase = ::ural::details::remove_erase_functor_t{};
+    auto constexpr const remove = remove_fn{};
+    auto constexpr const remove_erase = remove_erase_fn{};
 
-    auto constexpr const remove_if = ::ural::details::remove_if_functor_t{};
-    auto constexpr const remove_if_erase = ::ural::details::remove_if_erase_functor_t{};
+    auto constexpr const remove_if = remove_if_fn{};
+    auto constexpr const remove_if_erase = remove_if_erase_fn{};
 
-    auto constexpr const unique = ::ural::details::unique_functor_t{};
-    auto constexpr const unique_erase = ::ural::details::unique_erase_t{};
+    auto constexpr const unique = unique_fn{};
+    auto constexpr const unique_erase = unique_erase_fn{};
 
-    auto constexpr const next_permutation = ::ural::details::next_permutation_functor{};
-    auto constexpr const prev_permutation = ::ural::details::prev_permutation_functor{};
+    auto constexpr const next_permutation = next_permutation_fn{};
+    auto constexpr const prev_permutation = prev_permutation_fn{};
 }
 // namespace ural
 

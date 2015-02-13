@@ -36,9 +36,7 @@
 
 namespace ural
 {
-namespace details
-{
-    class square_functor
+    class square_fn
     {
     public:
         /** @brief Функция вычисления квадрата
@@ -63,37 +61,41 @@ namespace details
             return op(x, x);
         }
     };
-}
-// namespace details
 
-    auto constexpr square = ::ural::details::square_functor{};
+    auto constexpr square = square_fn{};
 
-    /** @brief Функция вычисления обобщённого куба числа
-    @param x значение, для которого вычисляется куб
-    @param op операция, используемая в качестве умножения
-    @return <tt> op(ural::square(x, op), x) </tt>
-    */
-    template <class T, class BinOp>
-    constexpr T cube(T const & x, BinOp op)
+    class cube_fn
     {
-        return op(ural::square(x, op), x);
-    }
+    public:
+        /** @brief Функция вычисления куба числа
+        @param x значение, для которого вычисляется куб
+        @return <tt> ural::cube(x, ural::multiplies<>{}) </tt>
+        */
+        template <class T>
+        constexpr T operator()(T const & x) const
+        {
+            return (*this)(x, ural::multiplies<>{});
+        }
 
-    /** @brief Функция вычисления куба числа
-    @param x значение, для которого вычисляется куб
-    @return <tt> ural::cube(x, ural::multiplies<>{}) </tt>
-    */
-    template <class T>
-    constexpr T cube(T const & x)
-    {
-        return ural::cube(x, ural::multiplies<>{});
-    }
+        /** @brief Функция вычисления обобщённого куба числа
+        @param x значение, для которого вычисляется куб
+        @param op операция, используемая в качестве умножения
+        @return <tt> op(ural::square(x, op), x) </tt>
+        */
+        template <class T, class BinOp>
+        constexpr T operator()(T const & x, BinOp op) const
+        {
+            return op(ural::square_fn{}(x, op), x);
+        }
+    };
+
+    auto constexpr cube = cube_fn{};
 
     /** @brief Класс-характеристика единичного элемента относительно операции
     @tparam T тип элемента
-    @tparam F тип функционального объекта
+    @tparam BinaryOperation тип функционального объекта
     */
-    template <class T, class F>
+    template <class T, class BinaryOperation>
     struct unit_element_traits;
 
     /** @brief Нейтральный элемент относительно умножения
@@ -122,10 +124,14 @@ namespace details
         }
     };
 
-    template <class T, class F>
-    constexpr T make_unit_element(F const & f)
+    /** @brief Функция создания единичного элемента операции
+    @tparam T тип элементов
+    @param f функциональный объект
+    */
+    template <class T, class BinaryOperation>
+    constexpr T make_unit_element(BinaryOperation const & f)
     {
-        return unit_element_traits<T, F>::make(f);
+        return unit_element_traits<T, BinaryOperation>::make(f);
     }
 
     class natural_power_f

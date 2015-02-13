@@ -304,14 +304,19 @@ namespace ural
 
 namespace details
 {
-    template <class T>
-    void do_swap(T & x, T & y)
+    class swap_fn
     {
-        using std::swap;
-        // @todo using ural::swap;
-        using boost::swap;
-        return swap(x, y);
-    }
+    public:
+        template <class T>
+        void operator()(T & x, T & y) const
+        {
+            using std::swap;
+            // @todo using ural::swap;
+            using boost::swap;
+            return swap(x, y);
+        }
+    };
+    auto constexpr do_swap = swap_fn{};
 
     template <class RASequence, class Compare>
     void insertion_sort(RASequence s, Compare cmp)
@@ -1142,12 +1147,6 @@ namespace details
             }
         }
         ::ural::details::pop_heap(s1, cmp);
-    }
-
-    template <class RASequence, class Compare>
-    void nth_element(RASequence s, Compare cmp)
-    {
-        return ::ural::details::heap_select(std::move(s), std::move(cmp));
     }
 }
 // namespace details

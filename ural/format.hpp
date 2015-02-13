@@ -241,8 +241,9 @@ namespace details
         std::basic_string<Char, Traits>
         operator()(T const & x) const
         {
-            typedef std::basic_ostringstream<Char, Traits> OStream;
-            return ::ural::details::to_string_impl<OStream>(x);
+            std::basic_ostringstream<Char, Traits> os;
+            os << x;
+            return os.str();
         }
     };
 
