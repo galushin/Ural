@@ -103,7 +103,7 @@ namespace ural
         }
 
         template <class T, std::size_t N>
-        static bool empty_impl(T (&x)[N], std::nullptr_t )
+        static bool empty_impl(T (&)[N], std::nullptr_t )
         {
             return N == 0;
         }

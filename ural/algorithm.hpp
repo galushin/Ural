@@ -454,19 +454,59 @@ namespace details
 
     auto constexpr transform = transform_f{};
 
-    template <class ForwardSequence, class T>
-    auto fill(ForwardSequence && seq, T const & value)
-    -> decltype(sequence_fwd<ForwardSequence>(seq))
+    class generate_fn
     {
-        return ural::details::fill(sequence_fwd<ForwardSequence>(seq), value);
-    }
+    public:
+        template <class ForwardSequence, class Generator>
+        auto operator()(ForwardSequence && seq, Generator gen) const
+        -> decltype(ural::sequence_fwd<ForwardSequence>(seq))
+        {
+            return this->impl(ural::sequence_fwd<ForwardSequence>(seq),
+                              ural::make_functor(std::move(gen)));
+        }
 
-    template <class ForwardSequence, class Generator>
-    void generate(ForwardSequence && seq, Generator gen)
+    private:
+        template <class ForwardSequence, class Generator>
+        static ForwardSequence
+        impl(ForwardSequence seq, Generator gen)
+        {
+            // По сути, это проверка концепции для типа Generator
+            typedef decltype(gen()) result_type;
+
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::WritableSequence<ForwardSequence, result_type>));
+
+            auto r = copy_fn{}(ural::make_generator_sequence(std::move(gen)),
+                               std::move(seq));
+            return r[ural::_2];
+        }
+    };
+
+    class fill_fn
     {
-        ural::copy(ural::make_generator_sequence(gen),
-                   std::forward<ForwardSequence>(seq));
-    }
+    public:
+        template <class ForwardSequence, class T>
+        auto operator()(ForwardSequence && seq, T const & value) const
+        -> decltype(sequence_fwd<ForwardSequence>(seq))
+        {
+            return this->impl(sequence_fwd<ForwardSequence>(seq), value);
+        }
+
+    private:
+        template <class ForwardSequence, class T>
+        static ForwardSequence
+        impl(ForwardSequence seq, T const & value)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::WritableSequence<ForwardSequence, T const &>));
+
+            return generate_fn{}(std::move(seq),
+                                 ural::value_functor<T const &>(value));
+        }
+    };
+
+    auto constexpr fill = fill_fn{};
+    auto constexpr generate = generate_fn{};
 
     template <class Forward1, class Forward2>
     auto swap_ranges(Forward1 && s1, Forward2 && s2)
@@ -811,55 +851,158 @@ namespace details
                                      ural::less<>{});
     }
 
-    template <class Input1, class  Input2, class Compare>
-    bool lexicographical_compare(Input1 && in1, Input2 && in2, Compare cmp)
+    class lexicographical_compare_fn
     {
-        return ::ural::details::lexicographical_compare(
-                                         sequence_fwd<Input1>(in1),
-                                         sequence_fwd<Input2>(in2),
-                                         ural::make_functor(std::move(cmp)));
-    }
+    public:
+        template <class Input1, class  Input2>
+        bool operator()(Input1 && in1, Input2 && in2) const
+        {
+            return (*this)(std::forward<Input1>(in1),
+                           std::forward<Input2>(in2),
+                           ural::less<>());
+        }
 
-    template <class Input1, class  Input2>
-    bool lexicographical_compare(Input1 && in1, Input2 && in2)
+        template <class Input1, class  Input2, class Compare>
+        bool operator()(Input1 && in1, Input2 && in2, Compare cmp) const
+        {
+            return this->impl(sequence_fwd<Input1>(in1),
+                              sequence_fwd<Input2>(in2),
+                              ural::make_functor(std::move(cmp)));
+        }
+
+    private:
+        template <class Input1, class  Input2, class Compare>
+        static bool
+        impl(Input1 in1, Input2 in2, Compare cmp)
+        {
+            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input1>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input1>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input2>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input2>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*in1), decltype(*in2))>));
+
+            for(; !!in1 && !!in2; ++ in1, ++ in2)
+            {
+                if(cmp(*in1, *in2))
+                {
+                    return true;
+                }
+                else if(cmp(*in2, *in1))
+                {
+                    return false;
+                }
+            }
+            return !in1 && !!in2;
+        }
+    };
+
+    auto constexpr lexicographical_compare = lexicographical_compare_fn{};
+
+    class is_permutation_fn
     {
-        return ::ural::lexicographical_compare(std::forward<Input1>(in1),
-                                               std::forward<Input2>(in2),
-                                               ural::less<>());
-    }
+    public:
+        template <class Forward1, class Forward2>
+        bool operator()(Forward1 && s1, Forward2 && s2) const
+        {
+            return (*this)(std::forward<Forward1>(s1),
+                           std::forward<Forward2>(s2),
+                           ural::equal_to<>{});
+        }
 
-    template <class Forward1, class Forward2, class BinaryPredicate>
-    bool is_permutation(Forward1 && s1, Forward2 && s2, BinaryPredicate pred)
-    {
-        return ::ural::details::is_permutation(sequence_fwd<Forward1>(s1),
-                                               sequence_fwd<Forward2>(s2),
-                                               make_functor(std::move(pred)));
-    }
+        template <class Forward1, class Forward2, class BinaryPredicate>
+        bool operator()(Forward1 && s1, Forward2 && s2,
+                        BinaryPredicate pred) const
+        {
+            return this->impl(sequence_fwd<Forward1>(s1),
+                              sequence_fwd<Forward2>(s2),
+                              make_functor(std::move(pred)));
+        }
 
-    template <class Forward1, class Forward2>
-    bool is_permutation(Forward1 && s1, Forward2 && s2)
-    {
-        return ::ural::is_permutation(std::forward<Forward1>(s1),
-                                      std::forward<Forward2>(s2),
-                                      ural::equal_to<>{});
-    }
+    private:
+        template <class Forward1, class Forward2, class BinaryPredicate>
+        static bool
+        impl(Forward1 s1, Forward2 s2, BinaryPredicate pred)
+        {
+            std::tie(s1, s2) = ural::details::mismatch(std::move(s1), std::move(s2),
+                                                       pred);
 
+            s1.shrink_front();
+            s2.shrink_front();
+
+            for(; !!s1; ++ s1)
+            {
+                // Пропускаем элементы, которые уже встречались
+                if(!!find_fn{}(s1.traversed_front(), *s1, pred))
+                {
+                    continue;
+                }
+
+                auto s = s1;
+                ++ s;
+                auto const n1 = 1 + count_fn{}(s, *s1, pred);
+                auto const n2 = count_fn{}(s2, *s1, pred);
+
+                if(n1 != n2)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    };
+    auto constexpr is_permutation = is_permutation_fn{};
 
     // Операции с множествами
-    template <class Input1, class  Input2, class Compare>
-    bool includes(Input1 && in1, Input2 && in2, Compare cmp)
+    class includes_fn
     {
-        return ::ural::details::includes(sequence_fwd<Input1>(in1),
-                                         sequence_fwd<Input2>(in2),
-                                         ural::make_functor(std::move(cmp)));
-    }
+    public:
+        template <class Input1, class  Input2>
+        bool operator()(Input1 && in1, Input2 && in2) const
+        {
+            return (*this)(std::forward<Input1>(in1),
+                           std::forward<Input2>(in2), ural::less<>());
+        }
 
-    template <class Input1, class  Input2>
-    bool includes(Input1 && in1, Input2 && in2)
-    {
-        return ::ural::includes(std::forward<Input1>(in1),
-                                std::forward<Input2>(in2), ural::less<>());
-    }
+        template <class Input1, class  Input2, class Compare>
+        bool operator()(Input1 && in1, Input2 && in2, Compare cmp) const
+        {
+            return this->impl(sequence_fwd<Input1>(in1),
+                              sequence_fwd<Input2>(in2),
+                              ural::make_functor(std::move(cmp)));
+        }
+
+    private:
+        template <class Input1, class  Input2, class Compare>
+        static bool impl(Input1 in1, Input2 in2, Compare cmp)
+        {
+            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input1>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input2>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input1>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input2>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*in1), decltype(*in2))>));
+
+            for(; !!in1 && !!in2;)
+            {
+                if(cmp(*in1, *in2))
+                {
+                    ++ in1;
+                }
+                else if(cmp(*in2, *in1))
+                {
+                    return false;
+                }
+                else
+                {
+                    ++ in1;
+                    ++ in2;
+                }
+            }
+
+            return !in2;
+        }
+    };
+
+    auto constexpr includes = includes_fn{};
 
     // Поиск наибольшего и наименьшего
     class min_element_fn
@@ -936,23 +1079,82 @@ namespace details
 
     auto constexpr max_element = max_element_fn{};
 
-    template <class ForwardSequence, class Compare>
-    auto minmax_element(ForwardSequence && in, Compare cmp)
-    -> ural::tuple<decltype(sequence_fwd<ForwardSequence>(in)),
-                   decltype(sequence_fwd<ForwardSequence>(in))>
+    class minmax_element_fn
     {
-        return ::ural::details::minmax_element(sequence_fwd<ForwardSequence>(in),
-                                               ural::make_functor(std::move(cmp)));
-    }
+    public:
+        template <class ForwardSequence>
+        auto operator()(ForwardSequence && in) const
+        -> ural::tuple<decltype(sequence_fwd<ForwardSequence>(in)),
+                       decltype(sequence_fwd<ForwardSequence>(in))>
+        {
+            return (*this)(sequence_fwd<ForwardSequence>(in), ural::less<>{});
+        }
 
-    template <class ForwardSequence>
-    auto minmax_element(ForwardSequence && in)
-    -> ural::tuple<decltype(sequence_fwd<ForwardSequence>(in)),
-                   decltype(sequence_fwd<ForwardSequence>(in))>
-    {
-        return ::ural::minmax_element(sequence_fwd<ForwardSequence>(in),
-                                      ural::less<>{});
-    }
+        template <class ForwardSequence, class Compare>
+        auto operator()(ForwardSequence && in, Compare cmp) const
+        -> ural::tuple<decltype(sequence_fwd<ForwardSequence>(in)),
+                       decltype(sequence_fwd<ForwardSequence>(in))>
+        {
+            return this->impl(sequence_fwd<ForwardSequence>(in),
+                              ural::make_functor(std::move(cmp)));
+        }
+
+    private:
+        template <class ForwardSequence, class Compare>
+        static tuple<ForwardSequence, ForwardSequence>
+        impl(ForwardSequence in, Compare cmp)
+        {
+            typedef tuple<ForwardSequence, ForwardSequence> Tuple;
+
+            if(!in)
+            {
+                return Tuple{in, in};
+            }
+
+            auto cmp_min = ural::compare_by(ural::dereference<>{}, std::cref(cmp));
+            auto cmp_max = ural::make_binary_reverse_args(cmp_min);
+
+            ::ural::min_element_accumulator<ForwardSequence, decltype(cmp_min)>
+                acc_min(in, std::move(cmp_min));
+            ::ural::min_element_accumulator<ForwardSequence, decltype(cmp_max)>
+                acc_max(in, std::move(cmp_max));
+            ++ in;
+
+            for(; !!in; ++ in)
+            {
+                auto in_next = in;
+                ++ in_next;
+
+                // остался только один элемент
+                if(!in_next)
+                {
+                    if(acc_min.update(in) == false)
+                    {
+                        acc_max(in);
+                    }
+                    break;
+                }
+
+                // осталось как минимум два элемента
+                if(cmp(*in, *in_next))
+                {
+                    acc_min(in);
+                    acc_max(in_next);
+                }
+                else
+                {
+                    acc_min(in_next);
+                    acc_max(in);
+                }
+
+                in = in_next;
+            }
+
+            return Tuple{acc_min.result(), acc_max.result()};
+        }
+    };
+
+    auto constexpr minmax_element = minmax_element_fn{};
 
 namespace details
 {

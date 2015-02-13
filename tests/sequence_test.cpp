@@ -381,6 +381,7 @@ BOOST_AUTO_TEST_CASE(filtered_sequence_for_each)
     std::vector<int> r;
     std::vector<int> const z  = {3, 6};
 
+    // Цикл вместо алгоритма используется специально
     for(auto & x : s)
     {
         r.push_back(x);

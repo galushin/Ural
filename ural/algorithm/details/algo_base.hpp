@@ -674,31 +674,6 @@ namespace details
         }
     }
 
-    // Заполнение и генерация
-    template <class ForwardSequence, class Generator>
-    ForwardSequence generate(ForwardSequence seq, Generator gen)
-    {
-        typedef decltype(gen()) result_type;
-
-        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<ForwardSequence>));
-        BOOST_CONCEPT_ASSERT((concepts::WritableSequence<ForwardSequence, result_type>));
-
-        auto r = copy_fn{}(ural::make_generator_sequence(std::move(gen)),
-                           std::move(seq));
-        return r[ural::_2];
-    }
-
-    template <class ForwardSequence, class T>
-    ForwardSequence
-    fill(ForwardSequence seq, T const & value)
-    {
-        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<ForwardSequence>));
-        BOOST_CONCEPT_ASSERT((concepts::WritableSequence<ForwardSequence, T const &>));
-
-        return ::ural::details::generate(std::move(seq),
-                                         ural::value_functor<T const &>(value));
-    }
-
     // Разделение
     template <class Input, class UnaryPredicate>
     bool is_partitioned(Input in, UnaryPredicate pred)
@@ -906,6 +881,7 @@ namespace details
     template <class RASequence, class T, class Compare>
     RASequence equal_range(RASequence in, T const & value, Compare cmp)
     {
+        // @todo Оптимизация
         auto lower = ::ural::details::lower_bound(in, value, cmp);
         auto upper = ::ural::details::upper_bound(in, value, cmp);
 
@@ -1172,143 +1148,6 @@ namespace details
     void nth_element(RASequence s, Compare cmp)
     {
         return ::ural::details::heap_select(std::move(s), std::move(cmp));
-    }
-
-    template <class Input1, class  Input2, class Compare>
-    bool lexicographical_compare(Input1 in1, Input2 in2, Compare cmp)
-    {
-        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input1>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input1>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input2>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input2>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*in1), decltype(*in2))>));
-
-        for(; !!in1 && !!in2; ++ in1, ++ in2)
-        {
-            if(cmp(*in1, *in2))
-            {
-                return true;
-            }
-            else if(cmp(*in2, *in1))
-            {
-                return false;
-            }
-        }
-        return !in1 && !!in2;
-    }
-
-    // Операции над множествами
-    template <class Input1, class  Input2, class Compare>
-    bool includes(Input1 in1, Input2 in2, Compare cmp)
-    {
-        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input1>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input2>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input1>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input2>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*in1), decltype(*in2))>));
-
-        for(; !!in1 && !!in2;)
-        {
-            if(cmp(*in1, *in2))
-            {
-                ++ in1;
-            }
-            else if(cmp(*in2, *in1))
-            {
-                return false;
-            }
-            else
-            {
-                ++ in1;
-                ++ in2;
-            }
-        }
-
-        return !in2;
-    }
-
-    // Поиск наибольшего и наименьшего
-    template <class ForwardSequence, class Compare>
-    tuple<ForwardSequence, ForwardSequence>
-    minmax_element(ForwardSequence in, Compare cmp)
-    {
-        typedef tuple<ForwardSequence, ForwardSequence> Tuple;
-
-        if(!in)
-        {
-            return Tuple{in, in};
-        }
-
-        auto cmp_min = ural::compare_by(ural::dereference<>{}, std::cref(cmp));
-        auto cmp_max = ural::make_binary_reverse_args(cmp_min);
-
-        ::ural::min_element_accumulator<ForwardSequence, decltype(cmp_min)>
-            acc_min(in, std::move(cmp_min));
-        ::ural::min_element_accumulator<ForwardSequence, decltype(cmp_max)>
-            acc_max(in, std::move(cmp_max));
-        ++ in;
-
-        for(; !!in; ++ in)
-        {
-            auto in_next = in;
-            ++ in_next;
-
-            // остался только один элемент
-            if(!in_next)
-            {
-                if(acc_min.update(in) == false)
-                {
-                    acc_max(in);
-                }
-                break;
-            }
-
-            // осталось как минимум два элемента
-            if(cmp(*in, *in_next))
-            {
-                acc_min(in);
-                acc_max(in_next);
-            }
-            else
-            {
-                acc_min(in_next);
-                acc_max(in);
-            }
-
-            in = in_next;
-        }
-
-        return Tuple{acc_min.result(), acc_max.result()};
-    }
-
-    template <class Forward1, class Forward2, class BinaryPredicate>
-    bool is_permutation(Forward1 s1, Forward2 s2, BinaryPredicate pred)
-    {
-        std::tie(s1, s2) = ural::details::mismatch(std::move(s1), std::move(s2),
-                                                   pred);
-
-        s1.shrink_front();
-        s2.shrink_front();
-
-        for(; !!s1; ++ s1)
-        {
-            // Пропускаем элементы, которые уже встречались
-            if(!!find_fn{}(s1.traversed_front(), *s1, pred))
-            {
-                continue;
-            }
-
-            auto s = s1;
-            ++ s;
-            auto const n1 = 1 + count_fn{}(s, *s1, pred);
-            auto const n2 = count_fn{}(s2, *s1, pred);
-
-            if(n1 != n2)
-            {
-                return false;
-            }
-        }
-        return true;
     }
 }
 // namespace details
