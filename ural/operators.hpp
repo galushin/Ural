@@ -19,6 +19,7 @@
 
 /** @file ural/operators.hpp
  @brief Автоматизация определения операторов
+ @todo Обобщить пост-инкремент и пост-декремент: modify_return_old
 */
 
 #include <ural/defs.hpp>
@@ -84,11 +85,10 @@ namespace ural
     @brief Обобщённая реализация пост-инкремента
     @param x аргмент
     @return Значение, которое @c x имел до вызова
-    @todo Добавить требование наличия пре-инкремента в enable_if
     */
-    template <class Incrementable>
-    typename std::enable_if<std::is_copy_constructible<Incrementable>::value, Incrementable>::type
-    operator++(Incrementable & x, int)
+    template <class T>
+    typename std::enable_if<std::is_copy_constructible<T>() && has_pre_increment<T>(), T>::type
+    operator++(T & x, int)
     {
         auto tmp = x;
         ++ x;
@@ -100,11 +100,10 @@ namespace ural
     @brief Обобщённая реализация пост-декремента
     @param x аргмент
     @return Значение, которое @c x имел до вызова
-    @todo Добавить требование наличия пре-декремента в enable_if
     */
-    template <class Decrementable>
-    typename std::enable_if<std::is_copy_constructible<Decrementable>::value, Decrementable>::type
-    operator--(Decrementable & x, int)
+    template <class T>
+    typename std::enable_if<std::is_copy_constructible<T>() && has_pre_decrement<T>(), T>::type
+    operator--(T & x, int)
     {
         auto tmp = x;
         -- x;

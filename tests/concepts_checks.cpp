@@ -45,3 +45,37 @@ BOOST_AUTO_TEST_CASE(archetype_check)
 
     BOOST_CHECK(true);
 }
+
+BOOST_AUTO_TEST_CASE(has_pre_increment_test)
+{
+    static_assert(ural::has_pre_increment<int>() == true, "");
+    static_assert(ural::has_pre_increment<std::string>() == false, "");
+
+    static_assert(ural::has_pre_increment<std::string::iterator>() == true, "");
+    static_assert(ural::has_pre_increment<int*>() == true, "");
+    static_assert(ural::has_pre_increment<void*>() == false, "");
+
+    BOOST_CHECK_EQUAL(ural::has_pre_increment<int>(), true);
+    BOOST_CHECK_EQUAL(ural::has_pre_increment<std::string>(), false);
+
+    BOOST_CHECK_EQUAL(ural::has_pre_increment<std::string::iterator>(), true);
+    BOOST_CHECK_EQUAL(ural::has_pre_increment<int*>(), true);
+    BOOST_CHECK_EQUAL(ural::has_pre_increment<void*>(), false);
+}
+
+BOOST_AUTO_TEST_CASE(has_pre_decrement_test)
+{
+    static_assert(ural::has_pre_decrement<int>() == true, "");
+    static_assert(ural::has_pre_decrement<std::string>() == false, "");
+
+    static_assert(ural::has_pre_decrement<std::string::iterator>() == true, "");
+    static_assert(ural::has_pre_decrement<int*>() == true, "");
+    static_assert(ural::has_pre_decrement<void*>() == false, "");
+
+    BOOST_CHECK_EQUAL(ural::has_pre_decrement<int>(), true);
+    BOOST_CHECK_EQUAL(ural::has_pre_decrement<std::string>(), false);
+
+    BOOST_CHECK_EQUAL(ural::has_pre_decrement<std::string::iterator>(), true);
+    BOOST_CHECK_EQUAL(ural::has_pre_decrement<int*>(), true);
+    BOOST_CHECK_EQUAL(ural::has_pre_decrement<void*>(), false);
+}

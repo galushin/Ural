@@ -60,6 +60,22 @@ namespace ural
         template <class T, class U>
         std::integral_constant<bool, true>
         is_assignable_helper(ural::declare_type<decltype(std::declval<T>() = std::declval<U>())> *);
+
+        template <class T>
+        std::false_type
+        has_pre_increment_helper(...);
+
+        template <class T>
+        std::true_type
+        has_pre_increment_helper(ural::declare_type<decltype(++std::declval<T&>())> *);
+
+        template <class T>
+        std::false_type
+        has_pre_decrement_helper(...);
+
+        template <class T>
+        std::true_type
+        has_pre_decrement_helper(ural::declare_type<decltype(--std::declval<T&>())> *);
     }
     // namespace details
     /// @endcond
@@ -85,6 +101,16 @@ namespace ural
      : std::conditional<std::is_reference<T>::value,
                         typename std::remove_reference<T>::type &&,
                         T>
+    {};
+
+    template <class T>
+    struct has_pre_increment
+     : decltype(::ural::details::has_pre_increment_helper<T>(nullptr))
+    {};
+
+    template <class T>
+    struct has_pre_decrement
+     : decltype(::ural::details::has_pre_decrement_helper<T>(nullptr))
     {};
 }
 // namespace ural
