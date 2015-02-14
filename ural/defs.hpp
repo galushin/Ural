@@ -86,6 +86,8 @@ namespace ural
         {}
     };
 
+    /** @todo Найти лучшее место для empty_fn и empty
+    */
     class empty_fn
     {
     private:

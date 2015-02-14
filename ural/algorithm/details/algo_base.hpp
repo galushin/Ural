@@ -302,6 +302,9 @@ namespace ural
         }
     };
 
+    template <class T1, class T2>
+    void swap(T1 & x, T2 & y);
+
 namespace details
 {
     class swap_fn
@@ -311,7 +314,7 @@ namespace details
         void operator()(T & x, T & y) const
         {
             using std::swap;
-            // @todo using ural::swap;
+            using ural::swap;
             using boost::swap;
             return swap(x, y);
         }
@@ -933,37 +936,6 @@ namespace details
         }
     }
 
-    template <class RandomAccessSequence, class Size, class Compare>
-    void heap_sink(RandomAccessSequence seq, Size first, Size last, Compare cmp)
-    {
-        assert(last <= seq.size());
-
-        if(first == last)
-        {
-            return;
-        }
-
-        auto const c1 = heap_child_1(first);
-        auto const c2 = heap_child_2(first);
-        auto largest = first;
-
-        if(c1 < last && cmp(seq[largest], seq[c1]))
-        {
-            largest = c1;
-        }
-
-        if (c2 < last && cmp(seq[largest], seq[c2]))
-        {
-            largest = c2;
-        }
-
-        if(largest != first)
-        {
-            ::ural::details::do_swap(seq[largest], seq[first]);
-            heap_sink(seq, largest, last, cmp);
-        }
-    }
-
     template <class RandomAccessSequence, class Compare>
     RandomAccessSequence
     is_heap_until(RandomAccessSequence seq, Compare cmp)
@@ -993,160 +965,6 @@ namespace details
 
         seq += index;
         return seq;
-    }
-
-    template <class RandomAccessSequence, class Compare>
-    bool is_heap(RandomAccessSequence seq, Compare cmp)
-    {
-        BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(seq)>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
-
-        return !::ural::details::is_heap_until(seq, cmp);
-    }
-
-    template <class RandomAccessSequence, class Compare>
-    void make_heap(RandomAccessSequence seq, Compare cmp)
-    {
-        BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(seq)>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
-
-        for(auto n = seq.size() / 2; n > 0; -- n)
-        {
-            heap_sink(seq, n - 1, seq.size(), cmp);
-        }
-
-        assert(ural::details::is_heap(seq, cmp));
-    }
-
-    template <class RandomAccessSequence, class Compare>
-    void pop_heap(RandomAccessSequence seq, Compare cmp)
-    {
-        BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(seq)>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
-
-        assert(ural::details::is_heap(seq, cmp));
-        auto const N = seq.size();
-
-        if(N <= 1)
-        {
-            return;
-        }
-
-        ::ural::details::do_swap(seq[0], seq[N-1]);
-        ::ural::details::heap_sink(seq, static_cast<decltype(N)>(0), N-1, cmp);
-    }
-
-    template <class RandomAccessSequence, class Compare>
-    void push_heap(RandomAccessSequence seq, Compare cmp)
-    {
-        BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(seq)>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
-
-        assert(ural::details::is_heap_until(seq, cmp).size() <= 1);
-
-        if(seq.size() >= 1)
-        {
-            ::ural::details::heap_swim(seq, seq.size() - 1, cmp);
-        }
-
-        assert(ural::details::is_heap(seq, cmp));
-    }
-
-    template <class RandomAccessSequence, class Compare>
-    void sort_heap(RandomAccessSequence seq, Compare cmp)
-    {
-        BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(seq)>));
-        BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
-
-        assert(ural::details::is_heap(seq, cmp));
-        for(auto n = seq.size(); n > 0; --n)
-        {
-            ::ural::details::pop_heap(seq, cmp);
-            seq.pop_back();
-        }
-
-        assert(::ural::is_sorted_fn{}(seq, cmp));
-    }
-
-    // Сортировка
-    template <class RASequence, class Size, class Compare>
-    void partial_sort(RASequence s, Size const part, Compare cmp)
-    {
-        ::ural::details::make_heap(s, cmp);
-
-        s.shrink_front();
-        auto s_old = s;
-        s += part;
-
-        for(auto i = s; !!i; ++ i)
-        {
-            if(cmp(*i, *s_old))
-            {
-                ::ural::details::do_swap(*s_old, *i);
-                ::ural::details::heap_sink(s.traversed_front(),
-                                           static_cast<decltype(part)>(0), part, cmp);
-            }
-        }
-
-        ::ural::details::sort_heap(s.traversed_front(), cmp);
-    }
-
-    template <class Input, class RASequence, class Compare>
-    RASequence
-    partial_sort_copy(Input in, RASequence out, Compare cmp)
-    {
-        out.shrink_front();
-        std::tie(in, out) = copy_fn{}(std::move(in), std::move(out));
-
-        auto to_sort = out.traversed_front();
-        auto const part = to_sort.size();
-
-        ::ural::details::make_heap(to_sort, cmp);
-
-        for(; !!in; ++ in)
-        {
-            if(cmp(*in, *to_sort))
-            {
-                *to_sort = *in;
-                decltype(part) constexpr zero = 0;
-                ::ural::details::heap_sink(to_sort, zero, part, cmp);
-            }
-        }
-
-        ::ural::details::sort_heap(std::move(to_sort), cmp);
-
-        return out;
-    }
-
-    template <class RASequence, class Compare>
-    void heap_select(RASequence s, Compare cmp)
-    {
-        if(!s)
-        {
-            return;
-        }
-
-        ++ s;
-        auto s1 = s.traversed_front();
-
-        if(!s1 || !s)
-        {
-            return;
-        }
-
-        ::ural::details::make_heap(s1, cmp);
-
-        for(; !!s; ++ s)
-        {
-            if(cmp(*s, *s1))
-            {
-                ::ural::details::do_swap(*s, *s1);
-                auto const n = s1.size();
-                decltype(n) constexpr zero = 0;
-                ::ural::details::heap_sink(s1, zero, n, cmp);
-            }
-        }
-        ::ural::details::pop_heap(s1, cmp);
     }
 }
 // namespace details

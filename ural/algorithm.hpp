@@ -621,80 +621,270 @@ namespace ural
     }
 
     // Бинарные кучи
-    template <class RandomAccessSequence, class Compare>
-    bool is_heap(RandomAccessSequence && seq, Compare cmp)
+    class is_heap_fn
     {
-        typedef RandomAccessSequence Seq;
-        return ::ural::details::is_heap(sequence_fwd<Seq>(seq),
-                                        make_functor(std::move(cmp)));
-    }
+    public:
+        template <class RASequence>
+        bool operator()(RASequence && seq) const
+        {
+            return (*this)(std::forward<RASequence>(seq), ural::less<>{});
+        }
 
-    template <class RandomAccessSequence>
-    bool is_heap(RandomAccessSequence && seq)
-    {
-        return ::ural::is_heap(std::forward<RandomAccessSequence>(seq),
-                               ural::less<>{});
-    }
+        template <class RASequence, class Compare>
+        bool operator()(RASequence && seq, Compare cmp) const
+        {
+            return this->impl(sequence_fwd<RASequence>(seq),
+                              make_functor(std::move(cmp)));
+        }
 
-    template <class RandomAccessSequence, class Compare>
-    void make_heap(RandomAccessSequence && seq, Compare cmp)
-    {
-        typedef RandomAccessSequence Seq;
-        return ::ural::details::make_heap(sequence_fwd<Seq>(seq),
-                                          make_functor(std::move(cmp)));
-    }
+    private:
+        template <class RASequence, class Compare>
+        static bool
+        impl(RASequence seq, Compare cmp)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
 
-    template <class RandomAccessSequence>
-    void make_heap(RandomAccessSequence && seq)
-    {
-        return ::ural::make_heap(std::forward<RandomAccessSequence>(seq),
-                                 ural::less<>{});
-    }
+            return !::ural::details::is_heap_until(seq, cmp);
+        }
+    };
+    auto constexpr is_heap = is_heap_fn{};
 
-    template <class RandomAccessSequence, class Compare>
-    void push_heap(RandomAccessSequence && seq, Compare cmp)
+    class heap_sink_fn
     {
-        typedef RandomAccessSequence Seq;
-        return ::ural::details::push_heap(sequence_fwd<Seq>(seq),
-                                          make_functor(std::move(cmp)));
-    }
+    public:
+        template <class RASequence, class Size, class Compare>
+        void operator()(RASequence && seq, Size first, Size last, Compare cmp) const
+        {
+            return this->impl(ural::sequence_fwd<RASequence>(seq), first, last,
+                              ural::make_functor(std::move(cmp)));
+        }
 
-    template <class RandomAccessSequence>
-    void push_heap(RandomAccessSequence && seq)
-    {
-        return ::ural::push_heap(std::forward<RandomAccessSequence>(seq),
-                                 ural::less<>{});
-    }
+    private:
+        template <class RASequence, class Size, class Compare>
+        void impl(RASequence seq, Size first, Size last, Compare cmp) const
+        {
+            assert(last <= seq.size());
 
-    template <class RandomAccessSequence, class Compare>
-    void pop_heap(RandomAccessSequence && seq, Compare cmp)
-    {
-        typedef RandomAccessSequence Seq;
-        return ::ural::details::pop_heap(sequence_fwd<Seq>(seq),
-                                          make_functor(std::move(cmp)));
-    }
+            if(first == last)
+            {
+                return;
+            }
 
-    template <class RandomAccessSequence>
-    void pop_heap(RandomAccessSequence && seq)
-    {
-        return ::ural::pop_heap(std::forward<RandomAccessSequence>(seq),
-                                ural::less<>{});
-    }
+            auto const c1 = details::heap_child_1(first);
+            auto const c2 = details::heap_child_2(first);
+            auto largest = first;
 
-    template <class RandomAccessSequence, class Compare>
-    void sort_heap(RandomAccessSequence && seq, Compare cmp)
-    {
-        typedef RandomAccessSequence Seq;
-        return ::ural::details::sort_heap(sequence_fwd<Seq>(seq),
-                                          make_functor(std::move(cmp)));
-    }
+            if(c1 < last && cmp(seq[largest], seq[c1]))
+            {
+                largest = c1;
+            }
 
-    template <class RandomAccessSequence>
-    void sort_heap(RandomAccessSequence && seq)
+            if (c2 < last && cmp(seq[largest], seq[c2]))
+            {
+                largest = c2;
+            }
+
+            if(largest != first)
+            {
+                ::ural::details::do_swap(seq[largest], seq[first]);
+                this->impl(seq, largest, last, cmp);
+            }
+        }
+    };
+
+    class make_heap_fn
     {
-        return ::ural::sort_heap(std::forward<RandomAccessSequence>(seq),
-                                 ural::less<>{});
-    }
+    public:
+        template <class RASequence>
+        void operator()(RASequence && seq) const
+        {
+            return (*this)(std::forward<RASequence>(seq), ural::less<>{});
+        }
+
+        template <class RASequence, class Compare>
+        void operator()(RASequence && seq, Compare cmp) const
+        {
+            return this->impl(sequence_fwd<RASequence>(seq),
+                              ural::make_functor(std::move(cmp)));
+        }
+
+    private:
+        template <class RandomAccessSequence, class Compare>
+        static void
+        impl(RandomAccessSequence seq, Compare cmp)
+        {
+            BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(seq)>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
+
+            for(auto n = seq.size() / 2; n > 0; -- n)
+            {
+                heap_sink_fn{}(seq, n - 1, seq.size(), cmp);
+            }
+
+            assert(is_heap_fn{}(seq, cmp));
+        }
+    };
+
+    auto constexpr make_heap = make_heap_fn{};
+
+    class push_heap_fn
+    {
+    public:
+        template <class RASequence>
+        void operator()(RASequence && seq) const
+        {
+            return (*this)(std::forward<RASequence>(seq), ural::less<>{});
+        }
+
+        template <class RASequence, class Compare>
+        void operator()(RASequence && seq, Compare cmp) const
+        {
+            return this->impl(sequence_fwd<RASequence>(seq),
+                              make_functor(std::move(cmp)));
+        }
+
+    private:
+        template <class RASequence, class Compare>
+        static void
+        impl(RASequence seq, Compare cmp)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
+
+            assert(ural::details::is_heap_until(seq, cmp).size() <= 1);
+
+            if(seq.size() >= 1)
+            {
+                ::ural::details::heap_swim(seq, seq.size() - 1, cmp);
+            }
+
+            assert(is_heap_fn{}(seq, cmp));
+        }
+    };
+    auto constexpr push_heap = push_heap_fn{};
+
+    class pop_heap_fn
+    {
+    public:
+        template <class RASequence>
+        void operator()(RASequence && seq) const
+        {
+            return (*this)(std::forward<RASequence>(seq), ural::less<>{});
+        }
+
+        template <class RASequence, class Compare>
+        void operator()(RASequence && seq, Compare cmp) const
+        {
+            return this->impl(sequence_fwd<RASequence>(seq),
+                              make_functor(std::move(cmp)));
+        }
+
+    private:
+        template <class RASequence, class Compare>
+        static void
+        impl(RASequence seq, Compare cmp)
+        {
+            BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
+
+            assert(is_heap_fn{}(seq, cmp));
+            auto const N = seq.size();
+
+            if(N <= 1)
+            {
+                return;
+            }
+
+            ::ural::details::do_swap(seq[0], seq[N-1]);
+            heap_sink_fn{}(seq, 0*N, N-1, cmp);
+        }
+    };
+    auto constexpr pop_heap = pop_heap_fn{};
+
+    class sort_heap_fn
+    {
+    public:
+        template <class RASequence>
+        void operator()(RASequence && seq) const
+        {
+            return (*this)(std::forward<RASequence>(seq),
+                           ural::less<>{});
+        }
+
+        template <class RASequence, class Compare>
+        void operator()(RASequence && seq, Compare cmp) const
+        {
+            return this->impl(sequence_fwd<RASequence>(seq),
+                              make_functor(std::move(cmp)));
+        }
+
+    private:
+        template <class RASequence, class Compare>
+        static void
+        impl(RASequence seq, Compare cmp)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
+
+            assert(is_heap_fn{}(seq, cmp));
+            for(auto n = seq.size(); n > 0; --n)
+            {
+                pop_heap_fn{}(seq, cmp);
+                seq.pop_back();
+            }
+
+            assert(::ural::is_sorted_fn{}(seq, cmp));
+        }
+    };
+    auto constexpr sort_heap = sort_heap_fn{};
+
+    class heap_select_fn
+    {
+    public:
+        template <class RASequence, class Compare>
+        void operator()(RASequence && s, Compare cmp) const
+        {
+            return this->impl(ural::sequence_fwd<RASequence>(s),
+                              ural::make_functor(std::move(cmp)));
+        }
+
+    private:
+        template <class RASequence, class Compare>
+        static void
+        impl(RASequence s, Compare cmp)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, bool(decltype(*s), decltype(*s))>));
+
+            if(!s)
+            {
+                return;
+            }
+
+            ++ s;
+            auto s1 = s.traversed_front();
+
+            if(!s1 || !s)
+            {
+                return;
+            }
+
+            make_heap_fn{}(s1, cmp);
+
+            for(; !!s; ++ s)
+            {
+                if(cmp(*s, *s1))
+                {
+                    ::ural::details::do_swap(*s, *s1);
+                    auto const n = s1.size();
+                    heap_sink_fn{}(s1, 0*n, n, cmp);
+                }
+            }
+            pop_heap_fn{}(s1, cmp);
+        }
+    };
+    auto constexpr heap_select = heap_select_fn{};
 
     // Сортировка
     template <class RASequence, class T, class Compare>
@@ -787,38 +977,95 @@ namespace ural
         return ::ural::stable_sort(std::forward<RASequence>(s), ural::less<>{});
     }
 
-    template <class RASequence, class Size, class Compare>
-    void partial_sort(RASequence && s, Size part, Compare cmp)
+    class partial_sort_fn
     {
-        return ::ural::details::partial_sort(sequence_fwd<RASequence>(s),
-                                             std::move(part),
-                                             ural::make_functor(std::move(cmp)));
-    }
+    public:
+        template <class RASequence, class Size>
+        void operator()(RASequence && s, Size part) const
+        {
+            return (*this)(std::forward<RASequence>(s), part, ural::less<>{});
+        }
 
-    template <class RASequence, class Size>
-    void partial_sort(RASequence && s, Size part)
-    {
-        return ::ural::partial_sort(std::forward<RASequence>(s), part,
-                                    ural::less<>{});
-    }
+        template <class RASequence, class Size, class Compare>
+        void operator()(RASequence && s, Size part, Compare cmp) const
+        {
+            return this->impl(sequence_fwd<RASequence>(s), std::move(part),
+                              ural::make_functor(std::move(cmp)));
+        }
 
-    template <class Input, class RASequence, class Compare>
-    auto partial_sort_copy(Input && in, RASequence && out, Compare cmp)
-    -> decltype(sequence_fwd<RASequence>(out))
-    {
-        return ::ural::details::partial_sort_copy(sequence_fwd<Input>(in),
-                                                  sequence_fwd<RASequence>(out),
-                                                  ural::make_functor(std::move(cmp)));
-    }
+    private:
+        template <class RASequence, class Size, class Compare>
+        static void
+        impl(RASequence s, Size const part, Compare cmp)
+        {
+            make_heap_fn{}(s, cmp);
 
-    template <class Input, class RASequence>
-    auto partial_sort_copy(Input && in, RASequence && out)
-    -> decltype(sequence_fwd<RASequence>(out))
+            s.shrink_front();
+            auto const s_old = s;
+            s += part;
+
+            for(auto i = s; !!i; ++ i)
+            {
+                if(cmp(*i, *s_old))
+                {
+                    ::ural::details::do_swap(*s_old, *i);
+                    heap_sink_fn{}(s.traversed_front(), 0*part, part, cmp);
+                }
+            }
+
+            sort_heap_fn{}(s.traversed_front(), cmp);
+        }
+    };
+    auto constexpr partial_sort = partial_sort_fn{};
+
+    class partial_sort_copy_fn
     {
-        return ::ural::partial_sort_copy(sequence_fwd<Input>(in),
-                                         sequence_fwd<RASequence>(out),
-                                         ural::less<>{});
-    }
+    public:
+        template <class Input, class RASequence>
+        auto operator()(Input && in, RASequence && out) const
+        -> decltype(sequence_fwd<RASequence>(out))
+        {
+            return (*this)(sequence_fwd<Input>(in),
+                           sequence_fwd<RASequence>(out), ural::less<>{});
+        }
+
+        template <class Input, class RASequence, class Compare>
+        auto operator()(Input && in, RASequence && out, Compare cmp) const
+        -> decltype(sequence_fwd<RASequence>(out))
+        {
+            return this->impl(sequence_fwd<Input>(in),
+                              sequence_fwd<RASequence>(out),
+                              ural::make_functor(std::move(cmp)));
+        }
+
+    private:
+        template <class Input, class RASequence, class Compare>
+        static RASequence
+        impl(Input in, RASequence out, Compare cmp)
+        {
+            out.shrink_front();
+            std::tie(in, out) = copy_fn{}(std::move(in), std::move(out));
+
+            auto to_sort = out.traversed_front();
+            auto const part = to_sort.size();
+
+            make_heap_fn{}(to_sort, cmp);
+
+            for(; !!in; ++ in)
+            {
+                if(cmp(*in, *to_sort))
+                {
+                    *to_sort = *in;
+                    heap_sink_fn{}(to_sort, 0*part, part, cmp);
+                }
+            }
+
+            sort_heap_fn{}(std::move(to_sort), cmp);
+
+            return out;
+        }
+    };
+    auto constexpr partial_sort_copy = partial_sort_copy_fn{};
 
     class nth_element_fn
     {
@@ -840,7 +1087,7 @@ namespace ural
         template <class RASequence, class Compare>
         static void impl(RASequence s, Compare cmp)
         {
-            return ::ural::details::heap_select(std::move(s), std::move(cmp));
+            return heap_select_fn{}(std::move(s), std::move(cmp));
         }
     };
     auto constexpr nth_element = nth_element_fn{};
