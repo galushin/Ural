@@ -688,6 +688,8 @@ namespace ural
             if(largest != first)
             {
                 ::ural::details::do_swap(seq[largest], seq[first]);
+
+                // @todo Заменить рекурсию на итерацию?
                 this->impl(seq, largest, last, cmp);
             }
         }

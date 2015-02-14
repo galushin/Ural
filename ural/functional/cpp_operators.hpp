@@ -19,8 +19,6 @@
 
 /** @file ural/functional/cpp_operators.hpp
  @brief Функциональные объекты, аналогичные определённым в @< functional @>
- @todo Добавить во вспомогательные классы требование к функциональным объектам:
- они должны быть "прозрачными"
 */
 
 #include <ural/functional/make_functor.hpp>
@@ -45,6 +43,8 @@ namespace ural
                    typename boost::call_traits<T2>::param_type y) const
         -> decltype(std::declval<F const>()(x, y))
         {
+            typedef typename F::is_transparent F_is_transparent;
+
             return F{}(x, y);
         }
     };
@@ -61,6 +61,8 @@ namespace ural
                    T2 && y) const
         -> decltype(std::declval<F const>()(x, std::forward<T2>(y)))
         {
+            typedef typename F::is_transparent F_is_transparent;
+
             return F{}(x, std::forward<T2>(y));
         }
     };
@@ -77,6 +79,8 @@ namespace ural
                    typename boost::call_traits<T2>::param_type y) const
         -> decltype(std::declval<F const>()(std::forward<T1>(x), y))
         {
+            typedef typename F::is_transparent F_is_transparent;
+
             return F{}(std::forward<T1>(x), y);
         }
     };
@@ -89,6 +93,8 @@ namespace ural
 
         T1 & operator()(T1 & x, T2 const & y) const
         {
+            typedef typename F::is_transparent F_is_transparent;
+
             return F{}(x, y);
         }
     };
@@ -102,6 +108,8 @@ namespace ural
         template <class T2>
         T1 & operator()(T1 & x, T2 && y) const
         {
+            typedef typename F::is_transparent F_is_transparent;
+
             return F{}(x, std::forward<T2>(y));
         }
     };
@@ -115,6 +123,8 @@ namespace ural
         template <class T1>
         T1 & operator()(T1 & x, T2 const & y) const
         {
+            typedef typename F::is_transparent F_is_transparent;
+
             return F{}(x, y);
         }
     };
@@ -136,6 +146,8 @@ namespace ural
         constexpr result_type
         operator()(typename boost::call_traits<T>::param_type x) const
         {
+            typedef typename F::is_transparent F_is_transparent;
+
             return F{}(x);
         }
     };
@@ -243,6 +255,8 @@ namespace ural
     class divides<void, void>
     {
     public:
+        typedef std::true_type is_transparent;
+
         template <class T1, class T2>
         constexpr auto operator()(T1 && x, T2 && y) const
         -> decltype(std::forward<T1>(x) / std::forward<T2>(y))
@@ -266,6 +280,8 @@ namespace ural
     class modulus<void, void>
     {
     public:
+        typedef std::true_type is_transparent;
+
         template <class T1, class T2>
         constexpr auto operator()(T1 && x, T2 && y) const
         -> decltype(std::forward<T1>(x) % std::forward<T2>(y))
@@ -287,6 +303,8 @@ namespace ural
     class negate<>
     {
     public:
+        typedef std::true_type is_transparent;
+
         template <class T>
         constexpr auto operator()(T && x) const
         -> decltype(-std::forward<T>(x))
@@ -310,6 +328,8 @@ namespace ural
     class equal_to<void, void>
     {
     public:
+        typedef std::true_type is_transparent;
+
         template <class T1, class T2>
         constexpr auto operator()(T1 const & x, T2 const & y) const
         -> decltype(x == y)
@@ -333,6 +353,8 @@ namespace ural
     class not_equal_to<void, void>
     {
     public:
+        typedef std::true_type is_transparent;
+
         template <class T1, class T2>
         constexpr auto operator()(T1 && x, T2 && y) const
         -> decltype (std::forward<T1>(x) != std::forward<T2>(y))
@@ -356,6 +378,8 @@ namespace ural
     class less<void, void>
     {
     public:
+        typedef std::true_type is_transparent;
+
         template <class T1, class T2>
         constexpr auto operator()(T1 && x, T2 && y) const
         -> decltype (std::forward<T1>(x) < std::forward<T2>(y))
@@ -449,6 +473,8 @@ namespace ural
     class logical_and<void, void>
     {
     public:
+        typedef std::true_type is_transparent;
+
         template <class T1, class T2>
         constexpr auto operator()(T1 && x, T2 && y) const
         -> decltype(std::forward<T1>(x) && std::forward<T2>(y))
@@ -472,6 +498,8 @@ namespace ural
     class logical_or<void, void>
     {
     public:
+        typedef std::true_type is_transparent;
+
         template <class T1, class T2>
         constexpr auto operator()(T1 && x, T2 && y) const
         -> decltype(std::forward<T1>(x) || std::forward<T2>(y))
@@ -493,6 +521,8 @@ namespace ural
     class logical_not<void>
     {
     public:
+        typedef std::true_type is_transparent;
+
         template <class T>
         constexpr auto operator()(T && x) const
         -> decltype(!std::forward<T>(x))
@@ -510,6 +540,8 @@ namespace ural
     class logical_implication<void, void>
     {
     public:
+        typedef std::true_type is_transparent;
+
         template <class T1, class T2>
         constexpr auto operator()(T1 && x, T2 && y) const
         -> decltype(!std::forward<T1>(x) || std::forward<T2>(y))
@@ -532,6 +564,8 @@ namespace ural
     class bit_not<void>
     {
     public:
+        typedef std::true_type is_transparent;
+
         template <class T>
         constexpr auto operator()(T && arg) const
         -> decltype(~std::forward<T>(arg))
@@ -555,6 +589,8 @@ namespace ural
     class bit_and<void, void>
     {
     public:
+        typedef std::true_type is_transparent;
+
         template <class T1, class T2>
         constexpr auto operator()(T1 && x, T2 && y) const
         -> decltype(std::forward<T1>(x) & std::forward<T2>(y))
@@ -579,6 +615,8 @@ namespace ural
     class bit_or<void, void>
     {
     public:
+        typedef std::true_type is_transparent;
+
         template <class T1, class T2>
         constexpr auto operator()(T1 && x, T2 && y) const
         -> decltype(std::forward<T1>(x) | std::forward<T2>(y))
@@ -603,6 +641,8 @@ namespace ural
     class bit_xor<void, void>
     {
     public:
+        typedef std::true_type is_transparent;
+
         template <class T1, class T2>
         constexpr auto operator()(T1 && x, T2 && y) const
         -> decltype(std::forward<T1>(x) ^ std::forward<T2>(y))
@@ -692,6 +732,8 @@ namespace ural
     class plus_assign<>
     {
     public:
+        typedef std::true_type is_transparent;
+
         template <class T1, class T2>
         constexpr T1 & operator()(T1 & x, T2 && y) const
         {
@@ -714,6 +756,8 @@ namespace ural
     class minus_assign<>
     {
     public:
+        typedef std::true_type is_transparent;
+
         template <class T1, class T2>
         constexpr T1 & operator()(T1 & x, T2 && y) const
         {
@@ -730,6 +774,8 @@ namespace ural
     class multiplies_assign<void, void>
     {
     public:
+        typedef std::true_type is_transparent;
+
         template <class T1, class T2>
         constexpr T1 & operator()(T1 & x, T2 && y) const
         {
@@ -746,6 +792,8 @@ namespace ural
     class divides_assign<void, void>
     {
     public:
+        typedef std::true_type is_transparent;
+
         template <class T1, class T2>
         constexpr T1 & operator()(T1 & x, T2 && y) const
         {
@@ -762,6 +810,8 @@ namespace ural
     class modulus_assign<void, void>
     {
     public:
+        typedef std::true_type is_transparent;
+
         template <class T1, class T2>
         constexpr T1 & operator()(T1 & x, T2 && y) const
         {

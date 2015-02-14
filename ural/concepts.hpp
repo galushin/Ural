@@ -199,6 +199,7 @@ namespace concepts
         {
             typedef decltype(*seq = make_value()) AssignResult;
 
+            // @todo begin?
 //            @todo BOOST_CONCEPT_ASSERT((boost::OutputIterator<Seq, T>));
         }
 
@@ -295,14 +296,23 @@ namespace concepts
             value_consumer<bool>() = (d0 == d1);
             value_consumer<bool>() = (d0 != d1);
 
-            // @todo Ввод/вывод
+            // Ввод/вывод
+            auto const d0_c = d0;
+            value_consumer<std::ostream&>() = (get_ostream() << d0_c);
+
+            value_consumer<std::istream&>() = (get_istream() >> d0);
+
             // @todo Конструкторы
+            // @todo Соответствие концепции распределения стандарта C++11
         }
 
     private:
         typedef typename D::result_type T;
         typedef typename D::param_type P;
         typedef typename P::distribution_type PD;
+
+        static std::istream & get_istream();
+        static std::ostream & get_ostream();
     };
 }
 // namespace concepts

@@ -27,14 +27,23 @@ namespace ural
     /** @brief Адаптор последовательности, возвращающий в качестве значения
     исходную последовательность
     @tparam Sequence последовательность
-    @todo Уточнить тип расстояния. Если в базе есть тип @c distance_type,
-    использовать его, если <tt> Sequence() - Sequence() </tt> --- корректное
-    выражение, то использовать его тип, иначе --- <tt> std::size_t </tt>
     */
     template <class Sequence>
     class outdirected_sequence
      : public sequence_base<outdirected_sequence<Sequence>>
     {
+        template <class U>
+        static size_t
+        decl_distance_type(...);
+
+        template <class U>
+        static decltype(std::declval<U>() - std::declval<U>())
+        decl_distance_type(void *);
+
+        template <class U>
+        static typename U::distance_type
+        decl_distance_type(declare_type<Sequence> *);
+
     public:
         // Типы
         /// @brief Категория обхода
@@ -50,7 +59,7 @@ namespace ural
         typedef value_type pointer;
 
         /// @brief Тип расстояния
-        typedef size_t distance_type;
+        typedef decltype(decl_distance_type<Sequence>(nullptr)) distance_type;
 
         // Конструктор
         /** @brief Конструктор

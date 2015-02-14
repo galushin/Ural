@@ -549,10 +549,19 @@ namespace ural
         param_type param_;
     };
 
+    template <class Char, class Traits, class D, class Vector>
+    std::basic_ostream<Char, Traits> &
+    operator<<(std::basic_ostream<Char, Traits> & os,
+               iid_adaptor<D, Vector> const & d);
+
+    template <class Char, class Traits, class D, class Vector>
+    std::basic_istream<Char, Traits> &
+    operator>>(std::basic_istream<Char, Traits> & os,
+               iid_adaptor<D, Vector> & d);
+
     /** @brief Многомерное нормальное распределение
     @tparam Vector тип вектора-результата
     @tparam Matrix тип корреляционной матрицы
-    @todo Соответствие концепции распределения стандарта C++11
     */
     template <class Vector = use_default, class Matrix = use_default>
     class multivariate_normal_distribution
@@ -668,6 +677,16 @@ namespace ural
 
         iid_adaptor<std::normal_distribution<element_type>, result_type> base_;
     };
+
+    template <class Char, class Traits, class Vector, class Matrix>
+    std::basic_ostream<Char, Traits> &
+    operator<<(std::basic_ostream<Char, Traits> & os,
+               multivariate_normal_distribution<Vector, Matrix> const & d);
+
+    template <class Char, class Traits, class Vector, class Matrix>
+    std::basic_istream<Char, Traits> &
+    operator>>(std::basic_istream<Char, Traits> & is,
+               multivariate_normal_distribution<Vector, Matrix> & d);
 }
 // namespace ural
 
