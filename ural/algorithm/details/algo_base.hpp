@@ -159,8 +159,7 @@ namespace ural
                                                            bool(decltype(*in), T const &)>));
 
             return count_if_fn{}(std::move(in),
-                                 std::bind(std::move(pred),
-                                           std::placeholders::_1,
+                                 std::bind(std::move(pred), ural::_1,
                                            std::ref(value)));
         }
 
@@ -561,23 +560,14 @@ namespace details
         return ural::tuple<Forward1, Forward2>{in1, in2};
     }
 
-    template <class ForwardSequence, class T, class BinaryPredicate>
-    void replace(ForwardSequence seq, T const & old_value, T const & new_value,
-                 BinaryPredicate bin_pred)
-    {
-        // @todo Выразить через replace_if
-        for(; !!seq; ++ seq)
-        {
-            if(bin_pred(*seq, old_value))
-            {
-                *seq = new_value;
-            }
-        }
-    }
-
     template <class ForwardSequence, class Predicate, class T>
     void replace_if(ForwardSequence seq, Predicate pred, T const & new_value)
     {
+        BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<ForwardSequence>));
+        BOOST_CONCEPT_ASSERT((concepts::WritableSequence<ForwardSequence, T>));
+        BOOST_CONCEPT_ASSERT((concepts::Callable<Predicate, bool(decltype(*seq))>));
+
         for(; !!seq; ++ seq)
         {
             if(pred(*seq))
@@ -585,6 +575,22 @@ namespace details
                 *seq = new_value;
             }
         }
+    }
+
+    template <class ForwardSequence, class T, class BinaryPredicate>
+    void replace(ForwardSequence seq, T const & old_value, T const & new_value,
+                 BinaryPredicate bin_pred)
+    {
+        BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<ForwardSequence>));
+        BOOST_CONCEPT_ASSERT((concepts::WritableSequence<ForwardSequence, T>));
+
+        BOOST_CONCEPT_ASSERT((concepts::Callable<BinaryPredicate, bool(decltype(*seq), T)>));
+
+        auto const pred = std::bind(std::move(bin_pred), ural::_1, std::cref(old_value));
+
+        return ::ural::details::replace_if(std::move(seq), std::move(pred),
+                                           new_value);
     }
 
     template <class BidirectionalSequence>
@@ -803,8 +809,7 @@ namespace details
     RASequence
     lower_bound(RASequence in, T const & value, Compare cmp)
     {
-        auto pred = std::bind(std::move(cmp), std::placeholders::_1,
-                              std::cref(value));
+        auto pred = std::bind(std::move(cmp), ural::_1, std::cref(value));
         return ::ural::details::partition_point(std::move(in), std::move(pred));
     }
 
@@ -812,7 +817,7 @@ namespace details
     RASequence
     upper_bound(RASequence in, T const & value, Compare cmp)
     {
-        auto pred = ural::not_fn(std::bind(std::move(cmp), std::cref(value), std::placeholders::_1));
+        auto pred = ural::not_fn(std::bind(std::move(cmp), std::cref(value), ural::_1));
         return ::ural::details::partition_point(std::move(in), std::move(pred));
     }
 

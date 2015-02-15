@@ -27,6 +27,15 @@
 #include <boost/mpl/list.hpp>
 namespace
 {
+    typedef boost::mpl::list<ural::less<int>,
+                             ural::less<int, void>,
+                             ural::less<void, int>,
+                             ural::less<>> Less_functors;
+
+    typedef boost::mpl::list<ural::greater<int>,
+                             ural::greater<int, void>,
+                             ural::greater<void, int>,
+                             ural::greater<>> Greater_functors;
 
     typedef boost::mpl::list<ural::not_equal_to<int>,
                          ural::not_equal_to<>,
@@ -67,10 +76,16 @@ namespace
                          ural::logical_implication<void, void>>
         Implication_functors;
 
+    // Арифметические операторы
+    typedef boost::mpl::list<ural::plus<int>,
+                             ural::plus<>,
+                             ural::plus<int, void>,
+                             ural::plus<void, int>> Plus_functors;
+
     typedef boost::mpl::list<ural::modulus<int>,
-                         ural::modulus<>,
-                         ural::modulus<int, void>,
-                         ural::modulus<void, int>> Modulus_functors;
+                             ural::modulus<>,
+                             ural::modulus<int, void>,
+                             ural::modulus<void, int>> Modulus_functors;
 }
 
 BOOST_AUTO_TEST_CASE(memoize_functor_test)
@@ -269,6 +284,42 @@ BOOST_AUTO_TEST_CASE(compare_by_test_custom_compare)
     {
         BOOST_CHECK_EQUAL(cmp1(a, b), cmp2(a, b));
     }
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(less_test, Functor, Less_functors)
+{
+    constexpr Functor cmp {};
+
+    static_assert(cmp == cmp, "");
+    static_assert(!(cmp != cmp), "");
+
+    static_assert(true == cmp(1, 2), "");
+    static_assert(false == cmp(2, 1), "");
+    static_assert(false == cmp(2, 2), "");
+    static_assert(false == cmp(1, 1), "");
+
+    BOOST_CHECK_EQUAL(true, cmp(1, 2));
+    BOOST_CHECK_EQUAL(false, cmp(2, 1));
+    BOOST_CHECK_EQUAL(false, cmp(2, 2));
+    BOOST_CHECK_EQUAL(false, cmp(1, 1));
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(greater_test, Functor, Greater_functors)
+{
+    constexpr Functor cmp {};
+
+    static_assert(cmp == cmp, "");
+    static_assert(!(cmp != cmp), "");
+
+    static_assert(false == cmp(1, 2), "");
+    static_assert(true == cmp(2, 1), "");
+    static_assert(false == cmp(2, 2), "");
+    static_assert(false == cmp(1, 1), "");
+
+    BOOST_CHECK_EQUAL(false, cmp(1, 2));
+    BOOST_CHECK_EQUAL(true, cmp(2, 1));
+    BOOST_CHECK_EQUAL(false, cmp(2, 2));
+    BOOST_CHECK_EQUAL(false, cmp(1, 1));
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(not_equal_to_test, Functor, Neq_functors)

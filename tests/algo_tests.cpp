@@ -24,6 +24,7 @@
 
 #include <boost/mpl/list.hpp>
 
+#include <ural/sequence/transform.hpp>
 #include <ural/numeric/numbers_sequence.hpp>
 #include <ural/algorithm.hpp>
 #include <ural/memory.hpp>
@@ -426,16 +427,12 @@ BOOST_AUTO_TEST_CASE(moved_test)
     typedef std::unique_ptr<int> Type;
 
     std::vector<int> const ys = {25, -15, 5, -5, 15};
-    std::vector<Type> xs1;
-    std::vector<Type> xs2;
 
-    for(auto & y : ys)
-    {
-        auto constexpr f = ural::to_unique_ptr;
+    auto xs1 = ys | ural::transformed(ural::to_unique_ptr)
+                  | ural::to_container<std::vector>{};
 
-        xs1.emplace_back(f(y));
-        xs2.emplace_back(f(y));
-    }
+    auto xs2 = ys | ural::transformed(ural::to_unique_ptr)
+                  | ural::to_container<std::vector>{};
 
     std::vector<Type> r_std;
     std::vector<Type> r_ural;
