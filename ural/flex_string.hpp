@@ -1481,6 +1481,89 @@ namespace ural
         }
         //@}
 
+        // 21.4.7.2 find
+        /** @brief Поиск положения подстроки в строке
+        @param str строка
+        @param pos индекс, с которого начинается поиск
+        @return Наименьший индекс @c xpos такой, что выполняются следующие
+        условия:
+        <tt> pos <= xpos </tt>,
+        <tt> xpos + str.size() <= this->size() </tt>,
+        <tt> traits::eq(this->at(i), str.at(i)) </tt> для всех @c i из интервала
+        <tt> [0, this->size()) </tt>, если такого индекса нет, то возвращает
+        @c npos.
+        */
+        size_type find(flex_string const & str, size_type pos = 0) const noexcept
+        {
+            return this->find(str.c_str(), pos, str.size());
+        }
+
+        /** @brief Поиск символа в массиве
+        @param s указатель на начало массива символов длинной не менее @c n
+        @param n количество символов массива
+        @param pos индекс, с которого начинается поиск
+        @return То же, что <tt> this->find(flex_string(s, n), pos) </tt>
+        */
+        size_type find(value_type const * s, size_type pos, size_type n) const
+        {
+            if(pos >= this->size())
+            {
+                return npos;
+            }
+
+            auto r = ural::search(::ural::make_iterator_sequence(this->begin() + pos,
+                                                                 this->end()),
+                                  ::ural::make_iterator_sequence(s, s+n),
+                                  &traits_type::eq);
+
+            if(!r)
+            {
+                return this->npos;
+            }
+            else
+            {
+                return r.traversed_front().size() + pos;
+            }
+        }
+
+        /** @brief Поиск подстроки, заданной в виде строкового литерала
+        @param s указатель на начало строкового литерала
+        @param pos индекс, с которого начинается поиск
+        @return Тоже, что и вызов <tt> this->find(flex_string(s), pos) </tt>
+        */
+        size_type find(value_type const * s, size_type pos = 0) const
+        {
+            return this->find(s, pos, traits_type::length(s));
+        }
+
+        /** @brief Поиск символа в строке
+        @param c символ
+        @param pos индекс, с которого начинается поиск
+        @return Тоже, что и вызов <tt> this->find(flex_string(1, c), pos) </tt>
+        */
+        size_type find(value_type c, size_type pos = 0) const
+        {
+            if(pos >= this->size())
+            {
+                return this->npos;
+            }
+
+            // @todo заменить на sequence(*this) + pos
+            auto r = ::ural::find(ural::make_iterator_sequence(this->begin() + pos,
+                                                               this->end()), c);
+
+            if(!r)
+            {
+                return this->npos;
+            }
+            else
+            {
+                return r.traversed_front().size() + pos;
+            }
+        }
+
+        // 21.4.7.3
+
         // 21.4.7.8 substr
         /** @brief Выделение подстроки
         @param pos номер элемента, с которого начинается подстрока
