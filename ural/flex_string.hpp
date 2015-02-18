@@ -1506,13 +1506,12 @@ namespace ural
         */
         size_type find(value_type const * s, size_type pos, size_type n) const
         {
-            if(pos >= this->size())
+            if(pos >= this->size() || pos + n > this->size())
             {
                 return npos;
             }
 
-            auto r = ural::search(::ural::make_iterator_sequence(this->begin() + pos,
-                                                                 this->end()),
+            auto r = ural::search(ural::sequence(*this) + pos,
                                   ::ural::make_iterator_sequence(s, s+n),
                                   &traits_type::eq);
 
@@ -1522,7 +1521,7 @@ namespace ural
             }
             else
             {
-                return r.traversed_front().size() + pos;
+                return r.traversed_front().size();
             }
         }
 
@@ -1548,9 +1547,7 @@ namespace ural
                 return this->npos;
             }
 
-            // @todo заменить на sequence(*this) + pos
-            auto r = ::ural::find(ural::make_iterator_sequence(this->begin() + pos,
-                                                               this->end()), c);
+            auto r = ::ural::find(ural::sequence(*this) + pos, c);
 
             if(!r)
             {
@@ -1558,11 +1555,71 @@ namespace ural
             }
             else
             {
-                return r.traversed_front().size() + pos;
+                return r.traversed_front().size();
             }
         }
 
-        // 21.4.7.3
+        // 21.4.7.3 rfind
+        size_type rfind(flex_string const & str, size_type pos = npos) const noexcept
+        {
+            return this->rfind(str.c_str(), pos, str.size());
+        }
+
+        size_type rfind(value_type const * s, size_type pos, size_type n) const
+        {
+            if(n > this->size())
+            {
+                return npos;
+            }
+
+            auto const last_pos = (pos == this->npos || pos + n > this->size())
+                                ? this->size()
+                                : pos + n;
+
+            auto const seq1
+                = ural::make_iterator_sequence(this->begin(), this->begin() + last_pos) | ural::reversed;
+
+            auto const seq2 = ural::make_iterator_sequence(s, s+n) | ural::reversed;
+
+            auto const r = ural::search(seq1, seq2, &traits_type::eq);
+
+            if(!r)
+            {
+                return npos;
+            }
+            else
+            {
+                assert(r.size() >= n);
+                return r.size() - n;
+            }
+        }
+
+        size_type rfind(value_type const * s, size_type pos = npos) const
+        {
+            auto const n = traits_type::length(s);
+            return this->rfind(s, pos, n);
+        }
+
+        size_type rfind(value_type c, size_type pos = npos) const
+        {
+            auto const last_pos = std::min(pos+1, this->size());
+            auto seq = ural::make_iterator_sequence(this->begin(), this->begin() + last_pos)
+                     | ural::reversed;
+
+            auto const r = ural::find(seq, c);
+
+            if(!r)
+            {
+                return npos;
+            }
+            else
+            {
+                return r.size() - 1;
+            }
+        }
+
+        // 21.4.7.4 find_first_of
+        // 21.4.7.5
 
         // 21.4.7.8 substr
         /** @brief Выделение подстроки

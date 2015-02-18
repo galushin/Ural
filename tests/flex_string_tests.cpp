@@ -1080,7 +1080,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_copy_to_end, String, Strings_list)
 
 // @todo 21.4.7.1 Функции доступа
 
-// find
+// 21.4.7.2 find
 BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_find, String, Strings_list)
 {
     std::string s1{"Banana"};
@@ -1195,7 +1195,140 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_find_char_fail, String, Strings_list)
     BOOST_CHECK(r_ural == String::npos);
 }
 
-// @todo 21.4.7.3
+// @todo 21.4.7.3 rfind
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_rfind, String, Strings_list)
+{
+    std::string s1{"Banana man"};
+    std::string s2{"an"};
+
+    auto const fs1 = String{s1};
+    auto const fs2 = String{s2};
+
+    BOOST_CHECK(s1 == fs1);
+    BOOST_CHECK(s2 == fs2);
+
+    auto const r_str = s1.rfind(s2);
+    auto const r_ural = fs1.rfind(fs2);
+
+    BOOST_CHECK(r_ural != String::npos);
+    BOOST_CHECK_EQUAL(r_str, r_ural);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_rfind_too_long_fail, String, Strings_list)
+{
+    std::string s1{"an"};
+    std::string s2{"Banana man"};
+
+    auto const fs1 = String{s1};
+    auto const fs2 = String{s2};
+
+    BOOST_CHECK(s1 == fs1);
+    BOOST_CHECK(s2 == fs2);
+
+    auto const r_std = s1.rfind(s2);
+    auto const r_ural = fs1.rfind(fs2);
+
+    BOOST_CHECK(r_std == std::string::npos);
+    BOOST_CHECK(r_ural == String::npos);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_rfind_with_pos, String, Strings_list)
+{
+    std::string s1{"Banana man"};
+    std::string s2{"an"};
+
+    auto const fs1 = String{s1};
+    auto const fs2 = String{s2};
+
+    BOOST_CHECK(s1 == fs1);
+    BOOST_CHECK(s2 == fs2);
+
+    for(auto pos : ural::numbers(0, s1.size()))
+    {
+        auto const r_str = s1.rfind(s2, pos);
+        auto const r_ural = fs1.rfind(fs2, pos);
+
+        BOOST_CHECK_EQUAL(r_str, r_ural);
+    }
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_rfind_c_str, String, Strings_list)
+{
+    std::string s1{"Banana man"};
+    char const * s2 = "an";
+
+    auto const fs1 = String{s1};
+
+    BOOST_CHECK(s1 == fs1);
+
+    auto const r_str = s1.rfind(s2, 5);
+    auto const r_ural = fs1.rfind(s2, 5);
+
+    BOOST_CHECK_EQUAL(r_str, r_ural);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_rfind_c_str_fail, String, Strings_list)
+{
+    std::string s1{"Banana"};
+    char const * s2 = "fan";
+
+    auto const fs1 = String{s1};
+
+    BOOST_CHECK(s1 == fs1);
+
+    auto const r_str = s1.rfind(s2);
+    auto const r_ural = fs1.rfind(s2);
+
+    BOOST_CHECK_EQUAL(r_str, r_ural);
+    BOOST_CHECK(r_ural == String::npos);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_rfind_char, String, Strings_list)
+{
+    std::string s1{"Banana man"};
+    char c = 'a';
+
+    auto const fs1 = String{s1};
+
+    BOOST_CHECK(s1 == fs1);
+
+    auto const r_str = s1.rfind(c, 4);
+    auto const r_ural = fs1.rfind(c, 4);
+
+    BOOST_CHECK_EQUAL(r_str, r_ural);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_rfind_char_5, String, Strings_list)
+{
+    std::string s1{"Banana man"};
+    char c = 'a';
+
+    auto const fs1 = String{s1};
+
+    BOOST_CHECK(s1 == fs1);
+
+    auto const r_str = s1.rfind(c, 5);
+    auto const r_ural = fs1.rfind(c, 5);
+
+    BOOST_CHECK_EQUAL(r_str, r_ural);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_rfind_char_fail, String, Strings_list)
+{
+    std::string s1{"Banana"};
+    char c = 'f';
+
+    auto const fs1 = String{s1};
+
+    BOOST_CHECK(s1 == fs1);
+
+    auto const r_str = s1.rfind(c);
+    auto const r_ural = fs1.rfind(c);
+
+    BOOST_CHECK_EQUAL(r_str, r_ural);
+    BOOST_CHECK(r_ural == String::npos);
+}
+
 // @todo 21.4.7.4
 // @todo 21.4.7.5
 // @todo 21.4.7.6
