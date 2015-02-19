@@ -1195,7 +1195,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_find_char_fail, String, Strings_list)
     BOOST_CHECK(r_ural == String::npos);
 }
 
-// @todo 21.4.7.3 rfind
+// 21.4.7.3 rfind
 BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_rfind, String, Strings_list)
 {
     std::string s1{"Banana man"};
@@ -1329,7 +1329,117 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_rfind_char_fail, String, Strings_list)
     BOOST_CHECK(r_ural == String::npos);
 }
 
-// @todo 21.4.7.4
+// 21.4.7.4 find_first_of
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_find_first_of, String, Strings_list)
+{
+    std::string s1{"Banana"};
+    std::string s2 = "fan";
+
+    auto const fs1 = String(s1);
+    auto const fs2 = String(s2);
+
+    auto const r_std = s1.find_first_of(s2);
+    auto const r_ural = fs1.find_first_of(fs2);
+
+    BOOST_CHECK_EQUAL(r_std, r_ural);
+}
+
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_find_first_of_fail, String, Strings_list)
+{
+    std::string s1{"Banana"};
+    std::string s2 = "out";
+
+    auto const fs1 = String(s1);
+    auto const fs2 = String(s2);
+
+    auto const r_std = s1.find_first_of(s2);
+    auto const r_ural = fs1.find_first_of(fs2);
+
+    BOOST_CHECK_EQUAL(r_std, r_ural);
+    BOOST_CHECK(String::npos == r_ural);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_find_first_of_pos, String, Strings_list)
+{
+    std::string s1{"Banana"};
+    std::string s2 = "fan";
+
+    auto const fs1 = String(s1);
+    auto const fs2 = String(s2);
+
+    for(auto i : ural::indices_of(fs1))
+    {
+        auto const r_std = s1.find_first_of(s2, i);
+        auto const r_ural = fs1.find_first_of(fs2, i);
+
+        BOOST_CHECK_EQUAL(r_std, r_ural);
+    }
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_find_first_of_c_str, String, Strings_list)
+{
+    std::string s1{"Banana"};
+    char const * s2 = "fan";
+
+    auto const fs1 = String(s1);
+
+    auto const r_std = s1.find_first_of(s2);
+    auto const r_ural = fs1.find_first_of(s2);
+
+    BOOST_CHECK_EQUAL(r_std, r_ural);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_find_first_of_pos_c_str, String, Strings_list)
+{
+    std::string s1{"Banana"};
+    char const * s2 = "fan";
+
+    auto const fs1 = String(s1);
+    auto const fs2 = String(s2);
+
+    for(auto i : ural::indices_of(fs1))
+    {
+        auto const r_std = s1.find_first_of(s2, i);
+        auto const r_ural = fs1.find_first_of(s2, i);
+
+        BOOST_CHECK_EQUAL(r_std, r_ural);
+    }
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_find_first_of_char, String, Strings_list)
+{
+    std::string s1{"Banana"};
+    std::string s2 = "fan";
+
+    auto const fs1 = String(s1);
+
+    for(auto i : ural::indices_of(s2))
+    {
+        auto const r_std = s1.find_first_of(s2[i]);
+        auto const r_ural = fs1.find_first_of(s2[i]);
+
+        BOOST_CHECK_EQUAL(r_std, r_ural);
+    }
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_find_first_of_char_pos, String, Strings_list)
+{
+    std::string s1{"Banana"};
+    std::string s2 = "fan";
+
+    auto const fs1 = String(s1);
+
+    for(auto j : ural::indices_of(s2))
+    for(auto i : ural::indices_of(fs1))
+    {
+        auto const r_std = s1.find_first_of(s2[j], i);
+        auto const r_ural = fs1.find_first_of(s2[j], i);
+
+        BOOST_CHECK_EQUAL(r_std, r_ural);
+    }
+}
+
 // @todo 21.4.7.5
 // @todo 21.4.7.6
 // @todo 21.4.7.7

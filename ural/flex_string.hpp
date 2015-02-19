@@ -1619,6 +1619,56 @@ namespace ural
         }
 
         // 21.4.7.4 find_first_of
+        size_type find_first_of(flex_string const & str, size_type pos = 0) const noexcept
+        {
+            return this->find_first_of(str.c_str(), pos, str.size());
+        }
+
+        size_type find_first_of(value_type const * s, size_type pos, size_type n) const
+        {
+            if(pos >= this->size())
+            {
+                return npos;
+            }
+
+            auto r = ural::find_first_of(ural::sequence(*this) + pos,
+                                         ural::make_iterator_sequence(s, s+n),
+                                         &traits_type::eq);
+
+            if(!r)
+            {
+                return this->npos;
+            }
+            else
+            {
+                return r.traversed_front().size();
+            }
+        }
+
+        size_type find_first_of(value_type const * s, size_type pos = 0) const
+        {
+            return this->find_first_of(s, pos, traits_type::length(s));
+        }
+
+        size_type find_first_of(value_type c, size_type pos = 0) const
+        {
+            if(pos >= this->size())
+            {
+                return this->npos;
+            }
+
+            auto r = ural::find(ural::sequence(*this) + pos, c, &traits_type::eq);
+
+            if(!r)
+            {
+                return this->npos;
+            }
+            else
+            {
+                return r.traversed_front().size();
+            }
+        }
+
         // 21.4.7.5
 
         // 21.4.7.8 substr
