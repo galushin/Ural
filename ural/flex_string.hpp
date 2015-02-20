@@ -1572,9 +1572,7 @@ namespace ural
                 return npos;
             }
 
-            auto const last_pos = (pos == this->npos || pos + n > this->size())
-                                ? this->size()
-                                : pos + n;
+            auto const last_pos = this->adjust_pos(pos, n);
 
             auto const seq1
                 = ural::make_iterator_sequence(this->begin(), this->begin() + last_pos) | ural::reversed;
@@ -1602,8 +1600,8 @@ namespace ural
 
         size_type rfind(value_type c, size_type pos = npos) const
         {
-            //@todo тест с pos == npos
-            auto const last_pos = std::min(pos+1, this->size());
+            auto const last_pos = this->adjust_pos(pos, 1);
+
             auto seq = ural::make_iterator_sequence(this->begin(), this->begin() + last_pos)
                      | ural::reversed;
 
@@ -1679,9 +1677,7 @@ namespace ural
 
         size_type find_last_of(value_type const * s, size_type pos, size_type n) const
         {
-            auto const last_pos = (pos == this->npos || pos + 1 > this->size())
-                                ? this->size()
-                                : pos + 1;
+            auto const last_pos = this->adjust_pos(pos, 1);
 
             auto seq = ural::make_iterator_sequence(this->begin(), this->begin() + last_pos)
                      | ural::reversed;
@@ -1707,10 +1703,7 @@ namespace ural
 
         size_type find_last_of(value_type c, size_type pos = npos) const
         {
-            // @todo Выделить и устранить дублирование
-            auto const last_pos = (pos == this->npos || pos + 1 > this->size())
-                                ? this->size()
-                                : pos + 1;
+            auto const last_pos = this->adjust_pos(pos, 1);
 
             auto seq = ural::make_iterator_sequence(this->begin(), this->begin() + last_pos)
                      | ural::reversed;
@@ -1845,6 +1838,16 @@ namespace ural
                                    std::random_access_iterator_tag)
         {
             this->reserve(this->size() + last - first);
+        }
+
+        size_type adjust_pos(size_type pos, size_type n) const
+        {
+            if(pos == this->npos || pos + n > this->size())
+            {
+                return this->size();
+            }
+
+            return pos + n;
         }
 
     private:
