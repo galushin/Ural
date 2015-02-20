@@ -1602,6 +1602,7 @@ namespace ural
 
         size_type rfind(value_type c, size_type pos = npos) const
         {
+            //@todo тест с pos == npos
             auto const last_pos = std::min(pos+1, this->size());
             auto seq = ural::make_iterator_sequence(this->begin(), this->begin() + last_pos)
                      | ural::reversed;
@@ -1614,6 +1615,7 @@ namespace ural
             }
             else
             {
+                assert(r.size() >= 1);
                 return r.size() - 1;
             }
         }
@@ -1669,7 +1671,65 @@ namespace ural
             }
         }
 
-        // 21.4.7.5
+        // 21.4.7.5 find_last_of
+        size_type find_last_of(flex_string const & str, size_type pos = npos) const noexcept
+        {
+            return this->find_last_of(str.c_str(), pos, str.size());
+        }
+
+        size_type find_last_of(value_type const * s, size_type pos, size_type n) const
+        {
+            auto const last_pos = (pos == this->npos || pos + 1 > this->size())
+                                ? this->size()
+                                : pos + 1;
+
+            auto seq = ural::make_iterator_sequence(this->begin(), this->begin() + last_pos)
+                     | ural::reversed;
+            auto seq2 = ural::make_iterator_sequence(s, s+n);
+
+            auto r = ural::find_first_of(seq, seq2, &traits_type::eq);
+
+            if(!r)
+            {
+                return this->npos;
+            }
+            else
+            {
+                assert(r.size() >= 1);
+                return r.size() - 1;
+            }
+        }
+
+        size_type find_last_of(value_type const * s, size_type pos = npos) const
+        {
+            return this->find_last_of(s, pos, traits_type::length(s));
+        }
+
+        size_type find_last_of(value_type c, size_type pos = npos) const
+        {
+            // @todo Выделить и устранить дублирование
+            auto const last_pos = (pos == this->npos || pos + 1 > this->size())
+                                ? this->size()
+                                : pos + 1;
+
+            auto seq = ural::make_iterator_sequence(this->begin(), this->begin() + last_pos)
+                     | ural::reversed;
+
+            auto const r = ural::find(seq, c, &traits_type::eq);
+
+            // @todo Выделить и устранить дублирование
+            if(!r)
+            {
+                return this->npos;
+            }
+            else
+            {
+                assert(r.size() >= 1);
+                return r.size() - 1;
+            }
+        }
+
+        // 21.4.7.6
 
         // 21.4.7.8 substr
         /** @brief Выделение подстроки
