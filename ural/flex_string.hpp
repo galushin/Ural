@@ -1722,7 +1722,77 @@ namespace ural
             }
         }
 
-        // 21.4.7.6
+        // 21.4.7.6 find_first_not_of
+        size_type
+        find_first_not_of(flex_string const & str, size_type pos = 0) const noexcept
+        {
+            return this->find_first_not_of(str.c_str(), pos, str.size());
+        }
+
+        size_type
+        find_first_not_of(value_type const * s, size_type pos, size_type n) const
+        {
+            // @todo Выделить алгоритм?
+            if(pos >= this->size())
+            {
+                return npos;
+            }
+
+            auto const seq = ::ural::make_iterator_sequence(s, s+n);
+
+            for(auto i = pos; i != this->size(); ++ i)
+            {
+                auto r = ::ural::find(seq, (*this)[i], &traits_type::eq);
+
+                if(!r)
+                {
+                    return i;
+                }
+            }
+
+            return npos;
+        }
+
+        size_type
+        find_first_not_of(value_type const * s, size_type pos = 0) const
+        {
+            return this->find_first_not_of(s, pos, traits_type::length(s));
+        }
+
+        size_type
+        find_first_not_of(value_type c, size_type pos = 0) const
+        {
+            // @todo Устранить дублирование с find_first_of
+            if(pos >= this->size())
+            {
+                return this->npos;
+            }
+
+            auto r = ural::find(ural::sequence(*this) + pos, c,
+                                ::ural::not_fn(&traits_type::eq));
+
+            if(!r)
+            {
+                return this->npos;
+            }
+            else
+            {
+                return r.traversed_front().size();
+            }
+        }
+
+        // 21.4.7.7 find_last_not_of
+        size_type
+        find_last_not_of(flex_string const & str, size_type pos = 0) const noexcept;
+
+        size_type
+        find_last_not_of(value_type const * s, size_type pos, size_type n) const;
+
+        size_type
+        find_last_not_of(value_type const * s, size_type pos = 0) const;
+
+        size_type
+        find_last_not_of(value_type c, size_type pos = 0) const;
 
         // 21.4.7.8 substr
         /** @brief Выделение подстроки

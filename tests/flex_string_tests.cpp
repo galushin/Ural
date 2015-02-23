@@ -1551,7 +1551,117 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_find_last_of_char_pos, String, Strings
     }
 }
 
-// @todo 21.4.7.6
+// 21.4.7.6 find_first_not_of
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_find_first_not_of, String, Strings_list)
+{
+    std::string s1{"Banana"};
+    std::string s2 = "fan";
+
+    auto const fs1 = String(s1);
+    auto const fs2 = String(s2);
+
+    auto const r_std = s1.find_first_not_of(s2);
+    auto const r_ural = fs1.find_first_not_of(fs2);
+
+    BOOST_CHECK_EQUAL(r_std, r_ural);
+}
+
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_find_first_not_of_fail, String, Strings_list)
+{
+    std::string s1{"Banana"};
+    std::string s2 = s1;
+
+    auto const fs1 = String(s1);
+    auto const fs2 = String(s2);
+
+    auto const r_std = s1.find_first_not_of(s2);
+    auto const r_ural = fs1.find_first_not_of(fs2);
+
+    BOOST_CHECK_EQUAL(r_std, r_ural);
+    BOOST_CHECK(String::npos == r_ural);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_find_first_not_of_pos, String, Strings_list)
+{
+    std::string s1{"Banana"};
+    std::string s2 = "fan";
+
+    auto const fs1 = String(s1);
+    auto const fs2 = String(s2);
+
+    for(auto i : ural::indices_of(fs1))
+    {
+        auto const r_std = s1.find_first_not_of(s2, i);
+        auto const r_ural = fs1.find_first_not_of(fs2, i);
+
+        BOOST_CHECK_EQUAL(r_std, r_ural);
+    }
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_find_first_not_of_c_str, String, Strings_list)
+{
+    std::string s1{"Banana"};
+    char const * s2 = "fan";
+
+    auto const fs1 = String(s1);
+
+    auto const r_std = s1.find_first_not_of(s2);
+    auto const r_ural = fs1.find_first_not_of(s2);
+
+    BOOST_CHECK_EQUAL(r_std, r_ural);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_find_first_of_not_pos_c_str, String, Strings_list)
+{
+    std::string s1{"Banana"};
+    char const * s2 = "fan";
+
+    auto const fs1 = String(s1);
+    auto const fs2 = String(s2);
+
+    for(auto i : ural::indices_of(fs1))
+    {
+        auto const r_std = s1.find_first_not_of(s2, i);
+        auto const r_ural = fs1.find_first_not_of(s2, i);
+
+        BOOST_CHECK_EQUAL(r_std, r_ural);
+    }
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_find_first_not_of_char, String, Strings_list)
+{
+    std::string s1{"Banana"};
+    std::string s2 = "fan";
+
+    auto const fs1 = String(s1);
+
+    for(auto i : ural::indices_of(s2))
+    {
+        auto const r_std = s1.find_first_not_of(s2[i]);
+        auto const r_ural = fs1.find_first_not_of(s2[i]);
+
+        BOOST_CHECK_EQUAL(r_std, r_ural);
+    }
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_find_first_not_of_char_pos, String, Strings_list)
+{
+    std::string s1{"Banana"};
+    std::string s2 = "fan";
+
+    auto const fs1 = String(s1);
+
+    for(auto j : ural::indices_of(s2))
+    for(auto i : ural::indices_of(fs1))
+    {
+        auto const r_std = s1.find_first_not_of(s2[j], i);
+        auto const r_ural = fs1.find_first_not_of(s2[j], i);
+
+        BOOST_CHECK_EQUAL(r_std, r_ural);
+    }
+}
+
 // @todo 21.4.7.7
 
 // 21.4.7.8 substr
