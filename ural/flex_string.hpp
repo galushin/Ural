@@ -1587,7 +1587,7 @@ namespace ural
             }
             else
             {
-                assert(r.size() >= n);
+                assert(static_cast<size_type>(r.size()) >= n);
                 return r.size() - n;
             }
         }
@@ -1717,7 +1717,6 @@ namespace ural
             }
             else
             {
-                assert(r.size() >= 1);
                 return r.size() - 1;
             }
         }
@@ -1783,16 +1782,55 @@ namespace ural
 
         // 21.4.7.7 find_last_not_of
         size_type
-        find_last_not_of(flex_string const & str, size_type pos = 0) const noexcept;
+        find_last_not_of(flex_string const & str, size_type pos = npos) const noexcept
+        {
+            return this->find_last_not_of(str.c_str(), pos, str.size());
+        }
 
         size_type
-        find_last_not_of(value_type const * s, size_type pos, size_type n) const;
+        find_last_not_of(value_type const * s, size_type pos, size_type n) const
+        {
+            auto const last_pos = this->adjust_pos(pos, 1);
+
+            auto const seq = ural::make_iterator_sequence(s, s+n);
+
+            for(auto ri = last_pos; ri > 0; --ri)
+            {
+                auto r = ::ural::find(seq, (*this)[ri - 1], &traits_type::eq);
+
+                if(!r)
+                {
+                    return ri - 1;
+                }
+            }
+
+            return this->npos;
+        }
 
         size_type
-        find_last_not_of(value_type const * s, size_type pos = 0) const;
+        find_last_not_of(value_type const * s, size_type pos = npos) const
+        {
+            return this->find_last_not_of(s, pos, traits_type::length(s));
+        }
 
         size_type
-        find_last_not_of(value_type c, size_type pos = 0) const;
+        find_last_not_of(value_type c, size_type pos = npos) const
+        {
+            auto const last_pos = this->adjust_pos(pos, 1);
+            auto const seq = ural::make_iterator_sequence(this->begin(), this->begin() + last_pos) | ural::reversed;
+
+            // @todo Устранить дублирование с find_first_of
+            auto r = ural::find(seq, c, ::ural::not_fn(&traits_type::eq));
+
+            if(!r)
+            {
+                return this->npos;
+            }
+            else
+            {
+                return r.size() - 1;
+            }
+        }
 
         // 21.4.7.8 substr
         /** @brief Выделение подстроки
