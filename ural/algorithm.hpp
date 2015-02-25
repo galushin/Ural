@@ -663,6 +663,60 @@ namespace ural
     }
 
     // Бинарные кучи
+    class is_heap_until_fn
+    {
+    public:
+        template <class RASequence>
+        auto operator()(RASequence && seq) const
+        -> decltype(sequence_fwd<RASequence>(seq))
+        {
+            return (*this)(std::forward<RASequence>(seq), ural::less<>{});
+        }
+
+        template <class RASequence, class Compare>
+        auto operator()(RASequence && seq, Compare cmp) const
+        -> decltype(sequence_fwd<RASequence>(seq))
+        {
+            return this->impl(sequence_fwd<RASequence>(seq),
+                              make_functor(std::move(cmp)));
+        }
+
+    private:
+        template <class RandomAccessSequence, class Compare>
+        static RandomAccessSequence
+        impl(RandomAccessSequence seq, Compare cmp)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<decltype(seq)>));
+            BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
+
+            // Пустая последовательность - куча
+            if(!seq)
+            {
+                return seq;
+            }
+
+            auto const n = seq.size();
+
+            auto index = 1;
+
+            for(; index != n; ++ index)
+            {
+                auto const p = ural::details::heap_parent(index);
+
+                if(cmp(seq[p], seq[index]))
+                {
+                    break;
+                }
+            }
+
+            // @todo Заменить на одну строку: return std::move(seq) + index;
+            seq += index;
+            return seq;
+        }
+    };
+
+    auto constexpr is_heap_until = ::ural::is_heap_until_fn{};
+
     class is_heap_fn
     {
     public:
@@ -687,7 +741,7 @@ namespace ural
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
             BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
 
-            return !::ural::details::is_heap_until(seq, cmp);
+            return !::ural::is_heap_until(seq, cmp);
         }
     };
     auto constexpr is_heap = is_heap_fn{};
@@ -796,7 +850,7 @@ namespace ural
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
             BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
 
-            assert(ural::details::is_heap_until(seq, cmp).size() <= 1);
+            assert(::ural::is_heap_until(seq, cmp).size() <= 1);
 
             if(seq.size() >= 1)
             {
@@ -931,66 +985,125 @@ namespace ural
     auto constexpr heap_select = heap_select_fn{};
 
     // Сортировка
-    template <class RASequence, class T, class Compare>
-    auto lower_bound(RASequence && in, T const & value, Compare cmp)
-    -> decltype(sequence_fwd<RASequence>(in))
+    class lower_bound_fn
     {
-        return ::ural::details::lower_bound(sequence_fwd<RASequence>(in),
-                                            value, make_functor(std::move(cmp)));
-    }
+    public:
+        template <class RASequence, class T>
+        auto operator()(RASequence && in, T const & value) const
+        -> decltype(sequence_fwd<RASequence>(in))
+        {
+            return (*this)(std::forward<RASequence>(in), value, ural::less<>{});
+        }
 
-    template <class RASequence, class T>
-    auto lower_bound(RASequence && in, T const & value)
-    -> decltype(sequence_fwd<RASequence>(in))
-    {
-        return ::ural::lower_bound(std::forward<RASequence>(in), value,
-                                   ural::less<>{});
-    }
+        template <class RASequence, class T, class Compare>
+        auto operator()(RASequence && in, T const & value, Compare cmp) const
+        -> decltype(sequence_fwd<RASequence>(in))
+        {
+            return this->impl(sequence_fwd<RASequence>(in), value,
+                              make_functor(std::move(cmp)));
+        }
+    private:
+        template <class RASequence, class T, class Compare>
+        static RASequence
+        impl(RASequence in, T const & value, Compare cmp)
+        {
+            auto pred = std::bind(std::move(cmp), ural::_1, std::cref(value));
+            return ::ural::details::partition_point(std::move(in), std::move(pred));
+        }
+    };
+    auto constexpr lower_bound = lower_bound_fn{};
 
-    template <class RASequence, class T, class Compare>
-    auto upper_bound(RASequence && in, T const & value, Compare cmp)
-    -> decltype(sequence_fwd<RASequence>(in))
+    class upper_bound_fn
     {
-        return ::ural::details::upper_bound(sequence_fwd<RASequence>(in),
-                                            value, make_functor(std::move(cmp)));
-    }
+    public:
+        template <class RASequence, class T>
+        auto operator()(RASequence && in, T const & value) const
+        -> decltype(sequence_fwd<RASequence>(in))
+        {
+            return (*this)(std::forward<RASequence>(in), value, ural::less<>{});
+        }
 
-    template <class RASequence, class T>
-    auto upper_bound(RASequence && in, T const & value)
-    -> decltype(sequence_fwd<RASequence>(in))
-    {
-        return ::ural::upper_bound(std::forward<RASequence>(in), value,
-                                   ural::less<>{});
-    }
+        template <class RASequence, class T, class Compare>
+        auto operator()(RASequence && in, T const & value, Compare cmp) const
+        -> decltype(sequence_fwd<RASequence>(in))
+        {
+            return this->impl(sequence_fwd<RASequence>(in), value,
+                              make_functor(std::move(cmp)));
+        }
+    private:
+        template <class RASequence, class T, class Compare>
+        static RASequence
+        impl(RASequence in, T const & value, Compare cmp)
+        {
+            auto pred = ural::not_fn(std::bind(std::move(cmp), std::cref(value), ural::_1));
+            return ::ural::details::partition_point(std::move(in), std::move(pred));
+        }
+    };
+    auto constexpr upper_bound = upper_bound_fn{};
 
-    template <class RASequence, class T, class Compare>
-    bool binary_search(RASequence && in, T const & value, Compare cmp)
+    class binary_search_fn
     {
-        return ::ural::details::binary_search(sequence_fwd<RASequence>(in),
-                                              value, make_functor(std::move(cmp)));
-    }
+    public:
+        template <class RASequence, class T>
+        bool operator()(RASequence && in, T const & value) const
+        {
+            return (*this)(std::forward<RASequence>(in), value, ural::less<>{});
+        }
 
-    template <class RASequence, class T>
-    bool binary_search(RASequence && in, T const & value)
-    {
-        return ::ural::binary_search(std::forward<RASequence>(in), value, ural::less<>{});
-    }
+        template <class RASequence, class T, class Compare>
+        bool operator()(RASequence && in, T const & value, Compare cmp) const
+        {
+            return this->impl(sequence_fwd<RASequence>(in), value,
+                              make_functor(std::move(cmp)));
+        }
 
-    template <class RASequence, class T, class Compare>
-    auto equal_range(RASequence && in, T const & value, Compare cmp)
-    -> decltype(sequence_fwd<RASequence>(in))
-    {
-        return ::ural::details::equal_range(sequence_fwd<RASequence>(in),
-                                            value, make_functor(std::move(cmp)));
-    }
+    private:
+        template <class RASequence, class T, class Compare>
+        static bool impl(RASequence in, T const & value, Compare cmp)
+        {
+            // @todo Добавить проверки концепций
+            in = lower_bound_fn{}(std::move(in), value, cmp);
 
-    template <class RASequence, class T>
-    auto equal_range(RASequence && in, T const & value)
-    -> decltype(sequence_fwd<RASequence>(in))
+            return !!in && !cmp(value, *in);
+        }
+    };
+    auto constexpr binary_search = binary_search_fn{};
+
+    class equal_range_fn
     {
-        return ::ural::equal_range(std::forward<RASequence>(in), value,
-                                   ural::less<>{});
-    }
+    public:
+        template <class RASequence, class T>
+        auto operator()(RASequence && in, T const & value) const
+        -> decltype(sequence_fwd<RASequence>(in))
+        {
+            return (*this)(std::forward<RASequence>(in), value, ural::less<>{});
+        }
+
+        template <class RASequence, class T, class Compare>
+        auto operator()(RASequence && in, T const & value, Compare cmp) const
+        -> decltype(sequence_fwd<RASequence>(in))
+        {
+            return this->impl(sequence_fwd<RASequence>(in), value,
+                              make_functor(std::move(cmp)));
+        }
+
+    private:
+        template <class RASequence, class T, class Compare>
+        static RASequence impl(RASequence in, T const & value, Compare cmp)
+        {
+            // @todo Оптимизация
+            auto lower = lower_bound_fn{}(in, value, cmp);
+            auto upper = upper_bound_fn{}(in, value, cmp);
+
+            auto n_lower = lower.traversed_front().size();
+            auto n_upper = in.size() - upper.traversed_front().size();
+
+            in += n_lower;
+            in.pop_back(n_upper);
+            return in;
+        }
+    };
+    auto constexpr equal_range = equal_range_fn{};
 
     auto constexpr is_sorted_until = is_sorted_until_fn{};
     auto constexpr is_sorted = is_sorted_fn{};
@@ -1136,19 +1249,87 @@ namespace ural
     };
     auto constexpr nth_element = nth_element_fn{};
 
-    template <class BidirectionalSequence, class Compare>
-    void inplace_merge(BidirectionalSequence && s, Compare cmp)
+    class inplace_merge_fn
     {
-        return ::ural::details::inplace_merge(sequence_fwd<BidirectionalSequence>(s),
-                                              ural::make_functor(std::move(cmp)));
-    }
+    public:
+        template <class BidirectionalSequence>
+        void operator()(BidirectionalSequence && s) const
+        {
+            return (*this)(std::forward<BidirectionalSequence>(s),
+                           ural::less<>{});
+        }
 
-    template <class BidirectionalSequence>
-    void inplace_merge(BidirectionalSequence && s)
-    {
-        return ::ural::inplace_merge(std::forward<BidirectionalSequence>(s),
-                                     ural::less<>{});
-    }
+        template <class BidirectionalSequence, class Compare>
+        void operator()(BidirectionalSequence && s, Compare cmp) const
+        {
+            return this->impl(sequence_fwd<BidirectionalSequence>(s),
+                              ural::make_functor(std::move(cmp)));
+        }
+
+    private:
+        template <class BidirectionalSequence, class Compare>
+        static void impl(BidirectionalSequence s, Compare cmp)
+        {
+            auto s1 = s.traversed_front();
+            auto s2 = ural::shrink_front(s);
+
+            auto n1 = ural::size(s1);
+            auto n2 = ural::size(s2);
+
+            if(!s1 || !s2)
+            {
+                return;
+            }
+
+            assert(::ural::is_sorted_fn{}(s1, cmp));
+            assert(::ural::is_sorted_fn{}(s2, cmp));
+
+            if(n1 + n2 == 2)
+            {
+                if(cmp(*s2, *s1))
+                {
+                    ::ural::details::do_swap(*s1, *s2);
+                }
+                return;
+            }
+
+            auto s1_cut = s1;
+            auto s2_cut = s2;
+
+            if(n1 > n2)
+            {
+                auto n11 = n1 / 2;
+                s1_cut += n11;
+                s2_cut = lower_bound_fn{}(s2, *s1_cut, cmp);
+            }
+            else
+            {
+                auto n21 = n2 / 2;
+                s2_cut += n21;
+                s1_cut = upper_bound_fn{}(s1, *s2_cut, cmp);
+            }
+
+            ::ural::details::rotate(s1_cut, s2_cut.traversed_front());
+
+            auto s_new = s.original();
+
+            auto n11 = ural::size(s1_cut.traversed_front());
+            auto n12 = ural::size(s1_cut);
+            auto n21 = ural::size(s2_cut.traversed_front());
+
+            ural::advance(s_new, n11 + n21);
+
+            auto s1_new = s_new.traversed_front();
+            auto s2_new = ural::shrink_front(s_new);
+
+            ural::advance(s1_new, n11);
+            ural::advance(s2_new, n12);
+
+            inplace_merge_fn::impl(s1_new, cmp);
+            inplace_merge_fn::impl(s2_new, cmp);
+        }
+    };
+    auto constexpr inplace_merge = inplace_merge_fn{};
 
     class lexicographical_compare_fn
     {
