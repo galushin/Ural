@@ -1079,7 +1079,11 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_copy_to_end, String, Strings_list)
 
 // 21.4.7 операции со строками
 
-// @todo 21.4.7.1 Функции доступа
+/* 21.4.7.1 Функции доступа
+ data покрывается многими тесатми, в частности flex_string_copy_from_0
+ c_str покрывается тестом flex_string_from_c_str
+ get_allocator покрывается тестом flex_string_allocator_ctor
+*/
 
 // 21.4.7.2 find
 BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_find, String, Strings_list)

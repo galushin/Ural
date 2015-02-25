@@ -1518,14 +1518,7 @@ namespace ural
                                   ::ural::make_iterator_sequence(s, s+n),
                                   &traits_type::eq);
 
-            if(!r)
-            {
-                return this->npos;
-            }
-            else
-            {
-                return r.traversed_front().size();
-            }
+            return this->sequence_to_index(r);
         }
 
         /** @brief Поиск подстроки, заданной в виде строкового литерала
@@ -1552,14 +1545,7 @@ namespace ural
 
             auto r = ::ural::find(ural::sequence(*this) + pos, c);
 
-            if(!r)
-            {
-                return this->npos;
-            }
-            else
-            {
-                return r.traversed_front().size();
-            }
+            return this->sequence_to_index(r);
         }
 
         // 21.4.7.3 rfind
@@ -1638,14 +1624,7 @@ namespace ural
                                          ural::make_iterator_sequence(s, s+n),
                                          &traits_type::eq);
 
-            if(!r)
-            {
-                return this->npos;
-            }
-            else
-            {
-                return r.traversed_front().size();
-            }
+            return this->sequence_to_index(r);
         }
 
         size_type find_first_of(value_type const * s, size_type pos = 0) const
@@ -1662,14 +1641,7 @@ namespace ural
 
             auto r = ural::find(ural::sequence(*this) + pos, c, &traits_type::eq);
 
-            if(!r)
-            {
-                return this->npos;
-            }
-            else
-            {
-                return r.traversed_front().size();
-            }
+            return this->sequence_to_index(r);
         }
 
         // 21.4.7.5 find_last_of
@@ -1745,14 +1717,7 @@ namespace ural
 
             auto const r = ::ural::find_first_not_of(seq1, seq2, &traits_type::eq);
 
-            if(!r)
-            {
-                return this->npos;
-            }
-            else
-            {
-                return r.traversed_front().size();
-            }
+            return this->sequence_to_index(r);
         }
 
         size_type
@@ -1773,14 +1738,7 @@ namespace ural
             auto r = ural::find(ural::sequence(*this) + pos, c,
                                 ::ural::not_fn(&traits_type::eq));
 
-            if(!r)
-            {
-                return this->npos;
-            }
-            else
-            {
-                return r.traversed_front().size();
-            }
+            return this->sequence_to_index(r);
         }
 
         // 21.4.7.7 find_last_not_of
@@ -1793,6 +1751,7 @@ namespace ural
         size_type
         find_last_not_of(value_type const * s, size_type pos, size_type n) const
         {
+            // @todo Выразить через алгоритм
             auto const last_pos = this->adjust_pos(pos, 1);
 
             auto const seq = ural::make_iterator_sequence(s, s+n);
@@ -1959,6 +1918,19 @@ namespace ural
             }
 
             return pos + n;
+        }
+
+        template <class Sequence>
+        static size_type sequence_to_index(Sequence seq)
+        {
+            if(!seq)
+            {
+                return flex_string::npos;
+            }
+            else
+            {
+                return seq.traversed_front().size();
+            }
         }
 
     private:
