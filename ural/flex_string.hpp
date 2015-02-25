@@ -458,7 +458,7 @@ namespace ural
                     allocator_type const & a = allocator_type{})
          : data_(n+1, a)
         {
-            std::fill(this->begin(), this->end(), c);
+            ural::fill(*this, c);
             *this->end() = value_type{};
         }
 
@@ -937,7 +937,6 @@ namespace ural
         */
         flex_string & append(value_type const * s)
         {
-            // @todo +1
             return this->append(s, traits_type::length(s));
         }
 
@@ -992,7 +991,6 @@ namespace ural
         @param last конец интервала
         @pre <tt> [first; last)</tt>  --- допустимый интервал
         @return <tt> *this </tt>
-        @todo Тест случая, когда @c first и @c last --- целые типы
         */
         template <class InputIterator>
         flex_string & append(InputIterator first, InputIterator last)
@@ -1065,10 +1063,15 @@ namespace ural
         @param s указатель на начало массива
         @param n количество элементов
         @pre @c s указывает на массив длинны не меньше @c n
-        @todo генерировать исключение, если <tt> n > max_size() </tt>
         */
         flex_string & assign(const value_type * s, size_type n)
         {
+            if(n > this->max_size())
+            {
+                // @todo Более подробная диагностика
+                throw std::length_error("flex_string::assign");
+            }
+
             this->clear();
             return this->append(s, n);
         }
@@ -1737,19 +1740,19 @@ namespace ural
                 return npos;
             }
 
-            auto const seq = ::ural::make_iterator_sequence(s, s+n);
+            auto const seq1 = sequence(*this) + pos;
+            auto const seq2 = ::ural::make_iterator_sequence(s, s+n);
 
-            for(auto i = pos; i != this->size(); ++ i)
+            auto const r = ::ural::find_first_not_of(seq1, seq2, &traits_type::eq);
+
+            if(!r)
             {
-                auto r = ::ural::find(seq, (*this)[i], &traits_type::eq);
-
-                if(!r)
-                {
-                    return i;
-                }
+                return this->npos;
             }
-
-            return npos;
+            else
+            {
+                return r.traversed_front().size();
+            }
         }
 
         size_type

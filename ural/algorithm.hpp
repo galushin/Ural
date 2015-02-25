@@ -208,6 +208,48 @@ namespace ural
                                      ural::equal_to<>{});
     }
 
+    /**
+    @todo уменьшить дублирование с find_first_of
+    */
+    class find_first_not_of_fn
+    {
+    public:
+        template <class Input, class Forward>
+        auto operator()(Input && in, Forward && s) const
+        -> decltype(sequence_fwd<Input>(in))
+        {
+            return (*this)(sequence_fwd<Input>(in), sequence_fwd<Forward>(s),
+                           ::ural::equal_to<>{});
+        }
+
+        template <class Input, class Forward, class BinaryPredicate>
+        auto operator()(Input && in, Forward && s, BinaryPredicate bin_pred) const
+        -> decltype(sequence_fwd<Input>(in))
+        {
+            return this->impl(sequence_fwd<Input>(in), sequence_fwd<Forward>(s),
+                              ural::make_functor(std::move(bin_pred)));
+        }
+
+    private:
+        template <class Input, class Forward, class BinaryPredicate>
+        static Input impl(Input in, Forward s, BinaryPredicate bin_pred)
+        {
+            for(; !!in; ++ in)
+            {
+                auto r = ::ural::find(s, *in, bin_pred);
+
+                if(!r)
+                {
+                    return in;
+                }
+            }
+
+            return in;
+        }
+    };
+
+    auto constexpr find_first_not_of = find_first_not_of_fn{};
+
     template <class Forward, class BinaryPredicate>
     auto adjacent_find(Forward && s, BinaryPredicate pred)
     -> decltype(sequence_fwd<Forward>(s))

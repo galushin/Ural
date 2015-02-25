@@ -2015,3 +2015,24 @@ BOOST_AUTO_TEST_CASE(unique_erase_test)
     BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
                                   v_ural.begin(), v_ural.end());
 }
+
+// find_first_not_of
+BOOST_AUTO_TEST_CASE(find_first_not_of_test)
+{
+    std::vector<int> const v{2, 3, 25, 5, 0};
+    std::vector<int> const t{3, 19, 10, 2};
+
+    auto r_ural = ural::find_first_not_of(v, t);
+
+    auto const n1 = r_ural.traversed_front().size();
+    auto const n2 = r_ural.size();
+
+    BOOST_CHECK_EQUAL(v.size(), n1+n2);
+
+    for(auto i : ural::numbers(0, n1))
+    {
+        BOOST_CHECK(!!ural::find(t, v[i]));
+    }
+
+    BOOST_CHECK(!ural::find(t, v[n1]));
+}

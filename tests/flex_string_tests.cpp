@@ -309,11 +309,12 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_iterators, String, Strings_list)
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_iterators_given_numbers, String, Strings_list)
 {
-    auto const n = int(42);
-    auto const c = int('a');
+    typedef int Integer;
+    auto const n = Integer(42);
+    auto const c = Integer('a');
 
     std::string s(n, c);
-    String const fs(n, c);
+    auto const fs = String(n, c);
 
     BOOST_CHECK_EQUAL(s, fs);
 }
@@ -772,7 +773,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_append_init_list, String, Strings_list
 }
 
 // 21.4.6.2 Append
-BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_append_sunstring, String, Strings_list)
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_append_substring, String, Strings_list)
 {
     std::string s1 = "Step";
     std::string const s2 = "Ivanovich";
