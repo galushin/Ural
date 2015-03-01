@@ -394,6 +394,10 @@ namespace ural
         Members members_;
     };
 
+    /** @brief Оператор "равно"
+    @param x левый операнд
+    @param y правый операнд
+    */
     template <class Iterator1, class P1, class Iterator2, class P2>
     bool operator==(iterator_sequence<Iterator1, P1> const & x,
                     iterator_sequence<Iterator2, P2> const & y)
@@ -402,22 +406,18 @@ namespace ural
                 && x.members().second() == y.members().second();
     }
 
+    /** @brief Функция создания @c iterator_sequence
+    @param first итератор, задающий начало последовательности
+    @param last итератор, задающий конец последовательности
+    @pre <tt> [first; last) </tt> должен быть действительным интервалом
+    @return <tt> iterator_sequence<Iterator>{first, last} </tt>
+    */
     template <class Iterator>
     iterator_sequence<Iterator>
     make_iterator_sequence(Iterator first, Iterator last)
     {
         return iterator_sequence<Iterator>{first, last};
     }
-
-    template <class Iterator, class Policy>
-    iterator_sequence<Iterator, Policy>
-    operator+(iterator_sequence<Iterator, Policy> i,
-              typename iterator_sequence<Iterator, Policy>::distance_type n)
-    {
-        i += n;
-        return i;
-    }
-
 }
 // namespace ural
 

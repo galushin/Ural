@@ -125,6 +125,21 @@ namespace ural
         return static_cast<Seq const&>(s).front();
     }
 
+    /** @brief Бинарный оператор "плюс" для последовательности и расстояния
+    @param s последовательность
+    @param n свдиг
+    @todo Передавать последовательность по значению
+    @return <tt> Seq{s} + n </tt>
+    */
+    template <class Seq, class Base>
+    Seq
+    operator+(sequence_base<Seq, Base> const & s, typename Seq::distance_type n)
+    {
+        auto result = static_cast<Seq const &>(s);
+        result += n;
+        return result;
+    }
+
     template <class Sequence>
     Sequence shrink_front(Sequence s)
     {
@@ -154,23 +169,6 @@ namespace ural
         {
             return s.size();
         }
-
-        template <class Sequence>
-        void advance(Sequence & s, typename Sequence::distance_type n,
-                     single_pass_traversal_tag)
-        {
-            for(; n > 0; -- n)
-            {
-                ++ s;
-            }
-        }
-
-        template <class Sequence>
-        void advance(Sequence & s, typename Sequence::distance_type n,
-                     random_access_traversal_tag)
-        {
-            s += n;
-        }
     }
     // namespace details
 
@@ -181,12 +179,34 @@ namespace ural
         return ::ural::details::size(s, ural::make_traversal_tag(s));
     }
 
-    template <class Sequence>
-    void advance(Sequence & s, typename Sequence::distance_type n)
+    class advance_fn
     {
-        return ::ural::details::advance(s, std::move(n),
-                                        ural::make_traversal_tag(s));
-    }
+    public:
+        template <class Sequence>
+        void operator()(Sequence & s, typename Sequence::distance_type n) const
+        {
+            return this->impl(s, std::move(n), ural::make_traversal_tag(s));
+        }
+
+    private:
+        template <class Sequence>
+        static void impl(Sequence & s, typename Sequence::distance_type n,
+                         single_pass_traversal_tag)
+        {
+            for(; n > 0; -- n)
+            {
+                ++ s;
+            }
+        }
+
+        template <class Sequence>
+        static void impl(Sequence & s, typename Sequence::distance_type n,
+                         random_access_traversal_tag)
+        {
+            s += n;
+        }
+    };
+    auto constexpr advance = advance_fn{};
 
     template <class Sequence>
     Sequence next(Sequence s, typename Sequence::distance_type n = 1)

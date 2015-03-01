@@ -709,9 +709,7 @@ namespace ural
                 }
             }
 
-            // @todo Заменить на одну строку: return std::move(seq) + index;
-            seq += index;
-            return seq;
+            return std::move(seq) + index;
         }
     };
 
