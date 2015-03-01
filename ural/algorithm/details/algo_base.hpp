@@ -349,19 +349,6 @@ namespace details
         }
     }
 
-    template <class RASequence, class Compare>
-    void sort(RASequence s, Compare cmp)
-    {
-        // @todo Реализовать быструю сортировку
-        return ::ural::details::insertion_sort(std::move(s), std::move(cmp));
-    }
-
-    template <class RASequence, class Compare>
-    void stable_sort(RASequence s, Compare cmp)
-    {
-        return ::ural::details::insertion_sort(std::move(s), std::move(cmp));
-    }
-
     template<class Forward1, class Forward2, class BinaryPredicate>
     Forward1 search(Forward1 in, Forward2 s, BinaryPredicate p)
     {
@@ -841,6 +828,54 @@ namespace details
     }
 }
 // namespace details
+
+    class sort_fn
+    {
+    public:
+        template <class RASequence>
+        void operator()(RASequence && s) const
+        {
+            return (*this)(std::forward<RASequence>(s), ural::less<>{});
+        }
+
+        template <class RASequence, class Compare>
+        void operator()(RASequence && s, Compare cmp) const
+        {
+            return this->impl(sequence_fwd<RASequence>(s),
+                              ural::make_functor(std::move(cmp)));
+        }
+    private:
+        template <class RASequence, class Compare>
+        static void impl(RASequence s, Compare cmp)
+        {
+            // @todo Реализовать быструю сортировку
+            return ::ural::details::insertion_sort(std::move(s), std::move(cmp));
+        }
+    };
+
+    class stable_sort_fn
+    {
+    public:
+        template <class RASequence>
+        void operator()(RASequence && s) const
+        {
+            return (*this)(std::forward<RASequence>(s), ural::less<>{});
+        }
+
+        template <class RASequence, class Compare>
+        void operator()(RASequence && s, Compare cmp) const
+        {
+            return this->impl(sequence_fwd<RASequence>(s),
+                              ural::make_functor(std::move(cmp)));
+        }
+
+    private:
+        template <class RASequence, class Compare>
+        static void impl(RASequence s, Compare cmp)
+        {
+            return ::ural::details::insertion_sort(std::move(s), std::move(cmp));
+        }
+    };
 }
 // namespace ural
 #endif

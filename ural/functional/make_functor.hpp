@@ -28,20 +28,6 @@
 
 namespace ural
 {
-    /** Преобразование в функциональный объект. Перегрузка по умолчанию: просто
-    возвращает свой аргумент.
-    @brief Преобразование в функциональный объект
-    @param f функциональный объект
-    @return f
-    */
-    template <class F>
-    constexpr
-    typename disable_if<std::is_member_pointer<F>::value, F>::type
-    make_functor(F f)
-    {
-        return f;
-    }
-
     template <class Signature>
     class function_ptr_functor;
 
@@ -350,42 +336,61 @@ namespace ural
      : ural::declare_type<mem_fn_functor<R, T const volatile, Args...>>
     {};
 
-    /** @brief Создание функционального объекта на основе указателя на
-    функцию-член
-    @param mf указатель на функцию-член
-    @return <tt> typename mem_fn_functor_type<F>::type(mf) </tt>
-    */
-    template <class F>
-    typename std::enable_if<std::is_member_function_pointer<F>::value,
-                            typename mem_fn_functor_type<F>::type>::type
-    make_functor(F mf)
+    class make_functor_fn
     {
-        return typename mem_fn_functor_type<F>::type(mf);
-    }
+    public:
+        /** @brief Создание функционального объекта на основе указателя на
+        функцию-член
+        @param mf указатель на функцию-член
+        @return <tt> typename mem_fn_functor_type<F>::type(mf) </tt>
+        */
+        template <class F>
+        typename std::enable_if<std::is_member_function_pointer<F>::value,
+                                typename mem_fn_functor_type<F>::type>::type
+        operator()(F mf) const
+        {
+            return typename mem_fn_functor_type<F>::type(mf);
+        }
 
-    /** @brief Создание функционального объекта на основе указателя на
-    переменную-член
-    @param mv указатель на переменную-член
-    @return <tt> function_ptr_functor<T>(mv) </tt>
-    */
-    template <class T>
-    typename std::enable_if<std::is_member_object_pointer<T>::value,
-                            function_ptr_functor<T>>::type
-    make_functor(T mv)
-    {
-        return function_ptr_functor<T>(mv);
-    }
+        /** @brief Создание функционального объекта на основе указателя на
+        переменную-член
+        @param mv указатель на переменную-член
+        @return <tt> function_ptr_functor<T>(mv) </tt>
+        */
+        template <class T>
+        typename std::enable_if<std::is_member_object_pointer<T>::value,
+                                function_ptr_functor<T>>::type
+        operator()(T mv) const
+        {
+            return function_ptr_functor<T>(mv);
+        }
 
-    /** @brief Создание функционального объекта на основе указателя на функцию
-    @param f указатель на функцию
-    @return <tt> function_ptr_functor<R(Args...)>{f} </tt>
-    */
-    template <class R, class... Args>
-    function_ptr_functor<R(Args...)>
-    make_functor(R(*f)(Args...))
-    {
-        return function_ptr_functor<R(Args...)>{f};
-    }
+        /** @brief Создание функционального объекта на основе указателя на функцию
+        @param f указатель на функцию
+        @return <tt> function_ptr_functor<R(Args...)>{f} </tt>
+        */
+        template <class R, class... Args>
+        function_ptr_functor<R(Args...)>
+        operator()(R(*f)(Args...)) const
+        {
+            return function_ptr_functor<R(Args...)>{f};
+        }
+
+        /** Преобразование в функциональный объект. Перегрузка по умолчанию: просто
+        возвращает свой аргумент.
+        @brief Преобразование в функциональный объект
+        @param f функциональный объект
+        @return f
+        */
+        template <class F>
+        constexpr
+        typename disable_if<std::is_member_pointer<F>::value, F>::type
+        operator()(F f) const
+        {
+            return f;
+        }
+    };
+    auto constexpr make_functor = make_functor_fn{};
 }
 // namespace ural
 

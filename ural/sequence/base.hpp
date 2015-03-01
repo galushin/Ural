@@ -48,9 +48,13 @@ namespace ural
     */
     template <class T1, class T2>
     struct common_tag<T1, T2>
-     : declare_type<decltype(decl_common_type(std::declval<T1>(), std::declval<T2>()))>
+     : declare_type<decltype(::ural::decl_common_type(std::declval<T1>(), std::declval<T2>()))>
     {};
 
+    /** @brief Специализация для произвольного количества типов
+    @tparam Head первый тип
+    @tparam Tail список остальных типов
+    */
     template <class Head, class... Tail>
     struct common_tag<Head, Tail...>
     {
@@ -61,8 +65,11 @@ namespace ural
         typedef typename common_tag<Head, tail_common_type>::type type;
     };
 
+    /** @brief Создание объекта типа категории обхода последовательности
+    @return <tt> typename S::traversal_tag{} </tt>
+    */
     template <class S>
-    typename S::traversal_tag
+    constexpr typename S::traversal_tag
     make_traversal_tag(S const & )
     {
         return typename S::traversal_tag{};

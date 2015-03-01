@@ -1106,31 +1106,8 @@ namespace ural
     auto constexpr is_sorted_until = is_sorted_until_fn{};
     auto constexpr is_sorted = is_sorted_fn{};
 
-    template <class RASequence, class Compare>
-    void sort(RASequence && s, Compare cmp)
-    {
-        return ::ural::details::sort(sequence_fwd<RASequence>(s),
-                                     ural::make_functor(std::move(cmp)));
-    }
-
-    template <class RASequence>
-    void sort(RASequence && s)
-    {
-        return ::ural::sort(std::forward<RASequence>(s), ural::less<>{});
-    }
-
-    template <class RASequence, class Compare>
-    void stable_sort(RASequence && s, Compare cmp)
-    {
-        return ::ural::details::stable_sort(sequence_fwd<RASequence>(s),
-                                            ural::make_functor(std::move(cmp)));
-    }
-
-    template <class RASequence>
-    void stable_sort(RASequence && s)
-    {
-        return ::ural::stable_sort(std::forward<RASequence>(s), ural::less<>{});
-    }
+    auto constexpr sort = sort_fn{};
+    auto constexpr stable_sort = stable_sort_fn{};
 
     class partial_sort_fn
     {
