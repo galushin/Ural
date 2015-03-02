@@ -36,7 +36,7 @@ namespace ural
     @tparam T тип значения
     @todo Возможность задавать сигнатуру или использовать произвольную ---
     аналог функции @c const из Haskel
-    @todo Функция создания
+    @todo Конструктор размещения --- с произвольными аргументами
 
     Если T --- регулярный тип, то <tt> value_functor<T> </tt> --- тоже,
     регулярный.
@@ -56,10 +56,10 @@ namespace ural
 
         /** @brief Конструктор
         @param value значение
-        @post <tt> (*this)() == value </tt>
+        @post <tt> (*this)()  == value </tt>
         */
         constexpr explicit value_functor(T value)
-         : value_(std::move(value))
+         : value_(value)
         {}
 
         /** @brief Оператор вычисления значения
@@ -85,6 +85,28 @@ namespace ural
     operator==(value_functor<T1> const & x, value_functor<T2> const & y)
     {
         return x() == y();
+    }
+
+    /** @brief Функция создания @c value_functor
+    @param value начальное значение
+    @return <tt> value_functor<T>{value} </tt>
+    */
+    template <class T>
+    constexpr value_functor<T>
+    make_value_functor(T const & value)
+    {
+        return value_functor<T>{value};
+    }
+
+    /** @brief Функция создания @c value_functor на основе временного объекта
+    @param value начальное значение
+    @return <tt> value_functor<T>{std::move(value)} </tt>
+    */
+    template <class T>
+    constexpr value_functor<T>
+    make_value_functor(T && value)
+    {
+        return value_functor<T>{std::move(value)};
     }
 
     /** @brief Накопитель для определения наименьшего значения

@@ -721,8 +721,10 @@ BOOST_AUTO_TEST_CASE(value_functor_equality_test)
 {
     typedef ural::value_functor<int> Functor;
 
-    Functor constexpr f1{42};
-    Functor constexpr f2{13};
+    auto const n1 = 42;
+    Functor constexpr f1 = ural::make_value_functor(n1);
+
+    Functor constexpr f2 = ural::make_value_functor(13);
 
     auto constexpr r1 = f1();
     auto constexpr r2 = f2();
