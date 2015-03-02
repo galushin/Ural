@@ -55,11 +55,12 @@ namespace ural
         typedef T const & result_type;
 
         /** @brief Конструктор
-        @param value значение
-        @post <tt> (*this)()  == value </tt>
+        @param args список аргументов
+        @post <tt> (*this)()  == T(std::forward<Args>(args)...) </tt>
         */
-        constexpr explicit value_functor(T value)
-         : value_(value)
+        template <class... Args>
+        constexpr explicit value_functor(Args &&... args)
+         : value_(std::forward<Args>(args)...)
         {}
 
         /** @brief Оператор вычисления значения

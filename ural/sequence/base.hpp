@@ -104,6 +104,14 @@ namespace ural
 
         sequence_base() = default;
 
+        sequence_base(sequence_base &) = default;
+        sequence_base(sequence_base const &) = default;
+        sequence_base(sequence_base &&) = default;
+
+        sequence_base & operator=(sequence_base &) = default;
+        sequence_base & operator=(sequence_base const &) = default;
+        sequence_base & operator=(sequence_base &&) = default;
+
         ~ sequence_base() = default;
     };
 
