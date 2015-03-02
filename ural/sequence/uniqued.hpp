@@ -163,12 +163,16 @@ namespace ural
     class uniqued_helper_custom
     {
     public:
+        /// @brief Используемый предикат
         Predicate predicate;
     };
 
     struct uniqued_helper
     {
     public:
+        /** @brief Создание вспомогательного объекта, хранящего предикат
+        @param pred предикат
+        */
         template <class Predicate>
         auto operator()(Predicate pred) const
         -> uniqued_helper_custom<decltype(make_functor(std::move(pred)))>

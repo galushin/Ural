@@ -63,7 +63,7 @@ namespace ural
         {}
         //@}
 
-        /** @brief Инициализирует элементы кортежа <tt> std::get<i>(x) <tt>
+        /** @brief Инициализирует элементы кортежа <tt> std::get<i>(x) </tt>
         @param x стандартный кортеж, используемый для инициализации
         */
         template <class... Us>
@@ -72,7 +72,7 @@ namespace ural
         {}
 
         /** @brief Инициализирует элементы кортежа
-        <tt> std::forward<Ui>(std::get<i>(x)) <tt>
+        <tt> std::forward<Ui>(std::get<i>(x)) </tt>
         @param x стандартный кортеж, используемый для инициализации
         */
         template <class... Us>

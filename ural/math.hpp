@@ -105,6 +105,9 @@ namespace ural
     struct unit_element_traits<T, ural::multiplies<>>
     {
     public:
+        /** @brief Функция создания
+        @return <tt> T{1} </tt>
+        */
         constexpr static T make(ural::multiplies<> const &)
         {
             return T{1};
@@ -118,6 +121,9 @@ namespace ural
     struct unit_element_traits<T, ural::plus<>>
     {
     public:
+        /** @brief Функция создания
+        @return <tt> T{0} </tt>
+        */
         constexpr static T make(ural::plus<> const &)
         {
             return T{0};
@@ -214,6 +220,10 @@ namespace ural
         class abs_fn
         {
         public:
+            /** @brief Оператор вызова функции
+            @param x аргумент
+            @return <tt> abs(x) </tt>
+            */
             template <class T>
             auto operator()(T const & x) const
             -> decltype(abs(x))

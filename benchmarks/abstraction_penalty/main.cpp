@@ -66,6 +66,8 @@ Alex Stepanov
 Pavel Galushin
 */
 
+/// @cond false
+
 #include <ural/numeric.hpp>
 #include <ural/sequence/all.hpp>
 
@@ -428,3 +430,4 @@ int main(int argv, char** argc)
     summarize();
     return 0;
 }
+/// @endcond

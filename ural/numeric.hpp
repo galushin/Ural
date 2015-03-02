@@ -258,7 +258,7 @@ namespace ural
 
     /** @brief Функциональный объект для вычисления приближённого значения
     квадратого корня по итерационному методу Герона. Смотри, например
-    en.wikipedia.org/wiki/Methods_of_computing_square_roots#Babylonian_method
+    http://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Babylonian_method
     */
     class sqrt_heron_f
     {

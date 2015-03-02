@@ -17,6 +17,10 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/** @file ural/disjoint_set.hpp
+ @brief Класс для представления непересекающихся множеств
+*/
+
 #include <ural/numeric/numbers_sequence.hpp>
 #include <ural/tuple.hpp>
 

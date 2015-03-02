@@ -140,9 +140,15 @@ namespace ural
     public:
         static_assert(std::is_empty<F>::value, "must be empty class");
 
+        /// @brief Тип аргумента
         typedef T argument_type;
+
+        /// @brief Тип возвращаемого значения
         typedef decltype(std::declval<F const>()(std::declval<T>())) result_type;
 
+        /** @brief Оператор вызова функции
+        @param x аргумент
+        */
         constexpr result_type
         operator()(typename boost::call_traits<T>::param_type x) const
         {

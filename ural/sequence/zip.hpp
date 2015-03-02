@@ -53,6 +53,10 @@ namespace ural
         typedef typename Impl_seq::traversal_tag traversal_tag;
 
         // Конструкторы
+        /** @brief Конструктор
+        @param ins список входных последовательностей
+        @todo Добавить пост-условие
+        */
         zip_sequence(Inputs... ins)
          : impl_{make_tuple_functor{}, std::move(ins)...}
         {}
@@ -66,11 +70,18 @@ namespace ural
             return !impl_;
         }
 
+        /** @brief Текущий элемент
+        @pre <tt> !!*this </tt>
+        @return Текущий элемент
+        */
         reference front() const
         {
             return impl_.front();
         }
 
+        /** @brief Переход к следующему элементу
+        @pre <tt> !!*this </tt>
+        */
         void pop_front()
         {
             impl_.pop_front();

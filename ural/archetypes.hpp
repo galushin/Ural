@@ -123,19 +123,29 @@ namespace archetypes
     class URNG_archetype
     {
     public:
+        /// @brief Тип результата
         typedef size_t result_type;
 
-        result_type operator()()
+        /** @brief Оператор вызова функции
+        @return <tt> this->min() </tt>
+        */
+        result_type operator()() const
         {
             return this->min();
         }
 
-        constexpr static result_type min()
+        /** @brief Наименьшее возможное значение
+        @return Наименьшее возможное значение
+        */
+        constexpr static result_type min URAL_PREVENT_MACRO_SUBSTITUTION ()
         {
             return 0;
         }
 
-        constexpr static result_type max()
+        /** @brief Наибольшее возможное значение
+        @return Наибольшее возможное значение
+        */
+        constexpr static result_type max URAL_PREVENT_MACRO_SUBSTITUTION  ()
         {
             return 1;
         }

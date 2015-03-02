@@ -246,6 +246,7 @@ namespace concepts
     class Uniform_random_number_generator
     {
     public:
+        /// @brief Примеры использования
         BOOST_CONCEPT_USAGE(Uniform_random_number_generator)
         {
             typedef typename G::result_type result_type;
@@ -267,6 +268,7 @@ namespace concepts
      : boost::CopyConstructible<D>
     {
     public:
+        /// @brief Примеры использования
         BOOST_CONCEPT_USAGE(RandomDistribution)
         {
             URAL_CONCEPT_ASSERT(D, CopyAssignable);

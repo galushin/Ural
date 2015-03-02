@@ -104,13 +104,21 @@ namespace ural
 
         sequence_base() = default;
 
+        //@{
+        /// @brief Конструкторы копирования и перемещения
         sequence_base(sequence_base &) = default;
         sequence_base(sequence_base const &) = default;
         sequence_base(sequence_base &&) = default;
+        //@}
 
+        //@{
+        /** @brief Операторы присваивания
+        @return <tt> *this </tt>
+        */
         sequence_base & operator=(sequence_base &) = default;
         sequence_base & operator=(sequence_base const &) = default;
         sequence_base & operator=(sequence_base &&) = default;
+        //@}
 
         ~ sequence_base() = default;
     };

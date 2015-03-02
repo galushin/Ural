@@ -87,9 +87,16 @@ namespace ural
         static_assert(std::is_same<X, decltype(std::declval<X>() * std::declval<X>())>::value,
                       "Type of polynom variable must be closed relative to multiplication");
 
+        /// @brief Тип аргумента
         typedef X argument_type;
+
+        /// @brief Тип возвращаемого значения
         typedef decltype(std::declval<A>() * std::declval<X>()) result_type;
 
+        /** @brief Оператор вызова функции
+        @param x аргумент
+        @return значение многочлена в точке @c x
+        */
         result_type operator()(argument_type const & x) const
         {
             auto const & r = static_cast<polynomial<A, X, Alloc> const &>(*this);
@@ -105,6 +112,10 @@ namespace ural
     class polynomial_base<A, void, Alloc>
     {
     public:
+        /** @brief Оператор вызова функции
+        @param x аргумент
+        @return значение многочлена в точке @c x
+        */
         template <class X>
         auto operator()(X && x) const
         -> decltype(std::declval<A>() * x)
@@ -125,6 +136,7 @@ namespace ural
     @tparam A тип коэффициентов
     @tparam X тип аргументов
     @tparam Alloc тип распределителя памяти
+    @todo Конструктор с парой итераторов. Выразить через него конструктор со списком
     */
     template <class A, class X = void, class Alloc = std::allocator<A> >
     class polynomial
@@ -139,25 +151,36 @@ namespace ural
 
     public:
         // Типы
+        /// @brief Тип коэффициентов
         typedef A coefficient_type;
+
+        /// @brief Тип контейнера коэффициентов
         typedef std::vector<coefficient_type, Alloc> coefficients_container;
+
+        /// @brief Тип для представления размера
         typedef typename coefficients_container::size_type size_type;
 
         // Конструкторы
+        /** @brief Конструктор без параметров
+        @param cs список коэффициентов
+        @post <tt> this->coefficients() == coefficients_container(1, 0) </tt>
+        */
         polynomial()
          : cs_(1, coefficient_type{0})
         {}
 
-        polynomial(std::initializer_list<coefficient_type> cs)
+        template <class InputIterator>
+        polynomial(InputIterator first, InputIterator last)
          : cs_{}
         {
             auto const zero = coefficient_type{0};
 
-            auto seq = find(cs, zero, not_equal_to<>{});
+            auto seq = find(ural::make_iterator_sequence(first, last),
+                            zero, not_equal_to<>{});
 
             if (!seq)
             {
-                cs_.assign(1, coefficient_type{0});
+                cs_.assign(1, zero);
             }
             else
             {
@@ -166,7 +189,19 @@ namespace ural
             }
         }
 
+        /** @brief Конструктор на основе списка коэффициентов
+        @param cs список коэффициентов
+        @post <tt> this->coefficients() == coefficients_container(cs) </tt>
+        */
+        polynomial(std::initializer_list<coefficient_type> cs)
+         : polynomial(cs.begin(), cs.end())
+        {}
+
         // Линейное пространство
+        /** @brief Прибавление многочлена
+        @param p многочлен-слагаемое
+        @return <tt> *this </tt>
+        */
         polynomial & operator+=(polynomial const & p)
         {
             auto const old_size = cs_.size();
@@ -190,6 +225,10 @@ namespace ural
             return *this;
         }
 
+        /** @brief Вычитание многочлена
+        @param p многочлен-вычитаемое
+        @return <tt> *this </tt>
+        */
         polynomial & operator-=(polynomial const & p)
         {
             // @todo Устранить дублирование с +=
@@ -218,6 +257,10 @@ namespace ural
             return *this;
         }
 
+        /** @brief Умножение многочлена на скаляр
+        @param a множитель
+        @return <tt> *this </tt>
+        */
         polynomial & operator*=(coefficient_type const & a)
         {
             for(auto & c : cs_)
@@ -227,6 +270,10 @@ namespace ural
             return *this;
         }
 
+        /** @brief Деление многочлена на скаляр
+        @param a делитель
+        @return <tt> *this </tt>
+        */
         polynomial & operator/=(coefficient_type const & a)
         {
             assert(a != coefficient_type{0});
@@ -240,15 +287,21 @@ namespace ural
         }
 
         // Унарные плюс и минус
+        /** @brief Унарный плюс
+        @return <tt> *this </tt>
+        */
         polynomial operator+() const
         {
             return *this;
         }
 
+        /** @brief Унарный минус
+        */
         polynomial operator-() const
         {
             polynomial r = *this;
 
+            // @todo заменить на алгоритм ural
             std::transform(r.cs_.begin(), r.cs_.end(), r.cs_.begin(),
                            ural::negate<coefficient_type>{});
 
@@ -281,6 +334,9 @@ namespace ural
         }
         //@}
 
+        /** @brief Контейнер коэффициентов
+        @return Ссылка на контейнер, содержащий коэффициенты многочлена
+        */
         coefficients_container const & coefficients() const
         {
             return this->cs_;

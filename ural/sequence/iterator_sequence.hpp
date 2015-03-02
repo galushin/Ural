@@ -94,7 +94,7 @@ namespace ural
 
         /** @brief Проверка допустимости шага.
         @param seq последовательность
-        @param index проверяемый индекс
+        @param n проверяемое значение шага
         @throw bad_index<decltype(seq.size())>, если
         <tt> index > seq.size() </tt>
 

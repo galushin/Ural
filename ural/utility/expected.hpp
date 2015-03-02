@@ -38,15 +38,22 @@ namespace ural
     class unexpected
     {
     public:
+        /** @brief Конструктор
+        @param ex объект исключения
+        */
         unexpected(E ex)
          : ex_{std::move(ex)}
         {}
 
+        /** @brief Передача владения объектом исключения
+        */
         E move_out()
         {
             return std::move(ex_);
         }
 
+        /** @brief Доступ к значению
+        */
         E const & get() const
         {
             return this->ex_;

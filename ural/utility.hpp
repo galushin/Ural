@@ -151,7 +151,6 @@ namespace ural
     public:
         // Создание и присваивание
         /** @brief Конструктор без параметров
-        @param value значение
         @post <tt> this->value() == T{} </tt>
         @post <tt> this->old_value() == T{} </tt>
         */
