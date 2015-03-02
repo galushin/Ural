@@ -26,6 +26,7 @@
 #include <ural/format/stream_traits.hpp>
 #include <ural/algorithm.hpp>
 #include <ural/sequence/to.hpp>
+#include <ural/sequence/iostream.hpp>
 #include <ural/sequence/insertion.hpp>
 #include <ural/sequence/transform.hpp>
 #include <ural/sequence/by_line.hpp>
@@ -145,7 +146,7 @@ namespace ural
             ural::basic_istringstream<String> is(s);
             T reader;
             is >> reader;
-            assert(is.eof());
+            assert(!!is);
             return reader;
         }
     };
@@ -187,6 +188,7 @@ namespace ural
     @tparam T тип элементов таблицы
     @param is входной поток
     @return считанную таблицу
+    @todo Параметризация разделителей
     */
     template <class T, class IStream>
     std::vector<std::vector<T>>
@@ -197,7 +199,7 @@ namespace ural
         // @todo Проверка концепций
         std::vector<std::vector<T>> result;
 
-        for(auto seq = ural::by_line(is, '\n'); !!seq; ++ seq)
+        for(auto seq = ural::by_line(is, '\n'); !!seq && !seq.front().empty(); ++ seq)
         {
             typedef typename stream_traits<input_stream_type>::string_type
                 String;

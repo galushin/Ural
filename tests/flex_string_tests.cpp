@@ -286,7 +286,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_n_char_and_allocator, String, Str
     BOOST_CHECK_EQUAL(n, s.size());
     BOOST_CHECK_GE(s.capacity(), s.size());
 
-    for(auto i : ural::numbers(0, s.size()))
+    for(auto i : ural::indices_of(s))
     {
         BOOST_CHECK(Traits::eq(s[i], C));
     }
@@ -519,7 +519,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_resize_greater, String, Strings_list)
 
     BOOST_CHECK_EQUAL(2*s_old.size(), s.size());
 
-    for(auto i : ural::numbers(0, s_old.size()))
+    for(auto i : ural::indices_of(s_old))
     {
         BOOST_CHECK_EQUAL(s_old[i], s[i]);
     }
@@ -1248,7 +1248,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_rfind_with_pos, String, Strings_list)
     BOOST_CHECK(s1 == fs1);
     BOOST_CHECK(s2 == fs2);
 
-    for(auto pos : ural::numbers(0, s1.size()))
+    for(auto pos : ural::indices_of(s1))
     {
         auto const r_str = s1.rfind(s2, pos);
         auto const r_ural = fs1.rfind(fs2, pos);

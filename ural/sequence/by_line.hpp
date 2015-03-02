@@ -114,6 +114,7 @@ namespace ural
     private:
         void seek()
         {
+            using std::getline;
             getline(is_.get(), reader_, delim_);
 
             if(kd_ == keep_delimeter::yes && is_.get().eof() == false)

@@ -129,12 +129,15 @@ BOOST_AUTO_TEST_CASE(table_io_test)
     std::ostringstream os;
     ural::write_table(os, data_src);
 
+    // текстовые редакторы иногда добавляют пустую строку в конец файла
+    os << "\n";
+
     std::istringstream is(os.str());
     auto data = ural::read_table<Type>(is);
 
     BOOST_CHECK_EQUAL(data_src.size(), data.size());
 
-    for(auto i : ural::numbers(0, data.size()))
+    for(auto i : ural::indices_of(data))
     {
         BOOST_CHECK_EQUAL(data_src[i].size(), data[i].size());
         BOOST_CHECK(data_src[i] == data[i]);
@@ -154,6 +157,9 @@ BOOST_AUTO_TEST_CASE(table_io_test_temporary_stream)
     };
 
     auto & os = ural::write_table(std::ostringstream{}, data_src);
+
+    // текстовые редакторы иногда добавляют пустую строку в конец файла
+    os << "\n";
 
     auto data = ural::read_table<Type>(std::istringstream(os.str()));
 

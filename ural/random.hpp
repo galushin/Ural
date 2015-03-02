@@ -156,7 +156,7 @@ namespace ural
 
                 data_.reserve(ws.size());
 
-                for(auto k : numbers(0, ws.size()))
+                for(auto k : ::ural::indices_of(ws))
                 {
                     ws[k] /= w_sum;
                     data_.emplace_back(1.0, k);
@@ -173,7 +173,7 @@ namespace ural
                 Stack small;
                 Stack large;
 
-                for(auto i : numbers(0, ws.size()))
+                for(auto i : ::ural::indices_of(ws))
                 {
                     if(ws[i] > w_uni)
                     {

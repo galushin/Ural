@@ -76,7 +76,7 @@ namespace distributions
 
             auto result = weight_type{0};
 
-            for(auto i : ural::numbers(0, d.ps_.size()))
+            for(auto i : ural::indices_of(d.ps_))
             {
                 result += square(i) * d.ps_[i];
             }

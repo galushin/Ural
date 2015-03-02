@@ -957,7 +957,7 @@ BOOST_AUTO_TEST_CASE(rotate_test)
 {
     std::vector<int> const v{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-    for(auto i : ural::numbers(0, v.size()))
+    for(auto i : ural::indices_of(v))
     {
         auto v_std = v;
         auto v_ural = v;
@@ -994,7 +994,7 @@ BOOST_AUTO_TEST_CASE(rotate_copy_test)
 {
     std::vector<int> const src{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-    for(auto i : ural::numbers(0, src.size()))
+    for(auto i : ural::indices_of(src))
     {
         std::forward_list<int> r_std;
         std::forward_list<int> r_ural;
@@ -1016,7 +1016,7 @@ BOOST_AUTO_TEST_CASE(rotate_copy_return_test)
 {
     std::vector<int> const src{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-    for(auto i : ural::numbers(0, src.size()))
+    for(auto i : ural::indices_of(src))
     {
         std::vector<int> d_std(src.size() + 5);
         std::vector<int> d_ural(src.size() + 5);
@@ -1773,7 +1773,7 @@ BOOST_AUTO_TEST_CASE(push_heap_test)
 {
     std::vector<int> v { 3, 1, 4, 1, 5, 9 };
 
-    for(auto i : ural::numbers(0, v.size()))
+    for(auto i : ural::indices_of(v))
     {
         BOOST_CHECK(std::is_heap(v.begin(), v.begin() + i));
         ural::push_heap(ural::make_iterator_sequence(v.begin(), v.begin()+i+1));
