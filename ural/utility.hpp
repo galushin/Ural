@@ -440,6 +440,10 @@ namespace ural
     class tuple_get
     {
     public:
+        /** @brief Оператор вызова функции
+        @param x кортеж
+        @return <tt> get(std::forward<Tuple>(x), ural::placeholder<Index>{}); </tt>
+        */
         template <class Tuple>
         constexpr auto operator()(Tuple && x) const
         -> decltype(get(std::forward<Tuple>(x), ural::placeholder<Index>{}))
@@ -453,6 +457,19 @@ namespace ural
     */
     class swap_allocators
     {
+    public:
+        /** @brief Выполнение обмена
+        @param x первый распределитель памяти
+        @param y второй распределитель памяти
+        */
+        template <class A>
+        void operator()(A & x, A & y) const
+        {
+            auto constexpr tag = typename std::allocator_traits<A>::propagate_on_container_swap{};
+
+            return this->do_swap(x, y, tag);
+        }
+
     private:
         template <class A>
         static void do_swap(A & x, A & y, std::true_type)
@@ -464,15 +481,6 @@ namespace ural
         template <class A>
         static void do_swap(A &, A &, std::false_type)
         {}
-
-    public:
-        template <class A>
-        void operator()(A & x, A & y) const
-        {
-            auto constexpr tag = typename std::allocator_traits<A>::propagate_on_container_swap{};
-
-            return this->do_swap(x, y, tag);
-        }
     };
 }
 // namespace ural

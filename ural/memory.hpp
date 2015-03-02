@@ -70,10 +70,14 @@ namespace ural
     class to_unqiue_ptr_functor
     {
     public:
+        /** @brief Оператор вызова функции
+        @param value значение
+        @return <tt> return ::ural::make_unique<T>(std::move(value)) </tt>
+        */
         template <class T>
         std::unique_ptr<T> operator()(T value) const
         {
-            return make_unique<T>(std::move(value));
+            return ::ural::make_unique<T>(std::move(value));
         }
     };
 

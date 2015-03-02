@@ -53,7 +53,7 @@ namespace ural
         /** @brief Оператор вычисления значения
         @param x значение
         @return Если @c x не удовлетворяет предикату, то
-        <tt> this->new_value() </t>> иначе --- @c x.
+        <tt> this->new_value() </tt> иначе --- @c x.
         */
         result_type operator()(T const & x) const
         {

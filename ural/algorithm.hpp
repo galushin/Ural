@@ -40,6 +40,9 @@ namespace ural
     class unique_fn
     {
     public:
+        /** @brief Устранение последовательных дубликатов
+        @param seq последовательность
+        */
         template <class ForwardSequence>
         auto operator()(ForwardSequence && seq) const
         -> decltype(ural::sequence_fwd<ForwardSequence>(seq))
@@ -47,6 +50,10 @@ namespace ural
             return (*this)(std::forward<ForwardSequence>(seq), ural::equal_to<>{});
         }
 
+        /** @brief Устранение последовательных дубликатов
+        @param seq последовательность
+        @param pred бинарный предикат
+        */
         template <class ForwardSequence, class BinaryPredicate>
         auto operator()(ForwardSequence && seq, BinaryPredicate pred) const
         -> decltype(ural::sequence_fwd<ForwardSequence>(seq))
@@ -96,12 +103,22 @@ namespace ural
     class unique_erase_fn
     {
     public:
+        /** @brief Удаление последовательных дубликатов из контейнера
+        @param c контейнер
+        @return @c c
+        */
         template <class Container>
         Container & operator()(Container & c) const
         {
             return (*this)(c, ural::equal_to<>{});
         }
 
+        /** @brief Удаление последовательных дубликатов из контейнера
+        @param c контейнер
+        @param bin_pred бинарный предикат, с помощью которого определяются
+        дубликаты
+        @return @c c
+        */
         template <class Container, class BinaryPredicate>
         Container &
         operator()(Container & c, BinaryPredicate bin_pred) const
@@ -434,6 +451,13 @@ namespace ural
     class transform_f
     {
     public:
+        /** @brief Преобразование последовательности
+        @param in входная последовательность
+        @param out выходная последовательность
+        @param f унарная функция
+        @return Кортеж, содержащий непройденные части входной и выходной
+        последовательностей (по меньшей мере одна из них будет пуста)
+        */
         template <class Input, class Output, class UnaryFunction>
         auto operator()(Input && in, Output && out, UnaryFunction f) const
         -> tuple<decltype(sequence_fwd<Input>(in)),
@@ -444,6 +468,14 @@ namespace ural
                               ural::make_functor(std::move(f)));
         }
 
+        /** @brief Преобразование двух последовательностей
+        @param in1 первая входная последовательность
+        @param in2 вторая входная последовательность
+        @param out выходная последовательность
+        @param f бинарная функция
+        @return Кортеж, содержащий непройденные части входных и выходной
+        последовательностей (по меньшей мере одна из них будет пуста)
+        */
         template <class Input1, class Input2, class Output, class BinaryFunction>
         auto operator()(Input1 && in1, Input2 && in2, Output && out,
                         BinaryFunction f) const
@@ -1014,6 +1046,10 @@ namespace ural
     class upper_bound_fn
     {
     public:
+        /** @brief Поиск верхней грани
+        @param in последовательность
+        @param value значение
+        */
         template <class RASequence, class T>
         auto operator()(RASequence && in, T const & value) const
         -> decltype(sequence_fwd<RASequence>(in))
@@ -1021,6 +1057,11 @@ namespace ural
             return (*this)(std::forward<RASequence>(in), value, ural::less<>{});
         }
 
+        /** @brief Поиск верхней грани
+        @param in последовательность
+        @param value значение
+        @param cmp функция сравнения
+        */
         template <class RASequence, class T, class Compare>
         auto operator()(RASequence && in, T const & value, Compare cmp) const
         -> decltype(sequence_fwd<RASequence>(in))

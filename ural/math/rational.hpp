@@ -222,7 +222,7 @@ namespace ural
         @post Пусть <tt> g = gcd(abs(num), abs(denom)) </tt>, тогда
         <tt> this->numerator() == num / g * sign(denom) </tt> и
         <tt> this->denominator() == abs(denom) </tt>
-        @throw @c bad_rational, если <tt> denom == 0 </tt>.
+        @throw bad_rational, если <tt> denom == 0 </tt>
         */
         void assign(IntegerType num, IntegerType denom)
         {

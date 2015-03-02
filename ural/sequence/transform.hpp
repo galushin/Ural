@@ -179,6 +179,7 @@ namespace ural
     template <class Function>
     struct transformed_helper
     {
+        /// @brief Функциональный объект
         Function f;
     };
 

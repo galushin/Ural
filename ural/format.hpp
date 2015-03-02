@@ -239,6 +239,10 @@ namespace details
     class to_string_functor
     {
     public:
+        /** @brief Выполнение преобразования в строку
+        @param x преобразуемое значение
+        @return Строка, содержащая представление @c x
+        */
         template <class T>
         std::basic_string<Char, Traits>
         operator()(T const & x) const

@@ -263,26 +263,48 @@ namespace ural
         }
 
         // Модификаторы
+        /** @brief Изменение размера
+        @param n желаемое количество элементов
+        @param c символ
+        @post <tt> this->size() == n </tt>. Если в результате этой операции
+        размер увеличится, то новые элементы будут равны @c c.
+        */
         void resize(size_type n, T const & c)
         {
             data_.resize(n, c);
         }
 
+        /** @brief Резервирование памяти
+        @param n количество объектов для которых будет зарезервирована память
+        @post Перераспределение памяти не будет происходить, пока
+        <tt> this->size() </tt> не превысит @c n
+        */
         void reserve(size_type n)
         {
             data_.reserve(n);
         }
 
+        /** @brief Обмен
+        @param x объект, с которым будет производится обмен содержимым
+        */
         void swap(string_vector_storage & x)
         {
             data_.swap(x.data_);
         }
 
+        /** @brief Добавление нескольких копий символа в конец строки
+        @param n количество копий символа
+        @param c символ
+        */
         void append(size_type n, T const & c)
         {
             data_.insert(this->end(), n, c);
         }
 
+        /** @brief Удаление последних @c n элементов строки
+        @param n количество элементов, которые нужно удалить
+        @pre <tt> n <= this->size() </tt>
+        */
         void pop_back(size_type n)
         {
             data_.erase(this->end() - n, this->end());
