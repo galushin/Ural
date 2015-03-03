@@ -141,11 +141,15 @@ namespace ural
     class make_tuple_functor
     {
     public:
+        /** @brief Оператор вызова функции
+        @param args аргументы
+        @return <tt> ural::make_tuple(std::forward<Args>(args)...) </tt>
+        */
         template <class... Args>
         constexpr auto operator()(Args &&... args) const
-        -> decltype(ural::make_tuple(args...))
+        -> decltype(ural::make_tuple(std::forward<Args>(args)...))
         {
-            return ural::make_tuple(args...);
+            return ural::make_tuple(std::forward<Args>(args)...);
         }
     };
 
