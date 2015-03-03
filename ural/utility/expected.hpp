@@ -34,6 +34,9 @@
 
 namespace ural
 {
+    /** @brief Обёртка для объекта, хранящего исключение
+    @tparam E тип, хранящий исключение
+    */
     template <class E = std::exception_ptr>
     class unexpected
     {
@@ -97,9 +100,16 @@ namespace ural
         /// @brief Тип значения
         typedef T value_type;
 
+        /// @brief Тип, представляющий исключение
         typedef unexpected<std::exception_ptr> unexpected_type;
 
         // Создание, присваивание и уничтожение
+        /** @brief Преобразование из <tt> unexpected<std::exception_ptr> </tt>
+        @param ue объект, содержащий исключение
+        @post <tt> this->has_value() == false </tt>
+        @post <tt> this->value() </tt> генерирует то же исключение, что и
+        <tt> std::rethrow_exception(ue.get()) </tt>
+        */
         expected(unexpected<std::exception_ptr> ue)
          : has_value_{false}
         {
@@ -400,6 +410,12 @@ namespace ural
             }
         }
 
+        /** @brief Преобразование
+        @param f унарная функция
+        @return Если <tt> *this </tt> содержит значение @c value, то возвращает
+        <tt> ural::expected_from_call(f, this->value_) </tt>, иначе --- объект,
+        содержащий исключение.
+        */
         template <class F>
         auto fmap(F f) noexcept -> expected<decltype(f(std::declval<T>()))>
         {
