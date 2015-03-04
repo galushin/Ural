@@ -42,7 +42,7 @@ namespace ural
 
         /** @brief Конструктор
         @param pred предикат
-        @tparam new_value новое значение
+        @param new_value новое значение
         @post <tt> this->predicate() == pred </tt>
         @post <tt> this->new_value() == new_value </tt>
         */

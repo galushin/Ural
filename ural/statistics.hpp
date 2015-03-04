@@ -129,6 +129,9 @@ namespace ural
             return this->value_;
         }
 
+        /** @brief Оператор неявного преобразования
+        @return <tt> this->value() </tt>
+        */
         constexpr operator const_reference() const
         {
             return this->value();

@@ -14,6 +14,8 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+// @todo Тест unique_copy(istream_sequence, ostream_sequence)
+
 #include "rnd.hpp"
 
 #include <boost/test/unit_test.hpp>

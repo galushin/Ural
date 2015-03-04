@@ -126,11 +126,15 @@ namespace ural
             return base_.pop_front();
         }
 
+        /** @brief Пройденная задняя часть последовательности
+        @return Пройденная задняя часть последовательности
+        */
         reverse_sequence traversed_back()
         {
             return reverse_sequence(base_.traversed_front());
         }
 
+        /// @brief Отбрасывает пройденную заднюю часть последовательности
         void shrink_back()
         {
             return base_.shrink_front();

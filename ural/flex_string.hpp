@@ -47,16 +47,29 @@ namespace ural
     {
     public:
         // @todo Для пустой строки не выделять память
+        // @todo операции перемещения
         /* @todo Использовать характеристика распределителей памяти, в чатсности,
         чтобы определить, нужно ли их копировать/перемещать
         */
 
         // Типы
+        /// @brief Тип для представления размера
         typedef typename A::size_type size_type;
+
+        /// @brief Тип итератора
         typedef typename A::pointer iterator;
+
+        /// @brief Тип константного итератора
         typedef typename A::const_pointer const_iterator;
 
         // Создание, копирование, уничтожение
+        /** @brief Конструктор
+        @param n количество элементов
+        @param a распределитель памяити
+        @post <tt> this->get_allocator() == a </tt>
+        @post <tt> this->size() == n </tt>
+        @post Все элементы равны <tt> T() </tt>
+        */
         string_allocator_storage(size_type n, A const & a)
          : A{a}
         {
@@ -71,14 +84,26 @@ namespace ural
             }
         }
 
+        /** @brief Конструктор копий
+        @param x копируемый объект
+        @post <tt> this->size() == x.size() </tt>
+        @post <tt> std::equal(this->begin(), this->end(), x.begin()) == true </tt>
+        */
         string_allocator_storage(string_allocator_storage const & x)
          : string_allocator_storage{x.size(), x.get_allocator()}
         {
             ural::copy(x, *this);
         }
 
+        /** @brief Оператор присваивания
+        @param x копируемый объект
+        @return <tt> *this </tt>
+        post <tt> this->size() == x.size() </tt>
+        @post <tt> std::equal(this->begin(), this->end(), x.begin()) == true </tt>
+        */
         string_allocator_storage & operator=(string_allocator_storage const & x);
 
+        /// @brief Деструктор
         ~string_allocator_storage()
         {
             for(auto p = begin_; p != end_; ++ p)
@@ -90,26 +115,44 @@ namespace ural
         }
 
         // Свойства
+        /** @brief Используемый распределитель памяти
+        @return Используемый распределитель памяти
+        */
         A get_allocator() const
         {
             return static_cast<A>(*this);
         }
 
+        /** @brief Указатель на начало выделенной области памяти
+        @return Указатель на начало выделенной области памяти
+        */
         T const * data() const
         {
             return this->begin_;
         }
 
+        /** @brief Размер
+        @return Текущее количество элементов
+        */
         size_type size() const
         {
             return this->end() - this->begin();
         }
 
+        /** @brief Ёмкость
+        @return Наибольший размер, который может быть достигнут без
+        перераспределения памяти
+        */
         size_type capacity() const
         {
             return this->end_of_storage_ - this->begin();
         }
 
+        // Итераторы
+        //@{
+        /** @brief Итератор, задающий начало хранилища
+        @return Итератор, задающий начало хранилища
+        */
         iterator begin()
         {
             return this->begin_;
@@ -119,7 +162,12 @@ namespace ural
         {
             return this->begin_;
         }
+        //@}
 
+        //@{
+        /** @brief Итератор, задающий конец хранилища
+        @return Итератор, задающий конец хранилища
+        */
         iterator end()
         {
             return this->end_;
@@ -129,8 +177,15 @@ namespace ural
         {
             return this->end_;
         }
+        //@}
 
         // Модификаторы
+        /** @brief Изменение размера
+        @param n желаемое количество элементов
+        @param c символ
+        @post <tt> this->size() == n </tt>. Если в результате этой операции
+        размер увеличится, то новые элементы будут равны @c c.
+        */
         void resize(size_type n, T const & c)
         {
             if(n > this->size())
@@ -143,6 +198,11 @@ namespace ural
             }
         }
 
+        /** @brief Резервирование памяти
+        @param n количество объектов для которых будет зарезервирована память
+        @post Перераспределение памяти не будет происходить, пока
+        <tt> this->size() </tt> не превысит @c n
+        */
         void reserve(size_type n)
         {
             if(n <= this->capacity())
@@ -167,6 +227,9 @@ namespace ural
             assert(this->capacity() >= n);
         }
 
+        /** @brief Обмен
+        @param x объект, с которым будет производится обмен содержимым
+        */
         void swap(string_allocator_storage & x)
         {
             ural::swap_allocators{}(static_cast<A&>(*this), static_cast<A&>(x));
@@ -176,6 +239,10 @@ namespace ural
             std::swap(this->end_of_storage_, x.end_of_storage_);
         }
 
+        /** @brief Добавление нескольких копий символа в конец строки
+        @param n количество копий символа
+        @param c символ
+        */
         void append(size_type n, T const & c)
         {
             this->reserve(this->size() + n);
@@ -188,6 +255,10 @@ namespace ural
             }
         }
 
+        /** @brief Удаление последних @c n элементов строки
+        @param n количество элементов, которые нужно удалить
+        @pre <tt> n <= this->size() </tt>
+        */
         void pop_back(size_type n)
         {
             for(; n > 0; -- n, -- end_)
@@ -211,37 +282,66 @@ namespace ural
 
     public:
         // Типы
+        /// @brief Тип для представления размера
         typedef typename Container::size_type size_type;
+
+        /// @brief Тип итератора
         typedef typename Container::iterator iterator;
+
+        /// @brief Тип константного итератора
         typedef typename Container::const_iterator const_iterator;
 
         // Конструкторы
+        /** @brief Конструктор
+        @param n количество элементов
+        @param a распределитель памяити
+        @post <tt> this->get_allocator() == a </tt>
+        @post <tt> this->size() == n </tt>
+        @post Все элементы равны <tt> T() </tt>
+        */
         string_vector_storage(size_type n, A const & a)
          : data_{n, T{}, a}
         {}
 
         // Свойства
+        /** @brief Используемый распределитель памяти
+        @return Используемый распределитель памяти
+        */
         A get_allocator() const
         {
             return data_.get_allocator();
         }
 
+        /** @brief Размер
+        @return Текущее количество элементов
+        */
         size_type size() const
         {
             return data_.size();
         }
 
+        /** @brief Ёмкость
+        @return Наибольший размер, который может быть достигнут без
+        перераспределения памяти
+        */
         size_type capacity() const
         {
             return data_.capacity();
         }
 
+        /** @brief Указатель на начало выделенной области памяти
+        @return Указатель на начало выделенной области памяти
+        */
         T const * data() const
         {
             return data_.data();
         }
 
         // Итераторы
+        //@{
+        /** @brief Итератор, задающий начало хранилища
+        @return Итератор, задающий начало хранилища
+        */
         iterator begin()
         {
             return data_.begin();
@@ -251,7 +351,12 @@ namespace ural
         {
             return data_.begin();
         }
+        //@}
 
+        //@{
+        /** @brief Итератор, задающий конец хранилища
+        @return Итератор, задающий конец хранилища
+        */
         iterator end()
         {
             return data_.end();
@@ -261,6 +366,7 @@ namespace ural
         {
             return data_.end();
         }
+        //@}
 
         // Модификаторы
         /** @brief Изменение размера

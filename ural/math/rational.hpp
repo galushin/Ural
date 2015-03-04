@@ -317,49 +317,84 @@ namespace ural
             return members_[ural::_2];
         }
 
+        /** @brief Явное преобразование в @c bool
+        @return <tt> *this != 0 </tt>
+        */
         constexpr explicit operator bool() const
         {
             return !!*this;
         }
 
         // Составные операторы присваивания
+        /** @brief Прибавление рационального числа
+        @param x прибавляемое
+        @return <tt> *this </tt>
+        */
         rational & operator+=(rational const & x)
         {
             return *this = *this + x;
         }
 
+        /** @brief Прибавление целого числа
+        @param x прибавляемое
+        @return <tt> *this </tt>
+        */
         rational & operator+=(IntegerType const & x)
         {
             this->numerator_ref() += x * this->denominator();
             return *this;
         }
 
+        /** @brief Вычитание рационального числа
+        @param x вычитаемое
+        @return <tt> *this </tt>
+        */
         rational & operator-=(rational const & x)
         {
             return *this = *this - x;
         }
 
+        /** @brief Вычитание целого числа
+        @param x вычитаемое
+        @return <tt> *this </tt>
+        */
         rational & operator-=(IntegerType const & x)
         {
             this->numerator_ref() -= x * this->denominator();
             return *this;
         }
 
+        /** @brief Умножение на рациональное число
+        @param x делитель
+        @return <tt> *this </tt>
+        */
         rational & operator*=(rational const & x)
         {
             return *this = *this * x;
         }
 
+        /** @brief Умножение на целое число
+        @param x множитель
+        @return <tt> *this </tt>
+        */
         rational & operator*=(IntegerType const & x)
         {
             return *this *= rational{x};
         }
 
+        /** @brief Деление на рациональное число
+        @param x делитель
+        @return <tt> *this </tt>
+        */
         rational & operator/=(rational const & x)
         {
             return *this = *this / x;
         }
 
+        /** @brief Деление на целое число
+        @param x делитель
+        @return <tt> *this </tt>
+        */
         rational & operator/=(IntegerType const & x)
         {
             return *this /= rational{x};

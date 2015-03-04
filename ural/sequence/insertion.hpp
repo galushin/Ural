@@ -163,11 +163,17 @@ namespace ural
             return false;
         }
 
+        /** @brief Доступ к первому элементу
+        @return <tt> *this </tt>
+        */
         set_insert_sequence const & operator*() const
         {
             return *this;
         }
 
+        /** @brief Оператор присваивания
+        @param x добавляемое в контейнер значение
+        */
         template <class T>
         void operator=(T && x) const
         {
@@ -184,6 +190,10 @@ namespace ural
     struct set_inserter_helper
     {
     public:
+        /** @brief Оператор вызова функции
+        @param c контейнер
+        @return <tt> set_insert_sequence<Container>(c) </tt>
+        */
         template <class Container>
         ural::set_insert_sequence<Container>
         operator()(Container & c) const

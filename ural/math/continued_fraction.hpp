@@ -67,6 +67,11 @@ namespace ural
     class sqrt_as_continued_fraction_functor
     {
     public:
+        /** @brief Оператор вызова функции
+        @param N число, из которого необходимо вычислить корень
+        @param out выходная последовательность
+        @return Непройденная часть @c out
+        */
         template <class IntType, class OutputTraversable>
         auto operator()(IntType N, OutputTraversable && out) const
         -> decltype(sequence(std::forward<OutputTraversable>(out)))

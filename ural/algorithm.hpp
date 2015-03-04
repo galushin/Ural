@@ -19,6 +19,7 @@
 
 /** @file ural/algorithm.hpp
  @brief Обобщённые алгоритмы
+ @todo Проверка концепций
 */
 
 #include <ural/sequence/filtered.hpp>
@@ -859,12 +860,29 @@ namespace ural
     class push_heap_fn
     {
     public:
+        /** Добавление нового элемента в бинарную кучу
+        @brief Оператор вызова функции
+        @param seq последовательность произвольного доступа
+        @pre @c seq не пуста
+        @pre Первые <tt> seq.size() - 1 </tt> элементов @c seq образуют бинарную
+        кучу
+        @post <tt> is_heap(seq) </tt>
+        */
         template <class RASequence>
         void operator()(RASequence && seq) const
         {
             return (*this)(std::forward<RASequence>(seq), ural::less<>{});
         }
 
+        /** Добавление нового элемента в бинарную кучу
+        @brief Оператор вызова функции
+        @param seq последовательность произвольного доступа
+        @param cmp функция сравнения
+        @pre @c seq не пуста
+        @pre Первые <tt> seq.size() - 1 </tt> элементов @c seq образуют бинарную
+        кучу по отношению @c cmp
+        @post <tt> is_heap(seq, cmp) </tt>
+        */
         template <class RASequence, class Compare>
         void operator()(RASequence && seq, Compare cmp) const
         {
@@ -933,6 +951,10 @@ namespace ural
     class sort_heap_fn
     {
     public:
+        /** @brief Оператор вызова функции
+        @param seq последовательность произвольного доступа
+        @post <tt> is_sorted(seq) <tt>
+        */
         template <class RASequence>
         void operator()(RASequence && seq) const
         {
@@ -940,6 +962,11 @@ namespace ural
                            ural::less<>{});
         }
 
+        /** @brief Оператор вызова функции
+        @param seq последовательность произвольного доступа
+        @param cmp функция сравнения
+        @post <tt> is_sorted(seq, cmp) <tt>
+        */
         template <class RASequence, class Compare>
         void operator()(RASequence && seq, Compare cmp) const
         {
@@ -1746,6 +1773,10 @@ namespace ural
     class remove_fn
     {
     public:
+        /** @brief Оператор вызова функции
+        @param seq входная последовательность
+        @param value значение
+        */
         template <class ForwardSequence, class Value>
         auto operator()(ForwardSequence && seq, Value const & value) const
         -> decltype(sequence_fwd<ForwardSequence>(seq))
@@ -1754,6 +1785,11 @@ namespace ural
                            ural::equal_to<>{});
         }
 
+        /** @brief Оператор вызова функции
+        @param seq входная последовательность
+        @param value значение
+        @param pred бинарный предикат, определяющий эквивалентность элементов
+        */
         template <class ForwardSequence, class Value, class BinaryPredicate>
         auto operator()(ForwardSequence && seq, Value const & value,
                         BinaryPredicate pred) const
@@ -1803,6 +1839,10 @@ namespace ural
     class remove_if_fn
     {
     public:
+        /** @brief Оператор вызова функции
+        @param seq входная последовательность
+        @param pred унарный предикат
+        */
         template <class ForwardSequence, class Predicate>
         auto operator()(ForwardSequence && seq, Predicate pred) const
         -> decltype(sequence_fwd<ForwardSequence>(seq))
@@ -1850,6 +1890,12 @@ namespace ural
     class remove_if_erase_fn
     {
     public:
+        /** Физически удаляет элементы, удовлетворяющие предикату, из контейнера
+        @brief Оператор вызова функции
+        @param c контейнер
+        @param pred предикат
+        @return @c c
+        */
         template <class Container, class Predicate>
         Container & operator()(Container & c, Predicate pred) const
         {
@@ -1864,6 +1910,12 @@ namespace ural
     class remove_erase_fn
     {
     public:
+        /** Физически удаляет элементы, равные заданному значению
+        @brief Оператор вызова функции
+        @param c контейнер
+        @param value значение
+        @return @c c
+        */
         template <class Container, class Value>
         Container & operator()(Container & target, Value const & value) const
         {
