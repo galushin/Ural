@@ -505,6 +505,10 @@ namespace details
         //@}
 
         //@{
+        /** @brief Доступ к ссылке на значение
+        @pre <tt> !*this == false </tt>
+        @return <tt> this->value() </tt>
+        */
         constexpr value_type const & operator*() const
         {
             return impl_.value_unsafe();
@@ -563,6 +567,10 @@ namespace details
             return impl_.emplace(ilist, std::forward<Args>(args)...);
         }
 
+        /** Обменивает содержимое @c that и <tt> *this </tt>
+        @brief Обмен
+        @param that объект, с которым будет производится обмен
+        */
         void swap(optional & x) noexcept(std::is_nothrow_move_constructible<T>::value
                                          && details::has_nothrow_swap<T>::value)
         {
@@ -612,7 +620,7 @@ namespace details
         // Присваивания
         /** @brief Удаление значения
         @post <tt> !*this </tt>
-        @reutnr <tt> *this </tt>
+        @return <tt> *this </tt>
         */
         optional & operator=(nullopt_t)
         {
@@ -678,7 +686,11 @@ namespace details
             ptr_ = std::addressof(x);
         }
 
-        void swap(optional & that)
+        /** Обменивает содержимое @c that и <tt> *this </tt>
+        @brief Обмен
+        @param that объект, с которым будет производится обмен
+        */
+        void swap(optional & that) noexcept
         {
             using std::swap;
             using ural::swap;
