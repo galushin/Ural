@@ -180,6 +180,7 @@ namespace ural
             c_.get().insert(std::forward<T>(x));
         }
 
+        /// @brief Переход к следующему элементу
         void pop_front()
         {};
 

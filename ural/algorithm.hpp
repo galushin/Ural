@@ -953,7 +953,7 @@ namespace ural
     public:
         /** @brief Оператор вызова функции
         @param seq последовательность произвольного доступа
-        @post <tt> is_sorted(seq) <tt>
+        @post <tt> is_sorted(seq) </tt>
         */
         template <class RASequence>
         void operator()(RASequence && seq) const
@@ -965,7 +965,7 @@ namespace ural
         /** @brief Оператор вызова функции
         @param seq последовательность произвольного доступа
         @param cmp функция сравнения
-        @post <tt> is_sorted(seq, cmp) <tt>
+        @post <tt> is_sorted(seq, cmp) </tt>
         */
         template <class RASequence, class Compare>
         void operator()(RASequence && seq, Compare cmp) const
@@ -1912,9 +1912,9 @@ namespace ural
     public:
         /** Физически удаляет элементы, равные заданному значению
         @brief Оператор вызова функции
-        @param c контейнер
+        @param target контейнер
         @param value значение
-        @return @c c
+        @return @c target
         */
         template <class Container, class Value>
         Container & operator()(Container & target, Value const & value) const

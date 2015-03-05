@@ -162,13 +162,19 @@ namespace ural
 
         // Конструкторы
         /** @brief Конструктор без параметров
-        @param cs список коэффициентов
         @post <tt> this->coefficients() == coefficients_container(1, 0) </tt>
         */
         polynomial()
          : cs_(1, coefficient_type{0})
         {}
 
+        /** @brief Конструктор на основе последовательности, заданной парой
+        итераторов
+        @param first итератор, задающий начало последовательности
+        @param last итератор, задающий конец последовательности
+        @pre <tt> [first; last) </tt> должен быть корректным интервалом
+        @todo написать пост-условие
+        */
         template <class InputIterator>
         polynomial(InputIterator first, InputIterator last)
          : cs_{}
@@ -309,6 +315,9 @@ namespace ural
         }
 
         // Свойства
+        /** @brief Степень многочлена
+        @return <tt> this->coefficients().size() - 1 </tt>
+        */
         size_type degree() const
         {
             assert(!ural::empty(cs_));

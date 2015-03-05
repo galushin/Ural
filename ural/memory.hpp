@@ -72,7 +72,7 @@ namespace ural
     public:
         /** @brief Оператор вызова функции
         @param value значение
-        @return <tt> return ::ural::make_unique<T>(std::move(value)) </tt>
+        @return <tt> ::ural::make_unique<T>(std::move(value)) </tt>
         */
         template <class T>
         std::unique_ptr<T> operator()(T value) const

@@ -38,6 +38,11 @@ namespace ural
     public:
         static_assert(std::is_empty<F>::value, "must be empty class");
 
+        /** @brief Оператор вызова функции
+        @param x левый операнд
+        @param y правый операнд
+        @return <tt> F{}(x, y) </tt>
+        */
         constexpr auto
         operator()(typename boost::call_traits<T1>::param_type x,
                    typename boost::call_traits<T2>::param_type y) const
@@ -91,6 +96,11 @@ namespace ural
     public:
         static_assert(std::is_empty<F>::value, "Must be empty!");
 
+        /** @brief Оператор вызова функции
+        @param x левый операнд
+        @param y правый операнд
+        @return <tt> F{}(x, y) </tt>
+        */
         T1 & operator()(T1 & x, T2 const & y) const
         {
             typedef typename F::is_transparent F_is_transparent;
@@ -261,6 +271,7 @@ namespace ural
     class divides<void, void>
     {
     public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
         typedef std::true_type is_transparent;
 
         template <class T1, class T2>
@@ -286,6 +297,7 @@ namespace ural
     class modulus<void, void>
     {
     public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
         typedef std::true_type is_transparent;
 
         template <class T1, class T2>
@@ -309,8 +321,13 @@ namespace ural
     class negate<>
     {
     public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
         typedef std::true_type is_transparent;
 
+        /** @brief Оператор вызова функции
+        @param x операнд
+        @return <tt> -std::forward<T>(x) </tt>
+        */
         template <class T>
         constexpr auto operator()(T && x) const
         -> decltype(-std::forward<T>(x))
@@ -334,6 +351,7 @@ namespace ural
     class equal_to<void, void>
     {
     public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
         typedef std::true_type is_transparent;
 
         template <class T1, class T2>
@@ -359,8 +377,14 @@ namespace ural
     class not_equal_to<void, void>
     {
     public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
         typedef std::true_type is_transparent;
 
+        /** @brief Оператор вызова функции
+        @param x левый операнд
+        @param y правй операнд
+        @return <tt> std::forward<T1>(x) != std::forward<T2>(y) </tt>
+        */
         template <class T1, class T2>
         constexpr auto operator()(T1 && x, T2 && y) const
         -> decltype (std::forward<T1>(x) != std::forward<T2>(y))
@@ -384,6 +408,7 @@ namespace ural
     class less<void, void>
     {
     public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
         typedef std::true_type is_transparent;
 
         template <class T1, class T2>
@@ -409,6 +434,7 @@ namespace ural
     class greater<void, void>
     {
     public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
         typedef std::true_type is_transparent;
 
         template <class T1, class T2>
@@ -481,6 +507,7 @@ namespace ural
     class logical_and<void, void>
     {
     public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
         typedef std::true_type is_transparent;
 
         template <class T1, class T2>
@@ -506,6 +533,7 @@ namespace ural
     class logical_or<void, void>
     {
     public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
         typedef std::true_type is_transparent;
 
         template <class T1, class T2>
@@ -529,6 +557,7 @@ namespace ural
     class logical_not<void>
     {
     public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
         typedef std::true_type is_transparent;
 
         template <class T>
@@ -548,6 +577,7 @@ namespace ural
     class logical_implication<void, void>
     {
     public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
         typedef std::true_type is_transparent;
 
         template <class T1, class T2>
@@ -572,6 +602,7 @@ namespace ural
     class bit_not<void>
     {
     public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
         typedef std::true_type is_transparent;
 
         template <class T>
@@ -597,6 +628,7 @@ namespace ural
     class bit_and<void, void>
     {
     public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
         typedef std::true_type is_transparent;
 
         template <class T1, class T2>
@@ -623,6 +655,7 @@ namespace ural
     class bit_or<void, void>
     {
     public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
         typedef std::true_type is_transparent;
 
         template <class T1, class T2>
@@ -649,6 +682,7 @@ namespace ural
     class bit_xor<void, void>
     {
     public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
         typedef std::true_type is_transparent;
 
         template <class T1, class T2>
@@ -740,8 +774,14 @@ namespace ural
     class plus_assign<>
     {
     public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
         typedef std::true_type is_transparent;
 
+        /** @brief Оператор вызова функции
+        @param x левый операнд
+        @param y правый операнд
+        @return <tt> x += std::forward<T2>(y) </tt>
+        */
         template <class T1, class T2>
         constexpr T1 & operator()(T1 & x, T2 && y) const
         {
@@ -764,6 +804,7 @@ namespace ural
     class minus_assign<>
     {
     public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
         typedef std::true_type is_transparent;
 
         template <class T1, class T2>
@@ -782,6 +823,7 @@ namespace ural
     class multiplies_assign<void, void>
     {
     public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
         typedef std::true_type is_transparent;
 
         template <class T1, class T2>
@@ -800,6 +842,7 @@ namespace ural
     class divides_assign<void, void>
     {
     public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
         typedef std::true_type is_transparent;
 
         template <class T1, class T2>
@@ -818,6 +861,7 @@ namespace ural
     class modulus_assign<void, void>
     {
     public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
         typedef std::true_type is_transparent;
 
         template <class T1, class T2>

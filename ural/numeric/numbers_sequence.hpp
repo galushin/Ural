@@ -75,16 +75,23 @@ namespace ural
         {}
 
         // Однопроходная последовательность
+        /** @brief Проверка исчерпания последовательности
+        @return @b true, если последовательность исчерпана, иначе -- @b false
+        */
         bool operator!() const
         {
             return data_[ural::_1] >= data_[ural::_2];
         }
 
+        /** @brief Текущий элемент
+        @return Ссылка на текущий элемент
+        */
         reference front() const
         {
             return data_[ural::_1];
         }
 
+        /// @brief Переход к следующему элементу
         void pop_front()
         {
             data_[ural::_1] += data_[ural::_3];

@@ -203,6 +203,10 @@ namespace ural
             return false;
         }
 
+        /** @brief Текущий элемент
+        @return <tt> *this </tt>
+        @todo front?
+        */
         ostream_sequence const & operator*() const
         {
             return *this;

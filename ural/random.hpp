@@ -562,6 +562,8 @@ namespace ural
     /** @brief Многомерное нормальное распределение
     @tparam Vector тип вектора-результата
     @tparam Matrix тип корреляционной матрицы
+    @todo Тип параметра как требует стандартная библиотека
+    @todo Функции, возвращающие вектор мат.ожиданий и ковариационную матрицу
     */
     template <class Vector = use_default, class Matrix = use_default>
     class multivariate_normal_distribution
@@ -591,6 +593,7 @@ namespace ural
         class param_type
         {
         public:
+            /// @brief Тип распределения
             typedef multivariate_normal_distribution distribution_type;
 
         private:
@@ -614,8 +617,7 @@ namespace ural
         multivariate_normal_distribution(param_type p);
 
         /** @brief Конструктор
-        @param dim размерность
-        @post <tt> this->dim() == dim </tt>
+        @param mu вектор математических ожиданий
         @post <tt> this->mean() == mu </tt>
         @post Корреляционная матрица --- единичная
         */
@@ -630,6 +632,8 @@ namespace ural
         @param C ковариационная матрица
         @pre <tt> mu.size() == C.size1() </tt>
         @pre <tt> C.size1() == C.size2() </tt>
+        @post <tt> this->mean() == mu </tt>
+        @post <tt> this->cov() == C </tt>
         */
         multivariate_normal_distribution(result_type mu, matrix_type const & C)
          : mu_(std::move(mu))

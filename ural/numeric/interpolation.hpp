@@ -27,6 +27,12 @@ namespace ural
     class numeric_policy
     {
     public:
+        /** Функция проверки неравенства нулю, если @c x равно нулю, выдаётся
+        ошибка нарушения утверждения.
+        @brief Функция проверки неравенства нулю
+        @param x проверяемое значение
+        @return @b true
+        */
         static bool check_not_zero(X const & x)
         {
             using std::abs;

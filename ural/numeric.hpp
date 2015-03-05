@@ -309,25 +309,38 @@ namespace ural
     {
     public:
         // Типы
+        /// @brief Тип значения
         typedef Vector value_type;
+
+        /// @brief Тип ссылки
         typedef Vector const & reference;
 
         // Конструкторы
+        /** @brief Конструктор без параметров
+        @post <tt> this->front() == {1} </tt>
+        */
         pascal_triangle_rows_sequence()
          : row_{1}
         {}
 
         // Однопроходная последовательность
+        /** @brief Проверка исчерпания последовательности
+        @return @b true, если последовательность исчерпана, иначе -- @b false
+        */
         bool operator!() const
         {
             return false;
         }
 
+        /** @brief Текущий элемент
+        @return Ссылка на текущий элемент
+        */
         reference front() const
         {
             return row_;
         }
 
+        /// @brief Переход к следующему элементу
         void pop_front()
         {
             Vector new_row(row_.size() + 1, 1);

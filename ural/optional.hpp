@@ -461,7 +461,7 @@ namespace details
         }
 
         /** @brief Проверка отсутствия значения
-        @return <tt> !static_cast<bool>(*this) </tt>
+        @return <tt> !bool(*this) </tt>
         */
         constexpr bool operator!() const
         {
@@ -567,9 +567,9 @@ namespace details
             return impl_.emplace(ilist, std::forward<Args>(args)...);
         }
 
-        /** Обменивает содержимое @c that и <tt> *this </tt>
+        /** Обменивает содержимое @c x и <tt> *this </tt>
         @brief Обмен
-        @param that объект, с которым будет производится обмен
+        @param x объект, с которым будет производится обмен
         */
         void swap(optional & x) noexcept(std::is_nothrow_move_constructible<T>::value
                                          && details::has_nothrow_swap<T>::value)
