@@ -62,11 +62,26 @@ namespace ural
             /// @brief Тип соответствующего распределения
             typedef ural::discrete_distribution<IntType> distribution_type;
 
+            /** @brief Конструктор без параметров
+            @post <tt> this->probabilities() == {1} </tt>
+            */
             param_type()
              : data_{1, std::pair<weight_type, size_t>(1.0, 0)}
              , ps_(1, 1.0)
             {}
 
+            /** @brief Конструктор на основе последовательности весов
+            @param first итератор, задающий начало последовательности весов
+            @param last итератор, задающий конец последовательности весов
+            @pre Для любого @c i из <tt> [first; last) </tt> выполняется
+            <tt> *i >= 0 </tt>.
+            @pre Либо <tt> first == last </tt>, либо сумма всех весов больше нуля.
+            @post Если <tt> first == last </tt>, то
+            <tt> this->probabilities() == {1} </tt>. В противном случае, пусть
+            @c w_sum --- сумма всех весов из  <tt> [first; last) </tt>, тогда
+            значение @c k из интервала  <tt> [0; last - first) </tt> имеет
+            вероятность  <tt> first[k] / w_sum </tt>.
+            */
             template <class Iterator>
             param_type(Iterator first, Iterator last)
             {
@@ -82,6 +97,10 @@ namespace ural
                 }
             }
 
+            /** @brief Конструктор на основе списка инициализации.
+            @param ws список инициализации, содержащий веса
+            @post <tt> *this == param_type(ws.begin(), ws.end()) </tt>
+            */
             param_type(std::initializer_list<weight_type> ws)
              : param_type(ws.begin(), ws.end())
             {}
@@ -112,6 +131,11 @@ namespace ural
             }
 
             // Порождение значений
+            /** @brief Порождение случайной величины
+            @param g генератор равномерно распределённых случайных чисел
+            @return Случайная величина, параметр распределения которой равен
+            <tt> *this </tt>
+            */
             template <class URNG>
             result_type operator()(URNG & g) const
             {
@@ -133,16 +157,26 @@ namespace ural
             }
 
             // Свойства
+            /** @brief Вектор вероятностей
+            @return Вектор вероятностей, с которыми появляются значения,
+            возвращаемые оператором ().
+            */
             std::vector<weight_type> probabilities() const
             {
                 return ps_;
             }
 
+            /** @brief Наименьшее значение
+            @return Наименьшее значение, которое может вернуть оператор ().
+            */
             result_type min URAL_PREVENT_MACRO_SUBSTITUTION () const
             {
                 return result_type{0};
             }
 
+            /** @brief Наибольшее значение
+            @return Наибольшее значение, которое может вернуть оператор ().
+            */
             result_type max URAL_PREVENT_MACRO_SUBSTITUTION () const
             {
                 return result_type(data_.size() - 1);
@@ -241,9 +275,9 @@ namespace ural
          : param_{std::move(first), std::move(last)}
         {}
 
-        /** @brief Конструктор на основе списка инициализации. Эквивалентен
-        <tt> discrete_distribution<result_type>(ws.begin(), ws.end()) </tt>
+        /** @brief Конструктор на основе списка инициализации.
         @param ws список инициализации, содержащий веса
+        @post <tt> *this == discrete_distribution(ws.begin(), ws.end()) </tt>
         */
         discrete_distribution(std::initializer_list<weight_type> ws)
          : param_{ws}
@@ -330,6 +364,7 @@ namespace ural
         }
 
         // Модификаторы
+        /// @brief Сброс кэша распределения
         void reset()
         {}
 
@@ -438,26 +473,47 @@ namespace ural
             /// @brief Тип распределения
             typedef iid_adaptor distribution_type;
 
+            /** @brief Конструктор
+            @post <tt> this->count() == 1 </tt>
+            @post <tt> this->base() == distribution_type{} </tt>
+            */
             param_type()
              : d_{}
              , n_{1}
             {}
 
+            /** @brief Конструктор
+            @param n количество случайных величин
+            @post <tt> this->count() == n </tt>
+            @post <tt> this->base() == distribution_type{} </tt>
+            */
             explicit param_type(size_type n)
              : d_{}
              , n_{std::move(n)}
             {}
 
+            /** @brief Конструктор
+            @param n количество случайных величин
+            @param d распределение случайных величин
+            @post <tt> this->count() == n </tt>
+            @post <tt> this->base() == d </tt>
+            */
             explicit param_type(size_type n, Distribution const & d)
              : d_{d}
              , n_{std::move(n)}
             {}
 
+            /** @brief Количество случайных величин, генерируемых за раз
+            @return Количество случайных величин, генерируемых за раз
+            */
             size_type count() const
             {
                 return this->n_;
             }
 
+            /** @brief Базовое распределение
+            @return Константная ссылка на базовое распределение
+            */
             Distribution const & base() const
             {
                 return this->d_;
@@ -500,8 +556,13 @@ namespace ural
          : param_(n, d)
         {}
 
+        /** @brief Конструктор на основе параметра распределения
+        @param p параметр распределения
+        @post <tt> this->param() == p </tt>
+        */
         explicit iid_adaptor(param_type const & p);
 
+        /// @brief Сброс кэша распределения
         void reset()
         {
             param_.do_reset();
@@ -522,11 +583,26 @@ namespace ural
             return result_;
         }
 
+         /** @brief Порождение случайной величины
+        @param g генератор равномерно распределённых случайных чисел
+        @param p параметр распределения
+        @return Вектор, компоненты которого распределены одинаково и независимо
+        с распределением <tt> p.base_distibution() </tt>
+        */
         template <class URNG>
         result_type operator()(URNG & g, param_type const & p);
 
         // Свойства
+        /** @brief Наименьшее возможное значение
+        @return Наименьшее возможное значение, которое может вернуть
+        распределение
+        */
         result_type min URAL_PREVENT_MACRO_SUBSTITUTION () const;
+
+        /** @brief Наибольшее возможное значение
+        @return Наибольшее возможное значение, которое может вернуть
+        распределение
+        */
         result_type max URAL_PREVENT_MACRO_SUBSTITUTION () const;
 
         /** @brief Количество случайных величин
@@ -537,12 +613,23 @@ namespace ural
             return param_.count();
         }
 
+        /** @brief Базовое распределение
+        @return Константная ссылка на базовое распределение
+        */
         Distribution const & base() const
         {
             return param_.base();
         }
 
+        /** @brief Текущее значение параметра распределения
+        @return Текущее значение параметра распределения
+        */
         param_type param() const;
+
+        /** @brief Установка значения параметра распределения
+        @param p новое значение параметра распределения
+        @post <tt> this->param() == p </tt>
+        */
         void param(param_type const & p);
 
     private:
@@ -582,11 +669,14 @@ namespace ural
         typedef typename default_helper<Vector, boost::numeric::ublas::vector<double>>::type
             result_type;
 
+        /// @brief Тип элементов
         typedef typename result_type::value_type element_type;
 
+        /// @brief Тип ковариационной матрицы
         typedef typename default_helper<Matrix, boost::numeric::ublas::matrix<element_type>>::type
             matrix_type;
 
+        /// @brief Тип для представления размера
         typedef typename result_type::size_type size_type;
 
         /// @brief Тип параметра
@@ -614,6 +704,10 @@ namespace ural
          , base_{dim}
         {}
 
+        /** @brief Конструктор на основе параметра распределения
+        @param p параметр распределения
+        @post <tt> this->param() == p </tt>
+        */
         multivariate_normal_distribution(param_type p);
 
         /** @brief Конструктор
@@ -643,14 +737,17 @@ namespace ural
             assert(mu.size() == C.size2());
         }
 
+        /// @brief Сброс кэша случайной величины
         void reset()
         {
             base_.reset();
         }
 
         // Генерация случайных чисел
-        /** @brief Порождение случайных чисел
+        /** @brief Порождение случайной величины
         @param g генератор равномерно распределённых случайных чисел
+        @return Случайная величина, распределение которой имеет параметр
+        <tt> this->param() </tt>
         */
         template <class URNG>
         result_type operator()(URNG & g)
@@ -659,20 +756,45 @@ namespace ural
             return mu_ + prod(L_, base_(g));
         }
 
+        /** @brief Порождение случайной величины
+        @param g генератор равномерно распределённых случайных чисел
+        @param p значение параметра
+        @return Случайная величина, распределение которой имеет параметр @c p
+        */
         template <class URNG>
         result_type operator()(URNG & g, param_type const & p);
 
         // Свойства
+        /** @brief Размерность
+        @return Размерность вектора-результата
+        */
         size_type dim () const
         {
             return mu_.size();
         }
 
+        /** @brief Наименьшее возможное значение
+        @return Наименьшее возможное значение, которое может вернуть
+        распределение
+        */
         result_type min URAL_PREVENT_MACRO_SUBSTITUTION () const;
+
+        /** @brief Наибольшее возможное значение
+        @return Наибольшее возможное значение, которое может вернуть
+        распределение
+        */
         result_type max URAL_PREVENT_MACRO_SUBSTITUTION () const;
 
+        /** @brief Значение параметра
+        @return Текущее значение параметра распределения
+        */
         param_type param() const;
-        void param(param_type) const;
+
+        /** @brief Установка нового значения параметров
+        @param p новое значение параметра
+        @post <tt> this->param() == p </tt>
+        */
+        void param(param_type p) const;
 
     private:
         result_type mu_;
