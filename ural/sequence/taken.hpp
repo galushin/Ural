@@ -148,11 +148,15 @@ namespace ural
     /** @brief Оператор "равно"
     @param x левый операнд
     @param y правый операнд
+    @return <tt> x.count() == y.count() && x.base() == y.base() </tt>
     */
     template <class Sequence, class Size>
     bool operator==(take_sequence<Sequence, Size> const & x,
                     take_sequence<Sequence, Size> const & y);
 
+    /** @brief Тип вспомогательного объекта для создания @c take_sequence
+    @tparam Size тип для представления размера
+    */
     template <class Size>
     struct taken_helper
     {
@@ -160,6 +164,10 @@ namespace ural
         Size count;
     };
 
+    /** @brief Создание @c take_sequence в конвейерном стиле
+    @param seq входная последовательность
+    @param helper объект, хранящий количество элементов
+    */
     template <class Sequence, class Size>
     auto operator|(Sequence && seq, taken_helper<Size> helper)
     -> take_sequence<decltype(sequence(std::forward<Sequence>(seq))), Size>
@@ -168,6 +176,10 @@ namespace ural
         return Result{sequence(std::forward<Sequence>(seq)), helper.count};
     }
 
+    /** @brief Функция создания @c take_helper
+    @param n количество элементов
+    @return <tt> taken_helper<Size>{n} </tt>
+    */
     template <class Size>
     taken_helper<Size> taken(Size n)
     {
