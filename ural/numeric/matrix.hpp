@@ -46,22 +46,46 @@ namespace ural
         typedef boost::numeric::ublas::matrix<T, L, A> Base;
     public:
         // Типы
+        /// @brief Тип элементов
         typedef T value_type;
+
+        /// @brief Тип разности между индексами
         typedef typename Base::difference_type difference_type;
+
+        /// @brief Тип для представления размера
         typedef typename Base::size_type size_type;
+
+        /// @brief Тип ссылки
         typedef typename Base::reference reference;
+
+        /// @brief Тип константной ссылки
         typedef typename Base::const_reference const_reference;
 
+        /// @brief Тип константного замыкания для шаблонов выражений
         typedef const boost::numeric::ublas::matrix_reference<const matrix> const_closure_type;
+
+        /// @brief Тип замыкания для шаблонов выражений
         typedef boost::numeric::ublas::matrix_reference<matrix> closure_type;
 
+        /// @brief Способ хранения элемнтов: рязряженный или плотный
         typedef typename Base::storage_category storage_category;
+
+        /// @brief Тип временного вектора
         typedef typename Base::vector_temporary_type vector_temporary_type;
+
+        /// @brief Способ хранения элементов: по строкам или по столбцам
         typedef typename Base::orientation_category orientation_category;
 
+        /// @brief Итератор для первой размерности
         typedef typename Base::iterator1 iterator1;
+
+        /// @brief Константный итератор для первой размерности
         typedef typename Base::const_iterator1 const_iterator1;
+
+        /// @brief Итератор для второй размерности
         typedef typename Base::iterator2 iterator2;
+
+        /// @brief Константный итератор для второй размерности
         typedef typename Base::const_iterator2 const_iterator2;
 
         // Конструкторы
@@ -285,6 +309,12 @@ namespace ural
         return matrix_by_rows_sequence<Matrix>(x);
     }
 
+    /** @brief Првоерка того, что матрица является корреляционной
+    @param S матрица
+    @param eps точность
+    @return @b true, если матрица @c S является корреляционной с точностью
+    @c eps, иначе -- @b false.
+    */
     template <class Matrix>
     bool is_correlational_matrix(Matrix const & S, double eps)
     {
