@@ -31,8 +31,10 @@
 
 #include <type_traits>
 
+/// @brief Макрос для вывода сообщения о несоответствии концепции
 #define URAL_CONCEPT_ERROR_MSG(T, Concept) #T " is not " #Concept
 
+/// @brief Макрос для проверки соответствия концепции
 #define URAL_CONCEPT_ASSERT(T, Concept)\
     static_assert(Concept<T>(), URAL_CONCEPT_ERROR_MSG(T, Concept) )
 
@@ -40,21 +42,28 @@ namespace ural
 {
 namespace concepts
 {
-    /** @brief Концепция "Полурегулярный тип"
+    /** @brief Концепция-функция "допускающий копирующее присваивание"
+    @tparam T тип, проверяемый на соответствие концепции
     */
-    template <class T>
-    constexpr bool SemiRegular()
-    {
-        return std::is_copy_constructible<T>::value
-            && std::is_copy_assignable<T>::value;
-    }
-
     template <class T>
     constexpr bool CopyAssignable()
     {
         return std::is_copy_assignable<T>::value;
     }
 
+    /** @brief Концепция "Полурегулярный тип"
+    @tparam T тип, проверяемый на соответствие концепции
+    */
+    template <class T>
+    constexpr bool SemiRegular()
+    {
+        return ::ural::concepts::CopyAssignable<T>()
+            && std::is_copy_assignable<T>::value;
+    }
+
+    /** @brief Концепция-функция "допускающий проверку на равенство"
+    @tparam T тип, проверяемый на соответствие концепции
+    */
     template <class T>
     constexpr bool EqualityComparable()
     {
@@ -263,6 +272,9 @@ namespace concepts
         }
     };
 
+    /** @brief Концепция "Распределение вероятностей" (Стандарт C++ 26.5.1.6)
+    @tparam D тип, проверяемый на соответствие концепции
+    */
     template <class D>
     class RandomDistribution
      : boost::CopyConstructible<D>

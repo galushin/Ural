@@ -87,6 +87,10 @@ namespace ural
     struct back_inserter_helper
     {
     public:
+        /** @brief Оператор вызова функции
+        @param c контейнер, в который будет производится вставка
+        @return <tt> std::back_insert_iterator<Container> </tt>
+        */
         template <class Container>
         constexpr std::back_insert_iterator<Container>
         operator()(Container & c) const
@@ -95,8 +99,15 @@ namespace ural
         }
     };
 
+    /** @brief Функциональный объект, создающий итератор вставки в конец
+    контейнера
+    */
     constexpr auto back_inserter = back_inserter_helper{};
 
+    /** @brief Создание @c std::back_insert_iterator конвейерным синтаксисом
+    @param c контейнера
+    @return <tt> std::back_insert_iterator<Container>(c) </tt>
+    */
     template <class Container>
     std::back_insert_iterator<Container>
     operator|(Container & c, back_inserter_helper helper)
@@ -109,7 +120,12 @@ namespace ural
     */
     struct front_inserter_helper
     {
-    template <class Container>
+    public:
+        /** @brief Оператор вызова функции
+        @param c контейнер, в который будет производится вставка
+        @return <tt> std::front_insert_iterator<Container> </tt>
+        */
+        template <class Container>
         constexpr std::front_insert_iterator<Container>
         operator()(Container & c) const
         {
@@ -117,8 +133,15 @@ namespace ural
         }
     };
 
+    /** @brief Функциональный объект, создающий итератор вставки в начало
+    контейнера
+    */
     constexpr auto front_inserter = front_inserter_helper{};
 
+    /** @brief Создание @c std::front_insert_iterator конвейерным синтаксисом
+    @param c контейнера
+    @return <tt> std::front_insert_iterator<Container>(c) </tt>
+    */
     template <class Container>
     std::front_insert_iterator<Container>
     operator|(Container & c, front_inserter_helper helper)
@@ -188,6 +211,9 @@ namespace ural
         std::reference_wrapper<Container> c_;
     };
 
+    /** @brief Вспомогательный класс для создания последовательности вставки
+    элементов в множество
+    */
     struct set_inserter_helper
     {
     public:
@@ -203,6 +229,10 @@ namespace ural
         }
     };
 
+    /** @brief Создание @c set_insert_sequence конвейерным синтаксисом
+    @param c контейнера
+    @return <tt> set_insert_sequence<Container>(c) </tt>
+    */
     template <class Container>
     ural::set_insert_sequence<Container>
     operator|(Container & c, set_inserter_helper)
@@ -210,6 +240,9 @@ namespace ural
         return ural::set_inserter_helper{}(c);
     }
 
+    /** @brief Функциональный объект, создающий последовательность вставки
+    во множество
+    */
     constexpr auto set_inserter = set_inserter_helper{};
 }
 // namespace ural

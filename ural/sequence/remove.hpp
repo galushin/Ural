@@ -142,6 +142,12 @@ namespace ural
         tuple<Input, Predicate> members_;
     };
 
+    /** @brief Функция создания @c remove_if_sequence
+    @param in входная последовательность
+    @param pred унарный предикат, определяющий, какие элементы должны быть
+    исключены из последовательности
+    @return <tt> remove_if_sequence(sequence_fwd<Input>(in), make_functor(pred)) </tt>
+    */
     template <class Input, class Predicate>
     auto make_remove_if_sequence(Input && in, Predicate pred)
     -> remove_if_sequence<decltype(sequence(std::forward<Input>(in))),
@@ -250,6 +256,13 @@ namespace ural
         ural::tuple<Input, T, BinaryPredicate> members_;
     };
 
+    /** @brief Функция создания @c remove_sequence
+    @param in входная последовательность
+    @param value значение, которое должно быть исключено из последовательности
+    @param pred бинарный предикат, определяющий сравнение элементов со
+    значением, которое должно быть удалено
+    @return <tt> remove_sequence<>(std::forward<Input>(in), value, ural::equal_to<>{}); </tt>
+    */
     template <class Input, class T, class BinaryPredicate>
     auto make_remove_sequence(Input && in, T const & value, BinaryPredicate pred)
     -> remove_sequence<decltype(sequence(std::forward<Input>(in))), T,
@@ -261,6 +274,11 @@ namespace ural
                         make_functor(std::move(pred)));
     }
 
+    /** @brief Функция создания @c remove_sequence
+    @param in входная последовательность
+    @param value значение, которое должно быть исключено из последовательности
+    @return <tt> make_remove_sequence(std::forward<Input>(in), value, ural::equal_to<>{}); </tt>
+    */
     template <class Input, class T>
     auto make_remove_sequence(Input && in, T const & value)
     -> decltype(make_remove_sequence(std::forward<Input>(in), value, ural::equal_to<>{}))

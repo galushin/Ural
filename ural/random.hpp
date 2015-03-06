@@ -105,10 +105,23 @@ namespace ural
              : param_type(ws.begin(), ws.end())
             {}
 
+            /** @brief Конструктор на основе преобразованного интервала весов
+            @param nw количество весов
+            @param xmin наименьшее значение
+            @param xmax наибольшее значение
+            @param fw унарная функция преобразования весов
+            @pre fw -- унарный функциональный объект, тип возвращаемого значения
+            которого может быть преобразован в @c weight_type
+            @pre <tt> 0 < d = (x_max - x_min) / n  </tt>
+            @post Пусть <tt> n = max(1, nw) </tt>, тогда веса определяются
+            формулой <tt> w_k = fw(x_min + k * d + d / 2) </tt> для
+            <tt> k = 0, 1, ..., n-1 </tt>
+            */
             template<class UnaryOperation>
             param_type(size_t nw, weight_type xmin, weight_type xmax,
                        UnaryOperation fw)
             {
+                // @todo добавить проверку концепкций
                 std::vector<double> ws;
                 if(nw == 0)
                 {
@@ -283,6 +296,18 @@ namespace ural
          : param_{ws}
         {}
 
+        /** @brief Конструктор на основе преобразованного интервала весов
+        @param nw количество весов
+        @param xmin наименьшее значение
+        @param xmax наибольшее значение
+        @param fw унарная функция преобразования весов
+        @pre fw -- унарный функциональный объект, тип возвращаемого значения
+        которого может быть преобразован в @c weight_type
+        @pre <tt> 0 < d = (x_max - x_min) / n  </tt>
+        @post Пусть <tt> n = max(1, nw) </tt>, тогда веса определяются
+        формулой <tt> w_k = fw(x_min + k * d + d / 2) </tt> для
+        <tt> k = 0, 1, ..., n-1 </tt>
+        */
         template<class UnaryOperation>
         discrete_distribution(size_t nw,
                               weight_type xmin, weight_type xmax,
@@ -409,7 +434,7 @@ namespace ural
     /** @brief Чтение из потока ввода
     @param is поток ввода
     @param d объект-распределение
-    @return <tt> is </tt>
+    @return @c is
     */
     template <class Ch, class Tr, class IntType>
     std::basic_istream<Ch, Tr> &
@@ -636,14 +661,24 @@ namespace ural
         param_type param_;
     };
 
+    /** @brief Оператор вывода в поток
+    @param is поток вывода
+    @param d переменная, значение которой должно быть выведено
+    @return @c os
+    */
     template <class Char, class Traits, class D, class Vector>
     std::basic_ostream<Char, Traits> &
     operator<<(std::basic_ostream<Char, Traits> & os,
                iid_adaptor<D, Vector> const & d);
 
+    /** @brief Оператор ввода из потока
+    @param is поток ввода
+    @param d переменная, в которую будет вводится значение
+    @return @c is
+    */
     template <class Char, class Traits, class D, class Vector>
     std::basic_istream<Char, Traits> &
-    operator>>(std::basic_istream<Char, Traits> & os,
+    operator>>(std::basic_istream<Char, Traits> & is,
                iid_adaptor<D, Vector> & d);
 
     /** @brief Многомерное нормальное распределение
@@ -804,11 +839,21 @@ namespace ural
         iid_adaptor<std::normal_distribution<element_type>, result_type> base_;
     };
 
+    /** @brief Оператор вывода в поток
+    @param is поток вывода
+    @param d переменная, значение которой должно быть выведено
+    @return @c os
+    */
     template <class Char, class Traits, class Vector, class Matrix>
     std::basic_ostream<Char, Traits> &
     operator<<(std::basic_ostream<Char, Traits> & os,
                multivariate_normal_distribution<Vector, Matrix> const & d);
 
+    /** @brief Оператор ввода из потока
+    @param is поток ввода
+    @param d переменная, в которую будет вводится значение
+    @return @c is
+    */
     template <class Char, class Traits, class Vector, class Matrix>
     std::basic_istream<Char, Traits> &
     operator>>(std::basic_istream<Char, Traits> & is,

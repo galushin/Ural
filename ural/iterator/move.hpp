@@ -74,7 +74,7 @@ namespace ural
 
         // Конструкторы
         /** @brief Конструктор без аргументов
-        @post <tt> this->base() == Iterator{}
+        @post <tt> this->base() == Iterator{} </tt>
         */
         move_iterator()
          : base_()
@@ -159,7 +159,7 @@ namespace ural
         // Итератор произвольного доступа
         /** @brief Оператор "плюс"
         @param n количество элементов
-        @return <tt> move_iterator(this->base() + n)
+        @return <tt> move_iterator(this->base() + n) </tt>
         */
         move_iterator operator+(difference_type n) const
         {
@@ -180,7 +180,7 @@ namespace ural
 
         /** @brief Оператор "минус"
         @param n количество элементов
-        @return <tt> move_iterator(this->base() - n)
+        @return <tt> move_iterator(this->base() - n) </tt>
         */
         move_iterator operator-(difference_type n) const
         {
