@@ -30,6 +30,11 @@ namespace ural
     @tparam Input Тип базовой последовательности
     @tparam BinaryPredicat бинарный предикат, определяющий, совпадают ли два
     последовательных элемента.
+
+    @note Было решено увеличить размер объекта за возможность менять текущий
+    элемент последовательности. Другим возможным вариантом было сделать ссылку
+    константной.
+    @todo Уменьшить дублирование, где это возможно
     */
     template <class Input, class BinaryPredicate = ural::equal_to<> >
     class unique_sequence
@@ -60,9 +65,10 @@ namespace ural
         @post <tt> this->predicate() == BinaryPredicate{} </tt>
         */
         explicit unique_sequence(Input in)
-         : cur_{std::move(in)}
-         , eq_{}
-        {}
+         : unique_sequence(std::move(in), traversal_tag{})
+        {
+            this->seek(traversal_tag{});
+        }
 
         /** @brief Конструктор
         @param in входная последовательность
@@ -71,13 +77,15 @@ namespace ural
         @post <tt> this->predicate() == pred </tt>
         */
         explicit unique_sequence(Input in, BinaryPredicate pred)
-         : cur_{std::move(in)}
-         , eq_(std::move(pred))
-        {}
+         : unique_sequence(std::move(in), std::move(pred), traversal_tag{})
+        {
+            this->seek(traversal_tag{});
+        }
 
         // Адаптор последовательности
         /** @brief Базовая последовательность
         @return Базовая последовательность
+        @todo Может быть сделать protected
         */
         Input const & base() const
         {
@@ -98,7 +106,7 @@ namespace ural
         */
         bool operator!() const
         {
-            return !this->base();
+            return !current_;
         }
 
         /** @brief Текущий элемент последовательности
@@ -108,7 +116,7 @@ namespace ural
         reference front() const
         {
             assert(!!*this);
-            return *this->base();
+            return *current_;
         }
 
         /** @brief Переход к следующему элементу
@@ -122,28 +130,90 @@ namespace ural
 
     private:
         // @todo Вынести, чтобы уменьшить раздувание кода?
-        void pop_front_impl(single_pass_traversal_tag)
+        // Конструкторы
+        unique_sequence(Input in, single_pass_traversal_tag)
+         : current_()
+         , next_(std::move(in))
+         , eq_()
         {
-            auto cur_value = *cur_;
-            ++ cur_;
-
-            cur_ = find_fn{}(cur_, cur_value, not_fn(this->predicate()));
+            if(!!next_)
+            {
+                current_ = *next_;
+                ++ next_;
+            }
         }
 
-        void pop_front_impl(forward_traversal_tag)
+        unique_sequence(Input in, forward_traversal_tag)
+         : current_(std::move(in))
+         , next_(current_)
+         , eq_()
         {
-            /* В большинстве случаев последовательность дешевле копировать, чем
-            объекты, поэтому если последовательность позволяет многократный
-            обход, то лучше копировать её, а не элемент
-            */
-            Input old_cur_ = cur_;
-            ++ cur_;
+            if(!!next_)
+            {
+                ++ next_;
+            }
+        }
 
-            cur_ = find_fn{}(cur_, *old_cur_, not_fn(this->predicate()));
+        // @todo Покрыть тестами
+        unique_sequence(Input in, BinaryPredicate pred, single_pass_traversal_tag);
+
+        unique_sequence(Input in, BinaryPredicate pred, forward_traversal_tag)
+         : current_(std::move(in))
+         , next_(current_)
+         , eq_(std::move(pred))
+        {
+            if(!!next_)
+            {
+                ++ next_;
+            }
+        }
+
+        // Поиск следующего
+        void seek(single_pass_traversal_tag)
+        {
+            next_ = find_fn{}(std::move(next_), current_, not_fn(this->predicate()));
+        }
+
+        void seek(forward_traversal_tag)
+        {
+            next_ = find_fn{}(std::move(next_), *current_, not_fn(this->predicate()));
+        }
+
+        // Переход к следующему элементу
+        void pop_front_impl(single_pass_traversal_tag tag)
+        {
+            if(!!next_)
+            {
+                current_ = *next_;
+                ++ next_;
+                this->seek(tag);
+            }
+            else
+            {
+                current_ = Holder{};
+            }
+        }
+
+        void pop_front_impl(forward_traversal_tag tag)
+        {
+            current_ = next_;
+
+            if(!!next_)
+            {
+                ++ next_;
+                this->seek(tag);
+            }
         }
 
     private:
-        Input cur_;
+        typedef std::is_same<traversal_tag, single_pass_traversal_tag>
+            Is_singple_pass;
+        typedef optional<value_type> optional_value;
+        typedef typename std::conditional<Is_singple_pass::value, optional_value, Input>::type
+            Holder;
+
+        Holder current_;
+        Input next_;
         BinaryPredicate eq_;
     };
 

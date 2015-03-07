@@ -897,43 +897,42 @@ BOOST_AUTO_TEST_CASE(unique_copy_from_istream_to_ostream)
     BOOST_CHECK_EQUAL(z.str(), os.str());
 }
 
-// @todo раскомментировать, в настоящий момент приводит к ошибкам
-//BOOST_AUTO_TEST_CASE(unique_sequence_move_only)
-//{
-//    std::forward_list<int> src{1, 2, 2, 2, 3, 3, 2, 2, 1};
-//
-//    typedef std::unique_ptr<int> Pointer;
-//
-//    std::vector<Pointer> v1;
-//    std::vector<Pointer> v2;
-//
-//    for(auto & y : src)
-//    {
-//        auto constexpr f = ural::to_unique_ptr;
-//
-//        v1.emplace_back(f(y));
-//        v2.emplace_back(f(y));
-//    }
-//
-//    auto const eq = [](Pointer const & x, Pointer const & y)
-//    {
-//        return (!!x && !!y) ? (*x == *y) : (!x && !y);
-//    };
-//
-//    auto const last = std::unique(v1.begin(), v1.end(), eq);
-//
-//    auto const r_ural
-//        = v2 | ural::uniqued(eq) | ural::moved | ural::to_container<std::vector>{};
-//
-//    BOOST_CHECK_EQUAL(last - v1.begin(), r_ural.end() - r_ural.begin());
-//
-//    for(auto i : ural::numbers(0, last - v1.begin()))
-//    {
-//        BOOST_CHECK(!v1[i]);
-//        BOOST_CHECK(!r_ural[i]);
-//        BOOST_CHECK_EQUAL(*v1[i], *r_ural[i]);
-//    }
-//}
+BOOST_AUTO_TEST_CASE(unique_sequence_move_only)
+{
+    std::forward_list<int> src{1, 2, 2, 2, 3, 3, 2, 2, 1};
+
+    typedef std::unique_ptr<int> Pointer;
+
+    std::vector<Pointer> v1;
+    std::vector<Pointer> v2;
+
+    for(auto & y : src)
+    {
+        auto constexpr f = ural::to_unique_ptr;
+
+        v1.emplace_back(f(y));
+        v2.emplace_back(f(y));
+    }
+
+    auto const eq = [](Pointer const & x, Pointer const & y)
+    {
+        return (!!x && !!y) ? (*x == *y) : (!x && !y);
+    };
+
+    auto const last = std::unique(v1.begin(), v1.end(), eq);
+
+    auto const r_ural
+        = v2 | ural::uniqued(eq) | ural::moved | ural::to_container<std::vector>{};
+
+    BOOST_CHECK_EQUAL(last - v1.begin(), r_ural.end() - r_ural.begin());
+
+    for(auto i : ural::numbers(0, last - v1.begin()))
+    {
+        BOOST_CHECK(!!v1[i]);
+        BOOST_CHECK(!!r_ural[i]);
+        BOOST_CHECK_EQUAL(*v1[i], *r_ural[i]);
+    }
+}
 
 // 25.3.10 Обращение
 BOOST_AUTO_TEST_CASE(reverse_test)
