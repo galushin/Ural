@@ -27,30 +27,31 @@ namespace ural
 {
     /** @brief Последовательность неповторяющихся соседних элементов базовой
     последовательности
-    @tparam Forward Тип базовой последовательности
+    @tparam Input Тип базовой последовательности
     @tparam BinaryPredicat бинарный предикат, определяющий, совпадают ли два
     последовательных элемента.
     */
-    template <class Forward, class BinaryPredicate = ural::equal_to<> >
+    template <class Input, class BinaryPredicate = ural::equal_to<> >
     class unique_sequence
-     : public sequence_base<unique_sequence<Forward, BinaryPredicate>>
+     : public sequence_base<unique_sequence<Input, BinaryPredicate>>
     {
     public:
         // Типы
         /// @brief Тип ссылки
-        typedef typename Forward::reference reference;
+        typedef typename Input::reference reference;
 
         /// @brief Тип значения
-        typedef typename Forward::value_type value_type;
+        typedef typename Input::value_type value_type;
 
         /// @brief Категория обхода
-        typedef ural::forward_traversal_tag traversal_tag;
+        typedef typename ural::common_tag<typename Input::traversal_tag,
+                                          forward_traversal_tag>::type traversal_tag;
 
         /// @brief Тип указателя
-        typedef typename Forward::pointer pointer;
+        typedef typename Input::pointer pointer;
 
         /// @brief Тип расстояния
-        typedef typename Forward::distance_type distance_type;
+        typedef typename Input::distance_type distance_type;
 
         // Конструкторы
         /** @brief Конструктор
@@ -58,13 +59,10 @@ namespace ural
         @post <tt> this->base() == in </tt>
         @post <tt> this->predicate() == BinaryPredicate{} </tt>
         */
-        explicit unique_sequence(Forward in)
+        explicit unique_sequence(Input in)
          : cur_{std::move(in)}
          , eq_{}
-         , next_{cur_}
-        {
-            this->seek();
-        }
+        {}
 
         /** @brief Конструктор
         @param in входная последовательность
@@ -72,19 +70,16 @@ namespace ural
         @post <tt> this->base() == in </tt>
         @post <tt> this->predicate() == pred </tt>
         */
-        explicit unique_sequence(Forward in, BinaryPredicate pred)
+        explicit unique_sequence(Input in, BinaryPredicate pred)
          : cur_{std::move(in)}
          , eq_(std::move(pred))
-         , next_{cur_}
-        {
-            this->seek();
-        }
+        {}
 
         // Адаптор последовательности
         /** @brief Базовая последовательность
         @return Базовая последовательность
         */
-        Forward const & base() const
+        Input const & base() const
         {
             return this->cur_;
         }
@@ -112,6 +107,7 @@ namespace ural
         */
         reference front() const
         {
+            assert(!!*this);
             return *this->base();
         }
 
@@ -120,23 +116,35 @@ namespace ural
         */
         void pop_front()
         {
-           cur_ = next_;
-           this->seek();
+            assert(!!*this);
+            return this->pop_front_impl(traversal_tag{});
         }
 
     private:
-        void seek()
+        // @todo Вынести, чтобы уменьшить раздувание кода?
+        void pop_front_impl(single_pass_traversal_tag)
         {
-            if(!!next_)
-            {
-                ++ next_;
-                next_ = find_fn{}(next_, *cur_, not_fn(this->predicate()));
-            }
+            auto cur_value = *cur_;
+            ++ cur_;
+
+            cur_ = find_fn{}(cur_, cur_value, not_fn(this->predicate()));
         }
 
-        Forward cur_;
+        void pop_front_impl(forward_traversal_tag)
+        {
+            /* В большинстве случаев последовательность дешевле копировать, чем
+            объекты, поэтому если последовательность позволяет многократный
+            обход, то лучше копировать её, а не элемент
+            */
+            Input old_cur_ = cur_;
+            ++ cur_;
+
+            cur_ = find_fn{}(cur_, *old_cur_, not_fn(this->predicate()));
+        }
+
+    private:
+        Input cur_;
         BinaryPredicate eq_;
-        Forward next_;
     };
 
     /** @brief Функция создания @c unique_sequence

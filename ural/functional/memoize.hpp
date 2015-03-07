@@ -102,9 +102,18 @@ namespace ural
         {}
 
         // @todo Реализовать
+        /** @brief Конструктор перемещения
+        */
         memoize_functor(memoize_functor &&);
 
+        /** @brief Оператор копирующего присваивания
+        @return <tt> *this </tt>
+        */
         memoize_functor & operator=(memoize_functor const &);
+
+        /** @brief Оператор присваивания с перемещением
+        @return <tt> *this </tt>
+        */
         memoize_functor & operator=(memoize_functor &&);
 
         // Применение функционального объекта
