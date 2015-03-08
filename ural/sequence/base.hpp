@@ -102,6 +102,7 @@ namespace ural
          : Base(std::forward<Args>(args)...)
         {}
 
+        /// @brief Конструктор без аргументов
         sequence_base() = default;
 
         //@{
@@ -120,15 +121,23 @@ namespace ural
         sequence_base & operator=(sequence_base &&) = default;
         //@}
 
+        /// @brief Деструктор
         ~ sequence_base() = default;
     };
 
+    /** @brief Создание начального итератора для последовательности
+    @param s последовательность
+    @return <tt> sequence_iterator<Seq>{static_cast<Seq const&>(s)} </tt>
+    */
     template <class Seq, class Base>
     sequence_iterator<Seq> begin(sequence_base<Seq, Base> const & s)
     {
         return sequence_iterator<Seq>{static_cast<Seq const&>(s)};
     }
 
+    /** @brief Создание конечного итератора для последовательности
+    @return <tt> sequence_iterator<Seq>{} </tt>
+    */
     template <class Seq, class Base>
     sequence_iterator<Seq> end(sequence_base<Seq, Base> const &)
     {
@@ -163,6 +172,11 @@ namespace ural
         return result;
     }
 
+    /** @brief Отбрасывание начальной пройденной части копии последовательности
+    @param s последовательность
+    @return Копия последовательности @c s, у которой отброшена передняя
+    пройденная часть
+    */
     template <class Sequence>
     Sequence shrink_front(Sequence s)
     {
@@ -195,6 +209,11 @@ namespace ural
     }
     // namespace details
 
+    /** @brief Размер последовательности
+    @param s последовательность
+    @return Количество непройденных элементов последовательности
+    @todo преобразовать в функциональный объект
+    */
     template <class Sequence>
     typename Sequence::distance_type
     size(Sequence const & s)
@@ -202,9 +221,16 @@ namespace ural
         return ::ural::details::size(s, ural::make_traversal_tag(s));
     }
 
+    /** @brief Тип функционального объекта для продвижения последовательности на
+    заданное число шагов
+    */
     class advance_fn
     {
     public:
+        /** @brief Продвижение последовательности на заданное число шагов
+        @param s последовательность
+        @param n число шагов
+        */
         template <class Sequence>
         void operator()(Sequence & s, typename Sequence::distance_type n) const
         {
@@ -229,8 +255,18 @@ namespace ural
             s += n;
         }
     };
+
+    /** @brief Функциональный объект для продвижения последовательности на
+    заданное число шагов
+    */
     auto constexpr advance = advance_fn{};
 
+    /** @brief Продвижение копии последовательнисти на заданное количество шагов
+    @param s последовательность
+    @param n количество шагов
+    @return Копия последовательность @c s продвинутая на @c n шагов c помощью
+    <tt> advance </tt>
+    */
     template <class Sequence>
     Sequence next(Sequence s, typename Sequence::distance_type n = 1)
     {
