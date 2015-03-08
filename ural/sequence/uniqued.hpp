@@ -67,7 +67,7 @@ namespace ural
         explicit unique_sequence(Input in)
          : unique_sequence(std::move(in), traversal_tag{})
         {
-            this->seek(traversal_tag{});
+            this->seek();
         }
 
         /** @brief Конструктор
@@ -79,15 +79,19 @@ namespace ural
         explicit unique_sequence(Input in, BinaryPredicate pred)
          : unique_sequence(std::move(in), std::move(pred), traversal_tag{})
         {
-            this->seek(traversal_tag{});
+            this->seek();
         }
 
         // Адаптор последовательности
         /** @brief Базовая последовательность
         @return Базовая последовательность
-        @todo Может быть сделать protected, покрыть тестами
+        @note <tt> this->base().front() </tt> и <tt> this->front() </tt>
+        ссылаются на разные элементы в случае однопроходной последовательности
         */
-        Input const & base() const;
+        Input const & base() const
+        {
+            return this->base_impl(traversal_tag{});
+        }
 
         /** @brief Используемый предикат
         @return Используемый предикат
@@ -126,7 +130,6 @@ namespace ural
         }
 
     private:
-        // @todo Вынести, чтобы уменьшить раздувание кода?
         // Конструкторы
         unique_sequence(Input in, single_pass_traversal_tag)
          : current_()
@@ -151,8 +154,17 @@ namespace ural
             }
         }
 
-        // @todo Покрыть тестами
-        unique_sequence(Input in, BinaryPredicate pred, single_pass_traversal_tag);
+        unique_sequence(Input in, BinaryPredicate pred, single_pass_traversal_tag)
+         : current_()
+         , next_(std::move(in))
+         , eq_(std::move(pred))
+        {
+            if(!!next_)
+            {
+                current_ = *next_;
+                ++ next_;
+            }
+        }
 
         unique_sequence(Input in, BinaryPredicate pred, forward_traversal_tag)
          : current_(std::move(in))
@@ -165,13 +177,19 @@ namespace ural
             }
         }
 
-        // Поиск следующего
-        void seek(single_pass_traversal_tag)
+        // Базовая последовательность
+        Input const & base_impl(single_pass_traversal_tag) const
         {
-            next_ = find_fn{}(std::move(next_), current_, not_fn(this->predicate()));
+            return this->next_;
         }
 
-        void seek(forward_traversal_tag)
+        Input const & base_impl(forward_traversal_tag) const
+        {
+            return this->current_;
+        }
+
+        // Поиск следующего
+        void seek()
         {
             next_ = find_fn{}(std::move(next_), *current_, not_fn(this->predicate()));
         }
@@ -183,7 +201,7 @@ namespace ural
             {
                 current_ = *next_;
                 ++ next_;
-                this->seek(tag);
+                this->seek();
             }
             else
             {
@@ -198,7 +216,7 @@ namespace ural
             if(!!next_)
             {
                 ++ next_;
-                this->seek(tag);
+                this->seek();
             }
         }
 

@@ -14,8 +14,6 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// @todo Тест unique_copy(istream_sequence, ostream_sequence)
-
 #include "rnd.hpp"
 
 #include <boost/test/unit_test.hpp>
@@ -873,7 +871,58 @@ BOOST_AUTO_TEST_CASE(unique_test_custom_predicate)
     BOOST_CHECK_EQUAL(s_std, s_ural);
 }
 
+BOOST_AUTO_TEST_CASE(unique_copy_test_custom_predicate)
+{
+    // Подготовка
+    std::string const source = "The      string    with many       spaces!";
+
+    auto const pred = [](char c1, char c2){ return c1 == ' ' && c2 == ' '; };
+
+    // std
+    std::istringstream is_std(source);
+    std::ostringstream os_std;
+
+    std::unique_copy(std::istream_iterator<char>(is_std),
+                     std::istream_iterator<char>(),
+                     std::ostream_iterator<char>(os_std),
+                     pred);
+
+    // ural
+    std::istringstream is_ural(source);
+    std::ostringstream os_ural;
+
+    ural::unique_copy(ural::make_istream_sequence<char>(is_ural),
+                      ural::make_ostream_sequence(os_ural),
+                      pred);
+
+    // Проверка результатов
+    BOOST_CHECK_EQUAL(os_std.str(), os_ural.str());
+}
+
 BOOST_AUTO_TEST_CASE(unique_copy_from_istream_to_ostream)
+{
+    std::list<int> const v1{1, 2, 2, 2, 3, 3, 2, 2, 1};
+
+    std::ostringstream src;
+    ural::copy(v1, ural::make_ostream_sequence(src, ' '));
+
+    auto v2 = v1;
+    ural::unique_erase(v2);
+
+    std::ostringstream z;
+    ural::copy(v2, ural::make_ostream_sequence(z, ' '));
+
+    // Сам алгоритм
+    std::istringstream is(src.str());
+    std::ostringstream os;
+
+    ural::unique_copy(ural::make_istream_sequence<int>(is),
+                      ural::make_ostream_sequence(os, ' '));
+
+    BOOST_CHECK_EQUAL(z.str(), os.str());
+}
+
+BOOST_AUTO_TEST_CASE(unique_sequence_from_istream_to_ostream)
 {
     // Готовим строку с данными
     std::list<int> const v1{1, 2, 2, 2, 3, 3, 2, 2, 1};

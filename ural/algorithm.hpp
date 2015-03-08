@@ -588,6 +588,34 @@ namespace ural
                                             sequence_fwd<Forward2>(s2));
     }
 
+    /** @brief Тип функционального объекта копирования неповторяющихся значений
+    */
+    class unique_copy_fn
+    {
+    public:
+        template <class Input, class Output>
+        auto operator()(Input && in, Output && out) const
+        -> ural::tuple<decltype(sequence_fwd<Input>(in)),
+                       decltype(sequence_fwd<Output>(out))>
+        {
+            return (*this)(std::forward<Input>(in), std::forward<Output>(out),
+                           ::ural::equal_to<>{});
+        }
+
+        template <class Input, class Output, class BinaryPredicate>
+        auto operator()(Input && in, Output && out, BinaryPredicate bin_pred) const
+        -> ural::tuple<decltype(sequence_fwd<Input>(in)),
+                       decltype(sequence_fwd<Output>(out))>
+        {
+            auto u_in = ::ural::make_unique_sequence(std::forward<Input>(in),
+                                                     std::move(bin_pred));
+            auto r = ural::copy(std::move(u_in), std::forward<Output>(out));
+            return ural::make_tuple(std::move(r[ural::_1].base()),
+                                    std::move(r[ural::_2]));
+        }
+    };
+    auto constexpr unique_copy = unique_copy_fn{};
+
     template <class BidirectionalSequence>
     void reverse(BidirectionalSequence && seq)
     {
