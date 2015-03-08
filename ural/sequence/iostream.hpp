@@ -127,15 +127,22 @@ namespace ural
         return istream_sequence<T, IStream>(is);
     }
 
-    template <class OStream, class Delimeter>
+    /** @brief Вспомогательный класс для определения типа разделителя
+    @tparam Stream тип потока ввода/вывода
+    @tparam Delimeter тип разделителя
+    */
+    template <class Stream, class Delimeter>
     struct default_delimeter_helper
      : public declare_type<Delimeter>
     {};
 
-    template <class OStream>
-    struct default_delimeter_helper<OStream, use_default>
-     : public declare_type<std::basic_string<typename OStream::char_type,
-                                             typename OStream::traits_type>>
+    /** @brief Специализация для синтеза типа разделителя по умолчанию
+    @tparam Stream тип потока ввода/вывода
+    */
+    template <class Stream>
+    struct default_delimeter_helper<Stream, use_default>
+     : public declare_type<std::basic_string<typename Stream::char_type,
+                                             typename Stream::traits_type>>
     {};
 
     /**
@@ -205,7 +212,9 @@ namespace ural
 
         /** @brief Текущий элемент
         @return <tt> *this </tt>
-        @todo front?
+        @note Если вместо оператора * определить фунцию @c front, то возникнет
+        ошибка, так как общее определение оператора * для последовательностей
+        использует тип ссылки
         */
         ostream_sequence const & operator*() const
         {
@@ -217,6 +226,9 @@ namespace ural
         {}
 
         //@{
+        /** @brief Оператор присваивания
+        @param x записываемый объект
+        */
         void operator=(T const & x) const
         {
             data_.first().get() << x << data_.second();
@@ -240,15 +252,29 @@ namespace ural
         boost::compressed_pair<std::reference_wrapper<ostream_type>, Delimeter> data_;
     };
 
+    /** @brief Тип используемый, когда формально требуется вывести объектв в
+    поток, но ничего выводить фактически выводить не нужно.
+    */
     struct no_delimeter
     {};
 
+    /** @brief Оператор вывода для @c no_delimeter
+    @param os поток вывода
+    @return @c os
+    */
     template <class OStream>
     OStream & operator<<(OStream & os, no_delimeter)
     {
         return os;
     }
 
+    /** @brief Создание последовательности на основе потока вывода с явным
+    указанием типа записываемых объектов c разделителем
+    @tparam T тип записываемых элементов
+    @param os поток вывода
+    @param delim разделитель
+    @return <tt> ostream_sequence<OStream, T, Delimeter>(os, std::move(delim)) </tt>
+    */
     template <class T, class OStream, class Delimeter>
     ostream_sequence<OStream, T, Delimeter>
     make_ostream_sequence(OStream & os, Delimeter delim)
@@ -256,6 +282,12 @@ namespace ural
         return ostream_sequence<OStream, T, Delimeter>(os, std::move(delim));
     }
 
+    /** @brief Создание последовательности на основе потока вывода без явного
+    указания типа записываемых объектов с разделителем
+    @param os поток вывода
+    @param delim разделитель
+    @return <tt> ostream_sequence<OStream, use_default, Delimeter>(os, std::move(delim)) </tt>
+    */
     template <class OStream, class Delimeter>
     ostream_sequence<OStream, use_default, Delimeter>
     make_ostream_sequence(OStream & os, Delimeter delim)
@@ -263,6 +295,12 @@ namespace ural
         return ostream_sequence<OStream, use_default, Delimeter>(os, std::move(delim));
     }
 
+    /** @brief Создание последовательности на основе потока вывода с явным
+    указанием типа записываемых объектов и без разделителя
+    @tparam T тип записываемых элементов
+    @param os поток вывода
+    @return <tt> ostream_sequence<OStream, T, no_delimeter>(os) </tt>
+    */
     template <class T, class OStream>
     ostream_sequence<OStream, T, no_delimeter>
     make_ostream_sequence(OStream & os)
@@ -270,6 +308,11 @@ namespace ural
         return ostream_sequence<OStream, T, no_delimeter>(os);
     }
 
+    /** @brief Создание последовательности на основе потока вывода без явного
+    указания типа записываемых объектов и без разделителя
+    @param os поток вывода
+    @return <tt> ostream_sequence<OStream, use_default, no_delimeter>(os) </tt>
+    */
     template <class OStream>
     ostream_sequence<OStream, use_default, no_delimeter>
     make_ostream_sequence(OStream & os)

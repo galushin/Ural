@@ -139,7 +139,7 @@ namespace ural
     @param s последовательность
     @pre <tt> !s == false </tt>
     @return <tt> static_cast<Seq const&>(s).front() </tt>
-    @todo Реализовать через SFINAE и is_sequence
+    @todo Реализовать через SFINAE и is_sequence, использовать decltype?
     */
     template <class Seq, class Base>
     typename Seq::reference

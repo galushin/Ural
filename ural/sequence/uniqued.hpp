@@ -85,12 +85,9 @@ namespace ural
         // Адаптор последовательности
         /** @brief Базовая последовательность
         @return Базовая последовательность
-        @todo Может быть сделать protected
+        @todo Может быть сделать protected, покрыть тестами
         */
-        Input const & base() const
-        {
-            return this->cur_;
-        }
+        Input const & base() const;
 
         /** @brief Используемый предикат
         @return Используемый предикат
