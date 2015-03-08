@@ -28,7 +28,7 @@ namespace distributions
     /** @brief "Математическое" дискретное распределение
     @tparam IntType тип значений
     @tparam Weight тип весов
-    @todo Добавить конструктор на основе списка инициализации
+    @todo Функция-член probabilities, возвращающая вектор вероятностей
     */
     template <class IntType = int, class Weight = double>
     class discrete
@@ -41,7 +41,7 @@ namespace distributions
         typedef Weight weight_type;
 
         /** @brief Конструктор без параметров
-        @todo Добавить пост-условия
+        @post <tt> this->probabilities() = {1.0} </tt>
         */
         discrete()
          : ps_{weight_type{1.0}}
@@ -51,6 +51,7 @@ namespace distributions
         @param first итератор, задающий начало интервала
         @param last итератор, задающий конеч интервала
         @pre <tt> [first; last) </tt> должен быть корректным интервалом
+        @pre Все элементы <tt> [first; last) </tt> должны быть неотрицательными
         @todo Добавить пост-условия
         */
         template <class Iterator>
@@ -66,6 +67,14 @@ namespace distributions
             }
         }
 
+        /** @brief Конструктор на основе списка инициализаторов
+        @param ws список весов
+        @post То же, что и <tt> discrete(ws.begin(), ws.end()) </tt>
+        */
+        discrete(std::initializer_list<weight_type> ws)
+         : discrete(ws.begin(), ws.end())
+        {}
+
         // Характеристики распределения
         /** @brief Математическое ожидание
         @param d распределение
@@ -73,7 +82,7 @@ namespace distributions
         */
         friend weight_type mean(discrete const & d)
         {
-            return ural::inner_product(ural::numbers(0, d.ps_.size()),
+            return ural::inner_product(ural::indices_of(d.ps_),
                                        d.ps_, weight_type{0});
         }
 

@@ -409,3 +409,29 @@ BOOST_AUTO_TEST_CASE(math_discrete_distibution_from_container)
 
     BOOST_CHECK_EQUAL(cdf(d, 4), 1.0);
 }
+
+BOOST_AUTO_TEST_CASE(math_discrete_distibution_from_init_list)
+{
+    typedef ural::distributions::discrete<int> Distribution;
+
+    auto const d = Distribution{4, 3, 2, 1};
+
+    auto const m = mean(d);
+    BOOST_CHECK_CLOSE(m, 1.0, 1e-10);
+
+    auto const s2 = variance(d);
+    BOOST_CHECK_CLOSE(s2, 1.0, 1e-10);
+
+    auto const s = standard_deviation(d);
+    BOOST_CHECK_CLOSE(s*s, s2, 1e-10);
+
+    BOOST_CHECK_EQUAL(cdf(d, -1), 0.0);
+
+    // @todo Тесты с промежуточными значениями
+    BOOST_CHECK_CLOSE(cdf(d, 0), 0.4, 1e-10);
+    BOOST_CHECK_CLOSE(cdf(d, 1), 0.7, 1e-10);
+    BOOST_CHECK_CLOSE(cdf(d, 2), 0.9, 1e-10);
+    BOOST_CHECK_CLOSE(cdf(d, 3), 1.0, 1e-10);
+
+    BOOST_CHECK_EQUAL(cdf(d, 4), 1.0);
+}
