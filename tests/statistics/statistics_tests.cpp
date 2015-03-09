@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE(z_score_test)
     }
 }
 
-#include "rnd.hpp"
+#include "../rnd.hpp"
 
 #include <ural/numeric/matrix.hpp>
 #include <ural/random.hpp>
@@ -356,82 +356,4 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
             BOOST_CHECK_LE(abs(mu[i] - m[i]), 1e-3);
         }
     }
-}
-
-// "Математическое" дискретное распределение
-#include <ural/distributions/discrete.hpp>
-BOOST_AUTO_TEST_CASE(math_discrete_distribution_default_ctor)
-{
-    typedef ural::distributions::discrete<int> Distribution;
-
-    auto const d = Distribution{};
-
-    auto const m = mean(d);
-    BOOST_CHECK_EQUAL(m, 0.0);
-
-    auto const s2 = variance(d);
-    BOOST_CHECK_EQUAL(s2, 0.0);
-
-    auto const s = standard_deviation(d);
-    BOOST_CHECK_EQUAL(s, 0.0);
-
-    BOOST_CHECK_EQUAL(cdf(d, -1), 0.0);
-    BOOST_CHECK_EQUAL(cdf(d, 0), 1.0);
-    BOOST_CHECK_EQUAL(cdf(d, 1), 1.0);
-}
-
-// @todo Тест с распределением с близким к нулю стандартным отклонением
-
-BOOST_AUTO_TEST_CASE(math_discrete_distibution_from_container)
-{
-    typedef ural::distributions::discrete<int> Distribution;
-
-    std::vector<double> const w{4, 3, 2, 1};
-
-    auto const d = Distribution(w.begin(), w.end());
-
-    auto const m = mean(d);
-    BOOST_CHECK_CLOSE(m, 1.0, 1e-10);
-
-    auto const s2 = variance(d);
-    BOOST_CHECK_CLOSE(s2, 1.0, 1e-10);
-
-    auto const s = standard_deviation(d);
-    BOOST_CHECK_CLOSE(s*s, s2, 1e-10);
-
-    BOOST_CHECK_EQUAL(cdf(d, -1), 0.0);
-
-    // @todo Тесты с промежуточными значениями
-    BOOST_CHECK_CLOSE(cdf(d, 0), 0.4, 1e-10);
-    BOOST_CHECK_CLOSE(cdf(d, 1), 0.7, 1e-10);
-    BOOST_CHECK_CLOSE(cdf(d, 2), 0.9, 1e-10);
-    BOOST_CHECK_CLOSE(cdf(d, 3), 1.0, 1e-10);
-
-    BOOST_CHECK_EQUAL(cdf(d, 4), 1.0);
-}
-
-BOOST_AUTO_TEST_CASE(math_discrete_distibution_from_init_list)
-{
-    typedef ural::distributions::discrete<int> Distribution;
-
-    auto const d = Distribution{4, 3, 2, 1};
-
-    auto const m = mean(d);
-    BOOST_CHECK_CLOSE(m, 1.0, 1e-10);
-
-    auto const s2 = variance(d);
-    BOOST_CHECK_CLOSE(s2, 1.0, 1e-10);
-
-    auto const s = standard_deviation(d);
-    BOOST_CHECK_CLOSE(s*s, s2, 1e-10);
-
-    BOOST_CHECK_EQUAL(cdf(d, -1), 0.0);
-
-    // @todo Тесты с промежуточными значениями
-    BOOST_CHECK_CLOSE(cdf(d, 0), 0.4, 1e-10);
-    BOOST_CHECK_CLOSE(cdf(d, 1), 0.7, 1e-10);
-    BOOST_CHECK_CLOSE(cdf(d, 2), 0.9, 1e-10);
-    BOOST_CHECK_CLOSE(cdf(d, 3), 1.0, 1e-10);
-
-    BOOST_CHECK_EQUAL(cdf(d, 4), 1.0);
 }

@@ -73,7 +73,8 @@
 		<Unit filename="../tests/rnd.hpp" />
 		<Unit filename="../tests/sequence/reversed.cpp" />
 		<Unit filename="../tests/sequence_test.cpp" />
-		<Unit filename="../tests/statistics_tests.cpp" />
+		<Unit filename="../tests/statistics/distributions_discrete.cpp" />
+		<Unit filename="../tests/statistics/statistics_tests.cpp" />
 		<Unit filename="../tests/tracers_tests.cpp" />
 		<Unit filename="../tests/tuple_tests.cpp" />
 		<Unit filename="../tests/utility_test.cpp" />
