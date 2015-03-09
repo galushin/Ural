@@ -717,13 +717,25 @@ BOOST_AUTO_TEST_CASE(make_adjoint_functor_constexpr_test)
     BOOST_CHECK_EQUAL(r4, std::get<3>(x));
 }
 
-BOOST_AUTO_TEST_CASE(value_functor_equality_test)
+BOOST_AUTO_TEST_CASE(value_functor__test)
 {
     typedef ural::value_functor<int> Functor;
 
     auto const n1 = 42;
     Functor constexpr f1 = ural::make_value_functor(n1);
 
+    BOOST_CHECK_EQUAL(n1, f1());
+    BOOST_CHECK_EQUAL(n1, f1(13));
+    BOOST_CHECK_EQUAL(n1, f1(n1));
+    BOOST_CHECK_EQUAL(n1, f1("abc", 13));
+}
+
+BOOST_AUTO_TEST_CASE(value_functor_equality_test)
+{
+    typedef ural::value_functor<int> Functor;
+
+    auto const n1 = 42;
+    Functor constexpr f1 = ural::make_value_functor(n1);
     Functor constexpr f2 = ural::make_value_functor(13);
 
     auto constexpr r1 = f1();
@@ -735,6 +747,30 @@ BOOST_AUTO_TEST_CASE(value_functor_equality_test)
     static_assert(f2 == f2, "");
     static_assert(f2 != f1, "");
     static_assert(f1 != f2, "");
+
+    BOOST_CHECK(true);
+}
+
+BOOST_AUTO_TEST_CASE(value_functor_less_test)
+{
+    typedef ural::value_functor<int> Functor;
+
+    auto const n42 = 42;
+    Functor constexpr f1 = ural::make_value_functor(13);
+    Functor constexpr f2 = ural::make_value_functor(n42);
+
+    auto constexpr r1 = f1();
+    auto constexpr r2 = f2();
+
+    static_assert(r1 != r2, "");
+    static_assert(r1 < r2, "");
+
+    static_assert(f1 < f2, "");
+    static_assert(f1 <= f2, "");
+    static_assert(f2 > f1, "");
+    static_assert(f2 >= f1, "");
+    static_assert(!(f1 < f1), "");
+    static_assert(!(f2 < f2), "");
 
     BOOST_CHECK(true);
 }

@@ -2318,6 +2318,11 @@ namespace ural
         return os;
     }
 
+    /** @brief Оператор ввода строки из потока
+    @param is поток ввода
+    @param str строка
+    @return @c is
+    */
     template <class IStream, class Char, class Traits, class Allocator, class Storage>
     IStream &
     operator>>(IStream & is,

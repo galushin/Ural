@@ -34,8 +34,6 @@ namespace ural
     /** @brief Функциональный объект без аргументов, возвращающий фиксированное
     знчение
     @tparam T тип значения
-    @todo Возможность задавать сигнатуру или использовать произвольную ---
-    аналог функции @c const из Haskel
 
     Если T --- регулярный тип, то <tt> value_functor<T> </tt> --- тоже,
     регулярный.
@@ -43,8 +41,12 @@ namespace ural
     Пусть @c f --- это объект типа, <tt> value_functor<T> </tt>, а @c x ---
     типа @c T.
     Выражение <tt> f = x </tt> выглядит не очень логичным. Если нужно изменить
-    значение @c f, то можно воспользоваться кодом вида
+    значение, которое возвращает @c f, то можно воспользоваться кодом вида
     <tt> f = value_functor<T>{x} </tt>.
+
+    Рассматривалась возможность задавать сигнатуру (типы параметров), но она
+    была отвергнута, так как лишь усложняет реализацию, а сами параметры вообще
+    не используются.
     */
     template <class T>
     class value_functor
@@ -66,7 +68,8 @@ namespace ural
         @return Значение, установленное в конструкторе или в результате
         присваивания
         */
-        constexpr result_type operator()() const
+        template <class... Args>
+        constexpr result_type operator()(Args &&...) const
         {
             return this->value_;
         }
@@ -81,10 +84,24 @@ namespace ural
     @return <tt> x() == y() </tt>
     */
     template <class T1, class T2>
-    constexpr bool
+    constexpr auto
     operator==(value_functor<T1> const & x, value_functor<T2> const & y)
+    -> decltype(x() == y())
     {
         return x() == y();
+    }
+
+    /** @brief Оператор "меньше"
+    @param x левый операнд
+    @param y правый операнд
+    @return <tt> x() < y() </tt>
+    */
+    template <class T1, class T2>
+    constexpr auto
+    operator<(value_functor<T1> const & x, value_functor<T2> const & y)
+    -> decltype(x() < y())
+    {
+        return x() < y();
     }
 
     /** @brief Функция создания @c value_functor

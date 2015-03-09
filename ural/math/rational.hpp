@@ -63,6 +63,11 @@ namespace ural
      : boost::incrementable<rational<IntegerType>
      , boost::decrementable<rational<IntegerType>>>
     {
+    /** @brief Ввод рационального числа из потока
+    @param is поток ввода
+    @param x переменная, для которой производится ввод
+    @return @c is
+    */
     template <class Char, class Tr>
     friend std::basic_istream<Char, Tr> &
     operator>>(std::basic_istream<Char, Tr> & is, rational & x)
@@ -112,12 +117,24 @@ namespace ural
             return members_[ural::_2];
         }
 
+        /** @brief Подготовка числителя рационального числа
+        @param num исходный числитель
+        @param denom исходный знаменатель
+        @pre <tt> gcd(num, denom) == 1</tt>
+        @return Если <tt> denom < 0 </tt>, то <tt> - num </tt>, иначе ---
+        <tt> num </tt>
+        */
         static constexpr IntegerType
         prepare_numerator(IntegerType num, IntegerType denom)
         {
             return denom < 0 ? - std::move(num) : std::move(num);
         }
 
+        /** @brief Подготовка знаменателя рационального числа
+        @param denom исходный знаменатель
+        @return <tt> abs(denom) </tt>
+        @throw bad_rational, если </tt> denom == 0 </tt>
+        */
         static constexpr IntegerType
         prepare_denominator(IntegerType denom)
         {
@@ -403,7 +420,8 @@ namespace ural
         ural::tuple<IntegerType, IntegerType> members_;
     };
 
-    /** @brief Проверка равенства нулю
+    /** @brief Проверка равенства нулю рационального числа
+    @param x рациональное число
     @return <tt> !x.numerator() </tt>
     */
     template <class T>
@@ -425,6 +443,7 @@ namespace ural
 
     /** @brief Унарный плюс
     @return <tt> x </tt>
+    @todo Две версии: копирование и перемещение?
     */
     template <class T>
     constexpr rational<T> operator+(rational<T> x)
@@ -432,6 +451,7 @@ namespace ural
         return x;
     }
 
+    //@{
     /** @brief Унарный минус
     @return <tt> rational<T>(-x.numerator(), x.denominator()) </tt>
     @todo Реализовать версию с перемещением?
@@ -441,6 +461,7 @@ namespace ural
     {
         return rational<T>(-x.numerator(), x.denominator(), T{1}, unsafe_tag{});
     }
+    //@}
 
     /** @brief Оператор "равно"
     @param x левый операнд
@@ -454,17 +475,24 @@ namespace ural
             && x.denominator() == y.denominator();
     }
 
+    //@{
+    /** @brief Проверка на равенство рационального и целого чисел
+    @param q рациональное число
+    @param n целое число
+    @return <tt> q.numerator() == n && q.denominator() == T{1} </tt>
+    */
     template <class T>
-    constexpr bool operator==(rational<T> const & x, T const & y)
+    constexpr bool operator==(rational<T> const & q, T const & n)
     {
-        return x.numerator() == y && x.denominator() == T{1};
+        return q.numerator() == n && q.denominator() == T{1};
     }
 
     template <class T>
-    constexpr bool operator==(T const & x, rational<T> const & y)
+    constexpr bool operator==(T const & n, rational<T> const & q)
     {
-        return x == y.numerator() && T{1} == y.denominator();
+        return q == n;
     }
+    //@}
 
     /// @cond false
     template <class T>
@@ -519,6 +547,8 @@ namespace ural
     /** @brief Оператор "меньше"
     @param x левый операнд
     @param y правый операнд
+    @return <tt> x.numerator() * y.denominator() < y.numerator() * x.denominator() </tt>,
+    но таким способом, что гарантировано не происходит переполнение.
     */
     template <class T>
     constexpr bool operator<(rational<T> const & x, rational<T> const & y)
@@ -526,12 +556,24 @@ namespace ural
         return mixed_fraction<T>(x) < mixed_fraction<T>(y);
     }
 
+    /** @brief Оператор "меньше" для целого и рационального чисел
+    @param x целое число
+    @param y рациональное число
+    @return <tt> x * y.denominator() < y.numerator() </tt>, но таким способом,
+    что гарантировано не происходит переполнение.
+    */
     template <class T>
     constexpr bool operator<(T const & x, rational<T> const & y)
     {
         return x < mixed_fraction<T>(y);
     }
 
+    /** @brief Оператор "меньше" для рационального и целого чисел
+    @param x рациональное число
+    @param y целое число
+    @return <tt> x.numerator() < y * x.denominator() </tt>, но таким способом,
+    что гарантировано не происходит переполнение.
+    */
     template <class T>
     constexpr bool operator<(rational<T> const & x, T const & y)
     {
@@ -547,6 +589,9 @@ namespace ural
                            + y.numerator() * (d / y.denominator()), d);
     }
 
+    /** @brief Сумма рациональных чисел
+    @param x, y слагаемые
+    */
     template <class T>
     constexpr rational<T>
     operator+(rational<T> const & x, rational<T> const & y)
@@ -554,6 +599,11 @@ namespace ural
         return sum_helper(x, y, ural::lcm(x.denominator(), y.denominator()));
     }
 
+    /** @brief Сумма рационального и целого чисел
+    @param x первое слагаемое -- рациональное число
+    @param y второе слагаемое -- целое число
+    @return <tt> rational<T>(x.numerator() + y * x.denominator(), x.denominator()) </tt>
+    */
     template <class T>
     constexpr rational<T>
     operator+(rational<T> const & x, T const & y)
@@ -562,6 +612,11 @@ namespace ural
                            x.denominator());
     }
 
+    /** @brief Сумма целого и рационального чисел
+    @param x первое слагаемое -- рациональное число
+    @param y второе слагаемое -- целое число
+    @return <tt> y + x </tt>
+    */
     template <class T>
     constexpr rational<T>
     operator+(T const & x, rational<T> const & y)
@@ -570,6 +625,12 @@ namespace ural
                            y.denominator());
     }
 
+    /** @brief Разность рациональных чисел
+    @param x уменьшаемое
+    @param y вычитаемое
+    @return <tt> rational<T>(x.numerator() * y.denominator() - y.numerator() * x.denominator(),
+                             x.denominator() * y.denominator()) </tt>
+    */
     template <class T>
     constexpr rational<T>
     operator-(rational<T> const & x, rational<T> const & y)
@@ -588,6 +649,11 @@ namespace ural
                            x.denominator());
     }
 
+    /** @brief Вычитание рационального числа из целого
+    @param x уменьшаемое -- целое число
+    @param y вычитаемое -- рациональное число
+    @return <tt> rational<T>(x * y.denominator() - y.numerator(), y.denominator()) </tt>
+    */
     template <class T>
     constexpr rational<T>
     operator-(T const & x, rational<T> const & y)
@@ -596,6 +662,11 @@ namespace ural
                            y.denominator());
     }
 
+    /** @brief Умножение рациональных чисел
+    @param x, y множители
+    @return <tt> rational<T>(x.numerator() * y.numerator(),
+                             x.denominator() * y.denominator()) </tt>
+    */
     template <class T>
     constexpr rational<T>
     operator*(rational<T> const & x, rational<T> const & y)
@@ -605,6 +676,11 @@ namespace ural
                            x.denominator() * y.denominator());
     }
 
+    /** @brief Умножение рационального числа на целое
+    @param x рациональное число
+    @param y целое число
+    @return <tt> rational<T>(x.numerator() * y, x.denominator()) </tt>
+    */
     template <class T>
     constexpr rational<T>
     operator*(rational<T> const & x, T const & y)
@@ -612,6 +688,11 @@ namespace ural
         return rational<T>(x.numerator() * y, x.denominator());
     }
 
+    /** @brief Умножение целого числа на рациональное
+    @param x рациональное число
+    @param y целое число
+    @return <tt> rational<T>(x * y.numerator(), y.denominator()) </tt>
+    */
     template <class T>
     constexpr rational<T>
     operator*(T const & x, rational<T> const & y)
@@ -619,6 +700,12 @@ namespace ural
         return rational<T>(x * y.numerator(), y.denominator());
     }
 
+    /** @brief Деление рациональных чисел
+    @param x делимое
+    @param y делитель
+    @return <tt> rational<T>(x.numerator() * y.denominator(),
+                             x.denominator() * y.numerator()) </tt>
+    */
     template <class T>
     constexpr rational<T>
     operator/(rational<T> const & x, rational<T> const & y)
@@ -628,6 +715,11 @@ namespace ural
                            x.denominator() * y.numerator());
     }
 
+    /** @brief Деление рационального числа на целое
+    @param x делимое
+    @param y делитель
+    @return <tt> rational<T>(x.numerator(), x.denominator() * y) </tt>
+    */
     template <class T>
     constexpr rational<T>
     operator/(rational<T> const & x, T const & y)
@@ -635,6 +727,11 @@ namespace ural
         return rational<T>(x.numerator(), x.denominator() * y);
     }
 
+    /** @brief Деление целого числа на рациональное
+    @param x делимое
+    @param y делитель
+    @return <tt> rational<T>(x * y.denominator(), y.numerator()) </tt>
+    */
     template <class T>
     constexpr rational<T>
     operator/(T const & x, rational<T> const & y)
@@ -685,6 +782,10 @@ namespace ural
     template <class RealType, class Rational>
     RealType rational_to_real(Rational r, RealType const & eps)
     {
+        /* Здесь есть проблема выбора множителя:
+        1. Большой множитель -- меньше шагов в цикле
+        2. Маленький множитель -- меньше вероятность переполнения
+        */
         // @todo Выделить вычисление целой части
         auto result = RealType{0};
 
