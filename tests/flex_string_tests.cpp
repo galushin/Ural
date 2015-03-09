@@ -20,6 +20,7 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/mpl/list.hpp>
 
+#include <iomanip>
 #include <string>
 #include <sstream>
 
@@ -2097,6 +2098,19 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_ostreaming, String, Strings_list)
     os << s;
 
     BOOST_CHECK_EQUAL(src, os.str());
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_ostreaming_width, String, Strings_list)
+{
+    std::string const src = "Stepanov";
+    std::ostringstream os_std;
+    os_std << std::setw(src.size() + 5) << src;
+
+    String const s(src.begin(), src.end());
+    std::ostringstream os_ural;
+    os_ural << std::setw(s.size() + 5) << s;
+
+    BOOST_CHECK_EQUAL(os_std.str(), os_ural.str());
 }
 
 // @todo get_line

@@ -2314,7 +2314,6 @@ namespace ural
     operator<<(OStream & os,
                flex_string<Char, Traits, Allocator, Storage> const & x)
     {
-        // @todo добавить выравнивание
         os << x.c_str();
         return os;
     }
