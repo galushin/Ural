@@ -77,6 +77,7 @@ namespace ural
     /** @brief Класс для представления вероятности
     @tparam RealType тип значения
     @tparam Policy тип стратегии проверок
+    @todo опретор ввода
     */
     template <class RealType = double,
               class Policy = throw_probability_policy<RealType>>
@@ -355,30 +356,50 @@ namespace tags
     template <class T, class Tag, class Base = empty_type>
     class descriptive;
 
+    /** @brief Накопитель для описательной статистики "Количество элементов"
+    @tparam T тип элементов выборки
+    @tparam Base базовый класс
+    */
     template <class T, class Base>
     class descriptive<T, statistics::tags::count_tag, Base>
      : public Base
     {
     public:
         // Типы
+        /// @brief Тип элементов выборки
         typedef T value_type;
+
+        /// @brief Тип для хранения количества элементов
         typedef size_t count_type;
 
+        // Конструкторы
+        /** @brief Конструктор без параметров
+        @post <tt> this->count() == 0 </tt>
+        @post Базовый класс инициализируется с помощью конструктора без
+        параметров
+        */
         descriptive()
          : Base{}
          , n_{0}
         {}
 
+        /** @brief Конструктор
+        @param x первый элемент выборки
+        @post <tt> this->count() == 1 </tt>
+        @post Базовый класс инициализируется как <tt> Base{x} </tt>
+        */
         explicit descriptive(value_type const & x)
          : Base{x}
          , n_{1}
         {}
 
+        // Свойства
         count_type const & count() const
         {
             return n_;
         }
 
+        // Обновление
         descriptive & operator()(T const & x)
         {
             Base::operator()(x);
@@ -386,11 +407,12 @@ namespace tags
             return *this;
         }
 
-    friend count_type const & at_tag(descriptive const & x,
-                                     statistics::tags::count_tag)
-    {
-        return x.count();
-    }
+        // Свободные функции
+        friend count_type const & at_tag(descriptive const & x,
+                                         statistics::tags::count_tag)
+        {
+            return x.count();
+        }
 
     protected:
         ~descriptive() = default;
@@ -926,6 +948,7 @@ namespace tags
 
         /** @brief Ковариационная матрица
         @return Выборочная ковариационная матрица, накопленная к данному моменту
+        @todo Сокращённая форма (cov)
         */
         covariance_matrix_type covariance_matrix() const
         {

@@ -20,7 +20,6 @@
 /** @file ural/utility/expected.hpp
  @brief Обёртка для значения или исключения, которое помешало вычислению этого
  значения.
- @todo Поддержка типов с перемещением
 */
 
 #include <ural/defs.hpp>
@@ -210,6 +209,33 @@ namespace ural
             return *this;
         }
 
+        /** @brief Присвоение значения
+        @param value новое значение
+        @return <tt> *this </tt>
+        @post <tt> this->has_value() == true </tt>
+        @post <tt> this->value() == value </tt>
+        @see set_value
+        */
+        expected & operator=(T const & value)
+        {
+            this->set_value(value);
+            return *this;
+        }
+
+        /** @brief Присвоение значения с перемещением
+        @param value новое значение
+        @return <tt> *this </tt>
+        @post <tt> this->has_value() == true </tt>
+        @post <tt> this->value() </tt> равно значению, которое @c value
+        содержало до вызова оператора присваивания
+        @see set_value
+        */
+        expected & operator=(T && value)
+        {
+            this->set_value(std::move(value));
+            return *this;
+        }
+
         /// @brief Деструктор
         ~ expected()
         {
@@ -354,9 +380,10 @@ namespace ural
         /** @brief Установить значение
         @param value значение
         @post <tt> this->has_value() == true </tt>
-        @post <tt> this->value() == value </tt>
+        @post <tt> this->value() </tt> равно значению, которое @c value имело
+        до вызова
         */
-        void set_value(T value)
+        void set_value(T && value)
         {
             if(this->has_value_)
             {
@@ -366,6 +393,25 @@ namespace ural
             {
                 this->ex_.~unexpected_type();
                 new(&this->value_) T(std::move(value));
+                has_value_ = true;
+            }
+        }
+
+        /** @brief Установить значение
+        @param value значение
+        @post <tt> this->has_value() == true </tt>
+        @post <tt> this->value() == value </tt>
+        */
+        void set_value(T const & value)
+        {
+            if(this->has_value_)
+            {
+                this->value_ = value;
+            }
+            else
+            {
+                this->ex_.~unexpected_type();
+                new(&this->value_) T(value);
                 has_value_ = true;
             }
         }

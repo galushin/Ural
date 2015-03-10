@@ -372,3 +372,56 @@ BOOST_AUTO_TEST_CASE(unexpected_fmap_test)
         BOOST_CHECK_EQUAL(value, x);
     }
 }
+
+
+BOOST_AUTO_TEST_CASE(expected_copy_assign_value_to_value)
+{
+    auto const value = std::string{"Good"};
+    auto e_good = ural::expected_from_call(may_throw, false, value);
+
+    std::string const s{"Bad"};
+
+    e_good = s;
+
+    BOOST_CHECK_EQUAL(e_good.value(), s);
+}
+
+BOOST_AUTO_TEST_CASE(expected_copy_assign_value_to_exception)
+{
+    auto const value = std::string{"Good"};
+    auto e = ural::expected_from_call(may_throw, true, value);
+
+    std::string const s{"Bad"};
+
+    e = s;
+
+    BOOST_CHECK_EQUAL(e.value(), s);
+}
+
+BOOST_AUTO_TEST_CASE(expected_move_assign_value_to_value)
+{
+    auto const value = std::string{"Good"};
+    auto e = ural::expected_from_call(may_throw, false, value);
+
+    std::string s{"Bad"};
+    auto const s_old = s;
+
+    e = std::move(s);
+
+    BOOST_CHECK_EQUAL(e.value(), s_old);
+    BOOST_CHECK_NE(s, s_old);
+}
+
+BOOST_AUTO_TEST_CASE(expected_move_assign_value_to_exception)
+{
+    auto const value = std::string{"Good"};
+    auto e = ural::expected_from_call(may_throw, true, value);
+
+    std::string s{"Bad"};
+    auto const s_old = s;
+
+    e = std::move(s);
+
+    BOOST_CHECK_EQUAL(e.value(), s_old);
+    BOOST_CHECK_NE(s, s_old);
+}
