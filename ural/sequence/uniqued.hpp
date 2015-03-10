@@ -195,7 +195,7 @@ namespace ural
         }
 
         // Переход к следующему элементу
-        void pop_front_impl(single_pass_traversal_tag tag)
+        void pop_front_impl(single_pass_traversal_tag)
         {
             if(!!next_)
             {
@@ -209,7 +209,7 @@ namespace ural
             }
         }
 
-        void pop_front_impl(forward_traversal_tag tag)
+        void pop_front_impl(forward_traversal_tag)
         {
             current_ = next_;
 

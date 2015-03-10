@@ -205,9 +205,9 @@ namespace ural
         */
         void reserve(size_type n)
         {
+            // По сравнению с выделением памяти - эта проверка недорогая
             if(n <= this->capacity())
             {
-                // @todo Заменить на assert
                 return;
             }
 
@@ -326,7 +326,7 @@ namespace ural
         */
         size_type capacity() const
         {
-            return data_.capacity();
+            return this->data_.capacity();
         }
 
         /** @brief Указатель на начало выделенной области памяти
@@ -387,6 +387,7 @@ namespace ural
         */
         void reserve(size_type n)
         {
+            assert(n > this->capacity());
             data_.reserve(n);
         }
 
@@ -833,6 +834,7 @@ namespace ural
 
             if(n > this->capacity())
             {
+                assert(n+1 > data_.capacity());
                 return data_.reserve(n+1);
             }
             else if(n > this->size())

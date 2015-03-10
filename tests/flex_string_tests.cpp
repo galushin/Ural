@@ -438,6 +438,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_const_iterators, String, Strings_list)
 
     String const s(src.begin(), src.end());
 
+    BOOST_CHECK_EQUAL(src, s);
     BOOST_CHECK_EQUAL_COLLECTIONS(src.begin(), src.end(), s.begin(), s.end());
     BOOST_CHECK_EQUAL_COLLECTIONS(src.begin(), src.end(), s.cbegin(), s.cend());
 

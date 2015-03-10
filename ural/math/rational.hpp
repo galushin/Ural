@@ -125,7 +125,7 @@ namespace ural
         <tt> num </tt>
         */
         static constexpr IntegerType
-        prepare_numerator(IntegerType num, IntegerType denom)
+        prepare_numerator(IntegerType num, IntegerType const & denom)
         {
             return denom < 0 ? - std::move(num) : std::move(num);
         }
