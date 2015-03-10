@@ -685,7 +685,6 @@ namespace ural
     @tparam Vector тип вектора-результата
     @tparam Matrix тип корреляционной матрицы
     @todo Тип параметра как требует стандартная библиотека
-    @todo Функции, возвращающие вектор мат.ожиданий и ковариационную матрицу
     */
     template <class Vector = use_default, class Matrix = use_default>
     class multivariate_normal_distribution
@@ -806,6 +805,22 @@ namespace ural
         size_type dim () const
         {
             return mu_.size();
+        }
+
+        /** @brief Вектор математических ожиданий
+        @return Вектор математических ожиданий
+        */
+        result_type const & mean() const
+        {
+            return this->mu_;
+        }
+
+        /** @brief Ковариационная матрица
+        @return Ковариационная матрица
+        */
+        matrix_type cov() const
+        {
+            return ::boost::numeric::ublas::prod(this->L_, trans(this->L_));
         }
 
         /** @brief Наименьшее возможное значение

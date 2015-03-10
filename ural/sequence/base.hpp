@@ -157,6 +157,7 @@ namespace ural
         return static_cast<Seq const&>(s).front();
     }
 
+    //@{
     /** @brief Бинарный оператор "плюс" для последовательности и расстояния
     @param s последовательность
     @param n свдиг
@@ -171,6 +172,14 @@ namespace ural
         result += n;
         return result;
     }
+
+    template <class Seq, class Base>
+    Seq
+    operator+(typename Seq::distance_type n, sequence_base<Seq, Base> const & s)
+    {
+        return std::move(s + n);
+    }
+    //@}
 
     /** @brief Отбрасывание начальной пройденной части копии последовательности
     @param s последовательность

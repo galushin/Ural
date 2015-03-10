@@ -774,6 +774,9 @@ BOOST_AUTO_TEST_CASE(multivariate_normal_equality_test)
     ural::multivariate_normal_distribution<> const d2{mu};
     ural::multivariate_normal_distribution<> const d3{mu_2};
 
+    BOOST_CHECK_CLOSE(norm_2(d2.mean() - mu), 0, 1e-6);
+    BOOST_CHECK_CLOSE(norm_2(d3.mean() - mu_2), 0, 1e-6);
+
     BOOST_CHECK(d1 == d1);
     BOOST_CHECK(d2 == d2);
     BOOST_CHECK(d3 == d3);

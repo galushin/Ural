@@ -216,6 +216,7 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
     BOOST_CHECK_EQUAL(C.size2(), dim);
 
     // Добавить сдвиг мат. ожидания
+    // @todo Замена boost::ublas::vector со списком инициализаторов
     Vector mu(dim);
     mu[0] = -1;
     mu[1] = 1;
@@ -226,6 +227,11 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
     typedef ural::iid_adaptor<Vector_distribution> Sample_distribution;
 
     Sample_distribution sample_distr(sample_size, Vector_distribution{mu, C});
+
+    BOOST_CHECK_CLOSE(norm_2(mu - sample_distr.base().mean()), 0, 1e-6);
+
+    double const delta_C = norm_1(C - sample_distr.base().cov());
+    BOOST_CHECK_CLOSE(delta_C, 0, 1e-6);
 
     auto const sample = sample_distr(ural_test::random_engine());
 

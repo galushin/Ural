@@ -249,19 +249,6 @@ namespace ural
         return x.base() < y.base();
     }
 
-    /** @brief Оператор сложение смещения и итератора
-    @param n количество элементов
-    @param x итератора
-    @return <tt> x + n </tt>
-    */
-    template <class Iterator>
-    move_iterator<Iterator>
-    operator+(typename move_iterator<Iterator>::difference_type n,
-              move_iterator<Iterator> const & x)
-    {
-        return x + n;
-    }
-
     /** @brief Бинарный оператор "минус"
     @param x левый операнд
     @param y правый операнд

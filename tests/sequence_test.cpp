@@ -390,6 +390,27 @@ BOOST_AUTO_TEST_CASE(filtered_sequence_for_each)
     BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(), r.begin(), r.end());
 }
 
+BOOST_AUTO_TEST_CASE(zip_sequence_bases_access)
+{
+    std::vector<int> const x = {1, 2, 3, 4, 5};
+    std::vector<char> const y = {'a', 'b', 'c', 'd', 'e'};
+
+    auto xy_zip = ural::make_zip_sequence(x, y);
+
+    BOOST_CHECK(xy_zip.bases()[ural::_1].begin() == x.begin());
+    BOOST_CHECK(xy_zip.bases()[ural::_1].end() == x.end());
+    BOOST_CHECK(xy_zip.bases()[ural::_2].begin() == y.begin());
+    BOOST_CHECK(xy_zip.bases()[ural::_2].end() == y.end());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(xy_zip.bases()[ural::_1].begin(),
+                                  xy_zip.bases()[ural::_1].end(),
+                                  x.begin(), x.end());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(xy_zip.bases()[ural::_2].begin(),
+                                  xy_zip.bases()[ural::_2].end(),
+                                  y.begin(), y.end());
+}
+
 BOOST_AUTO_TEST_CASE(zip_sequence_test)
 {
     std::vector<int> const x = {1, 2, 3, 4, 5};
