@@ -20,6 +20,7 @@
 /** @file ural/statistics.hpp
  @brief Средства математической статистики
  @todo Концепция "Описательная статистика"
+ @todo Реализовать и использовать meta-алгоритм flatten
 */
 
 #include <ural/numeric/numbers_sequence.hpp>
@@ -643,29 +644,25 @@ namespace tags
         typedef typename Base::mean_type mean_type;
 
         // Конструкторы
-        descriptive()
-         : Base{}
-        {}
-
-        explicit descriptive(T const & x)
-         : Base{x}
-        {}
+        using Base::Base;
 
         // Обновление
-        descriptive & operator()(T const & x)
-        {
-            Base::operator()(x);
-
-            return *this;
-        }
+        using Base::operator();
 
         // Свойства
+        /** @brief Значение среднеквадратического уклонения
+        @return <tt> sqrt(this->variance()) </tt>
+        */
         mean_type standard_deviation() const
         {
             using std::sqrt;
             return sqrt(this->variance());
         }
 
+        /** @brief Значение среднеквадратического уклонения
+        @param x объект-накопитель описательной статистики
+        @return <tt> x.standard_deviation() </tt>
+        */
         friend mean_type at_tag(descriptive const & x,
                             statistics::tags::standard_deviation_tag)
         {
@@ -707,12 +704,19 @@ namespace tags
          , min_{x}
         {}
 
+        /** @brief Значение, накопленное к данному моменту
+        @c param x объект-накопитель для описательной статистики
+        @return <tt> x.min() </tt>
+        */
         friend value_type const & at_tag(descriptive const & x,
                                          statistics::tags::min_tag)
         {
             return x.min();
         }
 
+        /** @brief Значение, накопленное к данному моменту
+        @return Наименьшее из значений выборки, обработаннх к данному моменту
+        */
         value_type const & min URAL_PREVENT_MACRO_SUBSTITUTION () const
         {
             return min_;
@@ -751,18 +755,32 @@ namespace tags
      : public Base
     {
     public:
+        /// @brief Тип значения
         typedef T value_type;
 
+        /** @brief Конструктор без параметров
+        @post Инициализирует базовый класс конструктором без аргументов
+        @post <tt> this->max() == -std::numeric_limits<T>::infinity() </tt>
+        */
         descriptive()
          : Base{}
          , max_{-std::numeric_limits<T>::infinity()}
         {}
 
+        /** @brief Конструктор
+        @param x первый элемент выборки
+        @post Инициализирует базовый класс c @c x в качестве параметра
+        @post <tt> this->max() == x </tt>
+        */
         explicit descriptive(T const & x)
          : Base{x}
          , max_{x}
         {}
 
+        /** @brief Текущее значение описательной статистики
+        @param x объект-накопитель описательной статистики
+        @return <tt> x.max() </tt>
+        */
         friend value_type const & at_tag(descriptive const & x,
                                          statistics::tags::max_tag)
         {
@@ -774,6 +792,13 @@ namespace tags
             return max_;
         }
 
+        /** Передаёт @c x базовому накопителю, а затем заменяет наибольшее
+        значение, встреченное до сих пор, на @c x, если
+        <tt> this->max() < x </tt>
+        @brief Обновление значения
+        @param x новый элемент выборки
+        @return <tt> *this </tt>
+        */
         descriptive & operator()(T const & x)
         {
             Base::operator()(x);
