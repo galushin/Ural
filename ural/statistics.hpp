@@ -19,6 +19,7 @@
 
 /** @file ural/statistics.hpp
  @brief Средства математической статистики
+ @todo Концепция "Описательная статистика"
 */
 
 #include <ural/numeric/numbers_sequence.hpp>
@@ -268,7 +269,7 @@ namespace tags
     struct raw_moment_tag   : declare_depend_on<count_tag>{};
 
     /// @brief Тип-тэг описательной статистики "Математическое ожидание"
-    struct mean_tag     : declare_depend_on<count_tag, raw_moment_tag<1>>{};
+    struct mean_tag : declare_depend_on<raw_moment_tag<1>>{};
 
     /// @brief Тип-тэг описательной статистики "Дисперсия"
     struct variance_tag : declare_depend_on<mean_tag>{};
@@ -394,12 +395,21 @@ namespace tags
         {}
 
         // Свойства
+        /** @brief Количество элементов выборки
+        @return Количество элементов выборки
+        */
         count_type const & count() const
         {
             return n_;
         }
 
         // Обновление
+        /** Обработка нового элемента. Сначала данный элемент передаётся
+        базовому накопителю, а затем счётчик увеличивается на единичу
+        @brief Обновление
+        @param x новый элемент выборки
+        @return <tt> *this </tt>
+        */
         descriptive & operator()(T const & x)
         {
             Base::operator()(x);
@@ -408,6 +418,10 @@ namespace tags
         }
 
         // Свободные функции
+        /** @brief Свободная функция доступа к накопленному значению
+        @param x описательная статистика
+        @return <tt> x.count() </tt>
+        */
         friend count_type const & at_tag(descriptive const & x,
                                          statistics::tags::count_tag)
         {
@@ -421,36 +435,71 @@ namespace tags
         count_type n_;
     };
 
+    /** @brief Описательная статистика "начальный момента порядка @c N"
+    @tparam T тип элементов
+    @tparam Base базовая описательная статистика
+    @tparam N порядок момента
+    @todo Выразить через более общую статистику: с произвольным преобразованием
+    */
     template <class T, class Base, size_t N>
     class descriptive<T, statistics::tags::raw_moment_tag<N>, Base>
      : public Base
     {
         static_assert(N > 0, "Use counter instead");
     public:
+        // Типы
+        /// @brief Тип количества элементов
         typedef typename Base::count_type count_type;
+
+        /// @brief Тип момента
         typedef typename average_type<T, count_type>::type moment_type;
 
+        // Конструкторы
+        /** @brief Конструктор без аргументов
+        @post <tt> raw_moment(*this, integral_constant<size_t, N>{}) == 0 </tt>
+        @post Базовая описательная статистика инициализируется конструктором
+        без аргментов
+        */
         descriptive()
          : Base{}
          , value_(0)
         {}
 
+        /** @brief Конструктор
+        @param x первый элемент выборки
+        @post <tt> raw_moment(*this, integral_constant<size_t, N>{}) == 1 </tt>
+        @post Базовый класс инициализируется как <tt> Base{x} </tt>
+        */
         explicit descriptive(T const & x)
          : Base{x}
          , value_(x)
         {}
 
-        friend moment_type const &
-        raw_moment(descriptive const & x, std::integral_constant<size_t, N>)
-        {
-            return x.value_;
-        }
-
+        // Обновление
+        /** Обработка нового элемента. Сначала данный элемент передаётся
+        базовому накопителю, а затем выборочный момент пересчитывается с учётом
+        нового значения.
+        @brief Обновление
+        @param x новый элемент выборки
+        @return <tt> *this </tt>
+        */
         descriptive & operator()(T const & x)
         {
             Base::operator()(x);
             value_ += (power(x) - value_) / this->count();
             return *this;
+        }
+
+        // Свойства
+        /** @brief Значение начального момента
+        @param x объект-накопитель
+        @return Значение начального момента
+        @todo Перегрузка с placeholder?
+        */
+        friend moment_type const &
+        raw_moment(descriptive const & x, std::integral_constant<size_t, N>)
+        {
+            return x.value_;
         }
 
     protected:
@@ -465,51 +514,60 @@ namespace tags
         moment_type value_;
     };
 
+    /** @brief Описательная статистика "выборочное среднее"
+    @tparam T тип элементов
+    @tparam Base базовая описательная статистика
+    @todo Можно ли обойтись без этого класса вообще?
+    */
     template <class T, class Base>
     class descriptive<T, statistics::tags::mean_tag, Base>
      : public Base
     {
     public:
-        typedef typename Base::count_type count_type;
+        /// @brief Тип для представления выборочного среднего
         typedef typename Base::moment_type mean_type;
 
-        descriptive()
-         : Base{}
-        {}
+        /// @brief Конструкторы как в базовом классе
+        using Base::Base;
 
-        explicit descriptive(T const & x)
-         : Base{x}
-        {}
-
+        /** @brief Значение выборочного среднего
+        @return Значение выборочного среднего накопленного к настоящему моменту
+        */
         mean_type const & mean() const
         {
             return raw_moment(*this, std::integral_constant<size_t, 1>{});
         }
 
-    friend mean_type const & at_tag(descriptive const & x,
-                                     statistics::tags::mean_tag)
-    {
-        return x.mean();
-    }
+        /// @brief Обновление -- как в базовом классе
+        using Base::operator();
 
-        descriptive & operator()(T const & x)
+        /** @brief Значение выборочного среднего
+        @param d объект-накопитель описательной статистики
+        @return <tt> d.mean() </tt>
+        */
+        friend mean_type const & at_tag(descriptive const & d,
+                                        statistics::tags::mean_tag)
         {
-            Base::operator()(x);
-
-            return *this;
+            return d.mean();
         }
 
     protected:
         ~descriptive() = default;
     };
 
-    // @todo Несмещённая дисперсия?
+    /** @brief Описательная статистика "дисперсия"
+    @tparam T тип элементов
+    @tparam Base базовая описательная статистика
+    @todo Несмещённая дисперсия?
+    @todo Тип возвращаемого значения
+    */
     template <class T, class Base>
     class descriptive<T, statistics::tags::variance_tag, Base>
      : public Base
     {
     public:
         // Типы
+        /// @brief Тип для представления математического ожидания
         typedef typename Base::mean_type mean_type;
 
         // Конструкторы
@@ -551,6 +609,11 @@ namespace tags
         mean_type sq_;
     };
 
+    /** @brief Описательная статистика "среднеквадратическое отклонение"
+    @tparam T тип элементов
+    @tparam Base базовая описательная статистика
+    @todo Обобщённый накопитель с преобразованием, выразить через него же момент
+    */
     template <class T, class Base>
     class descriptive<T, statistics::tags::standard_deviation_tag, Base>
      : public Base
@@ -593,6 +656,10 @@ namespace tags
         ~descriptive() = default;
     };
 
+    /** @brief Описательная статистика "наименьшее значение"
+    @tparam T тип элементов
+    @tparam Base базовая описательная статистика
+    */
     template <class T, class Base>
     class descriptive<T, statistics::tags::min_tag, Base>
      : public Base
@@ -638,6 +705,10 @@ namespace tags
         value_type min_;
     };
 
+    /** @brief Описательная статистика "наибольшее значение"
+    @tparam T тип элементов
+    @tparam Base базовая описательная статистика
+    */
     template <class T, class Base>
     class descriptive<T, statistics::tags::max_tag, Base>
      : public Base
@@ -685,6 +756,10 @@ namespace tags
         value_type max_;
     };
 
+    /** @brief Описательная статистика "размах"
+    @tparam T тип элементов
+    @tparam Base базовая описательная статистика
+    */
     template <class T, class Base>
     class descriptive<T, statistics::tags::range_tag, Base>
      : public Base
@@ -725,9 +800,17 @@ namespace tags
         ~descriptive() = default;
     };
 
+    /** @brief Класс "набор описательных статистик"
+    @tparam T тип элементов выборки
+    @tparam Tags список тэгов описательных статистик
+    */
     template <class T, class Tags>
     class descriptives;
 
+    /** @brief Специализаци для пустого списка тэгов
+    @tparam T тип элементов выборки
+    @todo Конструктор с одним аргументом
+    */
     template <class T>
     class descriptives<T, null_type>
     {
@@ -826,6 +909,11 @@ namespace tags
         }
 
         // Свойства
+        /** @brief Доступ к свойствам по тэгу
+        @tparam Tag тип-тэг
+        @pre Тип @c Tag должен содержаться в списке типов @c tag_list
+        @return <tt> at_tag(*this, Tag{}) </tt>
+        */
         template <class Tag>
         auto operator[](statistics::tags_list<Tag>) const
         -> decltype(at_tag(*this, Tag{}))
