@@ -571,17 +571,30 @@ namespace tags
         typedef typename Base::mean_type mean_type;
 
         // Конструкторы
+        /** @brief Конструктор без параметров
+        @post Инициализирует базовый класс конструктором без параметров
+        @post <tt> this->variance() == 0 </tt>
+        */
         descriptive()
          : Base{}
          , sq_(0)
         {}
 
+        /** @brief Конструктор без параметров
+        @param x первый элемент выборки
+        @post Инициализирует базовый класс c @c x в качестве параметра
+        @post <tt> this->variance() == 0 </tt>
+        */
         explicit descriptive(T const & x)
          : Base{x}
          , sq_(0)
         {}
 
         // Обновление
+        /** @brief Обновление
+        @param x новый элемент выборки
+        @return <tt> *this </tt>
+        */
         descriptive & operator()(T const & x)
         {
             auto old_m = this->mean();
@@ -594,12 +607,19 @@ namespace tags
         }
 
         // Свойства
+        /** @brief Текущее значение дисперсии
+        @param x объект-накопитель описательной статистики
+        @return <tt> x.variance() </tt>
+        */
         friend mean_type at_tag(descriptive const & x,
                                 statistics::tags::variance_tag)
         {
             return x.variance();
         }
 
+        /** @brief Текущее значение дисперсии
+        @return Текущее значение дисперсии
+        */
         mean_type variance() const
         {
             return sq_ / this->count();
@@ -665,13 +685,23 @@ namespace tags
      : public Base
     {
     public:
+        /// @brief Тип значения
         typedef T value_type;
 
+        /** @brief Конструктор без параметров
+        @post Инициализирует базовый класс конструктором без аргументов
+        @post <tt> this->min() == std::numeric_limits<T>::infinity() </tt>
+        */
         descriptive()
          : Base{}
          , min_{std::numeric_limits<T>::infinity()}
         {}
 
+        /** @brief Конструктор
+        @param x первый элемент выборки
+        @post Инициализирует базовый класс c @c x в качестве параметра
+        @post <tt> this->min() == x </tt>
+        */
         explicit descriptive(T const & x)
          : Base{x}
          , min_{x}
@@ -688,6 +718,13 @@ namespace tags
             return min_;
         }
 
+        /** Передаёт базовому накопителю @c x, а затем заменяет наименьшее
+        значение, накопленное к настоящему моменту, на @c x, если @c x меньше
+        этого значения.
+        @brief Обновление
+        @param x новый элемент выборки
+        @return <tt> *this </tt>
+        */
         descriptive & operator()(T const & x)
         {
             Base::operator()(x);
@@ -759,38 +796,36 @@ namespace tags
     /** @brief Описательная статистика "размах"
     @tparam T тип элементов
     @tparam Base базовая описательная статистика
+    @todo Добавить требования к базовому классу: max и min
     */
     template <class T, class Base>
     class descriptive<T, statistics::tags::range_tag, Base>
      : public Base
     {
     public:
-        // Типы
+        /// @brief Тип значения
         typedef T value_type;
 
-        // Конструкторы
-        descriptive()
-         : Base{}
-        {}
+        /// @brief Конструкторы
+        using Base::Base;
 
-        explicit descriptive(T const & x)
-         : Base{x}
-        {}
-
-        // Обновление
-        descriptive & operator()(T const & x)
-        {
-            Base::operator()(x);
-            return *this;
-        }
+        /// @brief Обновление
+        using Base::operator();
 
         // Свойства
+        /** @brief Доступ к значению
+        @param x объект-накопитель для описательной статистики
+        @return <tt> x.range() </tt>
+        */
         friend value_type at_tag(descriptive const & x,
                                  statistics::tags::range_tag)
         {
             return x.range();
         }
 
+        /** @brief Значение размаха выборки
+        @return <tt> this->max() - this->min() </tt>
+        */
         value_type range () const
         {
             return this->max() - this->min();
@@ -818,11 +853,16 @@ namespace tags
         ~descriptives() = default;
 
     public:
+        /// @brief Конструктор
         descriptives() = default;
 
+        /// @brief Конструктор
         explicit descriptives(T const &)
         {};
 
+        /** @brief Обновление
+        @return <tt> *this </tt>
+        */
         descriptives & operator()(T const &)
         {
             return *this;
