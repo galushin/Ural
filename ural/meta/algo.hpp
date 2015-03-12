@@ -21,10 +21,38 @@
  @brief Алгоритмы для списков типов
 */
 
+#include <ural/meta/list.hpp>
+
 namespace ural
 {
 namespace meta
 {
+    // @todo Обобщить
+    template <class T1, class T2>
+    struct is_not_same
+     : std::integral_constant<bool, !std::is_same<T1, T2>::value>
+    {};
+
+    // Удаление последовательных дубликатов
+    template <class List>
+    struct unique;
+
+    template <>
+    struct unique<null_type>
+    {
+        typedef null_type type;
+    };
+
+    template <class Head, class Tail>
+    struct unique<list<Head, Tail>>
+    {
+    private:
+        typedef typename ::ural::meta::find<Tail, Head, is_not_same>::type skip_head;
+        typedef typename unique<skip_head>::type new_tail;
+
+    public:
+        typedef list<Head, new_tail> type;
+    };
 }
 // namespace meta
 }

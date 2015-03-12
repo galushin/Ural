@@ -337,6 +337,11 @@ namespace tags
     struct prepare
     {
     private:
+        /* Заменять на sort-unique нельзя, так как отношение is_depend_on
+        слишком слабое. Если есть два независимых тэга A и B, то
+        список <A, B, A> при сортировке не изменится и, следовательно,
+        после unique будет содержать дубликаты
+        */
         typedef typename expand_depend_on<typename Tags::list, null_type>::type
             WithDependencies;
         typedef typename meta::copy_without_duplicates<WithDependencies>::type
@@ -1099,14 +1104,20 @@ namespace tags
             return m_;
         }
 
+        //@{
         /** @brief Ковариационная матрица
         @return Выборочная ковариационная матрица, накопленная к данному моменту
-        @todo Сокращённая форма (cov)
         */
         covariance_matrix_type covariance_matrix() const
         {
             return cov_ / (n_ > 1 ? (n_ - 1) : 1);
         }
+
+        covariance_matrix_type cov() const
+        {
+            return this->covariance_matrix();
+        }
+        //@}
 
     private:
         size_t n_;

@@ -109,22 +109,20 @@ namespace meta
     {};
 
     // find
-    template <class Container, class T>
+    template <class Container, class T,
+              template <class, class> class Eq = std::is_same>
     struct find;
 
-    template <class T>
-    struct find<null_type, T>
+    template <class T, template <class, class> class Eq>
+    struct find<null_type, T, Eq>
      : declare_type<null_type>
     {};
 
-    template <class Head, class Tail>
-    struct find<list<Head, Tail>, Head>
-     : declare_type<list<Head, Tail>>
-    {};
-
-    template <class Head, class Tail, class T>
-    struct find<list<Head, Tail>, T>
-     : find<Tail, T>
+    template <class Head, class Tail, class T, template <class, class> class Eq>
+    struct find<list<Head, Tail>, T, Eq>
+     : std::conditional<Eq<Head, T>::value,
+                        declare_type<list<Head, Tail>>,
+                        find<Tail, T, Eq>>::type
     {};
 
     // Копирование без дубликатов
