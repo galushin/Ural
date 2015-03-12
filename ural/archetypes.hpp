@@ -120,6 +120,7 @@ namespace archetypes
         }
     };
 
+    /// @brief Архетип генератора равномерно распределённых случайных чисел
     class URNG_archetype
     {
     public:

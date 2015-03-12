@@ -436,6 +436,10 @@ namespace ural
         return x.second();
     }
 
+    /** @brief Тип функционального объекта для доступа к элементу кортежа
+    (в широком смысле) с заданным на этапе компиляции индексом
+    @tparam Index номер элемента кортежа
+    */
     template <size_t Index>
     class tuple_get
     {

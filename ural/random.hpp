@@ -724,6 +724,9 @@ namespace ural
         };
 
         // Конструкторы
+        /** @brief Конструктор по умолчанию
+        @todo Покрыть тестами, определить пост-условия
+        */
         multivariate_normal_distribution();
 
         /** @brief Конструктор
@@ -794,6 +797,7 @@ namespace ural
         @param g генератор равномерно распределённых случайных чисел
         @param p значение параметра
         @return Случайная величина, распределение которой имеет параметр @c p
+        @todo Покрыть тестами
         */
         template <class URNG>
         result_type operator()(URNG & g, param_type const & p);

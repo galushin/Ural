@@ -36,6 +36,9 @@
 
 namespace ural
 {
+    /** @brief Тип функционального объекта для вычисления квадрата
+    (второй степени)
+    */
     class square_fn
     {
     public:
@@ -64,6 +67,7 @@ namespace ural
 
     auto constexpr square = square_fn{};
 
+    /// @brief Тип функционального объекта для вычисления куба (третьей степени)
     class cube_fn
     {
     public:
@@ -140,6 +144,9 @@ namespace ural
         return unit_element_traits<T, BinaryOperation>::make(f);
     }
 
+    /** @brief Тип бинарного функционального объекта для вычисления
+    неотрицательных степеней
+    */
     class natural_power_f
     {
     public:
@@ -160,7 +167,7 @@ namespace ural
         @param n степень
         @param op ассоциативная бинарная операция, используемая в качестве
         умножения
-        @pre <tt> n > 0 </tt>
+        @pre <tt> n >= 0 </tt>
         @return @c x в степени @c n
         */
         template <class T, class AssocBinOp>
@@ -218,6 +225,7 @@ namespace ural
     {
         using std::abs;
 
+        /// @brief Тип функционального объекта для вычисления модуля
         class abs_fn
         {
         public:
@@ -236,6 +244,9 @@ namespace ural
 
     using details::abs_fn;
 
+    /** @brief Создание функционального объекта для вычисления модуля
+    @return <tt> details::abs_fn{} </tt>
+    */
     constexpr abs_fn abs()
     {
         return abs_fn{};
@@ -269,6 +280,34 @@ namespace ural
     struct average_type<T, N, typename std::enable_if<are_integral<T, N>::value>::type>
      : declare_type<double>
     {};
+
+    /** @brief Преобразование в беззнаковое число
+    @param x преобразуемое число
+    @pre @c x должно быть представимо в виде соответствующего знакового типа
+    @return <tt> typename std::make_signed<T>::type(std::move(x)) </tt>
+    @todo Настройка способа проверки корректности - стратегии
+    */
+    template <class T>
+    typename std::make_signed<T>::type
+    to_signed(T x)
+    {
+        // @todo Проверка корректности
+        return typename std::make_signed<T>::type(std::move(x));
+    }
+
+    /** @brief Преобразование в беззнаковое число
+    @param x преобразуемое число
+    @pre <tt> x >= 0 </tt>
+    @return <tt> typename std::make_unsigned<T>::type(std::move(x)) </tt>
+    @todo Настройка способа проверки корректности - стратегии
+    */
+    template <class T>
+    typename std::make_unsigned<T>::type
+    to_unsigned(T x)
+    {
+        assert(x >= 0);
+        return typename std::make_unsigned<T>::type(std::move(x));
+    }
 }
 // namespace ural
 

@@ -421,6 +421,17 @@ namespace details
             return *this;
         }
 
+        /** @brief Присваивание совместимого значения
+        @param value значение
+        @pre Объект типа @c T можно создать с помощью конструктора, принимающего
+        выражение <tt> std::forward<U>(value) </tt>
+        @pre Неконстантному объекту типа @c T можно присвоить значение
+        <tt> std::forward<U>(value) </tt>
+        @return <tt> *this </tt>
+        @post <tt> this->empty() == false </tt>
+        @post <tt> this->value() </tt> равно значению, которое @c value, имело
+        до начала выполнения присваивания
+        */
         template <class U>
         typename std::enable_if<std::is_constructible<T, U>::value && is_assignable<T&, U>::value, optional &>::type
         operator=(U && value)
@@ -584,6 +595,12 @@ namespace details
         Impl impl_;
     };
 
+    /** @brief Специализация для ссылок
+    @tparam T тип объекта, на который приозводится ссылка
+    Используем тот факт, что ссылка с необязательным значением эквивалентна
+    указателю
+    @todo Запретить привязки временных объектов
+    */
     template <class T>
     class optional<T&>
     {
@@ -606,9 +623,18 @@ namespace details
         {}
         //@}
 
+        /// @brief Конструктор копий
         optional(optional const & ) = default;
+
+        /// @brief Конструктор перемещения
         optional(optional && ) = default;
 
+        //@{
+        /** @brief Конструктор на основе ссылки
+        @param x ссылка
+        @post <tt> !*this == false </tt>
+        @post <tt> addressof(x) == addressof(this->value()) </tt>
+        */
         constexpr optional(T & x)
          : ptr_(details::constexpr_addressof(x))
         {}
@@ -616,9 +642,10 @@ namespace details
         constexpr optional(in_place_t, T & x)
          : ptr_(details::constexpr_addressof(x))
         {}
+        //@}
 
         // Присваивания
-        /** @brief Удаление значения
+        /** @brief Оператор присваивания с @c nullopt_t в правой части
         @post <tt> !*this </tt>
         @return <tt> *this </tt>
         */
@@ -628,7 +655,14 @@ namespace details
             return *this;
         }
 
+        /** @brief Оператор копирующего присваивания
+        @return <tt> *this </tt>
+        */
         optional & operator=(optional const & ) = default;
+
+        /** @brief Оператор присваивания с перемещением
+        @return <tt> *this </tt>
+        */
         optional & operator=(optional && ) = default;
 
         // Свойства
@@ -647,17 +681,28 @@ namespace details
         }
         //@}
 
+        /** @brief Явное преобразование в @с bool -- проверка наличия значения
+        @return <tt> !this->empty() </tt>
+        */
         constexpr explicit operator bool() const
         {
             return !!*this;
         }
 
+        /** @brief Доступ к текущему значению без проверки
+        @pre <tt> !this->empty() </tt>
+        @return <tt> *this->get_pointer() </tt>
+        */
         constexpr T & operator*() const
         {
             return *this->get_pointer();
         }
 
         //@{
+        /** @brief Указатель на хранимое значение
+        @return Если <tt> this->empty() </tt>, то возвращает @c nullptr, иначе
+        -- указатель, ссылающийся на тот же объект, что <tt> this->value() </tt>
+        */
         constexpr T * operator->() const
         {
             return this->get_pointer();
@@ -669,18 +714,32 @@ namespace details
         }
         //@}
 
+        /** @brief Доступ к текущему значению с проверкой
+        @return <tt> *(*this) </tt>
+        @throw bad_optional_access, если <tt> this->empty() </tt>
+        */
         constexpr T & value() const
         {
             return *this ? **this:
                             throw bad_optional_access{"optional::value"}, **this;
         }
 
+        /** @brief Доступ к текущему значению с "запасным" значением на случай,
+        если в данном объекте значение отсутствует
+        @param other "запасное" значение
+        @return Если <tt> this->empty() </tt>, то возвращает @c other, иначе
+        -- <tt> **this </tt>
+        */
         constexpr T & value_or(T & other) const
         {
             return !*this ? other : **this;
         }
 
         // Модифицирующие операциии
+        /** @brief Размещение новой ссылки
+        @param x новая ссылка
+        @post <tt> addressof(x) == this->get_pointer() </tt>
+        */
         void emplace(T & x)
         {
             ptr_ = std::addressof(x);
@@ -701,6 +760,10 @@ namespace details
         T * ptr_;
     };
 
+    /** @brief Создание объекта с необязательным значением
+    @param value значение
+    @return <tt> optional<typename std::decay<T>::type>{std::forward<T>(value)} </tt>
+    */
     template <class T>
     constexpr optional<typename std::decay<T>::type>
     make_optional(T && value)
@@ -708,6 +771,10 @@ namespace details
         return optional<typename std::decay<T>::type>{std::forward<T>(value)};
     }
 
+    /** @brief Создание ссылки с необязательным значением
+    @param value обёртка для ссылки
+    @return <tt> optional<T &>(value.get()) </tt>
+    */
     template <class T>
     optional<T &>
     make_optional(std::reference_wrapper<T> value)
@@ -715,6 +782,12 @@ namespace details
         return optional<T &>(value.get());
     }
 
+    //@{
+    /** @brief Проверка объекта типа @c optional на равенство с объектом,
+    обозначающим отсутствующее значение
+    @param x объект с необязательным значением
+    @return <tt> !x </tt>
+    */
     template <class T>
     constexpr bool operator==(nullopt_t, optional<T> const & x)
     {
@@ -726,7 +799,16 @@ namespace details
     {
         return nullopt == x;
     }
+    //@}
 
+    //@{
+    /** @brief Проверка объекта типа @c optional на равенство со значением
+    соответствующего типа
+    @param x объект с необязательным значением
+    @param a значение
+    @return Если @c x не содержит значения, то @b false, иначе --
+    <tt> a == *x </tt>
+    */
     template <class T1, class T2>
     constexpr bool operator==(optional<T1> const & x, T2 const & a)
     {
@@ -738,6 +820,7 @@ namespace details
     {
         return x == a;
     }
+    //@}
 
     template <class T>
     constexpr bool

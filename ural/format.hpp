@@ -232,7 +232,10 @@ namespace details
 }
 //namespace details
 
-    /** @todo Оптимизированные перегрузки для отдельных типов, например, для
+    /** @brief Функциональный объект преобразования в строку
+    @tparam Char тип символов
+    @tparam Traits класс характеристик символов
+    @todo Оптимизированные перегрузки для отдельных типов, например, для
     целых чисел
     */
     template <class Char, class Traits = std::char_traits<Char>>
@@ -253,7 +256,10 @@ namespace details
         }
     };
 
+    /// @brief Функциональный объект преобразования в <tt> std::string </tt>
     auto constexpr to_string = to_string_functor<char>{};
+
+    /// @brief Функциональный объект преобразования в <tt> std::wstring </tt>s
     auto constexpr to_wstring = to_string_functor<wchar_t>{};
 }
 // namespace ural

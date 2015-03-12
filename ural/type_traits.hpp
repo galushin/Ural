@@ -96,6 +96,12 @@ namespace ural
         constexpr static auto value = type::value;
     };
 
+    /** @brief Класс-характеристика для определения типа объекта, из которого
+    будет приозводится перемещение.
+    @tparam T тип
+    Если @c T -- тип ссылки, то результатом будет
+    <tt> typename std::remove_reference<T>::type && </tt>, иначе -- сам тип T
+    */
     template <class T>
     struct moved_type
      : std::conditional<std::is_reference<T>::value,
@@ -103,11 +109,17 @@ namespace ural
                         T>
     {};
 
+    /** @brief Класс-характеристика "поддерживает пре-инкрмент"
+    @tparam T тип, для которого проверяется свойство
+    */
     template <class T>
     struct has_pre_increment
      : decltype(::ural::details::has_pre_increment_helper<T>(nullptr))
     {};
 
+    /** @brief Класс-характеристика "поддерживает пре-декремент"
+    @tparam T тип, для которого проверяется свойство
+    */
     template <class T>
     struct has_pre_decrement
      : decltype(::ural::details::has_pre_decrement_helper<T>(nullptr))

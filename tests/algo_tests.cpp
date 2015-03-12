@@ -686,8 +686,8 @@ BOOST_AUTO_TEST_CASE(fill_n_test)
     std::fill_n(v_std.begin(), n, value);
     auto r = ural::fill(v_ural | ural::taken(n), value);
 
-    BOOST_CHECK_EQUAL(n, r.base().traversed_front().size());
-    BOOST_CHECK_EQUAL(v_std.size() - n, r.base().size());
+    BOOST_CHECK_EQUAL(ural::to_signed(n), r.base().traversed_front().size());
+    BOOST_CHECK_EQUAL(ural::to_signed(v_std.size() - n), r.base().size());
 
     BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
                                   v_ural.begin(), v_ural.end());
@@ -746,7 +746,7 @@ BOOST_AUTO_TEST_CASE(remove_test)
 
     BOOST_CHECK_EQUAL(r_ural.begin() - s_ural.begin(), r_std - s_std.begin());
     BOOST_CHECK_EQUAL(r_ural.traversed_begin() - s_ural.begin(), 0);
-    BOOST_CHECK_EQUAL(r_ural.end() - s_ural.begin(), s_ural.size());
+    BOOST_CHECK_EQUAL(ural::to_unsigned(r_ural.end() - s_ural.begin()), s_ural.size());
 
     BOOST_CHECK_EQUAL_COLLECTIONS(r_ural.traversed_begin(), r_ural.begin(),
                                   s_std.begin(), r_std);
@@ -1054,8 +1054,10 @@ BOOST_AUTO_TEST_CASE(rotate_test)
         }
         else
         {
-            BOOST_CHECK_EQUAL(i, ural::size(r_ural));
-            BOOST_CHECK_EQUAL(v.size() - i, ural::size(r_ural.traversed_front()));
+            BOOST_CHECK_EQUAL(ural::to_signed(i), ural::size(r_ural));
+
+            BOOST_CHECK_EQUAL(ural::to_signed(v.size() - i),
+                              ural::size(r_ural.traversed_front()));
         }
 
         BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
@@ -1105,8 +1107,10 @@ BOOST_AUTO_TEST_CASE(rotate_copy_return_test)
 
         auto r_ural = ural::rotate_copy(s, d_ural);
 
-        BOOST_CHECK_EQUAL(src.size(), r_ural[ural::_2].traversed_front().size());
-        BOOST_CHECK_EQUAL(d_ural.size() - src.size(), r_ural[ural::_2].size());
+        BOOST_CHECK_EQUAL(ural::to_signed(src.size()),
+                          r_ural[ural::_2].traversed_front().size());
+        BOOST_CHECK_EQUAL(ural::to_signed(d_ural.size() - src.size()),
+                          r_ural[ural::_2].size());
 
         BOOST_CHECK_EQUAL(s.size(), r_ural[ural::_1].traversed_front().size());
         BOOST_CHECK_EQUAL(s.traversed_front().size(), r_ural[ural::_1].size());
@@ -1357,8 +1361,9 @@ BOOST_AUTO_TEST_CASE(partition_copy_return_value_test)
     auto r = ural::partition_copy(src, true_sink, false_sink, pred);
 
     BOOST_CHECK(!r[ural::_1]);
-    BOOST_CHECK_EQUAL(src.size(), r[ural::_2].traversed_front().size()
-                                  + r[ural::_3].traversed_front().size());
+    BOOST_CHECK_EQUAL(ural::to_signed(src.size()),
+                      r[ural::_2].traversed_front().size()
+                      + r[ural::_3].traversed_front().size());
 
     BOOST_CHECK(ural::all_of(r[ural::_2].traversed_front(), pred));
     BOOST_CHECK(ural::none_of(r[ural::_3].traversed_front(), pred));
@@ -2104,7 +2109,7 @@ BOOST_AUTO_TEST_CASE(find_first_not_of_test)
     auto const n1 = r_ural.traversed_front().size();
     auto const n2 = r_ural.size();
 
-    BOOST_CHECK_EQUAL(v.size(), n1+n2);
+    BOOST_CHECK_EQUAL(ural::to_signed(v.size()), n1+n2);
 
     for(auto i : ural::numbers(0, n1))
     {

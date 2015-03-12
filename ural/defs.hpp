@@ -86,7 +86,9 @@ namespace ural
         {}
     };
 
-    /** @todo Найти лучшее место для empty_fn и empty
+    /** @brief Тип функционального объекта для функции @c empty и аналогичной
+    функциональности
+    @todo Найти лучшее место для empty_fn и empty
     */
     class empty_fn
     {
@@ -111,6 +113,13 @@ namespace ural
         }
 
     public:
+        /** @brief Оператор вызова функции
+        @param x контейнер @c STL, "почти контейнер" или встроенный массив
+        @return Если @c x имеет функцию-член @c empty, то возвращает
+        <tt> x.empty </tt>, если @c x -- встроенный C-массив известного размера
+        @c N то возвращает @c N, в остальных случаях возвращает
+        <tt> x.size() == 0 </tt>
+        */
         template <class Container>
         bool operator()(Container const & x) const
         {

@@ -406,13 +406,14 @@ namespace
     pearson_test(InputSequence && in, Probabilities const & prob)
     {
         std::vector<typename InputSequence::value_type> u(prob.size());
-        size_t N = 0;
+        typename InputSequence::value_type N = 0;
 
         for(auto s = sequence(in); !!s; ++ s)
         {
             auto v = *s;
 
-            assert(0U <= v && v < prob.size());
+            assert(0 <= v);
+            assert(ural::to_unsigned(v) < prob.size());
 
             ++ u[v];
             ++ N;
@@ -472,7 +473,7 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_eval_test)
     test_discrete_distribution_exact(D{}, 100);
     test_discrete_distribution_exact(D{.3}, 100);
 
-    auto const N = 100U;
+    auto const N = 100;
     const double eps = 1e-6;
     typedef std::vector<double> Weights;
     test_discrete_distribution_approx(Weights{.75, .25}, N, eps);

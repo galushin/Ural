@@ -485,7 +485,7 @@ BOOST_AUTO_TEST_CASE(pascal_triangle_PE_203)
     {
         auto const & row = *seq;
 
-        BOOST_CHECK_EQUAL(row.size(), i+1);
+        BOOST_CHECK_EQUAL(row.size(), ural::to_unsigned(i+1));
 
         ural::copy(row, r | ural::set_inserter);
 

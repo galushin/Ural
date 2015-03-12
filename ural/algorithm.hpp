@@ -22,6 +22,7 @@
  @todo Проверка концепций
 */
 
+#include <ural/math.hpp>
 #include <ural/sequence/filtered.hpp>
 #include <ural/sequence/transform.hpp>
 #include <ural/sequence/moved.hpp>
@@ -819,7 +820,7 @@ namespace ural
         template <class RASequence, class Size, class Compare>
         void impl(RASequence seq, Size first, Size last, Compare cmp) const
         {
-            assert(last <= seq.size());
+            assert(ural::to_signed(last) <= seq.size());
 
             if(first == last)
             {

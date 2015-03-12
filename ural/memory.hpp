@@ -67,6 +67,10 @@ namespace ural
                             std::unique_ptr<T>>::type
     make_unique(size_t size) = delete;
 
+    /** @brief Тип функционального объекта для создания копии заданного объекта
+    в динамической памяти, управляемой с помощью <tt> std::unique_ptr </tt>
+    @todo Перегрузки с произвольным числом аргументов
+    */
     class to_unqiue_ptr_functor
     {
     public:
@@ -119,6 +123,10 @@ namespace ural
         ~default_copy() = default;
     };
 
+    /** @brief Стратегия копирования с испльзованием заданной функции-члена
+    @tparam T тип копируемого объекта
+    @tparam clone_fn функция-член, используемая для копирования
+    */
     template <class T, std::unique_ptr<T>(T::*clone_fn)() const = &T::clone>
     class member_function_copy
     {
