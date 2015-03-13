@@ -35,7 +35,18 @@ namespace meta
 
     // Удаление последовательных дубликатов
     template <class List>
-    struct unique;
+    struct unique
+    {
+    private:
+        typedef typename List::head Head;
+        typedef typename List::tail Tail;
+
+        typedef typename ::ural::meta::find<Tail, Head, is_not_same>::type skip_head;
+        typedef typename unique<skip_head>::type new_tail;
+
+    public:
+        typedef typename push_front<Head, new_tail>::type type;
+    };
 
     template <>
     struct unique<null_type>
@@ -43,16 +54,43 @@ namespace meta
         typedef null_type type;
     };
 
-    template <class Head, class Tail>
-    struct unique<list<Head, Tail>>
+    // Обращение
+    template <class Container, class Out>
+    struct reverse_copy
+     : reverse_copy<typename Container::tail,
+                    typename push_front<typename Container::head, Out>::type>
+    {};
+
+    template <class Out>
+    struct reverse_copy<null_type, Out>
+     : declare_type<Out>
+    {};
+
+    // Сортировка выбором
+    /** @brief Сортировка выбором
+    @tparam List Контейнер типов
+    @tparam Compare функция сравнения
+    */
+    template <class List, template <class, class> class Compare>
+    struct selection_sort
     {
     private:
-        typedef typename ::ural::meta::find<Tail, Head, is_not_same>::type skip_head;
-        typedef typename unique<skip_head>::type new_tail;
+        typedef typename min_value<typename List::tail, Compare, typename List::head>::type new_head;
+        typedef typename remove_first<List, new_head>::type without_new_head;
+        typedef typename selection_sort<without_new_head, Compare>::type new_tail;
 
     public:
-        typedef list<Head, new_tail> type;
+        /// @brief Тип-результат
+        typedef typename push_front<new_head, new_tail>::type type;
     };
+
+    /** @brief Специализация для пустого списка
+    @tparam Compare функция сравнения
+    */
+    template <template <class, class> class Compare>
+    struct selection_sort<null_type, Compare>
+     : declare_type<null_type>
+    {};
 }
 // namespace meta
 }

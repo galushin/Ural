@@ -34,11 +34,22 @@ namespace ural
     */
     struct empty_type{};
 
+    template <class... Types>
+    struct typelist
+    {};
+
     /** Класс-тэг обозначающий отсутствие типа. Используется, например, как
     пустой список типов
     @brief Класс-тэг обозначающий отсутствие типа. Исполь
     */
-    class null_type{};
+    typedef typelist<> null_type;
+
+    template <class Head, class... Others>
+    struct typelist<Head, Others...>
+    {
+        typedef Head head;
+        typedef typelist<Others...> tail;
+    };
 
     /** @brief Тип-тэг, обозначающий, что нужно использовать значение по
     умолчанию

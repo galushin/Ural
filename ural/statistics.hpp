@@ -23,6 +23,7 @@
  @todo Реализовать и использовать meta-алгоритм flatten
 */
 
+#include <ural/meta/algo.hpp>
 #include <ural/numeric/numbers_sequence.hpp>
 #include <ural/math.hpp>
 #include <ural/algorithm.hpp>
@@ -218,12 +219,13 @@ namespace statistics
 {
     /** @brief Список тэгов
     @tparam Ts тэги
+    @todo можно ли его самого считать контейнером типов?
     */
     template <class... Ts>
     struct tags_list
     {
         /// @brief Список типов-тэгов
-        typedef typename meta::make_list<Ts...>::type list;
+        typedef ::ural::typelist<Ts...> list;
     };
 
     /** @brief Конкатенация списков тэгов
@@ -231,7 +233,7 @@ namespace statistics
     @tparam Ts2 тэги второго списка
     */
     template <class... Ts1, class... Ts2>
-    tags_list<Ts1..., Ts2...>
+    constexpr tags_list<Ts1..., Ts2...>
     operator|(tags_list<Ts1...>, tags_list<Ts2...>)
     {
         return {};
@@ -246,7 +248,7 @@ namespace tags
     struct declare_depend_on
     {
         /// @brief Список зависимостей
-        typedef typename meta::make_list<Ts...>::type depends_on;
+        typedef ::ural::typelist<Ts...> depends_on;
     };
 
     /** @brief Класс-характеристика для определения, зависит ли тэг @c T1 от
@@ -302,7 +304,20 @@ namespace tags
     @param Out хвост списка-результата
     */
     template <class List, class Out>
-    struct expand_depend_on;
+    struct expand_depend_on
+    {
+    private:
+        typedef typename List::head Head;
+        typedef typename List::tail Tail;
+
+        typedef typename ::ural::meta::push_front<Head, Out>::type R1;
+        typedef typename expand_depend_on<typename Head::depends_on, R1>::type
+            R2;
+
+    public:
+        /// @brief Тип-результат
+        typedef typename expand_depend_on<Tail, R2>::type type;
+    };
 
      /** @brief Специализация для пустых списков типов
     @tparam Out накопитель
@@ -311,24 +326,6 @@ namespace tags
     struct expand_depend_on<null_type, Out>
      : declare_type<Out>
     {};
-
-    /** @brief Специализация для непустых списков типов
-    @tparam Head первый элемент списка типов
-    @tparam Tail хвост списка типов
-    @tparam Out накопитель
-    */
-    template <class Head, class Tail, class Out>
-    struct expand_depend_on<::ural::meta::list<Head, Tail>, Out>
-    {
-    private:
-        typedef ::ural::meta::list<Head, Out> R1;
-        typedef typename expand_depend_on<typename Head::depends_on, R1>::type
-            R2;
-
-    public:
-        /// @brief Тип-результат
-        typedef typename expand_depend_on<Tail, R2>::type type;
-    };
 
     /** @brief Подготовка списка тэгов для данного
     @tparam Tags список тэгов
@@ -346,10 +343,11 @@ namespace tags
             WithDependencies;
         typedef typename meta::copy_without_duplicates<WithDependencies>::type
             UniqueTags;
+        typedef typename meta::selection_sort<UniqueTags, statistics::tags::is_depend_on>::type
+            Sorted;
     public:
         /// @brief Список всех необходимых тэгов, топологически отсортированные
-        typedef typename meta::selection_sort<UniqueTags, statistics::tags::is_depend_on>::type
-            type;
+        typedef typename meta::reverse_copy<Sorted, null_type>::type type;
     };
 }
 // namespace tags

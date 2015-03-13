@@ -32,40 +32,49 @@ namespace ural
 namespace meta
 {
     // Список
-    /** @brief Список типов
-    @tparam Head первый элемент списка
-    @tparam Tail хвост списка --- список остальных элементов или @c null_type
-    */
-    template <class Head, class Tail>
-    struct list
-    {
-        /// @brief Голова списка типов --- первый элемент.
-        typedef Head head;
+    // @todo Переделать в push_front
+//    /** @brief Список типов
+//    @tparam Head первый элемент списка
+//    @tparam Tail хвост списка --- список остальных элементов или @c null_type
+//    */
+//    template <class Head, class Tail>
+//    struct list
+//    {
+//        /// @brief Голова списка типов --- первый элемент.
+//        typedef Head head;
+//
+//        /// @brief Хвост списка типов --- остальные элементы или @c null_type
+//        typedef Tail tail;
+//    };
 
-        /// @brief Хвост списка типов --- остальные элементы или @c null_type
-        typedef Tail tail;
-    };
+//    /** @brief Класс-характеристика для создания <tt> meta::list </tt> по
+//    переменному количеству типов-аргументов
+//    @tparam Types типы
+//    */
+//    template <class... Types>
+//    struct make_list;
+//
+//    /// @brief Специализация для пустого списка
+//    template <>
+//    struct make_list<>
+//     : declare_type<null_type>
+//    {};
+//
+//    /** @brief Специализация для непустого списка
+//    @tparam T1 первый тип
+//    @tparam Ts остальные типы
+//    */
+//    template <class T1, class... Ts>
+//    struct make_list<T1, Ts...>
+//     : declare_type<list<T1, typename make_list<Ts...>::type>>
+//    {};
 
-    /** @brief Класс-характеристика для создания <tt> meta::list </tt> по
-    переменному количеству типов-аргументов
-    @tparam Types типы
-    */
-    template <class... Types>
-    struct make_list;
+    template <class Value, class Container>
+    struct push_front;
 
-    /// @brief Специализация для пустого списка
-    template <>
-    struct make_list<>
-     : declare_type<null_type>
-    {};
-
-    /** @brief Специализация для непустого списка
-    @tparam T1 первый тип
-    @tparam Ts остальные типы
-    */
-    template <class T1, class... Ts>
-    struct make_list<T1, Ts...>
-     : declare_type<list<T1, typename make_list<Ts...>::type>>
+    template <class Value, template<class...> class Container, class... Args>
+    struct push_front<Value, Container<Args...>>
+     : declare_type<Container<Value, Args...>>
     {};
 
     // at
@@ -111,18 +120,15 @@ namespace meta
     // find
     template <class Container, class T,
               template <class, class> class Eq = std::is_same>
-    struct find;
+    struct find
+     : std::conditional<Eq<typename Container::head, T>::value,
+                        declare_type<Container>,
+                        find<typename Container::tail, T, Eq>>::type
+    {};
 
     template <class T, template <class, class> class Eq>
     struct find<null_type, T, Eq>
      : declare_type<null_type>
-    {};
-
-    template <class Head, class Tail, class T, template <class, class> class Eq>
-    struct find<list<Head, Tail>, T, Eq>
-     : std::conditional<Eq<Head, T>::value,
-                        declare_type<list<Head, Tail>>,
-                        find<Tail, T, Eq>>::type
     {};
 
     // Копирование без дубликатов
@@ -136,7 +142,7 @@ namespace meta
         typedef typename find<Out, Head>::type Pos;
 
         typedef typename std::conditional<std::is_same<Pos, null_type>::value,
-                                          list<Head, Out>, Out>::type new_out;
+                                          Container, Out>::type new_out;
 
     public:
         /// @brief Тип-результат
@@ -184,59 +190,19 @@ namespace meta
     @tparam Value тип, который нужно удалить
     */
     template <class List, class Value>
-    struct remove_first;
+    struct remove_first
+     : std::conditional<std::is_same<typename List::head, Value>::value,
+                        declare_type<typename List::tail>,
+                        push_front<typename List::head,
+                                   remove_first<typename List::tail, Value>>
+                       >::type
+    {};
 
     /** @brief специализация для пустых списков
     @tparam Value тип, который нужно удалить
     */
     template <class Value>
     struct remove_first<null_type, Value>
-     : declare_type<null_type>
-    {};
-
-    /** @brief Специализация для случая совпадения первого элемента с удаляемым
-    @tparam Head первый элемент списка
-    @tparam Tail хвост списка
-    */
-    template <class Head, class Tail>
-    struct remove_first<list<Head, Tail>, Head>
-     : declare_type<Tail>
-    {};
-
-    /** @brief Специализация для случая несовпадения первого элемента с
-    удаляемым
-    @tparam Head первый элемент списка
-    @tparam Tail хвост списка
-    @tparam Value тип, который нужно удалить
-    */
-    template <class Head, class Tail, class Value>
-    struct remove_first<list<Head, Tail>, Value>
-     : list<Head, typename remove_first<Tail, Value>::type>
-    {};
-
-    // Сортировка выбором
-    /** @brief Сортировка выбором
-    @tparam List Контейнер типов
-    @tparam Compare функция сравнения
-    */
-    template <class List, template <class, class> class Compare>
-    struct selection_sort
-    {
-    private:
-        typedef typename min_value<typename List::tail, Compare, typename List::head>::type new_head;
-        typedef typename remove_first<List, new_head>::type without_new_head;
-        typedef typename selection_sort<without_new_head, Compare>::type new_tail;
-
-    public:
-        /// @brief Тип-результат
-        typedef list<new_head, new_tail> type;
-    };
-
-    /** @brief Специализация для пустого списка
-    @tparam Compare функция сравнения
-    */
-    template <template <class, class> class Compare>
-    struct selection_sort<null_type, Compare>
      : declare_type<null_type>
     {};
 }
