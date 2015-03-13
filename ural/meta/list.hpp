@@ -31,51 +31,46 @@ namespace ural
 {
 namespace meta
 {
-    // Список
-    // @todo Переделать в push_front
-//    /** @brief Список типов
-//    @tparam Head первый элемент списка
-//    @tparam Tail хвост списка --- список остальных элементов или @c null_type
-//    */
-//    template <class Head, class Tail>
-//    struct list
-//    {
-//        /// @brief Голова списка типов --- первый элемент.
-//        typedef Head head;
-//
-//        /// @brief Хвост списка типов --- остальные элементы или @c null_type
-//        typedef Tail tail;
-//    };
-
-//    /** @brief Класс-характеристика для создания <tt> meta::list </tt> по
-//    переменному количеству типов-аргументов
-//    @tparam Types типы
-//    */
-//    template <class... Types>
-//    struct make_list;
-//
-//    /// @brief Специализация для пустого списка
-//    template <>
-//    struct make_list<>
-//     : declare_type<null_type>
-//    {};
-//
-//    /** @brief Специализация для непустого списка
-//    @tparam T1 первый тип
-//    @tparam Ts остальные типы
-//    */
-//    template <class T1, class... Ts>
-//    struct make_list<T1, Ts...>
-//     : declare_type<list<T1, typename make_list<Ts...>::type>>
-//    {};
-
-    template <class Value, class Container>
+    // Вставка нового элемента в начало
+    template <class Container, class Value>
     struct push_front;
 
     template <class Value, template<class...> class Container, class... Args>
-    struct push_front<Value, Container<Args...>>
+    struct push_front<Container<Args...>, Value>
      : declare_type<Container<Value, Args...>>
     {};
+
+    // Удаление первого элемента
+    template <class Container>
+    struct pop_front
+    {
+    private:
+        template <class U>
+        static null_type pop_front_helper(...);
+
+        template <class U>
+        static typename U::tail
+        pop_front_helper(void*);
+
+    public:
+        typedef decltype(pop_front_helper<Container>(nullptr)) type;
+    };
+
+    // Первый элемент
+    template <class Container>
+    struct front
+    {
+    private:
+        template <class U>
+        static U front_helper(...);
+
+        template <class U>
+        static typename U::head
+        front_helper(void*);
+
+    public:
+        typedef decltype(front_helper<Container>(nullptr)) type;
+    };
 
     // at
     /** @brief Доступ по индексу
@@ -192,9 +187,9 @@ namespace meta
     template <class List, class Value>
     struct remove_first
      : std::conditional<std::is_same<typename List::head, Value>::value,
-                        declare_type<typename List::tail>,
-                        push_front<typename List::head,
-                                   remove_first<typename List::tail, Value>>
+                        pop_front<List>,
+                        push_front<remove_first<typename List::tail, Value>,
+                                   typename List::head>
                        >::type
     {};
 

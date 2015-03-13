@@ -21,13 +21,23 @@
 
 BOOST_AUTO_TEST_CASE(meta_unique_test)
 {
-    typedef typename ::ural::typelist<int, int, char, int, char, char, double>
-        Source;
-    typedef typename ::ural::typelist<int, char, int, char, double>
-        Objective;
-    typedef typename ::ural::meta::unique<Source>::type Result;
+    typedef ::ural::typelist<int, int, char, int, char, char, double> Source;
+    typedef ::ural::typelist<int, char, int, char, double> Objective;
+    typedef ::ural::meta::unique<Source>::type Result;
 
     static_assert(std::is_same<Objective::head, Result::head>::value, "");
+
+    static_assert(std::is_same<Objective, Result>::value, "");
+    BOOST_CHECK(true);
+}
+
+BOOST_AUTO_TEST_CASE(meta_flatten_test)
+{
+    using ural::typelist;
+
+    typedef typelist<char, typelist<bool, typelist<void, int*>, double>> Source;
+    typedef typelist<char, bool, void, int*, double> Objective;
+    typedef typename ::ural::meta::flatten<Source>::type Result;
 
     static_assert(std::is_same<Objective, Result>::value, "");
     BOOST_CHECK(true);

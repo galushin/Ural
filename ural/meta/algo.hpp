@@ -45,7 +45,7 @@ namespace meta
         typedef typename unique<skip_head>::type new_tail;
 
     public:
-        typedef typename push_front<Head, new_tail>::type type;
+        typedef typename push_front<new_tail, Head>::type type;
     };
 
     template <>
@@ -58,7 +58,7 @@ namespace meta
     template <class Container, class Out>
     struct reverse_copy
      : reverse_copy<typename Container::tail,
-                    typename push_front<typename Container::head, Out>::type>
+                    typename push_front<Out, typename Container::head>::type>
     {};
 
     template <class Out>
@@ -81,7 +81,7 @@ namespace meta
 
     public:
         /// @brief Тип-результат
-        typedef typename push_front<new_head, new_tail>::type type;
+        typedef typename push_front<new_tail, new_head>::type type;
     };
 
     /** @brief Специализация для пустого списка
@@ -90,6 +90,29 @@ namespace meta
     template <template <class, class> class Compare>
     struct selection_sort<null_type, Compare>
      : declare_type<null_type>
+    {};
+
+    // линеаризация вложенных списков
+    // @todo использовать в описательных статистиках (см. expand_depend_on)?
+    template <class Container, class Out = null_type>
+    struct flatten
+    {
+    private:
+        typedef typename front<Container>::type Head;
+        typedef typename pop_front<Container>::type Tail;
+
+        typedef std::is_same<Container, Head> is_atom;
+
+        typedef push_front<Out, Container> R_atom;
+        typedef flatten<Head, typename flatten<Tail, Out>::type> R_list;
+
+    public:
+        typedef typename std::conditional<is_atom::value, R_atom, R_list>::type::type type;
+    };
+
+    template <class Out>
+    struct flatten<null_type, Out>
+     : declare_type<Out>
     {};
 }
 // namespace meta

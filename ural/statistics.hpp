@@ -310,7 +310,7 @@ namespace tags
         typedef typename List::head Head;
         typedef typename List::tail Tail;
 
-        typedef typename ::ural::meta::push_front<Head, Out>::type R1;
+        typedef typename ::ural::meta::push_front<Out, Head>::type R1;
         typedef typename expand_depend_on<typename Head::depends_on, R1>::type
             R2;
 
