@@ -26,6 +26,7 @@ namespace meta
     /** @brief Пара типов
     @tparam T1 Первый тип
     @tparam T2 Второй тип
+    @todo Покрыть тестами
     */
     template <class T1, class T2>
     struct pair
@@ -37,26 +38,14 @@ namespace meta
         typedef T2 second;
     };
 
-    /// @brief Ассоциативный массив типов
-    template <class... Ts>
-    struct map;
-
-    /** @brief Поиск в ассоциативном массиве типов значения, соответствующего
-    заданному ключу
-    @tparam Container ассоциативный массив
-    @tparam Key тип-ключ
+    /** @brief Ассоциативный массив типов
+    @tparam Ts список типов
+    @todo Покрыть тестами
+    @todo Более строгие ограничения для Ts
     */
-    template <class Container, class Key>
-    struct at;
-
-    template <class Head, class... Tail, class K>
-    struct at<map<Head, Tail...>, K>
-     : at<map<Tail...>, K>
-    {};
-
-    template <class V1, class... Tail, class K>
-    struct at<map<pair<K, V1>, Tail...>, K>
-     : ural::declare_type<V1>
+    template <class... Ts>
+    struct map
+     : public ::ural::typelist<Ts...>
     {};
 }
 // namespace meta

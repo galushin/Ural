@@ -347,7 +347,7 @@ namespace tags
             Sorted;
     public:
         /// @brief Список всех необходимых тэгов, топологически отсортированные
-        typedef typename meta::reverse_copy<Sorted, null_type>::type type;
+        typedef typename meta::reverse_copy<Sorted>::type type;
     };
 }
 // namespace tags

@@ -22,7 +22,7 @@
 */
 
 #include <ural/meta/hierarchy.hpp>
-#include <ural/meta/list.hpp>
+#include <ural/meta/algo.hpp>
 
 #include <ural/functional/cpp_operators.hpp>
 

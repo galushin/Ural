@@ -27,13 +27,73 @@ namespace ural
 {
 namespace meta
 {
+    template <class F, class... Args>
+    struct apply
+     : public F::template apply<Args...>
+    {};
+
+    // @todo Автоматизированное преобразование функций-шаблонов в функции-классы
+
+    struct is_same
+    {
+        template <class T1, class T2>
+        struct apply
+         : std::is_same<T1, T2>
+        {};
+    };
+
+    template <class F>
+    struct not_fn
+    {
+        template <class... Ts>
+        struct apply
+         : std::integral_constant<bool, !::ural::meta::apply<F, Ts...>::value>
+        {};
+    };
+
     // @todo Обобщить
-    template <class T1, class T2>
     struct is_not_same
-     : std::integral_constant<bool, !std::is_same<T1, T2>::value>
+     : not_fn<is_same>
+    {};
+
+    // Алгоритмы
+    // all_of
+    /** @brief Проверка, что все элементы контейнера удовлетворяют заданному
+    предикату
+    @tparam Container тип контейнера типов
+    @tparam Predicate тип-предикат
+    */
+    template <class Container, template <class> class Predicate>
+    struct all_of
+     : std::integral_constant<bool, Predicate<typename Container::head>::value
+                                    && all_of<typename Container::tail, Predicate>::value>
+    {};
+
+    /** @brief Специализация для пустого списка типов
+    @tparam Predicate тип-предикат
+    */
+    template <template <class> class Predicate>
+    struct all_of<null_type, Predicate>
+     : std::true_type
+    {};
+
+    // find
+    template <class Container, class T, class Eq = meta::is_same>
+    struct find
+     : std::conditional<apply<Eq, typename Container::head, T>::value,
+                        declare_type<Container>,
+                        find<typename Container::tail, T, Eq>>::type
+    {};
+
+    template <class T, class Eq>
+    struct find<null_type, T, Eq>
+     : declare_type<null_type>
     {};
 
     // Удаление последовательных дубликатов
+    /**
+    @todo Возможность задавать функцию равенства
+    */
     template <class List>
     struct unique
     {
@@ -55,7 +115,7 @@ namespace meta
     };
 
     // Обращение
-    template <class Container, class Out>
+    template <class Container, class Out = null_type>
     struct reverse_copy
      : reverse_copy<typename Container::tail,
                     typename push_front<Out, typename Container::head>::type>
@@ -66,10 +126,66 @@ namespace meta
      : declare_type<Out>
     {};
 
+    // min_value
+    /** @brief Поиск наименьшего значения
+    @tparam List контейнер типов
+    @tparam Compare функция сравнения
+    @tparam Result тип, возвращаемый, если @c Container пуст
+    @todo Значение для @c Result и @c Compare по умолчанию
+    @todo "Функциональные" объекты должны быть классами, а не шаблонами
+    */
+    template <class List, template <class, class> class Compare, class Result>
+    struct min_value
+    {
+    private:
+        typedef typename List::head Candidate;
+
+        typedef typename std::conditional<Compare<Candidate, Result>::value,
+                                          Candidate, Result>::type new_result;
+
+    public:
+        /// @brief Тип-результат
+        typedef typename min_value<typename List::tail, Compare, Result>::type
+            type;
+    };
+
+    /** @brief Специализация для пустых контейнеров
+    @tparam Compare функция сравнения
+    @tparam Result тип, возвращаемый, если @c Container пуст
+    */
+    template <template <class, class> class Compare, class Result>
+    struct min_value<null_type, Compare, Result>
+     : declare_type<Result>
+    {};
+
+    // remove_first
+    /** @brief Удаляет первое входждения типа в контейнер
+    @tparam List контейнер типов
+    @tparam Value тип, который нужно удалить
+    @todo Возможность задавать функцию равенства
+    */
+    template <class List, class Value>
+    struct remove_first
+     : std::conditional<std::is_same<typename List::head, Value>::value,
+                        pop_front<List>,
+                        push_front<remove_first<typename List::tail, Value>,
+                                   typename List::head>
+                       >::type
+    {};
+
+    /** @brief специализация для пустых списков
+    @tparam Value тип, который нужно удалить
+    */
+    template <class Value>
+    struct remove_first<null_type, Value>
+     : declare_type<null_type>
+    {};
+
     // Сортировка выбором
     /** @brief Сортировка выбором
     @tparam List Контейнер типов
     @tparam Compare функция сравнения
+    @todo "Функциональные" объекты должны быть классами, а не шаблонами
     */
     template <class List, template <class, class> class Compare>
     struct selection_sort
@@ -112,6 +228,32 @@ namespace meta
 
     template <class Out>
     struct flatten<null_type, Out>
+     : declare_type<Out>
+    {};
+
+    // Копирование без дубликатов
+    /**
+    @todo Возможность задавать функцию проверки равенства
+    */
+    template <class Container, class Out = null_type>
+    struct copy_without_duplicates
+    {
+    private:
+        typedef typename Container::head Head;
+        typedef typename Container::tail Tail;
+
+        typedef typename find<Out, Head>::type Pos;
+
+        typedef typename std::conditional<std::is_same<Pos, null_type>::value,
+                                          Container, Out>::type new_out;
+
+    public:
+        /// @brief Тип-результат
+        typedef typename copy_without_duplicates<Tail, new_out>::type type;
+    };
+
+    template <class Out>
+    struct copy_without_duplicates<null_type, Out>
      : declare_type<Out>
     {};
 }

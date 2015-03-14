@@ -25,9 +25,9 @@ BOOST_AUTO_TEST_CASE(meta_unique_test)
     typedef ::ural::typelist<int, char, int, char, double> Objective;
     typedef ::ural::meta::unique<Source>::type Result;
 
-    static_assert(std::is_same<Objective::head, Result::head>::value, "");
+    Objective obj = Result{};
 
-    static_assert(std::is_same<Objective, Result>::value, "");
+    static_assert(std::is_same<decltype(obj), Result>::value, "");
     BOOST_CHECK(true);
 }
 
