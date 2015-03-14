@@ -339,11 +339,14 @@ namespace tags
         список <A, B, A> при сортировке не изменится и, следовательно,
         после unique будет содержать дубликаты
         */
+        typedef ural::meta::template_to_applied<statistics::tags::is_depend_on>
+            is_depend_on;
+
         typedef typename expand_depend_on<typename Tags::list, null_type>::type
             WithDependencies;
         typedef typename meta::copy_without_duplicates<WithDependencies>::type
             UniqueTags;
-        typedef typename meta::selection_sort<UniqueTags, statistics::tags::is_depend_on>::type
+        typedef typename meta::selection_sort<UniqueTags, is_depend_on>::type
             Sorted;
     public:
         /// @brief Список всех необходимых тэгов, топологически отсортированные

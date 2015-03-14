@@ -22,57 +22,28 @@
 */
 
 #include <ural/meta/list.hpp>
+#include <ural/meta/functional.hpp>
 
 namespace ural
 {
 namespace meta
 {
-    template <class F, class... Args>
-    struct apply
-     : public F::template apply<Args...>
-    {};
-
-    // @todo Автоматизированное преобразование функций-шаблонов в функции-классы
-
-    struct is_same
-    {
-        template <class T1, class T2>
-        struct apply
-         : std::is_same<T1, T2>
-        {};
-    };
-
-    template <class F>
-    struct not_fn
-    {
-        template <class... Ts>
-        struct apply
-         : std::integral_constant<bool, !::ural::meta::apply<F, Ts...>::value>
-        {};
-    };
-
-    // @todo Обобщить
-    struct is_not_same
-     : not_fn<is_same>
-    {};
-
-    // Алгоритмы
     // all_of
     /** @brief Проверка, что все элементы контейнера удовлетворяют заданному
     предикату
     @tparam Container тип контейнера типов
-    @tparam Predicate тип-предикат
+    @tparam Predicate предикат над типами
     */
-    template <class Container, template <class> class Predicate>
+    template <class Container, class Predicate>
     struct all_of
-     : std::integral_constant<bool, Predicate<typename Container::head>::value
+     : std::integral_constant<bool, apply<Predicate, typename Container::head>::value
                                     && all_of<typename Container::tail, Predicate>::value>
     {};
 
     /** @brief Специализация для пустого списка типов
-    @tparam Predicate тип-предикат
+    @tparam Predicate предикат над типами
     */
-    template <template <class> class Predicate>
+    template <class Predicate>
     struct all_of<null_type, Predicate>
      : std::true_type
     {};
@@ -90,8 +61,8 @@ namespace meta
      : declare_type<null_type>
     {};
 
-    // Удаление последовательных дубликатов
-    /**
+    /** @brief Удаление последовательных дубликатов из списка типов
+    @tparam List список типов
     @todo Возможность задавать функцию равенства
     */
     template <class List>
@@ -114,7 +85,10 @@ namespace meta
         typedef null_type type;
     };
 
-    // Обращение
+    /** @brief Копирование списка типов в обратном порядке
+    @tparam Container исходный список типов
+    @tparam Out список типов в который осуществляется копирование
+    */
     template <class Container, class Out = null_type>
     struct reverse_copy
      : reverse_copy<typename Container::tail,
@@ -132,15 +106,14 @@ namespace meta
     @tparam Compare функция сравнения
     @tparam Result тип, возвращаемый, если @c Container пуст
     @todo Значение для @c Result и @c Compare по умолчанию
-    @todo "Функциональные" объекты должны быть классами, а не шаблонами
     */
-    template <class List, template <class, class> class Compare, class Result>
+    template <class List, class Compare, class Result>
     struct min_value
     {
     private:
         typedef typename List::head Candidate;
 
-        typedef typename std::conditional<Compare<Candidate, Result>::value,
+        typedef typename std::conditional<apply<Compare, Candidate, Result>::value,
                                           Candidate, Result>::type new_result;
 
     public:
@@ -153,7 +126,7 @@ namespace meta
     @tparam Compare функция сравнения
     @tparam Result тип, возвращаемый, если @c Container пуст
     */
-    template <template <class, class> class Compare, class Result>
+    template <class Compare, class Result>
     struct min_value<null_type, Compare, Result>
      : declare_type<Result>
     {};
@@ -163,12 +136,13 @@ namespace meta
     @tparam List контейнер типов
     @tparam Value тип, который нужно удалить
     @todo Возможность задавать функцию равенства
+    @todo явный тест
     */
     template <class List, class Value>
     struct remove_first
      : std::conditional<std::is_same<typename List::head, Value>::value,
                         pop_front<List>,
-                        push_front<remove_first<typename List::tail, Value>,
+                        push_front<typename remove_first<typename List::tail, Value>::type,
                                    typename List::head>
                        >::type
     {};
@@ -185,9 +159,9 @@ namespace meta
     /** @brief Сортировка выбором
     @tparam List Контейнер типов
     @tparam Compare функция сравнения
-    @todo "Функциональные" объекты должны быть классами, а не шаблонами
+    @todo Значение @c Compare по умолчанию
     */
-    template <class List, template <class, class> class Compare>
+    template <class List, class Compare>
     struct selection_sort
     {
     private:
@@ -203,13 +177,16 @@ namespace meta
     /** @brief Специализация для пустого списка
     @tparam Compare функция сравнения
     */
-    template <template <class, class> class Compare>
+    template <class Compare>
     struct selection_sort<null_type, Compare>
      : declare_type<null_type>
     {};
 
-    // линеаризация вложенных списков
-    // @todo использовать в описательных статистиках (см. expand_depend_on)?
+    /** @brief Линеаризация вложенных списков
+    @tparam Container исходный список типов
+    @tparam Out Список типов, к которому добавляются новые элементы
+    @todo использовать в описательных статистиках (см. expand_depend_on)?
+    */
     template <class Container, class Out = null_type>
     struct flatten
     {
@@ -231,8 +208,9 @@ namespace meta
      : declare_type<Out>
     {};
 
-    // Копирование без дубликатов
-    /**
+    //
+    /** @brief Копирование без дубликатов
+    @tparam Container исходный список типов
     @todo Возможность задавать функцию проверки равенства
     */
     template <class Container, class Out = null_type>

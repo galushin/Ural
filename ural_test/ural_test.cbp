@@ -107,6 +107,7 @@
 		<Unit filename="../ural/math/rational.hpp" />
 		<Unit filename="../ural/memory.hpp" />
 		<Unit filename="../ural/meta/algo.hpp" />
+		<Unit filename="../ural/meta/functional.hpp" />
 		<Unit filename="../ural/meta/hierarchy.hpp" />
 		<Unit filename="../ural/meta/list.hpp" />
 		<Unit filename="../ural/meta/map.hpp" />

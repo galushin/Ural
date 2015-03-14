@@ -258,7 +258,7 @@ namespace ural
     */
     template <class... Ts>
     struct are_integral
-     : meta::all_of<typelist<Ts...>, std::is_integral>
+     : meta::all_of<typelist<Ts...>, ural::meta::template_to_applied<std::is_integral>>
     {};
 
     /** @brief Класс-характеристика для определения типа среднего значения
