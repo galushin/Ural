@@ -49,6 +49,11 @@ namespace meta
     {};
 
     // find
+    /** @brief Поиск типа в контейнере типов
+    @tparam Container контейнер типов
+    @tparam T искомый тип
+    @tparam Eq предикат над типами
+    */
     template <class Container, class T, class Eq = meta::is_same>
     struct find
      : std::conditional<apply<Eq, typename Container::head, T>::value,
@@ -61,26 +66,40 @@ namespace meta
      : declare_type<null_type>
     {};
 
+    template <class Container, class T, class Eq = meta::is_same>
+    struct count
+     : std::integral_constant<size_t, apply<Eq, T, typename Container::head>::value
+                                      + count<typename Container::tail, T, Eq>::value>
+    {};
+
+    template <class T, class Eq>
+    struct count<null_type, T, Eq>
+     : std::integral_constant<size_t, 0>
+    {};
+
     /** @brief Удаление последовательных дубликатов из списка типов
     @tparam List список типов
-    @todo Возможность задавать функцию равенства
+    @tparam Eq функция над типами, задающее равенство
     */
-    template <class List>
+    template <class List, class Eq = meta::is_same>
     struct unique
     {
     private:
+        typedef meta::not_fn<Eq> not_Eq;
+
         typedef typename List::head Head;
         typedef typename List::tail Tail;
 
-        typedef typename ::ural::meta::find<Tail, Head, is_not_same>::type skip_head;
+        typedef typename ::ural::meta::find<Tail, Head, not_Eq>::type skip_head;
         typedef typename unique<skip_head>::type new_tail;
 
     public:
+        /// @brief Тип-результат
         typedef typename push_front<new_tail, Head>::type type;
     };
 
-    template <>
-    struct unique<null_type>
+    template <class Eq>
+    struct unique<null_type, Eq>
     {
         typedef null_type type;
     };
@@ -135,12 +154,11 @@ namespace meta
     /** @brief Удаляет первое входждения типа в контейнер
     @tparam List контейнер типов
     @tparam Value тип, который нужно удалить
-    @todo Возможность задавать функцию равенства
-    @todo явный тест
+    @tparam Eq функция над типами, задающая равенство
     */
-    template <class List, class Value>
+    template <class List, class Value, class Eq = meta::is_same>
     struct remove_first
-     : std::conditional<std::is_same<typename List::head, Value>::value,
+     : std::conditional<apply<Eq, typename List::head, Value>::value,
                         pop_front<List>,
                         push_front<typename remove_first<typename List::tail, Value>::type,
                                    typename List::head>
@@ -149,9 +167,38 @@ namespace meta
 
     /** @brief специализация для пустых списков
     @tparam Value тип, который нужно удалить
+    @tparam Eq функция над типами, задающая равенство
     */
-    template <class Value>
-    struct remove_first<null_type, Value>
+    template <class Value, class Eq>
+    struct remove_first<null_type, Value, Eq>
+     : declare_type<null_type>
+    {};
+
+    /** @brief Удаление всех вхождений типа в контейнер типов
+    @tparam Container контейнер типов
+    @tparam T тип, который нужно удалить
+    @tparam Eq предикат над типами, задающий равенство
+    */
+    template <class Container, class T, class Eq = meta::is_same>
+    struct remove_all
+    {
+    private:
+        typedef typename Container::head Head;
+        typedef typename Container::tail Tail;
+
+        typedef typename remove_all<Tail, T>::type new_tail;
+        typedef meta::apply<Eq, Head, T> drop_head;
+        typedef push_front<new_tail, Head> with_head;
+
+    public:
+        /// @brief Тип-результат
+        typedef typename std::conditional<drop_head::value,
+                                          declare_type<new_tail>,
+                                          with_head>::type::type type;
+    };
+
+    template <class T, class Eq>
+    struct remove_all<null_type, T, Eq>
      : declare_type<null_type>
     {};
 
@@ -200,6 +247,7 @@ namespace meta
         typedef flatten<Head, typename flatten<Tail, Out>::type> R_list;
 
     public:
+        /// @brief Тип-результат
         typedef typename std::conditional<is_atom::value, R_atom, R_list>::type::type type;
     };
 
@@ -213,26 +261,24 @@ namespace meta
     @tparam Container исходный список типов
     @todo Возможность задавать функцию проверки равенства
     */
-    template <class Container, class Out = null_type>
+    template <class Container>
     struct copy_without_duplicates
     {
     private:
         typedef typename Container::head Head;
         typedef typename Container::tail Tail;
 
-        typedef typename find<Out, Head>::type Pos;
-
-        typedef typename std::conditional<std::is_same<Pos, null_type>::value,
-                                          Container, Out>::type new_out;
+        typedef typename remove_all<Tail, Head>::type removed_head;
+        typedef typename copy_without_duplicates<Tail>::type new_tail;
 
     public:
         /// @brief Тип-результат
-        typedef typename copy_without_duplicates<Tail, new_out>::type type;
+        typedef typename push_front<new_tail, Head>::type type;
     };
 
-    template <class Out>
-    struct copy_without_duplicates<null_type, Out>
-     : declare_type<Out>
+    template <>
+    struct copy_without_duplicates<null_type>
+     : declare_type<null_type>
     {};
 }
 // namespace meta

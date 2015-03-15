@@ -19,7 +19,7 @@
 
 /** @file ural/meta/list.hpp
  @brief Спиоск типов
- @todo Обобщить алгоритмы на любые контейнеры типов
+ @todo Декартово произведение списков типов
 */
 
 #include <ural/type_traits.hpp>
@@ -31,16 +31,30 @@ namespace ural
 {
 namespace meta
 {
-    // Вставка нового элемента в начало
+    /** @brief Вставка нового элемента в начало контейнера типов
+    @tparam Container контейнер типов
+    @tparam Value тип, который должне быть добавлен
+    */
     template <class Container, class Value>
     struct push_front;
 
-    template <class Value, template<class...> class Container, class... Args>
+    /** @brief Специализация для контейнеров на основе шаблонов классов с
+    переменным количеством аргументов
+    @tparam Container шаблон контейнера типа
+    @tparam Args типы, уже находящиеся в контейнере типов
+    @tparam Value тип, который должне быть добавлен
+    */
+    template <template <class...> class Container, class Value, class... Args>
     struct push_front<Container<Args...>, Value>
      : declare_type<Container<Value, Args...>>
     {};
 
-    // Удаление первого элемента
+    /** @brief Удаление первого элемента из контейнера типов. Если @c Container
+    не содержит элементов или не является контейнером типов, то результатом
+    будет @c null_type
+    @tparam Container контейнер типов
+    @todo возможность задавать значение, возвращаемое, когда убирать нечего
+    */
     template <class Container>
     struct pop_front
     {
@@ -56,7 +70,11 @@ namespace meta
         typedef decltype(pop_front_helper<Container>(nullptr)) type;
     };
 
-    // Первый элемент
+    /** @brief Первый элемент контейнера типов. Если @c Container не является
+    непустым контейнером типов, то результатом будет сам @c Container
+    @tparam Container контейнер типов
+    @todo возможность задавать значение, возвращаемое, когда убирать нечего
+    */
     template <class Container>
     struct front
     {

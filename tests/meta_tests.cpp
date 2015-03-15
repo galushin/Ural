@@ -42,3 +42,38 @@ BOOST_AUTO_TEST_CASE(meta_flatten_test)
     static_assert(std::is_same<Objective, Result>::value, "");
     BOOST_CHECK(true);
 }
+
+BOOST_AUTO_TEST_CASE(meta_remove_first_test)
+{
+    typedef ::ural::typelist<int, int, char, int, char, char, double> Source;
+    typedef typename ::ural::meta::remove_first<Source, char>::type Result;
+
+    typedef ::ural::typelist<int, int, int, char, char, double> Objective;
+
+    static_assert(std::is_same<Objective, Result>::value, "");
+
+    BOOST_CHECK(true);
+}
+
+BOOST_AUTO_TEST_CASE(meta_remove_all_test)
+{
+    typedef ::ural::typelist<int, int, char, int, char, char, double> Source;
+    typedef typename ::ural::meta::remove_all<Source, char>::type Result;
+
+    typedef ::ural::typelist<int, int, int, double> Objective;
+
+    static_assert(std::is_same<Objective, Result>::value, "");
+
+    BOOST_CHECK(true);
+}
+
+BOOST_AUTO_TEST_CASE(meta_count_test)
+{
+    typedef ::ural::typelist<int, int, char, int, char, char, double> Source;
+    typedef std::integral_constant<size_t, 3> Objective;
+    typedef ::ural::meta::count<Source, int> Result;
+
+    static_assert(Objective::value == Result::value, "");
+
+    BOOST_CHECK_EQUAL(Objective::value, Result::value);
+}
