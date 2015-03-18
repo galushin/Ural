@@ -21,6 +21,8 @@
  @brief Функции над типами
 */
 
+#include <ural/meta/list.hpp>
+
 namespace ural
 {
 namespace meta
@@ -49,6 +51,48 @@ namespace meta
         struct apply
          : F<Args...>
         {};
+    };
+
+    template <class T>
+    struct constant
+    {
+        template <class... Args>
+        struct apply
+         : declare_type<T>
+        {};
+    };
+
+    template <size_t k>
+    struct arg
+    {
+        template <class... Args>
+        struct apply
+         : meta::at<ural::typelist<Args...>, k>
+        {};
+    };
+
+    template <class F, class... BArgs>
+    struct bind
+    {
+        template <class... Args>
+        struct apply
+         : meta::apply<F, typename meta::apply<BArgs, Args...>::type...>
+        {};
+    };
+
+    template <class If, class Then, class Else>
+    struct if_then_else
+    {
+        template <class... Args>
+        struct apply
+        {
+        private:
+            using if_value = meta::apply<If, Args...>;
+            using F = typename std::conditional<if_value::value, Then, Else>::type;
+
+        public:
+            using type = typename meta::apply<F, Args...>::type;
+        };
     };
 
     /** @brief Отрицание предиката над типами

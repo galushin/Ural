@@ -77,3 +77,15 @@ BOOST_AUTO_TEST_CASE(meta_count_test)
 
     BOOST_CHECK_EQUAL(Objective::value, Result::value);
 }
+
+BOOST_AUTO_TEST_CASE(meta_replace_test)
+{
+    typedef ::ural::typelist<int, char, int, char, void> Source;
+    typedef typename ::ural::meta::replace<Source, char, double>::type Result;
+
+    typedef ::ural::typelist<int, double, int, double, void> Objective;
+
+    static_assert(std::is_same<Objective, Result>::value, "");
+
+    BOOST_CHECK(true);
+}
