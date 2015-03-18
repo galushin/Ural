@@ -316,6 +316,14 @@ namespace ural
             x.pop_front();
         }
     };
+
+    template <class Action, class T>
+    T modify_return_old(Action action, T & x)
+    {
+        auto old_value = T(x);
+        action(x);
+        return old_value;
+    }
 }
 // namespace ural
 

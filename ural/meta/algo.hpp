@@ -215,22 +215,17 @@ namespace meta
         typedef bind<meta::is_same, Get_input, meta::constant<null_type>>
             Input_is_empty;
 
-        // then
-
         // else
-        using Get_head = meta::bind<meta::template_to_applied<front>, Get_input>;
+        typedef template_bind<front, Get_input> Get_head ;
+        typedef template_bind<pop_front, Get_input> Get_tail;
 
         using Need_to_replace_head = meta::bind<Predicate, Get_head>;
+
         using Make_new_head
             = meta::if_then_else<Need_to_replace_head, Get_new_type, Get_head>;
+        typedef template_bind<replace_if, Get_tail, Get_predicate, Get_new_type> Make_new_tail;
 
-        typedef bind<meta::template_to_applied<pop_front>, Get_input> Get_tail;
-
-        typedef meta::bind<meta::template_to_applied<replace_if>,
-                           Get_tail, Get_predicate, Get_new_type> Make_new_tail;
-
-        typedef meta::bind<meta::template_to_applied<push_front>,
-                           Make_new_tail, Make_new_head> Make_new_list;
+        typedef template_bind<push_front, Make_new_tail, Make_new_head> Make_new_list;
 
         // сборка
         typedef meta::if_then_else<Input_is_empty, Get_input, Make_new_list>

@@ -694,6 +694,10 @@ namespace ural
     };
 
     // Негатор
+    /** @brief Адаптор функционального объекта, применяющий к его результату
+    оператор логического отрицания
+    @tparam Predicate тип предиката
+    */
     template <class Predicate>
     class not_functor
      : private compose_functor<ural::logical_not<>, Predicate>
@@ -759,7 +763,7 @@ namespace ural
     }
 
     // Составные операторы присваивания
-    /** @brief Функциональный объект для оператора "плюс-равно"
+    /** @brief Функциональный объект для оператора "плюс-присвоить"
     @tparam T1 тип первого аргумента
     @tparam T2 тип второго аргумента
     Если один из типов аргумента равен @b void, то тип будет выводится по
@@ -789,7 +793,7 @@ namespace ural
         }
     };
 
-    /** @brief Функциональный объект для оператора "минус-равно"
+    /** @brief Функциональный объект для оператора "минус-присвоить"
     @tparam T1 тип первого аргумента
     @tparam T2 тип второго аргумента
     Если один из типов аргумента равен @b void, то тип будет выводится по
@@ -814,6 +818,12 @@ namespace ural
         }
     };
 
+    /** @brief Функциональный объект для оператора "умножить-присвоить"
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    Если один из типов аргумента равен @b void, то тип будет выводится по
+    фактическому параметру
+    */
     template <class T1 = void, class T2 = T1>
     class multiplies_assign
      : public compound_assignment_helper<T1, T2, multiplies_assign<>>
@@ -833,6 +843,12 @@ namespace ural
         }
     };
 
+    /** @brief Функциональный объект для оператора "разделить-присвоить"
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    Если один из типов аргумента равен @b void, то тип будет выводится по
+    фактическому параметру
+    */
     template <class T1 = void, class T2 = T1>
     class divides_assign
      : public compound_assignment_helper<T1, T2, divides_assign<>>
@@ -852,6 +868,12 @@ namespace ural
         }
     };
 
+    /** @brief Функциональный объект для оператора "взять остаток-присвоить"
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    Если один из типов аргумента равен @b void, то тип будет выводится по
+    фактическому параметру
+    */
     template <class T1 = void, class T2 = T1>
     class modulus_assign
      : public compound_assignment_helper<T1, T2, modulus_assign<>>
@@ -868,6 +890,42 @@ namespace ural
         constexpr T1 & operator()(T1 & x, T2 && y) const
         {
             return x %= std::forward<T2>(y);
+        }
+    };
+
+    /** @brief Функциональный объект для префиксного оператора ++
+    @tparam T тип аргумента, если этот тип совпадает с @c void, то тип аргумента
+    будет выводится по фактическому параметру
+    */
+    template <class T = void>
+    class pre_increment;
+
+    template <>
+    class pre_increment<>
+    {
+    public:
+        template <class T>
+        T & operator()(T & x) const
+        {
+            return ++ x;
+        }
+    };
+
+    /** @brief Функциональный объект для префиксного оператора --
+    @tparam T тип аргумента, если этот тип совпадает с @c void, то тип аргумента
+    будет выводится по фактическому параметру
+    */
+    template <class T = void>
+    class pre_decrement;
+
+    template <>
+    class pre_decrement<>
+    {
+    public:
+        template <class T>
+        T & operator()(T & x) const
+        {
+            return -- x;
         }
     };
 

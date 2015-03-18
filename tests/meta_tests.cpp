@@ -89,3 +89,15 @@ BOOST_AUTO_TEST_CASE(meta_replace_test)
 
     BOOST_CHECK(true);
 }
+
+BOOST_AUTO_TEST_CASE(meta_identity_test)
+{
+    using id = ural::meta::identity;
+
+    static_assert(std::is_same<void, ural::meta::apply<id, void>::type>::value, "");
+    static_assert(std::is_same<char, ural::meta::apply<id, char>::type>::value, "");
+    static_assert(std::is_same<double, ural::meta::apply<id, double>::type>::value, "");
+    static_assert(std::is_same<std::string, ural::meta::apply<id, std::string>::type>::value, "");
+
+    BOOST_CHECK(true);
+}

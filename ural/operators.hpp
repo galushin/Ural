@@ -19,10 +19,10 @@
 
 /** @file ural/operators.hpp
  @brief Автоматизация определения операторов
- @todo Обобщить пост-инкремент и пост-декремент: modify_return_old
 */
 
 #include <ural/defs.hpp>
+#include <ural/functional.hpp>
 
 namespace ural
 {
@@ -90,9 +90,7 @@ namespace ural
     typename std::enable_if<std::is_copy_constructible<T>() && has_pre_increment<T>(), T>::type
     operator++(T & x, int)
     {
-        auto tmp = x;
-        ++ x;
-        return tmp;
+        return ::ural::modify_return_old(ural::pre_increment<>{}, x);
     }
 
     /** Обобщённая реализация пост-декремента. Применяет оператор пре-декремента
@@ -105,9 +103,7 @@ namespace ural
     typename std::enable_if<std::is_copy_constructible<T>() && has_pre_decrement<T>(), T>::type
     operator--(T & x, int)
     {
-        auto tmp = x;
-        -- x;
-        return tmp;
+        return ::ural::modify_return_old(ural::pre_decrement<>{}, x);
     }
 }
 // namespace ural

@@ -53,24 +53,6 @@ namespace meta
         {};
     };
 
-    template <class T>
-    struct constant
-    {
-        template <class... Args>
-        struct apply
-         : declare_type<T>
-        {};
-    };
-
-    template <size_t k>
-    struct arg
-    {
-        template <class... Args>
-        struct apply
-         : meta::at<ural::typelist<Args...>, k>
-        {};
-    };
-
     template <class F, class... BArgs>
     struct bind
     {
@@ -80,6 +62,53 @@ namespace meta
         {};
     };
 
+    /** @brief Каррирование (частичное применение) функции над типами
+    @tparam F исходная функция над типами
+    @tparam A1 тип первого аргумента
+    */
+    template <class F, class A1>
+    struct curry
+    {
+        template <class... Args>
+        struct apply
+         : meta::apply<F, A1, Args...>
+        {};
+    };
+
+    template <template <class...> class Trait, class... BArgs>
+    struct template_bind
+     : bind<template_to_applied<Trait>, BArgs...>
+    {};
+
+    /** @brief Функция над типами, возвращающая один из своих аргументов
+    @tparam k номер аргумента, который должен быть возвращён
+    */
+    template <size_t k>
+    struct arg
+    {
+        template <class... Args>
+        struct apply
+         : meta::at<ural::typelist<Args...>, k>
+        {};
+    };
+
+    /// @brief Функция над типами, возвращающая свой аргумент
+    typedef meta::bind<template_to_applied<declare_type>, meta::arg<0>>
+        identity;
+
+    /** @brief Функция над типами, возвращающая одно и то же тип
+    @tparam T возвращаемый тип
+    */
+    template <class T>
+    struct constant
+     : curry<identity, T>
+    {};
+
+    /** @brief Функция над типами, аналогичная условному оператору C++
+    @tparam If функция над типами, задающая условие
+    @tparam Then функция над типами, вызываемая, если @c If вернёт @b true
+    @tparam Else функция над типами, вызываемая, если @c If вернёт @b false
+    */
     template <class If, class Then, class Else>
     struct if_then_else
     {
