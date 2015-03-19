@@ -29,6 +29,8 @@
 
 namespace ural
 {
+    /** @todo Вынести распределитель памяти
+    */
     template <class T, class Alloc>
     class buffer
      : private Alloc
@@ -66,6 +68,14 @@ namespace ural
             return Alloc(*this);
         }
 
+        void swap(buffer & x)
+        {
+            // @todo swap с функцией проекцией swap_member
+            std::swap(this->begin_, x.begin_);
+            std::swap(this->end_, x.end_);
+            std::swap(this->storage_end_, x.storage_end_);
+        }
+
         // Итераторы
         pointer begin() const
         {
@@ -84,15 +94,14 @@ namespace ural
         }
 
         // Добавление элементов
-        void push_back(T const & value)
+        template <class... Args>
+        void emplace_back(Args && ... args)
         {
             assert(end_ != storage_end_);
 
-            Traits::construct(*this, end_, value);
+            Traits::construct(*this, end_, std::forward<Args>(args)...);
             ++ end_;
         }
-
-        void push_back(T && value);
 
     private:
         pointer begin_;
@@ -169,7 +178,7 @@ namespace ural
         {
             for(auto const & x : xs)
             {
-                data_.push_back(x);
+                data_.emplace_back(x);
             }
         }
 
@@ -187,18 +196,25 @@ namespace ural
         {
             for(auto k = n; k > 0; -- k)
             {
-                data_.push_back(value);
+                data_.emplace_back(value);
             }
         }
 
+        /** @brief Конструктор на основе интервала, заданного парой итераторов
+        @tparam InputIterator тип итератора
+        @param first итератор, задающий начало интервала
+        @param last итератор, задающий конец интервала
+        @todo добавить требование из таблицы 100
+        @post <tt> this->size() == std::distance(first, last) </tt>
+        */
         template <class InputIterator>
         vector(InputIterator first, InputIterator last)
-         : data_(allocator_type{}, size_type(last - first))
+         : vector()
         {
-            // @todo Оптимизация и обобщение
+            // @todo Оптимизация
             for(; first != last; ++ first)
             {
-                data_.push_back(*first);
+                this->push_back(*first);
             }
         }
 
@@ -290,9 +306,37 @@ namespace ural
             return std::distance(this->begin(), this->end());
         }
 
+        size_type capacity() const
+        {
+            return data_.capacity();
+        }
+
         bool empty() const
         {
             return this->begin() == this->end();
+        }
+
+        void reserve(size_type n)
+        {
+            if(n > this->capacity())
+            {
+                typedef std::allocator_traits<allocator_type> ATraits;
+                typedef buffer<value_type, allocator_type> Buffer;
+
+                // @note На самом деле, копирование распределителя на обязательно
+                Buffer new_buffer(this->get_allocator(), n);
+
+                for(auto & x : *this)
+                {
+                    new_buffer.emplace_back(std::move(x));
+                }
+
+                new_buffer.swap(data_);
+            }
+            else if(n > this->size())
+            {
+                // @todo Обработать этот случай
+            }
         }
 
         // Доступ к элементам
@@ -310,6 +354,23 @@ namespace ural
         }
 
         // Вставка элементов
+        void push_back(value_type const & x)
+        {
+            this->emplace_back(x);
+        }
+
+        void push_back(value_type && x);
+
+        template <class... Args>
+        void emplace_back(Args && ... args)
+        {
+            if(this->size() == this->capacity())
+            {
+                this->reserve(this->size() * 2 + 10);
+            }
+
+            data_.emplace_back(std::forward<Args>(args)...);
+        }
 
     private:
         buffer<value_type, allocator_type> data_;

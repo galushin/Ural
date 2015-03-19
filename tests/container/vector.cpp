@@ -177,3 +177,20 @@ BOOST_AUTO_TEST_CASE(vector_construct_from_init_list)
     BOOST_CHECK_EQUAL_COLLECTIONS(x_ural.begin(), x_ural.end(),
                                   x_std.begin(), x_std.end());
 }
+
+BOOST_AUTO_TEST_CASE(vector_construct_from_input_iterators)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+
+    std::istringstream is("1 2 3 4 5");
+    Vector const z{1, 2, 3, 4, 5};
+
+    auto first = std::istream_iterator<T>(is);
+    auto last = std::istream_iterator<T>();
+
+    Vector const x(first, last);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(),
+                                  z.begin(), z.end());
+}
