@@ -99,7 +99,8 @@ namespace ural
 
     /** @brief Тип функционального объекта для функции @c empty и аналогичной
     функциональности
-    @todo Найти лучшее место для empty_fn и empty
+    @todo Найти лучшее место для empty_fn и empty, а затем удалить заголовочный
+    файл ural\type_traits.hpp
     */
     class empty_fn
     {

@@ -124,9 +124,11 @@ namespace meta
     @tparam List контейнер типов
     @tparam Compare функция сравнения
     @tparam Result тип, возвращаемый, если @c Container пуст
-    @todo Значение для @c Result и @c Compare по умолчанию
+    @note Для типов в С++ нет естественное отношения порядка, определённого на
+    этапе компиляции (на этапе выполнения есть typeid::before), поэтому для
+    @c Compare не предоставляется на значение по умолчанию
     */
-    template <class List, class Compare, class Result>
+    template <class List, class Compare, class Result = null_type>
     struct min_value
     {
     private:
@@ -249,7 +251,6 @@ namespace meta
     /** @brief Сортировка выбором
     @tparam List Контейнер типов
     @tparam Compare функция сравнения
-    @todo Значение @c Compare по умолчанию
     */
     template <class List, class Compare>
     struct selection_sort
@@ -304,15 +305,15 @@ namespace meta
     @tparam Container исходный список типов
     @todo Возможность задавать функцию проверки равенства
     */
-    template <class Container>
+    template <class Container, class Eq = meta::is_same>
     struct copy_without_duplicates
     {
     private:
         typedef typename Container::head Head;
         typedef typename Container::tail Tail;
 
-        typedef typename remove_all<Tail, Head>::type removed_head;
-        typedef typename copy_without_duplicates<Tail>::type new_tail;
+        typedef typename remove_all<Tail, Head, Eq>::type removed_head;
+        typedef typename copy_without_duplicates<Tail, Eq>::type new_tail;
 
     public:
         /// @brief Тип-результат
