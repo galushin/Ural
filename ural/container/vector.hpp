@@ -45,13 +45,34 @@ namespace ural
         buffer(Alloc const & a, size_type capacity = 0)
          : Alloc(a)
         {
-            begin_ = Traits::allocate(*this, capacity);
+            if(capacity > 0)
+            {
+                begin_ = Traits::allocate(*this, capacity);
+            }
+            else
+            {
+                begin_ = nullptr;
+            }
+
             end_ = begin_;
             storage_end_ = begin_ + capacity;
         }
 
-        buffer(buffer const & x) = delete;
+        buffer(buffer const & xs)
+         : buffer(Traits::select_on_container_copy_construction(xs), xs.capacity())
+        {
+            // @todo заменить на алгоритм
+            for(auto const & x : xs)
+            {
+                this->emplace_back(x);
+            }
+
+        }
+
         buffer(buffer && x);
+
+        buffer & operator=(buffer const & x);
+        buffer & operator=(buffer && x);
 
         ~buffer()
         {
@@ -109,7 +130,13 @@ namespace ural
         pointer storage_end_;
     };
 
-    /** @brief Аналог <tt> std::vector </tt>
+    /** @c vector --- это последовательный контейнер, который предоставляет
+    операции с (амортизированной) постоянной сложностью для вставки и удаления
+    в конце последовательности, вставка или удаление в середине требуют
+    линейного времени. Управление хранением осуществляется автоматически, но
+    можно дать подсказки, чтобы увеличить эффективность.
+    @todo 23.3.6.1 пункт 2
+    @brief Аналог <tt> std::vector </tt>
     @tparam T тип элементов
     @tparam Alloc тип распределителя памяти
     @tparam Policy тип стратегии (в основном, отвечает за обработку ошибок)
@@ -162,25 +189,12 @@ namespace ural
         @post <tt> this->empty() </tt>
         */
         vector() noexcept
-         : vector(allocator_type{})
+         : vector(allocator_type())
         {}
 
         explicit vector(allocator_type const & a) noexcept
          : data_(a)
         {}
-
-        /** @brief Конструктор копий
-        @param xs копируемый вектор
-        @post <tt> *this == xs </tt>
-        */
-        vector(vector const & xs)
-         : data_(xs.get_allocator(), xs.size())
-        {
-            for(auto const & x : xs)
-            {
-                data_.emplace_back(x);
-            }
-        }
 
         /** @brief Создание контейнера заданного размера, каждый элемент
         которого равен заданному значению
@@ -208,15 +222,20 @@ namespace ural
         @post <tt> this->size() == std::distance(first, last) </tt>
         */
         template <class InputIterator>
-        vector(InputIterator first, InputIterator last)
-         : vector()
+        vector(InputIterator first, InputIterator last,
+               allocator_type const & a = allocator_type())
+         : vector(a)
         {
-            // @todo Оптимизация
-            for(; first != last; ++ first)
-            {
-                this->push_back(*first);
-            }
+            static_assert(std::is_integral<InputIterator>::value == false, "");
+
+            this->insert(this->cend(), first, last);
         }
+
+        /** @brief Конструктор копий
+        @param xs копируемый вектор
+        @post <tt> *this == xs </tt>
+        */
+        vector(vector const & xs) = default;
 
         /** @brief Конструктор на основе списка инициализаторов
         @param values список инициализаторов
@@ -354,6 +373,16 @@ namespace ural
         }
 
         // Вставка элементов
+        template <class InputIterator>
+        iterator insert(const_iterator position,
+                        InputIterator first, InputIterator last)
+        {
+            typedef typename std::iterator_traits<InputIterator>::iterator_category
+                Category;
+            return this->insert_impl(position - this->cbegin(),
+                                     first, last, Category());
+        }
+
         void push_back(value_type const & x)
         {
             this->emplace_back(x);
@@ -370,6 +399,35 @@ namespace ural
             }
 
             data_.emplace_back(std::forward<Args>(args)...);
+        }
+
+    private:
+        template <class InputIterator>
+        iterator insert_impl(size_type index,
+                             InputIterator first, InputIterator last,
+                             std::input_iterator_tag)
+        {
+            for(; first != last; ++ first)
+            {
+                this->push_back(*first);
+            }
+
+            // @todo В общем случае нужно ещё повернуть последовательность
+
+            return this->begin() + index;
+        }
+
+        template <class InputIterator>
+        iterator insert_impl(size_type index,
+                             InputIterator first, InputIterator last,
+                             std::forward_iterator_tag)
+        {
+            auto const n = std::distance(first, last);
+
+            this->reserve(this->size() + n);
+
+            return this->insert_impl(index, first, last,
+                                     std::input_iterator_tag());
         }
 
     private:

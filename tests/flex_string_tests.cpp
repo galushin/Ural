@@ -14,6 +14,8 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <ural/utility/tracers.hpp>
+
 #include <ural/numeric/numbers_sequence.hpp>
 #include <ural/flex_string.hpp>
 
@@ -26,67 +28,12 @@
 
 namespace
 {
-    template <class T>
-    class test_allocator
-    {
-        typedef std::allocator<T> Base;
-    public:
-        typedef typename Base::value_type value_type;
-        typedef typename Base::size_type size_type;
-        typedef typename Base::difference_type difference_type;
-        typedef typename Base::const_reference const_reference;
-        typedef typename Base::reference reference;
-        typedef typename Base::pointer pointer;
-        typedef typename Base::const_pointer const_pointer;
-
-        typedef std::true_type propagate_on_container_swap;
-
-        explicit test_allocator(int id = 0)
-         : id_{id}
-        {}
-
-        pointer allocate(size_type n)
-        {
-            return a_.allocate(n);
-        }
-
-        void deallocate(pointer p, size_type n)
-        {
-            return a_.deallocate(p, n);
-        }
-
-        template <class... Args>
-        void construct(pointer p, Args && ... args)
-        {
-            a_.construct(p, std::forward<Args>(args)...);
-        }
-
-        void destroy(pointer p)
-        {
-            a_.destroy(p);
-        }
-
-        template <class U>
-        struct rebind
-        {
-            typedef test_allocator<U> other;
-        };
-
-        int id() const
-        {
-            return this->id_;
-        }
-
-    private:
-        int id_;
-        std::allocator<T> a_;
-    };
-
-    typedef ural::flex_string<char, ural::use_default, test_allocator<char>,
-                              ural::string_vector_storage<char, test_allocator<char>>>
+    typedef ural::tracing_allocator<char> test_allocator;
+    typedef ural::flex_string<char, ural::use_default, test_allocator,
+                              ural::string_vector_storage<char, test_allocator>>
         Vector_string;
 
-    typedef ural::flex_string<char, ural::use_default, test_allocator<char>>
+    typedef ural::flex_string<char, ural::use_default, test_allocator>
         String;
 
     typedef boost::mpl::list<String, Vector_string> Strings_list;

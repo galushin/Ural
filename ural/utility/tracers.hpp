@@ -355,6 +355,85 @@ namespace ural
     {
         return functor_tracer<F, Tag, Threading>(std::move(f));
     }
+
+    /** @todo Синхронизация?
+    */
+    template <class T, class Alloc = std::allocator<T>>
+    class tracing_allocator
+    {
+        typedef Alloc Base;
+
+    public:
+        typedef typename Base::value_type value_type;
+        typedef typename Base::size_type size_type;
+        typedef typename Base::difference_type difference_type;
+        typedef typename Base::const_reference const_reference;
+        typedef typename Base::reference reference;
+        typedef typename Base::pointer pointer;
+        typedef typename Base::const_pointer const_pointer;
+
+        typedef std::true_type propagate_on_container_swap;
+
+        explicit tracing_allocator(int id = 0)
+         : id_{id}
+        {}
+
+        pointer allocate(size_type n)
+        {
+            ++ tracing_allocator::get_allocations();
+
+            return a_.allocate(n);
+        }
+
+        void deallocate(pointer p, size_type n)
+        {
+            return a_.deallocate(p, n);
+        }
+
+        template <class... Args>
+        void construct(pointer p, Args && ... args)
+        {
+            a_.construct(p, std::forward<Args>(args)...);
+        }
+
+        void destroy(pointer p)
+        {
+            a_.destroy(p);
+        }
+
+        template <class U>
+        struct rebind
+        {
+            typedef tracing_allocator<U, Alloc> other;
+        };
+
+        int id() const
+        {
+            return this->id_;
+        }
+
+        // Трассировка
+        static size_type allocations_count()
+        {
+            return tracing_allocator::get_allocations();
+        }
+
+        static void reset_allocations_count()
+        {
+            tracing_allocator::get_allocations() = 0;
+        }
+
+    private:
+        static size_type & get_allocations()
+        {
+            static size_type instance = 0;
+            return instance;
+        }
+
+    private:
+        int id_;
+        Alloc a_;
+    };
 }
 // namespace ural
 

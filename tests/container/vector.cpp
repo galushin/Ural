@@ -16,10 +16,13 @@
 
 // Общие требования (23.2)
 
+#include <ural/utility/tracers.hpp>
 #include <ural/container/vector.hpp>
 #include <ural/numeric/numbers_sequence.hpp>
 
 #include <boost/test/unit_test.hpp>
+
+#include <forward_list>
 
 // @todo тесты для разных типов элементов
 
@@ -144,6 +147,9 @@ BOOST_AUTO_TEST_CASE(vector_table_97)
     BOOST_CHECK(x.crend() == CRIterator(x.cbegin()));
 }
 
+// @todo Таблица 98
+// @todo Таблица 99
+
 // @todo 23.2.3
 
 BOOST_AUTO_TEST_CASE(vector_n_copies_of_t)
@@ -190,6 +196,27 @@ BOOST_AUTO_TEST_CASE(vector_construct_from_input_iterators)
     auto last = std::istream_iterator<T>();
 
     Vector const x(first, last);
+
+    // @todo Число перераспределений памяти должно быть логарифмическим
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(),
+                                  z.begin(), z.end());
+}
+
+BOOST_AUTO_TEST_CASE(vector_construct_from_forward_iterators)
+{
+    typedef int T;
+    typedef ural::tracing_allocator<T> Alloc;
+    typedef ural::vector<T, Alloc> Vector;
+
+    std::forward_list<T> const z(501, 42);
+
+    Alloc::reset_allocations_count();
+    BOOST_CHECK_EQUAL(Alloc::allocations_count(), 0U);
+
+    Vector const x(z.begin(), z.end());
+
+    BOOST_CHECK_EQUAL(Alloc::allocations_count(), 1U);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(),
                                   z.begin(), z.end());
