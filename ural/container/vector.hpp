@@ -220,6 +220,8 @@ namespace ural
         @param last итератор, задающий конец интервала
         @todo добавить требование из таблицы 100
         @post <tt> this->size() == std::distance(first, last) </tt>
+        @todo Запретить, если @c InputIterator не удовлетворяет требованиям к
+        входному итератору
         */
         template <class InputIterator>
         vector(InputIterator first, InputIterator last,
@@ -319,7 +321,7 @@ namespace ural
         }
         //@}
 
-        // Размер и ёмкость
+        // 23.3.6.3 Размер и ёмкость
         size_type size() const
         {
             return std::distance(this->begin(), this->end());
@@ -359,6 +361,12 @@ namespace ural
         }
 
         // Доступ к элементам
+        //@{
+        /** @brief Доступ к элементам вектора без проверки индекса
+        @param index индекс
+        @return <tt> *(this->begin() + n) </tt>
+        @pre <tt> index < this->size() </tt>
+        */
         reference operator[](size_type index)
         {
             vector const & c_self = *this;
@@ -371,7 +379,37 @@ namespace ural
             assert(0U <= index && index < this->size());
             return *(this->begin() + index);
         }
+        //@}
 
+        //@{
+        /** @brief Доступ к элементам вектора с проверкой индекса
+        @param index индекс
+        @return <tt> *(this->begin() + n) </tt>
+        @throw std::out_of_range если <tt> index >= this->size() </tt>
+        */
+        reference at(size_type index)
+        {
+            vector const & c_self = *this;
+            return const_cast<reference>(c_self.at(index));
+        }
+
+        const_reference at(size_type index) const
+        {
+            if(0U <= index && index < this->size())
+            {
+                return (*this)[index];
+            }
+            else
+            {
+                // @todo Более подробная диагностика
+                throw std::out_of_range("ural::vector::at");
+            }
+        }
+        //@}
+
+        // 23.3.6.4 Доступ к данным
+
+        // 23.3.6.5 Модификаторы
         // Вставка элементов
         template <class InputIterator>
         iterator insert(const_iterator position,

@@ -82,12 +82,17 @@ BOOST_AUTO_TEST_CASE(vector_types_test)
 
 BOOST_AUTO_TEST_CASE(vector_construct_empty)
 {
+    // Регрессия: при вызове конструктора без параметров память не распределяется
     typedef int T;
-    typedef ural::vector<T> Vector;
+    typedef ural::tracing_allocator<T> Alloc;
+    typedef ural::vector<T, Alloc> Vector;
 
     // Строка 8
+    Alloc::reset_allocations_count();
+
     Vector u;
     BOOST_CHECK(u.empty());
+    BOOST_CHECK_EQUAL(Alloc::allocations_count(), 0U);
 
     // Строка 9
     BOOST_CHECK(Vector().empty());
@@ -220,4 +225,23 @@ BOOST_AUTO_TEST_CASE(vector_construct_from_forward_iterators)
 
     BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(),
                                   z.begin(), z.end());
+}
+
+BOOST_AUTO_TEST_CASE(vector_at_test)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+
+    Vector xs = {1, 2, 3, 4, 5};
+
+    Vector const & c_xs = xs;
+
+    BOOST_CHECK_THROW(xs.at(xs.size()), std::out_of_range);
+    BOOST_CHECK_THROW(c_xs.at(xs.size()), std::out_of_range);
+
+    for(auto i : ural::indices_of(xs))
+    {
+        BOOST_CHECK_EQUAL(xs[i], xs.at(i));
+        BOOST_CHECK_EQUAL(c_xs[i], c_xs.at(i));
+    }
 }
