@@ -29,7 +29,11 @@
 
 namespace ural
 {
-    /** @todo Вынести распределитель памяти
+    /** @brief Минималистичный буфер
+    @tparam T тип элементов
+    @tparam Alloc тип распределителя памяти
+    @todo Поддержка ссылок на распределители памяти в качестве шаблонного
+    параметра
     */
     template <class T, class Alloc>
     class buffer
@@ -454,7 +458,10 @@ namespace ural
             this->emplace_back(x);
         }
 
-        void push_back(value_type && x);
+        void push_back(value_type && x)
+        {
+            this->emplace_back(std::move(x));
+        }
 
         template <class... Args>
         void emplace_back(Args && ... args)

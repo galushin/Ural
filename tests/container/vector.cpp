@@ -271,3 +271,21 @@ BOOST_AUTO_TEST_CASE(vector_at_test)
         BOOST_CHECK_EQUAL(c_xs[i], c_xs.at(i));
     }
 }
+
+// 23.3.6.5 Модификаторы
+BOOST_AUTO_TEST_CASE(vector_push_back_rvalue)
+{
+    typedef std::string T;
+    typedef ural::vector<T> Vector;
+
+    Vector xs;
+    auto value = T("abc 42");
+    auto const old_value = value;
+    auto const value_old_data = value.data();
+
+    xs.push_back(std::move(value));
+
+    BOOST_CHECK_EQUAL(xs.back(), old_value);
+    BOOST_CHECK_EQUAL(xs.back().data(), value_old_data);
+    BOOST_CHECK(value.empty());
+}
