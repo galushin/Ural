@@ -227,6 +227,32 @@ BOOST_AUTO_TEST_CASE(vector_construct_from_forward_iterators)
                                   z.begin(), z.end());
 }
 
+BOOST_AUTO_TEST_CASE(vector_front_test)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+
+    Vector xs = {1, 2, 3, 4, 5};
+
+    Vector const & c_xs = xs;
+
+    BOOST_CHECK_EQUAL(xs[0], xs.front());
+    BOOST_CHECK_EQUAL(c_xs[0], c_xs.front());
+}
+
+BOOST_AUTO_TEST_CASE(vector_back_test)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+
+    Vector xs = {1, 2, 3, 4, 5};
+
+    Vector const & c_xs = xs;
+
+    BOOST_CHECK_EQUAL(xs[xs.size() - 1], xs.back());
+    BOOST_CHECK_EQUAL(c_xs[c_xs.size() - 1], c_xs.back());
+}
+
 BOOST_AUTO_TEST_CASE(vector_at_test)
 {
     typedef int T;

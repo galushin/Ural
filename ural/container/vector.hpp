@@ -407,6 +407,34 @@ namespace ural
         }
         //@}
 
+        //@{
+        reference front()
+        {
+            vector const & c_self = *this;
+            return const_cast<reference>(c_self.front());
+        }
+
+        const_reference front() const
+        {
+            return (*this)[0];
+        }
+        //@}
+
+        //@{
+        reference back()
+        {
+            vector const & c_self = *this;
+            return const_cast<reference>(c_self.back());
+        }
+
+        const_reference back() const
+        {
+            // @todo Настройка способа проверки
+            assert(!this->empty());
+            return (*this)[this->size() - 1];
+        }
+        //@}
+
         // 23.3.6.4 Доступ к данным
 
         // 23.3.6.5 Модификаторы
