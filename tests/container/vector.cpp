@@ -289,3 +289,31 @@ BOOST_AUTO_TEST_CASE(vector_push_back_rvalue)
     BOOST_CHECK_EQUAL(xs.back().data(), value_old_data);
     BOOST_CHECK(value.empty());
 }
+
+BOOST_AUTO_TEST_CASE(vector_const_data_test)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+
+    Vector const xs = {1, 2, 3, 4, 5};
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(xs.begin(), xs.end(),
+                                  xs.data(), xs.data() + xs.size());
+}
+
+BOOST_AUTO_TEST_CASE(vector_data_test)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+
+    std::vector<T> const src = {3, 1, 4, 1, 5};
+
+    Vector xs = {1, 2, 3, 4, 5};
+
+    BOOST_CHECK_GE(xs.size(), src.size());
+
+    std::copy(src.begin(), src.end(), xs.data());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(src.begin(), src.end(),
+                                  xs.data(), xs.data() + xs.size());
+}

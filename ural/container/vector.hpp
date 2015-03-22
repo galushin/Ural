@@ -440,6 +440,21 @@ namespace ural
         //@}
 
         // 23.3.6.4 Доступ к данным
+        //@{
+        /** @brief (Константный) указатель на начало выделенной области памяти
+        @return (Константный) указатель на начало выделенной области памяти
+        */
+        value_type * data()
+        {
+            vector const & c_self = *this;
+            return const_cast<value_type *>(c_self.data());
+        }
+
+        value_type const * data() const
+        {
+            return data_.begin();
+        }
+        //@}
 
         // 23.3.6.5 Модификаторы
         // Вставка элементов
@@ -453,6 +468,7 @@ namespace ural
                                      first, last, Category());
         }
 
+        //@{
         void push_back(value_type const & x)
         {
             this->emplace_back(x);
@@ -462,6 +478,7 @@ namespace ural
         {
             this->emplace_back(std::move(x));
         }
+        //@}
 
         template <class... Args>
         void emplace_back(Args && ... args)
