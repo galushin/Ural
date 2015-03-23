@@ -272,24 +272,7 @@ BOOST_AUTO_TEST_CASE(vector_at_test)
     }
 }
 
-// 23.3.6.5 Модификаторы
-BOOST_AUTO_TEST_CASE(vector_push_back_rvalue)
-{
-    typedef std::string T;
-    typedef ural::vector<T> Vector;
-
-    Vector xs;
-    auto value = T("abc 42");
-    auto const old_value = value;
-    auto const value_old_data = value.data();
-
-    xs.push_back(std::move(value));
-
-    BOOST_CHECK_EQUAL(xs.back(), old_value);
-    BOOST_CHECK_EQUAL(xs.back().data(), value_old_data);
-    BOOST_CHECK(value.empty());
-}
-
+// 23.3.6.4 Доступ к данным
 BOOST_AUTO_TEST_CASE(vector_const_data_test)
 {
     typedef int T;
@@ -316,4 +299,42 @@ BOOST_AUTO_TEST_CASE(vector_data_test)
 
     BOOST_CHECK_EQUAL_COLLECTIONS(src.begin(), src.end(),
                                   xs.data(), xs.data() + xs.size());
+}
+
+// 23.3.6.5 Модификаторы
+BOOST_AUTO_TEST_CASE(vector_push_back_rvalue)
+{
+    typedef std::string T;
+    typedef ural::vector<T> Vector;
+
+    Vector xs;
+    auto value = T("abc 42");
+    auto const old_value = value;
+    auto const value_old_data = value.data();
+
+    xs.push_back(std::move(value));
+
+    BOOST_CHECK_EQUAL(xs.back(), old_value);
+    BOOST_CHECK_EQUAL(xs.back().data(), value_old_data);
+    BOOST_CHECK(value.empty());
+}
+
+BOOST_AUTO_TEST_CASE(vector_pop_back_test)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+
+    Vector const src = {3, 1, 4, 1, 5};
+
+    auto xs = src;
+    xs.push_back(9);
+    auto const old_data = xs.data();
+
+    BOOST_CHECK_EQUAL(xs.size(), src.size() + 1);
+
+    xs.pop_back();
+
+    BOOST_CHECK_EQUAL(old_data, xs.data());
+    BOOST_CHECK_EQUAL_COLLECTIONS(src.begin(), src.end(),
+                                  xs.begin(), xs.end());
 }

@@ -80,10 +80,7 @@ namespace ural
 
         ~buffer()
         {
-            for(auto i = this->begin(); i != this->end(); ++ i)
-            {
-                Traits::destroy(*this, i);
-            }
+            this->pop_back(this->size());
 
             Traits::deallocate(*this, this->begin(), this->capacity());
         }
@@ -113,6 +110,10 @@ namespace ural
         }
 
         // Размер и ёмкость
+        size_type size() const
+        {
+            return this->end() - this->begin();
+        }
         size_type capacity() const
         {
             return this->storage_end_ - this->begin();
@@ -126,6 +127,18 @@ namespace ural
 
             Traits::construct(*this, end_, std::forward<Args>(args)...);
             ++ end_;
+        }
+
+        // Удаление элементов
+        void pop_back(size_type n)
+        {
+            assert(n <= this->size());
+
+            for(; n > 0; -- n)
+            {
+                -- end_;
+                Traits::destroy(*this, end_);
+            }
         }
 
     private:
@@ -412,6 +425,10 @@ namespace ural
         //@}
 
         //@{
+        /** @brief Первый элемент
+        @return (Константная) ссылка на первый элемент контейнера
+        @pre <tt> this->empty() == false </tt>
+        */
         reference front()
         {
             vector const & c_self = *this;
@@ -420,11 +437,16 @@ namespace ural
 
         const_reference front() const
         {
+            // @todo Добавить проверку через стратегию
             return (*this)[0];
         }
         //@}
 
         //@{
+        /** @brief Последний элемент
+        @return (Константная) ссылка на последний элемент контейнера
+        @pre <tt> this->empty() == false </tt>
+        */
         reference back()
         {
             vector const & c_self = *this;
@@ -433,7 +455,7 @@ namespace ural
 
         const_reference back() const
         {
-            // @todo Настройка способа проверки
+            // @todo Добавить проверку через стратегию
             assert(!this->empty());
             return (*this)[this->size() - 1];
         }
@@ -458,14 +480,15 @@ namespace ural
 
         // 23.3.6.5 Модификаторы
         // Вставка элементов
-        template <class InputIterator>
-        iterator insert(const_iterator position,
-                        InputIterator first, InputIterator last)
+        template <class... Args>
+        void emplace_back(Args && ... args)
         {
-            typedef typename std::iterator_traits<InputIterator>::iterator_category
-                Category;
-            return this->insert_impl(position - this->cbegin(),
-                                     first, last, Category());
+            if(this->size() == this->capacity())
+            {
+                this->reserve(this->size() * 2 + 10);
+            }
+
+            data_.emplace_back(std::forward<Args>(args)...);
         }
 
         //@{
@@ -480,15 +503,25 @@ namespace ural
         }
         //@}
 
-        template <class... Args>
-        void emplace_back(Args && ... args)
+        /** @brief Уничтожает последний элемент
+        @pre <tt> this->empty() == false </tt>
+        */
+        void pop_back()
         {
-            if(this->size() == this->capacity())
-            {
-                this->reserve(this->size() * 2 + 10);
-            }
+            // @todo Улучшить диагностику
+            assert(!this->empty());
 
-            data_.emplace_back(std::forward<Args>(args)...);
+            data_.pop_back(1);
+        }
+
+        template <class InputIterator>
+        iterator insert(const_iterator position,
+                        InputIterator first, InputIterator last)
+        {
+            typedef typename std::iterator_traits<InputIterator>::iterator_category
+                Category;
+            return this->insert_impl(position - this->cbegin(),
+                                     first, last, Category());
         }
 
     private:
