@@ -178,7 +178,6 @@ BOOST_AUTO_TEST_CASE(vector_n_copies_of_t)
 
 BOOST_AUTO_TEST_CASE(vector_construct_from_init_list)
 {
-    // @todo Тест с итераторами ввода
     typedef int T;
     typedef ural::vector<T> Vector;
 
@@ -337,4 +336,48 @@ BOOST_AUTO_TEST_CASE(vector_pop_back_test)
     BOOST_CHECK_EQUAL(old_data, xs.data());
     BOOST_CHECK_EQUAL_COLLECTIONS(src.begin(), src.end(),
                                   xs.begin(), xs.end());
+}
+
+BOOST_AUTO_TEST_CASE(vector_insert_middle_range)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+
+    std::vector<T> to_insert = {2, 3};
+
+    Vector v_ural = {1, 4, 5};
+
+    std::vector<T> v_std(v_ural.begin(), v_ural.end());
+
+    auto const pos = v_ural.size() / 2;
+
+    auto r_std = v_std.insert(v_std.begin() + pos, to_insert.begin(), to_insert.end());
+    auto r_ural = v_ural.insert(v_ural.cbegin() + pos, to_insert.begin(), to_insert.end());
+
+    BOOST_CHECK_EQUAL(r_std - v_std.begin(), ural::to_signed(pos));
+    BOOST_CHECK_EQUAL(r_ural - v_ural.cbegin(), ural::to_signed(pos));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.cbegin(), v_std.cend(),
+                                  v_ural.cbegin(), v_ural.cend());
+}
+
+BOOST_AUTO_TEST_CASE(vector_insert_middle_init_list)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+
+    Vector v_ural = {1, 4, 5};
+
+    std::vector<T> v_std(v_ural.begin(), v_ural.end());
+
+    auto const pos = v_ural.size() / 2;
+
+    auto r_std = v_std.insert(v_std.begin() + pos, {2, 3});
+    auto r_ural = v_ural.insert(v_ural.cbegin() + pos, {2, 3});
+
+    BOOST_CHECK_EQUAL(r_std - v_std.begin(), ural::to_signed(pos));
+    BOOST_CHECK_EQUAL(r_ural - v_ural.cbegin(), ural::to_signed(pos));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.cbegin(), v_std.cend(),
+                                  v_ural.cbegin(), v_ural.cend());
 }

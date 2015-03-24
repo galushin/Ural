@@ -514,6 +514,10 @@ namespace ural
             data_.pop_back(1);
         }
 
+        /**
+        @pre @c first и @c last не являются итераторами элементов контейнера
+        <tt> *this </tt>
+        */
         template <class InputIterator>
         iterator insert(const_iterator position,
                         InputIterator first, InputIterator last)
@@ -524,18 +528,39 @@ namespace ural
                                      first, last, Category());
         }
 
+        /** @brief Вставка элементов списка инициализаторов перед указанной
+        позицией
+        @param position константный итератор, перед которым будут вставлены
+        новые элементы
+        @param values список инициализаторов, элементы которого должны быть
+        вставлены в контейнер
+        @return Итератор, ссылающийся на первый вставленный элемент, или
+        @c position, если таких элементов нет.
+        @note Может быть стоит определить перегрузку, принимающую любой объект,
+        для которого выражение
+        <tt> this->insert(position, begin(value), end(values)) </tt>
+        имеет смысл?
+        */
+        iterator insert(const_iterator position,
+                        std::initializer_list<value_type> values)
+        {
+            using std::begin;
+            using std::end;
+            return this->insert(position, begin(values), end(values));
+        }
+
     private:
         template <class InputIterator>
         iterator insert_impl(size_type index,
                              InputIterator first, InputIterator last,
                              std::input_iterator_tag)
         {
-            for(; first != last; ++ first)
-            {
-                this->push_back(*first);
-            }
+            auto const old_size = this->size();
 
-            // @todo В общем случае нужно ещё повернуть последовательность
+            // @todo Заменить на алгоритмы ural?
+            std::copy(first, last, *this | ural::back_inserter);
+
+            std::rotate(this->begin() + index, this->begin() + old_size, this->end());
 
             return this->begin() + index;
         }
