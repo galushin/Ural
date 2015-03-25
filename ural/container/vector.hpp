@@ -514,6 +514,31 @@ namespace ural
             data_.pop_back(1);
         }
 
+        /** Вставляет объект типа @c T, сконструированный с параметрами
+        <tt> std::forward<Args>(args)... </tt> перед @c position
+        @param position константный итератор, определяющий позицию, перед
+        которой должен быть вставлен новый элемент
+        @param args аргументы конструктора для создания нового объекта
+        @return итератор, ссылающийся на новый элемент.
+        */
+        template <class... Args>
+        iterator emplace(const_iterator position, Args && ... args)
+        {
+            auto const index = position - this->begin();
+            this->emplace_back(std::forward<Args>(args)...);
+
+            std::rotate(this->begin() + index, this->end() - 1, this->end());
+
+            return this->begin() + index;
+        }
+
+        iterator insert(const_iterator position, value_type const & x)
+        {
+            return this->emplace(position, std::move(x));
+        }
+
+        iterator insert(const_iterator position, value_type && x);
+
         /**
         @pre @c first и @c last не являются итераторами элементов контейнера
         <tt> *this </tt>

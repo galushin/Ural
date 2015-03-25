@@ -361,6 +361,27 @@ BOOST_AUTO_TEST_CASE(vector_insert_middle_range)
                                   v_ural.cbegin(), v_ural.cend());
 }
 
+BOOST_AUTO_TEST_CASE(vector_insert_middle)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+
+    auto const pos = 2;
+    auto const new_value = T{3};
+
+    Vector x = {1, 2, 4, 5};
+    Vector const z = {1, 2, new_value, 4, 5};
+
+
+    auto const result = x.insert(x.cbegin() + pos, new_value);
+
+    BOOST_CHECK_EQUAL(result - x.begin(), pos);
+    BOOST_CHECK_EQUAL(*result, new_value);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(),
+                                  z.begin(), z.end());
+}
+
 BOOST_AUTO_TEST_CASE(vector_insert_middle_init_list)
 {
     typedef int T;
