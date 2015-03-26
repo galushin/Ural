@@ -382,6 +382,30 @@ BOOST_AUTO_TEST_CASE(vector_insert_middle)
                                   z.begin(), z.end());
 }
 
+BOOST_AUTO_TEST_CASE(vector_insert_middle_with_move)
+{
+    typedef std::string T;
+    typedef ural::vector<T> Vector;
+
+    auto const pos = 2;
+    auto const new_value = T{"three"};
+    auto obj = new_value;
+
+    void const * old_obj_data = obj.data();
+
+    Vector x = {"one", "two", "four", "five"};
+    Vector const z = {"one", "two", new_value, "four", "five"};
+
+    auto const result = x.insert(x.cbegin() + pos, std::move(obj));
+
+    BOOST_CHECK_EQUAL(result - x.begin(), pos);
+    BOOST_CHECK_EQUAL(*result, new_value);
+    BOOST_CHECK_EQUAL(old_obj_data, result->data());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(),
+                                  z.begin(), z.end());
+}
+
 BOOST_AUTO_TEST_CASE(vector_insert_middle_init_list)
 {
     typedef int T;

@@ -187,19 +187,23 @@ namespace ural
         /// @brief Тип константного итератора
         typedef value_type const * const_iterator;
 
-        /// @brief Тип обратного итератора
-        typedef std::reverse_iterator<iterator> reverse_iterator;
-
-        /// @brief Тип константного обратного итератора
-        typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+        /// @brief Тип размера
+        typedef typename std::allocator_traits<allocator_type>::size_type
+            size_type;
 
         /// @brief Тип разности (итераторов)
         typedef typename std::allocator_traits<allocator_type>::difference_type
             difference_type;
 
-        /// @brief Тип размера
-        typedef typename std::allocator_traits<allocator_type>::size_type
-            size_type;
+        typedef typename std::allocator_traits<allocator_type>::pointer pointer;
+        typedef typename std::allocator_traits<allocator_type>::const_pointer
+            const_pointer;
+
+        /// @brief Тип обратного итератора
+        typedef std::reverse_iterator<iterator> reverse_iterator;
+
+        /// @brief Тип константного обратного итератора
+        typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
         // Конструкторы
         /** @brief Создание пустого контейнера
@@ -212,6 +216,8 @@ namespace ural
         explicit vector(allocator_type const & a) noexcept
          : data_(a)
         {}
+
+        explicit vector(size_type n, allocator_type const & a = allocator_type());
 
         /** @brief Создание контейнера заданного размера, каждый элемент
         которого равен заданному значению
@@ -256,13 +262,36 @@ namespace ural
         */
         vector(vector const & xs) = default;
 
+        vector(vector && x) noexcept;
+        vector(vector const & xs, allocator_type const & a);
+        vector(vector && x, allocator_type const & a) noexcept;
+
         /** @brief Конструктор на основе списка инициализаторов
         @param values список инициализаторов
         @post Эквивалентно <tt> vector(values.begin(), value.end()) </tt>
+        @todo Тест с распределителем памяти
         */
-        vector(std::initializer_list<value_type> values)
-         : vector(values.begin(), values.end())
+        vector(std::initializer_list<value_type> values,
+               allocator_type const & a = allocator_type())
+         : vector(values.begin(), values.end(), a)
         {}
+
+        /// @brief Деструктор
+        ~vector() = default;
+
+        vector & operator=(vector const & xs) = default;
+
+        vector & operator=(vector && x)
+            noexcept(std::allocator_traits<allocator_type>::propagate_on_container_move_assignment::value
+                     || std::allocator_traits<allocator_type>::is_always_equal::value);
+
+        vector & operator=(std::initializer_list<value_type> values);
+
+        template <class InputIterator>
+        void assign(InputIterator first, InputIterator last);
+
+        void assign(size_type n, value_type const & value);
+        void assign(std::initializer_list<value_type> values);
 
         allocator_type get_allocator() const
         {
@@ -271,85 +300,90 @@ namespace ural
 
         // Итераторы
         //@{
-        iterator begin()
+        iterator begin() noexcept
         {
             return iterator(data_.begin());
         }
 
-        const_iterator begin() const
+        const_iterator begin() const noexcept
         {
             return const_iterator(data_.begin());
         }
 
-        const_iterator cbegin() const
+        const_iterator cbegin() const noexcept
         {
             return this->begin();
         }
         //@}
 
         //@{
-        iterator end()
+        iterator end() noexcept
         {
             return iterator(data_.end());
         }
 
-        const_iterator end() const
+        const_iterator end() const noexcept
         {
             return const_iterator(data_.end());
         }
 
-        const_iterator cend() const
+        const_iterator cend() const noexcept
         {
             return this->end();
         }
         //@}
 
         //@{
-        reverse_iterator rbegin()
+        reverse_iterator rbegin() noexcept
         {
             return reverse_iterator(this->end());
         }
 
-        const_reverse_iterator rbegin() const
+        const_reverse_iterator rbegin() const noexcept
         {
             return const_reverse_iterator(this->end());
         }
 
-        const_reverse_iterator crbegin() const
+        const_reverse_iterator crbegin() const noexcept
         {
             return this->rbegin();
         }
         //@}
 
         //@{
-        reverse_iterator rend()
+        reverse_iterator rend() noexcept
         {
             return reverse_iterator(this->begin());
         }
 
-        const_reverse_iterator rend() const
+        const_reverse_iterator rend() const noexcept
         {
             return const_reverse_iterator(this->begin());
         }
 
-        const_reverse_iterator crend() const
+        const_reverse_iterator crend() const noexcept
         {
             return this->rend();
         }
         //@}
 
         // 23.3.6.3 Размер и ёмкость
-        size_type size() const
+        size_type size() const noexcept
         {
             return std::distance(this->begin(), this->end());
         }
 
-        size_type capacity() const
+        size_type max_size() const noexcept;
+
+        void resize(size_type new_size);
+        void resize(size_type new_size, value_type const & c);
+
+        size_type capacity() const noexcept
         {
             return data_.capacity();
         }
 
-        bool empty() const
+        bool empty() const noexcept
         {
             return this->begin() == this->end();
         }
@@ -361,9 +395,10 @@ namespace ural
                 typedef std::allocator_traits<allocator_type> ATraits;
                 typedef buffer<value_type, allocator_type> Buffer;
 
-                // @note На самом деле, копирование распределителя на обязательно
+                // @todo не копировать распределитель памяти
                 Buffer new_buffer(this->get_allocator(), n);
 
+                // @todo заменить на алгоритм
                 for(auto & x : *this)
                 {
                     new_buffer.emplace_back(std::move(x));
@@ -376,6 +411,8 @@ namespace ural
                 // @todo Обработать этот случай
             }
         }
+
+        void shrink_to_fit();
 
         // Доступ к элементам
         //@{
@@ -466,13 +503,13 @@ namespace ural
         /** @brief (Константный) указатель на начало выделенной области памяти
         @return (Константный) указатель на начало выделенной области памяти
         */
-        value_type * data()
+        value_type * data() noexcept
         {
             vector const & c_self = *this;
             return const_cast<value_type *>(c_self.data());
         }
 
-        value_type const * data() const
+        value_type const * data() const noexcept
         {
             return data_.begin();
         }
@@ -516,6 +553,7 @@ namespace ural
 
         /** Вставляет объект типа @c T, сконструированный с параметрами
         <tt> std::forward<Args>(args)... </tt> перед @c position
+        @brief Размещение нового элемента
         @param position константный итератор, определяющий позицию, перед
         которой должен быть вставлен новый элемент
         @param args аргументы конструктора для создания нового объекта
@@ -532,12 +570,30 @@ namespace ural
             return this->begin() + index;
         }
 
+        /** @brief Вставляет копию @c x перед @c position
+        @param position константный итератор, определяющий позицию, перед
+        которой должен быть вставлен новый элемент
+        @param args аргументы конструктора для создания нового объекта
+        @return итератор, ссылающийся на новый элемент.
+        */
         iterator insert(const_iterator position, value_type const & x)
+        {
+            return this->emplace(position, x);
+        }
+
+        /** @brief Вставляет @c position новый элемент, созданный из @c x с
+        помощью конструктора перемещения
+        @param position константный итератор, определяющий позицию, перед
+        которой должен быть вставлен новый элемент
+        @param args аргументы конструктора для создания нового объекта
+        @return итератор, ссылающийся на новый элемент.
+        */
+        iterator insert(const_iterator position, value_type && x)
         {
             return this->emplace(position, std::move(x));
         }
 
-        iterator insert(const_iterator position, value_type && x);
+        iterator insert(const_iterator position, size_type n, value_type const & value);
 
         /**
         @pre @c first и @c last не являются итераторами элементов контейнера
@@ -573,6 +629,15 @@ namespace ural
             using std::end;
             return this->insert(position, begin(values), end(values));
         }
+
+        iterator erase(const_iterator position);
+        iterator erase(const_iterator first, const_iterator last);
+
+        void swap(vector & x)
+            noexcept(std::allocator_traits<allocator_type>::propagate_on_container_swap::value
+                     || std::allocator_traits<allocator_type>::is_always_equal::value);
+
+        void clear() noexcept;
 
     private:
         template <class InputIterator>
