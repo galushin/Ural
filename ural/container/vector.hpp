@@ -166,6 +166,11 @@ namespace ural
         return ural::equal(x, y);
     }
 
+    friend bool operator<(vector const & x, vector const & y)
+    {
+        return ural::lexicographical_compare(x, y);
+    }
+
     public:
         // Типы
         /// @brief Тип значений
@@ -231,6 +236,7 @@ namespace ural
                allocator_type const & a = allocator_type{})
          : data_(a, n)
         {
+            // @todo Заменить на алгоритм
             for(auto k = n; k > 0; -- k)
             {
                 data_.emplace_back(value);

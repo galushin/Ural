@@ -426,3 +426,21 @@ BOOST_AUTO_TEST_CASE(vector_insert_middle_init_list)
     BOOST_CHECK_EQUAL_COLLECTIONS(v_std.cbegin(), v_std.cend(),
                                   v_ural.cbegin(), v_ural.cend());
 }
+
+BOOST_AUTO_TEST_CASE(vector_operator_less)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+
+    Vector const v1 = {1, 2, 3};
+    Vector const v2 = {1, 2, 3, 4};
+    Vector const v3 = {1, 4, 3, 4};
+
+    BOOST_CHECK(v1 < v2);
+    BOOST_CHECK(v2 < v3);
+    BOOST_CHECK(v1 < v3);
+
+    BOOST_CHECK(!(v1 < v1));
+    BOOST_CHECK(!(v2 < v2));
+    BOOST_CHECK(!(v3 < v3));
+}
