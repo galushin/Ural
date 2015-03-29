@@ -122,6 +122,28 @@ BOOST_AUTO_TEST_CASE(vector_copy_constructor)
                                   u.begin(), u.end());
 }
 
+BOOST_AUTO_TEST_CASE(vector_move_constructor)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+
+    auto const n = Vector::size_type(5);
+    auto const t = Vector::value_type(42);
+
+    Vector x(n, t);
+
+    auto const x_old = x;
+    auto const old_data = x.data();
+
+    Vector const x1(std::move(x));
+
+    BOOST_CHECK_EQUAL(old_data, x1.data());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_old.cbegin(), x_old.cend(),
+                                  x1.begin(), x1.end());
+    BOOST_CHECK(x.empty());
+}
+
 // Таблица 97
 BOOST_AUTO_TEST_CASE(vector_table_97)
 {

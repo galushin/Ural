@@ -73,7 +73,16 @@ namespace ural
 
         }
 
-        buffer(buffer && x);
+        buffer(buffer && x)
+         : Alloc(std::move(static_cast<Alloc&>(x)))
+         , begin_(x.begin_)
+         , end_(x.end_)
+         , storage_end_(x.storage_end_)
+        {
+            x.begin_ = nullptr;
+            x.end_ = nullptr;
+            x.storage_end_ = nullptr;
+        }
 
         buffer & operator=(buffer const & x);
         buffer & operator=(buffer && x);
@@ -268,7 +277,15 @@ namespace ural
         */
         vector(vector const & xs) = default;
 
-        vector(vector && x) noexcept;
+        /** @brief Конструктор перемещения
+        @param x вектор, содержимое которого должно быть перемещено
+        @post <tt> *this </tt> будет иметь то же значение, что было у @c x
+        перед выполнением конструктора
+        */
+        vector(vector && x) noexcept
+         : data_(std::move(x.data_))
+        {}
+
         vector(vector const & xs, allocator_type const & a);
         vector(vector && x, allocator_type const & a) noexcept;
 
@@ -412,10 +429,8 @@ namespace ural
 
                 new_buffer.swap(data_);
             }
-            else if(n > this->size())
-            {
-                // @todo Обработать этот случай
-            }
+
+            // Согласно 23.6.3.3 абзац 3 уменьшение ёмкости произойти не может
         }
 
         void shrink_to_fit();
