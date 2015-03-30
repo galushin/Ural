@@ -109,6 +109,9 @@ BOOST_AUTO_TEST_CASE(vector_copy_constructor)
     Vector x(n, t);
 
     // Строка 10
+    BOOST_CHECK(x == Vector(x));
+
+    // Строка 11
     Vector u(x);
 
     BOOST_CHECK_NE(u.begin(), x.begin());
@@ -135,6 +138,7 @@ BOOST_AUTO_TEST_CASE(vector_move_constructor)
     auto const x_old = x;
     auto const old_data = x.data();
 
+    // Строка 11
     Vector const x1(std::move(x));
 
     BOOST_CHECK_EQUAL(old_data, x1.data());
@@ -143,6 +147,38 @@ BOOST_AUTO_TEST_CASE(vector_move_constructor)
                                   x1.begin(), x1.end());
     BOOST_CHECK(x.empty());
 }
+
+BOOST_AUTO_TEST_CASE(vector_move_assign)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+
+    auto x = Vector{1, 2, 3, 4, 5};
+    auto const x_old = x;
+
+    auto y = Vector(5, 2);
+    auto const y_old = y;
+
+    auto const x_data_old = x.data();
+    auto const y_data_old = y.data();
+
+    // Строка 12
+    y = std::move(x);
+
+    typedef decltype(y = std::move(x)) Result_type;
+
+    static_assert(std::is_same<Result_type, Vector&>::value,
+                  "must be reference to vector");
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), y_old.begin(), y_old.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(y.begin(), y.end(), x_old.begin(), x_old.end());
+    BOOST_CHECK_EQUAL(x.data(), y_data_old);
+    BOOST_CHECK_EQUAL(y.data(), x_data_old);
+}
+
+// @todo Тест строки 12 для случая, когда вектор не может передать владение
+
+// Таблица 96 строка 13 требует наличия деструктора, это тривиально
 
 // Таблица 97
 BOOST_AUTO_TEST_CASE(vector_table_97)

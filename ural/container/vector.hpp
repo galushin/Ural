@@ -105,7 +105,24 @@ namespace ural
         }
 
         buffer & operator=(buffer const & x);
-        buffer & operator=(buffer && x);
+
+        /**
+        @todo Добавить noexcept
+        @todo Использовать Traits::is_always_equal
+        */
+        buffer & operator=(buffer && x)
+        {
+            static_assert(Traits::propagate_on_container_move_assignment::value, "");
+
+            this->allocator_ref() = x.allocator_ref();
+
+            using std::swap;
+            swap(this->begin_ref(), x.begin_ref());
+            swap(this->end_ref(), x.end_ref());
+            swap(this->storage_end_ref(), x.storage_end_ref());
+
+            return *this;
+        }
 
         ~buffer()
         {
@@ -330,7 +347,7 @@ namespace ural
         */
         template <class InputIterator>
         vector(InputIterator first, InputIterator last,
-               allocator_type const & a = allocator_type())
+               typename disable_if<std::is_integral<InputIterator>::value, allocator_type const &>::type a = allocator_type())
          : vector(a)
         {
             static_assert(std::is_integral<InputIterator>::value == false, "");
@@ -371,9 +388,14 @@ namespace ural
 
         vector & operator=(vector const & xs) = default;
 
+        /** @todo Добавить в noexcept: || std::allocator_traits<allocator_type>::is_always_equal::value
+        */
         vector & operator=(vector && x)
-            noexcept(std::allocator_traits<allocator_type>::propagate_on_container_move_assignment::value
-                     || std::allocator_traits<allocator_type>::is_always_equal::value);
+            noexcept(std::allocator_traits<allocator_type>::propagate_on_container_move_assignment::value)
+        {
+            data_ = std::move(x.data_);
+            return *this;
+        }
 
         vector & operator=(std::initializer_list<value_type> values);
 
