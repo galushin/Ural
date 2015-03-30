@@ -466,3 +466,18 @@ BOOST_AUTO_TEST_CASE(vector_operator_less)
     BOOST_CHECK(!(v2 < v2));
     BOOST_CHECK(!(v3 < v3));
 }
+
+// Качество реализации
+BOOST_AUTO_TEST_CASE(vector_optimize_empty_allocator)
+{
+    typedef std::string T;
+    typedef std::allocator<T> Alloc;
+    typedef ural::vector<T, Alloc> Vector;
+
+    static_assert(std::is_empty<Alloc>::value, "");
+
+    static_assert(sizeof(Vector) == 3 * sizeof(T*), "");
+    BOOST_CHECK_EQUAL(sizeof(Vector), 3 * sizeof(T*));
+
+    BOOST_CHECK(true);
+}

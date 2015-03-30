@@ -40,19 +40,19 @@ namespace ural
             assert(std::addressof(x.allocator_ref()) == std::addressof(y.allocator_ref()));
 
             using std::swap;
-            swap(x.begin_, y.begin_);
-            swap(x.end_, y.end_);
-            swap(x.storage_end_, y.storage_end_);
+            static_assert(std::tuple_size<decltype(x.members_)>::value == 4, "");
+            static_assert(std::tuple_size<decltype(y.members_)>::value == 4, "");
+
+            swap(x.members_[ural::_1], y.members_[ural::_1]);
+            swap(x.members_[ural::_2], y.members_[ural::_2]);
+            swap(x.members_[ural::_3], y.members_[ural::_3]);
+            swap(x.members_[ural::_4], y.members_[ural::_4]);
         }
     };
 
     /** @brief Минималистичный буфер
     @tparam T тип элементов
     @tparam Alloc тип распределителя памяти
-    @todo Поддержка ссылок на распределители памяти в качестве шаблонного
-    параметра
-    @todo Тест оптимизации пустого распределителя памяти - размер контейнера
-    с пустым распределителем памяти должен быть равен размеру трёх указателей
     */
     template <class T, class Alloc>
     class buffer
@@ -68,20 +68,24 @@ namespace ural
         typedef typename Traits::size_type size_type;
 
         // Создание, копирование, уничтожение
+        /**
+        @todo Можно ли избавиться от лишних инициализаций или убедиться, что
+        оптимизатор их устраняет
+        */
         buffer(Alloc const & a, size_type capacity = 0)
-         : alloc_(a)
+         : members_(a, nullptr, nullptr, nullptr)
         {
             if(capacity > 0)
             {
-                begin_ = Traits::allocate(this->allocator_ref(), capacity);
+                this->begin_ref() = Traits::allocate(this->allocator_ref(), capacity);
             }
             else
             {
-                begin_ = nullptr;
+                this->begin_ref() = nullptr;
             }
 
-            end_ = begin_;
-            storage_end_ = begin_ + capacity;
+            this->end_ref() = this->begin();
+            this->storage_end_ref() = this->begin() + capacity;
         }
 
         buffer(buffer const & xs)
@@ -91,14 +95,13 @@ namespace ural
         }
 
         buffer(buffer && x)
-         : alloc_(std::move(x.allocator_ref()))
-         , begin_(x.begin_)
-         , end_(x.end_)
-         , storage_end_(x.storage_end_)
+         : members_(std::move(x.members_))
         {
-            x.begin_ = nullptr;
-            x.end_ = nullptr;
-            x.storage_end_ = nullptr;
+            // @todo обёртка для встроенных указателей, реализующая правильные
+            // операции перемещения?
+            x.begin_ref() = nullptr;
+            x.end_ref() = nullptr;
+            x.storage_end_ref() = nullptr;
         }
 
         buffer & operator=(buffer const & x);
@@ -116,23 +119,17 @@ namespace ural
             return Alloc(*this);
         }
 
-        void swap(buffer & x)
-        {
-            // @todo swap с функцией проекцией swap_member
-            std::swap(this->begin_, x.begin_);
-            std::swap(this->end_, x.end_);
-            std::swap(this->storage_end_, x.storage_end_);
-        }
+        void swap(buffer & x);
 
         // Итераторы
         pointer begin() const
         {
-            return this->begin_;
+            return this->members_[ural::_2];
         }
 
         pointer end() const
         {
-            return this->end_;
+            return this->members_[ural::_3];
         }
 
         // Размер и ёмкость
@@ -143,7 +140,7 @@ namespace ural
 
         size_type capacity() const
         {
-            return this->storage_end_ - this->begin();
+            return this->members_[ural::_4]- this->begin();
         }
 
         void reserve(size_type n)
@@ -177,10 +174,11 @@ namespace ural
         template <class... Args>
         void emplace_back(Args && ... args)
         {
-            assert(end_ != storage_end_);
+            assert(this->end_ref() != this->storage_end_ref());
 
-            Traits::construct(this->allocator_ref(), end_, std::forward<Args>(args)...);
-            ++ end_;
+            Traits::construct(this->allocator_ref(), this->end(),
+                              std::forward<Args>(args)...);
+            ++ this->end_ref();
         }
 
         // Удаление элементов
@@ -190,27 +188,39 @@ namespace ural
 
             for(; n > 0; -- n)
             {
-                -- end_;
-                Traits::destroy(this->allocator_ref(), end_);
+                -- this->end_ref();
+                Traits::destroy(this->allocator_ref(), this->end());
             }
         }
 
     private:
+        pointer & begin_ref()
+        {
+            return members_[ural::_2];
+        }
+
+        pointer & end_ref()
+        {
+            return members_[ural::_3];
+        }
+
+        pointer & storage_end_ref()
+        {
+            return members_[ural::_4];
+        }
+
         allocator_type & allocator_ref()
         {
-            return this->alloc_;
+            return members_[ural::_1];
         }
 
         allocator_type const & allocator_ref() const
         {
-            return this->alloc_;
+            return members_[ural::_1];
         }
 
     private:
-        Alloc alloc_;
-        pointer begin_;
-        pointer end_;
-        pointer storage_end_;
+        tuple<allocator_type, pointer, pointer, pointer> members_;
     };
 
     /** @c vector --- это последовательный контейнер, который предоставляет
