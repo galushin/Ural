@@ -29,29 +29,51 @@
 
 namespace ural
 {
+    template <class T, class Alloc>
+    class buffer;
+
+    struct buffer_swapper
+    {
+        template <class T, class A>
+        void operator()(buffer<T, A> & x, buffer<T, A&> & y)
+        {
+            assert(std::addressof(x.allocator_ref()) == std::addressof(y.allocator_ref()));
+
+            using std::swap;
+            swap(x.begin_, y.begin_);
+            swap(x.end_, y.end_);
+            swap(x.storage_end_, y.storage_end_);
+        }
+    };
+
     /** @brief Минималистичный буфер
     @tparam T тип элементов
     @tparam Alloc тип распределителя памяти
     @todo Поддержка ссылок на распределители памяти в качестве шаблонного
     параметра
+    @todo Тест оптимизации пустого распределителя памяти - размер контейнера
+    с пустым распределителем памяти должен быть равен размеру трёх указателей
     */
     template <class T, class Alloc>
     class buffer
-     : private Alloc
     {
-        typedef std::allocator_traits<Alloc> Traits;
+        typedef std::allocator_traits<typename std::remove_reference<Alloc>::type> Traits;
+        friend class buffer_swapper;
+
     public:
         // Типы
+        typedef Alloc allocator_type;
+        typedef typename Traits::value_type value_type;
         typedef typename Traits::pointer pointer;
         typedef typename Traits::size_type size_type;
 
         // Создание, копирование, уничтожение
         buffer(Alloc const & a, size_type capacity = 0)
-         : Alloc(a)
+         : alloc_(a)
         {
             if(capacity > 0)
             {
-                begin_ = Traits::allocate(*this, capacity);
+                begin_ = Traits::allocate(this->allocator_ref(), capacity);
             }
             else
             {
@@ -63,18 +85,13 @@ namespace ural
         }
 
         buffer(buffer const & xs)
-         : buffer(Traits::select_on_container_copy_construction(xs), xs.capacity())
+         : buffer(Traits::select_on_container_copy_construction(xs.allocator_ref()), xs.capacity())
         {
-            // @todo заменить на алгоритм
-            for(auto const & x : xs)
-            {
-                this->emplace_back(x);
-            }
-
+            ural::copy(xs, *this | ural::back_inserter);
         }
 
         buffer(buffer && x)
-         : Alloc(std::move(static_cast<Alloc&>(x)))
+         : alloc_(std::move(x.allocator_ref()))
          , begin_(x.begin_)
          , end_(x.end_)
          , storage_end_(x.storage_end_)
@@ -91,7 +108,7 @@ namespace ural
         {
             this->pop_back(this->size());
 
-            Traits::deallocate(*this, this->begin(), this->capacity());
+            Traits::deallocate(this->allocator_ref(), this->begin(), this->capacity());
         }
 
         Alloc get_allocator() const
@@ -123,18 +140,46 @@ namespace ural
         {
             return this->end() - this->begin();
         }
+
         size_type capacity() const
         {
             return this->storage_end_ - this->begin();
         }
 
+        void reserve(size_type n)
+        {
+            // Согласно 23.6.3.3 абзац 3, уменьшение ёмкости произойти не может
+            if(n <= this->capacity())
+            {
+                return;
+            }
+
+            buffer<value_type, allocator_type &>
+                new_buffer(this->allocator_ref(), n);
+
+            // @todo заменить на алгоритм
+            for(auto & x : *this)
+            {
+                new_buffer.emplace_back(std::move(x));
+            }
+
+            buffer_swapper{}(*this, new_buffer);
+        }
+
         // Добавление элементов
+        void push_back(value_type const & x)
+        {
+            this->emplace_back(x);
+        }
+
+        void push_back(value_type && x);
+
         template <class... Args>
         void emplace_back(Args && ... args)
         {
             assert(end_ != storage_end_);
 
-            Traits::construct(*this, end_, std::forward<Args>(args)...);
+            Traits::construct(this->allocator_ref(), end_, std::forward<Args>(args)...);
             ++ end_;
         }
 
@@ -146,11 +191,23 @@ namespace ural
             for(; n > 0; -- n)
             {
                 -- end_;
-                Traits::destroy(*this, end_);
+                Traits::destroy(this->allocator_ref(), end_);
             }
         }
 
     private:
+        allocator_type & allocator_ref()
+        {
+            return this->alloc_;
+        }
+
+        allocator_type const & allocator_ref() const
+        {
+            return this->alloc_;
+        }
+
+    private:
+        Alloc alloc_;
         pointer begin_;
         pointer end_;
         pointer storage_end_;
@@ -413,24 +470,7 @@ namespace ural
 
         void reserve(size_type n)
         {
-            if(n > this->capacity())
-            {
-                typedef std::allocator_traits<allocator_type> ATraits;
-                typedef buffer<value_type, allocator_type> Buffer;
-
-                // @todo не копировать распределитель памяти
-                Buffer new_buffer(this->get_allocator(), n);
-
-                // @todo заменить на алгоритм
-                for(auto & x : *this)
-                {
-                    new_buffer.emplace_back(std::move(x));
-                }
-
-                new_buffer.swap(data_);
-            }
-
-            // Согласно 23.6.3.3 абзац 3 уменьшение ёмкости произойти не может
+            data_.reserve(n);
         }
 
         void shrink_to_fit();
