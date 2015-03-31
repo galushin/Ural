@@ -615,3 +615,105 @@ BOOST_AUTO_TEST_CASE(vector_optimize_empty_allocator)
 
     BOOST_CHECK(true);
 }
+
+BOOST_AUTO_TEST_CASE(vector_resize_grow)
+{
+    typedef std::string T;
+    typedef ural::vector<T> Vector;
+
+    auto const n0 = 5;
+    auto const s0 = T("tree");
+    auto const dn = 7;
+
+    Vector x(n0, s0);
+
+    x.resize(x.size() + dn, s0);
+
+    Vector const z(x.size(), s0);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
+}
+
+BOOST_AUTO_TEST_CASE(vector_resize_shrink)
+{
+    typedef std::string T;
+    typedef ural::vector<T> Vector;
+
+    auto const s0 = T("tree");
+
+    Vector x = {"one", "two", "three", "four", "five"};
+
+    auto const new_size = x.size() / 2;
+
+    BOOST_CHECK_LE(new_size, x.size());
+
+    auto const z = Vector(x.begin(), x.begin() + new_size);
+
+    x.resize(new_size, s0);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
+}
+
+BOOST_AUTO_TEST_CASE(vector_resize_same_size)
+{
+    typedef std::string T;
+    typedef ural::vector<T> Vector;
+
+    auto const s0 = T("tree");
+
+    Vector x = {"one", "two", "three", "four", "five"};
+    auto const x_old = x;
+
+    x.resize(x.size(), s0);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), x_old.begin(), x_old.end());
+}
+
+BOOST_AUTO_TEST_CASE(vector_resize_grow_default)
+{
+    typedef std::string T;
+    typedef ural::vector<T> Vector;
+
+    auto const n0 = 5;
+    auto const s0 = T{};
+    auto const dn = 7;
+
+    Vector x(n0, s0);
+
+    x.resize(x.size() + dn);
+
+    Vector const z(x.size(), s0);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
+}
+
+BOOST_AUTO_TEST_CASE(vector_resize_shrink_default)
+{
+    typedef std::string T;
+    typedef ural::vector<T> Vector;
+
+    Vector x = {"one", "two", "three", "four", "five"};
+
+    auto const new_size = x.size() / 2;
+
+    BOOST_CHECK_LE(new_size, x.size());
+
+    auto const z = Vector(x.begin(), x.begin() + new_size);
+
+    x.resize(new_size);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
+}
+
+BOOST_AUTO_TEST_CASE(vector_resize_same_size_default)
+{
+    typedef std::string T;
+    typedef ural::vector<T> Vector;
+
+    Vector x = {"one", "two", "three", "four", "five"};
+    auto const x_old = x;
+
+    x.resize(x.size());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), x_old.begin(), x_old.end());
+}

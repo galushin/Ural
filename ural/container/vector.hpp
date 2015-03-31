@@ -559,8 +559,41 @@ namespace ural
 
         size_type max_size() const noexcept;
 
-        void resize(size_type new_size);
-        void resize(size_type new_size, value_type const & c);
+        void resize(size_type new_size)
+        {
+            if(new_size < this->size())
+            {
+                this->erase(this->cbegin() + new_size, this->cend());
+            }
+            else
+            {
+                this->reserve(new_size);
+
+                // @todo Выделить алгоритм
+                for(auto dn = new_size - this->size(); dn > 0; -- dn)
+                {
+                    this->emplace_back();
+                }
+            }
+        }
+
+        void resize(size_type new_size, value_type const & c)
+        {
+            if(new_size < this->size())
+            {
+                this->erase(this->cbegin() + new_size, this->cend());
+            }
+            else
+            {
+                this->reserve(new_size);
+
+                // @todo Выделить алгоритм
+                for(auto dn = new_size - this->size(); dn > 0; -- dn)
+                {
+                    this->push_back(c);
+                }
+            }
+        }
 
         /** @brief Ёмкость контейнера
         @return Ёмкость контейнера, то есть количество элементов которое он
