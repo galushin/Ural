@@ -284,6 +284,20 @@ BOOST_AUTO_TEST_CASE(vector_construct_from_init_list)
                                   x_std.begin(), x_std.end());
 }
 
+BOOST_AUTO_TEST_CASE(vector_clear_test)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+
+    Vector x = {1, 3, 5, 7, 9};
+
+    BOOST_CHECK(!x.empty());
+
+    x.clear();
+
+    BOOST_CHECK(x.empty());
+}
+
 BOOST_AUTO_TEST_CASE(vector_assign_operator_init_list_shrink)
 {
     typedef int T;

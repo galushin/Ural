@@ -833,7 +833,16 @@ namespace ural
             noexcept(std::allocator_traits<allocator_type>::propagate_on_container_swap::value
                      || std::allocator_traits<allocator_type>::is_always_equal::value);
 
-        void clear() noexcept;
+        /** @brief Уничтожение всех элементов контейнера
+        @post <tt> this->empty() </tt>
+        @post Делает недействительными все ссылки, указатели и итераторы,
+        ссылающиеся на элементы контейнера, может также сделать недействительным
+        итератор конца контейнера
+        */
+        void clear() noexcept
+        {
+            this->erase(this->cbegin(), this->cend());
+        }
 
     private:
         template <class InputIterator>
