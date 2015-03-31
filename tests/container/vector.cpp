@@ -485,6 +485,23 @@ BOOST_AUTO_TEST_CASE(vector_insert_middle_init_list)
                                   v_ural.cbegin(), v_ural.cend());
 }
 
+BOOST_AUTO_TEST_CASE(vector_erase_one)
+{
+    ural::vector<int> x = {1, 2, -3, 3, 4, 5};
+
+    auto const index = 2;
+    auto const pos = x.cbegin() + index;
+
+    BOOST_CHECK_EQUAL(*pos, -3);
+
+    auto result = x.erase(pos);
+
+    BOOST_CHECK_EQUAL(result - x.cbegin(), index);
+
+    ural::vector<int> const z = {1, 2, 3, 4, 5};
+    BOOST_CHECK_EQUAL_COLLECTIONS(x.cbegin(), x.cend(), z.begin(), z.end());
+}
+
 BOOST_AUTO_TEST_CASE(vector_operator_less)
 {
     typedef int T;

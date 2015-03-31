@@ -723,8 +723,35 @@ namespace ural
             return this->insert(position, begin(values), end(values));
         }
 
-        iterator erase(const_iterator position);
-        iterator erase(const_iterator first, const_iterator last);
+        iterator erase(const_iterator position)
+        {
+            // @todo Проверка через политику
+            return this->erase(position, position+1);
+        }
+
+        iterator erase(const_iterator first, const_iterator last)
+        {
+            // @todo Проверка через политику
+
+            // 1. Переходим к неконстантным итераторам
+            auto const result = this->begin() + (first - this->cbegin());
+            auto sink = result;
+            auto source = this->begin() + (last - this->cbegin());
+            auto const stop = this->cend();
+
+            // 2. Перемещаем последние элементы на места удаляемых
+            // @todo заменить на алгоритм
+            for(; source != stop; ++source)
+            {
+                *sink = std::move_if_noexcept(*source);
+                ++ sink;
+            }
+
+            // 3. Удаляем последние элементы
+            data_.pop_back(this->end() - sink);
+
+            return result;
+        }
 
         void swap(vector & x)
             noexcept(std::allocator_traits<allocator_type>::propagate_on_container_swap::value
