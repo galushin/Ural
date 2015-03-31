@@ -234,18 +234,6 @@ BOOST_AUTO_TEST_CASE(vector_n_copies_of_t)
     }
 }
 
-BOOST_AUTO_TEST_CASE(vector_construct_from_init_list)
-{
-    typedef int T;
-    typedef ural::vector<T> Vector;
-
-    std::vector<T> const x_std = {1, 2, 3, 4, 5};
-    Vector const x_ural = {1, 2, 3, 4, 5};
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_ural.begin(), x_ural.end(),
-                                  x_std.begin(), x_std.end());
-}
-
 BOOST_AUTO_TEST_CASE(vector_construct_from_input_iterators)
 {
     typedef int T;
@@ -279,6 +267,85 @@ BOOST_AUTO_TEST_CASE(vector_construct_from_forward_iterators)
     Vector const x(z.begin(), z.end());
 
     BOOST_CHECK_EQUAL(Alloc::allocations_count(), 1U);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(),
+                                  z.begin(), z.end());
+}
+
+BOOST_AUTO_TEST_CASE(vector_construct_from_init_list)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+
+    std::vector<T> const x_std = {1, 2, 3, 4, 5};
+    Vector const x_ural = {1, 2, 3, 4, 5};
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_ural.begin(), x_ural.end(),
+                                  x_std.begin(), x_std.end());
+}
+
+BOOST_AUTO_TEST_CASE(vector_assign_operator_init_list_shrink)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+
+    Vector const z = {1, 3, 5, 7, 9};
+    Vector x(z.size() * 2 + 13, 42);
+
+    BOOST_CHECK_LE(z.size(), x.size());
+
+    x = {1, 3, 5, 7, 9};
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
+}
+
+BOOST_AUTO_TEST_CASE(vector_assign_operator_init_list_grow)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+
+    Vector const z = {1, 3, 5, 7, 9};
+    Vector x(z.size() / 2, 42);
+
+    BOOST_CHECK_GE(z.size(), x.size());
+
+    x = {1, 3, 5, 7, 9};
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
+}
+
+BOOST_AUTO_TEST_CASE(vector_assign_operator_init_list_exact)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+
+    Vector const z = {1, 3, 5, 7, 9};
+    Vector x(z.size(), 42);
+
+    BOOST_CHECK_GE(z.size(), x.size());
+
+    x = {1, 3, 5, 7, 9};
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
+}
+
+BOOST_AUTO_TEST_CASE(vector_assign_input_iterators)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+
+    std::istringstream is("1 2 3 4 5");
+    Vector const z{1, 2, 3, 4, 5};
+
+    auto first = std::istream_iterator<T>(is);
+    auto last = std::istream_iterator<T>();
+
+    Vector x(3, 42);
+
+    BOOST_CHECK(x != z);
+    BOOST_CHECK_LE(x.size(), z.size());
+
+    x.assign(first, last);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(),
                                   z.begin(), z.end());

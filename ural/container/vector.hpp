@@ -386,9 +386,17 @@ namespace ural
         /// @brief Деструктор
         ~vector() = default;
 
+        /** @brief Оператор копирующего присваивания
+        @param xs присваеваемое значение
+        @post <tt> *this == xs </tt>
+        */
         vector & operator=(vector const & xs) = default;
 
-        /** @todo Добавить в noexcept: || std::allocator_traits<allocator_type>::is_always_equal::value
+        /** @brief Оператор присваивания с перемещением
+        @param x объект, содержимое которого будет перемещено в данный объект
+        @post <tt> *this </tt> будет равен значению, которое @c x имел до
+        вызова оператора
+        @todo Добавить в noexcept: || std::allocator_traits<allocator_type>::is_always_equal::value
         */
         vector & operator=(vector && x)
             noexcept(std::allocator_traits<allocator_type>::propagate_on_container_move_assignment::value)
@@ -397,14 +405,62 @@ namespace ural
             return *this;
         }
 
-        vector & operator=(std::initializer_list<value_type> values);
+        /** @brief Присваивание значений из списка инициализаторов
+        @param values список инициализаторов
+        @post <tt> *this == vector(values) </tt>
+        @return <tt> *this </tt>
+        */
+        vector & operator=(std::initializer_list<value_type> values)
+        {
+            this->assign(values);
+            return *this;
+        }
 
+        /** @brief Заменяет элементы контейнера на копии элементов интервала
+        <tt> [first; last) </tt>
+        @param first итератор, задающий начало интервала
+        @param last итератор, задающий конец интервала
+        @pre @c first и @c last не должны быть итераторами <tt> *this </tt>
+        @post <tt> *this == vector(first, last) </tt>
+        */
         template <class InputIterator>
-        void assign(InputIterator first, InputIterator last);
+        void assign(InputIterator first, InputIterator const last)
+        {
+            // @todo Проверки
+
+            auto sink = this->begin();
+            auto const stop = this->end();
+
+            // @todo Выделить алгоритм
+            for(; sink != stop && first != last; ++sink, ++ first)
+            {
+                *sink = *first;
+            }
+
+            if(first == last)
+            {
+                this->erase(sink, stop);
+            }
+            else
+            {
+                this->insert(stop, first, last);
+            }
+        }
 
         void assign(size_type n, value_type const & value);
-        void assign(std::initializer_list<value_type> values);
 
+        /** @brief Присваивание значений из списка инициализаторов
+        @param values список инициализаторов
+        @post <tt> *this == vector(values) </tt>
+        */
+        void assign(std::initializer_list<value_type> values)
+        {
+            return this->assign(values.begin(), values.end());
+        }
+
+        /** @brief Используемый распределитель памяти
+        @return Копия используемого данным контейнером распределителя памяти
+        */
         allocator_type get_allocator() const
         {
             return data_.get_allocator();
@@ -412,6 +468,9 @@ namespace ural
 
         // Итераторы
         //@{
+        /** @brief Итератор начала контейнера
+        @return Итератор, ссылающийся на первый элемент контейнера
+        */
         iterator begin() noexcept
         {
             return iterator(data_.begin());
@@ -429,6 +488,10 @@ namespace ural
         //@}
 
         //@{
+        /** @brief Итератор конца контейнера
+        @return Итератор, указывающий на область памяти сразу за последним
+        элементом контейнера
+        */
         iterator end() noexcept
         {
             return iterator(data_.end());
@@ -446,6 +509,9 @@ namespace ural
         //@}
 
         //@{
+        /** @brief Начальный итератор обратного обхода контейнера
+        @return <tt> reverse_iterator(this->end()) </tt>
+        */
         reverse_iterator rbegin() noexcept
         {
             return reverse_iterator(this->end());
@@ -463,6 +529,9 @@ namespace ural
         //@}
 
         //@{
+        /** @brief Конечный итератор обратного обхода контейнера
+        @return <tt> reverse_iterator(this->begin()) </tt>
+        */
         reverse_iterator rend() noexcept
         {
             return reverse_iterator(this->begin());
@@ -480,6 +549,9 @@ namespace ural
         //@}
 
         // 23.3.6.3 Размер и ёмкость
+        /** @brief Размер, то есть количество элементов, находящихся в контейнере
+        @return <tt> std::distance(this->begin(), this->end()) </tt>
+        */
         size_type size() const noexcept
         {
             return std::distance(this->begin(), this->end());
@@ -490,6 +562,10 @@ namespace ural
         void resize(size_type new_size);
         void resize(size_type new_size, value_type const & c);
 
+        /** @brief Ёмкость контейнера
+        @return Ёмкость контейнера, то есть количество элементов которое он
+        может вместить без перераспределения памяти
+        */
         size_type capacity() const noexcept
         {
             return data_.capacity();
