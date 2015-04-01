@@ -172,7 +172,7 @@ namespace ural
         @pre <tt> [first; last) </tt> должен быть допустимым интервалом
         */
         explicit iterator_sequence(Iterator first, Iterator last)
-         : members_{Front_type{std::move(first)}, Back_type{std::move(last)}}
+         : members_{Front_type{(first)}, Back_type{(last)}}
         {}
 
         /** @brief Проверка исчерпания последовательности
@@ -192,7 +192,7 @@ namespace ural
         {
             policy_type::assert_not_empty(*this);
 
-            return *this->begin();
+            return *ural::get(this->members_[ural::_1]);
         }
 
         /** @brief Доступ к членам первого элемента последовательности
@@ -210,7 +210,7 @@ namespace ural
         void pop_front()
         {
             policy_type::assert_not_empty(*this);
-            ++ ural::get(members_.first());
+            ++ ural::get(ural::get(members_, ural::_1));
         }
 
         // Многопроходная прямая последовательность
@@ -226,7 +226,7 @@ namespace ural
         /// @brief Отбросить переднюю пройденную часть последовательности
         void shrink_front()
         {
-            members_.first().commit();
+            members_[ural::_1].commit();
         }
 
         /** @brief Полная последовательность (включая пройденные части)
@@ -246,7 +246,7 @@ namespace ural
         void pop_back()
         {
             policy_type::assert_not_empty(*this);
-            -- ural::get(members_.second());
+            -- ural::get(members_[ural::_2]);
         }
 
         /** @brief Доступ к последнему непройденному элементу последовательности
@@ -273,7 +273,7 @@ namespace ural
         /// @brief Отбросить заднюю пройденную часть последовательности
         void shrink_back()
         {
-            members_.second().commit();
+            members_[ural::_2].commit();
         }
 
         // Последовательность произвольного доступа
@@ -307,7 +307,7 @@ namespace ural
         {
             policy_type::check_step(*this, n);
 
-            ural::get(members_.first()) += n;
+            ural::get(members_[ural::_1]) += n;
             return *this;
         }
 
@@ -321,7 +321,7 @@ namespace ural
             policy_type::check_step(*this, n);
             assert(n >= 0);
 
-            ural::get(members_.second()) -= n;
+            ural::get(members_[ural::_2]) -= n;
         }
 
         // Итераторы
@@ -329,34 +329,34 @@ namespace ural
         @return Итератор, соответствующий первому непройденному элементу
         последовательности
         */
-        iterator begin() const
+        iterator const & begin() const
         {
-            return ural::get(members_.first());
+            return ural::get(ural::get(members_, ural::_1));
         }
 
         /** @brief Конец последовательности
         @return Итератор на элемент, следующий за последним непройденным
         элементом последовательности
         */
-        iterator end() const
+        iterator const & end() const
         {
-            return ural::get(members_.second());
+            return ural::get(ural::get(members_, ural::_2));
         }
 
         /** @brief Начало исходной последовательности
         @return Итератор, задающий начало исходной последовательности
         */
-        iterator traversed_begin() const
+        iterator const & traversed_begin() const
         {
-            return members_.first().old_value();
+            return ural::get(members_, ural::_1).old_value();
         }
 
         /** @brief Конец исходной последовательности
         @return Итератор, задающий конец исходной последовательности
         */
-        iterator traversed_end() const
+        iterator const & traversed_end() const
         {
-            return members_.second().old_value();
+            return members_[ural::_2].old_value();
         }
 
         friend iterator begin(iterator_sequence const & s)
@@ -382,7 +382,7 @@ namespace ural
         typedef typename std::conditional<is_bidirectional, with_old_value<iterator>, iterator>::type
             Back_type;
 
-        typedef boost::compressed_pair<Front_type, Back_type> Members;
+        typedef tuple<Front_type, Back_type> Members;
 
     public:
         Members const & members() const
@@ -402,8 +402,7 @@ namespace ural
     bool operator==(iterator_sequence<Iterator1, P1> const & x,
                     iterator_sequence<Iterator2, P2> const & y)
     {
-        return x.members().first() == y.members().first()
-                && x.members().second() == y.members().second();
+        return x.members() == y.members();
     }
 
     /** @brief Функция создания @c iterator_sequence

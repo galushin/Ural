@@ -520,8 +520,8 @@ BOOST_AUTO_TEST_CASE(iterator_sequence_iterators)
     auto const s1 = ural::sequence(v1);
     auto const s2 = ural::sequence(v2);
 
-    static_assert(std::is_same<decltype(s1.begin()), Container::iterator>::value, "");
-    static_assert(std::is_same<decltype(s2.begin()), Container::const_iterator>::value, "");
+    static_assert(std::is_convertible<decltype(s1.begin()), Container::iterator>::value, "");
+    static_assert(std::is_convertible<decltype(s2.begin()), Container::const_iterator>::value, "");
 
     BOOST_CHECK(s1.begin() == v1.begin());
     BOOST_CHECK(s1.end() == v1.end());
@@ -676,4 +676,24 @@ BOOST_AUTO_TEST_CASE(to_map_additional_parameters)
     static_assert(std::is_same<Compare, decltype(f1)::key_compare>::value, "");
 
     BOOST_CHECK(true);
+}
+
+BOOST_AUTO_TEST_CASE(iterator_sequence_for_istream_iterator_regression)
+{
+    std::vector<int> const z{11, 11, 22, 33, 55};
+
+    std::ostringstream os;
+    ural::copy(z, ural::make_ostream_sequence(os, " "));
+
+    std::istringstream is(os.str());
+
+    auto first = std::istream_iterator<int>(is);
+    auto last = std::istream_iterator<int>();
+
+    auto seq = ural::make_iterator_sequence(first, last);
+
+    std::vector<int> x;
+    ural::copy(seq, x | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
 }
