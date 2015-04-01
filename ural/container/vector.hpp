@@ -447,7 +447,29 @@ namespace ural
             }
         }
 
-        void assign(size_type n, value_type const & value);
+        void assign(size_type n, value_type const & value)
+        {
+            // @todo Проверки
+
+            auto sink = this->begin();
+            auto const stop = this->end();
+
+            // @todo Выделить алгоритм
+            // @todo Устранить дублирование
+            for(; sink != stop && n > 0; ++ sink, -- n)
+            {
+                *sink = value;
+            }
+
+            if(n == 0)
+            {
+                this->erase(sink, stop);
+            }
+            else
+            {
+                this->insert(this->cend(), n, value);
+            }
+        }
 
         /** @brief Присваивание значений из списка инициализаторов
         @param values список инициализаторов
@@ -795,15 +817,34 @@ namespace ural
             return this->emplace(position, std::move(x));
         }
 
-        iterator insert(const_iterator position, size_type n, value_type const & value);
+        iterator insert(const_iterator position, size_type const n, value_type const & value)
+        {
+            // @todo Проверки
+
+            // Резервируем память
+            auto const index = position - this->cbegin();
+
+            this->reserve(this->size() + n);
+
+            // Вставляем в конец
+            for(auto k = n; k > 0; -- k)
+            {
+                this->push_back(value);
+            }
+
+            // Передвигаем на место новые элементы
+            std::rotate(this->begin() + index, this->end() - n, this->end());
+
+            return this->begin() + index;
+        }
 
         /**
         @pre @c first и @c last не являются итераторами элементов контейнера
         <tt> *this </tt>
         */
         template <class InputIterator>
-        iterator insert(const_iterator position,
-                        InputIterator first, InputIterator last)
+        typename disable_if<std::is_integral<InputIterator>::value, iterator>::type
+        insert(const_iterator position, InputIterator first, InputIterator last)
         {
             typedef typename std::iterator_traits<InputIterator>::iterator_category
                 Category;

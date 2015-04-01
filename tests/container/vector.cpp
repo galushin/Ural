@@ -365,6 +365,75 @@ BOOST_AUTO_TEST_CASE(vector_assign_input_iterators)
                                   z.begin(), z.end());
 }
 
+BOOST_AUTO_TEST_CASE(vector_assign_n_shrink)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+
+    Vector x = {1, 3, 5, 7, 9};
+
+    auto const n1 = x.size() / 2;
+    auto const v1 = T{42};
+
+    x.assign(n1, v1);
+
+    auto const z = Vector(n1, v1);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
+}
+
+BOOST_AUTO_TEST_CASE(vector_assign_n_grow)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+
+    Vector x = {1, 3, 5, 7, 9};
+
+    auto const n1 = x.size() * 2;
+    auto const v1 = T{42};
+
+    x.assign(n1, v1);
+
+    auto const z = Vector(n1, v1);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
+}
+
+BOOST_AUTO_TEST_CASE(vector_assign_n_exact)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+
+    Vector x = {1, 3, 5, 7, 9};
+
+    auto const n1 = x.size();
+    auto const v1 = T{42};
+
+    x.assign(n1, v1);
+
+    auto const z = Vector(n1, v1);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
+}
+
+BOOST_AUTO_TEST_CASE(vector_insert_n)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+
+    Vector x = {1, 3, 5, 7};
+
+    auto const index = x.size() / 2;
+
+    auto const result = x.insert(x.cbegin() + index, 2, 42);
+
+    BOOST_CHECK((result - x.begin()) == index);
+
+    Vector const z = {1, 3, 42, 42, 5, 7};
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
+}
+
 BOOST_AUTO_TEST_CASE(vector_front_test)
 {
     typedef int T;
