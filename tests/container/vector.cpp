@@ -233,6 +233,51 @@ BOOST_AUTO_TEST_CASE(vector_copy_with_other_allocator)
     BOOST_CHECK_EQUAL(alloc.id(), u.get_allocator().id());
 }
 
+BOOST_AUTO_TEST_CASE(vector_move_with_different_allocator)
+{
+    typedef std::string T;
+    typedef ural::tracing_allocator<T> Alloc;
+    typedef ural::vector<T, Alloc> Vector;
+
+    // Строка 7
+    Vector t = {"one", "two", "three", "four", "five"};
+    auto const t_old = t;
+    Vector::allocator_type alloc(42);
+
+    Vector const u(std::move(t), alloc);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(t_old.begin(), t_old.end(),
+                                  u.begin(), u.end());
+    BOOST_CHECK_EQUAL(alloc.id(), u.get_allocator().id());
+
+    for(auto const & s : t)
+    {
+        BOOST_CHECK(s.empty());
+    }
+}
+
+BOOST_AUTO_TEST_CASE(vector_move_with_same_allocator)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+
+    // Строка 7
+    Vector t = {1, 2, 3, 4, 5};
+    auto const t_old = t;
+    Vector::allocator_type alloc;
+
+    auto const t_data_old = t.data();
+
+    Vector const u(std::move(t), alloc);
+
+    BOOST_CHECK_EQUAL(t_data_old, u.data());
+
+    BOOST_CHECK(t.empty());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(t_old.begin(), t_old.end(),
+                                  u.begin(), u.end());
+}
+
 // @todo 23.2.3
 
 BOOST_AUTO_TEST_CASE(vector_n_copies_of_t)

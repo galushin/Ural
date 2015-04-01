@@ -361,6 +361,12 @@ namespace ural
     template <class T, class Alloc = std::allocator<T>>
     class tracing_allocator
     {
+        friend bool operator==(tracing_allocator const & x,
+                               tracing_allocator const & y)
+        {
+            return x.id() == y.id();
+        }
+
         typedef Alloc Base;
 
     public:

@@ -102,6 +102,23 @@ namespace ural
             x.storage_end_ref() = nullptr;
         }
 
+        buffer(buffer && x, allocator_type const & a)
+         : buffer(a, 0)
+        {
+            if(x.allocator_ref() == this->allocator_ref())
+            {
+                using std::swap;
+                swap(this->begin_ref(), x.begin_ref());
+                swap(this->end_ref(), x.end_ref());
+                swap(this->storage_end_ref(), x.storage_end_ref());
+            }
+            else
+            {
+                this->reserve(x.size());
+                ural::move(x, *this | ural::back_inserter);
+            }
+        }
+
         buffer & operator=(buffer const & x);
 
         /**
@@ -433,7 +450,9 @@ namespace ural
             this->assign(xs.begin(), xs.end());
         }
 
-        vector(vector && x, allocator_type const & a) noexcept;
+        vector(vector && x, allocator_type const & a) noexcept
+         : data_(std::move(x.data_), a)
+        {}
 
         /** @brief Конструктор на основе списка инициализаторов
         @param values список инициализаторов
