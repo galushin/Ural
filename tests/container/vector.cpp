@@ -213,7 +213,7 @@ BOOST_AUTO_TEST_CASE(vector_table_97)
 // @todo Таблица 98
 
 // @todo Таблица 99
-BOOST_AUTO_TEST_CASE(vector_copy_with_other_allocator)
+BOOST_AUTO_TEST_CASE(vector_allocator_constructor)
 {
     typedef int T;
     typedef ural::tracing_allocator<T> Alloc;
@@ -222,6 +222,29 @@ BOOST_AUTO_TEST_CASE(vector_copy_with_other_allocator)
     // Строка 1
     static_assert(std::is_same<Vector::allocator_type::value_type,
                                Vector::value_type>::value, "Allocator for wrong type!");
+
+    // Строка 2
+    static_assert(std::is_same<Alloc, decltype(Vector().get_allocator())>::value, "");
+
+    // Строка 3
+    auto const u_0 = Vector();
+
+    BOOST_CHECK(u_0.empty());
+    BOOST_CHECK(u_0.get_allocator() == Alloc());
+
+    // Строка 4
+    Alloc alloc(42);
+    auto const u_1 = Vector(alloc);
+
+    BOOST_CHECK(u_1.empty());
+    BOOST_CHECK(u_1.get_allocator() == alloc);
+}
+
+BOOST_AUTO_TEST_CASE(vector_copy_with_other_allocator)
+{
+    typedef int T;
+    typedef ural::tracing_allocator<T> Alloc;
+    typedef ural::vector<T, Alloc> Vector;
 
     // Строка 5
     Vector const t = {1, 2, 3, 4, 5};
@@ -745,19 +768,27 @@ BOOST_AUTO_TEST_CASE(vector_operator_less)
     BOOST_CHECK(!(v3 < v3));
 }
 
-// Качество реализации
-BOOST_AUTO_TEST_CASE(vector_optimize_empty_allocator)
+// 23.3.6
+BOOST_AUTO_TEST_CASE(vector_construct_size_and_allocator)
 {
     typedef std::string T;
-    typedef std::allocator<T> Alloc;
+    typedef ural::tracing_allocator<T> Alloc;
     typedef ural::vector<T, Alloc> Vector;
 
-    static_assert(std::is_empty<Alloc>::value, "");
+    Alloc alloc(42);
 
-    static_assert(sizeof(Vector) == 3 * sizeof(T*), "");
-    BOOST_CHECK_EQUAL(sizeof(Vector), 3 * sizeof(T*));
+    auto const n = 15U;
 
-    BOOST_CHECK(true);
+    Vector const z(n, alloc);
+
+    BOOST_CHECK_EQUAL(n, z.size());
+    BOOST_CHECK_EQUAL(alloc.id(), z.get_allocator().id());
+
+    auto const empty_str = T{};
+    for(auto const & s : z)
+    {
+        BOOST_CHECK_EQUAL(s, empty_str);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(vector_resize_grow)
@@ -860,4 +891,19 @@ BOOST_AUTO_TEST_CASE(vector_resize_same_size_default)
     x.resize(x.size());
 
     BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), x_old.begin(), x_old.end());
+}
+
+// Качество реализации
+BOOST_AUTO_TEST_CASE(vector_optimize_empty_allocator)
+{
+    typedef std::string T;
+    typedef std::allocator<T> Alloc;
+    typedef ural::vector<T, Alloc> Vector;
+
+    static_assert(std::is_empty<Alloc>::value, "");
+
+    static_assert(sizeof(Vector) == 3 * sizeof(T*), "");
+    BOOST_CHECK_EQUAL(sizeof(Vector), 3 * sizeof(T*));
+
+    BOOST_CHECK(true);
 }

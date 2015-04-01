@@ -387,7 +387,17 @@ namespace ural
          : data_(a)
         {}
 
-        explicit vector(size_type n, allocator_type const & a = allocator_type());
+        /** @brief Создаёт вектор, содержащий @c n элементов, созданных
+        конструктором по умолчанию, с помощью распределителя памяти @c a
+        @param n количество элементов
+        @param a распределитель памяти
+        @pre @c value_type должен быть @c DefaultInsertable для <tt> *this </tt>
+        */
+        explicit vector(size_type n, allocator_type const & a = allocator_type())
+         : data_(a, n)
+        {
+            this->resize(n);
+        }
 
         /** @brief Создание контейнера заданного размера, каждый элемент
         которого равен заданному значению
@@ -827,7 +837,6 @@ namespace ural
             data_.emplace_back(std::forward<Args>(args)...);
         }
 
-        //@{
         void push_back(value_type const & x)
         {
             this->emplace_back(x);
@@ -837,7 +846,6 @@ namespace ural
         {
             this->emplace_back(std::move(x));
         }
-        //@}
 
         /** @brief Уничтожает последний элемент
         @pre <tt> this->empty() == false </tt>
@@ -913,7 +921,10 @@ namespace ural
             return this->begin() + index;
         }
 
-        /**
+        /** @brief Вставка последовательности элементов в середину контейнера
+        @param position итератор, перед которым будут вставлены новые элементы
+        @param first итератор, задающий начало интервала элементов для вставки
+        @param last итератор, задающий конец интервала элементов для вставки
         @pre @c first и @c last не являются итераторами элементов контейнера
         <tt> *this </tt>
         */
