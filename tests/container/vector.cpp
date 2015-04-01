@@ -211,7 +211,27 @@ BOOST_AUTO_TEST_CASE(vector_table_97)
 }
 
 // @todo Таблица 98
+
 // @todo Таблица 99
+BOOST_AUTO_TEST_CASE(vector_copy_with_other_allocator)
+{
+    typedef int T;
+    typedef ural::tracing_allocator<T> Alloc;
+    typedef ural::vector<T, Alloc> Vector;
+
+    // Строка 1
+    static_assert(std::is_same<Vector::allocator_type::value_type,
+                               Vector::value_type>::value, "Allocator for wrong type!");
+
+    // Строка 5
+    Vector const t = {1, 2, 3, 4, 5};
+    Alloc alloc(42);
+
+    Vector const u(t, alloc);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(t.begin(), t.end(), u.begin(), u.end());
+    BOOST_CHECK_EQUAL(alloc.id(), u.get_allocator().id());
+}
 
 // @todo 23.2.3
 

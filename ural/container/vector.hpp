@@ -131,7 +131,7 @@ namespace ural
 
         Alloc get_allocator() const
         {
-            return Alloc(*this);
+            return this->allocator_ref();
         }
 
         void swap(buffer & x);
@@ -421,7 +421,18 @@ namespace ural
          : data_(std::move(x.data_))
         {}
 
-        vector(vector const & xs, allocator_type const & a);
+        /** @brief Создание копии вектора с другим распределителем памяти
+        @param xs копируемый контейнер
+        @param a распределитель памяти
+        @post <tt> *this == xs </tt>
+        @post <tt> this->get_allocator() == a </tt>
+        */
+        vector(vector const & xs, allocator_type const & a)
+         : data_(a, xs.size())
+        {
+            this->assign(xs.begin(), xs.end());
+        }
+
         vector(vector && x, allocator_type const & a) noexcept;
 
         /** @brief Конструктор на основе списка инициализаторов
@@ -500,8 +511,6 @@ namespace ural
 
         void assign(size_type n, value_type const & value)
         {
-            // @todo Проверки
-
             auto sink = this->begin();
             auto const stop = this->end();
 
@@ -659,12 +668,7 @@ namespace ural
             else
             {
                 this->reserve(new_size);
-
-                // @todo Выделить алгоритм
-                for(auto dn = new_size - this->size(); dn > 0; -- dn)
-                {
-                    this->push_back(c);
-                }
+                this->insert(this->end(), new_size - this->size(), c);
             }
         }
 
@@ -898,10 +902,12 @@ namespace ural
         typename disable_if<std::is_integral<InputIterator>::value, iterator>::type
         insert(const_iterator position, InputIterator first, InputIterator last)
         {
-            typedef typename std::iterator_traits<InputIterator>::iterator_category
-                Category;
+            auto seq = ural::make_iterator_sequence(first, last);
+
+            typedef typename decltype(seq)::traversal_tag Category;
+
             return this->insert_impl(position - this->cbegin(),
-                                     first, last, Category());
+                                     seq, Category{});
         }
 
         /** @brief Вставка элементов списка инициализаторов перед указанной
@@ -971,32 +977,30 @@ namespace ural
         }
 
     private:
-        template <class InputIterator>
+        template <class InputSequence>
         iterator insert_impl(size_type index,
-                             InputIterator first, InputIterator last,
-                             std::input_iterator_tag)
+                             InputSequence seq,
+                             single_pass_traversal_tag)
         {
             auto const old_size = this->size();
 
-            // @todo Заменить на алгоритмы ural?
-            std::copy(first, last, *this | ural::back_inserter);
+            ural::copy(seq, *this | ural::back_inserter);
 
+            // @todo Заменить на алгоритмы ural?
             std::rotate(this->begin() + index, this->begin() + old_size, this->end());
 
             return this->begin() + index;
         }
 
-        template <class InputIterator>
+        template <class InputSequence>
         iterator insert_impl(size_type index,
-                             InputIterator first, InputIterator last,
-                             std::forward_iterator_tag)
+                             InputSequence seq,
+                             forward_traversal_tag)
         {
-            auto const n = std::distance(first, last);
+            this->reserve(this->size() + ural::size(seq));
 
-            this->reserve(this->size() + n);
-
-            return this->insert_impl(index, first, last,
-                                     std::input_iterator_tag());
+            return this->insert_impl(index, std::move(seq),
+                                     single_pass_traversal_tag{});
         }
 
     private:
