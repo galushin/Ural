@@ -97,8 +97,6 @@ namespace ural
         buffer(buffer && x)
          : members_(std::move(x.members_))
         {
-            // @todo обёртка для встроенных указателей, реализующая правильные
-            // операции перемещения?
             x.begin_ref() = nullptr;
             x.end_ref() = nullptr;
             x.storage_end_ref() = nullptr;
@@ -174,7 +172,7 @@ namespace ural
             // @todo заменить на алгоритм
             for(auto & x : *this)
             {
-                new_buffer.emplace_back(std::move(x));
+                new_buffer.push_back(std::move(x));
             }
 
             buffer_swapper{}(*this, new_buffer);
@@ -186,7 +184,10 @@ namespace ural
             this->emplace_back(x);
         }
 
-        void push_back(value_type && x);
+        void push_back(value_type && x)
+        {
+            this->emplace_back(std::move(x));
+        }
 
         template <class... Args>
         void emplace_back(Args && ... args)
@@ -238,6 +239,57 @@ namespace ural
 
     private:
         tuple<allocator_type, pointer, pointer, pointer> members_;
+    };
+
+    // @todo Можно ли унифицировать политики последовательностей и контейнеров?
+    class container_checking_throw_policy
+    {
+    public:
+        template <class Container>
+        static void
+        check_index(Container const & c,
+                    typename Container::difference_type index)
+        {
+            if(index < 0 || c.size() <= ural::to_unsigned(index))
+            {
+                // @todo Более подробная диагностика
+                throw std::out_of_range("Invalid index!");
+            }
+        }
+
+        template <class Container>
+        static void
+        check_not_empty(Container const & c)
+        {
+            if(c.empty() == true)
+            {
+                throw std::logic_error("Container must be not empty!");
+            }
+        }
+    };
+
+    class container_checking_assert_policy
+    {
+    public:
+        template <class Container>
+        static void
+        check_index(Container const & c,
+                    typename Container::difference_type index)
+        {
+            assert(0 <= index && ural::to_unsigned(index) < c.size());
+        }
+
+        template <class Container>
+        static void
+        check_not_empty(Container const & c)
+        {
+            assert(c.empty() == false);
+        }
+    };
+
+    class container_no_checks_policy
+    {
+    public:
     };
 
     /** @c vector --- это последовательный контейнер, который предоставляет
@@ -303,6 +355,9 @@ namespace ural
         /// @brief Тип константного обратного итератора
         typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
+        typedef typename default_helper<Policy, container_checking_assert_policy>::type
+            policy_type;
+
         // Конструкторы
         /** @brief Создание пустого контейнера
         @post <tt> this->empty() </tt>
@@ -329,11 +384,7 @@ namespace ural
                allocator_type const & a = allocator_type{})
          : data_(a, n)
         {
-            // @todo Заменить на алгоритм
-            for(auto k = n; k > 0; -- k)
-            {
-                data_.emplace_back(value);
-            }
+            this->insert(this->end(), n, value);
         }
 
         /** @brief Конструктор на основе интервала, заданного парой итераторов
@@ -653,8 +704,8 @@ namespace ural
 
         const_reference operator[](size_type index) const
         {
-            // @todo Настройка способа проверки
-            assert(0U <= index && index < this->size());
+            policy_type::check_index(*this, index);
+
             return *(this->begin() + index);
         }
         //@}
@@ -673,6 +724,7 @@ namespace ural
 
         const_reference at(size_type index) const
         {
+            // @todo просто использовать метод проверки из container_checking_throw_policy
             if(0U <= index && index < this->size())
             {
                 return (*this)[index];
@@ -698,7 +750,8 @@ namespace ural
 
         const_reference front() const
         {
-            // @todo Добавить проверку через стратегию
+            policy_type::check_not_empty(*this);
+
             return (*this)[0];
         }
         //@}
@@ -716,8 +769,7 @@ namespace ural
 
         const_reference back() const
         {
-            // @todo Добавить проверку через стратегию
-            assert(!this->empty());
+            policy_type::check_not_empty(*this);
             return (*this)[this->size() - 1];
         }
         //@}
@@ -770,7 +822,7 @@ namespace ural
         void pop_back()
         {
             // @todo Улучшить диагностику
-            assert(!this->empty());
+            policy_type::check_not_empty(*this);
 
             data_.pop_back(1);
         }

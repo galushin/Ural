@@ -427,7 +427,7 @@ BOOST_AUTO_TEST_CASE(vector_insert_n)
 
     auto const result = x.insert(x.cbegin() + index, 2, 42);
 
-    BOOST_CHECK((result - x.begin()) == index);
+    BOOST_CHECK(result == x.begin() + index);
 
     Vector const z = {1, 3, 42, 42, 5, 7};
 
@@ -458,6 +458,16 @@ BOOST_AUTO_TEST_CASE(vector_back_test)
 
     BOOST_CHECK_EQUAL(xs[xs.size() - 1], xs.back());
     BOOST_CHECK_EQUAL(c_xs[c_xs.size() - 1], c_xs.back());
+}
+
+BOOST_AUTO_TEST_CASE(vector_index_access_exception)
+{
+    typedef ural::vector<int, ural::use_default, ural::container_checking_throw_policy>
+        Vector;
+
+    Vector const x(13, 42);
+
+    BOOST_CHECK_THROW(x[x.size()], std::out_of_range);
 }
 
 BOOST_AUTO_TEST_CASE(vector_at_test)
