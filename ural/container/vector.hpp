@@ -19,6 +19,7 @@
 
 /** @file ural/container/vector.hpp
  @brief Аналог <tt> std::vector </tt>
+ @todo Куда должно относится требование "T is Erasable from X" из таблицы 96
 */
 
 #include <ural/container/policy.hpp>
@@ -70,10 +71,6 @@ namespace ural
         typedef typename Traits::size_type size_type;
 
         // Создание, копирование, уничтожение
-        /**
-        @todo Можно ли избавиться от лишних инициализаций или убедиться, что
-        оптимизатор их устраняет
-        */
         buffer(Alloc const & a, size_type capacity = 0)
          : members_(a, nullptr, nullptr, nullptr)
         {
@@ -123,13 +120,10 @@ namespace ural
 
         buffer & operator=(buffer const & x);
 
-        /**
-        @todo Добавить noexcept
-        @todo Использовать Traits::is_always_equal
-        */
-        buffer & operator=(buffer && x)
+        buffer & operator=(buffer && x) noexcept
         {
             static_assert(Traits::propagate_on_container_move_assignment::value, "");
+            // @todo Использовать Traits::is_always_equal
 
             this->allocator_ref() = x.allocator_ref();
 
@@ -372,8 +366,6 @@ namespace ural
         @param last итератор, задающий конец интервала
         @todo добавить требование из таблицы 100
         @post <tt> this->size() == std::distance(first, last) </tt>
-        @todo Запретить, если @c InputIterator не удовлетворяет требованиям к
-        входному итератору
         */
         template <class InputIterator>
         vector(InputIterator first, InputIterator last,
@@ -393,6 +385,8 @@ namespace ural
 
         /** @brief Конструктор перемещения
         @param x вектор, содержимое которого должно быть перемещено
+        @pre Конструктор перемещения типа @c allocator_type не должен возбуждать
+        исключений
         @post <tt> *this </tt> будет иметь то же значение, что было у @c x
         перед выполнением конструктора
         */

@@ -35,7 +35,6 @@ BOOST_AUTO_TEST_CASE(vector_types_test)
 
     // строка 1
     static_assert(std::is_same<Vector::value_type, T>::value, "");
-    // @todo проверить, что T является Eraseble из Vector (см. 23.2.1)
 
     // строка 2
     static_assert(std::is_same<Vector::reference, T&>::value, "");
@@ -210,9 +209,54 @@ BOOST_AUTO_TEST_CASE(vector_table_97)
     BOOST_CHECK(x.crend() == CRIterator(x.cbegin()));
 }
 
-// @todo Таблица 98
+// Таблица 98
+BOOST_AUTO_TEST_CASE(vector_table_98_less_comparable)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
 
-// @todo Таблица 99
+    Vector const v1 = {1, 2, 3};
+    Vector const v2 = {1, 2, 3, 4};
+    Vector const v3 = {1, 4, 3, 4};
+
+    // Строка 1 <
+    BOOST_CHECK(v1 < v2);
+    BOOST_CHECK(v2 < v3);
+    BOOST_CHECK(v1 < v3);
+
+    BOOST_CHECK(!(v1 < v1));
+    BOOST_CHECK(!(v2 < v2));
+    BOOST_CHECK(!(v3 < v3));
+
+    // Строка 2 >
+    BOOST_CHECK(v2 > v1);
+    BOOST_CHECK(v3 > v2);
+    BOOST_CHECK(v3 > v1);
+
+    BOOST_CHECK(!(v1 > v1));
+    BOOST_CHECK(!(v2 > v2));
+    BOOST_CHECK(!(v3 > v3));
+
+    // Строка 3 <=
+    BOOST_CHECK(v1 <= v2);
+    BOOST_CHECK(v2 <= v3);
+    BOOST_CHECK(v1 <= v3);
+
+    BOOST_CHECK(v1 <= v1);
+    BOOST_CHECK(v2 <= v2);
+    BOOST_CHECK(v3 <= v3);
+
+    // Строка 4 >=
+    BOOST_CHECK(v2 >= v1);
+    BOOST_CHECK(v3 >= v2);
+    BOOST_CHECK(v3 >= v1);
+
+    BOOST_CHECK(v1 >= v1);
+    BOOST_CHECK(v2 >= v2);
+    BOOST_CHECK(v3 >= v3);
+}
+
+// Таблица 99
 BOOST_AUTO_TEST_CASE(vector_allocator_constructor)
 {
     typedef int T;
@@ -254,6 +298,26 @@ BOOST_AUTO_TEST_CASE(vector_copy_with_other_allocator)
 
     BOOST_CHECK_EQUAL_COLLECTIONS(t.begin(), t.end(), u.begin(), u.end());
     BOOST_CHECK_EQUAL(alloc.id(), u.get_allocator().id());
+}
+
+BOOST_AUTO_TEST_CASE(vector_move_constructor_table_99)
+{
+    typedef int T;
+    typedef ural::tracing_allocator<T> Alloc;
+    typedef ural::vector<T, Alloc> Vector;
+
+    // Строка 6
+    Vector t = {1, 2, 3, 4, 5};
+
+    Vector const t_old = t;
+    auto const t_old_data = t.data();
+
+    Vector const u(std::move(t));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(t_old.begin(), t_old.end(), u.begin(), u.end());
+    BOOST_CHECK_EQUAL(t_old_data, u.data());
+    BOOST_CHECK_EQUAL(t_old.get_allocator().id(), u.get_allocator().id());
+    BOOST_CHECK(t_old.get_allocator() == u.get_allocator());
 }
 
 BOOST_AUTO_TEST_CASE(vector_move_with_different_allocator)
@@ -300,6 +364,8 @@ BOOST_AUTO_TEST_CASE(vector_move_with_same_allocator)
     BOOST_CHECK_EQUAL_COLLECTIONS(t_old.begin(), t_old.end(),
                                   u.begin(), u.end());
 }
+
+// @todo Таблица 99 строки 8,9 и 10
 
 // @todo 23.2.3
 
@@ -381,9 +447,14 @@ BOOST_AUTO_TEST_CASE(vector_clear_test)
 
     BOOST_CHECK(!x.empty());
 
+    auto const old_data = x.data();
+    auto const old_capacity = x.capacity();
+
     x.clear();
 
     BOOST_CHECK(x.empty());
+    BOOST_CHECK_EQUAL(old_data, x.data());
+    BOOST_CHECK_EQUAL(old_capacity, x.capacity());
 }
 
 BOOST_AUTO_TEST_CASE(vector_assign_operator_init_list_shrink)
@@ -748,24 +819,6 @@ BOOST_AUTO_TEST_CASE(vector_erase_one)
 
     ural::vector<int> const z = {1, 2, 3, 4, 5};
     BOOST_CHECK_EQUAL_COLLECTIONS(x.cbegin(), x.cend(), z.begin(), z.end());
-}
-
-BOOST_AUTO_TEST_CASE(vector_operator_less)
-{
-    typedef int T;
-    typedef ural::vector<T> Vector;
-
-    Vector const v1 = {1, 2, 3};
-    Vector const v2 = {1, 2, 3, 4};
-    Vector const v3 = {1, 4, 3, 4};
-
-    BOOST_CHECK(v1 < v2);
-    BOOST_CHECK(v2 < v3);
-    BOOST_CHECK(v1 < v3);
-
-    BOOST_CHECK(!(v1 < v1));
-    BOOST_CHECK(!(v2 < v2));
-    BOOST_CHECK(!(v3 < v3));
 }
 
 // 23.3.6

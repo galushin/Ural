@@ -25,6 +25,10 @@
 
 namespace ural
 {
+
+/** @namespace archetypes
+ @brief Архетипы -- минималистичные реализации концепций
+*/
 namespace archetypes
 {
     /** @brief Архетип функционального объекта (остаётся неопределённым)

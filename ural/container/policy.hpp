@@ -67,7 +67,7 @@ namespace ural
         static void
         check_index(Container const & c, Size index)
         {
-            if(index < 0 || c.size() <= ural::to_unsigned(index))
+            if(index < 0 || c.size() <= index)
             {
                 // @todo Более подробная диагностика
                 throw std::out_of_range("Invalid index!");
@@ -78,7 +78,7 @@ namespace ural
         static void
         check_step(Container const & c, Size step)
         {
-            if(step < 0 || c.size() < ural::to_unsigned(step))
+            if(step < 0 || c.size() < step)
             {
                 // @todo Более подробная диагностика
                 throw std::out_of_range("Invalid step!");

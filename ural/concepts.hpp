@@ -40,6 +40,9 @@
 
 namespace ural
 {
+/** @namespace concepts
+ @brief Концепции --- коллекции требований к типам
+*/
 namespace concepts
 {
     /** @brief Концепция-функция "допускающий копирующее присваивание"

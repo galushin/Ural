@@ -27,6 +27,9 @@
 
 namespace ural
 {
+/** @namespace distributions
+ @brief "Теоретические" распределения вероятностей.
+*/
 namespace distributions
 {
     /** @brief "Математическое" дискретное распределение

@@ -26,6 +26,9 @@
 
 namespace ural
 {
+/** @namespace meta
+ @brief Возможности, связанные с мета-программированием.
+*/
 namespace meta
 {
     // all_of
