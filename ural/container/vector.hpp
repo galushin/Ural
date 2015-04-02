@@ -21,6 +21,7 @@
  @brief Аналог <tt> std::vector </tt>
 */
 
+#include <ural/container/policy.hpp>
 #include <ural/sequence/taken.hpp>
 #include <ural/algorithm.hpp>
 #include <ural/defs.hpp>
@@ -40,11 +41,11 @@ namespace ural
         {
             assert(std::addressof(x.allocator_ref()) == std::addressof(y.allocator_ref()));
 
-            using std::swap;
             static_assert(std::tuple_size<decltype(x.members_)>::value == 4, "");
             static_assert(std::tuple_size<decltype(y.members_)>::value == 4, "");
 
-            swap(x.members_[ural::_1], y.members_[ural::_1]);
+            using std::swap;
+            // Первый обменивать не нужно, так как это объект и ссылка на него
             swap(x.members_[ural::_2], y.members_[ural::_2]);
             swap(x.members_[ural::_3], y.members_[ural::_3]);
             swap(x.members_[ural::_4], y.members_[ural::_4]);
@@ -255,62 +256,12 @@ namespace ural
         tuple<allocator_type, pointer, pointer, pointer> members_;
     };
 
-    // @todo Можно ли унифицировать политики последовательностей и контейнеров?
-    class container_checking_throw_policy
-    {
-    public:
-        template <class Container>
-        static void
-        check_index(Container const & c,
-                    typename Container::difference_type index)
-        {
-            if(index < 0 || c.size() <= ural::to_unsigned(index))
-            {
-                // @todo Более подробная диагностика
-                throw std::out_of_range("Invalid index!");
-            }
-        }
-
-        template <class Container>
-        static void
-        check_not_empty(Container const & c)
-        {
-            if(c.empty() == true)
-            {
-                throw std::logic_error("Container must be not empty!");
-            }
-        }
-    };
-
-    class container_checking_assert_policy
-    {
-    public:
-        template <class Container>
-        static void
-        check_index(Container const & c,
-                    typename Container::difference_type index)
-        {
-            assert(0 <= index && ural::to_unsigned(index) < c.size());
-        }
-
-        template <class Container>
-        static void
-        check_not_empty(Container const & c)
-        {
-            assert(c.empty() == false);
-        }
-    };
-
-    class container_no_checks_policy
-    {
-    public:
-    };
-
     /** @c vector --- это последовательный контейнер, который предоставляет
     операции с (амортизированной) постоянной сложностью для вставки и удаления
     в конце последовательности, вставка или удаление в середине требуют
     линейного времени. Управление хранением осуществляется автоматически, но
     можно дать подсказки, чтобы увеличить эффективность.
+    @ingroup SequenceContainers
     @todo 23.3.6.1 пункт 2
     @brief Аналог <tt> std::vector </tt>
     @tparam T тип элементов
@@ -359,7 +310,10 @@ namespace ural
         typedef typename std::allocator_traits<allocator_type>::difference_type
             difference_type;
 
+        /// @brief Тип указателя
         typedef typename std::allocator_traits<allocator_type>::pointer pointer;
+
+        /// @brief Тип указателя на константу
         typedef typename std::allocator_traits<allocator_type>::const_pointer
             const_pointer;
 
@@ -369,6 +323,7 @@ namespace ural
         /// @brief Тип константного обратного итератора
         typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
+        /// @brief Класс-стратегия проверок
         typedef typename default_helper<Policy, container_checking_assert_policy>::type
             policy_type;
 

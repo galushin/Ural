@@ -21,6 +21,9 @@
  @brief Базовый класс для последовательностей (CRTP)
 */
 
+/** @defgroup Sequences Последовательности
+*/
+
 #include <ural/defs.hpp>
 #include <utility>
 
@@ -91,6 +94,12 @@ namespace ural
         {
             s.pop_front();
             return s;
+        }
+
+    public:
+        bool empty() const
+        {
+            return !static_cast<Seq const &>(*this);
         }
 
     protected:

@@ -86,6 +86,7 @@
 		<Unit filename="../ural/algorithm/details/algo_base.hpp" />
 		<Unit filename="../ural/archetypes.hpp" />
 		<Unit filename="../ural/concepts.hpp" />
+		<Unit filename="../ural/container/policy.hpp" />
 		<Unit filename="../ural/container/vector.hpp" />
 		<Unit filename="../ural/defs.hpp" />
 		<Unit filename="../ural/disjoint_set.hpp" />

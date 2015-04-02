@@ -21,6 +21,7 @@
  @brief Последовательность на основе пары итераторов
 */
 
+#include <ural/container/policy.hpp>
 #include <ural/sequence/base.hpp>
 #include <ural/tuple.hpp>
 #include <ural/utility.hpp>
@@ -28,92 +29,6 @@
 
 namespace ural
 {
-    /** @brief Класс исключения "Некорректный индекс"
-    @tparam T тип индекса
-    */
-    template <class T>
-    class bad_index
-     : std::logic_error
-    {
-    public:
-        /** @brief Конструктор
-        @param msg сообщение об ошибке
-        @param index индекс
-        @param size размер
-        */
-        bad_index(char const * msg, T index, T size)
-         : logic_error(msg)
-         , index_(std::move(index))
-         , size_(std::move(size))
-        {}
-
-    private:
-        T index_;
-        T size_;
-    };
-
-    /** @brief Строгая стратегия проверок для последовательности: возбуждает
-    исключения в случае ошибок
-    */
-    class strict_sequence_policy
-    {
-    protected:
-        ~strict_sequence_policy() = default;
-
-    public:
-        /** @brief Проверяет, что последовательность @c seq не пуста, в
-        противном случае возбуждает исключение типа <tt> logic_error </tt>.
-        @param seq проверяемая последовательность
-        */
-        template <class Seq>
-        static void assert_not_empty(Seq const & seq)
-        {
-            if(!seq)
-            {
-                throw std::logic_error("Sequence must be not empty");
-            }
-        }
-
-        /** @brief Проверка допустимости индекса
-        @param seq последовательность
-        @param index проверяемый индекс
-        @throw bad_index<decltype(seq.size())>, если
-        <tt> index >= seq.size() </tt>
-        */
-        template <class Seq>
-        static void check_index(Seq const & seq,
-                                typename Seq::distance_type index)
-        {
-            typedef typename Seq::distance_type D;
-
-            if(index >= seq.size())
-            {
-                throw bad_index<D>("Invalid index", index, seq.size());
-            }
-        }
-
-        /** @brief Проверка допустимости шага.
-        @param seq последовательность
-        @param n проверяемое значение шага
-        @throw bad_index<decltype(seq.size())>, если
-        <tt> index > seq.size() </tt>
-
-        Отличается от проверки индекса тем, что может быть равен размеру
-        последовательности.
-        */
-        template <class Seq>
-        static void check_step(Seq const & seq,
-                               typename Seq::distance_type n)
-        {
-            typedef typename Seq::distance_type D;
-
-            if(n > seq.size())
-            {
-                throw bad_index<D>("Invalid step size", n, seq.size());
-            }
-        }
-    };
-
     /// @cond false
     // @todo Автоматическое построение по списку типов
     template <class IteratorTag>
@@ -134,7 +49,7 @@ namespace ural
     @tparam Iterator тип итератора
     @tparam Policy тип политики обработки ошибок
     */
-    template <class Iterator, class Policy = strict_sequence_policy>
+    template <class Iterator, class Policy = container_checking_throw_policy>
     class iterator_sequence
      : public sequence_base<iterator_sequence<Iterator, Policy>>
     {
