@@ -21,6 +21,7 @@
  @brief Аналог <tt> std::vector </tt>
 */
 
+#include <ural/sequence/taken.hpp>
 #include <ural/algorithm.hpp>
 #include <ural/defs.hpp>
 
@@ -186,11 +187,7 @@ namespace ural
             buffer<value_type, allocator_type &>
                 new_buffer(this->allocator_ref(), n);
 
-            // @todo заменить на алгоритм
-            for(auto & x : *this)
-            {
-                new_buffer.push_back(std::move(x));
-            }
+            ural::move(*this, new_buffer | ural::back_inserter);
 
             buffer_swapper{}(*this, new_buffer);
         }
@@ -507,6 +504,25 @@ namespace ural
             return *this;
         }
 
+        template <class InputSequence>
+        void assign(InputSequence && seq)
+        {
+            // @todo Проверки
+
+            auto r = ural::copy(std::forward<InputSequence>(seq), *this);
+
+            if(!r[ural::_1])
+            {
+                this->erase(r[ural::_2].begin(), r[ural::_2].end());
+            }
+            else
+            {
+                assert(!r[ural::_2]);
+
+                this->insert(r[ural::_2].begin(), r[ural::_1]);
+            }
+        }
+
         /** @brief Заменяет элементы контейнера на копии элементов интервала
         <tt> [first; last) </tt>
         @param first итератор, задающий начало интервала
@@ -517,47 +533,16 @@ namespace ural
         template <class InputIterator>
         void assign(InputIterator first, InputIterator const last)
         {
-            // @todo Проверки
-
-            auto sink = this->begin();
-            auto const stop = this->end();
-
-            // @todo Выделить алгоритм
-            for(; sink != stop && first != last; ++sink, ++ first)
-            {
-                *sink = *first;
-            }
-
-            if(first == last)
-            {
-                this->erase(sink, stop);
-            }
-            else
-            {
-                this->insert(stop, first, last);
-            }
+            return this->assign(ural::make_iterator_sequence(first, last));
         }
 
         void assign(size_type n, value_type const & value)
         {
-            auto sink = this->begin();
-            auto const stop = this->end();
-
-            // @todo Выделить алгоритм
             // @todo Устранить дублирование
-            for(; sink != stop && n > 0; ++ sink, -- n)
-            {
-                *sink = value;
-            }
+            auto gen = ural::make_value_functor(std::cref(value));
+            auto seq = ural::make_generator_sequence(std::move(gen)) | ural::taken(n);
 
-            if(n == 0)
-            {
-                this->erase(sink, stop);
-            }
-            else
-            {
-                this->insert(this->cend(), n, value);
-            }
+            return this->assign(std::move(seq));
         }
 
         /** @brief Присваивание значений из списка инициализаторов
@@ -900,25 +885,26 @@ namespace ural
             return this->emplace(position, std::move(x));
         }
 
+        template <class InputSequence>
+        iterator insert(const_iterator position, InputSequence && seq)
+        {
+            using ural::sequence;
+            auto s = sequence(seq);
+
+            typedef typename decltype(s)::traversal_tag Category;
+
+            return this->insert_impl(position - this->cbegin(),
+                                     std::move(s), Category{});
+        }
+
         iterator insert(const_iterator position, size_type const n, value_type const & value)
         {
             // @todo Проверки
 
-            // Резервируем память
-            auto const index = position - this->cbegin();
+            auto gen = ural::make_value_functor(std::cref(value));
+            auto seq = ural::make_generator_sequence(std::move(gen)) | ural::taken(n);
 
-            this->reserve(this->size() + n);
-
-            // Вставляем в конец
-            for(auto k = n; k > 0; -- k)
-            {
-                this->push_back(value);
-            }
-
-            // Передвигаем на место новые элементы
-            std::rotate(this->begin() + index, this->end() - n, this->end());
-
-            return this->begin() + index;
+            return this->insert(position, std::move(seq));
         }
 
         /** @brief Вставка последовательности элементов в середину контейнера
@@ -932,12 +918,7 @@ namespace ural
         typename disable_if<std::is_integral<InputIterator>::value, iterator>::type
         insert(const_iterator position, InputIterator first, InputIterator last)
         {
-            auto seq = ural::make_iterator_sequence(first, last);
-
-            typedef typename decltype(seq)::traversal_tag Category;
-
-            return this->insert_impl(position - this->cbegin(),
-                                     seq, Category{});
+            return this->insert(position, ural::make_iterator_sequence(first, last));
         }
 
         /** @brief Вставка элементов списка инициализаторов перед указанной

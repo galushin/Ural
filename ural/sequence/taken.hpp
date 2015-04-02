@@ -22,6 +22,7 @@
  заданным числом элементов
 */
 
+#include <ural/sequence/base.hpp>
 #include <ural/utility.hpp>
 
 namespace ural
