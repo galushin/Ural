@@ -22,6 +22,7 @@
  @todo Куда должно относится требование "T is Erasable from X" из таблицы 96
 */
 
+#include <ural/sequence/iterator_sequence.hpp>
 #include <ural/container/policy.hpp>
 #include <ural/sequence/taken.hpp>
 #include <ural/algorithm.hpp>
@@ -32,6 +33,36 @@
 
 namespace ural
 {
+    /** @todo Найти лучшее место для этого алгоритма
+    */
+    class move_if_noexcept_fn
+    {
+    public:
+        template <class Input, class Output>
+        auto operator()(Input && in, Output && out) const
+        -> tuple<decltype(ural::sequence_fwd<Input>(in)),
+                 decltype(ural::sequence_fwd<Output>(out))>
+        {
+            return this->impl(ural::sequence_fwd<Input>(in),
+                              ural::sequence_fwd<Output>(out));
+        }
+
+    private:
+        template <class Input, class Output>
+        tuple<Input, Output>
+        impl(Input in, Output out) const
+        {
+            // @todo Выразить через copy и transfrormed
+            for(; !!in && !!out; ++ in, ++ out)
+            {
+                *out = std::move_if_noexcept(*in);
+            }
+            return ural::make_tuple(std::move(in), std::move(out));
+        }
+    };
+
+    constexpr auto move_if_noexcept = move_if_noexcept_fn{};
+
     template <class T, class Alloc>
     class buffer;
 
@@ -182,7 +213,7 @@ namespace ural
             buffer<value_type, allocator_type &>
                 new_buffer(this->allocator_ref(), n);
 
-            ural::move(*this, new_buffer | ural::back_inserter);
+            ural::move_if_noexcept(*this, new_buffer | ural::back_inserter);
 
             buffer_swapper{}(*this, new_buffer);
         }
@@ -349,6 +380,7 @@ namespace ural
         которого равен заданному значению
         @param n количество элементов
         @param value значение
+        @pre @c T должно быть @c CopyConstructible для @c vector
         @post <tt> this->size() == n </tt>
         @post Для любого @c i из интервала <tt> [0; this->size()) </tt>
         выполняется <tt> (*this)[i] == value </tt>
@@ -379,6 +411,7 @@ namespace ural
 
         /** @brief Конструктор копий
         @param xs копируемый вектор
+        @pre @c T должно быть @c CopyInsertable для @c vector
         @post <tt> *this == xs </tt>
         */
         vector(vector const & xs) = default;
@@ -905,18 +938,17 @@ namespace ural
             auto const result = this->begin() + (first - this->cbegin());
             auto sink = result;
             auto source = this->begin() + (last - this->cbegin());
-            auto const stop = this->cend();
 
             // 2. Перемещаем последние элементы на места удаляемых
-            // @todo заменить на алгоритм
-            for(; source != stop; ++source)
-            {
-                *sink = std::move_if_noexcept(*source);
-                ++ sink;
-            }
+            auto in = ural::make_iterator_sequence(source, this->end());
+
+            // @todo Можно доказать, что эта последовательность исчерпаетс позже
+            auto out = ural::make_iterator_sequence(sink, this->end());
+
+            out = ural::move_if_noexcept(in, out)[ural::_2];
 
             // 3. Удаляем последние элементы
-            data_.pop_back(this->end() - sink);
+            data_.pop_back(out.size());
 
             return result;
         }
@@ -943,6 +975,8 @@ namespace ural
                              single_pass_traversal_tag)
         {
             auto const old_size = this->size();
+
+            assert(index <= old_size);
 
             ural::copy(seq, *this | ural::back_inserter);
 

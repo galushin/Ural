@@ -22,6 +22,28 @@
  @todo Проверка концепций
 */
 
+/** @defgroup Algorithms Алгоритмы
+ @brief Обобщённые операции над последовательностями.
+*/
+
+/** @defgroup NonModifyingSequenceOperations Немодифицирующие операции
+ @ingroup Algorithms
+ @brief Обобщённые операции не создающие новых последовательностей и не
+ изменяющие порядок элементов существующих последовательностей.
+*/
+
+/** @defgroup MutatingSequenceOperations
+ @ingroup Algorithms
+ @brief Операции, формирующие новые последовательности или меняющие порядок
+ элементов существующих последовательностей.
+*/
+
+/** @defgroup SortingOperations Сортировка и связанные с ней операции
+ @ingroup Algorithms
+ @brief Алгоритмы, связанные с сортировкой и/или обработкой сортированных
+ последовательностей
+*/
+
 #include <ural/math.hpp>
 #include <ural/sequence/filtered.hpp>
 #include <ural/sequence/transform.hpp>

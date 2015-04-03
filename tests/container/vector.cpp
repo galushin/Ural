@@ -24,8 +24,6 @@
 
 #include <forward_list>
 
-// @todo тесты для разных типов элементов
-
 // @todo 23.2.1
 // Таблица 96
 BOOST_AUTO_TEST_CASE(vector_types_test)
@@ -116,8 +114,6 @@ BOOST_AUTO_TEST_CASE(vector_copy_constructor)
     BOOST_CHECK_NE(u.begin(), x.begin());
     BOOST_CHECK_NE(u.end(), x.end());
 
-    // @todo Проверить, что T является CopyInsertable для Vector
-
     BOOST_CHECK(u == x);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(),
@@ -196,7 +192,7 @@ BOOST_AUTO_TEST_CASE(vector_table_97)
     typedef Vector::const_reverse_iterator CRIterator;
     static_assert(std::is_same<CRIterator, std::reverse_iterator<CIterator>>::value, "");
 
-    // @todo строки 3-6
+    // Строки 3-6
     auto const n = Vector::size_type(5);
     auto const t = Vector::value_type(42);
 
@@ -379,7 +375,6 @@ BOOST_AUTO_TEST_CASE(vector_n_copies_of_t)
 
     Vector x(n, t);
 
-    // @todo Проверить, что T является CopyConstructible для Vector
     BOOST_CHECK_EQUAL(n, x.size());
 
     for(auto i : ural::indices_of(x))
