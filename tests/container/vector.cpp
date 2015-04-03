@@ -222,6 +222,17 @@ BOOST_AUTO_TEST_CASE(vector_non_member_swap_test)
     BOOST_CHECK(v2.get_allocator() == v1_allocator_old);
 }
 
+BOOST_AUTO_TEST_CASE(vector_max_size_test)
+{
+    typedef int T;
+    typedef ural::tracing_allocator<T> Alloc;
+    typedef ural::vector<T, Alloc> Vector;
+
+    Vector v;
+    Alloc a;
+
+    BOOST_CHECK_EQUAL(std::allocator_traits<Alloc>::max_size(a), v.max_size());
+}
 
 // Таблица 97
 BOOST_AUTO_TEST_CASE(vector_table_97)

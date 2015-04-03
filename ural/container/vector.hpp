@@ -212,6 +212,11 @@ namespace ural
             return this->members_[ural::_4]- this->begin();
         }
 
+        size_type max_size() const
+        {
+            return Traits::max_size(this->allocator_ref());
+        }
+
         void reserve(size_type n)
         {
             // Согласно 23.6.3.3 абзац 3, уменьшение ёмкости произойти не может
@@ -305,7 +310,6 @@ namespace ural
     линейного времени. Управление хранением осуществляется автоматически, но
     можно дать подсказки, чтобы увеличить эффективность.
     @ingroup SequenceContainers
-    @todo 23.3.6.1 пункт 2
     @brief Аналог <tt> std::vector </tt>
     @tparam T тип элементов
     @tparam Alloc тип распределителя памяти
@@ -414,7 +418,10 @@ namespace ural
         @tparam InputIterator тип итератора
         @param first итератор, задающий начало интервала
         @param last итератор, задающий конец интервала
-        @todo добавить требование из таблицы 100
+        @pre @c T должен быть @c EmplaceConstructible для @c vector из
+        <tt> *i </tt>.
+        @pre Если @c InputIterator не удовлетворяет требованиям к прямым
+        итераторам, то @c T должен быть @c MoveInsertable для @c vector.
         @post <tt> this->size() == std::distance(first, last) </tt>
         */
         template <class InputIterator>
@@ -464,7 +471,6 @@ namespace ural
         /** @brief Конструктор на основе списка инициализаторов
         @param values список инициализаторов
         @post Эквивалентно <tt> vector(values.begin(), value.end()) </tt>
-        @todo Тест с распределителем памяти
         */
         vector(std::initializer_list<value_type> values,
                allocator_type const & a = allocator_type())
@@ -653,7 +659,10 @@ namespace ural
             return std::distance(this->begin(), this->end());
         }
 
-        size_type max_size() const noexcept;
+        size_type max_size() const noexcept
+        {
+            return data_.max_size();
+        }
 
         void resize(size_type new_size)
         {
@@ -944,13 +953,15 @@ namespace ural
 
         iterator erase(const_iterator position)
         {
-            // @todo Проверка через политику
+            policy_type::assert_can_erase(this->cbegin(), this->cend(), position);
+
             return this->erase(position, position+1);
         }
 
         iterator erase(const_iterator first, const_iterator last)
         {
-            // @todo Проверка через политику
+            policy_type::assert_can_erase(this->cbegin(), this->cend(),
+                                          first, last);
 
             // 1. Переходим к неконстантным итераторам
             auto const result = this->begin() + (first - this->cbegin());

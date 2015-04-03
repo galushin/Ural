@@ -53,6 +53,58 @@ begin и end
 
 namespace ural
 {
+    /// @cond false
+    namespace details
+    {
+        template <class Iterator>
+        bool can_erase(Iterator first, Iterator last, Iterator q)
+        {
+            for(; first != last; ++ first)
+            {
+                if(first == q)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        template <class Iterator>
+        bool can_erase(Iterator first, Iterator last, Iterator q1, Iterator q2)
+        {
+            if(q1 == q2)
+            {
+                return true;
+            }
+
+            for(; first != last; ++ first)
+            {
+                if(first == q1)
+                {
+                    break;
+                }
+            }
+
+            if(first == last)
+            {
+                return false;
+            }
+
+            for(; first != last; ++ first)
+            {
+                if(first == q2)
+                {
+                    break;
+                }
+            }
+
+            return first == q2;
+        }
+    }
+    // namespace details
+    ///@endcond
+
     /** @brief Стратегия проверки для контейнеров и последовательностей
     с генерацией исключений в случае нарушений требований
     */
@@ -103,6 +155,26 @@ namespace ural
                 throw std::logic_error("Container must be not empty!");
             }
         }
+
+        template <class ConstIterator>
+        static void assert_can_erase(ConstIterator first, ConstIterator last,
+                                     ConstIterator q)
+        {
+            if(!details::can_erase(first, last, q))
+            {
+                throw std::logic_error("Incorect position to erase");
+            }
+        }
+
+        template <class ConstIterator>
+        static void assert_can_erase(ConstIterator first, ConstIterator last,
+                                     ConstIterator q1, ConstIterator q2)
+        {
+            if(!details::can_erase(first, last, q1, q2))
+            {
+                throw std::logic_error("Incorect range to erase");
+            }
+        }
     };
 
     /** @brief Стратегия проверки для контейнеров и последовательностей,
@@ -134,6 +206,20 @@ namespace ural
         check_not_empty(Container const & c)
         {
             assert(c.empty() == false);
+        }
+
+        template <class ConstIterator>
+        static void assert_can_erase(ConstIterator first, ConstIterator last,
+                                     ConstIterator q)
+        {
+            assert(details::can_erase(first, last, q));
+        }
+
+        template <class ConstIterator>
+        static void assert_can_erase(ConstIterator first, ConstIterator last,
+                                     ConstIterator q1, ConstIterator q2)
+        {
+            assert(details::can_erase(first, last, q1, q2));
         }
     };
 
