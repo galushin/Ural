@@ -19,7 +19,6 @@
 
 /** @file ural/container/vector.hpp
  @brief Аналог <tt> std::vector </tt>
- @todo Куда должно относится требование "T is Erasable from X" из таблицы 96
 */
 
 #include <ural/memory.hpp>
@@ -513,8 +512,6 @@ namespace ural
         template <class InputSequence>
         void assign(InputSequence && seq)
         {
-            // @todo Проверки
-
             auto r = ural::copy(std::forward<InputSequence>(seq), *this);
 
             if(!r[ural::_1])
@@ -539,6 +536,7 @@ namespace ural
         template <class InputIterator>
         void assign(InputIterator first, InputIterator const last)
         {
+            // @todo Проверка, что first и last не ссылаются внутрь контейнера
             return this->assign(ural::make_iterator_sequence(first, last));
         }
 

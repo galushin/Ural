@@ -473,11 +473,16 @@ BOOST_AUTO_TEST_CASE(abs_fn_test)
 // Треугольник Паскаля
 #include <ural/numeric.hpp>
 #include <set>
-BOOST_AUTO_TEST_CASE(pascal_triangle_PE_203)
+#include <ural/container/flat_set.hpp>
+namespace
 {
-    std::set<int> const z = {1, 2, 3, 4, 5, 6, 7, 10, 15, 20, 21, 35};
+    typedef boost::mpl::list<std::set<int>, ural::flat_set<int>> PE_203_Set_types;
+}
+BOOST_AUTO_TEST_CASE_TEMPLATE(pascal_triangle_PE_203, Set, PE_203_Set_types)
+{
+    Set const z = {1, 2, 3, 4, 5, 6, 7, 10, 15, 20, 21, 35};
 
-    std::set<int> r;
+    Set r;
 
     auto seq = ural::pascal_triangle_rows_sequence<std::vector<int>>{};
 

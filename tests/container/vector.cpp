@@ -14,85 +14,26 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Общие требования (23.2)
-
 #include <ural/utility/tracers.hpp>
 #include <ural/container/vector.hpp>
 #include <ural/numeric/numbers_sequence.hpp>
 
+#include <boost/mpl/list.hpp>
 #include <boost/test/unit_test.hpp>
 
 #include <forward_list>
 
+// @todo Проверить значения по-умолчанию для шаблонных параметров
+// Общие требования (23.2)
 // @todo 23.2.1
 // Таблица 96
-BOOST_AUTO_TEST_CASE(vector_types_test)
+BOOST_AUTO_TEST_CASE(vector_value_type)
 {
     typedef int T;
     typedef ural::vector<T> Vector;
 
     // строка 1
     static_assert(std::is_same<Vector::value_type, T>::value, "");
-
-    // строка 2
-    static_assert(std::is_same<Vector::reference, T&>::value, "");
-
-    // строка 3
-    static_assert(std::is_same<Vector::const_reference, T const&>::value, "");
-
-    // итераторы
-    typedef Vector::iterator Iterator;
-    typedef std::iterator_traits<Iterator> Iterator_traits;
-
-    typedef Vector::const_iterator Const_iterator;
-    typedef std::iterator_traits<Const_iterator> Const_iterator_traits;
-
-    // строка 4
-    static_assert(std::is_convertible<Iterator_traits::iterator_category,
-                                      std::forward_iterator_tag>::value, "");
-    static_assert(std::is_same<Iterator_traits::value_type, T>::value, "");
-    static_assert(std::is_convertible<Iterator, Const_iterator>::value, "");
-
-    // строка 5
-    static_assert(std::is_convertible<Const_iterator_traits::iterator_category,
-                                      std::forward_iterator_tag>::value, "");
-    static_assert(std::is_same<Const_iterator_traits::value_type, T>::value, "");
-
-    // строка 6
-    typedef Vector::difference_type Difference;
-
-    static_assert(std::is_signed<Difference>::value, "");
-    static_assert(std::is_same<Difference, Iterator_traits::difference_type>::value, "");
-    static_assert(std::is_same<Difference, Const_iterator_traits::difference_type>::value, "");
-
-    // строка 7
-    typedef Vector::size_type Size;
-
-    // @todo Может быть отказаться от этого, раз Страуструп считает это ошибкой?
-    static_assert(std::is_unsigned<Size>::value, "");
-
-    static_assert(std::is_same<Size, std::make_unsigned<Difference>::type>::value, "");
-
-
-    BOOST_CHECK(true);
-}
-
-BOOST_AUTO_TEST_CASE(vector_construct_empty)
-{
-    // Регрессия: при вызове конструктора без параметров память не распределяется
-    typedef int T;
-    typedef ural::tracing_allocator<T> Alloc;
-    typedef ural::vector<T, Alloc> Vector;
-
-    // Строка 8
-    Alloc::reset_allocations_count();
-
-    Vector u;
-    BOOST_CHECK(u.empty());
-    BOOST_CHECK_EQUAL(Alloc::allocations_count(), 0U);
-
-    // Строка 9
-    BOOST_CHECK(Vector().empty());
 }
 
 BOOST_AUTO_TEST_CASE(vector_copy_constructor)
@@ -325,11 +266,22 @@ BOOST_AUTO_TEST_CASE(vector_allocator_constructor)
     // Строка 2
     static_assert(std::is_same<Alloc, decltype(Vector().get_allocator())>::value, "");
 
-    // Строка 3
-    auto const u_0 = Vector();
+    // Строка 3.1
+    // Регрессия: при вызове конструктора без параметров память не распределяется
+    Alloc::reset_allocations_count();
+
+    BOOST_CHECK(Vector().empty());
+    BOOST_CHECK(Vector().get_allocator() == Alloc());
+    BOOST_CHECK_EQUAL(Alloc::allocations_count(), 0U);
+
+    // Строка 3.2
+    Alloc::reset_allocations_count();
+
+    Vector u_0;
 
     BOOST_CHECK(u_0.empty());
     BOOST_CHECK(u_0.get_allocator() == Alloc());
+    BOOST_CHECK_EQUAL(Alloc::allocations_count(), 0U);
 
     // Строка 4
     Alloc alloc(42);
