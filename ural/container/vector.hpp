@@ -22,6 +22,7 @@
  @todo Куда должно относится требование "T is Erasable from X" из таблицы 96
 */
 
+#include <ural/memory.hpp>
 #include <ural/sequence/iterator_sequence.hpp>
 #include <ural/container/policy.hpp>
 #include <ural/sequence/taken.hpp>
@@ -47,6 +48,16 @@ namespace ural
                               ural::sequence_fwd<Output>(out));
         }
 
+        template <class T>
+        constexpr
+        typename std::conditional<!std::is_nothrow_move_constructible<T>::value
+                                  && std::is_move_constructible<T>::value,
+                                  T const &, T &&>::type
+        operator()(T & x) const
+        {
+            return std::move(x);
+        }
+
     private:
         template <class Input, class Output>
         tuple<Input, Output>
@@ -55,7 +66,7 @@ namespace ural
             // @todo Выразить через copy и transfrormed
             for(; !!in && !!out; ++ in, ++ out)
             {
-                *out = std::move_if_noexcept(*in);
+                *out = (*this)(*in);
             }
             return ural::make_tuple(std::move(in), std::move(out));
         }
@@ -77,6 +88,7 @@ namespace ural
             static_assert(std::tuple_size<decltype(y.members_)>::value == 4, "");
 
             using std::swap;
+
             // Первый обменивать не нужно, так как это объект и ссылка на него
             swap(x.members_[ural::_2], y.members_[ural::_2]);
             swap(x.members_[ural::_3], y.members_[ural::_3]);
@@ -137,10 +149,7 @@ namespace ural
         {
             if(x.allocator_ref() == this->allocator_ref())
             {
-                using std::swap;
-                swap(this->begin_ref(), x.begin_ref());
-                swap(this->end_ref(), x.end_ref());
-                swap(this->storage_end_ref(), x.storage_end_ref());
+                this->unsafe_swap_pointers(x);
             }
             else
             {
@@ -153,15 +162,12 @@ namespace ural
 
         buffer & operator=(buffer && x) noexcept
         {
-            static_assert(Traits::propagate_on_container_move_assignment::value, "");
-            // @todo Использовать Traits::is_always_equal
+            static_assert(Traits::propagate_on_container_move_assignment::value
+                          || ural::allocator_is_always_equal<allocator_type>::value, "");
 
             this->allocator_ref() = x.allocator_ref();
 
-            using std::swap;
-            swap(this->begin_ref(), x.begin_ref());
-            swap(this->end_ref(), x.end_ref());
-            swap(this->storage_end_ref(), x.storage_end_ref());
+            this->unsafe_swap_pointers(x);
 
             return *this;
         }
@@ -178,7 +184,11 @@ namespace ural
             return this->allocator_ref();
         }
 
-        void swap(buffer & x);
+        void swap(buffer & x)
+        {
+            ural::swap_allocators{}(this->allocator_ref(), x.allocator_ref());
+            this->unsafe_swap_pointers(x);
+        }
 
         // Итераторы
         pointer begin() const
@@ -275,6 +285,14 @@ namespace ural
         allocator_type const & allocator_ref() const
         {
             return members_[ural::_1];
+        }
+
+        void unsafe_swap_pointers(buffer & x)
+        {
+            using std::swap;
+            swap(this->begin_ref(), x.begin_ref());
+            swap(this->end_ref(), x.end_ref());
+            swap(this->storage_end_ref(), x.storage_end_ref());
         }
 
     private:
@@ -466,10 +484,10 @@ namespace ural
         @param x объект, содержимое которого будет перемещено в данный объект
         @post <tt> *this </tt> будет равен значению, которое @c x имел до
         вызова оператора
-        @todo Добавить в noexcept: || std::allocator_traits<allocator_type>::is_always_equal::value
         */
         vector & operator=(vector && x)
-            noexcept(std::allocator_traits<allocator_type>::propagate_on_container_move_assignment::value)
+            noexcept(std::allocator_traits<allocator_type>::propagate_on_container_move_assignment::value
+                     || ural::allocator_is_always_equal<allocator_type>::value)
         {
             data_ = std::move(x.data_);
             return *this;
@@ -955,7 +973,10 @@ namespace ural
 
         void swap(vector & x)
             noexcept(std::allocator_traits<allocator_type>::propagate_on_container_swap::value
-                     || std::allocator_traits<allocator_type>::is_always_equal::value);
+                     || ural::allocator_is_always_equal<allocator_type>::value)
+        {
+            data_.swap(x.data_);
+        }
 
         /** @brief Уничтожение всех элементов контейнера
         @post <tt> this->empty() </tt>
@@ -1000,6 +1021,12 @@ namespace ural
     private:
         buffer<value_type, allocator_type> data_;
     };
+
+    template <class T, class A, class P>
+    void swap(vector<T, A, P> & x, vector<T, A, P> & y)
+    {
+        return x.swap(y);
+    }
 }
 // namespace ural
 
