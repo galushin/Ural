@@ -378,6 +378,8 @@ namespace ural
         typedef typename Base::pointer pointer;
         typedef typename Base::const_pointer const_pointer;
 
+        typedef std::true_type propagate_on_container_copy_assignment;
+        typedef std::true_type propagate_on_container_move_assignment;
         typedef std::true_type propagate_on_container_swap;
 
         explicit tracing_allocator(int id = 0)

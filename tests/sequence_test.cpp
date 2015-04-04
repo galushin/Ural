@@ -15,12 +15,14 @@
 */
 
 #include <ural/sequence/sink.hpp>
+#include <ural/container/flat_set.hpp>
 #include <ural/algorithm.hpp>
 #include <ural/sequence/all.hpp>
 #include <ural/sequence/zip.hpp>
 #include <ural/sequence/map.hpp>
 #include <ural/sequence/progression.hpp>
 
+#include <boost/mpl/list.hpp>
 #include <boost/test/unit_test.hpp>
 
 #include <iterator>
@@ -463,13 +465,18 @@ BOOST_AUTO_TEST_CASE(set_inserter_container_access)
     BOOST_CHECK_EQUAL(&s, &seq.container());
 }
 
-BOOST_AUTO_TEST_CASE(set_inserter_test)
+namespace
+{
+    typedef boost::mpl::list<std::set<int>, ural::flat_set<int>> Int_set_types;
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(set_inserter_test, Set, Int_set_types)
 {
     std::vector<int> const xs = {1, 2, 3, 4, 5, 1, 3, 5, 2, 4, 6};
 
-    std::set<int> const z(xs.begin(), xs.end());
+    Set const z(xs.begin(), xs.end());
 
-    std::set<int> z_ural;
+    Set z_ural;
     ural::copy(xs, z_ural | ural::set_inserter);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),

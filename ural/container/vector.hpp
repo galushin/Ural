@@ -157,7 +157,20 @@ namespace ural
             }
         }
 
-        buffer & operator=(buffer const & x);
+        buffer & operator=(buffer const & x)
+        {
+            // @todo Что с распределителем памяти?
+            if(x.size() < this->size())
+            {
+                ural::copy(x, *this);
+                this->pop_back(this->size() - x.size());
+            }
+            else
+            {
+                buffer(x).swap(*this);
+            }
+            return *this;
+        }
 
         buffer & operator=(buffer && x) noexcept
         {
