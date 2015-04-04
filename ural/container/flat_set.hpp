@@ -86,8 +86,8 @@ namespace ural
         /// @brief Тип ссылки на константу
         typedef value_type const & const_reference;
 
-        /// @brief Тип итератора
-        typedef typename Data::iterator iterator;
+        /// @brief Тип итератора (смотри 23.2.4, абзац 6)
+        typedef typename Data::const_iterator iterator;
 
         /// @brief Тип константного итератора
         typedef typename Data::const_iterator const_iterator;
@@ -98,8 +98,8 @@ namespace ural
         /// @brief Тип размера
         typedef typename Data::size_type size_type;
 
-        /// @brief Тип обратного итератора
-        typedef typename Data::reverse_iterator reverse_iterator;
+        /// @brief Тип обратного итератора (смотри 23.2.4, абзац 6)
+        typedef typename Data::const_reverse_iterator reverse_iterator;
 
         /// @brief Тип константного обратного итератора
         typedef typename Data::const_reverse_iterator const_reverse_iterator;
@@ -152,7 +152,10 @@ namespace ural
          , data_(a)
         {}
 
-        explicit flat_set(flat_set const & x, allocator_type const & a);
+        explicit flat_set(flat_set const & x, allocator_type const & a)
+         : cmp_(x.cmp_)
+         , data_(x.data_, a)
+        {}
 
         explicit flat_set(flat_set && x, allocator_type const & a)
          : cmp_(std::move(x.cmp_))

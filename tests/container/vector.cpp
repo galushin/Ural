@@ -62,22 +62,6 @@ BOOST_AUTO_TEST_CASE(vector_non_member_swap_test)
     BOOST_CHECK(v2.get_allocator() == v1_allocator_old);
 }
 
-BOOST_AUTO_TEST_CASE(vector_copy_with_other_allocator)
-{
-    typedef int T;
-    typedef ural::tracing_allocator<T> Alloc;
-    typedef ural::vector<T, Alloc> Vector;
-
-    // Строка 5
-    Vector const t = {1, 2, 3, 4, 5};
-    Alloc alloc(42);
-
-    Vector const u(t, alloc);
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(t.begin(), t.end(), u.begin(), u.end());
-    BOOST_CHECK_EQUAL(alloc.id(), u.get_allocator().id());
-}
-
 BOOST_AUTO_TEST_CASE(vector_move_constructor_table_99)
 {
     typedef int T;

@@ -379,6 +379,22 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_allocator_constructor,
     BOOST_CHECK(u_1.get_allocator() == alloc);
 }
 
+BOOST_AUTO_TEST_CASE_TEMPLATE(container_copy_with_other_allocator,
+                              Container, Containers_types)
+{
+    typedef typename Container::allocator_type Alloc;
+
+    // Строка 5
+    Container const t = {1, 2, 3, 4, 5};
+
+    Alloc alloc(42);
+    Container const u(t, alloc);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(t.begin(), t.end(), u.begin(), u.end());
+    BOOST_CHECK_EQUAL(alloc.id(), u.get_allocator().id());
+    BOOST_CHECK(alloc == u.get_allocator());
+}
+
 // 23.2.3 Последовательные контейнеры
 // 23.2.4 Ассоциативные контейнеры
 // 23.2.5 Нуепорядоченные ассоциативные контейнеры
