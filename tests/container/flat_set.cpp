@@ -30,5 +30,10 @@ BOOST_AUTO_TEST_CASE(flat_set_default_template_parameters)
     static_assert(std::is_same<Set::allocator_type, std::allocator<T>>::value, "");
     static_assert(std::is_same<Set::policy_type, ural::vector<T>::policy_type>::value, "");
 
+    typedef std::greater<T> Greater;
+    typedef ural::flat_set<T, Greater> Set_greater;
+
+    static_assert(std::is_same<Set_greater::key_compare, Greater>::value, "");
+
     BOOST_CHECK(true);
 }

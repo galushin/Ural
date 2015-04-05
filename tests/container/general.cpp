@@ -167,7 +167,31 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_move_assign, Container, Containers_types
 }
 
 // @todo строка 13
+
 // @todo строки 14-17: итераторы
+BOOST_AUTO_TEST_CASE_TEMPLATE(container_iterators_getters_types,
+                              Container, Containers_types)
+{
+    typedef typename Container::iterator Iterator;
+    typedef typename Container::const_iterator CIterator;
+
+    Container v;
+    Container const & cr = v;
+
+    static_assert(std::is_same<decltype(v.begin()), Iterator>::value, "");
+    static_assert(std::is_same<decltype(cr.begin()), CIterator>::value, "");
+
+    static_assert(std::is_same<decltype(v.end()), Iterator>::value, "");
+    static_assert(std::is_same<decltype(cr.end()), CIterator>::value, "");
+
+    static_assert(std::is_same<decltype(v.cbegin()), CIterator>::value, "");
+    BOOST_CHECK(v.cbegin() == cr.begin());
+
+    static_assert(std::is_same<decltype(v.cend()), CIterator>::value, "");
+    BOOST_CHECK(v.cend() == cr.end());
+
+    BOOST_CHECK(true);
+}
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(container_equality_compare, Container, Containers_types)
 {
@@ -398,3 +422,32 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_copy_with_other_allocator,
 // 23.2.3 Последовательные контейнеры
 // 23.2.4 Ассоциативные контейнеры
 // 23.2.5 Нуепорядоченные ассоциативные контейнеры
+
+// Контейнеры с резервированием памяти
+namespace
+{
+    typedef boost::mpl::list<ural::vector<int, Allocator>,
+                             ural::flat_set<int, ural::use_default, Allocator>>
+        Reserving_containers;
+}
+
+// Качество реализации
+BOOST_AUTO_TEST_CASE_TEMPLATE(shrink_to_fit_test, Container, Reserving_containers)
+{
+    Container cs = {1, 3, 5, 7, 9};
+    auto const cs_old = cs;
+
+    cs.reserve(cs.size() * 2);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(cs.begin(), cs.end(),
+                                  cs_old.begin(), cs_old.end());
+    BOOST_CHECK_GT(cs.capacity(), cs.size());
+
+    cs.shrink_to_fit();
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(cs.begin(), cs.end(),
+                                  cs_old.begin(), cs_old.end());
+    BOOST_CHECK_EQUAL(cs.capacity(), cs.size());
+
+
+}

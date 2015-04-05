@@ -111,7 +111,8 @@ namespace ural
         /** @brief Конструктор
         @param cmp функция сравнения
         @param a распределитель памяти
-        @post <tt> this->value_compare() == cmp </tt>
+        @post <tt> this->empty() </tt>
+        @post <tt> this->value_comp() == cmp </tt>
         @post <tt> this->get_allocator() == a</tt>
         */
         explicit flat_set(value_compare const & cmp = value_compare(),
@@ -120,6 +121,18 @@ namespace ural
          , data_(a)
         {}
 
+        /**
+        @param first итератор, задающий начало последовательности значений,
+        которые должны быть вставлены
+        @param last итератор, задающий конец последовательности значений,
+        которые должны быть вставлены
+        @param cmp функция сравнения
+        @param a распределитель памяти
+        @post <tt> this->size() == std::distance(first, last) </tt>
+        @post <tt> std::equal(first, last, this->begin()) </tt>
+        @post <tt> this->value_compare() == cmp </tt>
+        @post <tt> this->get_allocator() == a</tt>
+        */
         template <class InputIterator>
         flat_set(InputIterator first, InputIterator last,
                  value_compare const & cmp = value_compare(),
@@ -132,31 +145,57 @@ namespace ural
         /** @brief Конструктор копий
         @param x копируемый контейнер
         @post <tt> *this == x </tt>
+        @post <tt> this->value_comp() == x.value_comp() </tt>
+        @todo Пост-условие для <tt> this->get_allocator() </tt>
         */
         flat_set(flat_set const & x) = default;
 
         /** @brief Конструктор перемещения
-        @param x копируемый контейнер
+        @param x контейнер, содержимое которого будет перемещено в <tt> *this </tt>
         @post <tt> *this </tt> равно значению, которое контейнер @c x имел до
         начала выполнения этого оператора
+        @post <tt> this->value_comp() </tt> равен значению, которое
+        <tt> x.value_comp() </tt> имел до вызова конструктора
+        @post <tt> this->get_allocator() </tt> равен значению, которое
+        <tt> x.get_allocator() </tt> имел до вызова конструктора
         */
         flat_set(flat_set && x) = default;
 
         /** @brief Конструктор на основе распределителя памяти
         @param a распределитель памяти
-        @post <tt> this->value_compare() == cmp </tt>
-        @post <tt> this->get_allocator() == allocator_type() </tt>
+        @post <tt> this->empty() </tt>
+        @post <tt> this->value_comp() == cmp </tt>
+        @post <tt> this->get_allocator() == a </tt>
         */
         explicit flat_set(allocator_type const & a)
          : cmp_()
          , data_(a)
         {}
 
+        /** @brief Создание копии контейнера с другим распределителем памяти
+        @param x контейнер, элементы которого копируются
+        @param a распределитель памяти
+        @post <tt> *this == x </tt>
+        @post <tt> this->value_comp() == x.value_comp() </tt>
+        @post <tt> this->get_allocator() == a </tt>
+        */
         explicit flat_set(flat_set const & x, allocator_type const & a)
          : cmp_(x.cmp_)
          , data_(x.data_, a)
         {}
 
+        /** @brief Контруктор перемещения с другим распределителем памяти
+        @param x контейнер, содрежимое которого должно быть перемещено
+        @param a распределитель памяти
+        @post <tt> this->value_comp() </tt> равен значению, которое
+        @post Если <tt> x.get_allocator() == a </tt>, то <tt> *this </tt>
+        будет владеть элементами, которые до вызова конструктора, принадлежали
+        @c x, в противном случае, создаёт контейнер, элементы которого
+        создаются с помощью конструктора перемещения из соответствующих
+        элементов контейнера @c x.
+        <tt> x.value_comp() </tt> имел до вызова конструктора
+        @post <tt> this->get_allocator() == a </tt>
+        */
         explicit flat_set(flat_set && x, allocator_type const & a)
          : cmp_(std::move(x.cmp_))
          , data_(std::move(x.data_), a)
@@ -311,8 +350,34 @@ namespace ural
             return data_.max_size();
         }
 
-        size_type capacity() const noexcept;
-        void reserve(size_type n);
+        /** @brief Ёмкость контейнера
+        @return Ёмкость контейнера, то есть количество элементов которое он
+        может вместить без перераспределения памяти
+        */
+        size_type capacity() const noexcept
+        {
+            return this->data_.capacity();
+        }
+
+        /** @brief Резервирование памяти для последующего использования
+        @param n желаемая ёмкость
+        @post Перераспределение памяти не будет производится, пока размер
+        контейнера не превысит @c n. Не может привести к уменьшению ёмкости.
+        Если распределение памяти произошло, то все ссылки, указатели и
+        итераторы становятся недействительными.
+        */
+        void reserve(size_type n)
+        {
+            return this->data_.reserve(n);
+        }
+
+        /** @brief Не обязатыельный к выполнению запрос на уменьшение ёмкости
+        до <tt> this->size() </tt>
+        */
+        void shrink_to_fit()
+        {
+            return this->data_.shrink_to_fit();
+        }
 
         // Модификаторы
         template <class... Args>
@@ -327,9 +392,9 @@ namespace ural
         контейнере нет элементов, эквивалентных @c x.
         @brief Вставка элемента в контейнер
         @param x вставляемый элемент
-        @return Пару, состоящую из итератор и булевого значения. Булево значение
-        показывает, был ли новый элемент вставлен в контейнер. Итератор
-        ссыалается на элемент, эквивалентный @c x
+        @return Пара, состоящую из итератора и булевого значения.
+        Булево значение показывает, был ли новый элемент вставлен в контейнер.
+        Итератор ссыалается на элемент, эквивалентный @c x.
         */
         std::pair<iterator, bool>
         insert(value_type const & x)
@@ -349,16 +414,30 @@ namespace ural
 
         std::pair<iterator, bool> insert(value_type &&);
 
-        iterator insert(const_iterator position, value_type const & x);
+        iterator insert(const_iterator position, value_type const & x)
+        {
+            // @todo оптимизация
+
+            // Используем общий алгоритм
+            return this->insert(x).first;
+        }
+
         iterator insert(const_iterator position, value_type && x);
 
         template <class InputIterator>
         void insert(InputIterator first, InputIterator last)
         {
-            // @todo Оптимизация
+            if(first == last)
+            {
+                return;
+            }
+
+            auto hint = this->insert(*first).first + 1;
+            ++ first;
+
             for(; first != last; ++ first)
             {
-                this->insert(*first);
+                hint = this->insert(hint, *first) + 1;
             }
         }
 
@@ -379,31 +458,45 @@ namespace ural
         void clear() noexcept;
 
         // Свойства
+        /** @brief Функция сравнения ключей
+        @return Функциональный объект, используемый для сравнения ключей
+        */
         key_compare key_comp() const;
 
+        /** @brief Функция сравнения значений
+        @return <tt> this->key_comp() </tt>
+        */
         value_compare value_comp() const;
 
         // Операции над множествами
+        //@{
         iterator find(key_type const & x);
         const_iterator find(key_type const & x) const;
+        //@}
 
         size_type count(key_type const & x) const;
 
+        //@{
         iterator lower_bound(key_type const & x)
         {
             return std::lower_bound(this->begin(), this->end(), x, this->cmp_);
         }
 
         const_iterator lower_bound(key_type const & x) const;
+        //@}
 
+        //@{
         iterator upper_bound(key_type const & x);
         const_iterator upper_bound(key_type const & x) const;
+        //@}
 
+        //@{
         std::pair<iterator, iterator>
         equal_range(key_type const & x);
 
         std::pair<const_iterator, const_iterator>
         equal_range(key_type const & x) const;
+        //@}
 
     private:
         value_compare cmp_;

@@ -237,12 +237,12 @@ namespace ural
                 return;
             }
 
-            buffer<value_type, allocator_type &>
-                new_buffer(this->allocator_ref(), n);
+            this->reserve_aux(n);
+        }
 
-            ural::move_if_noexcept(*this, new_buffer | ural::back_inserter);
-
-            buffer_swapper{}(*this, new_buffer);
+        void shrink_to_fit()
+        {
+            this->reserve_aux(this->size());
         }
 
         // Добавление элементов
@@ -279,6 +279,18 @@ namespace ural
         }
 
     private:
+        void reserve_aux(size_type n)
+        {
+            assert(n >= this->size());
+
+            buffer<value_type, allocator_type &>
+                new_buffer(this->allocator_ref(), n);
+
+            ural::move_if_noexcept(*this, new_buffer | ural::back_inserter);
+
+            buffer_swapper{}(*this, new_buffer);
+        }
+
         pointer & begin_ref()
         {
             return members_[ural::_2];
@@ -389,11 +401,17 @@ namespace ural
         // Конструкторы
         /** @brief Создание пустого контейнера
         @post <tt> this->empty() </tt>
+        @post <tt> this->get_allocator() == allocator_type{} </tt>
         */
         vector() noexcept
          : vector(allocator_type())
         {}
 
+        /** @brief Создание пустого контейнера с заданным распределителем
+        памяти
+        @post <tt> this->empty() </tt>
+        @post <tt> this->get_allocator() == a </tt>
+        */
         explicit vector(allocator_type const & a) noexcept
          : data_(a)
         {}
@@ -403,6 +421,8 @@ namespace ural
         @param n количество элементов
         @param a распределитель памяти
         @pre @c value_type должен быть @c DefaultInsertable для <tt> *this </tt>
+        @post <tt> this->size() == n </tt>
+        @post <tt> this->get_allocator() == a </tt>
         */
         explicit vector(size_type n, allocator_type const & a = allocator_type())
          : data_(a, n)
@@ -418,6 +438,7 @@ namespace ural
         @post <tt> this->size() == n </tt>
         @post Для любого @c i из интервала <tt> [0; this->size()) </tt>
         выполняется <tt> (*this)[i] == value </tt>
+        @post <tt> this->get_allocator() == a </tt>
         */
         vector(size_type const n, value_type const & value,
                allocator_type const & a = allocator_type{})
@@ -430,11 +451,14 @@ namespace ural
         @tparam InputIterator тип итератора
         @param first итератор, задающий начало интервала
         @param last итератор, задающий конец интервала
+        @pre <tt> [first; last) </tt> должен быть действительным интервалом
         @pre @c T должен быть @c EmplaceConstructible для @c vector из
         <tt> *i </tt>.
         @pre Если @c InputIterator не удовлетворяет требованиям к прямым
         итераторам, то @c T должен быть @c MoveInsertable для @c vector.
         @post <tt> this->size() == std::distance(first, last) </tt>
+        @post <tt> std::equal(this->begin(), this->end(), first) </tt>
+        @post <tt> this->get_allocator() == a </tt>
         */
         template <class InputIterator>
         vector(InputIterator first, InputIterator last,
@@ -450,6 +474,7 @@ namespace ural
         @param xs копируемый вектор
         @pre @c T должно быть @c CopyInsertable для @c vector
         @post <tt> *this == xs </tt>
+        @todo Пост-условие для <tt> this->get_allocator() </tt>
         */
         vector(vector const & xs) = default;
 
@@ -459,6 +484,8 @@ namespace ural
         исключений
         @post <tt> *this </tt> будет иметь то же значение, что было у @c x
         перед выполнением конструктора
+        @post <tt> this->get_allocator() </tt> равен распределителю памяти,
+        который был у @c x до выполнения конструктора.
         */
         vector(vector && x) noexcept
          : data_(std::move(x.data_))
@@ -476,6 +503,16 @@ namespace ural
             this->assign(xs.begin(), xs.end());
         }
 
+        /** @brief Контруктор перемещения с другим распределителем памяти
+        @param x контейнер, содрежимое которого должно быть перемещено
+        @param a распределитель памяти
+        @post <tt> this->get_allocator() == a </tt>
+        @post Если <tt> x.get_allocator() == a </tt>, то <tt> *this </tt>
+        будет владеть элементами, которые до вызова конструктора, принадлежали
+        @c x, в противном случае, создаёт контейнер, элементы которого
+        создаются с помощью конструктора перемещения из соответствующих
+        элементов контейнера @c x.
+        */
         vector(vector && x, allocator_type const & a) noexcept
          : data_(std::move(x.data_), a)
         {}
@@ -483,6 +520,7 @@ namespace ural
         /** @brief Конструктор на основе списка инициализаторов
         @param values список инициализаторов
         @post Эквивалентно <tt> vector(values.begin(), value.end()) </tt>
+        @post <tt> this->get_allocator() </tt>
         */
         vector(std::initializer_list<value_type> values,
                allocator_type const & a = allocator_type())
@@ -553,6 +591,12 @@ namespace ural
             return this->assign(ural::make_iterator_sequence(first, last));
         }
 
+        /** @brief Замена элементов контейнера на @c n элементов, каждый из
+        которых равен @c value
+        @param n количество элементов
+        @param value значение элементов
+        @post <tt> *this == vector(n, value) </tt>
+        */
         void assign(size_type n, value_type const & value)
         {
             // @todo Устранить дублирование
@@ -670,11 +714,21 @@ namespace ural
             return std::distance(this->begin(), this->end());
         }
 
+        /** @brief Наибольший размер
+        @return Наибольший возможный размер контейнера
+        */
         size_type max_size() const noexcept
         {
             return data_.max_size();
         }
 
+        /** @brief Изменение размера контейнера
+        @param new_size новый размер контейнера
+        @post Если <tt> new_size > this->size() </tt>, то вставляет в конец
+        контейнера <tt> new_size - this->size() </tt> элементов, созданных
+        конструктором без аргументов, в противном случае эквивалентно
+        вызову функции @c pop_back <tt> this->size() - new_size </tt> раз.
+        */
         void resize(size_type new_size)
         {
             if(new_size < this->size())
@@ -693,6 +747,14 @@ namespace ural
             }
         }
 
+        /** @brief Изменение размера контейнера
+        @param new_size новый размер контейнера
+        @param c значение новых элементов
+        @post Если <tt> new_size > this->size() </tt>, то вставляет в конец
+        контейнера <tt> new_size - this->size() </tt> копий @c c, в противном
+        случае эквивалентно вызову функции @c pop_back
+        <tt> this->size() - new_size </tt> раз.
+        */
         void resize(size_type new_size, value_type const & c)
         {
             if(new_size < this->size())
@@ -715,17 +777,33 @@ namespace ural
             return data_.capacity();
         }
 
+        /** @breif Проверка пустоты контейнера
+        @return <tt> this->begin() == this->end() </tt>
+        */
         bool empty() const noexcept
         {
             return this->begin() == this->end();
         }
 
+        /** @brief Резервирование памяти для последующего использования
+        @param n желаемая ёмкость
+        @post Перераспределение памяти не будет производится, пока размер
+        контейнера не превысит @c n. Не может привести к уменьшению ёмкости.
+        Если распределение памяти произошло, то все ссылки, указатели и
+        итераторы становятся недействительными.
+        */
         void reserve(size_type n)
         {
             data_.reserve(n);
         }
 
-        void shrink_to_fit();
+        /** @brief Не обязатыельный к выполнению запрос на уменьшение ёмкости
+        до <tt> this->size() </tt>
+        */
+        void shrink_to_fit()
+        {
+            this->data_.shrink_to_fit();
+        }
 
         // Доступ к элементам
         //@{
@@ -831,6 +909,14 @@ namespace ural
 
         // 23.3.6.5 Модификаторы
         // Вставка элементов
+        /** @brief Размещение нового элемента в конце контейнера
+        @param args аргументы конструктора для создания нового элемента
+        @post <tt> this->back() </tt> равно
+        <tt> T(std::forward<Args>(args)...) </tt>
+        @post Приводит к перераспределению памяти, если
+        <tt> this->size() == this->capacity() </tt>. В этом случае все ссылки,
+        указатели и итераторы становятся недействительными.
+        */
         template <class... Args>
         void emplace_back(Args && ... args)
         {
@@ -842,6 +928,15 @@ namespace ural
             data_.emplace_back(std::forward<Args>(args)...);
         }
 
+        //@{
+        /** @brief Вставка элемента в конец контейнера
+        @param x значение, которое должно быть вставлено
+        @post <tt> this->back() </tt> равно значению, которое @c x имел до
+        вызова функции.
+        @post Приводит к перераспределению памяти, если
+        <tt> this->size() == this->capacity() </tt>. В этом случае все ссылки,
+        указатели и итераторы становятся недействительными.
+        */
         void push_back(value_type const & x)
         {
             this->emplace_back(x);
@@ -851,6 +946,7 @@ namespace ural
         {
             this->emplace_back(std::move(x));
         }
+        //@}
 
         /** @brief Уничтожает последний элемент
         @pre <tt> this->empty() == false </tt>
@@ -917,6 +1013,13 @@ namespace ural
                                      std::move(s), Category{});
         }
 
+        /** @brief Вставка копий заданного значения в заданную точку
+        @param position позиция, перед которой должны быть вставлены новые
+        элементы
+        @param n количесвто элементов
+        @param value значение элементов
+        @return Итератор, ссылающийся на первый вставленный элемент
+        */
         iterator insert(const_iterator position, size_type const n, value_type const & value)
         {
             // @todo Проверки
@@ -962,6 +1065,14 @@ namespace ural
             return this->insert(position, begin(values), end(values));
         }
 
+        /** @brief Удаление элемента из контейнера
+        @param position итератор, ссылающийся на элемент который должен быть
+        удалён
+        @pre @c position должен быть итератором, ссылающимся на один из
+        элементов <tt> *this </tt>
+        @return Итератор, следующий за @c position до выполнения данной функции.
+        Если такого итератора нет, то <tt> this->end() </tt>
+        */
         iterator erase(const_iterator position)
         {
             policy_type::assert_can_erase(this->cbegin(), this->cend(), position);
@@ -969,6 +1080,16 @@ namespace ural
             return this->erase(position, position+1);
         }
 
+        /** @brief Удаление последовательности элементов из контейнера
+        @param first итератор, задающий начало последовательности элементов,
+        которые должны быть удалены
+        @param last итератор, задающий конец последовательности элементов,
+        которые должны быть удалены
+        @pre <tt> [first; last) </tt> должен быть действительным интервалом
+        элеметов контейнера <tt> *this </tt>
+        @return Итератор, ссылающийся на тот же элемент, что @c last до начала
+        выполнения функции. Если такого элемента нет, то <tt> this->end() </tt>
+        */
         iterator erase(const_iterator first, const_iterator last)
         {
             policy_type::assert_can_erase(this->cbegin(), this->cend(),
@@ -993,6 +1114,13 @@ namespace ural
             return result;
         }
 
+        /** @brief Обмен содержимого @c x и <tt> *this </tt>
+        @post Содержимое <tt> *this </tt> и @c x меняются местами
+        @post Обменивает распределители памяти контейнеров, если
+        <tt> std::allocator_traits<allocator_type>::propagate_on_container_swap::value </tt>
+        равно @b true. Если же это значение равно @b false, а распределители
+        памяти не равны, то поведение не определено.
+        */
         void swap(vector & x)
             noexcept(std::allocator_traits<allocator_type>::propagate_on_container_swap::value
                      || ural::allocator_is_always_equal<allocator_type>::value)
