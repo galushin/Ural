@@ -20,9 +20,6 @@
 /** @file ural/container/flat_map.hpp
  @brief Аналог <tt> std::set </tt>, хранящий элементы в виде массива, а не
  дерева.
- @todo Дополнить возможностями, связанными с "векторной реализацией"
- @todo Проверить, что при пустой функции сравнения размер объекта не
- увеличивается
 */
 
 #include <ural/container/vector.hpp>
@@ -38,6 +35,9 @@ namespace ural
     использовать, когда удаление элементов производится гораздо реже, чем
     пиоск, а сохранение действительности итераторов при вставке и удалении
     элементов не требуется.
+    В дополнение к операциям, определённым для <tt> std::map </tt>, данный
+    шаблон предоставляет некоторые функции, связанные с непрерывностью
+    контейнера: @c data, @c capacity, @c reserve и @c shrink_to_fit.
     @brief Упорядоченное множество, аналог <tt> std::map </tt>
     @tparam Key тип ключа
     @tparam Compare тип функции сравнения
@@ -117,8 +117,7 @@ namespace ural
         */
         explicit flat_set(value_compare const & cmp = value_compare(),
                           allocator_type const & a = allocator_type())
-         : cmp_(cmp)
-         , data_(a)
+         : members_(cmp, Data(a))
         {}
 
         /**
@@ -146,7 +145,9 @@ namespace ural
         @param x копируемый контейнер
         @post <tt> *this == x </tt>
         @post <tt> this->value_comp() == x.value_comp() </tt>
-        @todo Пост-условие для <tt> this->get_allocator() </tt>
+        @post <tt> this->get_allocator() </tt> равен
+        <tt> AT::select_on_container_copy_construction(x.get_allocator()) </tt>,
+        где @c AT есть <tt> std::allocator_traits<vector::allocator_type> </tt>.
         */
         flat_set(flat_set const & x) = default;
 
@@ -168,8 +169,7 @@ namespace ural
         @post <tt> this->get_allocator() == a </tt>
         */
         explicit flat_set(allocator_type const & a)
-         : cmp_()
-         , data_(a)
+         : members_(value_compare(), Data(a))
         {}
 
         /** @brief Создание копии контейнера с другим распределителем памяти
@@ -180,8 +180,7 @@ namespace ural
         @post <tt> this->get_allocator() == a </tt>
         */
         explicit flat_set(flat_set const & x, allocator_type const & a)
-         : cmp_(x.cmp_)
-         , data_(x.data_, a)
+         : members_(x.members_[ural::_1], Data(x.members_[ural::_2], a))
         {}
 
         /** @brief Контруктор перемещения с другим распределителем памяти
@@ -197,8 +196,8 @@ namespace ural
         @post <tt> this->get_allocator() == a </tt>
         */
         explicit flat_set(flat_set && x, allocator_type const & a)
-         : cmp_(std::move(x.cmp_))
-         , data_(std::move(x.data_), a)
+         : members_(std::move(x.members_[ural::_1]),
+                    Data(std::move(x.members_[ural::_2]), a))
         {}
 
         /** @brief Конструктор на основе списка инициализаторов
@@ -240,7 +239,7 @@ namespace ural
         */
         allocator_type get_allocator() const noexcept
         {
-            return this->data_.get_allocator();
+            return this->members_[ural::_2].get_allocator();
         }
 
         // Итераторы
@@ -250,12 +249,12 @@ namespace ural
         */
         iterator begin() noexcept
         {
-            return this->data_.begin();
+            return this->members_[ural::_2].begin();
         }
 
         const_iterator begin() const noexcept
         {
-            return this->data_.begin();
+            return this->members_[ural::_2].begin();
         }
 
         const_iterator cbegin() const noexcept
@@ -271,12 +270,12 @@ namespace ural
         */
         iterator end() noexcept
         {
-            return this->data_.end();
+            return this->members_[ural::_2].end();
         }
 
         const_iterator end() const noexcept
         {
-            return this->data_.end();
+            return this->members_[ural::_2].end();
         }
 
         const_iterator cend() const noexcept
@@ -291,12 +290,12 @@ namespace ural
         */
         reverse_iterator rbegin() noexcept
         {
-            return this->data_.rbegin();
+            return this->members_[ural::_2].rbegin();
         }
 
         const_reverse_iterator rbegin() const noexcept
         {
-            return this->data_.rbegin();
+            return this->members_[ural::_2].rbegin();
         }
 
         const_reverse_iterator crbegin() const noexcept
@@ -311,12 +310,12 @@ namespace ural
         */
         reverse_iterator rend() noexcept
         {
-            return this->data_.rend();
+            return this->members_[ural::_2].rend();
         }
 
         const_reverse_iterator rend() const noexcept
         {
-            return this->data_.rend();
+            return this->members_[ural::_2].rend();
         }
 
         const_reverse_iterator crend() const noexcept
@@ -331,7 +330,7 @@ namespace ural
         */
         bool empty() const noexcept
         {
-            return data_.empty();
+            return this->members_[ural::_2].empty();
         }
 
         /** @brief Размер контейнера
@@ -339,7 +338,7 @@ namespace ural
         */
         size_type size() const noexcept
         {
-            return data_.size();
+            return this->members_[ural::_2].size();
         }
 
         /** @brief Наибольший возможный размер
@@ -347,7 +346,7 @@ namespace ural
         */
         size_type max_size() const noexcept
         {
-            return data_.max_size();
+            return this->members_[ural::_2].max_size();
         }
 
         /** @brief Ёмкость контейнера
@@ -356,7 +355,7 @@ namespace ural
         */
         size_type capacity() const noexcept
         {
-            return this->data_.capacity();
+            return this->members_[ural::_2].capacity();
         }
 
         /** @brief Резервирование памяти для последующего использования
@@ -368,7 +367,7 @@ namespace ural
         */
         void reserve(size_type n)
         {
-            return this->data_.reserve(n);
+            return this->members_[ural::_2].reserve(n);
         }
 
         /** @brief Не обязатыельный к выполнению запрос на уменьшение ёмкости
@@ -376,7 +375,13 @@ namespace ural
         */
         void shrink_to_fit()
         {
-            return this->data_.shrink_to_fit();
+            return this->members_[ural::_2].shrink_to_fit();
+        }
+
+        // Доступ к данным
+        value_type const * data() const
+        {
+            return this->members_[ural::_2].data();
         }
 
         // Модификаторы
@@ -401,13 +406,13 @@ namespace ural
         {
             auto pos = this->lower_bound(x);
 
-            if(pos != this->end() && !cmp_(x, *pos))
+            if(pos != this->end() && !this->members_[ural::_1](x, *pos))
             {
                 return std::make_pair(pos, false);
             }
             else
             {
-                pos = data_.insert(pos, x);
+                pos = this->members_[ural::_2].insert(pos, x);
                 return std::make_pair(pos, true);
             }
         }
@@ -450,9 +455,7 @@ namespace ural
         void swap(flat_set & x)
         {
             using std::swap;
-
-            swap(this->cmp_, x.cmp_);
-            this->data_.swap(x.data_);
+            swap(this->members_, x.members_);
         }
 
         void clear() noexcept;
@@ -461,12 +464,18 @@ namespace ural
         /** @brief Функция сравнения ключей
         @return Функциональный объект, используемый для сравнения ключей
         */
-        key_compare key_comp() const;
+        key_compare key_comp() const
+        {
+            return this->members_[ural::_1];
+        }
 
         /** @brief Функция сравнения значений
         @return <tt> this->key_comp() </tt>
         */
-        value_compare value_comp() const;
+        value_compare value_comp() const
+        {
+            return this->key_comp();
+        }
 
         // Операции над множествами
         //@{
@@ -479,7 +488,8 @@ namespace ural
         //@{
         iterator lower_bound(key_type const & x)
         {
-            return std::lower_bound(this->begin(), this->end(), x, this->cmp_);
+            return std::lower_bound(this->begin(), this->end(), x,
+                                    this->value_comp());
         }
 
         const_iterator lower_bound(key_type const & x) const;
@@ -499,8 +509,7 @@ namespace ural
         //@}
 
     private:
-        value_compare cmp_;
-        Data data_;
+        tuple<value_compare, Data> members_;
     };
 }
 // namespace ural

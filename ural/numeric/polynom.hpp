@@ -23,43 +23,88 @@
  @todo Вся арифметика многочленов: разделить, вычислить остаток от деления
 */
 
+#include <ural/sequence/transform.hpp>
+#include <ural/container/vector.hpp>
 #include <ural/sequence/sink.hpp>
 
 #include <boost/operators.hpp>
 
 namespace ural
 {
+    /** @brief Функциональный объект накопитель для вычисления значений
+    многочленов по схеме Горнера
+    @tparam R тип значения многочлена
+    @tparam X тип аргумента многочлена
+    */
     template <class R, class X>
     class horner_accumulator
     {
     public:
-        explicit horner_accumulator(R r0, X x)
-         : data_{std::move(r0), std::move(x)}
+        /** @brief Конструктор
+        @param x значение аргумента
+        @post <tt> this->value() == R(0) </tt>
+        @post <tt> this->argument() == x </tt>
+        */
+        explicit horner_accumulator(X x)
+         : data_{R(0), std::move(x)}
         {}
 
+        /** @brief Конструктор
+        @param x значение аргумента
+        @post <tt> this->value() == r0 </tt>
+        @post <tt> this->argument() == x </tt>
+        */
+        horner_accumulator(X x, R r0)
+         : data_(std::move(r0), std::move(x))
+        {}
+
+        /** @brief Обновление значения
+        @param c очередной коэффициент
+        @return <tt> *this </tt>
+        @post <tt> this->value() </tt> будет равно
+        <tt> old_value * this->argument() + std::forward<C>(c) </tt>,
+        где @c old_value -- значение <tt> this->value() </tt> до выполнения
+        этой операции.
+        */
         template <class C>
         horner_accumulator &
-        operator()(C && arg)
+        operator()(C && c)
         {
             data_[ural::_1] = std::move(data_[ural::_1]) * data_[ural::_2]
-                            + std::forward<C>(arg);
+                            + std::forward<C>(c);
             return *this;
         }
 
+        /** @brief Текущее накопленное значение
+        @return Текущее накопленное значение
+        */
         R const & value() const
         {
             return data_[ural::_1];
+        }
+
+        /** @brief Точка, в которой вычисляется значение многочлена
+        @return Точка, в которой вычисляется значение аргумента
+        */
+        X const & argument() const
+        {
+            return this->data_[ural::_2];
         }
 
     private:
         ural::tuple<R, X> data_;
     };
 
-    /**
+    /** Обобщённая функция вычисления значения многочлена, заданного в виде
+    контейнера коэффициентов, в указанной точке.
     С одной стороны, многочлен может иметь нулевую степень, тогда тип результата
     будет совпадать с типом коэффициента. С другой стороны, рассмотрим многочлен
     с целыми коэффициентами и вещественными переменными. Его значения должны
     быть вещественными.
+    @brief Обобщённая функция вычисления значений многочленов
+    @param in последовательность коэффициентов
+    @param x значение точки, в которой вычисляется многочлен
+    @return Значение многочлена с коэффициентами @c in в точке @c x
     */
     template <class Input, class X>
     auto polynom(Input && in, X const & x)
@@ -69,9 +114,12 @@ namespace ural
 
         typedef decltype(sequence(in).front() * x) result_type;
 
-        assert(!!s);
+        if(!s)
+        {
+            return result_type(0);
+        }
 
-        horner_accumulator<result_type, X> acc(*s, std::cref(x));
+        horner_accumulator<result_type, X const &> acc(x, *s);
         ++ s;
 
         return ural::for_each(std::move(s), acc).value();
@@ -136,7 +184,7 @@ namespace ural
     @tparam A тип коэффициентов
     @tparam X тип аргументов
     @tparam Alloc тип распределителя памяти
-    @todo Конструктор с парой итераторов. Выразить через него конструктор со списком
+    @todo Нужно ли согласовать порядок коэффициентов с функцией @c polynom?
     */
     template <class A, class X = void, class Alloc = std::allocator<A> >
     class polynomial
@@ -155,7 +203,7 @@ namespace ural
         typedef A coefficient_type;
 
         /// @brief Тип контейнера коэффициентов
-        typedef std::vector<coefficient_type, Alloc> coefficients_container;
+        typedef ural::vector<coefficient_type, Alloc> coefficients_container;
 
         /// @brief Тип для представления размера
         typedef typename coefficients_container::size_type size_type;
@@ -168,20 +216,17 @@ namespace ural
          : cs_(1, coefficient_type{0})
         {}
 
-        /** @brief Конструктор на основе последовательности, заданной парой
-        итераторов
-        @param first итератор, задающий начало последовательности
-        @param last итератор, задающий конец последовательности
-        @pre <tt> [first; last) </tt> должен быть корректным интервалом
+        /** @brief Конструктор на основе последовательности
+        @param in входная последовательность
         @todo написать пост-условие
         */
-        template <class InputIterator>
-        polynomial(InputIterator first, InputIterator last)
-         : cs_{}
+        template <class InputSequence>
+        explicit polynomial(InputSequence && in)
+         : cs_()
         {
             auto const zero = coefficient_type{0};
 
-            auto seq = find(ural::make_iterator_sequence(first, last),
+            auto seq = find(ural::sequence_fwd<InputSequence>(in),
                             zero, not_equal_to<>{});
 
             if (!seq)
@@ -190,10 +235,22 @@ namespace ural
             }
             else
             {
-                cs_.assign(seq.begin(), seq.end());
+                cs_.assign(std::move(seq));
                 ural::reverse(cs_);
             }
         }
+
+        /** @brief Конструктор на основе последовательности, заданной парой
+        итераторов
+        @param first итератор, задающий начало последовательности
+        @param last итератор, задающий конец последовательности
+        @pre <tt> [first; last) </tt> должен быть корректным интервалом
+        @post <tt> *this == polynomial(make_iterator_sequence(first, last)) </tt>
+        */
+        template <class InputIterator>
+        polynomial(InputIterator first, InputIterator last)
+         : polynomial(ural::make_iterator_sequence(first, last))
+        {}
 
         /** @brief Конструктор на основе списка коэффициентов
         @param cs список коэффициентов
@@ -210,6 +267,7 @@ namespace ural
         */
         polynomial & operator+=(polynomial const & p)
         {
+            // @todo Заменить на алгоритмы ural
             auto const old_size = cs_.size();
 
             if(p.degree() > this->degree())
@@ -237,6 +295,7 @@ namespace ural
         */
         polynomial & operator-=(polynomial const & p)
         {
+            // @todo Заменить на алгоритмы ural
             // @todo Устранить дублирование с +=
             auto const old_size = cs_.size();
 
@@ -302,16 +361,12 @@ namespace ural
         }
 
         /** @brief Унарный минус
+        @return Многочлен, коэффициенты которого равны соответствующим
+        коэффициентам <tt> *this </tt>, взятым с обратным знаком.
         */
         polynomial operator-() const
         {
-            polynomial r = *this;
-
-            // @todo заменить на алгоритм ural
-            std::transform(r.cs_.begin(), r.cs_.end(), r.cs_.begin(),
-                           ural::negate<coefficient_type>{});
-
-            return r;
+            return polynomial(this->cs_ | reversed | transformed(ural::negate<>{}));
         }
 
         // Свойства

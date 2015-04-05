@@ -202,11 +202,15 @@ namespace ural
         return s;
     }
 
-    namespace details
+    /** @brief Функциональный объект, вычисляющий размер массивов/контейнеров
+    и последовательностей
+    */
+    class size_fn
     {
+    private:
         template <class Sequence>
-        typename Sequence::distance_type
-        size(Sequence const & s, single_pass_traversal_tag)
+        static typename Sequence::distance_type
+        size_impl(Sequence const & s, single_pass_traversal_tag)
         {
             typename Sequence::distance_type n{0};
 
@@ -219,25 +223,41 @@ namespace ural
         }
 
         template <class Sequence>
-        typename Sequence::distance_type
-        size(Sequence const & s, random_access_traversal_tag)
+        static typename Sequence::distance_type
+        size_impl(Sequence const & s, random_access_traversal_tag)
         {
             return s.size();
         }
-    }
-    // namespace details
 
-    /** @brief Размер последовательности
-    @param s последовательность
-    @return Количество непройденных элементов последовательности
-    @todo преобразовать в функциональный объект
-    */
-    template <class Sequence>
-    typename Sequence::distance_type
-    size(Sequence const & s)
-    {
-        return ::ural::details::size(s, ural::make_traversal_tag(s));
-    }
+    public:
+        /** @brief Размер последовательности
+        @param s последовательность
+        @return Количество непройденных элементов последовательности
+        */
+        template <class Sequence>
+        typename Sequence::distance_type
+        operator()(Sequence const & s) const
+        {
+            return this->size_impl(s, ural::make_traversal_tag(s));
+        }
+
+        /** @brief Размер контейнера
+        @param c контейнер
+        @return <tt> this->size() </tt>
+        */
+        template <class Container>
+        typename Container::size_type
+        operator()(Container const & c) const;
+
+        /** @brief Размер массива
+        @tparam N количество элементов
+        @param a массив
+        @return @c N
+        */
+        template <class T, size_t N>
+        size_t operator()(T(&a)[N]) const;
+    };
+    auto constexpr size = ural::size_fn{};
 
     /** @brief Тип функционального объекта для продвижения последовательности на
     заданное число шагов

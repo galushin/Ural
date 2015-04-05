@@ -21,6 +21,7 @@
  @brief Аналог <tt> std::vector </tt>
 */
 
+#include <ural/container/container_facade.hpp>
 #include <ural/memory.hpp>
 #include <ural/sequence/iterator_sequence.hpp>
 #include <ural/container/policy.hpp>
@@ -341,17 +342,8 @@ namespace ural
     */
     template <class T, class Alloc = use_default, class Policy = use_default>
     class vector
+     : ural::container_facade<vector<T, Alloc, Policy>>
     {
-    friend bool operator==(vector const & x, vector const & y)
-    {
-        return ural::equal(x, y);
-    }
-
-    friend bool operator<(vector const & x, vector const & y)
-    {
-        return ural::lexicographical_compare(x, y);
-    }
-
     public:
         // Типы
         /// @brief Тип значений
@@ -585,7 +577,8 @@ namespace ural
         @post <tt> *this == vector(first, last) </tt>
         */
         template <class InputIterator>
-        void assign(InputIterator first, InputIterator const last)
+        typename disable_if<std::is_integral<InputIterator>::value, void>::type
+        assign(InputIterator first, InputIterator const last)
         {
             // @todo Проверка, что first и last не ссылаются внутрь контейнера
             return this->assign(ural::make_iterator_sequence(first, last));
@@ -1171,12 +1164,6 @@ namespace ural
     private:
         buffer<value_type, allocator_type> data_;
     };
-
-    template <class T, class A, class P>
-    void swap(vector<T, A, P> & x, vector<T, A, P> & y)
-    {
-        return x.swap(y);
-    }
 }
 // namespace ural
 

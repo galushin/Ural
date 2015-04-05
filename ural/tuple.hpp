@@ -192,6 +192,12 @@ namespace details
 }
 // namespace details
 
+    /** @brief Применение функционального объекта к каждому из элементов
+    котрежа
+    @param t кортеж
+    @param f функциональный объект
+    @return Копия @c f, применённая ко всем элементам @c t
+    */
     template <class Tuple, class F>
     F for_each(Tuple && t, F f)
     {

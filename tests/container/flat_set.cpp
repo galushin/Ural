@@ -37,3 +37,16 @@ BOOST_AUTO_TEST_CASE(flat_set_default_template_parameters)
 
     BOOST_CHECK(true);
 }
+
+BOOST_AUTO_TEST_CASE(flat_set_with_empty_compare_sizeof_test)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+    typedef ural::flat_set<T> Set;
+
+    static_assert(std::is_empty<Set::key_compare>::value, "");
+
+    static_assert(sizeof(Vector) == sizeof(Set), "Set is too fat!!");
+
+    BOOST_CHECK(true);
+}

@@ -420,6 +420,20 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_copy_with_other_allocator,
 }
 
 // 23.2.3 Последовательные контейнеры
+BOOST_AUTO_TEST_CASE_TEMPLATE(container_assign_n_value_worse_then_iters_regression,
+                              Container, Sequence_containers)
+{
+    static_assert(std::is_signed<typename Container::value_type>::value, "");
+
+    Container x;
+    x.assign(13, 42);
+
+    Container z;
+    z.assign(typename Container::size_type(13),
+             typename Container::value_type(42));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), x.begin(), x.end());
+}
 // 23.2.4 Ассоциативные контейнеры
 // 23.2.5 Нуепорядоченные ассоциативные контейнеры
 
@@ -429,6 +443,19 @@ namespace
     typedef boost::mpl::list<ural::vector<int, Allocator>,
                              ural::flat_set<int, ural::use_default, Allocator>>
         Reserving_containers;
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(container_const_data_test, Container, Reserving_containers)
+{
+    Container const cs = {1, 3, 5, 7, 9};
+
+    typedef typename Container::value_type Value_type;
+    typedef decltype(cs.data()) Data_result;
+
+    static_assert(std::is_same<Value_type const *, Data_result>::value, "");
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(cs.begin(), cs.end(),
+                                  cs.data(), cs.data() + cs.size());
 }
 
 // Качество реализации

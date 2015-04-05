@@ -840,35 +840,34 @@ namespace ural
 
     private:
         template <class RASequence, class Size, class Compare>
+        static void
+        update_largest(RASequence seq, Size & largest, Size candidate, Size last, Compare cmp)
+        {
+            if(candidate < last && cmp(seq[largest], seq[candidate]))
+            {
+                largest = candidate;
+            }
+        }
+
+        template <class RASequence, class Size, class Compare>
         void impl(RASequence seq, Size first, Size last, Compare cmp) const
         {
             assert(ural::to_signed(last) <= seq.size());
 
-            if(first == last)
+            for(; first != last;)
             {
-                return;
-            }
+                auto largest = first;
+                update_largest(seq, largest, details::heap_child_1(first), last, cmp);
+                update_largest(seq, largest, details::heap_child_2(first), last, cmp);
 
-            auto const c1 = details::heap_child_1(first);
-            auto const c2 = details::heap_child_2(first);
-            auto largest = first;
+                if(largest == first)
+                {
+                    return;
+                }
 
-            if(c1 < last && cmp(seq[largest], seq[c1]))
-            {
-                largest = c1;
-            }
-
-            if (c2 < last && cmp(seq[largest], seq[c2]))
-            {
-                largest = c2;
-            }
-
-            if(largest != first)
-            {
                 ::ural::details::do_swap(seq[largest], seq[first]);
 
-                // @todo Заменить рекурсию на итерацию?
-                this->impl(seq, largest, last, cmp);
+                first = largest;
             }
         }
     };

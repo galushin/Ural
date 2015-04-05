@@ -116,6 +116,18 @@ namespace ural
             return apply(f, impl_.second());
         }
 
+        // Прямая последовательность
+
+        // Двусторонняя последовательность
+
+        // Последовательность произвольного доступа
+        distance_type size() const
+        {
+            // @todo Обобщить, реализовать без псевдо-рекурсии
+            return this->size_impl(impl_.second()[ural::_1].size(), ural::_2);
+        }
+
+        // Адаптор последовательности
         /** @brief Функциональный объект, задающий преобразование
         @return Функциональный объект, задающий преобразование
         */
@@ -125,6 +137,20 @@ namespace ural
         }
 
     private:
+        distance_type
+        size_impl(distance_type result, placeholder<sizeof...(Inputs)>) const
+        {
+            return result;
+        }
+
+        template <size_t index>
+        distance_type
+        size_impl(distance_type current, placeholder<index>) const
+        {
+            return this->size_impl(std::min(current, impl_.second()[ural::_1].size()),
+                                   placeholder<index+1>());
+        }
+
         reference deref(Inputs const & ... ins) const
         {
             return this->functor()((*ins)...);

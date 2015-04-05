@@ -23,7 +23,14 @@
 
 #include <forward_list>
 
-// @todo Проверить значения по-умолчанию для шаблонных параметров
+BOOST_AUTO_TEST_CASE(vector_default_template_param_types)
+{
+    typedef int T;
+    typedef ural::vector<T> Vector;
+
+     static_assert(std::is_same<Vector::allocator_type, std::allocator<T>>::value, "");
+}
+
 // Общие требования (23.2)
 // @todo 23.2.1
 // Таблица 96
@@ -410,17 +417,6 @@ BOOST_AUTO_TEST_CASE(vector_at_test)
 }
 
 // 23.3.6.4 Доступ к данным
-BOOST_AUTO_TEST_CASE(vector_const_data_test)
-{
-    typedef int T;
-    typedef ural::vector<T> Vector;
-
-    Vector const xs = {1, 2, 3, 4, 5};
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(xs.begin(), xs.end(),
-                                  xs.data(), xs.data() + xs.size());
-}
-
 BOOST_AUTO_TEST_CASE(vector_data_test)
 {
     typedef int T;

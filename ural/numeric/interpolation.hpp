@@ -45,6 +45,7 @@ namespace ural
     /** @brief Интерполяционный многочлен Ньютона
     @param X тип аргумента
     @param Y тип значения
+    @tparam Policy стратегия обработки ошибок
     */
     template <class X = use_default, class Y = use_default, class Policy = use_default>
     class newton_polynomial

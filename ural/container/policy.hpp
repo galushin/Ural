@@ -112,7 +112,7 @@ namespace ural
     {
     protected:
         ~container_checking_throw_policy() = default;
-
+        container_checking_throw_policy() = default;
     public:
         /** @brief Проверка допустимости индекса
         @param seq последовательность
@@ -184,7 +184,7 @@ namespace ural
     {
     protected:
         ~container_checking_assert_policy() = default;
-
+        container_checking_assert_policy() = default;
     public:
         /** @brief Проверка допустимости индекса
         @param seq последовательность
@@ -229,8 +229,32 @@ namespace ural
     class container_no_checks_policy
     {
     protected:
+        container_no_checks_policy() = default;
         ~container_no_checks_policy() = default;
     public:
+        /** @brief Проверка допустимости индекса
+        @param seq последовательность
+        @param index проверяемый индекс
+        */
+        template <class Container>
+        static void
+        check_index(Container const & c,
+                    typename Container::difference_type index);
+
+        /** @brief Проверяет, что последовательность @c seq не пуста.
+        @param seq проверяемая последовательность
+        */
+        template <class Container>
+        static void
+        check_not_empty(Container const & c);
+
+        template <class ConstIterator>
+        static void assert_can_erase(ConstIterator first, ConstIterator last,
+                                     ConstIterator q);
+
+        template <class ConstIterator>
+        static void assert_can_erase(ConstIterator first, ConstIterator last,
+                                     ConstIterator q1, ConstIterator q2);
     };
 }
 // namespace ural

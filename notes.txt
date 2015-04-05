@@ -20,6 +20,9 @@ library, it's a range. Return it.
 3) If the constness of T affects the constness of decltype(*begin(T{})),
 it's a container. Return a pair of iterators.
 4) Otherwise, it's an error
+
+Здесь нужно отметить, что для set и multiset типы итератора и константного
+итератора совпадают. Так что нужно искать ещё какие-то различия.
 */
 
 /** Eric Niebler: если алгоритм вызывается с временным контейнером, то
