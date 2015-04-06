@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE(memoize_functor_test)
 
     static_assert(std::is_empty<decltype(f_tracer)>::value, "Must be empty!");
 
-    auto f = ural::memoize<Signature>(std::ref(f_tracer));
+    auto f = ural::memoize<Signature>(ural::ref = f_tracer);
 
     auto const y1 = f(-1);
 
@@ -780,8 +780,8 @@ BOOST_AUTO_TEST_CASE(replace_functor_cref_test)
     auto const old_value = 13;
     auto const new_value = 42;
 
-    auto const f = ural::make_replace_functor(std::cref(old_value),
-                                              std::cref(new_value));
+    auto const f = ural::make_replace_functor(ural::cref(old_value),
+                                              ural::cref = new_value);
 
     BOOST_CHECK(f == f);
 
@@ -974,4 +974,54 @@ BOOST_AUTO_TEST_CASE(non_member_empty_for_c_array)
     int xs[] = {1, 2, 3, 4, 5};
 
     BOOST_CHECK(!ural::empty(xs));
+}
+
+BOOST_AUTO_TEST_CASE(ref_wrapper_test)
+{
+    typedef std::string T;
+    T s("abc");
+    T const & cs = s;
+
+    // 1
+    auto w_s = (ural::ref = s);
+
+    BOOST_CHECK_EQUAL(&s, &w_s.get());
+    static_assert(std::is_same<decltype(w_s), std::reference_wrapper<T>>::value, "");
+
+    // 2
+    auto w_s_2 = (ural::ref = w_s);
+
+    BOOST_CHECK_EQUAL(&s, &w_s_2.get());
+    static_assert(std::is_same<decltype(w_s_2), std::reference_wrapper<T>>::value, "");
+
+    // 3
+    auto w_cs = (ural::ref = cs);
+
+    BOOST_CHECK_EQUAL(&s, &w_cs.get());
+    static_assert(std::is_same<decltype(w_cs), std::reference_wrapper<T const>>::value, "");
+}
+
+BOOST_AUTO_TEST_CASE(cref_wrapper_test)
+{
+    typedef std::string T;
+    T s("abc");
+    T const & cs = s;
+
+    // 1
+    auto w_s = (ural::cref = s);
+
+    BOOST_CHECK_EQUAL(&s, &w_s.get());
+    static_assert(std::is_same<decltype(w_s), std::reference_wrapper<T const>>::value, "");
+
+    // 2
+    auto w_s_2 = (ural::cref = w_s);
+
+    BOOST_CHECK_EQUAL(&s, &w_s_2.get());
+    static_assert(std::is_same<decltype(w_s_2), std::reference_wrapper<T const>>::value, "");
+
+    // 3
+    auto w_cs = (ural::cref = cs);
+
+    BOOST_CHECK_EQUAL(&s, &w_cs.get());
+    static_assert(std::is_same<decltype(w_cs), std::reference_wrapper<T const>>::value, "");
 }

@@ -31,6 +31,102 @@
 
 namespace ural
 {
+    /** @brief Класс функционального объекта для создания
+    <tt> std::reference_wrapper </tt> без добавления константности.
+    */
+    class ref_fn
+    {
+    public:
+        //@{
+        /** @brief Создание обёртки для ссылки
+        @param x ссылка
+        @return <tt> std::reference_wrapper<T>(x) </tt>
+        */
+        template <class T>
+        constexpr std::reference_wrapper<T>
+        operator()(T & x) const
+        {
+            return std::reference_wrapper<T>(x);
+        }
+
+        template <class T>
+        constexpr std::reference_wrapper<T>
+        operator=(T & x) const
+        {
+            return (*this)(x);
+        }
+        //@}
+
+        //@{
+        /** @brief Перегрузка для <tt> std::reference_wrapper </tt>
+        @param x обёртка для ссылки
+        @return <tt> std::reference_wrapper<T>(x.get()) </tt>
+        */
+        template <class T>
+        constexpr std::reference_wrapper<T>
+        operator()(std::reference_wrapper<T> x) const
+        {
+            return (*this)(x.get());
+        }
+
+        template <class T>
+        constexpr std::reference_wrapper<T>
+        operator=(std::reference_wrapper<T> x) const
+        {
+            return (*this)(x);
+        }
+        //@}
+    };
+    auto constexpr ref = ref_fn{};
+
+    /** @brief Класс функционального объекта для создания
+    <tt> std::reference_wrapper </tt> c добавлением константности.
+    */
+    class cref_fn
+    {
+    public:
+        //@{
+        /** @brief Создание обёртки для ссылки
+        @param x ссылка
+        @return <tt> std::reference_wrapper<T>(x) </tt>
+        */
+        template <class T>
+        constexpr std::reference_wrapper<T const>
+        operator()(T const & x) const
+        {
+            return std::reference_wrapper<T const>(x);
+        }
+
+        template <class T>
+        constexpr std::reference_wrapper<T const>
+        operator=(T const & x) const
+        {
+            return (*this)(x);
+        }
+        //@}
+
+        //@{
+        /** @brief Перегрузка для <tt> std::reference_wrapper </tt>
+        @param x обёртка для ссылки
+        @return <tt> std::reference_wrapper<T>(x.get()) </tt>
+        */
+        template <class T>
+        constexpr std::reference_wrapper<T const>
+        operator()(std::reference_wrapper<T> x) const
+        {
+            return (*this)(x.get());
+        }
+
+        template <class T>
+        constexpr std::reference_wrapper<T const>
+        operator=(std::reference_wrapper<T> x) const
+        {
+            return (*this)(x);
+        }
+        //@}
+    };
+    auto constexpr cref = cref_fn{};
+
     /** @brief Функциональный объект без аргументов, возвращающий фиксированное
     знчение
     @tparam T тип значения

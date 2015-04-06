@@ -989,7 +989,7 @@ BOOST_AUTO_TEST_CASE(optional_ref)
   BOOST_CHECK (*ori == 9);
 
   int j = 22;
-  auto&& oj = make_optional(std::ref(j));
+  auto&& oj = make_optional(ural::ref(j));
   *oj = 23;
   BOOST_CHECK (&*oj == &j);
   BOOST_CHECK (j == 23);
