@@ -19,7 +19,6 @@
 
 /** @file ural/meta/list.hpp
  @brief Спиоск типов
- @todo Декартово произведение списков типов
 */
 
 #include <ural/type_traits.hpp>

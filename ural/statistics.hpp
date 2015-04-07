@@ -234,6 +234,14 @@ namespace ural
         return os << x.value();
     }
 
+    /** @brief Ввод вероятности из потока
+    @param is поток ввода
+    @param x объект, хранящий вероятность
+    @return @c is
+    @throw std::logic_error, если введённое значение не может быть
+    интерпретировано как вероятность, то есть не является вещественным числом
+    из интервала <tt> [0; 1] </tt>.
+    */
     template <class Char, class Tr, class T, class P>
     std::basic_istream<Char, Tr> &
     operator>>(std::basic_istream<Char, Tr> & is, probability<T, P> & x)

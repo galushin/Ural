@@ -21,6 +21,7 @@
  @brief Алгоритмы для списков типов
 */
 
+#include <ural/meta/map.hpp>
 #include <ural/meta/list.hpp>
 #include <ural/meta/functional.hpp>
 
@@ -69,6 +70,7 @@ namespace meta
      : declare_type<null_type>
     {};
 
+    // Подсчёт числа элементов, равных данному.
     template <class Container, class T, class Eq = meta::is_same>
     struct count
      : std::integral_constant<size_t, apply<Eq, T, typename Container::head>::value
@@ -78,6 +80,26 @@ namespace meta
     template <class T, class Eq>
     struct count<null_type, T, Eq>
      : std::integral_constant<size_t, 0>
+    {};
+
+    // Преобразование списка типов
+    template <class Input, class UnaryFunction>
+    struct transform
+    {
+    private:
+        typedef typename Input::head Head;
+        typedef typename Input::tail Tail;
+
+        typedef typename UnaryFunction::template apply<Head>::type New_head;
+        typedef typename transform<Tail, UnaryFunction>::type New_tail;
+
+    public:
+        typedef typename push_front<New_tail, New_head>::type type;
+    };
+
+    template <class UnaryFunction>
+    struct transform<null_type, UnaryFunction>
+     : declare_type<null_type>
     {};
 
     /** @brief Удаление последовательных дубликатов из списка типов
@@ -306,7 +328,7 @@ namespace meta
     //
     /** @brief Копирование без дубликатов
     @tparam Container исходный список типов
-    @todo Возможность задавать функцию проверки равенства
+    @tparam Eq функция проверки равенства
     */
     template <class Container, class Eq = meta::is_same>
     struct copy_without_duplicates
@@ -325,6 +347,56 @@ namespace meta
 
     template <>
     struct copy_without_duplicates<null_type>
+     : declare_type<null_type>
+    {};
+
+    // Добавление списка
+    template <class Input1, class Input2>
+    struct append
+    {
+    private:
+        typedef typename Input1::head New_head;
+        typedef typename append<typename Input1::tail, Input2>::type New_tail;
+
+    public:
+        typedef typename push_front<New_tail, New_head>::type type;
+    };
+
+    template <class Input2>
+    struct append<null_type, Input2>
+     : declare_type<Input2>
+    {};
+
+    // Декартово произведение
+    // @todo Произвольное число аргументов
+    template <class Input1, class Input2>
+    struct cartesian_product
+    {
+    private:
+        typedef typename Input1::head Head1;
+        typedef typename Input1::tail Tail1;
+
+        typedef meta::curry<ural::meta::make_pair, Head1> helper;
+
+        typedef typename meta::transform<Input2, helper>::type List1;
+        typedef typename cartesian_product<Tail1, Input2>::type List2;
+
+    public:
+        typedef typename append<List1, List2>::type type;
+    };
+
+    template <class Input1>
+    struct cartesian_product<Input1, null_type>
+     : declare_type<null_type>
+    {};
+
+    template <class Input2>
+    struct cartesian_product<null_type, Input2>
+     : declare_type<null_type>
+    {};
+
+    template <>
+    struct cartesian_product<null_type, null_type>
      : declare_type<null_type>
     {};
 }

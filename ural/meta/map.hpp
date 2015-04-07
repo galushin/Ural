@@ -20,7 +20,8 @@
 /** @file ural/meta/map.hpp
  @brief Ассоциативный контейнер для типов
 */
-
+namespace ural
+{
 namespace meta
 {
     /** @brief Пара типов
@@ -38,6 +39,14 @@ namespace meta
         typedef T2 second;
     };
 
+    struct make_pair
+    {
+        template <class T1, class T2>
+        struct apply
+         : declare_type<pair<T1, T2>>
+        {};
+    };
+
     /** @brief Ассоциативный массив типов
     @tparam Ts список типов
     @todo Покрыть тестами
@@ -49,6 +58,8 @@ namespace meta
     {};
 }
 // namespace meta
+}
+// namespace ural
 
 #endif
 // Z_URAL_META_MAP_HPP_INCLUDED

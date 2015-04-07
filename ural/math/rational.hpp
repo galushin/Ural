@@ -771,13 +771,33 @@ namespace ural
         return static_cast<To>(x.numerator()) / static_cast<To>(x.denominator());
     }
 
+    template <class RealType, class Rational>
+    RealType rational_to_real(Rational r, RealType const & eps,
+                              typename Rational::int_type Q)
+    {
+        // @todo Выделить вычисление целой части
+        auto result = RealType{0};
+
+        // @todo заменить на геометрическую прогрессию
+        // с условием останова в виде предиката
+        // for(auto q : ural::geometric_progression(1.0, 1.0 / Q) | filtered(_1 >= eps))???
+        for(auto q = RealType{1.0}; q >= eps; q /= Q)
+        {
+            auto const n = r.numerator() / r.denominator();
+            result += n * q;
+
+            r -= n;
+            r *= Q;
+        }
+
+        return result;
+    }
+
     /** @brief Преобразование рационального числа в вещественное
     @tparam RealType тип вещественного числа
     @param r преобразуемое число
     @param требуемая точность
     @return такое вещественное число @c x, что <tt> abs(x - r) < eps </tt>
-    @todo Перегрузка, задающая "естественную" точность
-    @todo Обязательно ли использовать десятичную систему?
     */
     template <class RealType, class Rational>
     RealType rational_to_real(Rational r, RealType const & eps)
@@ -786,22 +806,8 @@ namespace ural
         1. Большой множитель -- меньше шагов в цикле
         2. Маленький множитель -- меньше вероятность переполнения
         */
-        // @todo Выделить вычисление целой части
-        auto result = RealType{0};
-
-        // @todo заменить на геометрическую прогрессию
-        // с условием останова в виде предиката
-        // for(auto q : ural::geometric_progression(1.0, 0.1) | filtered(_1 >= eps))???
-        for(auto q = RealType{1.0}; q >= eps; q *= RealType{0.1})
-        {
-            auto const n = r.numerator() / r.denominator();
-            result += n * q;
-
-            r -= n;
-            r *= typename Rational::int_type{10};
-        }
-
-        return result;
+        return rational_to_real(std::move(r), eps,
+                                typename Rational::int_type(2));
     }
 
     /* @todo Преобразование рационального числа в обыкновенную (периодическую)

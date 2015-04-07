@@ -101,3 +101,22 @@ BOOST_AUTO_TEST_CASE(meta_identity_test)
 
     BOOST_CHECK(true);
 }
+
+#include <ural/meta/map.hpp>
+
+BOOST_AUTO_TEST_CASE(meta_cartesian_product_test)
+{
+    typedef ::ural::typelist<int, long, long long> Integers;
+    typedef ::ural::typelist<float, double> Doubles;
+
+    using ural::meta::pair;
+    typedef ::ural::typelist<pair<int, float>, pair<int, double>,
+                             pair<long, float>, pair<long, double>,
+                             pair<long long, float>, pair<long long, double>> Expected;
+
+    typedef typename ural::meta::cartesian_product<Integers, Doubles>::type
+        Result;
+
+    static_assert(std::is_same<Expected, Result>::value, "");
+    BOOST_CHECK(true);
+}
