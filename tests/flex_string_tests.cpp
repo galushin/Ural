@@ -300,16 +300,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_init_list, String, Strings_list)
     BOOST_CHECK_EQUAL(a.id(), fsa.get_allocator().id());
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_flex_string_and_allocator, String, Strings_list)
-{
-    typename String::allocator_type a{42};
-    String const s1{"Step"};
-
-    String const s2{s1, a};
-
-    BOOST_CHECK_EQUAL(a.id(), s2.get_allocator().id());
-    BOOST_CHECK_EQUAL(s1, s2);
-}
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_move_ctor, String, Strings_list)
 {
@@ -322,7 +312,57 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_move_ctor, String, Strings_list)
     BOOST_CHECK(ural::empty(s));
 }
 
-// @todo Конструктор на основе временной строки и распределителя памяти
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_flex_string_and_allocator, String, Strings_list)
+{
+    typename String::allocator_type a{42};
+    String const s1{"Step"};
+
+    String const s2{s1, a};
+
+    BOOST_CHECK_EQUAL(a.id(), s2.get_allocator().id());
+    BOOST_CHECK_EQUAL(s1, s2);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_move_with_different_allocator,
+                              String, Strings_list)
+{
+    typedef typename String::allocator_type Alloc;
+
+    String t = {"one_two"};
+    auto const t_old = t;
+    Alloc alloc(42);
+
+    BOOST_CHECK(t.get_allocator() != alloc);
+
+    String const u(std::move(t), alloc);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(t_old.begin(), t_old.end(),
+                                  u.begin(), u.end());
+    BOOST_CHECK_EQUAL(alloc.id(), u.get_allocator().id());
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_move_with_same_allocator,
+                              String, Strings_list)
+{
+    typedef typename String::allocator_type Alloc;
+
+    String t = {"one_two"};
+    auto const t_old = t;
+    Alloc alloc;
+
+    BOOST_CHECK(t.get_allocator() == alloc);
+
+    auto const t_data_old = t.data();
+
+    String const u(std::move(t), alloc);
+
+    BOOST_CHECK_EQUAL(t_data_old, u.data());
+
+    BOOST_CHECK(t.empty());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(t_old.begin(), t_old.end(),
+                                  u.begin(), u.end());
+}
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_operator_assign, String, Strings_list)
 {

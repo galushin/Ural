@@ -621,7 +621,20 @@ namespace ural
         @param str строка, содержимое которой должно быть перемещено
         @param a распределитель памяти
         */
-        flex_string(flex_string && str, allocator_type const & a);
+        flex_string(flex_string && str, allocator_type const & a)
+         : flex_string(a)
+        {
+            if(str.get_allocator() == a)
+            {
+                // @todo устранить обмен распределителями памяти
+                this->swap(str);
+            }
+            else
+            {
+                this->reserve(str.size());
+                ural::move(str, *this | ural::back_inserter);
+            }
+        }
 
         /** @brief Оператор присваивания
         @param s присваемая строка
