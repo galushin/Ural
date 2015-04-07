@@ -100,7 +100,6 @@ namespace ural
     /** @brief Класс для представления вероятности
     @tparam RealType тип значения
     @tparam Policy тип стратегии проверок
-    @todo опретор ввода
     */
     template <class RealType = double,
               class Policy = throw_probability_policy<RealType>>
@@ -233,6 +232,26 @@ namespace ural
     operator<<(std::basic_ostream<Char, Tr> & os, probability<T, P> const & x)
     {
         return os << x.value();
+    }
+
+    template <class Char, class Tr, class T, class P>
+    std::basic_istream<Char, Tr> &
+    operator>>(std::basic_istream<Char, Tr> & is, probability<T, P> & x)
+    {
+        T reader;
+        is >> reader;
+
+        try
+        {
+            x = reader;
+        }
+        catch(...)
+        {
+            is.setstate(::std::ios_base::failbit);
+            throw;
+        }
+
+        return is;
     }
 
 namespace statistics

@@ -99,6 +99,44 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(probability_bad_value_assign_test, T, Real_types)
     BOOST_CHECK_THROW(p = value, std::logic_error);
 }
 
+BOOST_AUTO_TEST_CASE(probability_correct_istreaming_test)
+{
+    typedef double T;
+
+    std::vector<T> const values = {0.0, 0.5, 1.0};
+
+    for(auto const & v : values)
+    {
+        std::ostringstream os;
+        os << v;
+
+        std::istringstream is(os.str());
+
+        ural::probability<T> p;
+        is >> p;
+
+        BOOST_CHECK_EQUAL(v, p.value());
+    }
+}
+
+BOOST_AUTO_TEST_CASE(probability_incorrect_istreaming_test)
+{
+    typedef double T;
+
+    std::vector<T> const values = {-0.1, 1.1};
+
+    for(auto const & v : values)
+    {
+        std::ostringstream os;
+        os << v;
+
+        std::istringstream is(os.str());
+
+        ural::probability<T> p;
+        BOOST_CHECK_THROW(is >> p, std::logic_error);
+    }
+}
+
 BOOST_AUTO_TEST_CASE(average_type_test)
 {
     typedef ural::rational<int> Rational;

@@ -127,16 +127,18 @@ namespace distributions
         */
         friend weight_type variance(discrete const & d)
         {
-            using ural::square;
+            auto const m = mean(d);
 
+            // @todo Заменить на алгоритм
             auto result = weight_type{0};
 
             for(auto i : ural::indices_of(d.ps_))
             {
-                result += square(i) * d.ps_[i];
+                using ural::square;
+                result += square(i - m) * d.ps_[i];
             }
 
-            return result - square(mean(d));
+            return result;
         }
 
         /** @brief Стандартное отклонение

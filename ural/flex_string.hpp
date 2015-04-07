@@ -46,8 +46,9 @@ namespace ural
      : private A
     {
     public:
-        // @todo Для пустой строки не выделять память
+        // @todo Унифицировать с buffer, используемый вектором
         // @todo операции перемещения
+        // @todo Использовать характеристики символов
         /* @todo Использовать характеристика распределителей памяти, в чатсности,
         чтобы определить, нужно ли их копировать/перемещать
         */
@@ -72,16 +73,23 @@ namespace ural
         */
         string_allocator_storage(size_type n, A const & a)
          : A{a}
+         , begin_(nullptr)
+         , end_(nullptr)
+         , end_of_storage_(nullptr)
         {
-            begin_ = A::allocate(n);
-            end_of_storage_ = begin_ + n;
-            end_ = begin_;
-
-            // @todo можно ли присваивать без конструирования?
-            for(; n > 0; -- n, ++ end_)
+            if(n > 0)
             {
-                A::construct(end_);
+                begin_ = A::allocate(n);
+                end_of_storage_ = begin_ + n;
+                end_ = begin_;
+
+                // @todo можно ли присваивать без конструирования?
+                for(; n > 0; -- n, ++ end_)
+                {
+                    A::construct(end_);
+                }
             }
+
         }
 
         /** @brief Конструктор копий

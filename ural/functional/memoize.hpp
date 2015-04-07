@@ -35,10 +35,10 @@ namespace ural
     @todo Тесты с различными типами аргументов
     @todo Возможность управлять ёмкостью и макс. размером кэша
     @todo Использовать по умолчанию в качестве контейнера boost::flat_map или аналог
-    @todo Операторы "равно" и "меньше"
+    @todo Оператор "меньше"
     @todo Нужно ли реализовать аналогичный класс, основанный на линейном поиске?
     @todo Оптимизация пустого класса для target_
-    @todo Нужно ли копировать кэш при копировании класса
+    @todo Покрыть тестами конструктор перемещний, операций присваивания и swap
     */
     template <class Signature, class F,
               class Threading = use_default,
@@ -130,9 +130,9 @@ namespace ural
 
             std::lock_guard<mutex_type> lock(this->mutex_);
 
-            auto pos = this->cache_.lower_bound(x);
+            auto pos = this->cache_.find(x);
 
-            if(pos == this->cache_.end() || pos->first != x)
+            if(pos == this->cache_.end())
             {
                 auto y = this->target()(std::forward<As>(args)...);
                 pos = cache_.emplace_hint(pos, std::move(x), std::move(y));

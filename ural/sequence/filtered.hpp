@@ -59,7 +59,7 @@ namespace ural
         /// @brief Тип указателя
         typedef typename Impl::pointer pointer;
 
-        //// @brief Тип расстояния
+        /// @brief Тип расстояния
         typedef typename Impl::distance_type distance_type;
 
         /// @brief Категория обхода

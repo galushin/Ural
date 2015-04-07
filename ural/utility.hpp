@@ -486,7 +486,7 @@ namespace ural
         template <class A>
         static void do_swap(A & x, A & y, std::false_type)
         {
-            // @todo Всегда ли можно проверять распределители памяти на равенство?
+            // всегда возможно: Таблица 26
             assert(x == y);
         }
     };
