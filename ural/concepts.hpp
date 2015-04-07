@@ -231,6 +231,8 @@ namespace concepts
     @tparam F тип объекта, для которого проверяется концепция
     @tparam R тип возвращаемого значения
     @tparam Args типы аргументов
+    @note Если @c R совпадает с @c void, то тип возвращаемого значения
+    не проверяется.
     */
     template <class F, class R, class... Args>
     class Callable<F, R(Args...)>
@@ -239,11 +241,11 @@ namespace concepts
         /// @brief Примеры использования
         BOOST_CONCEPT_USAGE(Callable)
         {
-            // @todo Убрать static_cast, чтобы требовать неявное преобразование
-            typedef decltype(static_cast<R>(f_(std::declval<Args>()...))) result_type;
+            typedef decltype(f_(std::declval<Args>()...)) result_type;
 
             // Подавляем предупреждение компилятора
-            static_assert(std::is_convertible<result_type, R>::value, "");
+            static_assert(std::is_same<R, void>::value
+                          || std::is_convertible<result_type, R>::value, "");
         }
 
     private:

@@ -16,6 +16,8 @@
 
 #include "rnd.hpp"
 
+#include <ural/container/vector.hpp>
+
 #include <boost/test/unit_test.hpp>
 
 #include <forward_list>
@@ -2059,6 +2061,20 @@ BOOST_AUTO_TEST_CASE(prev_permutation_test)
 }
 
 // Комбинирование вызовов модифицирующих алгоритмов с erase
+BOOST_AUTO_TEST_CASE(unqiue_fn_const_iterator_test)
+{
+    ural::vector<int> v1 = {1, 2, 3, 4, 5, 6};
+    auto v2 = v1;
+
+    auto const n = v1.size() / 2;
+
+    v2.erase(v2.cbegin() + n, v2.cend());
+
+    ural::erase(v1, ural::make_iterator_sequence(v1.cbegin() + n, v1.cend()));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(v1.begin(), v1.end(), v2.begin(), v2.end());
+}
+
 BOOST_AUTO_TEST_CASE(unique_erase_combination_test)
 {
     std::vector<int> v_std{1,2,3,1,2,3,3,4,5,4,5,6,7};

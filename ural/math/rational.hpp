@@ -72,10 +72,8 @@ namespace ural
     friend std::basic_istream<Char, Tr> &
     operator>>(std::basic_istream<Char, Tr> & is, rational & x)
     {
-        // @todo Устранить временный объект?
-        rational t;
-
-        is >> t.numerator_ref();
+        rational::int_type num(0);
+        is >> num;
 
         if(!is)
         {
@@ -101,8 +99,15 @@ namespace ural
             is.putback(reader);
         }
 
-        is >> t.denominator_ref();
-        x.assign(t.numerator(), t.denominator());
+        rational::int_type denom(0);
+        is >> denom;
+
+        if(!is)
+        {
+            return is;
+        }
+
+        x.assign(std::move(num), std::move(denom));
         return is;
     }
 

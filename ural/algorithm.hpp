@@ -108,16 +108,13 @@ namespace ural
     };
 
     // Алгоритмы над контейнерами
-    /**
-    @todo Принимать в качестве аргументов последовательность на основе
-    константных итераторов, как этого требует стандарт C++11
-    */
+    /// @brief Функциональный объект для функции-члена контейнеров @c erase
     class erase_fn
     {
     public:
-        template <class Container>
+        template <class Container, class Iterator, class Policy>
         auto operator()(Container & c,
-                        iterator_sequence<typename Container::iterator> seq) const
+                        iterator_sequence<Iterator, Policy> seq) const
         -> typename Container::iterator
         {
             return c.erase(seq.begin(), seq.end());
@@ -1990,6 +1987,42 @@ namespace ural
 
     auto constexpr const next_permutation = next_permutation_fn{};
     auto constexpr const prev_permutation = prev_permutation_fn{};
+
+    class move_if_noexcept_fn
+    {
+    public:
+        template <class Input, class Output>
+        auto operator()(Input && in, Output && out) const
+        -> tuple<decltype(ural::sequence_fwd<Input>(in)),
+                 decltype(ural::sequence_fwd<Output>(out))>
+        {
+            return this->impl(ural::sequence_fwd<Input>(in),
+                              ural::sequence_fwd<Output>(out));
+        }
+
+        template <class T>
+        constexpr
+        typename std::conditional<!std::is_nothrow_move_constructible<T>::value
+                                  && std::is_move_constructible<T>::value,
+                                  T const &, T &&>::type
+        operator()(T & x) const
+        {
+            return std::move(x);
+        }
+
+    private:
+        template <class Input, class Output>
+        tuple<Input, Output>
+        impl(Input in, Output out) const
+        {
+            auto r = ural::copy(std::move(in) | transformed(cref = *this),
+                                std::move(out));
+            return ural::make_tuple(r[ural::_1].bases()[ural::_1],
+                                    r[ural::_2]);
+        }
+    };
+
+    constexpr auto move_if_noexcept = move_if_noexcept_fn{};
 }
 // namespace ural
 

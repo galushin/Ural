@@ -34,46 +34,6 @@
 
 namespace ural
 {
-    /** @todo Найти лучшее место для этого алгоритма
-    */
-    class move_if_noexcept_fn
-    {
-    public:
-        template <class Input, class Output>
-        auto operator()(Input && in, Output && out) const
-        -> tuple<decltype(ural::sequence_fwd<Input>(in)),
-                 decltype(ural::sequence_fwd<Output>(out))>
-        {
-            return this->impl(ural::sequence_fwd<Input>(in),
-                              ural::sequence_fwd<Output>(out));
-        }
-
-        template <class T>
-        constexpr
-        typename std::conditional<!std::is_nothrow_move_constructible<T>::value
-                                  && std::is_move_constructible<T>::value,
-                                  T const &, T &&>::type
-        operator()(T & x) const
-        {
-            return std::move(x);
-        }
-
-    private:
-        template <class Input, class Output>
-        tuple<Input, Output>
-        impl(Input in, Output out) const
-        {
-            // @todo Выразить через copy и transfrormed
-            for(; !!in && !!out; ++ in, ++ out)
-            {
-                *out = (*this)(*in);
-            }
-            return ural::make_tuple(std::move(in), std::move(out));
-        }
-    };
-
-    constexpr auto move_if_noexcept = move_if_noexcept_fn{};
-
     template <class T, class Alloc>
     class buffer;
 
@@ -466,7 +426,9 @@ namespace ural
         @param xs копируемый вектор
         @pre @c T должно быть @c CopyInsertable для @c vector
         @post <tt> *this == xs </tt>
-        @todo Пост-условие для <tt> this->get_allocator() </tt>
+        @post <tt> this->get_allocator() </tt> равен
+        <tt> AT::select_on_container_copy_construction(xs) </tt>, где
+        @c AT --- это <tt> std::allocator_traits<allocator_type> </tt>
         */
         vector(vector const & xs) = default;
 
@@ -1144,7 +1106,6 @@ namespace ural
 
             ural::copy(seq, *this | ural::back_inserter);
 
-            // @todo Заменить на алгоритмы ural?
             std::rotate(this->begin() + index, this->begin() + old_size, this->end());
 
             return this->begin() + index;
