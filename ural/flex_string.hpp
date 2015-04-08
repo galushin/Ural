@@ -470,6 +470,10 @@ namespace ural
         typedef typename std::allocator_traits<allocator_type>::size_type
             size_type;
 
+        /// @brief Тип размера
+        typedef typename std::allocator_traits<allocator_type>::difference_type
+            difference_type;
+
         /// @brief Тип итератора
         typedef typename storage_type::iterator iterator;
 

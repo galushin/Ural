@@ -14,9 +14,10 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <ural/flex_string.hpp>
 #include <ural/container/flat_set.hpp>
-
 #include <ural/container/vector.hpp>
+
 #include <ural/utility/tracers.hpp>
 
 #include <boost/mpl/list.hpp>
@@ -28,12 +29,15 @@
 
 namespace
 {
-    typedef ural::tracing_allocator<int> Allocator;
+    typedef ural::tracing_allocator<char> Char_alloc;
+    typedef ural::tracing_allocator<int> Int_alloc;
 
-    typedef boost::mpl::list<ural::vector<int, Allocator>>
+    typedef boost::mpl::list<ural::vector<int, Int_alloc>,
+                             ural::flex_string<char, ural::use_default, Char_alloc>
+                            >
         Sequence_containers;
 
-    typedef boost::mpl::list<ural::flat_set<int, ural::use_default, Allocator>>
+    typedef boost::mpl::list<ural::flat_set<int, ural::use_default, Int_alloc>>
         Assosiative_containers_containers;
 
     typedef boost::mpl::copy<Assosiative_containers_containers,
@@ -112,8 +116,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_copy_constructor, Container, Containers_
     // Строка 11
     Container u(x);
 
-    BOOST_CHECK_NE(u.begin(), x.begin());
-    BOOST_CHECK_NE(u.end(), x.end());
+    BOOST_CHECK(u.begin() != x.begin());
+    BOOST_CHECK(u.end() != x.end());
 
     BOOST_CHECK(u == x);
 
@@ -308,7 +312,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_max_size_test,
     Container v;
     Alloc a;
 
-    BOOST_CHECK_EQUAL(std::allocator_traits<Alloc>::max_size(a), v.max_size());
+    BOOST_CHECK_GE(std::allocator_traits<Alloc>::max_size(a), v.max_size());
 }
 
 // Строка 25
@@ -404,21 +408,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_allocator_constructor,
     static_assert(std::is_same<Alloc, decltype(Container().get_allocator())>::value, "");
 
     // Строка 3.1
-    // Регрессия: при вызове конструктора без параметров память не распределяется
-    Alloc::reset_allocations_count();
-
     BOOST_CHECK(Container().empty());
     BOOST_CHECK(Container().get_allocator() == Alloc());
-    BOOST_CHECK_EQUAL(Alloc::allocations_count(), 0U);
 
     // Строка 3.2
-    Alloc::reset_allocations_count();
-
     Container u_0;
 
     BOOST_CHECK(u_0.empty());
     BOOST_CHECK(u_0.get_allocator() == Alloc());
-    BOOST_CHECK_EQUAL(Alloc::allocations_count(), 0U);
 
     // Строка 4
     Alloc alloc(42);
@@ -465,8 +462,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_assign_n_value_worse_then_iters_regressi
 // Контейнеры с резервированием памяти
 namespace
 {
-    typedef boost::mpl::list<ural::vector<int, Allocator>,
-                             ural::flat_set<int, ural::use_default, Allocator>>
+    typedef boost::mpl::list<ural::vector<int, Int_alloc>,
+                             ural::flat_set<int, ural::use_default, Int_alloc>>
         Reserving_containers;
 }
 
@@ -502,4 +499,28 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(shrink_to_fit_test, Container, Reserving_container
     BOOST_CHECK_EQUAL(cs.capacity(), cs.size());
 
 
+}
+
+BOOST_AUTO_TEST_CASE(vector_allocator_constructor_regression)
+{
+    // Регрессия: при вызове конструктора без параметров память не распределяется
+
+    typedef ural::tracing_allocator<int> Alloc;
+    typedef ural::vector<int, Alloc> Container;
+
+    // временный объект
+    Alloc::reset_allocations_count();
+
+    BOOST_CHECK(Container().empty());
+    BOOST_CHECK(Container().get_allocator() == Alloc());
+    BOOST_CHECK_EQUAL(Alloc::allocations_count(), 0U);
+
+    // переменная
+    Alloc::reset_allocations_count();
+
+    Container u_0;
+
+    BOOST_CHECK(u_0.empty());
+    BOOST_CHECK(u_0.get_allocator() == Alloc());
+    BOOST_CHECK_EQUAL(Alloc::allocations_count(), 0U);
 }
