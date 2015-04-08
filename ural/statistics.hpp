@@ -43,6 +43,8 @@
 система статистического анализа.
 */
 
+#include <ural/statistics/probability.hpp>
+
 #include <ural/meta/algo.hpp>
 #include <ural/numeric/numbers_sequence.hpp>
 #include <ural/math.hpp>
@@ -59,209 +61,6 @@
 
 namespace ural
 {
-    /** @brief Класс исключения "некорректное значение вероятности"
-    */
-    class bad_probability
-     : public std::logic_error
-    {
-    public:
-        /// @brief Конструктор
-        bad_probability()
-         : std::logic_error("bad probability")
-        {}
-    };
-
-    /** @brief Стратегия проверок для класса вероятности, возбуждающая
-    исключения в случае ошибок.
-    @tparam RealType тип значения
-    */
-    template <class RealType>
-    class throw_probability_policy
-    {
-    public:
-        /// @brief Тип значения
-        typedef RealType value_type;
-
-        /** @brief Функция проверки значения
-        @param value проверяемое значение
-        @return Возвращает @c value
-        @throw bad_probability, если <tt> value < 0 || value > 1 </tt>
-        */
-        constexpr static value_type enforce(value_type value)
-        {
-            return (value < 0 || value > 1) ?
-                    throw bad_probability{} : std::move(value);
-        }
-
-    protected:
-        ~throw_probability_policy() = default;
-    };
-
-    /** @brief Класс для представления вероятности
-    @tparam RealType тип значения
-    @tparam Policy тип стратегии проверок
-    */
-    template <class RealType = double,
-              class Policy = throw_probability_policy<RealType>>
-    class probability
-    {
-    public:
-        /// @brief Тип значения
-        typedef RealType value_type;
-
-        /// @brief Тип ссылки
-        typedef value_type const & const_reference;
-
-        /// @brief Тип стратегии
-        typedef Policy policy_type;
-
-        /** @brief Конструктор без параметров
-        @post <tt> this->value() == value_type{0} </tt>
-        */
-        constexpr probability() = default;
-
-        /** @brief Конструктор
-        @param value значение
-        @pre <tt> 0 < value && value < 1 </tt>
-        @post <tt> this->value() == value </tt>
-        @throw Тоже, что <tt> Policy::enforce(std::move(value)) </tt>
-        */
-        explicit constexpr probability(value_type value)
-         : value_{Policy::enforce(std::move(value))}
-        {}
-
-        /** @brief Оператор присваивания
-        @param value значение
-        @pre <tt> 0 < value && value < 1 </tt>
-        @post <tt> this->value() == value </tt>
-        @return <tt> *this </tt>
-        @throw Тоже, что <tt> Policy::enforce(std::move(value)) </tt>
-        */
-        probability & operator=(value_type value)
-        {
-            this->value_ = Policy::enforce(std::move(value));
-
-            return *this;
-        }
-
-        /** @brief Текущее значения
-        @return Текущее значения
-        */
-        constexpr const_reference value() const
-        {
-            return this->value_;
-        }
-
-        /** @brief Оператор неявного преобразования
-        @return <tt> this->value() </tt>
-        */
-        constexpr operator const_reference() const
-        {
-            return this->value();
-        }
-
-    private:
-        value_type value_;
-    };
-
-    /** @brief Создание вероятности на основе значения
-    @param p значение
-    @return <tt> probability<RealType>{std::move(p)} </tt>
-    @throw То же, что <tt> probability<RealType>{std::move(p)} </tt>
-    */
-    template <class RealType>
-    probability<RealType>
-    make_probability(RealType p)
-    {
-        return probability<RealType>{std::move(p)};
-    }
-
-    /** @brief Оператор равно
-    @param x левый операнд
-    @param y правый операнд
-    @return <tt> x.value() == y.value() </tt>
-    */
-    template <class T1, class P1, class T2, class P2>
-    constexpr bool operator==(probability<T1, P1> const & x,
-                              probability<T2, P2> const & y)
-    {
-        return x.value() == y.value();
-    }
-
-    /** @brief Оператор равно
-    @param x левый операнд
-    @param y правый операнд
-    @return <tt> x.value() == y </tt>
-    */
-    template <class T1, class P1, class T2>
-    constexpr bool operator==(probability<T1, P1> const & x, T2 const & y)
-    {
-        return x.value() == y;
-    }
-
-    /** @brief Оператор "равно"
-    @param x левый операнд
-    @param y правый операнд
-    @return <tt> x == y.value() </tt>
-    */
-    template <class T1, class T2, class P2>
-    constexpr bool operator==(T1 const & x, probability<T2, P2> const & y)
-    {
-        return x == y.value();
-    }
-
-    /** @brief Оператор "меньше"
-    @param x левый операнд
-    @param y правый операнд
-    @return <tt> x.value() < y.value() </tt>
-    */
-    template <class T1, class P1, class T2, class P2>
-    constexpr bool operator<(probability<T1, P1> const & x,
-                             probability<T2, P2> const & y)
-    {
-        return x.value() < y.value();
-    }
-
-    /** @brief Вывод вероятности в поток
-    @param os поток вывода
-    @param x вероятность
-    @return @c os
-    */
-    template <class Char, class Tr, class T, class P>
-    std::basic_ostream<Char, Tr> &
-    operator<<(std::basic_ostream<Char, Tr> & os, probability<T, P> const & x)
-    {
-        return os << x.value();
-    }
-
-    /** @brief Ввод вероятности из потока
-    @param is поток ввода
-    @param x объект, хранящий вероятность
-    @return @c is
-    @throw std::logic_error, если введённое значение не может быть
-    интерпретировано как вероятность, то есть не является вещественным числом
-    из интервала <tt> [0; 1] </tt>.
-    */
-    template <class Char, class Tr, class T, class P>
-    std::basic_istream<Char, Tr> &
-    operator>>(std::basic_istream<Char, Tr> & is, probability<T, P> & x)
-    {
-        T reader;
-        is >> reader;
-
-        try
-        {
-            x = reader;
-        }
-        catch(...)
-        {
-            is.setstate(::std::ios_base::failbit);
-            throw;
-        }
-
-        return is;
-    }
-
 namespace statistics
 {
     /** @brief Список тэгов
@@ -545,15 +344,22 @@ namespace tags
         }
 
         // Свойства
+        template <class Placeholder>
+        friend
+        typename std::enable_if<std::is_placeholder<Placeholder>::value == N, moment_type const &>::type
+        raw_moment(descriptive const & x, Placeholder)
+        {
+            return x.value_;
+        }
+
         /** @brief Значение начального момента
         @param x объект-накопитель
         @return Значение начального момента
-        @todo Перегрузка с placeholder?
         */
         friend moment_type const &
         raw_moment(descriptive const & x, std::integral_constant<size_t, N>)
         {
-            return x.value_;
+            return raw_moment(x, ural::placeholder<N-1>{});
         }
 
     protected:
@@ -922,7 +728,6 @@ namespace tags
 
     /** @brief Специализаци для пустого списка тэгов
     @tparam T тип элементов выборки
-    @todo Конструктор с одним аргументом
     */
     template <class T>
     class descriptives<T, null_type>

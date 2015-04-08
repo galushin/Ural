@@ -177,7 +177,6 @@ namespace ural
     @param max_iter максимальное число итераций
     @return кортеж <tt> {L, V} </tt>, где @c L --- матрица собственных чисел, а
     @c V --- матрица собственных векторов
-    @todo Дополнительные критерии остановки
     */
     template <class Matrix>
     tuple<Matrix, Matrix>
