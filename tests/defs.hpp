@@ -1,0 +1,6 @@
+#ifndef Z_URAL_TESTS_DEFS_HPP_INCLUDED
+#define Z_URAL_TESTS_DEFS_HPP_INCLUDED
+
+#define URAL_STATIC_ASSERT_EQUAL(E, G) static_assert( ((E) == (G)) , "");
+
+#endif // Z_URAL_TESTS_DEFS_HPP_INCLUDED

@@ -21,6 +21,7 @@
  @brief Математические функции и типы данных
 */
 
+#include <ural/math/common_factor.hpp>
 #include <ural/meta/hierarchy.hpp>
 #include <ural/meta/algo.hpp>
 
@@ -284,12 +285,26 @@ namespace ural
             /** @brief Оператор вызова функции
             @param x аргумент
             @return <tt> abs(x) </tt>
+            @todo constexpr?
             */
             template <class T>
             auto operator()(T const & x) const
             -> decltype(abs(x))
             {
                 return abs(x);
+            }
+        };
+
+        using ural::abs_constexpr;
+
+        class abs_constexpr_fn
+        {
+        public:
+            template <class T>
+            constexpr auto operator()(T const & x) const
+            -> decltype(abs_constexpr(x))
+            {
+                return abs_constexpr(x);
             }
         };
     }
@@ -302,6 +317,11 @@ namespace ural
     constexpr abs_fn abs()
     {
         return abs_fn{};
+    }
+
+    constexpr details::abs_constexpr_fn abs_constexpr()
+    {
+        return details::abs_constexpr_fn{};
     }
 
     /** @brief Класс-характеристика, определяющая, являются ли все типы пачки

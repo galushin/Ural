@@ -419,7 +419,7 @@ namespace ural
 
         std::pair<iterator, bool> insert(value_type &&);
 
-        iterator insert(const_iterator position, value_type const & x)
+        iterator insert(const_iterator, value_type const & x)
         {
             // @todo оптимизация
 

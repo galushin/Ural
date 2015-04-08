@@ -45,30 +45,6 @@ BOOST_AUTO_TEST_CASE(vector_value_type)
 
 // @todo Тест строки 12 для случая, когда вектор не может передать владение
 
-// Строка 21
-BOOST_AUTO_TEST_CASE(vector_non_member_swap_test)
-{
-    typedef int T;
-    typedef ural::tracing_allocator<T> Alloc;
-    typedef ural::vector<T, Alloc> Vector;
-
-    Vector v1({1, 3, 5, 7}, Alloc(1));
-    Vector v2({2, 4, 6, 8, 10}, Alloc(2));
-
-    auto v1_data_old = v1.data();
-    auto v2_data_old = v2.data();
-    auto const v1_allocator_old = v1.get_allocator();
-    auto const v2_allocator_old = v2.get_allocator();
-
-    using ural::swap;
-    swap(v1, v2);
-
-    BOOST_CHECK_EQUAL(v1.data(), v2_data_old);
-    BOOST_CHECK_EQUAL(v2.data(), v1_data_old);
-    BOOST_CHECK(v1.get_allocator() == v2_allocator_old);
-    BOOST_CHECK(v2.get_allocator() == v1_allocator_old);
-}
-
 BOOST_AUTO_TEST_CASE(vector_move_constructor_table_99)
 {
     typedef int T;

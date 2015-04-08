@@ -222,6 +222,24 @@ namespace ural
         return value_functor<T>{std::move(value)};
     }
 
+    /** @brief Функциональный объект для конструкторов
+    @tparam T тип создаваемого объекта
+    */
+    template <class T>
+    class constructor
+    {
+    public:
+        /** @brief Оператор вызова функции
+        @param args список аргументов конструктора
+        @return <tt> T(std::forward<Args>(args)...) </tt>
+        */
+        template <class... Args>
+        constexpr T operator()(Args && ... args) const
+        {
+            return T(std::forward<Args>(args)...);
+        }
+    };
+
     /** @brief Накопитель для определения наименьшего значения
     @tparam T тип значения
     @tparam Compare функция сравнения

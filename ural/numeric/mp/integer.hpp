@@ -32,22 +32,27 @@
 
 namespace ural
 {
-    template <long radix>
+    template <std::intmax_t radix>
     class digit_arithmetics_result;
 
     /** @brief Класс для представления цифр числа произвольной точности
     @tparam radix основание системы счисления
     @todo constexpr?
     */
-    template <long radix>
+    template <std::intmax_t radix>
     class digit
     {
+        static_assert(radix > 1, "radix must be > 1");
     public:
         // Типы
         // @todo Минимизация размера: выбор типа цифры в зависимости от значения radix
-        typedef long value_type;
+        typedef decltype(radix) value_type;
 
         // Конструкторы
+        /** @brief Конструктор
+        @param init_value начальное значение
+        @post <tt> this->value() == init_value </tt>
+        */
         explicit digit(value_type init_value)
          : value_(std::move(init_value))
         {
@@ -64,42 +69,42 @@ namespace ural
         value_type value_;
     };
 
-    template <long radix>
+    template <std::intmax_t radix>
     bool
     operator==(digit<radix> const & x, digit<radix> const & y)
     {
         return x.value() == y.value();
     }
 
-    template <class T, long radix>
+    template <class T, std::intmax_t radix>
     typename std::enable_if<std::is_integral<T>::value, bool>::type
     operator==(T const & n, digit<radix> const & d)
     {
         return n == d.value();
     }
 
-    template <class T, long radix>
+    template <class T, std::intmax_t radix>
     typename std::enable_if<std::is_integral<T>::value, bool>::type
     operator==(digit<radix> const & d, T const & n)
     {
         return d.value() == n;
     }
 
-    template <long radix>
+    template <std::intmax_t radix>
     bool
     operator<(digit<radix> const & x, digit<radix> const & y)
     {
         return x.value() < y.value();
     }
 
-    template <class T, long radix>
+    template <class T, std::intmax_t radix>
     typename std::enable_if<std::is_integral<T>::value, bool>::type
     operator<(T const & n, digit<radix> const & d)
     {
         return n < d.value();
     }
 
-    template <class T, long radix>
+    template <class T, std::intmax_t radix>
     typename std::enable_if<std::is_integral<T>::value, bool>::type
     operator<(digit<radix> const & d, T const & n)
     {
@@ -109,7 +114,7 @@ namespace ural
     /**
     @todo Для любых потоков?
     */
-    template <class Char, class Traits, long radix>
+    template <class Char, class Traits, std::intmax_t radix>
     std::basic_ostream<Char, Traits> &
     operator<<(std::basic_ostream<Char, Traits> & os, digit<radix> const & x)
     {
@@ -120,7 +125,7 @@ namespace ural
     @todo value-range-propagaion вместо assert
     @todo div вместо двух разных значений
     */
-    template <long radix>
+    template <std::intmax_t radix>
     class digit_arithmetics_result
     {
     public:
@@ -149,7 +154,7 @@ namespace ural
         value_type carry_;
     };
 
-    template <long radix>
+    template <std::intmax_t radix>
     digit_arithmetics_result<radix>
     operator+(digit<radix> x, digit<radix> y)
     {
@@ -160,7 +165,7 @@ namespace ural
     @note Данная операция может быть хорошим кандидатам на оптимизацию,
     см. ru.wikipedia.org/wiki/Умножение-сложение
     */
-    template <long radix>
+    template <std::intmax_t radix>
     digit_arithmetics_result<radix>
     multiply_add(digit<radix> a, digit<radix> b, digit<radix> c)
     {
@@ -171,7 +176,7 @@ namespace ural
     @note Это аналог операции, выполняемой сумматором
     см. https://ru.wikipedia.org/wiki/Сумматор
     */
-    template <long radix>
+    template <std::intmax_t radix>
     digit_arithmetics_result<radix>
     add_with_carry(digit<radix> a, digit<radix> b, digit<radix> c)
     {
@@ -253,7 +258,7 @@ namespace ural
     Нужно обратить внимание, что ноль (по крайней мере --- потенциально),
     не является уникально представленным
     */
-    template <long base>
+    template <std::intmax_t base>
     class integer
     {
         typedef integer self_type;
@@ -658,7 +663,7 @@ namespace ural
 
     };
 
-    template <long radix>
+    template <std::intmax_t radix>
     integer<radix>
     operator+(integer<radix> const & x, digit<radix> const & d)
     {
@@ -666,11 +671,11 @@ namespace ural
         return x + d.value();
     }
 
-    template <long radix>
+    template <std::intmax_t radix>
     integer<radix>
     operator+(digit<radix> const & d, integer<radix> const & x);
 
-    template <class T, long radix>
+    template <class T, std::intmax_t radix>
     typename std::enable_if<std::is_integral<T>::value, integer<radix>>::type
     operator+(integer<radix> const & x, T const & a)
     {
@@ -679,11 +684,11 @@ namespace ural
         return x + integer<radix>{a};
     }
 
-    template <class T, long radix>
+    template <class T, std::intmax_t radix>
     typename std::enable_if<std::is_integral<T>::value, integer<radix>>::type
     operator+(T const & a, integer<radix> const & x);
 
-    template <class T, long radix>
+    template <class T, std::intmax_t radix>
     typename std::enable_if<std::is_integral<T>::value, integer<radix>>::type
     operator*(integer<radix> const & x, T const & a)
     {
@@ -710,14 +715,14 @@ namespace ural
         return result;
     }
 
-    template <class T, long radix>
+    template <class T, std::intmax_t radix>
     typename std::enable_if<std::is_integral<T>::value, integer<radix>>::type
     operator*(T const & a, integer<radix> const & x)
     {
         return x * a;
     }
 
-    template <class T, long radix>
+    template <class T, std::intmax_t radix>
     typename std::enable_if<std::is_integral<T>::value, bool>::type
     operator<(integer<radix> const & x, T const & a)
     {
@@ -725,7 +730,7 @@ namespace ural
         return x < integer<radix>{a};
     }
 
-    template <class T, long radix>
+    template <class T, std::intmax_t radix>
     typename std::enable_if<std::is_integral<T>::value, bool>::type
     operator<(T const & a, integer<radix> const & x)
     {
@@ -733,7 +738,7 @@ namespace ural
         return integer<radix>{a} < x;
     }
 
-    template <class T, long radix>
+    template <class T, std::intmax_t radix>
     typename std::enable_if<std::is_integral<T>::value, bool>::type
     operator==(integer<radix> const & x, T const & a)
     {
@@ -743,7 +748,7 @@ namespace ural
                 && ural::equal(x.digits(), digits_sequence<T, radix>{abs(a)});
     }
 
-    template <class T, long radix>
+    template <class T, std::intmax_t radix>
     typename std::enable_if<std::is_integral<T>::value, bool>::type
     operator==(T const & a, integer<radix> const & x)
     {
@@ -751,7 +756,7 @@ namespace ural
     }
 
     // Ввод/вывод
-    template <class Char, class Traits, long radix>
+    template <class Char, class Traits, std::intmax_t radix>
     std::basic_ostream<Char, Traits> &
     operator<<(std::basic_ostream<Char, Traits> & os, integer<radix> const & x)
     {

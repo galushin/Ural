@@ -245,7 +245,32 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(vector_member_swap_test, Container, Containers_typ
     BOOST_CHECK(v2.get_allocator() == v1_allocator_old);
 }
 
-// @todo тест swap для случая, когда обменивать распределители нельзя
+// Строка 21
+BOOST_AUTO_TEST_CASE_TEMPLATE(container_non_member_swap_test,
+                              Container, Containers_types)
+{
+    typedef typename Container::allocator_type Alloc;
+
+    static_assert(std::allocator_traits<Alloc>::propagate_on_container_swap::value,
+                  "Swap for containers with different allocators is UB");
+
+    Container v1({1, 3, 5, 7}, Alloc(1));
+    Container v2({2, 4, 6, 8, 10}, Alloc(2));
+
+    auto v1_data_old = v1.data();
+    auto v2_data_old = v2.data();
+    auto const v1_allocator_old = v1.get_allocator();
+    auto const v2_allocator_old = v2.get_allocator();
+
+    using ural::swap;
+    using std::swap;
+    swap(v1, v2);
+
+    BOOST_CHECK_EQUAL(v1.data(), v2_data_old);
+    BOOST_CHECK_EQUAL(v2.data(), v1_data_old);
+    BOOST_CHECK(v1.get_allocator() == v2_allocator_old);
+    BOOST_CHECK(v2.get_allocator() == v1_allocator_old);
+}
 
 // Строка 22
 BOOST_AUTO_TEST_CASE_TEMPLATE(container_copy_assign_test,

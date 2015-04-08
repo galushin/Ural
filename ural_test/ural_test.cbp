@@ -59,6 +59,7 @@
 		<Unit filename="../tests/container/flat_set.cpp" />
 		<Unit filename="../tests/container/general.cpp" />
 		<Unit filename="../tests/container/vector.cpp" />
+		<Unit filename="../tests/defs.hpp" />
 		<Unit filename="../tests/disjoint_set_test.cpp" />
 		<Unit filename="../tests/expected_test.cpp" />
 		<Unit filename="../tests/flex_string_tests.cpp" />

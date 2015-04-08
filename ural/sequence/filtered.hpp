@@ -31,6 +31,8 @@ namespace ural
 {
     /** @brief Последовательность элементов базовой последовательности,
     удовлетворяющих заданному предикату.
+    @tparam Sequence входная последовательность
+    @tparam Predicate унарный предикат
     @todo Можно ли описать только отличия от @c remove_if_sequence?
     */
     template <class Sequence, class Predicate>

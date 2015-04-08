@@ -15,6 +15,9 @@
  *  extended, by Paul Moore, with permission.
  */
 
+ #include "./tests/defs.hpp"
+
+#include <ural/numeric.hpp>
 #include <ural/numeric/numbers_sequence.hpp>
 #include <ural/format.hpp>
 #include <ural/math/rational.hpp>
@@ -524,8 +527,6 @@ BOOST_AUTO_TEST_SUITE_END()
 // The rational arithmetic operations suite
 BOOST_AUTO_TEST_SUITE( rational_arithmetic_suite )
 
-#define URAL_STATIC_ASSERT_EQUAL(E, G) static_assert( ((E) == (G)) , "");
-
 // Addition & subtraction tests
 BOOST_AUTO_TEST_CASE_TEMPLATE( rational_additive_test, T,
  all_signed_test_types )
@@ -785,19 +786,21 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( dice_roll_test, T, all_signed_test_types )
 
     // Determine the mean number of times a fair six-sided die
     // must be thrown until each side has appeared at least once.
-    rational_type  r {static_cast<T>(0)};
 
-    // @todo Заменить на алгоритм
-    for (auto i : ural::numbers(1, 7))
-    {
-        r += rational_type( T(1), i );
-    }
-    r *= static_cast<T>( 6 );
+    auto inverse = std::bind(ural::constructor<rational_type>{}, T(1), ural::_1);
+
+    auto in = ural::numbers(1, 7) | ural::transformed(inverse);
+
+    auto const r = ural::accumulate(in, rational_type(T(0))) * T(6);
 
     BOOST_CHECK_EQUAL( r, rational_type(T(147), 10) );
 }
 
-// @todo builtin_signed_test_types -> all_signed_test_types
+/* В следующих двух тестах используется builtin_signed_test_types, а не
+all_signed_test_types так как в последний список входит MyInt, не допускающий
+арифметических операций с double. На мой взгляд, отсутствие неявных
+преобразований способствует лучшему тестированию в других местах.
+*/
 BOOST_AUTO_TEST_CASE_TEMPLATE(rational_to_double_test, T, builtin_signed_test_types)
 {
     typedef ural::rational<T> rational_type;
@@ -814,7 +817,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(rational_to_double_test, T, builtin_signed_test_ty
     BOOST_CHECK_CLOSE_FRACTION(Real(r.numerator()) / r.denominator(), x, eps);
 }
 
-// @todo builtin_signed_test_types -> all_signed_test_types
 BOOST_AUTO_TEST_CASE_TEMPLATE(negative_rational_to_double_test, T, builtin_signed_test_types)
 {
     typedef ural::rational<T> rational_type;

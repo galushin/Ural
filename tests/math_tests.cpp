@@ -17,6 +17,8 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "./tests/defs.hpp"
+
 #include <ural/numeric.hpp>
 #include <ural/math/common_factor.hpp>
 
@@ -448,7 +450,6 @@ BOOST_AUTO_TEST_CASE(is_coprime_with_sequence_test)
 // Функциональный объект для модуля
 BOOST_AUTO_TEST_CASE(abs_fn_test)
 {
-    // @todo constexpr
     auto constexpr abs_f = ural::abs();
 
     BOOST_CHECK_EQUAL(abs_f(5), 5);
@@ -468,6 +469,23 @@ BOOST_AUTO_TEST_CASE(abs_fn_test)
     BOOST_CHECK_CLOSE(abs_f(conj(z)), 1.0, 1e-6);
     BOOST_CHECK_CLOSE(abs_f(-z), 1.0, 1e-6);
     BOOST_CHECK_CLOSE(abs_f(-conj(z)), 1.0, 1e-6);
+}
+
+// Функциональный объект для модуля с поддержкой constexpr
+BOOST_AUTO_TEST_CASE(abs_constexpr_fn_test)
+{
+    auto constexpr abs_f = ural::abs_constexpr();
+
+    URAL_STATIC_ASSERT_EQUAL(abs_f(5), 5);
+    URAL_STATIC_ASSERT_EQUAL(abs_f(-5), 5);
+    URAL_STATIC_ASSERT_EQUAL(abs_f(4.5), 4.5);
+    URAL_STATIC_ASSERT_EQUAL(abs_f(-4.5), 4.5);
+
+    auto constexpr r = ural::rational<int>{18, 12};
+
+    static_assert(r >= 0, "");
+    URAL_STATIC_ASSERT_EQUAL(abs_f(r), r);
+    URAL_STATIC_ASSERT_EQUAL(abs_f(-r), r);
 }
 
 // Треугольник Паскаля
