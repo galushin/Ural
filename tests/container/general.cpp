@@ -501,6 +501,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(shrink_to_fit_test, Container, Reserving_container
 
 }
 
+// @todo распространить это на все контейнеры, кроме flex_string
 BOOST_AUTO_TEST_CASE(vector_allocator_constructor_regression)
 {
     // Регрессия: при вызове конструктора без параметров память не распределяется

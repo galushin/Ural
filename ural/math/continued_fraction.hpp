@@ -64,68 +64,87 @@ namespace ural
         IntType k_2;
     };
 
-    class sqrt_as_continued_fraction_functor
+    template <class IntType>
+    class sqrt_as_continued_fraction_sequence
+     : public ural::sequence_base<sqrt_as_continued_fraction_sequence<IntType>>
     {
     public:
-        /** @brief Оператор вызова функции
-        @param N число, из которого необходимо вычислить корень
-        @param out выходная последовательность
-        @return Непройденная часть @c out
-        */
-        template <class IntType, class OutputTraversable>
-        auto operator()(IntType N, OutputTraversable && out) const
-        -> decltype(sequence(std::forward<OutputTraversable>(out)))
+        // Типы
+        typedef IntType value_type;
+
+        typedef value_type const & reference;
+        typedef value_type const * pointer;
+
+        // @todo усилить категорию обхода?
+        typedef single_pass_traversal_tag traversal_tag;
+
+        typedef std::intmax_t distance_type;
+
+        // Конструкторы
+        explicit sqrt_as_continued_fraction_sequence(IntType value)
+         : N_(value)
+         , a_0_(sqrt_as_continued_fraction_sequence::sqrt_impl(value))
+         , x_(0)
+         , a_new_(a_0_)
+         , denom_(1)
+        {}
+
+        // Однопроходная последовательность
+        bool operator!() const
         {
-            return impl(std::move(N), sequence(std::forward<OutputTraversable>(out)));
+            return (denom_ == IntType(0));
+        }
+
+        reference front() const
+        {
+            return a_new_;
+        }
+
+        void pop_front()
+        {
+            if(ural::square(a_0_) == N_ || (denom_ == 1 && x_ == a_0_))
+            {
+                denom_ = IntType(0);
+                return;
+            }
+
+            if(x_ == IntType(0))
+            {
+                x_ = a_0_;
+            }
+
+            // denom / (sqrt(N) - x) = (sqrt(N) + x) * denom / (N - x^2)
+            auto const new_denom = (N_ - ural::square(x_)) / denom_;
+
+            a_new_ = (a_0_ + x_) / new_denom;
+
+            x_ = (a_new_ * new_denom - x_);
+
+            denom_ = new_denom;
         }
 
     private:
-        template <class IntType, class Output>
-        Output impl(IntType N, Output out) const
+        IntType N_;
+        IntType a_0_;
+        IntType a_new_;
+        IntType x_;
+        IntType denom_;
+
+    private:
+        static IntType sqrt_impl(IntType x)
         {
             // @todo обойтись без вещественных функций
             using std::sqrt;
-            IntType const a_0 = sqrt(N);
-
-            assert(!!out);
-            *out = a_0;
-            ++ out;
-
-            IntType x = a_0;
-            IntType denom = 1;
-
-            if(ural::square(x) == N)
-            {
-                return out;
-            }
-
-            for(;;)
-            {
-                // denom / (sqrt(N) - x) = (sqrt(N) + x) * denom / (N - x^2)
-                auto const new_denom = (N - x * x) / denom;
-
-                auto const a_new = (a_0 + x) / new_denom;
-
-                assert(!!out);
-                *out = a_new;
-                ++ out;
-
-                x = (a_new * new_denom - x);
-
-                denom = new_denom;
-
-                if(denom == 1 && x == a_0)
-                {
-                    break;
-                }
-            }
-
-            return out;
+            return sqrt(x);
         }
     };
 
-    auto constexpr sqrt_as_continued_fraction
-        = sqrt_as_continued_fraction_functor{};
+    template <class IntType>
+    sqrt_as_continued_fraction_sequence<IntType>
+    sqrt_as_continued_fraction(IntType n)
+    {
+        return sqrt_as_continued_fraction_sequence<IntType>(std::move(n));
+    }
 }
 // namespace ural
 

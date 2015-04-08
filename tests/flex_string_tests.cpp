@@ -26,6 +26,8 @@
 #include <string>
 #include <sstream>
 
+// @todo убрать тесты, покрываемые обобщёнными тестами (container/general.cpp)
+
 namespace
 {
     typedef ural::tracing_allocator<char> test_allocator;
