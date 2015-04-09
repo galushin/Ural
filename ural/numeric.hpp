@@ -256,47 +256,76 @@ namespace ural
 
     auto constexpr const discrete_convolution = discrete_convolution_functor{};
 
-    /** @brief Функциональный объект для вычисления приближённого значения
+    /** @brief Последовательность для вычисления приближённого значения
     квадратого корня по итерационному методу Герона. Смотри, например
     http://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Babylonian_method
+    @todo отделить критерий остановки, пусть исходная последовательность будет
+    бесконечной.
     */
-    class sqrt_heron_f
+    template <class RealType>
+    class sqrt_heron_sequence
+     : public sequence_base<sqrt_heron_sequence<RealType>>
     {
     public:
-        /** @brief S число, для которого вычисляется приближённое значение
-        квадратного корня
-        */
-        template <class RealType>
-        RealType
-        operator()(RealType S, RealType x0, RealType const & eps) const
+        // Типы
+        typedef RealType value_type;
+
+        typedef value_type const & reference;
+
+        // Конструктор
+        sqrt_heron_sequence(RealType S, RealType x0, RealType eps)
+         : s_(std::move(S))
+         , x0_(std::move(x0))
+         , eps_(std::move(eps) * 0.1)
+         , done_(false)
         {
-            assert(S >= 0);
+            assert(s_ >= 0);
 
-            if(S == RealType{0})
+            if(s_ < eps_)
             {
-                return S;
+                x0_ = s_;
             }
-
-            assert(x0 > 0);
-
-            for(;;)
-            {
-                auto const x_old = x0;
-
-                x0 = (x0 + S / x0) / RealType{2};
-
-                using std::abs;
-                if(abs(x0 - x_old) < eps)
-                {
-                    break;
-                }
-            }
-
-            return x0;
         }
+
+        // Однопроходная последовательность
+        bool operator!() const
+        {
+            return this->done_;
+        }
+
+        reference front() const
+        {
+            return this->x0_;
+        }
+
+        void pop_front()
+        {
+            using std::abs;
+            if(abs(ural::square(x0_) - s_) < eps_)
+            {
+                done_ = true;
+                return;
+            }
+
+            assert(x0_ > 0);
+
+            x0_ = (x0_ + s_ / x0_) / RealType(2);
+        }
+
+    private:
+        RealType s_;
+        RealType x0_;
+        RealType eps_;
+        bool done_;
     };
 
-    auto constexpr sqrt_heron = sqrt_heron_f{};
+    template <class RealType>
+    sqrt_heron_sequence<RealType>
+    make_sqrt_heron_sequence(RealType S, RealType x0, RealType eps)
+    {
+        return sqrt_heron_sequence<RealType>(std::move(S), std::move(x0),
+                                             std::move(eps));
+    }
 
     /** @brief Последовательность строк треугольника Паскаля
     @tparam Vector тип массива, используемого для хранения строк

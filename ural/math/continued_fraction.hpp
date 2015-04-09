@@ -84,8 +84,8 @@ namespace ural
         explicit sqrt_as_continued_fraction_sequence(IntType value)
          : N_(value)
          , a_0_(sqrt_as_continued_fraction_sequence::sqrt_impl(value))
-         , x_(0)
          , a_new_(a_0_)
+         , x_(0)
          , denom_(1)
         {}
 

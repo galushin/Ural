@@ -29,10 +29,6 @@ namespace ural
     /** @brief Тип для представления непересекающихся множеств
     @tparam IntType Тип элементов
     @tparam Allocator Тип распределителя памяти
-    @todo Проверка и обработка ошибок
-    @todo Оптимизация (сжатие путей)
-    @todo Настройка типа контейнера
-    @todo Конструкторы с распределителями памяти
     */
     template <class IntType,
               class Allocator = use_default

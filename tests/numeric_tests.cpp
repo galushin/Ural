@@ -956,11 +956,16 @@ BOOST_AUTO_TEST_CASE(square_root_iterative_zero_test)
     auto const eps = 1e-6;
 
     auto const S  = 0.0;
-    auto const x_0 = S / 2;
+    auto x_0 = S / 2;
 
-    auto const x = ural::sqrt_heron(S, x_0, eps);
+    auto seq = ural::make_sqrt_heron_sequence(S, x_0, eps);
 
-    BOOST_CHECK_CLOSE(std::sqrt(S), x, eps);
+    for(; !!seq; ++seq)
+    {
+        x_0 = *seq;
+    }
+
+    BOOST_CHECK_CLOSE_FRACTION(std::sqrt(S), x_0, eps);
 }
 
 BOOST_AUTO_TEST_CASE(square_root_iterative_test)
@@ -969,11 +974,16 @@ BOOST_AUTO_TEST_CASE(square_root_iterative_test)
 
     for(auto const S : ural::numbers(1.0, 200.0))
     {
-        auto const x_0 = S / 2;
+        auto x_0 = S / 2;
 
-        auto const x = ural::sqrt_heron(S, x_0, eps);
+        auto seq = ural::make_sqrt_heron_sequence(S, x_0, eps);
 
-        BOOST_CHECK_CLOSE(std::sqrt(S), x, eps);
+        for(; !!seq; ++ seq)
+        {
+            x_0 = *seq;
+        }
+
+        BOOST_CHECK_CLOSE_FRACTION(std::sqrt(S), x_0, eps);
     }
 }
 
@@ -983,10 +993,15 @@ BOOST_AUTO_TEST_CASE(square_root_iterative_less_then_1_test)
 
     for(auto S = 0.0; S < 1.0; S += 0.01)
     {
-        auto const x_0 = S / 2;
+        auto x_0 = S / 2;
 
-        auto const x = ural::sqrt_heron(S, x_0, eps);
+        auto seq = ural::make_sqrt_heron_sequence(S, x_0, eps);
 
-        BOOST_CHECK_CLOSE(std::sqrt(S), x, eps);
+        for(; !!seq; ++ seq)
+        {
+            x_0 = *seq;
+        }
+
+        BOOST_CHECK_CLOSE_FRACTION(std::sqrt(S), x_0, eps);
     }
 }
