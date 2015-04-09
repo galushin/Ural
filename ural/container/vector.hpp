@@ -120,36 +120,81 @@ namespace ural
 
         buffer & operator=(buffer const & x)
         {
-            // @todo Что с распределителем памяти?
+            // Если нельзя передать владение, то придётся освобождать память
+            if(this->allocator_ref() != x.allocator_ref())
+            {
+                this->destroy_impl();
+            }
+
+            if(Traits::propagate_on_container_copy_assignment::value == true)
+            {
+                this->allocator_ref() = x.allocator_ref();
+            }
+
+            this->reserve(x.size());
+
+            // Сначала присваиваем уже созданным элементам
+            auto r = ural::copy(x, *this);
+
+            // Обрабатываем лишние или недостающие элементы
             if(x.size() < this->size())
             {
-                ural::copy(x, *this);
                 this->pop_back(this->size() - x.size());
             }
             else
             {
-                buffer(x).swap(*this);
+                ural::copy(r[ural::_1], *this | ural::back_inserter);
             }
+
             return *this;
         }
 
         buffer & operator=(buffer && x) noexcept
         {
+            // @todo Устранить дублирование с копирующим присваиванием
             static_assert(Traits::propagate_on_container_move_assignment::value
                           || ural::allocator_is_always_equal<allocator_type>::value, "");
 
-            this->allocator_ref() = x.allocator_ref();
+            // Если нельзя передать владение, то придётся освобождать память
+            // А если можно, то просто обмениваем указатели
+            if(this->allocator_ref() != x.allocator_ref())
+            {
+                this->destroy_impl();
+            }
 
-            this->unsafe_swap_pointers(x);
+            if(Traits::propagate_on_container_move_assignment::value)
+            {
+                this->allocator_ref() = std::move(x.allocator_ref());
+            }
+
+            if(this->allocator_ref() == x.allocator_ref())
+            {
+                this->unsafe_swap_pointers(x);
+                return *this;
+            }
+
+            this->reserve(x.size());
+
+            // Сначала присваиваем уже созданным элементам
+            auto r = ural::move(x, *this);
+
+            // Обрабатываем лишние или недостающие элементы
+            if(x.size() < this->size())
+            {
+                this->pop_back(this->size() - x.size());
+            }
+            else
+            {
+                ural::move(r[ural::_1], *this | ural::back_inserter);
+            }
+
 
             return *this;
         }
 
         ~buffer()
         {
-            this->pop_back(this->size());
-
-            Traits::deallocate(this->allocator_ref(), this->begin(), this->capacity());
+            this->destroy_impl();
         }
 
         Alloc get_allocator() const
@@ -240,6 +285,17 @@ namespace ural
         }
 
     private:
+        void destroy_impl() noexcept
+        {
+            this->pop_back(this->size());
+
+            Traits::deallocate(this->allocator_ref(), this->begin(), this->capacity());
+
+            this->begin_ref() = nullptr;
+            this->end_ref() = nullptr;
+            this->storage_end_ref() = nullptr;
+        }
+
         void reserve_aux(size_type n)
         {
             assert(n >= this->size());
