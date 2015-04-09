@@ -350,23 +350,6 @@ namespace meta
      : declare_type<null_type>
     {};
 
-    // Добавление списка
-    template <class Input1, class Input2>
-    struct append
-    {
-    private:
-        typedef typename Input1::head New_head;
-        typedef typename append<typename Input1::tail, Input2>::type New_tail;
-
-    public:
-        typedef typename push_front<New_tail, New_head>::type type;
-    };
-
-    template <class Input2>
-    struct append<null_type, Input2>
-     : declare_type<Input2>
-    {};
-
     // Декартово произведение
     // @todo Произвольное число аргументов
     template <class Input1, class Input2>
@@ -382,7 +365,7 @@ namespace meta
         typedef typename cartesian_product<Tail1, Input2>::type List2;
 
     public:
-        typedef typename append<List1, List2>::type type;
+        typedef typename flatten<ural::typelist<List1, List2>>::type type;
     };
 
     template <class Input1>
