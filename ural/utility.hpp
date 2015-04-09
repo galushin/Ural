@@ -490,6 +490,47 @@ namespace ural
             assert(x == y);
         }
     };
+
+    /** @brief Тип функционального объекта для преобразования в ссылку на
+    константу.
+    http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/n4380.html
+    */
+    struct as_const_fn
+    {
+    public:
+        //@{
+        /** @brief Оператор вызова функции
+        @param x ссылка на значение, которая должно быть преобразована в
+        константную
+        @return Если @c x -- ссылка на временный объект, то возвращает копию
+        объекта, на который она указывает, в противном случае возвращает
+        константную ссылку на тот же объект
+        */
+        template <class T>
+        constexpr T const &
+        operator()(T & x) const noexcept
+        {
+            return x;
+        }
+
+        template <class T>
+        constexpr T const &
+        operator()(T const & x) const noexcept
+        {
+            return x;
+        }
+
+        template <class T>
+        constexpr T
+        operator()(T && x) const noexcept(noexcept(T(std::move(x))))
+        {
+            return x;
+        }
+        //@}
+    };
+
+    /// @brief Функциональный объект для преобразования ссылок в константные
+    auto constexpr as_const = as_const_fn{};
 }
 // namespace ural
 

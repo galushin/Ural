@@ -918,7 +918,7 @@ namespace ural
         */
         reference operator[](size_type pos)
         {
-            return const_cast<reference>(static_cast<flex_string const&>(*this)[pos]);
+            return const_cast<reference>(ural::as_const(*this)[pos]);
         }
 
         const_reference operator[](size_type pos) const
@@ -947,7 +947,7 @@ namespace ural
 
         reference at(size_type pos)
         {
-            auto const & c_self = static_cast<const flex_string&>(*this);
+            auto const & c_self = ural::as_const(*this);
 
             return const_cast<reference>(c_self.at(pos));
         }
@@ -966,7 +966,7 @@ namespace ural
 
         reference front()
         {
-            auto const & c_self = static_cast<const flex_string&>(*this);
+            auto const & c_self = ural::as_const(*this);
 
             return const_cast<reference>(c_self.front());
         }
@@ -985,7 +985,7 @@ namespace ural
 
         reference back()
         {
-            auto const & c_self = static_cast<const flex_string&>(*this);
+            auto const & c_self = ural::as_const(*this);
 
             return const_cast<reference>(c_self.back());
         }

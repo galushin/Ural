@@ -209,3 +209,22 @@ BOOST_AUTO_TEST_CASE(tuple_uniform_nonconst_access_test)
     BOOST_CHECK_EQUAL(s, ural::get(x, ural::_2));
     BOOST_CHECK_EQUAL(c, ural::get(x, ural::_3));
 }
+
+// as_const
+BOOST_AUTO_TEST_CASE(as_const_rvalue_test)
+{
+    // Временный объект
+    typedef decltype(ural::as_const(std::string("Stepanov"))) Result;
+    static_assert(std::is_reference<Result>::value == false, "Must be value");
+
+    // Переменная
+    std::string s;
+
+    typedef decltype(ural::as_const(s)) Reference;
+
+    static_assert(std::is_same<std::string const &, Reference>::value,
+                  "Must be reference");
+
+
+    BOOST_CHECK(true);
+}

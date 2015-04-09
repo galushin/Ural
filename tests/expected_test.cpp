@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE(expected_notconst_value_test)
     Expected e{x1};
     e.value() = x2;
 
-    BOOST_CHECK_EQUAL(static_cast<Expected const&>(e).value(), x2);
+    BOOST_CHECK_EQUAL(ural::as_const(e).value(), x2);
 
     BOOST_CHECK(e == x2);
     BOOST_CHECK(x2 == e);
