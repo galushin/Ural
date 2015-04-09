@@ -36,8 +36,7 @@ namespace distributions
     @tparam IntType тип значений
     @tparam Weight тип весов
     @todo Использовать для представления вероятностей probability<>?
-    @todo Диагностика отрицательных, бесконечных и nan весов, а также нулевой
-    суммы весов
+    @todo Настройка способоа диагностики
     @todo Хранить или вычислять cdf? А остальные характеристики?
     @todo Конструктор discrete(size_t nw, double xmin, double xmax, UnaryOperation fw)
     @todo Одновременное вычисление математического ожидания и дисперсии?
@@ -58,6 +57,10 @@ namespace distributions
 
         /// @brief Тип контейнера для хранения вероятностей
         typedef std::vector<probability_type> probabilities_vector;
+
+        /// @brief Тип математического ожидания
+        typedef decltype(std::declval<value_type>() * std::declval<weight_type>())
+            mean_type;
 
         // Конструкторы
         /** @brief Конструктор без параметров
@@ -94,7 +97,7 @@ namespace distributions
                 // @todo Заменить на алгоритм
                 for(auto & p : ps_)
                 {
-                    assert(p >= 0);
+                    enforce_weight(p);
 
                     p /= w_sum;
                 }
@@ -112,12 +115,12 @@ namespace distributions
         // Характеристики распределения
         /** @brief Математическое ожидание
         @param d распределение
-        @todo Тип возвращаемого значения
+        @return Значение математического ожидания
         */
-        friend weight_type mean(discrete const & d)
+        friend mean_type mean(discrete const & d)
         {
             return ural::inner_product(ural::indices_of(d.ps_),
-                                       d.ps_, weight_type{0});
+                                       d.ps_, mean_type{0});
         }
 
         /** @brief Дисперсия
@@ -166,6 +169,7 @@ namespace distributions
 
             auto result = weight_type{0};
 
+            // @todo Заменить на алгоритм
             for(auto i : ural::indices_of(d.ps_))
             {
                 if(i > x)
@@ -185,6 +189,15 @@ namespace distributions
         probabilities_vector const & probabilities() const
         {
             return this->ps_;
+        }
+
+    private:
+        static weight_type const & enforce_weight(weight_type const & w)
+        {
+            assert(std::isfinite(w) == true);
+            assert(w >= 0);
+
+            return w;
         }
 
     private:

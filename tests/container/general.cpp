@@ -172,7 +172,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_move_assign, Container, Containers_types
 
 // @todo строка 13
 
-// @todo строки 14-17: итераторы
+// Строки 14-17: итераторы
 BOOST_AUTO_TEST_CASE_TEMPLATE(container_iterators_getters_types,
                               Container, Containers_types)
 {
@@ -182,15 +182,19 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_iterators_getters_types,
     Container v;
     Container const & cr = v;
 
+    // строка 14
     static_assert(std::is_same<decltype(v.begin()), Iterator>::value, "");
     static_assert(std::is_same<decltype(cr.begin()), CIterator>::value, "");
 
+    // строка 15
     static_assert(std::is_same<decltype(v.end()), Iterator>::value, "");
     static_assert(std::is_same<decltype(cr.end()), CIterator>::value, "");
 
+    // строка 16
     static_assert(std::is_same<decltype(v.cbegin()), CIterator>::value, "");
     BOOST_CHECK(v.cbegin() == cr.begin());
 
+    // строка 17
     static_assert(std::is_same<decltype(v.cend()), CIterator>::value, "");
     BOOST_CHECK(v.cend() == cr.end());
 
@@ -441,6 +445,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_copy_with_other_allocator,
     BOOST_CHECK(alloc == u.get_allocator());
 }
 
+// Строка 10: повторяет требование строки 21 таблицы 96
+
 // 23.2.3 Последовательные контейнеры
 BOOST_AUTO_TEST_CASE_TEMPLATE(container_assign_n_value_worse_then_iters_regression,
                               Container, Sequence_containers)
@@ -497,8 +503,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(shrink_to_fit_test, Container, Reserving_container
     BOOST_CHECK_EQUAL_COLLECTIONS(cs.begin(), cs.end(),
                                   cs_old.begin(), cs_old.end());
     BOOST_CHECK_EQUAL(cs.capacity(), cs.size());
-
-
 }
 
 // @todo распространить это на все контейнеры, кроме flex_string

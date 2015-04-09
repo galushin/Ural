@@ -33,6 +33,7 @@ namespace archetypes
 {
     /** @brief Архетип функционального объекта (остаётся неопределённым)
     @tparam Signature сигнатура
+    @todo переименовать в @c Callable
     */
     template <class Signature>
     class functor;

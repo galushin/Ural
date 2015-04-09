@@ -493,7 +493,8 @@ namespace ural
 
     /** @brief Тип функционального объекта для преобразования в ссылку на
     константу.
-    http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/n4380.html
+    Подробности можно найти в следующей статье комитета по стандартизации С++
+    <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/n4380.html">n4380</a>
     */
     struct as_const_fn
     {
