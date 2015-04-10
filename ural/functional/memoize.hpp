@@ -76,7 +76,7 @@ namespace ural
         typedef typename Cache::size_type size_type;
 
         /// @brief Тип функционального объекта
-        typedef decltype(ural::make_functor(std::declval<F>())) target_type;
+        typedef decltype(ural::make_callable(std::declval<F>())) target_type;
 
         /// @brief Стратегия работы с многопоточьностью
         typedef typename default_helper<Threading, single_thread_policy>::type

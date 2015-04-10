@@ -189,12 +189,12 @@ namespace ural
     */
     template <class Function, class... Inputs>
     auto make_transform_sequence(Function f, Inputs && ... in)
-    -> transform_sequence<decltype(ural::make_functor(std::move(f))),
+    -> transform_sequence<decltype(ural::make_callable(std::move(f))),
                           decltype(sequence(std::forward<Inputs>(in)))...>
     {
-        typedef transform_sequence<decltype(ural::make_functor(std::move(f))),
+        typedef transform_sequence<decltype(ural::make_callable(std::move(f))),
                           decltype(sequence(std::forward<Inputs>(in)))...> Result;
-        return Result(ural::make_functor(std::move(f)),
+        return Result(ural::make_callable(std::move(f)),
                       sequence(std::forward<Inputs>(in))...);
     }
 
@@ -223,13 +223,13 @@ namespace ural
 
     /** @brief Создание элемента "конвейера", создающего @c transformed_sequence
     @param f функциональный объект
-    @return <tt> {ural::make_functor(std::move(f))} </tt>
+    @return <tt> {ural::make_callable(std::move(f))} </tt>
     */
     template <class Function>
     auto transformed(Function f)
-    -> transformed_helper<decltype(ural::make_functor(std::move(f)))>
+    -> transformed_helper<decltype(ural::make_callable(std::move(f)))>
     {
-        return {ural::make_functor(std::move(f))};
+        return {ural::make_callable(std::move(f))};
     }
 }
 // namespace ural

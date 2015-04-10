@@ -55,7 +55,7 @@ namespace ural
         // Конструкторы
         /** @brief Конструктор
         @param ins список входных последовательностей
-        @post <tt> this->bases() == make_functor(ins...) </tt>
+        @post <tt> this->bases() == make_callable(ins...) </tt>
         */
         zip_sequence(Inputs... ins)
          : impl_{make_tuple_functor{}, std::move(ins)...}

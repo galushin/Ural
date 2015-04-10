@@ -32,10 +32,10 @@ namespace ural
     template <class Generator>
     class generator_sequence
      : public sequence_base<generator_sequence<Generator>,
-                            decltype(make_functor(std::declval<Generator>()))>
+                            decltype(make_callable(std::declval<Generator>()))>
     {
     public:
-        typedef decltype(make_functor(std::declval<Generator>()))
+        typedef decltype(make_callable(std::declval<Generator>()))
             functor_type;
 
     private:

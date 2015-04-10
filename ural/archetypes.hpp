@@ -33,17 +33,16 @@ namespace archetypes
 {
     /** @brief Архетип функционального объекта (остаётся неопределённым)
     @tparam Signature сигнатура
-    @todo переименовать в @c Callable
     */
     template <class Signature>
-    class functor;
+    class callable;
 
     /** @brief Архетип функционального объекта (общее определение)
     @tparam R типы аргументов
     @tparam Args типы аргументов
     */
     template <class R, class... Args>
-    class functor<R(Args...)>
+    class callable<R(Args...)>
     {
     public:
         /** @brief Оператор применения функционального объекта
@@ -66,7 +65,7 @@ namespace archetypes
     @tparam Args типы аргументов
     */
     template <class... Args>
-    class functor<void(Args...)>
+    class callable<void(Args...)>
     {
     public:
         /// @brief Оператор применения функционального объекта

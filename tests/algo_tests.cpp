@@ -1885,7 +1885,7 @@ BOOST_AUTO_TEST_CASE(make_heap_test)
 {
     std::vector<int> v { 3, 1, 4, 1, 5, 9 };
 
-    auto cmp = ural::functor_tracer<ural::less<decltype(v.front())>>{};
+    auto cmp = ural::callable_tracer<ural::less<decltype(v.front())>>{};
     cmp.reset_calls();
 
     ural::make_heap(v, cmp);
@@ -1899,7 +1899,7 @@ BOOST_AUTO_TEST_CASE(make_heap_odd_size_test)
 {
     std::vector<int> v { 3, 1, 4, 1, 5, 9, 2};
 
-    auto cmp = ural::functor_tracer<ural::less<decltype(v.front())>>{};
+    auto cmp = ural::callable_tracer<ural::less<decltype(v.front())>>{};
     cmp.reset_calls();
 
     ural::make_heap(v, cmp);

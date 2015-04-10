@@ -66,7 +66,7 @@ namespace ural
         {
             return impl(sequence(std::forward<Input>(in)),
                         std::move(init_value),
-                        ural::make_functor(std::move(op)));
+                        ural::make_callable(std::move(op)));
         }
 
         template <class Input, class T>
@@ -101,8 +101,8 @@ namespace ural
             return impl(sequence(std::forward<Input1>(in1)),
                         sequence(std::forward<Input2>(in2)),
                         std::move(init_value),
-                        ural::make_functor(std::move(add)),
-                        ural::make_functor(std::move(mult)));
+                        ural::make_callable(std::move(add)),
+                        ural::make_callable(std::move(mult)));
         }
 
         template <class Input1, class Input2, class T>

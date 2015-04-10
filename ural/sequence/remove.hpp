@@ -146,16 +146,16 @@ namespace ural
     @param in входная последовательность
     @param pred унарный предикат, определяющий, какие элементы должны быть
     исключены из последовательности
-    @return <tt> remove_if_sequence(sequence_fwd<Input>(in), make_functor(pred)) </tt>
+    @return <tt> remove_if_sequence(sequence_fwd<Input>(in), make_callable(pred)) </tt>
     */
     template <class Input, class Predicate>
     auto make_remove_if_sequence(Input && in, Predicate pred)
     -> remove_if_sequence<decltype(sequence(std::forward<Input>(in))),
-                          decltype(make_functor(std::move(pred)))>
+                          decltype(make_callable(std::move(pred)))>
     {
         typedef remove_if_sequence<decltype(sequence(std::forward<Input>(in))),
-                                   decltype(make_functor(std::move(pred)))> Sequence;
-        return Sequence(sequence(std::forward<Input>(in)), make_functor(std::move(pred)));
+                                   decltype(make_callable(std::move(pred)))> Sequence;
+        return Sequence(sequence(std::forward<Input>(in)), make_callable(std::move(pred)));
     }
 
     /** @brief Адаптор последовательности, исключающий элементы базовой
@@ -266,12 +266,12 @@ namespace ural
     template <class Input, class T, class BinaryPredicate>
     auto make_remove_sequence(Input && in, T const & value, BinaryPredicate pred)
     -> remove_sequence<decltype(sequence(std::forward<Input>(in))), T,
-                       decltype(make_functor(std::move(pred)))>
+                       decltype(make_callable(std::move(pred)))>
     {
         typedef remove_sequence<decltype(sequence(std::forward<Input>(in))), T,
-                       decltype(make_functor(std::move(pred)))> Sequence;
+                       decltype(make_callable(std::move(pred)))> Sequence;
         return Sequence(sequence(std::forward<Input>(in)), value,
-                        make_functor(std::move(pred)));
+                        make_callable(std::move(pred)));
     }
 
     /** @brief Функция создания @c remove_sequence

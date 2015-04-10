@@ -24,7 +24,7 @@
 #include <ural/functional/adjoin.hpp>
 #include <ural/functional/compare_by.hpp>
 #include <ural/functional/cpp_operators.hpp>
-#include <ural/functional/make_functor.hpp>
+#include <ural/functional/make_callable.hpp>
 #include <ural/functional/replace.hpp>
 
 #include <ural/tuple.hpp>
@@ -320,15 +320,15 @@ namespace ural
     @param init_value начальное значение
     @param pred бинарный предикат
     @return <tt> min_element_accumulator<>(std::move(init_value),
-                                           ural::make_functor(std::move(pred)) </tt>
+                                           ural::make_callable(std::move(pred)) </tt>
     */
     template <class Value, class BinaryPredicate>
     auto make_min_element_accumulator(Value init_value, BinaryPredicate pred)
-    -> min_element_accumulator<Value, decltype(ural::make_functor(std::move(pred)))>
+    -> min_element_accumulator<Value, decltype(ural::make_callable(std::move(pred)))>
     {
-        typedef decltype(ural::make_functor(std::move(pred))) Functor;
+        typedef decltype(ural::make_callable(std::move(pred))) Functor;
         typedef min_element_accumulator<Value, Functor> Result;
-        return Result{std::move(init_value), ural::make_functor(std::move(pred))};
+        return Result{std::move(init_value), ural::make_callable(std::move(pred))};
     }
 
     /** @brief Адаптор функционального объекта с двумя аргументами, меняющий
@@ -374,16 +374,16 @@ namespace ural
     /** @brief Создание адаптора функционального объекта с двумя аргументами,
     меняющего порядок аргументов.
     @param f функциональный объект с двумя аргументами
-    @return <tt> Functor{make_functor(std::move(f))} </tt>, где @c Functor ---
-    <tt> binary_reverse_args_functor<decltype(make_functor(std::move(f)))> </tt>
+    @return <tt> Functor{make_callable(std::move(f))} </tt>, где @c Functor ---
+    <tt> binary_reverse_args_functor<decltype(make_callable(std::move(f)))> </tt>
     */
     template <class BinaryFunctor>
     constexpr auto make_binary_reverse_args(BinaryFunctor f)
-    -> binary_reverse_args_functor<decltype(make_functor(std::move(f)))>
+    -> binary_reverse_args_functor<decltype(make_callable(std::move(f)))>
     {
-        typedef binary_reverse_args_functor<decltype(make_functor(std::move(f)))>
+        typedef binary_reverse_args_functor<decltype(make_callable(std::move(f)))>
             Functor;
-        return Functor{make_functor(std::move(f))};
+        return Functor{make_callable(std::move(f))};
     }
 
     template <class Fun, Fun f>

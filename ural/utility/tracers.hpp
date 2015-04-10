@@ -269,10 +269,10 @@ namespace ural
     @tparam Threading тип, определяющий стратегию многопоточности
     */
     template <class F, class Tag = use_default, class Threading = use_default>
-    class functor_tracer
-     : private decltype(ural::make_functor(std::declval<F>()))
+    class callable_tracer
+     : private decltype(ural::make_callable(std::declval<F>()))
     {
-        typedef decltype(ural::make_functor(std::declval<F>())) Base_class;
+        typedef decltype(ural::make_callable(std::declval<F>())) Base_class;
     public:
         /// @brief Стратегия многопоточности
         typedef typename default_helper<Threading, single_thread_policy>::type
@@ -287,7 +287,7 @@ namespace ural
         /** @brief Конструктор
         @post <tt> this->target() == F{} </tt>
         */
-        explicit functor_tracer()
+        explicit callable_tracer()
          : Base_class{}
         {}
 
@@ -295,7 +295,7 @@ namespace ural
         @param f используемый функтор
         @post <tt> this->target() == f </tt>
         */
-        explicit functor_tracer(F f)
+        explicit callable_tracer(F f)
          : Base_class(std::move(f))
         {}
 
@@ -343,17 +343,17 @@ namespace ural
         }
     };
 
-    /** @brief Функция создания @c functor_tracer
+    /** @brief Функция создания @c callable_tracer
     @tparam Tag тэг
     @tparam Threading стратегия многопоточности
     @param f функциональный объект
-    @return functor_tracer<F>(f)
+    @return callable_tracer<F>(f)
     */
     template <class F, class Tag = use_default, class Threading = use_default>
-    functor_tracer<F, Tag, Threading>
+    callable_tracer<F, Tag, Threading>
     make_function_tracer(F f)
     {
-        return functor_tracer<F, Tag, Threading>(std::move(f));
+        return callable_tracer<F, Tag, Threading>(std::move(f));
     }
 
     /** @todo Синхронизация?

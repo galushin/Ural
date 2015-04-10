@@ -53,7 +53,7 @@
 
 #include <ural/functional.hpp>
 #include <ural/random/c_rand_engine.hpp>
-#include <ural/functional/make_functor.hpp>
+#include <ural/functional/make_callable.hpp>
 
 #include <ural/algorithm/copy.hpp>
 #include <ural/algorithm/details/algo_base.hpp>
@@ -83,7 +83,7 @@ namespace ural
         -> decltype(ural::sequence_fwd<ForwardSequence>(seq))
         {
             return this->impl(ural::sequence_fwd<ForwardSequence>(seq),
-                              make_functor(std::move(pred)));
+                              make_callable(std::move(pred)));
         }
 
     private:
@@ -161,7 +161,7 @@ namespace ural
             BOOST_CONCEPT_ASSERT((ural::concepts::Callable<UnaryFunction, void(decltype(*in))>));
 
             auto r = ural::copy_fn{}(in, ural::make_function_output_sequence(std::move(f)));
-            return r[ural::_2].functor();
+            return r[ural::_2].function();
         }
 
     public:
@@ -173,10 +173,10 @@ namespace ural
         */
         template <class Input, class UnaryFunction>
         auto operator()(Input && in, UnaryFunction f) const
-        -> decltype(ural::make_functor(std::move(f)))
+        -> decltype(ural::make_callable(std::move(f)))
         {
             return for_each_fn::impl(sequence_fwd<Input>(in),
-                                     ural::make_functor(std::move(f)));
+                                     ural::make_callable(std::move(f)));
         }
     };
 
@@ -216,7 +216,7 @@ namespace ural
     {
         return ::ural::details::find_end(sequence_fwd<Forward1>(in),
                                          sequence_fwd<Forward2>(s),
-                                         make_functor(std::move(bin_pred)));
+                                         make_callable(std::move(bin_pred)));
     }
 
     template <class Forward1, class Forward2>
@@ -234,7 +234,7 @@ namespace ural
     {
         return ::ural::details::find_first_of(sequence_fwd<Input>(in),
                                               sequence_fwd<Forward>(s),
-                                              make_functor(std::move(bin_pred)));
+                                              make_callable(std::move(bin_pred)));
     }
 
     template <class Input, class Forward>
@@ -265,7 +265,7 @@ namespace ural
         -> decltype(sequence_fwd<Input>(in))
         {
             return this->impl(sequence_fwd<Input>(in), sequence_fwd<Forward>(s),
-                              ural::make_functor(std::move(bin_pred)));
+                              ural::make_callable(std::move(bin_pred)));
         }
 
     private:
@@ -293,7 +293,7 @@ namespace ural
     -> decltype(sequence_fwd<Forward>(s))
     {
         return ::ural::details::adjacent_find(sequence_fwd<Forward>(s),
-                                              ural::make_functor(std::move(pred)));
+                                              ural::make_callable(std::move(pred)));
     }
 
     template <class Forward>
@@ -310,7 +310,7 @@ namespace ural
     {
         return ::ural::details::search(sequence_fwd<Forward1>(in),
                                        sequence_fwd<Forward2>(s),
-                                       ural::make_functor(std::move(bin_pred)));
+                                       ural::make_callable(std::move(bin_pred)));
     }
 
     template <class Forward1, class Forward2>
@@ -329,7 +329,7 @@ namespace ural
     {
         return ::ural::details::search_n(sequence_fwd<Forward>(in),
                                          std::move(count), value,
-                                         ural::make_functor(std::move(bin_pred)));
+                                         ural::make_callable(std::move(bin_pred)));
     }
 
     template <class Forward, class Size, class T>
@@ -345,7 +345,7 @@ namespace ural
     {
         return ::ural::details::equal(sequence_fwd<Input1>(in1),
                                       sequence_fwd<Input2>(in2),
-                                      ural::make_functor(std::move(pred)));
+                                      ural::make_callable(std::move(pred)));
     }
 
     template <class Input1, class Input2>
@@ -362,7 +362,7 @@ namespace ural
     {
         return ::ural::details::mismatch(sequence_fwd<Input1>(in1),
                                          sequence_fwd<Input2>(in2),
-                                         make_functor(std::move(pred)));
+                                         make_callable(std::move(pred)));
     }
 
     template <class Input1, class Input2>
@@ -486,7 +486,7 @@ namespace ural
         {
             return this->impl(sequence_fwd<Input>(in),
                               sequence_fwd<Output>(out),
-                              ural::make_functor(std::move(f)));
+                              ural::make_callable(std::move(f)));
         }
 
         /** @brief Преобразование двух последовательностей
@@ -507,7 +507,7 @@ namespace ural
             return this->impl(sequence_fwd<Input1>(in1),
                               sequence_fwd<Input2>(in2),
                               sequence_fwd<Output>(out),
-                              ural::make_functor(std::move(f)));
+                              ural::make_callable(std::move(f)));
         }
 
     private:
@@ -553,7 +553,7 @@ namespace ural
         -> decltype(ural::sequence_fwd<ForwardSequence>(seq))
         {
             return this->impl(ural::sequence_fwd<ForwardSequence>(seq),
-                              ural::make_functor(std::move(gen)));
+                              ural::make_callable(std::move(gen)));
         }
 
     private:
@@ -664,7 +664,7 @@ namespace ural
     {
         return ::ural::details::replace(sequence_fwd<ForwardSequence>(seq),
                                         old_value, new_value,
-                                        make_functor(std::move(bin_pred)));
+                                        make_callable(std::move(bin_pred)));
     }
 
     template <class ForwardSequence, class T>
@@ -678,7 +678,7 @@ namespace ural
     void replace_if(ForwardSequence && seq, Predicate pred, T const & new_value)
     {
         return ::ural::details::replace_if(sequence_fwd<ForwardSequence>(seq),
-                                           make_functor(std::move(pred)),
+                                           make_callable(std::move(pred)),
                                            new_value);
     }
 
@@ -702,7 +702,7 @@ namespace ural
     bool is_partitioned(Input && in, UnaryPredicate pred)
     {
         return ::ural::details::is_partitioned(sequence_fwd<Input>(in),
-                                               make_functor(std::move(pred)));
+                                               make_callable(std::move(pred)));
     }
 
     template <class ForwardSequence, class UnaryPredicate>
@@ -710,7 +710,7 @@ namespace ural
     -> decltype(sequence_fwd<ForwardSequence>(in))
     {
         return ::ural::details::partition(sequence_fwd<ForwardSequence>(in),
-                                          make_functor(std::move(pred)));
+                                          make_callable(std::move(pred)));
     }
 
     template <class ForwardSequence, class UnaryPredicate>
@@ -719,7 +719,7 @@ namespace ural
     {
         auto s = sequence_fwd<ForwardSequence>(in);
         return ::ural::details::stable_partition(std::move(s),
-                                                 make_functor(std::move(pred)));
+                                                 make_callable(std::move(pred)));
     }
 
     template <class Input, class Output1, class Output2, class UnaryPredicate>
@@ -732,7 +732,7 @@ namespace ural
         return ::ural::details::partition_copy(sequence_fwd<Input>(in),
                                                sequence_fwd<Output1>(out_true),
                                                sequence_fwd<Output2>(out_false),
-                                               make_functor(std::move(pred)));
+                                               make_callable(std::move(pred)));
     }
 
     template <class ForwardSequence, class Predicate>
@@ -740,7 +740,7 @@ namespace ural
     -> decltype(sequence_fwd<ForwardSequence>(in))
     {
         return ::ural::details::partition_point(sequence_fwd<ForwardSequence>(in),
-                                                ural::make_functor(std::move(pred)));
+                                                ural::make_callable(std::move(pred)));
     }
 
     // Бинарные кучи
@@ -759,7 +759,7 @@ namespace ural
         -> decltype(sequence_fwd<RASequence>(seq))
         {
             return this->impl(sequence_fwd<RASequence>(seq),
-                              make_functor(std::move(cmp)));
+                              make_callable(std::move(cmp)));
         }
 
     private:
@@ -809,7 +809,7 @@ namespace ural
         bool operator()(RASequence && seq, Compare cmp) const
         {
             return this->impl(sequence_fwd<RASequence>(seq),
-                              make_functor(std::move(cmp)));
+                              make_callable(std::move(cmp)));
         }
 
     private:
@@ -832,7 +832,7 @@ namespace ural
         void operator()(RASequence && seq, Size first, Size last, Compare cmp) const
         {
             return this->impl(ural::sequence_fwd<RASequence>(seq), first, last,
-                              ural::make_functor(std::move(cmp)));
+                              ural::make_callable(std::move(cmp)));
         }
 
     private:
@@ -882,7 +882,7 @@ namespace ural
         void operator()(RASequence && seq, Compare cmp) const
         {
             return this->impl(sequence_fwd<RASequence>(seq),
-                              ural::make_functor(std::move(cmp)));
+                              ural::make_callable(std::move(cmp)));
         }
 
     private:
@@ -934,7 +934,7 @@ namespace ural
         void operator()(RASequence && seq, Compare cmp) const
         {
             return this->impl(sequence_fwd<RASequence>(seq),
-                              make_functor(std::move(cmp)));
+                              make_callable(std::move(cmp)));
         }
 
     private:
@@ -970,7 +970,7 @@ namespace ural
         void operator()(RASequence && seq, Compare cmp) const
         {
             return this->impl(sequence_fwd<RASequence>(seq),
-                              make_functor(std::move(cmp)));
+                              make_callable(std::move(cmp)));
         }
 
     private:
@@ -1018,7 +1018,7 @@ namespace ural
         void operator()(RASequence && seq, Compare cmp) const
         {
             return this->impl(sequence_fwd<RASequence>(seq),
-                              make_functor(std::move(cmp)));
+                              make_callable(std::move(cmp)));
         }
 
     private:
@@ -1048,7 +1048,7 @@ namespace ural
         void operator()(RASequence && s, Compare cmp) const
         {
             return this->impl(ural::sequence_fwd<RASequence>(s),
-                              ural::make_functor(std::move(cmp)));
+                              ural::make_callable(std::move(cmp)));
         }
 
     private:
@@ -1104,7 +1104,7 @@ namespace ural
         -> decltype(sequence_fwd<RASequence>(in))
         {
             return this->impl(sequence_fwd<RASequence>(in), value,
-                              make_functor(std::move(cmp)));
+                              make_callable(std::move(cmp)));
         }
     private:
         template <class RASequence, class T, class Compare>
@@ -1141,7 +1141,7 @@ namespace ural
         -> decltype(sequence_fwd<RASequence>(in))
         {
             return this->impl(sequence_fwd<RASequence>(in), value,
-                              make_functor(std::move(cmp)));
+                              make_callable(std::move(cmp)));
         }
     private:
         template <class RASequence, class T, class Compare>
@@ -1167,7 +1167,7 @@ namespace ural
         bool operator()(RASequence && in, T const & value, Compare cmp) const
         {
             return this->impl(sequence_fwd<RASequence>(in), value,
-                              make_functor(std::move(cmp)));
+                              make_callable(std::move(cmp)));
         }
 
     private:
@@ -1197,7 +1197,7 @@ namespace ural
         -> decltype(sequence_fwd<RASequence>(in))
         {
             return this->impl(sequence_fwd<RASequence>(in), value,
-                              make_functor(std::move(cmp)));
+                              make_callable(std::move(cmp)));
         }
 
     private:
@@ -1237,7 +1237,7 @@ namespace ural
         void operator()(RASequence && s, Size part, Compare cmp) const
         {
             return this->impl(sequence_fwd<RASequence>(s), std::move(part),
-                              ural::make_functor(std::move(cmp)));
+                              ural::make_callable(std::move(cmp)));
         }
 
     private:
@@ -1282,7 +1282,7 @@ namespace ural
         {
             return this->impl(sequence_fwd<Input>(in),
                               sequence_fwd<RASequence>(out),
-                              ural::make_functor(std::move(cmp)));
+                              ural::make_callable(std::move(cmp)));
         }
 
     private:
@@ -1321,7 +1321,7 @@ namespace ural
         void operator()(RASequence && s, Compare cmp) const
         {
             return this->impl(sequence_fwd<RASequence>(s),
-                              ural::make_functor(std::move(cmp)));
+                              ural::make_callable(std::move(cmp)));
         }
 
         template <class RASequence>
@@ -1353,7 +1353,7 @@ namespace ural
         void operator()(BidirectionalSequence && s, Compare cmp) const
         {
             return this->impl(sequence_fwd<BidirectionalSequence>(s),
-                              ural::make_functor(std::move(cmp)));
+                              ural::make_callable(std::move(cmp)));
         }
 
     private:
@@ -1437,7 +1437,7 @@ namespace ural
         {
             return this->impl(sequence_fwd<Input1>(in1),
                               sequence_fwd<Input2>(in2),
-                              ural::make_functor(std::move(cmp)));
+                              ural::make_callable(std::move(cmp)));
         }
 
     private:
@@ -1485,7 +1485,7 @@ namespace ural
         {
             return this->impl(sequence_fwd<Forward1>(s1),
                               sequence_fwd<Forward2>(s2),
-                              make_functor(std::move(pred)));
+                              make_callable(std::move(pred)));
         }
 
     private:
@@ -1538,7 +1538,7 @@ namespace ural
         {
             return this->impl(sequence_fwd<Input1>(in1),
                               sequence_fwd<Input2>(in2),
-                              ural::make_functor(std::move(cmp)));
+                              ural::make_callable(std::move(cmp)));
         }
 
     private:
@@ -1604,7 +1604,7 @@ namespace ural
         -> decltype(sequence_fwd<ForwardSequence>(in))
         {
             return this->impl(sequence_fwd<ForwardSequence>(in),
-                              ural::make_functor(std::move(cmp)));
+                              ural::make_callable(std::move(cmp)));
         }
 
         template <class ForwardSequence>
@@ -1636,7 +1636,7 @@ namespace ural
         -> decltype(sequence_fwd<ForwardSequence>(in))
         {
             return this->impl(sequence_fwd<ForwardSequence>(in),
-                              ural::make_functor(std::move(cmp)));
+                              ural::make_callable(std::move(cmp)));
         }
 
         template <class ForwardSequence>
@@ -1666,7 +1666,7 @@ namespace ural
                        decltype(sequence_fwd<ForwardSequence>(in))>
         {
             return this->impl(sequence_fwd<ForwardSequence>(in),
-                              ural::make_functor(std::move(cmp)));
+                              ural::make_callable(std::move(cmp)));
         }
 
     private:
@@ -1740,7 +1740,7 @@ namespace ural
         bool operator()(BiSequence && s, Compare cmp) const
         {
             return this->impl(sequence_fwd<BiSequence>(s),
-                              ural::make_functor(std::move(cmp)));
+                              ural::make_callable(std::move(cmp)));
 
         }
 
@@ -1803,7 +1803,7 @@ namespace ural
         bool operator()(BiSequence && s, Compare cmp) const
         {
             return this->impl(sequence_fwd<BiSequence>(s),
-                              ural::make_functor(std::move(cmp)));
+                              ural::make_callable(std::move(cmp)));
 
         }
 
@@ -1843,7 +1843,7 @@ namespace ural
         -> decltype(sequence_fwd<ForwardSequence>(seq))
         {
             return this->impl(sequence_fwd<ForwardSequence>(seq),
-                              value, make_functor(std::move(pred)));
+                              value, make_callable(std::move(pred)));
         }
 
     private:
@@ -1895,7 +1895,7 @@ namespace ural
         -> decltype(sequence_fwd<ForwardSequence>(seq))
         {
             return this->impl(sequence_fwd<ForwardSequence>(seq),
-                              ural::make_functor(std::move(pred)));
+                              ural::make_callable(std::move(pred)));
         }
 
     private:

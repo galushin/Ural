@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE(memoize_functor_test)
 
     typedef ural::abs_fn Target;
 
-    ural::functor_tracer<Target, Tag> f_tracer(ural::abs());
+    ural::callable_tracer<Target, Tag> f_tracer(ural::abs());
 
     static_assert(std::is_empty<decltype(f_tracer)>::value, "Must be empty!");
 
@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE(functor_tracer_test)
 {
     typedef double(*Target)(double);
 
-    typedef ural::functor_tracer<Target> Functor;
+    typedef ural::callable_tracer<Target> Functor;
 
     // Явное преобразование нужно, так как std::abs --- перегруженная функция
     auto f = ural::make_function_tracer(Target(std::abs));
@@ -525,7 +525,7 @@ BOOST_AUTO_TEST_CASE(make_functor_for_member_var_test)
     auto r_v = std::ref(x_v);
     auto r_cv = std::ref(x_cv);
 
-    auto f = ural::make_functor(&Type::first);
+    auto f = ural::make_callable(&Type::first);
 
     BOOST_CHECK_EQUAL(&Type::first, f.target());
 
@@ -575,7 +575,7 @@ BOOST_AUTO_TEST_CASE(make_functor_for_member_var_test_smart_ptr)
     auto p_v = ural::make_unique<Type volatile>(x);
     auto p_cv = ural::make_unique<Type const volatile>(x);
 
-    auto f = ural::make_functor(&Type::first);
+    auto f = ural::make_callable(&Type::first);
 
     BOOST_CHECK_EQUAL(&Type::first, f.target());
 
@@ -622,10 +622,10 @@ BOOST_AUTO_TEST_CASE(make_functor_for_member_function_test)
         }
     };
 
-    auto f = ural::make_functor(&Inner::do_something);
-    auto f_v = ural::make_functor(&Inner::do_something_threadsafe);
-    auto f_c = ural::make_functor(&Inner::get_something);
-    auto f_cv = ural::make_functor(&Inner::get_something_threadsafe);
+    auto f = ural::make_callable(&Inner::do_something);
+    auto f_v = ural::make_callable(&Inner::do_something_threadsafe);
+    auto f_c = ural::make_callable(&Inner::get_something);
+    auto f_cv = ural::make_callable(&Inner::get_something_threadsafe);
 
     BOOST_CHECK(f.target() == &Inner::do_something);
     BOOST_CHECK(f_v.target() == &Inner::do_something_threadsafe);
@@ -674,7 +674,7 @@ BOOST_AUTO_TEST_CASE(make_adjoin_functor_test)
     auto f1 = [](int a) { return a != 0; };
     auto f2 = [](int a) { return a % 2; };
 
-    auto f = ural::adjoin_functors(f1, f2);
+    auto f = ural::adjoin_functions(f1, f2);
     std::tuple<bool, int> x = f(5);
 
     BOOST_CHECK_EQUAL(true, std::get<0>(x));
@@ -695,7 +695,7 @@ BOOST_AUTO_TEST_CASE(make_adjoint_functor_constexpr_test)
     auto constexpr r3 = std::get<2>(tr);
     auto constexpr r4 = std::get<3>(tr);
 
-    auto constexpr f = ural::adjoin_functors(f1, f2, f3, f4);
+    auto constexpr f = ural::adjoin_functions(f1, f2, f3, f4);
 
     static_assert(std::is_empty<decltype(f)>::value, "Must be empty class");
 

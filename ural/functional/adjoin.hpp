@@ -24,7 +24,7 @@
 
 #include <ural/tuple.hpp>
 #include <ural/utility.hpp>
-#include <ural/functional/make_functor.hpp>
+#include <ural/functional/make_callable.hpp>
 
 namespace ural
 {
@@ -33,19 +33,19 @@ namespace ural
     @tparam Fs типы базовых функциональных объектов
     */
     template <class... Fs>
-    class adjoin_functor_type
+    class adjoin_function_type
      : ural::tuple<Fs...>
     {
         typedef ural::tuple<Fs...> Base;
 
     public:
         /// @brief Конструктор без параметров
-        constexpr adjoin_functor_type() = default;
+        constexpr adjoin_function_type() = default;
 
         /** @brief Конструктор
         @param fs базовые функциональные объекты
         */
-        constexpr explicit adjoin_functor_type(Fs... fs)
+        constexpr explicit adjoin_function_type(Fs... fs)
          : Base{std::move(fs)...}
         {}
 
@@ -82,12 +82,12 @@ namespace ural
     @param fs базовые функциональные объекты
     */
     template <class... Fs>
-    constexpr auto adjoin_functors(Fs... fs)
-    -> adjoin_functor_type<decltype(ural::make_functor(std::move(fs)))...>
+    constexpr auto adjoin_functions(Fs... fs)
+    -> adjoin_function_type<decltype(ural::make_callable(std::move(fs)))...>
     {
-        typedef adjoin_functor_type<decltype(ural::make_functor(std::move(fs)))...>
+        typedef adjoin_function_type<decltype(ural::make_callable(std::move(fs)))...>
             Functor;
-        return Functor{ural::make_functor(std::move(fs))...};
+        return Functor{ural::make_callable(std::move(fs))...};
     }
 }
 // namespace ural

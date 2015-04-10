@@ -22,7 +22,7 @@
  аргумент заданной функции.
 */
 
-#include <ural/functional/make_functor.hpp>
+#include <ural/functional/make_callable.hpp>
 #include <ural/sequence/base.hpp>
 
 namespace ural
@@ -67,14 +67,14 @@ namespace ural
 
         /** @brief Конструктор
         @param f функциональный объект
-        @post <tt> this->functor() == f </tt>
+        @post <tt> this->function() == f </tt>
         */
         explicit function_output_sequence(UnaryFunction f)
          : Base_class{std::move(f)}
         {}
 
         // Свойства
-        UnaryFunction const & functor() const
+        UnaryFunction const & function() const
         {
             return *this;
         }
@@ -122,16 +122,16 @@ namespace ural
 
     /** @brief Создание @c make_function_output_sequence
     @param f функциональный объект
-    @return <tt> function_output_sequence<F>(make_functor(std::move(f))) </tt>,
-    где @c F есть decltype(ural::make_functor(std::move(f))).
+    @return <tt> function_output_sequence<F>(make_callable(std::move(f))) </tt>,
+    где @c F есть decltype(ural::make_callable(std::move(f))).
     */
     template <class UnaryFunction>
     auto make_function_output_sequence(UnaryFunction f)
-    -> function_output_sequence<decltype(ural::make_functor(std::move(f)))>
+    -> function_output_sequence<decltype(ural::make_callable(std::move(f)))>
     {
-        typedef decltype(ural::make_functor(std::move(f))) Functor;
+        typedef decltype(ural::make_callable(std::move(f))) Functor;
         typedef function_output_sequence<Functor> Result;
-        return Result(ural::make_functor(std::move(f)));
+        return Result(ural::make_callable(std::move(f)));
     }
 }
 // namespace ural

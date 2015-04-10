@@ -157,7 +157,7 @@ namespace ural
     */
     template <class Additive, class Plus>
     auto make_arithmetic_progression(Additive first, Additive step, Plus op)
-    -> arithmetic_progression<Additive, decltype(make_functor(std::move(op)))>
+    -> arithmetic_progression<Additive, decltype(make_callable(std::move(op)))>
     {
         return {std::move(first), std::move(step), std::move(op)};
     }

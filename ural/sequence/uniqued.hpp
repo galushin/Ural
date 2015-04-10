@@ -239,11 +239,11 @@ namespace ural
     template <class Forward, class BinaryPredicate>
     auto make_unique_sequence(Forward && in, BinaryPredicate pred)
     -> unique_sequence<decltype(sequence(std::forward<Forward>(in))),
-                        decltype(make_functor(std::move(pred)))>
+                        decltype(make_callable(std::move(pred)))>
     {
         typedef unique_sequence<decltype(sequence(std::forward<Forward>(in))),
-                        decltype(make_functor(std::move(pred)))> Seq;
-        return Seq(sequence(std::forward<Forward>(in)), make_functor(std::move(pred)));
+                        decltype(make_callable(std::move(pred)))> Seq;
+        return Seq(sequence(std::forward<Forward>(in)), make_callable(std::move(pred)));
     }
 
     /** @brief Функция создания @c unique_sequence
@@ -284,7 +284,7 @@ namespace ural
         */
         template <class Predicate>
         auto operator()(Predicate pred) const
-        -> uniqued_helper_custom<decltype(make_functor(std::move(pred)))>
+        -> uniqued_helper_custom<decltype(make_callable(std::move(pred)))>
         {
             return {std::move(pred)};
         }

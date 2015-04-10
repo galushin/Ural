@@ -21,7 +21,7 @@
  @brief Функциональные объекты, аналогичные определённым в @< functional @>
 */
 
-#include <ural/functional/make_functor.hpp>
+#include <ural/functional/make_callable.hpp>
 #include <ural/functional/compose.hpp>
 
 namespace ural
@@ -700,9 +700,9 @@ namespace ural
     */
     template <class Predicate>
     class not_functor
-     : private compose_functor<ural::logical_not<>, Predicate>
+     : private compose_function<ural::logical_not<>, Predicate>
     {
-        typedef compose_functor<ural::logical_not<>, Predicate> Base;
+        typedef compose_function<ural::logical_not<>, Predicate> Base;
 
         friend constexpr bool
         operator==(not_functor const & x, not_functor const & y)
@@ -713,7 +713,7 @@ namespace ural
 
     public:
         /// @brief Тип базового функционального объекта
-        typedef decltype(make_functor(std::declval<Predicate>())) target_type;
+        typedef decltype(make_callable(std::declval<Predicate>())) target_type;
 
         // Конструкторы
         /** @brief Конструктор
@@ -736,7 +736,7 @@ namespace ural
         */
         constexpr target_type const & target() const
         {
-            return Base::second_functor();
+            return Base::second_function();
         }
 
         /** @brief Применение функционального объекта
@@ -756,10 +756,10 @@ namespace ural
     */
     template <class Predicate>
     auto not_fn(Predicate pred)
-    -> not_functor<decltype(make_functor(std::move(pred)))>
+    -> not_functor<decltype(make_callable(std::move(pred)))>
     {
-        typedef not_functor<decltype(make_functor(std::move(pred)))> Functor;
-        return Functor{make_functor(std::move(pred))};
+        typedef not_functor<decltype(make_callable(std::move(pred)))> Functor;
+        return Functor{make_callable(std::move(pred))};
     }
 
     // Составные операторы присваивания

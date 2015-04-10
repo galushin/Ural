@@ -141,14 +141,14 @@ namespace ural
                                  Predicate pred)
     -> partition_sequence<decltype(sequence(std::forward<Output1>(out_true))),
                           decltype(sequence(std::forward<Output2>(out_false))),
-                          decltype(make_functor(std::move(pred)))>
+                          decltype(make_callable(std::move(pred)))>
     {
         typedef partition_sequence<decltype(sequence(std::forward<Output1>(out_true))),
                           decltype(sequence(std::forward<Output2>(out_false))),
-                          decltype(make_functor(std::move(pred)))> Result;
+                          decltype(make_callable(std::move(pred)))> Result;
         return Result(sequence(std::forward<Output1>(out_true)),
                       sequence(std::forward<Output2>(out_false)),
-                      make_functor(std::move(pred)));
+                      make_callable(std::move(pred)));
     }
 }
 // namespace ural

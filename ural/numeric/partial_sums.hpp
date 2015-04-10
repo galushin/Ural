@@ -143,12 +143,12 @@ namespace ural
     template <class Input, class BinaryOperation>
     auto partial_sums(Input && s, BinaryOperation add)
     -> partial_sums_sequence<decltype(sequence(std::forward<Input>(s))),
-                             decltype(make_functor(std::move(add)))>
+                             decltype(make_callable(std::move(add)))>
     {
         typedef partial_sums_sequence<decltype(sequence(std::forward<Input>(s))),
-                             decltype(make_functor(std::move(add)))> Result;
+                             decltype(make_callable(std::move(add)))> Result;
         return Result{sequence(std::forward<Input>(s)),
-                      make_functor(std::move(add))};
+                      make_callable(std::move(add))};
     }
 
     /** @brief Создание последовательности частных сумм

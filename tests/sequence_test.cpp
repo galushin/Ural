@@ -643,7 +643,7 @@ BOOST_AUTO_TEST_CASE(transform_sequence_iterators)
 {
     std::string const s("hello");
 
-    auto f = ural::function_ptr_functor<int(int)>(std::toupper);
+    auto f = ural::function_ptr_wrapper<int(int)>(std::toupper);
 
     auto const seq = ural::make_transform_sequence(f, s);
 

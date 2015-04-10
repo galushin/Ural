@@ -127,14 +127,14 @@ namespace ural
     template <class Sequence, class Predicate>
     auto make_filter_sequence(Sequence && seq, Predicate pred)
     -> filter_sequence<decltype(sequence(std::forward<Sequence>(seq))),
-                       decltype(make_functor(std::move(pred)))>
+                       decltype(make_callable(std::move(pred)))>
     {
         typedef decltype(sequence(std::forward<Sequence>(seq))) Seq;
-        typedef decltype(make_functor(std::move(pred))) Pred;
+        typedef decltype(make_callable(std::move(pred))) Pred;
         typedef filter_sequence<Seq, Pred> Result;
 
         return Result{sequence(std::forward<Sequence>(seq)),
-                      make_functor(std::move(pred))};
+                      make_callable(std::move(pred))};
     }
 
     template <class Predicate>
@@ -154,10 +154,10 @@ namespace ural
 
     template <class Predicate>
     auto filtered(Predicate pred)
-    -> filtered_helper<decltype(make_functor(std::move(pred)))>
+    -> filtered_helper<decltype(make_callable(std::move(pred)))>
     {
-        typedef filtered_helper<decltype(make_functor(std::move(pred)))> Helper;
-        return Helper{make_functor(std::move(pred))};
+        typedef filtered_helper<decltype(make_callable(std::move(pred)))> Helper;
+        return Helper{make_callable(std::move(pred))};
     }
 }
 // namespace ural

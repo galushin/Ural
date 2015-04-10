@@ -119,12 +119,12 @@ namespace ural
     */
     template <class UnaryFunction, class Compare>
     constexpr auto compare_by(UnaryFunction f, Compare cmp)
-    -> comparer_by<decltype(make_functor(std::move(f))),
-                   decltype(make_functor(std::move(cmp)))>
+    -> comparer_by<decltype(make_callable(std::move(f))),
+                   decltype(make_callable(std::move(cmp)))>
     {
-        typedef comparer_by<decltype(make_functor(std::move(f))),
-                   decltype(make_functor(std::move(cmp)))> Functor;
-        return Functor(make_functor(std::move(f)), make_functor(std::move(cmp)));
+        typedef comparer_by<decltype(make_callable(std::move(f))),
+                   decltype(make_callable(std::move(cmp)))> Functor;
+        return Functor(make_callable(std::move(f)), make_callable(std::move(cmp)));
     }
 
     /** @brief Создание функционального объекта, сравнивающего объекты по
@@ -134,10 +134,10 @@ namespace ural
     */
     template <class UnaryFunction>
     constexpr auto compare_by(UnaryFunction f)
-    -> comparer_by<decltype(make_functor(std::move(f)))>
+    -> comparer_by<decltype(make_callable(std::move(f)))>
     {
-        typedef comparer_by<decltype(make_functor(std::move(f)))> Functor;
-        return Functor(make_functor(std::move(f)));
+        typedef comparer_by<decltype(make_callable(std::move(f)))> Functor;
+        return Functor(make_callable(std::move(f)));
     }
 
     /** @brief Создание функционального объекта, проверяющего равенство двух

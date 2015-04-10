@@ -115,7 +115,7 @@ namespace ural
 
     public:
         /// @brief Тип предиката
-        typedef decltype(make_functor(std::declval<BinaryPredicate>())) predicate_type;
+        typedef decltype(make_callable(std::declval<BinaryPredicate>())) predicate_type;
 
         /// @brief Тип возвращаемого значения
         typedef T const & result_type;
@@ -143,7 +143,7 @@ namespace ural
         constexpr explicit replace_functor(T old_value, T new_value,
                                            BinaryPredicate pred)
          : members_{std::move(old_value), std::move(new_value),
-                    make_functor(std::move(pred))}
+                    make_callable(std::move(pred))}
         {}
 
         // Свойства

@@ -21,7 +21,7 @@
 #include <ural/defs.hpp>
 #include <boost/call_traits.hpp>
 
-/** @file ural/functional/make_functor.hpp
+/** @file ural/functional/make_callable.hpp
  @brief Классы и функции для преобразования указателей на функции, функции-члены
  и переменные члены.
 */
@@ -29,7 +29,7 @@
 namespace ural
 {
     template <class Signature>
-    class function_ptr_functor;
+    class function_ptr_wrapper;
 
     /** @brief Оператор "равно"
     @param x левый операнд
@@ -38,8 +38,8 @@ namespace ural
     */
     template <class Signature>
     constexpr bool
-    operator==(function_ptr_functor<Signature> const & x,
-               function_ptr_functor<Signature> const & y)
+    operator==(function_ptr_wrapper<Signature> const & x,
+               function_ptr_wrapper<Signature> const & y)
     {
         return x.target() == y.target();
     }
@@ -49,7 +49,7 @@ namespace ural
     @tparam Args типы аргументов
     */
     template <class R, class... Args>
-    class function_ptr_functor<R(Args...)>
+    class function_ptr_wrapper<R(Args...)>
     {
     public:
         /// @brief Тип указателя на функцию
@@ -62,7 +62,7 @@ namespace ural
         @param f указатель на функцию
         @post <tt> this->target() == f </tt>
         */
-        function_ptr_functor(target_type f)
+        function_ptr_wrapper(target_type f)
          : target_{f}
         {}
 
@@ -90,15 +90,15 @@ namespace ural
     };
 
     template <class F>
-    constexpr bool operator==(function_ptr_functor<F> const & x,
-                              typename function_ptr_functor<F>::target_type y)
+    constexpr bool operator==(function_ptr_wrapper<F> const & x,
+                              typename function_ptr_wrapper<F>::target_type y)
     {
         return x.target() == y;
     }
 
     template <class F>
-    constexpr bool operator==(typename function_ptr_functor<F>::target_type x,
-                              function_ptr_functor<F> const & y)
+    constexpr bool operator==(typename function_ptr_wrapper<F>::target_type x,
+                              function_ptr_wrapper<F> const & y)
     {
         return x == y.target();
     }
@@ -108,7 +108,7 @@ namespace ural
     @tparam R тип переменной-члена
     */
     template <class T, class R>
-    class function_ptr_functor<R(T::*)>
+    class function_ptr_wrapper<R(T::*)>
     {
     public:
         /// @brief Тип указателя на переменную-член
@@ -118,7 +118,7 @@ namespace ural
         @param mv указатель на переменную-член
         @post <tt> this->target() == mv </tt>
         */
-        explicit function_ptr_functor(target_type mv)
+        explicit function_ptr_wrapper(target_type mv)
          : mv_(mv)
         {}
 
@@ -154,7 +154,7 @@ namespace ural
         */
         template <class U>
         auto operator()(std::reference_wrapper<U> r) const
-        -> decltype(std::declval<function_ptr_functor>()(r.get()))
+        -> decltype(std::declval<function_ptr_wrapper>()(r.get()))
         {
             return (*this)(r.get());
         }
@@ -165,7 +165,7 @@ namespace ural
         */
         template <class U>
         auto operator()(U * p) const
-        -> decltype(std::declval<function_ptr_functor>()(*p))
+        -> decltype(std::declval<function_ptr_wrapper>()(*p))
         {
             return (*this)(*p);
         }
@@ -193,7 +193,7 @@ namespace ural
     public:
         template <class Ptr>
         auto operator()(Ptr const & p) const
-        -> decltype(std::declval<function_ptr_functor>().call(*p))
+        -> decltype(std::declval<function_ptr_wrapper>().call(*p))
         {
             return this->call(*p);
         }
@@ -245,7 +245,7 @@ namespace ural
     @tparam Args список типов аргументов
     */
     template <class R, class T, class... Args>
-    class mem_fn_functor
+    class mem_fn_wrapper
     {
     public:
         typedef typename declare_mem_fn_ptr_type<R, T, Args...>::type
@@ -258,7 +258,7 @@ namespace ural
         @param mf указатель на функцию-член
         @post <tt> this->target() == mf </tt>
         */
-        explicit mem_fn_functor(target_type mf)
+        explicit mem_fn_wrapper(target_type mf)
          : mf_{mf}
         {}
 
@@ -314,66 +314,66 @@ namespace ural
     };
 
     template <class F>
-    struct mem_fn_functor_type;
+    struct mem_fn_functional_type;
 
     template <class T, class R, class... Args>
-    struct mem_fn_functor_type<R(T::*)(Args...)>
-     : ural::declare_type<mem_fn_functor<R, T, Args...>>
+    struct mem_fn_functional_type<R(T::*)(Args...)>
+     : ural::declare_type<mem_fn_wrapper<R, T, Args...>>
     {};
 
     template <class T, class R, class... Args>
-    struct mem_fn_functor_type<R(T::*)(Args...) const>
-     : ural::declare_type<mem_fn_functor<R, T const, Args...>>
+    struct mem_fn_functional_type<R(T::*)(Args...) const>
+     : ural::declare_type<mem_fn_wrapper<R, T const, Args...>>
     {};
 
     template <class T, class R, class... Args>
-    struct mem_fn_functor_type<R(T::*)(Args...) volatile>
-     : ural::declare_type<mem_fn_functor<R, T volatile, Args...>>
+    struct mem_fn_functional_type<R(T::*)(Args...) volatile>
+     : ural::declare_type<mem_fn_wrapper<R, T volatile, Args...>>
     {};
 
     template <class T, class R, class... Args>
-    struct mem_fn_functor_type<R(T::*)(Args...) const volatile>
-     : ural::declare_type<mem_fn_functor<R, T const volatile, Args...>>
+    struct mem_fn_functional_type<R(T::*)(Args...) const volatile>
+     : ural::declare_type<mem_fn_wrapper<R, T const volatile, Args...>>
     {};
 
-    class make_functor_fn
+    class make_callable_fn
     {
     public:
         /** @brief Создание функционального объекта на основе указателя на
         функцию-член
         @param mf указатель на функцию-член
-        @return <tt> typename mem_fn_functor_type<F>::type(mf) </tt>
+        @return <tt> typename mem_fn_functional_type<F>::type(mf) </tt>
         */
         template <class F>
         typename std::enable_if<std::is_member_function_pointer<F>::value,
-                                typename mem_fn_functor_type<F>::type>::type
+                                typename mem_fn_functional_type<F>::type>::type
         operator()(F mf) const
         {
-            return typename mem_fn_functor_type<F>::type(mf);
+            return typename mem_fn_functional_type<F>::type(mf);
         }
 
         /** @brief Создание функционального объекта на основе указателя на
         переменную-член
         @param mv указатель на переменную-член
-        @return <tt> function_ptr_functor<T>(mv) </tt>
+        @return <tt> function_ptr_wrapper<T>(mv) </tt>
         */
         template <class T>
         typename std::enable_if<std::is_member_object_pointer<T>::value,
-                                function_ptr_functor<T>>::type
+                                function_ptr_wrapper<T>>::type
         operator()(T mv) const
         {
-            return function_ptr_functor<T>(mv);
+            return function_ptr_wrapper<T>(mv);
         }
 
         /** @brief Создание функционального объекта на основе указателя на функцию
         @param f указатель на функцию
-        @return <tt> function_ptr_functor<R(Args...)>{f} </tt>
+        @return <tt> function_ptr_wrapper<R(Args...)>{f} </tt>
         */
         template <class R, class... Args>
-        function_ptr_functor<R(Args...)>
+        function_ptr_wrapper<R(Args...)>
         operator()(R(*f)(Args...)) const
         {
-            return function_ptr_functor<R(Args...)>{f};
+            return function_ptr_wrapper<R(Args...)>{f};
         }
 
         /** Преобразование в функциональный объект. Перегрузка по умолчанию: просто
@@ -390,7 +390,7 @@ namespace ural
             return f;
         }
     };
-    auto constexpr make_functor = make_functor_fn{};
+    auto constexpr make_callable = make_callable_fn{};
 }
 // namespace ural
 

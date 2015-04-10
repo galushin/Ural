@@ -29,35 +29,35 @@ namespace ural
 {
     // Композиция функциональных объектов
     /** @brief Композиция функциональных объектов
-    @tparam UnaryFunctor тип унарного функционального объекта, вычисляющего
+    @tparam UnaryFunction тип унарного функционального объекта, вычисляющего
     окончательное значение
-    @tparam Functor тип функционального объекта, применяемого непосредственно к
+    @tparam Function тип функционального объекта, применяемого непосредственно к
     аргументам
     @todo Проверка, что класс пустой, если пусты оба шаблонных параметра
     */
-    template <class UnaryFunctor, class Functor>
-    class compose_functor
+    template <class UnaryFunction, class Function>
+    class compose_function
     {
-    friend bool operator==(compose_functor const & x, compose_functor const & y)
+    friend bool operator==(compose_function const & x, compose_function const & y)
     {
-        return x.first_functor() == y.first_functor()
-                && x.second_functor() == y.second_functor();
+        return x.first_function() == y.first_function()
+                && x.second_function() == y.second_function();
     }
     public:
         /** @brief тип унарного функционального объекта, вычисляющего
         окончательное значение
         */
-        typedef decltype(ural::make_functor(std::declval<UnaryFunctor>()))
-            first_functor_type;
+        typedef decltype(ural::make_callable(std::declval<UnaryFunction>()))
+            first_function_type;
 
         /** @brief тип функционального объекта, применяемого непосредственно к
         аргументам
         */
-        typedef decltype(ural::make_functor(std::declval<Functor>()))
-            second_functor_type;
+        typedef decltype(ural::make_callable(std::declval<Function>()))
+            second_function_type;
 
     private:
-        typedef boost::compressed_pair<first_functor_type, second_functor_type>
+        typedef boost::compressed_pair<first_function_type, second_function_type>
             Base;
 
     public:
@@ -67,14 +67,14 @@ namespace ural
         @post <tt> this->first_functor() == f1 </tt>
         @post <tt> this->second_functor() == f2 </tt>
         */
-        explicit compose_functor(UnaryFunctor f1, Functor f2)
+        explicit compose_function(UnaryFunction f1, Function f2)
          : base_{std::move(f1), std::move(f2)}
         {}
 
         /** @brief Первый функциональный объект
         @return Первый функциональный объект
         */
-        first_functor_type const & first_functor() const
+        first_function_type const & first_function() const
         {
             return ::ural::get(base_, ural::_1);
         }
@@ -82,7 +82,7 @@ namespace ural
         /** @brief Второй функциональный объект
         @return Второй функциональный объект
         */
-        second_functor_type const & second_functor() const
+        second_function_type const & second_function() const
         {
             return ::ural::get(base_, ural::_2);
         }
@@ -92,9 +92,9 @@ namespace ural
         */
         template <class... Args>
         constexpr auto operator()(Args && ... args) const
-        -> decltype(std::declval<first_functor_type>()(std::declval<second_functor_type>()(std::forward<Args>(args)...)))
+        -> decltype(std::declval<first_function_type>()(std::declval<second_function_type>()(std::forward<Args>(args)...)))
         {
-            return this->first_functor()(this->second_functor()(std::forward<Args>(args)...));
+            return this->first_function()(this->second_function()(std::forward<Args>(args)...));
         }
 
     private:

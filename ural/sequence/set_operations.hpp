@@ -187,15 +187,15 @@ namespace ural
     auto merge(Input1 && in1, Input2 && in2, Compare cmp)
     -> merge_sequence<decltype(sequence(std::forward<Input1>(in1))),
                                  decltype(sequence(std::forward<Input2>(in2))),
-                                 decltype(ural::make_functor(std::move(cmp)))>
+                                 decltype(ural::make_callable(std::move(cmp)))>
     {
         typedef merge_sequence<decltype(sequence(std::forward<Input1>(in1))),
                                  decltype(sequence(std::forward<Input2>(in2))),
-                                 decltype(ural::make_functor(std::move(cmp)))> Result;
+                                 decltype(ural::make_callable(std::move(cmp)))> Result;
 
         return Result{sequence(std::forward<Input1>(in1)),
                       sequence(std::forward<Input2>(in2)),
-                      ural::make_functor(std::move(cmp))};
+                      ural::make_callable(std::move(cmp))};
     }
 
     template <class Input1, class Input2>
@@ -325,15 +325,15 @@ namespace ural
     auto set_intersection(Input1 && in1, Input2 && in2, Compare cmp)
     -> set_intersection_sequence<decltype(sequence(std::forward<Input1>(in1))),
                                  decltype(sequence(std::forward<Input2>(in2))),
-                                 decltype(ural::make_functor(std::move(cmp)))>
+                                 decltype(ural::make_callable(std::move(cmp)))>
     {
         typedef set_intersection_sequence<decltype(sequence(std::forward<Input1>(in1))),
                                  decltype(sequence(std::forward<Input2>(in2))),
-                                 decltype(ural::make_functor(std::move(cmp)))> Result;
+                                 decltype(ural::make_callable(std::move(cmp)))> Result;
 
         return Result{sequence(std::forward<Input1>(in1)),
                       sequence(std::forward<Input2>(in2)),
-                      ural::make_functor(std::move(cmp))};
+                      ural::make_callable(std::move(cmp))};
     }
 
     template <class Input1, class Input2>
@@ -464,15 +464,15 @@ namespace ural
     auto set_difference(Input1 && in1, Input2 && in2, Compare cmp)
     -> set_difference_sequence<decltype(sequence(std::forward<Input1>(in1))),
                                  decltype(sequence(std::forward<Input2>(in2))),
-                                 decltype(ural::make_functor(std::move(cmp)))>
+                                 decltype(ural::make_callable(std::move(cmp)))>
     {
         typedef set_difference_sequence<decltype(sequence(std::forward<Input1>(in1))),
                                  decltype(sequence(std::forward<Input2>(in2))),
-                                 decltype(ural::make_functor(std::move(cmp)))> Result;
+                                 decltype(ural::make_callable(std::move(cmp)))> Result;
 
         return Result{sequence(std::forward<Input1>(in1)),
                       sequence(std::forward<Input2>(in2)),
-                      ural::make_functor(std::move(cmp))};
+                      ural::make_callable(std::move(cmp))};
     }
 
     template <class Input1, class Input2>
@@ -643,15 +643,15 @@ namespace ural
     auto set_symmetric_difference(Input1 && in1, Input2 && in2, Compare cmp)
     -> set_symmetric_difference_sequence<decltype(sequence(std::forward<Input1>(in1))),
                                  decltype(sequence(std::forward<Input2>(in2))),
-                                 decltype(ural::make_functor(std::move(cmp)))>
+                                 decltype(ural::make_callable(std::move(cmp)))>
     {
         typedef set_symmetric_difference_sequence<decltype(sequence(std::forward<Input1>(in1))),
                                  decltype(sequence(std::forward<Input2>(in2))),
-                                 decltype(ural::make_functor(std::move(cmp)))> Result;
+                                 decltype(ural::make_callable(std::move(cmp)))> Result;
 
         return Result{sequence(std::forward<Input1>(in1)),
                       sequence(std::forward<Input2>(in2)),
-                      ural::make_functor(std::move(cmp))};
+                      ural::make_callable(std::move(cmp))};
     }
 
     template <class Input1, class Input2>
@@ -822,15 +822,15 @@ namespace ural
     auto set_union(Input1 && in1, Input2 && in2, Compare cmp)
     -> set_union_sequence<decltype(sequence(std::forward<Input1>(in1))),
                                  decltype(sequence(std::forward<Input2>(in2))),
-                                 decltype(ural::make_functor(std::move(cmp)))>
+                                 decltype(ural::make_callable(std::move(cmp)))>
     {
         typedef set_union_sequence<decltype(sequence(std::forward<Input1>(in1))),
                                  decltype(sequence(std::forward<Input2>(in2))),
-                                 decltype(ural::make_functor(std::move(cmp)))> Result;
+                                 decltype(ural::make_callable(std::move(cmp)))> Result;
 
         return Result{sequence(std::forward<Input1>(in1)),
                       sequence(std::forward<Input2>(in2)),
-                      ural::make_functor(std::move(cmp))};
+                      ural::make_callable(std::move(cmp))};
     }
 
     template <class Input1, class Input2>

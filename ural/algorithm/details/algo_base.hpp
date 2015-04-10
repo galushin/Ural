@@ -66,7 +66,7 @@ namespace ural
         -> decltype(sequence_fwd<ForwardSequence>(in))
         {
             return this->impl(sequence_fwd<ForwardSequence>(in),
-                              ural::make_functor(std::move(cmp)));
+                              ural::make_callable(std::move(cmp)));
         }
 
         template <class ForwardSequence>
@@ -96,7 +96,7 @@ namespace ural
         bool operator()(ForwardSequence && in, Compare cmp) const
         {
             return this->impl(sequence_fwd<ForwardSequence>(in),
-                              ural::make_functor(std::move(cmp)));
+                              ural::make_callable(std::move(cmp)));
         }
 
         template <class ForwardSequence>
@@ -142,7 +142,7 @@ namespace ural
         -> typename decltype(sequence_fwd<Input>(in))::distance_type
         {
             return this->impl(sequence_fwd<Input>(in),
-                              ural::make_functor(std::move(pred)));
+                              ural::make_callable(std::move(pred)));
         }
     };
 
@@ -183,7 +183,7 @@ namespace ural
         -> typename decltype(sequence_fwd<Input>(in))::distance_type
         {
             return this->impl(sequence_fwd<Input>(in), value,
-                              ural::make_functor(std::move(pred)));
+                              ural::make_callable(std::move(pred)));
         }
     };
 
@@ -214,7 +214,7 @@ namespace ural
         -> decltype(ural::sequence_fwd<Input>(in))
         {
             return this->impl(sequence_fwd<Input>(in),
-                              ural::make_functor(std::move(pred)));
+                              ural::make_callable(std::move(pred)));
         }
     };
 
@@ -248,7 +248,7 @@ namespace ural
         -> decltype(sequence_fwd<Input>(in))
         {
             return this->impl(sequence_fwd<Input>(in), value,
-                              ural::make_functor(std::move(pred)));
+                              ural::make_callable(std::move(pred)));
         }
     };
 
@@ -842,7 +842,7 @@ namespace details
         void operator()(RASequence && s, Compare cmp) const
         {
             return this->impl(sequence_fwd<RASequence>(s),
-                              ural::make_functor(std::move(cmp)));
+                              ural::make_callable(std::move(cmp)));
         }
     private:
         template <class RASequence, class Compare>
@@ -866,7 +866,7 @@ namespace details
         void operator()(RASequence && s, Compare cmp) const
         {
             return this->impl(sequence_fwd<RASequence>(s),
-                              ural::make_functor(std::move(cmp)));
+                              ural::make_callable(std::move(cmp)));
         }
 
     private:
