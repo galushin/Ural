@@ -395,17 +395,23 @@ namespace ural
 
         void deallocate(pointer p, size_type n)
         {
+            ++ tracing_allocator::get_deallocations();
+
             return a_.deallocate(p, n);
         }
 
         template <class... Args>
         void construct(pointer p, Args && ... args)
         {
+            ++ tracing_allocator::get_constructions();
+
             a_.construct(p, std::forward<Args>(args)...);
         }
 
         void destroy(pointer p)
         {
+            ++ tracing_allocator::get_destructions();
+
             a_.destroy(p);
         }
 
@@ -426,13 +432,49 @@ namespace ural
             return tracing_allocator::get_allocations();
         }
 
-        static void reset_allocations_count()
+        static size_type deallocations_count()
+        {
+            return tracing_allocator::get_deallocations();
+        }
+
+        static size_type constructions_count()
+        {
+            return tracing_allocator::get_constructions();
+        }
+
+        static size_type destructions_count()
+        {
+            return tracing_allocator::get_destructions();
+        }
+
+        static void reset_traced_info()
         {
             tracing_allocator::get_allocations() = 0;
+            tracing_allocator::get_deallocations() = 0;
+            tracing_allocator::get_constructions() = 0;
+            tracing_allocator::get_destructions() = 0;
         }
 
     private:
         static size_type & get_allocations()
+        {
+            static size_type instance = 0;
+            return instance;
+        }
+
+        static size_type & get_deallocations()
+        {
+            static size_type instance = 0;
+            return instance;
+        }
+
+        static size_type & get_constructions()
+        {
+            static size_type instance = 0;
+            return instance;
+        }
+
+        static size_type & get_destructions()
         {
             static size_type instance = 0;
             return instance;

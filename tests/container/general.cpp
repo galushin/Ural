@@ -88,7 +88,11 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_types_test, Container, Containers_types)
     // строка 7
     typedef typename Container::size_type Size;
 
-    // @todo Может быть отказаться от этого, раз Страуструп считает это ошибкой?
+    /* @todo Может быть отказаться от этого, раз Страуструп считает это ошибкой?
+    Отказаться: более совершенная диагностика
+    Сохранить: соответствие существующему стандарту
+    Моё предложение: сохранить, но не использовать для индекса
+    */
     static_assert(std::is_unsigned<Size>::value, "");
 
     static_assert(std::is_same<Size, typename std::make_unsigned<Difference>::type>::value, "");
@@ -171,6 +175,24 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_move_assign, Container, Containers_types
 }
 
 // @todo строка 13
+BOOST_AUTO_TEST_CASE_TEMPLATE(container_destructor_test,
+                              Container, Containers_types)
+{
+    typedef typename Container::allocator_type Alloc;
+    Alloc::reset_traced_info();
+
+    BOOST_CHECK_EQUAL(Alloc::allocations_count(), 0);
+
+    {
+        auto x = Container{1, 2, 3, 4, 5};
+
+        BOOST_CHECK_GT(Alloc::allocations_count(), 0);
+        BOOST_CHECK_GT(Alloc::constructions_count(), 0);
+    }
+
+    BOOST_CHECK_EQUAL(Alloc::allocations_count(), Alloc::deallocations_count());
+    BOOST_CHECK_EQUAL(Alloc::constructions_count(), Alloc::destructions_count());
+}
 
 // Строки 14-17: итераторы
 BOOST_AUTO_TEST_CASE_TEMPLATE(container_iterators_getters_types,
@@ -445,6 +467,48 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_copy_with_other_allocator,
     BOOST_CHECK(alloc == u.get_allocator());
 }
 
+BOOST_AUTO_TEST_CASE_TEMPLATE(container_move_constructor_table_99,
+                              Container, Containers_types)
+{
+    typedef typename Container::allocator_type Alloc;
+
+    // Строка 6
+    Container t = {1, 2, 3, 4, 5};
+
+    Container const t_old = t;
+    auto const t_old_data = t.data();
+
+    Container const u(std::move(t));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(t_old.begin(), t_old.end(), u.begin(), u.end());
+    BOOST_CHECK_EQUAL(t_old_data, u.data());
+    BOOST_CHECK_EQUAL(t_old.get_allocator().id(), u.get_allocator().id());
+    BOOST_CHECK(t_old.get_allocator() == u.get_allocator());
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(container_move_with_same_allocator,
+                              Container, Containers_types)
+{
+    // Строка 7
+    Container t = {1, 2, 3, 4, 5};
+    auto const t_old = t;
+    typename Container::allocator_type alloc;
+
+    auto const t_data_old = t.data();
+
+    Container const u(std::move(t), alloc);
+
+    BOOST_CHECK_EQUAL(t_data_old, u.data());
+
+    BOOST_CHECK(t.empty());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(t_old.begin(), t_old.end(),
+                                  u.begin(), u.end());
+}
+
+// @todo Таблица 99 строки 6, 7, 8,9
+
+
 // Строка 10: повторяет требование строки 21 таблицы 96
 
 // 23.2.3 Последовательные контейнеры
@@ -514,14 +578,14 @@ BOOST_AUTO_TEST_CASE(vector_allocator_constructor_regression)
     typedef ural::vector<int, Alloc> Container;
 
     // временный объект
-    Alloc::reset_allocations_count();
+    Alloc::reset_traced_info();
 
     BOOST_CHECK(Container().empty());
     BOOST_CHECK(Container().get_allocator() == Alloc());
     BOOST_CHECK_EQUAL(Alloc::allocations_count(), 0U);
 
     // переменная
-    Alloc::reset_allocations_count();
+    Alloc::reset_traced_info();
 
     Container u_0;
 

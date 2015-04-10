@@ -45,26 +45,6 @@ BOOST_AUTO_TEST_CASE(vector_value_type)
 
 // @todo Тест строки 12 для случая, когда вектор не может передать владение
 
-BOOST_AUTO_TEST_CASE(vector_move_constructor_table_99)
-{
-    typedef int T;
-    typedef ural::tracing_allocator<T> Alloc;
-    typedef ural::vector<T, Alloc> Vector;
-
-    // Строка 6
-    Vector t = {1, 2, 3, 4, 5};
-
-    Vector const t_old = t;
-    auto const t_old_data = t.data();
-
-    Vector const u(std::move(t));
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(t_old.begin(), t_old.end(), u.begin(), u.end());
-    BOOST_CHECK_EQUAL(t_old_data, u.data());
-    BOOST_CHECK_EQUAL(t_old.get_allocator().id(), u.get_allocator().id());
-    BOOST_CHECK(t_old.get_allocator() == u.get_allocator());
-}
-
 BOOST_AUTO_TEST_CASE(vector_move_with_different_allocator)
 {
     typedef std::string T;
@@ -87,30 +67,6 @@ BOOST_AUTO_TEST_CASE(vector_move_with_different_allocator)
         BOOST_CHECK(s.empty());
     }
 }
-
-BOOST_AUTO_TEST_CASE(vector_move_with_same_allocator)
-{
-    typedef int T;
-    typedef ural::vector<T> Vector;
-
-    // Строка 7
-    Vector t = {1, 2, 3, 4, 5};
-    auto const t_old = t;
-    Vector::allocator_type alloc;
-
-    auto const t_data_old = t.data();
-
-    Vector const u(std::move(t), alloc);
-
-    BOOST_CHECK_EQUAL(t_data_old, u.data());
-
-    BOOST_CHECK(t.empty());
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(t_old.begin(), t_old.end(),
-                                  u.begin(), u.end());
-}
-
-// @todo Таблица 99 строки 8,9 и 10
 
 // @todo 23.2.3
 
@@ -159,7 +115,7 @@ BOOST_AUTO_TEST_CASE(vector_construct_from_forward_iterators)
 
     std::forward_list<T> const z(501, 42);
 
-    Alloc::reset_allocations_count();
+    Alloc::reset_traced_info();
     BOOST_CHECK_EQUAL(Alloc::allocations_count(), 0U);
 
     Vector const x(z.begin(), z.end());
