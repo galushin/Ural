@@ -148,7 +148,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_move_constructor, Container, Containers_
     BOOST_CHECK(x.empty());
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(container_move_assign, Container, Containers_types)
+BOOST_AUTO_TEST_CASE_TEMPLATE(container_move_assign,
+                              Container, Containers_types)
 {
     auto x = Container{1, 2, 3, 4, 5};
     auto const x_old = x;
@@ -173,6 +174,11 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_move_assign, Container, Containers_types
     BOOST_CHECK_EQUAL(x.begin(), y_begin_old);
     BOOST_CHECK_EQUAL(x.end(), y_end_old);
 }
+
+/* @todo присваивание с перемещением контейнеров в том случае, если
+распределители памяти не равны. Здесь нужно два теста: один с меньшим размером,
+один - с большим
+*/
 
 // @todo строка 13
 BOOST_AUTO_TEST_CASE_TEMPLATE(container_destructor_test,
@@ -303,11 +309,27 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_non_member_swap_test,
 }
 
 // Строка 22
-BOOST_AUTO_TEST_CASE_TEMPLATE(container_copy_assign_test,
+BOOST_AUTO_TEST_CASE_TEMPLATE(container_copy_assign_bigger,
                               Container, Containers_types)
 {
     auto const v1 = Container{1, 1, 2, 3, 5, 8, 13};
     auto v2 = Container{1, 2, 3, 4, 5};
+
+    BOOST_CHECK(v1 != v2);
+    BOOST_CHECK_GT(v1.size(), v2.size());
+
+    v2 = v1;
+
+    BOOST_CHECK(v1 == v2);
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(container_copy_assign_lesser,
+                              Container, Containers_types)
+{
+    auto const v1 = Container{1, 1, 2, 3, 5, 8, 13};
+    auto v2 = Container{1, 2, 3, 4, 5, 5, 6, 7, 7, 8};
+
+    BOOST_CHECK_LT(v1.size(), v2.size());
 
     BOOST_CHECK(v1 != v2);
 
