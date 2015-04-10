@@ -289,7 +289,11 @@ namespace ural
         {
             this->pop_back(this->size());
 
-            Traits::deallocate(this->allocator_ref(), this->begin(), this->capacity());
+            if(this->capacity() > 0)
+            {
+                Traits::deallocate(this->allocator_ref(),
+                                   this->begin(), this->capacity());
+            }
 
             this->begin_ref() = nullptr;
             this->end_ref() = nullptr;

@@ -187,13 +187,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_destructor_test,
     typedef typename Container::allocator_type Alloc;
     Alloc::reset_traced_info();
 
-    BOOST_CHECK_EQUAL(Alloc::allocations_count(), 0);
+    BOOST_CHECK_EQUAL(Alloc::allocations_count(), 0U);
+    BOOST_CHECK_EQUAL(Alloc::deallocations_count(), 0U);
 
     {
         auto x = Container{1, 2, 3, 4, 5};
 
-        BOOST_CHECK_GT(Alloc::allocations_count(), 0);
-        BOOST_CHECK_GT(Alloc::constructions_count(), 0);
+        BOOST_CHECK_GT(Alloc::allocations_count(), 0U);
+        BOOST_CHECK_GT(Alloc::constructions_count(), 0U);
     }
 
     BOOST_CHECK_EQUAL(Alloc::allocations_count(), Alloc::deallocations_count());
