@@ -350,38 +350,104 @@ namespace meta
      : declare_type<null_type>
     {};
 
-    // Декартово произведение
-    // @todo Произвольное число аргументов
-    template <class Input1, class Input2>
-    struct cartesian_product
+    // Склеивание списков типов
+    /** @brief Объединение (конкатенация) нескольких списков типов в один
+    @tparam Lists списки типов
+    */
+    template <class... Lists>
+    struct append;
+
+    template <class L1, class... Others>
+    struct append<L1, Others...>
     {
     private:
-        typedef typename Input1::head Head1;
-        typedef typename Input1::tail Tail1;
+        typedef typename L1::head Head;
+        typedef typename L1::tail Tail;
 
-        typedef meta::curry<ural::meta::make_pair, Head1> helper;
-
-        typedef typename meta::transform<Input2, helper>::type List1;
-        typedef typename cartesian_product<Tail1, Input2>::type List2;
+        typedef typename append<Others...>::type R1;
+        typedef typename append<Tail, R1>::type R2;
 
     public:
-        typedef typename flatten<ural::typelist<List1, List2>>::type type;
+        typedef typename push_front<R2, Head>::type type;
     };
 
-    template <class Input1>
-    struct cartesian_product<Input1, null_type>
-     : declare_type<null_type>
+    template <class... Others>
+    struct append<null_type, Others...>
+     : append<Others...>
     {};
 
-    template <class Input2>
-    struct cartesian_product<null_type, Input2>
-     : declare_type<null_type>
+    template <class L1>
+    struct append<L1>
+     : declare_type<L1>
     {};
 
     template <>
-    struct cartesian_product<null_type, null_type>
+    struct append<null_type>
      : declare_type<null_type>
     {};
+
+    // Декартово произведение
+    /** @brief Декартово произведение списков типов
+    @tparam Lists списки типов
+    */
+    template <class... Lists>
+    struct cartesian_product;
+
+    template <>
+    struct cartesian_product<null_type>
+     : declare_type<null_type>
+    {};
+
+    template <class Input>
+    struct cartesian_product<Input>
+    {
+    private:
+        typedef typelist<typename Input::head> new_head;
+
+        typedef typename cartesian_product<typename Input::tail>::type
+            new_tail;
+    public:
+        typedef typename push_front<new_tail, new_head>::type type;
+    };
+
+    template <class Input1, class... Others>
+    struct cartesian_product<Input1, Others...>
+    {
+    private:
+        typedef typename cartesian_product<Others...>::type CP_of_others;
+
+        // @todo выразить через существующие
+        template <class Types, class Tuples>
+        struct combine
+        {
+        private:
+            typedef typename Types::head Head;
+            typedef typename Types::tail Tail;
+
+            struct helper
+            {
+                template <class List>
+                struct apply
+                 : push_front<List, Head>
+                {};
+            };
+
+            typedef typename meta::transform<Tuples, helper>::type List1;
+
+            typedef typename combine<Tail, Tuples>::type List2;
+
+        public:
+            typedef typename ::ural::meta::append<List1, List2>::type type;
+        };
+
+        template <class Tuples>
+        struct combine<null_type, Tuples>
+         : declare_type<null_type>
+        {};
+
+    public:
+        typedef typename combine<Input1, CP_of_others>::type type;
+    };
 }
 // namespace meta
 }

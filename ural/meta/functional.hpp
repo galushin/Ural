@@ -144,6 +144,45 @@ namespace meta
 
     /// @brief Предикат несовпадения двух типов
     typedef not_fn<is_same> is_not_same;
+
+    template <class UnaryFunction, class Function>
+    class composed
+    {
+    public:
+        template <class... Args>
+        struct apply
+        {
+        private:
+            typedef typename meta::apply<Function, Args...>::type R1;
+
+        public:
+            typedef typename meta::apply<UnaryFunction, R1>::type type;
+        };
+    };
+
+    struct compose
+    {
+        template <class F1, class... F_others>
+        struct apply
+        {
+        private:
+            typedef typename meta::compose::template apply<F_others...>::type
+                F2;
+            typedef meta::composed<F1, F2> F12;
+            typedef std::is_same<F1, ural::meta::identity> F1_is_Id;
+            typedef std::is_same<F2, ural::meta::identity> F2_is_Id;
+
+        public:
+           typedef typename std::conditional<F1_is_Id::value,
+                                             ural::declare_type<F2>,
+                                             std::conditional<F2_is_Id::value, F1, F12>>::type::type type;
+        };
+
+        template <class F1>
+        struct apply<F1>
+         : declare_type<F1>
+        {};
+    };
 }
 // namespace meta
 }
