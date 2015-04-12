@@ -192,16 +192,25 @@ namespace tags
         typedef typename expand_depend_on<typename Tags::list, null_type>::type
             WithDependencies;
 
-        // @todo избегать лишних инстанцирований
+        // @todo Выразить через более высокоуровневые конструкции
         typedef meta::contains<WithDependencies, tags::min_tag> C_min;
         typedef meta::contains<WithDependencies, tags::max_tag> C_max;
         typedef std::integral_constant<bool, C_min::value && C_max::value>
             C_min_and_max;
-        typedef typename meta::replace<WithDependencies, tags::min_tag, tags::range_tag>::type R1;
-        typedef typename meta::replace<R1, tags::max_tag, tags::range_tag>::type R2;
 
-        typedef typename std::conditional<C_min_and_max::value, R2,
-                                            WithDependencies>::type NeededTags;
+        struct is_min_or_max_tag
+        {
+            template <class T>
+            struct apply
+             : std::integral_constant<bool, std::is_same<T, tags::min_tag>::value || std::is_same<T, tags::max_tag>::value>
+            {};
+        };
+
+        typedef meta::replace_if<WithDependencies, is_min_or_max_tag, tags::range_tag> R2;
+
+        typedef typename std::conditional<C_min_and_max::value,
+                                          R2,
+                                          declare_type<WithDependencies>>::type::type NeededTags;
 
         typedef typename meta::copy_without_duplicates<NeededTags>::type
             UniqueTags;
@@ -693,7 +702,6 @@ namespace tags
     /** @brief Описательная статистика "размах"
     @tparam T тип элементов
     @tparam Base базовая описательная статистика
-    @todo Добавить требования к базовому классу: max и min
     */
     template <class T, class Base>
     class descriptive<T, statistics::tags::range_tag, Base>

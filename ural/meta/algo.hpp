@@ -71,6 +71,11 @@ namespace meta
      : declare_type<null_type>
     {};
 
+    /** @brief Проверка того, что тип присутствует в контейнере типов
+    @tparam Container контейнер типов
+    @tparam T искомый тип
+    @tparam Eq предикат над типами
+    */
     template <class Container, class T, class Eq = meta::is_same>
     struct contains
      : std::integral_constant<bool, !std::is_same<typename meta::find<Container, T, Eq>::type, null_type>::value>

@@ -16,7 +16,9 @@
 
 // "Математическое" дискретное распределение
 #include <ural/distributions/discrete.hpp>
+#include <ural/math/rational.hpp>
 
+#include <boost/mpl/list.hpp>
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_CASE(math_discrete_distribution_default_ctor)
@@ -44,8 +46,6 @@ BOOST_AUTO_TEST_CASE(math_discrete_distribution_default_ctor)
     BOOST_CHECK_EQUAL_COLLECTIONS(ps.begin(), ps.end(),
                                   ps_0.begin(), ps_0.end());
 }
-
-// @todo Тест с распределением с близким к нулю стандартным отклонением
 
 BOOST_AUTO_TEST_CASE(math_discrete_distibution_from_empty_container)
 {
@@ -75,11 +75,17 @@ BOOST_AUTO_TEST_CASE(math_discrete_distibution_from_empty_container)
                                   ps_0.begin(), ps_0.end());
 }
 
-BOOST_AUTO_TEST_CASE(math_discrete_distibution_from_container)
+namespace
 {
-    typedef ural::distributions::discrete<int> Distribution;
+    typedef boost::mpl::list<double, int> Weight_types;
+}
 
-    std::vector<double> const w{4, 3, 2, 1};
+BOOST_AUTO_TEST_CASE_TEMPLATE(math_discrete_distibution_from_container,
+                              Weight, Weight_types)
+{
+    typedef ural::distributions::discrete<int, Weight> Distribution;
+
+    std::vector<int> const w{4, 3, 2, 1};
 
     auto const d = Distribution(w.begin(), w.end());
 
@@ -92,13 +98,16 @@ BOOST_AUTO_TEST_CASE(math_discrete_distibution_from_container)
     auto const s = standard_deviation(d);
     BOOST_CHECK_CLOSE(s*s, s2, 1e-10);
 
-    BOOST_CHECK_EQUAL(cdf(d, -1), 0.0);
+    BOOST_CHECK_EQUAL(cdf(d, -0.5), 0);
 
-    // @todo Тесты с промежуточными значениями
-    BOOST_CHECK_CLOSE(cdf(d, 0), 0.4, 1e-10);
-    BOOST_CHECK_CLOSE(cdf(d, 1), 0.7, 1e-10);
-    BOOST_CHECK_CLOSE(cdf(d, 2), 0.9, 1e-10);
-    BOOST_CHECK_CLOSE(cdf(d, 3), 1.0, 1e-10);
+    BOOST_CHECK_CLOSE(cdf(d, 0.0), 0.4, 1e-10);
+    BOOST_CHECK_CLOSE(cdf(d, 0.5), 0.4, 1e-10);
+    BOOST_CHECK_CLOSE(cdf(d, 1.0), 0.7, 1e-10);
+    BOOST_CHECK_CLOSE(cdf(d, 1.5), 0.7, 1e-10);
+    BOOST_CHECK_CLOSE(cdf(d, 2.0), 0.9, 1e-10);
+    BOOST_CHECK_CLOSE(cdf(d, 2.5), 0.9, 1e-10);
+    BOOST_CHECK_CLOSE(cdf(d, 3.0), 1.0, 1e-10);
+    BOOST_CHECK_CLOSE(cdf(d, 3.5), 1.0, 1e-10);
 
     BOOST_CHECK_EQUAL(cdf(d, 4), 1.0);
 
@@ -111,6 +120,43 @@ BOOST_AUTO_TEST_CASE(math_discrete_distibution_from_container)
     {
         BOOST_CHECK_CLOSE(ps[i], ps_0[i], 1e-10);
     }
+}
+
+BOOST_AUTO_TEST_CASE(math_discrete_distibution_from_container_rational_weight)
+{
+    typedef ural::rational<int> Weight;
+
+    typedef ural::distributions::discrete<int, Weight> Distribution;
+
+    std::vector<int> const w{4, 3, 2, 1};
+
+    auto const d = Distribution(w.begin(), w.end());
+
+    auto const m = mean(d);
+    BOOST_CHECK_EQUAL(m, 1);
+
+    auto const s2 = variance(d);
+    BOOST_CHECK_EQUAL(s2, 1);
+
+    BOOST_CHECK_EQUAL(cdf(d, -0.5), 0);
+
+    BOOST_CHECK_EQUAL(cdf(d, 0), Weight(4, 10));
+    BOOST_CHECK_EQUAL(cdf(d, 0.5), Weight(4, 10));
+    BOOST_CHECK_EQUAL(cdf(d, 1), Weight(7, 10));
+    BOOST_CHECK_EQUAL(cdf(d, 1.5), Weight(7, 10));
+    BOOST_CHECK_EQUAL(cdf(d, 2), Weight(9, 10));
+    BOOST_CHECK_EQUAL(cdf(d, 2.5), Weight(9, 10));
+    BOOST_CHECK_EQUAL(cdf(d, 3), Weight(1));
+    BOOST_CHECK_EQUAL(cdf(d, 3.5), Weight(1));
+
+    BOOST_CHECK_EQUAL(cdf(d, 4), 1);
+
+    auto const ps_0 = std::vector<Weight>{Weight(4, 10), Weight(3, 10),
+                                          Weight(2, 10), Weight(1, 10)};
+    auto const ps   = d.probabilities();
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(ps.begin(), ps.end(),
+                                  ps_0.begin(), ps_0.end());
 }
 
 BOOST_AUTO_TEST_CASE(math_discrete_distibution_from_init_list)
@@ -128,13 +174,16 @@ BOOST_AUTO_TEST_CASE(math_discrete_distibution_from_init_list)
     auto const s = standard_deviation(d);
     BOOST_CHECK_CLOSE(s*s, s2, 1e-10);
 
-    BOOST_CHECK_EQUAL(cdf(d, -1), 0.0);
+    BOOST_CHECK_EQUAL(cdf(d, -0.5), 0);
 
-    // @todo Тесты с промежуточными значениями
-    BOOST_CHECK_CLOSE(cdf(d, 0), 0.4, 1e-10);
-    BOOST_CHECK_CLOSE(cdf(d, 1), 0.7, 1e-10);
-    BOOST_CHECK_CLOSE(cdf(d, 2), 0.9, 1e-10);
-    BOOST_CHECK_CLOSE(cdf(d, 3), 1.0, 1e-10);
+    BOOST_CHECK_CLOSE(cdf(d, 0.0), 0.4, 1e-10);
+    BOOST_CHECK_CLOSE(cdf(d, 0.5), 0.4, 1e-10);
+    BOOST_CHECK_CLOSE(cdf(d, 1.0), 0.7, 1e-10);
+    BOOST_CHECK_CLOSE(cdf(d, 1.5), 0.7, 1e-10);
+    BOOST_CHECK_CLOSE(cdf(d, 2.0), 0.9, 1e-10);
+    BOOST_CHECK_CLOSE(cdf(d, 2.5), 0.9, 1e-10);
+    BOOST_CHECK_CLOSE(cdf(d, 3.0), 1.0, 1e-10);
+    BOOST_CHECK_CLOSE(cdf(d, 3.5), 1.0, 1e-10);
 
     BOOST_CHECK_EQUAL(cdf(d, 4), 1.0);
 

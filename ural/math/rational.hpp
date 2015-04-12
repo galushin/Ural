@@ -818,6 +818,13 @@ namespace ural
     /* @todo Преобразование рационального числа в обыкновенную (периодическую)
     дробь в произвольном основании
     */
+
+    template <class Integer>
+    constexpr bool isfinite(rational<Integer> const & x)
+    {
+        using std::isfinite;
+        return isfinite(x.numerator());
+    }
 }
 // namespace ural
 

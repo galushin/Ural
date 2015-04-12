@@ -36,16 +36,20 @@ namespace distributions
     @tparam IntType тип значений
     @tparam Weight тип весов
     @todo Использовать для представления вероятностей probability<>?
-    @todo Настройка способоа диагностики
-    @todo Хранить или вычислять cdf? А остальные характеристики?
+    @todo Настройка способа диагностики
+    @todo Конструктор на основе контейнера/последовательности
     @todo Конструктор discrete(size_t nw, double xmin, double xmax, UnaryOperation fw)
-    @todo Одновременное вычисление математического ожидания и дисперсии?
+    @note Числовые характеристики вычисляются в конструкторе. Дело в том, что
+    это позволяет съэкономить линейное время за счёт постоянных затрат памяти.
+    Хранение значений @c cdf требует линейного объёма памяти и уменьшает
+    сложность с O(N) до O(log(N)), что не является однозначным выигрышем.
     */
     template <class IntType = int, class Weight = double>
     class discrete
     {
     public:
         // Типы
+        // @todo Уточнить этот тип, возможно нужно вообще отказаться от этого шаблонного параметра
         /// @brief Тип значения
         typedef IntType value_type;
 
@@ -53,21 +57,31 @@ namespace distributions
         typedef Weight weight_type;
 
         /// @brief Тип вероятностей
-        typedef weight_type probability_type;
+        typedef typename ural::average_type<weight_type, weight_type>::type
+            probability_type;
 
         /// @brief Тип контейнера для хранения вероятностей
         typedef std::vector<probability_type> probabilities_vector;
 
         /// @brief Тип математического ожидания
-        typedef decltype(std::declval<value_type>() * std::declval<weight_type>())
+        typedef decltype(std::declval<value_type>() * std::declval<probability_type>())
             mean_type;
+
+        /// @brief Тип квадрата
+        typedef decltype(square(std::declval<value_type>())) square_type;
+
+        /// @brief Тип дисперсии
+        typedef  decltype(std::declval<square_type>() * std::declval<probability_type>())
+            variance_type;
 
         // Конструкторы
         /** @brief Конструктор без параметров
         @post <tt> this->probabilities() = {1.0} </tt>
         */
         discrete()
-         : ps_{weight_type{1.0}}
+         : ps_{weight_type{1}}
+         , mean_(0)
+         , variance_(0)
         {}
 
         /** @brief Конструктор на основе интервала, заданного парой итераторов
@@ -78,15 +92,20 @@ namespace distributions
         конечными числами.
         @post Если <tt> first == last </tt>, то данный конструктор эквивалентен
         конструктору без аргументов.
-        @todo Постусловие для <tt> first != last </tt>
+        @post Если <tt> first != last </tt>, для любого @c i из интервала
+        <tt> [0; distance(first, last)) </tt> имеет место равенство
+        <tt> this->probabilities()[i] == *(first + i) / w_sum </tt>, где
+        @c w_sum --- сумма всех элементов интервала <tt> [first; last) </tt>.
         */
         template <class Iterator>
         discrete(Iterator first, Iterator last)
          : ps_(first, last)
+         , mean_(0)
+         , variance_(0)
         {
             if(ps_.empty())
             {
-                ps_.resize(1u, weight_type{1.0});
+                ps_.resize(1u, weight_type(1));
             }
             else
             {
@@ -101,6 +120,17 @@ namespace distributions
 
                     p /= w_sum;
                 }
+            }
+
+            // @todo можно ли рассчитать числовые характеристики вместе с суммой весов?
+            // @todo Одновременное вычисление математического ожидания и дисперсии?
+            mean_ = ural::inner_product(ural::numbers_sequence<value_type>(0, ps_.size()), ps_, mean_);
+
+            // @todo заменить на алгоритм,
+            for(auto i : ural::indices_of(ps_))
+            {
+                using ural::square;
+                variance_ += square(value_type(i) - mean_) * ps_[i];
             }
         }
 
@@ -117,38 +147,25 @@ namespace distributions
         @param d распределение
         @return Значение математического ожидания
         */
-        friend mean_type mean(discrete const & d)
+        friend mean_type const & mean(discrete const & d)
         {
-            return ural::inner_product(ural::indices_of(d.ps_),
-                                       d.ps_, mean_type{0});
+            return d.mean_;
         }
 
         /** @brief Дисперсия
         @param d распределение
-        @todo Тип возвращаемого значения
-        @todo Более устойчивый алгоритм вычисления дисперсии
         */
-        friend weight_type variance(discrete const & d)
+        friend variance_type const & variance(discrete const & d)
         {
-            auto const m = mean(d);
-
-            // @todo Заменить на алгоритм
-            auto result = weight_type{0};
-
-            for(auto i : ural::indices_of(d.ps_))
-            {
-                using ural::square;
-                result += square(i - m) * d.ps_[i];
-            }
-
-            return result;
+            return d.variance_;
         }
 
         /** @brief Стандартное отклонение
         @return <tt> sqrt(variance(d)) </tt>
         @param d распределение
+        @todo Уточнить тип возвращаемого значения
         */
-        friend weight_type standard_deviation(discrete const & d)
+        friend variance_type standard_deviation(discrete const & d)
         {
             using std::sqrt;
             return sqrt(variance(d));
@@ -158,21 +175,26 @@ namespace distributions
         @brief Функция распределения
         @param d распределение
         @param x точка в которой вычисляется фунция распределения
-        @todo Тип возвращаемого значения
         */
-        friend weight_type cdf(discrete const & d, weight_type const & x)
+        template <class T>
+        friend probability_type cdf(discrete const & d, T const & x)
         {
-            if(x >= d.ps_.size())
+            if(x < 0)
             {
-                return weight_type{1.0};
+                return probability_type(0);
             }
 
-            auto result = weight_type{0};
+            if(x >= ural::to_signed(d.ps_.size()))
+            {
+                return probability_type(1);
+            }
+
+            auto result = probability_type(0);
 
             // @todo Заменить на алгоритм
             for(auto i : ural::indices_of(d.ps_))
             {
-                if(i > x)
+                if(ural::to_signed(i) > x)
                 {
                     break;
                 }
@@ -194,7 +216,8 @@ namespace distributions
     private:
         static weight_type const & enforce_weight(weight_type const & w)
         {
-            assert(std::isfinite(w) == true);
+            using std::isfinite;
+            assert(isfinite(w) == true);
             assert(w >= 0);
 
             return w;
@@ -202,6 +225,8 @@ namespace distributions
 
     private:
         probabilities_vector ps_;
+        mean_type mean_;
+        variance_type variance_;
     };
 }
 // namespace distributions
