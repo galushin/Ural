@@ -124,27 +124,10 @@ namespace meta
         };
     };
 
-    /** @brief Отрицание предиката над типами
-    @tparam F предикат над типами
+    /** @brief Композиция двух функций
+    @tparam UnaryFunction унарная функция
+    @tparam Function функция
     */
-    template <class F>
-    struct not_fn
-    {
-        /** @brief Вычисление функции над типами
-        @tparam Ts типы-аргументы
-        */
-        template <class... Ts>
-        struct apply
-         : std::integral_constant<bool, !::ural::meta::apply<F, Ts...>::value>
-        {};
-    };
-
-    /// @brief Предикат совпадения двух типов
-    typedef template_to_applied<std::is_same> is_same;
-
-    /// @brief Предикат несовпадения двух типов
-    typedef not_fn<is_same> is_not_same;
-
     template <class UnaryFunction, class Function>
     class composed
     {
@@ -160,6 +143,9 @@ namespace meta
         };
     };
 
+    /** @brief Создание композиции двух функций. Учитывает, что тождественная
+    функция является единичным элементом для композиции.
+    */
     struct compose
     {
         template <class F1, class... F_others>
@@ -183,6 +169,27 @@ namespace meta
          : declare_type<F1>
         {};
     };
+
+    /** @brief Отрицание предиката над типами
+    @tparam F предикат над типами
+    */
+    template <class F>
+    struct not_fn
+    {
+        /** @brief Вычисление функции над типами
+        @tparam Ts типы-аргументы
+        */
+        template <class... Ts>
+        struct apply
+         : std::integral_constant<bool, !::ural::meta::apply<F, Ts...>::value>
+        {};
+    };
+
+    /// @brief Предикат совпадения двух типов
+    typedef template_to_applied<std::is_same> is_same;
+
+    /// @brief Предикат несовпадения двух типов
+    typedef not_fn<is_same> is_not_same;
 }
 // namespace meta
 }

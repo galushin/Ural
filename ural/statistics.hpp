@@ -20,6 +20,7 @@
 /** @file ural/statistics.hpp
  @brief Средства математической статистики
  @todo Концепция "Описательная статистика"
+ @todo Накопительные статистики: поддержка временных значений
  @todo Реализовать и использовать meta-алгоритм flatten
 */
 
@@ -133,7 +134,7 @@ namespace tags
     struct max_tag      : declare_depend_on<>{};
 
     /// @brief Тип-тэг описательной статистики "Размах"
-    struct range_tag    : declare_depend_on<min_tag, max_tag>{};
+    struct range_tag    : declare_depend_on<>{};
 
     // Тэги-объекты
     constexpr auto count = tags_list<count_tag>{};
@@ -190,7 +191,19 @@ namespace tags
 
         typedef typename expand_depend_on<typename Tags::list, null_type>::type
             WithDependencies;
-        typedef typename meta::copy_without_duplicates<WithDependencies>::type
+
+        // @todo избегать лишних инстанцирований
+        typedef meta::contains<WithDependencies, tags::min_tag> C_min;
+        typedef meta::contains<WithDependencies, tags::max_tag> C_max;
+        typedef std::integral_constant<bool, C_min::value && C_max::value>
+            C_min_and_max;
+        typedef typename meta::replace<WithDependencies, tags::min_tag, tags::range_tag>::type R1;
+        typedef typename meta::replace<R1, tags::max_tag, tags::range_tag>::type R2;
+
+        typedef typename std::conditional<C_min_and_max::value, R2,
+                                            WithDependencies>::type NeededTags;
+
+        typedef typename meta::copy_without_duplicates<NeededTags>::type
             UniqueTags;
         typedef typename meta::selection_sort<UniqueTags, is_depend_on>::type
             Sorted;
@@ -690,13 +703,87 @@ namespace tags
         /// @brief Тип значения
         typedef T value_type;
 
-        /// @brief Конструкторы
-        using Base::Base;
+        // Конструкторы
+        /** @brief Конструктор без параметров
+        @post Инициализирует базовый класс конструктором без аргументов
+        @post <tt> this->max() == -std::numeric_limits<T>::infinity() </tt>
+        @post <tt> this->min() == std::numeric_limits<T>::infinity() </tt>
+        */
+        descriptive()
+         : Base()
+         , min_(std::numeric_limits<T>::infinity())
+         , max_(-std::numeric_limits<T>::infinity())
+        {}
 
-        /// @brief Обновление
-        using Base::operator();
+        /** @brief Конструктор
+        @param x первый элемент выборки
+        @post <tt> this->max() == x </tt>
+        @post <tt> this->min() == x </tt>
+        */
+        explicit descriptive(T const & x)
+         : Base(x)
+         , min_(x)
+         , max_(x)
+        {}
+
+        /** @brief Обновление значения
+        @param x новый элемент выборки
+        @return <tt> *this </tt>
+        */
+        descriptive & operator()(T const & x)
+        {
+            Base::operator()(x);
+
+            assert(this->min_ != std::numeric_limits<T>::infinity());
+
+            if(x < this->min())
+            {
+                min_ = x;
+            }
+            else if(x > this->max())
+            {
+                max_ = x;
+            }
+            return *this;
+        }
 
         // Свойства
+        /** @brief Наименьшее значение, накопленное к данному моменту
+        @c param x объект-накопитель для описательной статистики
+        @return <tt> x.min() </tt>
+        */
+        friend value_type const & at_tag(descriptive const & x,
+                                         statistics::tags::min_tag)
+        {
+            return x.min();
+        }
+
+        /** @brief Наименьшее значение, накопленное к данному моменту
+        @return Наименьшее из значений выборки, обработаннх к данному моменту
+        */
+        value_type const & min URAL_PREVENT_MACRO_SUBSTITUTION () const
+        {
+            return this->min_;
+        }
+
+        /** @brief Наибольшее значение значение описательной статистики
+        @param x объект-накопитель описательной статистики
+        @return <tt> x.max() </tt>
+        */
+        friend value_type const & at_tag(descriptive const & x,
+                                         statistics::tags::max_tag)
+        {
+            return x.max();
+        }
+
+        /** @brief Наибольшее значение, накопленное к данному моменту
+        @return Наибольшее из значений выборки, обработаннх к данному моменту
+        */
+        value_type const & max URAL_PREVENT_MACRO_SUBSTITUTION () const
+        {
+            return this->max_;
+        }
+
         /** @brief Доступ к значению
         @param x объект-накопитель для описательной статистики
         @return <tt> x.range() </tt>
@@ -717,6 +804,10 @@ namespace tags
 
     protected:
         ~descriptive() = default;
+
+    private:
+        value_type min_;
+        value_type max_;
     };
 
     /** @brief Класс "набор описательных статистик"
@@ -759,7 +850,6 @@ namespace tags
     @note Дбулирование тэгов не проверяется, чтобы не увиличивать время
     компиляции. @c descriptives_facade устраняет дубликаты из списка, прежде,
     чем передать его @c descriptives
-    @todo Оптимизировать min | max
     */
     template <class T, class Tags>
     class descriptives
@@ -841,8 +931,6 @@ namespace tags
         auto operator[](statistics::tags_list<Tag>) const
         -> decltype(at_tag(*this, Tag{}))
         {
-            static_assert(!std::is_same<ural::meta::find<PreparedTags, Tag>, null_type>::value,
-                          "Unsupported tag");
             return at_tag(*this, Tag{});
         }
     };

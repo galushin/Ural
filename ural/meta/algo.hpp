@@ -19,6 +19,7 @@
 
 /** @file ural/meta/algo.hpp
  @brief Алгоритмы для списков типов
+ @todo учесть работы по MPL11 и Hana
 */
 
 #include <ural/meta/map.hpp>
@@ -68,6 +69,11 @@ namespace meta
     template <class T, class Eq>
     struct find<null_type, T, Eq>
      : declare_type<null_type>
+    {};
+
+    template <class Container, class T, class Eq = meta::is_same>
+    struct contains
+     : std::integral_constant<bool, !std::is_same<typename meta::find<Container, T, Eq>::type, null_type>::value>
     {};
 
     // Подсчёт числа элементов, равных данному.
