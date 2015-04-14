@@ -21,6 +21,10 @@
  @brief Класс для представления вероятностей
 */
 
+#include <stdexcept>
+#include <istream>
+#include <ostream>
+
 namespace ural
 {
     /** @brief Класс исключения "некорректное значение вероятности"

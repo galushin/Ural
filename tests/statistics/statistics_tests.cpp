@@ -181,13 +181,39 @@ BOOST_AUTO_TEST_CASE(describe_test)
     BOOST_CHECK_CLOSE((ural::square(xs.size()) - 1) / 12.0, ds[variance], 1e-3);
 }
 
+BOOST_AUTO_TEST_CASE(describe_test_max)
+{
+    // Тэг range заменяет min и max, так что их нужно тестировать отдельно
+    std::vector<int> const xs = {1, 2, 3, 4, 5, 6};
+
+    using namespace ural::statistics::tags;
+
+    auto ds = ural::describe(xs, max);
+
+    BOOST_CHECK_EQUAL(xs.back(), ds.max());
+    BOOST_CHECK_EQUAL(xs.back(), ds[max]);
+}
+
+BOOST_AUTO_TEST_CASE(describe_test_min)
+{
+    // Тэг range заменяет min и max, так что их нужно тестировать отдельно
+    std::vector<int> const xs = {1, 2, 3, 4, 5, 6};
+
+    using namespace ural::statistics::tags;
+
+    auto ds = ural::describe(xs, min);
+
+    BOOST_CHECK_EQUAL(xs.front(), ds.min());
+    BOOST_CHECK_EQUAL(xs.front(), ds[min]);
+}
+
 BOOST_AUTO_TEST_CASE(describe_test_duplicated_tags)
 {
     std::vector<int> const xs = {1, 2, 3, 4, 5, 6};
 
     using namespace ural::statistics::tags;
 
-    auto ds = ural::describe(xs, count | mean | min | max | std_dev | range);
+    auto ds = ural::describe(xs, count | mean | min | variance | max | std_dev | range);
 
     BOOST_CHECK_EQUAL(xs.size(), ds.count());
 

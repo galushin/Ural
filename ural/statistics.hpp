@@ -58,8 +58,6 @@
 #include <boost/math/distributions/chi_squared.hpp>
 #include <boost/math/distributions/normal.hpp>
 
-#include <stdexcept>
-
 namespace ural
 {
 namespace statistics
@@ -228,16 +226,18 @@ namespace tags
     @tparam T тип элементов выборки
     @tparam Tag тэг, описывающий накопительную статистику
     @tparam Base базовый класс
+    @tparam Weight тип веса
     */
-    template <class T, class Tag, class Base = empty_type>
+    template <class T, class Tag, class Base, class Weight>
     class descriptive;
 
     /** @brief Накопитель для описательной статистики "Количество элементов"
     @tparam T тип элементов выборки
     @tparam Base базовый класс
+    @tparam Weight тип веса
     */
-    template <class T, class Base>
-    class descriptive<T, statistics::tags::count_tag, Base>
+    template <class T, class Base, class Weight>
+    class descriptive<T, statistics::tags::count_tag, Base, Weight>
      : public Base
     {
     public:
@@ -248,6 +248,9 @@ namespace tags
         /// @brief Тип для хранения количества элементов
         typedef size_t count_type;
 
+        /// @brief Тип весов
+        typedef Weight weight_type;
+
         // Конструкторы
         /** @brief Конструктор без параметров
         @post <tt> this->count() == 0 </tt>
@@ -257,16 +260,19 @@ namespace tags
         descriptive()
          : Base{}
          , n_{0}
+         , w_sum_(0)
         {}
 
         /** @brief Конструктор
         @param x первый элемент выборки
+        @param w вес первого элемента выборки
         @post <tt> this->count() == 1 </tt>
         @post Базовый класс инициализируется как <tt> Base{x} </tt>
         */
-        explicit descriptive(value_type const & x)
-         : Base{x}
+        explicit descriptive(value_type const & x, weight_type const & w)
+         : Base(x, w)
          , n_{1}
+         , w_sum_(w)
         {}
 
         // Свойства
@@ -278,17 +284,27 @@ namespace tags
             return n_;
         }
 
+        /** @brief Сумма весов
+        @return Накопленная к настоящему моменту сумма весов
+        */
+        weight_type const & weight_sum() const
+        {
+            return this->w_sum_;
+        }
+
         // Обновление
         /** Обработка нового элемента. Сначала данный элемент передаётся
         базовому накопителю, а затем счётчик увеличивается на единичу
         @brief Обновление
         @param x новый элемент выборки
+        @param w вес нового элемента выборки
         @return <tt> *this </tt>
         */
-        descriptive & operator()(T const & x)
+        descriptive & operator()(T const & x, weight_type const & w)
         {
-            Base::operator()(x);
+            Base::operator()(x, w);
             ++ n_;
+            w_sum_ += w;
             return *this;
         }
 
@@ -303,21 +319,25 @@ namespace tags
             return x.count();
         }
 
+        // @todo покрыть тестами аналогичную функцию для weight_sum
+
     protected:
         ~descriptive() = default;
 
     private:
         count_type n_;
+        weight_type w_sum_;
     };
 
     /** @brief Описательная статистика "начальный момента порядка @c N"
     @tparam T тип элементов
     @tparam Base базовая описательная статистика
     @tparam N порядок момента
+    @tparam Weight тип веса
     @todo Выразить через более общую статистику: с произвольным преобразованием
     */
-    template <class T, class Base, size_t N>
-    class descriptive<T, statistics::tags::raw_moment_tag<N>, Base>
+    template <class T, class Base, size_t N, class Weight>
+    class descriptive<T, statistics::tags::raw_moment_tag<N>, Base, Weight>
      : public Base
     {
         static_assert(N > 0, "Use counter instead");
@@ -326,8 +346,11 @@ namespace tags
         /// @brief Тип количества элементов
         typedef typename Base::count_type count_type;
 
+        /// @brief Тип весов
+        typedef typename Base::weight_type weight_type;
+
         /// @brief Тип момента
-        typedef typename average_type<T, count_type>::type moment_type;
+        typedef typename average_type<T, weight_type>::type moment_type;
 
         // Конструкторы
         /** @brief Конструктор без аргументов
@@ -342,11 +365,12 @@ namespace tags
 
         /** @brief Конструктор
         @param x первый элемент выборки
+        @param w вес первого элемента выборки
         @post <tt> raw_moment(*this, integral_constant<size_t, N>{}) == 1 </tt>
         @post Базовый класс инициализируется как <tt> Base{x} </tt>
         */
-        explicit descriptive(T const & x)
-         : Base{x}
+        explicit descriptive(T const & x, weight_type const & w)
+         : Base(x, w)
          , value_(x)
         {}
 
@@ -356,12 +380,13 @@ namespace tags
         нового значения.
         @brief Обновление
         @param x новый элемент выборки
+        @param w вес нового элемента выборки
         @return <tt> *this </tt>
         */
-        descriptive & operator()(T const & x)
+        descriptive & operator()(T const & x, weight_type const & w)
         {
-            Base::operator()(x);
-            value_ += (power(x) - value_) / this->count();
+            Base::operator()(x, w);
+            value_ += (power(x) - value_) * w / this->weight_sum();
             return *this;
         }
 
@@ -399,10 +424,11 @@ namespace tags
     /** @brief Описательная статистика "выборочное среднее"
     @tparam T тип элементов
     @tparam Base базовая описательная статистика
+    @tparam Weight тип веса
     @todo Можно ли обойтись без этого класса вообще?
     */
-    template <class T, class Base>
-    class descriptive<T, statistics::tags::mean_tag, Base>
+    template <class T, class Base, class Weight>
+    class descriptive<T, statistics::tags::mean_tag, Base, Weight>
      : public Base
     {
     public:
@@ -440,11 +466,12 @@ namespace tags
     /** @brief Описательная статистика "дисперсия"
     @tparam T тип элементов
     @tparam Base базовая описательная статистика
+    @tparam Weight тип веса
     @todo Несмещённая дисперсия?
     @todo Тип возвращаемого значения
     */
-    template <class T, class Base>
-    class descriptive<T, statistics::tags::variance_tag, Base>
+    template <class T, class Base, class Weight>
+    class descriptive<T, statistics::tags::variance_tag, Base, Weight>
      : public Base
     {
     public:
@@ -464,26 +491,28 @@ namespace tags
 
         /** @brief Конструктор без параметров
         @param x первый элемент выборки
+        @param w вес первого элемента выборки
         @post Инициализирует базовый класс c @c x в качестве параметра
         @post <tt> this->variance() == 0 </tt>
         */
-        explicit descriptive(T const & x)
-         : Base{x}
+        explicit descriptive(T const & x, Weight const & w)
+         : Base(x, w)
          , sq_(0)
         {}
 
         // Обновление
         /** @brief Обновление
         @param x новый элемент выборки
+        @param w вес нового элемента выборки
         @return <tt> *this </tt>
         */
-        descriptive & operator()(T const & x)
+        descriptive & operator()(T const & x, Weight const & w)
         {
             auto old_m = this->mean();
 
-            Base::operator()(x);
+            Base::operator()(x, w);
 
-            sq_ += (x - old_m) * (x - this->mean());
+            sq_ += (x - old_m) * (x - this->mean()) * w;
 
             return *this;
         }
@@ -504,7 +533,7 @@ namespace tags
         */
         mean_type variance() const
         {
-            return sq_ / this->count();
+            return sq_ / this->weight_sum();
         }
 
     private:
@@ -514,10 +543,11 @@ namespace tags
     /** @brief Описательная статистика "среднеквадратическое отклонение"
     @tparam T тип элементов
     @tparam Base базовая описательная статистика
+    @tparam Weight тип веса
     @todo Обобщённый накопитель с преобразованием, выразить через него же момент
     */
-    template <class T, class Base>
-    class descriptive<T, statistics::tags::standard_deviation_tag, Base>
+    template <class T, class Base, class Weight>
+    class descriptive<T, statistics::tags::standard_deviation_tag, Base, Weight>
      : public Base
     {
     public:
@@ -557,9 +587,10 @@ namespace tags
     /** @brief Описательная статистика "наименьшее значение"
     @tparam T тип элементов
     @tparam Base базовая описательная статистика
+    @tparam Weight тип веса
     */
-    template <class T, class Base>
-    class descriptive<T, statistics::tags::min_tag, Base>
+    template <class T, class Base, class Weight>
+    class descriptive<T, statistics::tags::min_tag, Base, Weight>
      : public Base
     {
     public:
@@ -577,11 +608,12 @@ namespace tags
 
         /** @brief Конструктор
         @param x первый элемент выборки
+        @param w вес первого элемента выборки
         @post Инициализирует базовый класс c @c x в качестве параметра
         @post <tt> this->min() == x </tt>
         */
-        explicit descriptive(T const & x)
-         : Base{x}
+        explicit descriptive(T const & x, Weight const & w)
+         : Base(x, w)
          , min_{x}
         {}
 
@@ -608,11 +640,12 @@ namespace tags
         этого значения.
         @brief Обновление
         @param x новый элемент выборки
+        @param w вес нового элемента выборки
         @return <tt> *this </tt>
         */
-        descriptive & operator()(T const & x)
+        descriptive & operator()(T const & x, Weight const & w)
         {
-            Base::operator()(x);
+            Base::operator()(x, w);
             if(x < min_)
             {
                 min_ = x;
@@ -630,9 +663,10 @@ namespace tags
     /** @brief Описательная статистика "наибольшее значение"
     @tparam T тип элементов
     @tparam Base базовая описательная статистика
+    @tparam Weight тип веса
     */
-    template <class T, class Base>
-    class descriptive<T, statistics::tags::max_tag, Base>
+    template <class T, class Base, class Weight>
+    class descriptive<T, statistics::tags::max_tag, Base, Weight>
      : public Base
     {
     public:
@@ -650,11 +684,12 @@ namespace tags
 
         /** @brief Конструктор
         @param x первый элемент выборки
+        @param w вес первого элемента выборки
         @post Инициализирует базовый класс c @c x в качестве параметра
         @post <tt> this->max() == x </tt>
         */
-        explicit descriptive(T const & x)
-         : Base{x}
+        explicit descriptive(T const & x, Weight const & w)
+         : Base(x, w)
          , max_{x}
         {}
 
@@ -678,11 +713,12 @@ namespace tags
         <tt> this->max() < x </tt>
         @brief Обновление значения
         @param x новый элемент выборки
+        @param w вес нового элемента выборки
         @return <tt> *this </tt>
         */
-        descriptive & operator()(T const & x)
+        descriptive & operator()(T const & x, Weight const & w)
         {
-            Base::operator()(x);
+            Base::operator()(x, w);
 
             if(max_ < x)
             {
@@ -702,9 +738,10 @@ namespace tags
     /** @brief Описательная статистика "размах"
     @tparam T тип элементов
     @tparam Base базовая описательная статистика
+    @tparam Weight тип веса
     */
-    template <class T, class Base>
-    class descriptive<T, statistics::tags::range_tag, Base>
+    template <class T, class Base, class Weight>
+    class descriptive<T, statistics::tags::range_tag, Base, Weight>
      : public Base
     {
     public:
@@ -725,22 +762,24 @@ namespace tags
 
         /** @brief Конструктор
         @param x первый элемент выборки
+        @param w вес первого элемента выборки
         @post <tt> this->max() == x </tt>
         @post <tt> this->min() == x </tt>
         */
-        explicit descriptive(T const & x)
-         : Base(x)
+        explicit descriptive(T const & x, Weight const & w)
+         : Base(x, w)
          , min_(x)
          , max_(x)
         {}
 
         /** @brief Обновление значения
         @param x новый элемент выборки
+        @param w вес нового элемента выборки
         @return <tt> *this </tt>
         */
-        descriptive & operator()(T const & x)
+        descriptive & operator()(T const & x, Weight const & w)
         {
-            Base::operator()(x);
+            Base::operator()(x, w);
 
             assert(this->min_ != std::numeric_limits<T>::infinity());
 
@@ -821,15 +860,17 @@ namespace tags
     /** @brief Класс "набор описательных статистик"
     @tparam T тип элементов выборки
     @tparam Tags список тэгов описательных статистик
+    @tparam Weight тип веса
     */
-    template <class T, class Tags>
+    template <class T, class Tags, class Weight>
     class descriptives;
 
     /** @brief Специализаци для пустого списка тэгов
     @tparam T тип элементов выборки
+    @tparam Weight тип веса
     */
-    template <class T>
-    class descriptives<T, null_type>
+    template <class T, class Weight>
+    class descriptives<T, null_type, Weight>
     {
     protected:
         ~descriptives() = default;
@@ -839,13 +880,13 @@ namespace tags
         descriptives() = default;
 
         /// @brief Конструктор
-        explicit descriptives(T const &)
+        explicit descriptives(T const &, Weight const &)
         {};
 
         /** @brief Обновление
         @return <tt> *this </tt>
         */
-        descriptives & operator()(T const &)
+        descriptives & operator()(T const &, Weight const &)
         {
             return *this;
         }
@@ -859,11 +900,11 @@ namespace tags
     компиляции. @c descriptives_facade устраняет дубликаты из списка, прежде,
     чем передать его @c descriptives
     */
-    template <class T, class Tags>
+    template <class T, class Tags, class Weight>
     class descriptives
-     : public descriptive<T, typename Tags::head, descriptives<T, typename Tags::tail>>
+     : public descriptive<T, typename Tags::head, descriptives<T, typename Tags::tail, Weight>, Weight>
     {
-        typedef descriptive<T, typename Tags::head, descriptives<T, typename Tags::tail>>
+        typedef descriptive<T, typename Tags::head, descriptives<T, typename Tags::tail, Weight>, Weight>
             Base;
     public:
         /// @brief Конструктор без аргументов
@@ -871,20 +912,22 @@ namespace tags
 
         /** @brief Конструктор с параметром
         @param init_value первый элемент выборки
+        @param w вес первого элемента выборки
         */
-        explicit descriptives(T const & init_value)
-         : Base{init_value}
+        explicit descriptives(T const & init_value, Weight const & w)
+         : Base(init_value, w)
         {}
 
         /** @brief Обновление элемента выборки
         @param x новое значение
+        @param w вес нового элемента выборки
         @pre Объект создан с помощью конструктора с параметром или ему было
         присвоено значение
         @return <tt> *this </tt>
         */
-        descriptives & operator()(T const & x)
+        descriptives & operator()(T const & x, Weight const & w)
         {
-            Base::operator()(x);
+            Base::operator()(x, w);
             return *this;
         }
     };
@@ -892,13 +935,14 @@ namespace tags
     /** @brief Фасад для описательных статистик
     @tparam T тип элементов
     @tparam Tags список тэгов
+    @tparam Weight тип весов
     */
-    template <class T, class Tags>
+    template <class T, class Tags, class Weight = std::size_t>
     class descriptives_facade
-     : public descriptives<T, typename statistics::tags::prepare<Tags>::type>
+     : public descriptives<T, typename statistics::tags::prepare<Tags>::type, Weight>
     {
         typedef typename statistics::tags::prepare<Tags>::type PreparedTags;
-        typedef descriptives<T, PreparedTags> Base;
+        typedef descriptives<T, PreparedTags, Weight> Base;
 
     public:
         // Типы
@@ -915,7 +959,15 @@ namespace tags
         @param x значение
         */
         explicit descriptives_facade(T const & x)
-         : Base{x}
+         : descriptives_facade(x, Weight(1))
+        {}
+
+        /** @brief Конструктор
+        @param x значение
+        @param w вес первого элемента выборки
+        */
+        descriptives_facade(T const & x, Weight const & w)
+         : Base(x, w)
         {}
 
         // Обновление
@@ -925,7 +977,17 @@ namespace tags
         */
         descriptives_facade & operator()(T const & x)
         {
-            Base::operator()(x);
+            return (*this)(x, Weight(1));
+        }
+
+        /** @brief Обновление статистик
+        @param x новое значение
+        @param w вес нового элемента выборки
+        @return <tt> *this </tt>
+        */
+        descriptives_facade & operator()(T const & x, Weight const & w)
+        {
+            Base::operator()(x, w);
             return *this;
         }
 
@@ -969,6 +1031,47 @@ namespace tags
         return ural::for_each(seq, std::move(r));
     }
 
+    /** @brief Алгоритм сбора описательных статистик
+    @tparam Tags список тэгов описательных статистик
+    @param in входная последовательность
+    @param ws последовательность весов
+    @return Объект, содержащий описательные статистики
+    */
+    template <class Input, class Tags, class Weights>
+    auto describe(Input && in, Tags, Weights && ws)
+    -> descriptives_facade<typename decltype(ural::sequence_fwd<Input>(in))::value_type,
+                           Tags,
+                           typename decltype(ural::sequence_fwd<Weights>(ws))::value_type>
+    {
+        // @todo как обрабатывать ситуацию разной длины последовательностей
+        // данных и весов
+        // @todo устранить дублирование
+        typedef typename decltype(ural::sequence_fwd<Input>(in))::value_type Value;
+        typedef typename decltype(ural::sequence_fwd<Weights>(ws))::value_type Weight_type;
+        typedef descriptives_facade<Value, Tags, Weight_type> Result;
+
+        using ural::sequence;
+        auto in_seq = ural::sequence_fwd<Input>(in);
+        auto ws_seq = ural::sequence_fwd<Weights>(ws);
+
+        if(!in_seq || !ws_seq)
+        {
+            return Result{};
+        }
+
+        // @todo заменить на алгоритм
+        Result r(*in_seq, *ws_seq);
+        ++ in_seq;
+        ++ ws_seq;
+
+        for(; !!in_seq && !!ws_seq; ++ in_seq, ++ ws_seq)
+        {
+            r(*in_seq, *ws_seq);
+        }
+
+        return r;
+    }
+
     /** @brief Стандартизация выборки
     @param in входная последовательность
     @param out выходная последовательность
@@ -985,7 +1088,9 @@ namespace tags
 
         typedef typename decltype(ds)::value_type Value;
 
-        auto f = [m, s](Value const & x) { return (x - m) / s; };
+        assert(s != 0);
+
+        auto f = [&m, &s](Value const & x) { return (x - m) / s; };
 
         ural::copy(ural::make_transform_sequence(std::move(f),
                                                  std::forward<Forward>(in)),

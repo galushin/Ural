@@ -21,6 +21,7 @@
  @brief "Математическое" дискретное распределение
 */
 
+#include <ural/statistics.hpp>
 #include <ural/numeric.hpp>
 
 #include <vector>
@@ -123,15 +124,12 @@ namespace distributions
             }
 
             // @todo можно ли рассчитать числовые характеристики вместе с суммой весов?
-            // @todo Одновременное вычисление математического ожидания и дисперсии?
-            mean_ = ural::inner_product(ural::numbers_sequence<value_type>(0, ps_.size()), ps_, mean_);
-
-            // @todo заменить на алгоритм,
-            for(auto i : ural::indices_of(ps_))
-            {
-                using ural::square;
-                variance_ += square(value_type(i) - mean_) * ps_[i];
-            }
+            auto values = ural::numbers_sequence<value_type>(0, ps_.size());
+            auto s = ural::describe(std::move(values),
+                                    ural::statistics::tags::variance,
+                                    ps_);
+            mean_ = s.mean();
+            variance_ = s.variance();
         }
 
         /** @brief Конструктор на основе списка инициализаторов
@@ -211,6 +209,18 @@ namespace distributions
         probabilities_vector const & probabilities() const
         {
             return this->ps_;
+        }
+
+        value_type min() const
+        {
+            return value_type(0);
+        }
+
+        value_type max() const
+        {
+            assert(!ps_.empty());
+            // @todo всегда ли это безопасно?
+            return value_type(this->ps_.size() - 1u);
         }
 
     private:

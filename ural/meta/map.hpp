@@ -17,6 +17,8 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <ural/defs.hpp>
+
 /** @file ural/meta/map.hpp
  @brief Ассоциативный контейнер для типов
 */

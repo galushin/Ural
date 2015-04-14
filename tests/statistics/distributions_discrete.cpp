@@ -15,6 +15,7 @@
 */
 
 // "Математическое" дискретное распределение
+// @todo min и max
 #include <ural/distributions/discrete.hpp>
 #include <ural/math/rational.hpp>
 
@@ -26,6 +27,9 @@ BOOST_AUTO_TEST_CASE(math_discrete_distribution_default_ctor)
     typedef ural::distributions::discrete<int> Distribution;
 
     auto const d = Distribution{};
+
+    BOOST_CHECK_EQUAL(d.min(), 0);
+    BOOST_CHECK_EQUAL(d.max(), 0);
 
     auto const m = mean(d);
     BOOST_CHECK_EQUAL(m, 0.0);
@@ -54,6 +58,9 @@ BOOST_AUTO_TEST_CASE(math_discrete_distibution_from_empty_container)
     auto const w = std::vector<double>{};
 
     auto const d = Distribution(w.begin(), w.end());
+
+    BOOST_CHECK_EQUAL(d.min(), 0);
+    BOOST_CHECK_EQUAL(ural::to_unsigned(d.max()), d.probabilities().size() - 1);
 
     auto const m = mean(d);
     BOOST_CHECK_EQUAL(m, 0.0);
@@ -88,6 +95,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(math_discrete_distibution_from_container,
     std::vector<int> const w{4, 3, 2, 1};
 
     auto const d = Distribution(w.begin(), w.end());
+
+    BOOST_CHECK_EQUAL(d.min(), 0);
+    BOOST_CHECK_EQUAL(ural::to_unsigned(d.max()), d.probabilities().size() - 1);
 
     auto const m = mean(d);
     BOOST_CHECK_CLOSE(m, 1.0, 1e-10);
@@ -132,6 +142,9 @@ BOOST_AUTO_TEST_CASE(math_discrete_distibution_from_container_rational_weight)
 
     auto const d = Distribution(w.begin(), w.end());
 
+    BOOST_CHECK_EQUAL(d.min(), 0);
+    BOOST_CHECK_EQUAL(ural::to_unsigned(d.max()), d.probabilities().size() - 1);
+
     auto const m = mean(d);
     BOOST_CHECK_EQUAL(m, 1);
 
@@ -164,6 +177,9 @@ BOOST_AUTO_TEST_CASE(math_discrete_distibution_from_init_list)
     typedef ural::distributions::discrete<int> Distribution;
 
     auto const d = Distribution{4, 3, 2, 1};
+
+    BOOST_CHECK_EQUAL(d.min(), 0);
+    BOOST_CHECK_EQUAL(ural::to_unsigned(d.max()), d.probabilities().size() - 1);
 
     auto const m = mean(d);
     BOOST_CHECK_CLOSE(m, 1.0, 1e-10);
