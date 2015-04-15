@@ -62,3 +62,73 @@ BOOST_AUTO_TEST_CASE(any_value_ctor_saves)
     BOOST_CHECK_EQUAL(Type::move_ctor_count(), old_move_ctor_count+1);
     BOOST_CHECK_EQUAL(Type::destroyed_objects(), old_destroyed + 2);
 }
+
+BOOST_AUTO_TEST_CASE(any_value_ctor_from_lvalue)
+{
+    typedef ural::regular_tracer<int> Type;
+
+    auto const old_active = Type::active_objects();
+    auto const old_constructed = Type::constructed_objects();
+    auto const old_copy_ctor_count = Type::copy_ctor_count();
+    auto const old_destroyed = Type::destroyed_objects();
+
+    {
+        auto const value = Type(42);
+        ural::any const a(value);
+
+        BOOST_CHECK(!a.empty());
+
+        BOOST_CHECK(a.type() == typeid(Type));
+        BOOST_CHECK_EQUAL(a.type().name(), typeid(Type).name());
+    }
+
+    BOOST_CHECK_EQUAL(Type::active_objects(), old_active);
+    BOOST_CHECK_EQUAL(Type::constructed_objects(), old_constructed+2);
+    BOOST_CHECK_EQUAL(Type::copy_ctor_count(), old_copy_ctor_count+1);
+    BOOST_CHECK_EQUAL(Type::destroyed_objects(), old_destroyed + 2);
+}
+
+BOOST_AUTO_TEST_CASE(any_get_const_pointer_test)
+{
+    typedef std::string Type;
+
+    // Пустой
+    ural::any const a0;
+
+    BOOST_CHECK(a0.get_pointer<Type>() == nullptr);
+    BOOST_CHECK(a0.get_pointer<int>() == nullptr);
+
+    // Не пустой
+    auto const value = Type("42");
+    ural::any const a1(value);
+
+    BOOST_REQUIRE(a1.get_pointer<Type>() != nullptr);
+    BOOST_CHECK(a1.get_pointer<int>()  == nullptr);
+
+    BOOST_CHECK_EQUAL(*a1.get_pointer<Type>(), value);
+    BOOST_CHECK_EQUAL(*a1.get_pointer<Type const>(), value);
+}
+
+BOOST_AUTO_TEST_CASE(any_get_pointer_test)
+{
+    typedef std::string Type;
+
+    // Пустой
+    ural::any a0;
+
+    BOOST_CHECK(a0.get_pointer<Type>() == nullptr);
+    BOOST_CHECK(a0.get_pointer<int>() == nullptr);
+
+    // Не пустой
+    auto const value = Type("42");
+    ural::any a1(value);
+
+    BOOST_CHECK(a1.get_pointer<int>()  == nullptr);
+    BOOST_REQUIRE(a1.get_pointer<Type>() != nullptr);
+
+    auto const new_value = Type("ABC");
+    *a1.get_pointer<Type>() = new_value;
+
+    BOOST_REQUIRE(a1.get_pointer<Type>() != nullptr);
+    BOOST_CHECK_EQUAL(*ural::as_const(a1).get_pointer<Type>(), new_value);
+}

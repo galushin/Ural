@@ -22,6 +22,9 @@
  Реализация шаблона проектирования "Хранитель"
 */
 
+#include <ural/functional/make_callable.hpp>
+#include <ural/utility.hpp>
+
 #include <utility>
 #include <typeinfo>
 
@@ -29,6 +32,9 @@ namespace ural
 {
     /** @brief Контейнер, который может хратить не более одного значения любого
     типа.
+    @todo Операции перемещения и swap (метод и свободная функция)
+    @todo Операторы == и <
+    @todo Операции копирования
     @todo Поддержка распределителей памяти
     @todo Конструктор с размещением any(emplace_ctor<T>{}, args...)?
     @todo Ещё какая-либо функциональность контейнеров
@@ -36,8 +42,11 @@ namespace ural
     память или один уровень косвенности? Можно ли реализовать так, чтобы можно
     было настраивать поддерживаемые операции, но при этом размер объекта не
     зависел от количества поддерживаемых значений?
-    @todo Чем должен быть any: контейнером (хранит значение и даёт к нему доступ)
-    или обёрткой (имитирует функциональность исходного объекта)?
+    @todo Разные методы доступа к данным: проверяемое разыменование (get),
+    указатель на базовый класс - через механизм обработи исключений,
+    value_or, непроверяемое разыменование, optional и expected
+    @todo Оптимизация хранения указателей: как на объекты, так и на функциии,
+    переменные-члены и функции-члены
     */
     class any
     {
@@ -48,7 +57,7 @@ namespace ural
         @post <tt> this->empty() == true </tt>
         */
         any()
-         : type_(nullptr)
+         : type_(&typeid(void))
          , ptr_(nullptr)
          , destroy_(&any::destructor_empty)
         {}
@@ -61,15 +70,55 @@ namespace ural
         template <class T>
         explicit any(T && x)
          : type_(&typeid(x))
-         , ptr_(new T(std::forward<T>(x)))
-         , destroy_(&any::destructor_impl<T>)
+         , ptr_(new typename std::decay<T>::type(std::forward<T>(x)))
+         , destroy_(&any::destructor_impl<typename std::decay<T>::type>)
         {}
+
+        any(any const & x);
+        any(any && x);
+
+        any & operator=(any const & x);
+        any & operator=(any && x);
+
+        template <class T>
+        any & operator=(T && x);
 
         /// @brief Деструктор
         ~any()
         {
             this->destroy_(ptr_);
         }
+
+        void swap(any & x);
+
+        // Доступ к данным
+        //@{
+        /** @brief Доступ к указателю
+        @tparam T тип объекта, к которому производится попытка доступа
+        @return Если <tt> *this </tt> содержит объект типа @c T, то указатель
+        на данный объект, иначе --- @b nullptr
+        */
+        template <class T>
+        T * get_pointer()
+        {
+            return const_cast<T*>(ural::as_const(*this).get_pointer<T>());
+        }
+
+        template <class T>
+        T const * get_pointer() const
+        {
+            typedef typename std::decay<T>::type DT;
+
+            if(this->type() == typeid(DT))
+            {
+                return static_cast<T const *>(ptr_);
+            }
+            else
+            {
+                return nullptr;
+            }
+        }
+        //@}
 
         // Свойства
         /** @brief Проверка того, что данный объект не хранит значение
@@ -78,7 +127,8 @@ namespace ural
         */
         bool empty() const
         {
-            return type_ == nullptr;
+            assert(type_ != nullptr);
+            return *type_ == typeid(void);
         }
 
         /** @brief Доступ к информации о типе хранимого объекта
@@ -88,7 +138,9 @@ namespace ural
         */
         std::type_info const & type() const
         {
-            return type_ == nullptr ? typeid(void) : *type_;
+            assert(type_ != nullptr);
+
+            return *type_;
         }
 
     private:
@@ -104,7 +156,7 @@ namespace ural
     private:
         std::type_info const * type_;
         void * ptr_;
-        void(*destroy_)(void*);
+        ural::function_ptr_wrapper<void(void*)> destroy_;
     };
 }
 // namespace ural
