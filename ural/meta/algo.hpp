@@ -81,6 +81,38 @@ namespace meta
      : std::integral_constant<bool, !std::is_same<typename meta::find<Container, T, Eq>::type, null_type>::value>
     {};
 
+    /** @brief Проверка того, что @c C2 является подмножеством @c C1
+    @tparam C1 первый список типов
+    @tparam C2 второй список типов
+    @tparam Eq фукнция, определяющая равенство
+    */
+    template <class C1, class C2, class Eq = meta::is_same>
+    struct includes
+    {
+    private:
+        typedef typename C2::head Head;
+        typedef typename C2::tail Tail;
+
+        typedef meta::contains<C1, Head, Eq> Head_result;
+        typedef meta::includes<C1, Tail, Eq> Tail_result;
+
+        typedef typename std::conditional<!Head_result::value,
+                                          std::false_type,
+                                          Tail_result>::type Impl;
+
+
+    public:
+        enum
+        {
+            value = Impl::value
+        };
+    };
+
+    template <class C1, class Eq>
+    struct includes<C1, null_type, Eq>
+     : std::true_type
+    {};
+
     // Подсчёт числа элементов, равных данному.
     template <class Container, class T, class Eq = meta::is_same>
     struct count

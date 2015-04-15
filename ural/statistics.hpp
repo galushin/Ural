@@ -110,11 +110,14 @@ namespace tags
     /// @brief Тип-тэг описательной статистики "Количество элементов"
     struct count_tag    : declare_depend_on<>{};
 
+    /// @brief Тип-тэг описательной статистики "Сумма весов"
+    struct weigth_sum_tag    : declare_depend_on<>{};
+
     /** @brief Тип-тэг описательной статистики "Начальный момент"
     @tparam N порядок момента
     */
     template <size_t N>
-    struct raw_moment_tag   : declare_depend_on<count_tag>{};
+    struct raw_moment_tag   : declare_depend_on<weigth_sum_tag>{};
 
     /// @brief Тип-тэг описательной статистики "Математическое ожидание"
     struct mean_tag : declare_depend_on<raw_moment_tag<1>>{};
@@ -136,6 +139,7 @@ namespace tags
 
     // Тэги-объекты
     constexpr auto count = tags_list<count_tag>{};
+    constexpr auto weigth_sum = tags_list<weigth_sum_tag>{};
     constexpr auto mean = tags_list<mean_tag>{};
     constexpr auto variance = tags_list<variance_tag>{};
     constexpr auto std_dev = tags_list<standard_deviation_tag>{};
@@ -147,6 +151,7 @@ namespace tags
     исходные.
     @param List список тэгов
     @param Out хвост списка-результата
+    @todo обобщить (Поиск в ширину) и унифицировать с flatten
     */
     template <class List, class Out>
     struct expand_depend_on
@@ -190,17 +195,14 @@ namespace tags
         typedef typename expand_depend_on<typename Tags::list, null_type>::type
             WithDependencies;
 
-        // @todo Выразить через более высокоуровневые конструкции
-        typedef meta::contains<WithDependencies, tags::min_tag> C_min;
-        typedef meta::contains<WithDependencies, tags::max_tag> C_max;
-        typedef std::integral_constant<bool, C_min::value && C_max::value>
-            C_min_and_max;
+        typedef ural::typelist<tags::min_tag, tags::max_tag> L_min_max;
+        typedef meta::includes<WithDependencies, L_min_max> C_min_and_max;
 
         struct is_min_or_max_tag
         {
             template <class T>
             struct apply
-             : std::integral_constant<bool, std::is_same<T, tags::min_tag>::value || std::is_same<T, tags::max_tag>::value>
+             : meta::contains<L_min_max, T>
             {};
         };
 
@@ -235,6 +237,7 @@ namespace tags
     @tparam T тип элементов выборки
     @tparam Base базовый класс
     @tparam Weight тип веса
+    @todo рассмотреть вопрос настройки типа счётчика
     */
     template <class T, class Base, class Weight>
     class descriptive<T, statistics::tags::count_tag, Base, Weight>
@@ -242,11 +245,87 @@ namespace tags
     {
     public:
         // Типы
+        /// @brief Тип счётчика
+        typedef long count_type;
+
+        // Конструкторы
+        /** @brief Конструктор без аргументов
+        @post Базовый класс создаётся конструктором без аргументов
+        @post <tt> this->count() == 0 </tt>
+        */
+        descriptive()
+         : Base()
+         , n_(0)
+        {}
+
+        /** @brief Конструктор с параметром
+        @param init_value первый элемент выборки
+        @param w вес первого элемента выборки
+        @post Базовый класс создаётся конструктором c параметрами
+        @c init_value и @c w
+        @post <tt> this->count() == 1 </tt>
+        */
+        explicit descriptive(T const & init_value, Weight const & w)
+         : Base(init_value, w)
+         , n_(1)
+        {}
+
+        // Обновление
+        /** Обработка нового элемента. Сначала данный элемент передаётся
+        базовому накопителю, а затем счётчик увеличивается на единичу
+        @brief Обновление
+        @param x новый элемент выборки
+        @param w вес нового элемента выборки
+        @return <tt> *this </tt>
+        */
+        descriptive & operator()(T const & x, Weight const & w)
+        {
+            Base::operator()(x, w);
+
+            ++ n_;
+
+            return *this;
+        }
+
+        // Свойства
+        /** @brief Функция доступа к накопленному значению
+        @return Количество обработанных элементов
+        */
+        count_type const & count() const
+        {
+            return this->n_;
+        }
+
+        /** @brief Свободная функция доступа к накопленному значению
+        @param x описательная статистика
+        @return <tt> x.count() </tt>
+        */
+        friend count_type const & at_tag(descriptive const & x,
+                                         statistics::tags::count_tag)
+        {
+            return x.count();
+        }
+
+    protected:
+        ~descriptive() = default;
+
+    private:
+        count_type n_;
+    };
+
+    /** @brief Накопитель для описательной статистики "Сумма весов"
+    @tparam T тип элементов выборки
+    @tparam Base базовый класс
+    @tparam Weight тип веса
+    */
+    template <class T, class Base, class Weight>
+    class descriptive<T, statistics::tags::weigth_sum_tag, Base, Weight>
+     : public Base
+    {
+    public:
+        // Типы
         /// @brief Тип элементов выборки
         typedef T value_type;
-
-        /// @brief Тип для хранения количества элементов
-        typedef size_t count_type;
 
         /// @brief Тип весов
         typedef Weight weight_type;
@@ -259,7 +338,6 @@ namespace tags
         */
         descriptive()
          : Base{}
-         , n_{0}
          , w_sum_(0)
         {}
 
@@ -271,26 +349,8 @@ namespace tags
         */
         explicit descriptive(value_type const & x, weight_type const & w)
          : Base(x, w)
-         , n_{1}
          , w_sum_(w)
         {}
-
-        // Свойства
-        /** @brief Количество элементов выборки
-        @return Количество элементов выборки
-        */
-        count_type const & count() const
-        {
-            return n_;
-        }
-
-        /** @brief Сумма весов
-        @return Накопленная к настоящему моменту сумма весов
-        */
-        weight_type const & weight_sum() const
-        {
-            return this->w_sum_;
-        }
 
         // Обновление
         /** Обработка нового элемента. Сначала данный элемент передаётся
@@ -303,29 +363,33 @@ namespace tags
         descriptive & operator()(T const & x, weight_type const & w)
         {
             Base::operator()(x, w);
-            ++ n_;
             w_sum_ += w;
             return *this;
         }
 
-        // Свободные функции
-        /** @brief Свободная функция доступа к накопленному значению
-        @param x описательная статистика
-        @return <tt> x.count() </tt>
+        // Свойства
+        /** @brief Сумма весов
+        @return Накопленная к настоящему моменту сумма весов
         */
-        friend count_type const & at_tag(descriptive const & x,
-                                         statistics::tags::count_tag)
+        weight_type const & weight_sum() const
         {
-            return x.count();
+            return this->w_sum_;
         }
 
-        // @todo покрыть тестами аналогичную функцию для weight_sum
+        /** @brief Свободная функция, возвращающая сумму весов
+        @param x объект-накопитель описательной статистики
+        @return Накопленная к настоящему моменту сумма весов
+        */
+        friend weight_type const & at_tag(descriptive const & x,
+                                         statistics::tags::weigth_sum_tag)
+        {
+            return x.weight_sum();
+        }
 
     protected:
         ~descriptive() = default;
 
     private:
-        count_type n_;
         weight_type w_sum_;
     };
 
@@ -343,9 +407,6 @@ namespace tags
         static_assert(N > 0, "Use counter instead");
     public:
         // Типы
-        /// @brief Тип количества элементов
-        typedef typename Base::count_type count_type;
-
         /// @brief Тип весов
         typedef typename Base::weight_type weight_type;
 
@@ -467,7 +528,8 @@ namespace tags
     @tparam T тип элементов
     @tparam Base базовая описательная статистика
     @tparam Weight тип веса
-    @todo Несмещённая дисперсия?
+    @todo Несмещённая дисперсия? Нужно изучить вопрос: чему равна несмещённая
+    дисперсия для взвешенной выборки
     @todo Тип возвращаемого значения
     */
     template <class T, class Base, class Weight>
@@ -936,8 +998,10 @@ namespace tags
     @tparam T тип элементов
     @tparam Tags список тэгов
     @tparam Weight тип весов
+    @todo рассмотреть целесообразность для значения по умолчанию для Tags
     */
-    template <class T, class Tags, class Weight = std::size_t>
+    template <class T, class Tags,
+              class Weight = std::make_signed<std::size_t>::type>
     class descriptives_facade
      : public descriptives<T, typename statistics::tags::prepare<Tags>::type, Weight>
     {
