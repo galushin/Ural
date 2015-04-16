@@ -75,7 +75,21 @@ namespace ural
         {}
 
         any(any const & x);
-        any(any && x);
+
+        /** @brief Конструктор перемещения
+        @param x объект, содержимое которого будет перемещенно в данный объект
+        @post <tt> *this </tt> будет равен @c x до вызова конструктора
+        @post <tt> x.empty() == true </tt>
+        */
+        any(any && x)
+         : type_(std::move(x.type_))
+         , ptr_(std::move(x.ptr_))
+         , destroy_(std::move(x.destroy_))
+        {
+            x.type_= &typeid(void);
+            x.ptr_ = nullptr;
+            x.destroy_ = &any::destructor_empty;
+        }
 
         any & operator=(any const & x);
         any & operator=(any && x);

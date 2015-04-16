@@ -88,6 +88,34 @@ BOOST_AUTO_TEST_CASE(any_value_ctor_from_lvalue)
     BOOST_CHECK_EQUAL(Type::destroyed_objects(), old_destroyed + 2);
 }
 
+BOOST_AUTO_TEST_CASE(any_move_ctor)
+{
+    typedef ural::regular_tracer<std::string> Type;
+
+    auto const old_active = Type::active_objects();
+
+    {
+        // Пустой
+        ural::any a0;
+        auto const a0_m = std::move(a0);
+
+        BOOST_CHECK(a0.empty());
+        BOOST_CHECK(a0_m.empty());
+
+        // Не пустой
+        auto const value = Type("42");
+        ural::any a1(value);
+        auto const a1_m = std::move(a1);
+
+        BOOST_CHECK(a1.empty());
+        BOOST_CHECK(!a1_m.empty());
+        BOOST_CHECK(a1_m.get_pointer<Type>() != nullptr);
+        BOOST_CHECK_EQUAL(*a1_m.get_pointer<Type>(), value);
+    }
+
+    BOOST_CHECK_EQUAL(Type::active_objects(), old_active);
+}
+
 BOOST_AUTO_TEST_CASE(any_get_const_pointer_test)
 {
     typedef std::string Type;
