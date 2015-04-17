@@ -50,6 +50,9 @@ namespace ural
     */
     class any
     {
+    friend bool operator==(any const & x, any const & y);
+    friend bool operator<(any const & x, any const & y);
+
     public:
         // Создание, копирование, уничтожение
         /** @brief Конструктор без параметров
@@ -103,7 +106,13 @@ namespace ural
             this->destroy_(ptr_);
         }
 
-        void swap(any & x);
+        void swap(any & x)
+        {
+            using std::swap;
+            swap(this->type_, x.type_);
+            swap(this->ptr_, x.ptr_);
+            swap(this->destroy_, x.destroy_);
+        }
 
         // Доступ к данным
         //@{

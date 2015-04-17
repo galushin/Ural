@@ -116,6 +116,103 @@ BOOST_AUTO_TEST_CASE(any_move_ctor)
     BOOST_CHECK_EQUAL(Type::active_objects(), old_active);
 }
 
+BOOST_AUTO_TEST_CASE(any_swap_member_empty_and_empty)
+{
+    typedef ural::regular_tracer<std::string> Type;
+
+    auto const old_active = Type::active_objects();
+
+    {
+        ural::any x;
+        ural::any y;
+
+        x.swap(y);
+
+        BOOST_CHECK(x.empty());
+        BOOST_CHECK(y.empty());
+    }
+
+    BOOST_CHECK_EQUAL(Type::active_objects(), old_active);
+}
+
+BOOST_AUTO_TEST_CASE(any_swap_member_empty_and_value)
+{
+    typedef ural::regular_tracer<std::string> Type;
+
+    auto const old_active = Type::active_objects();
+
+    {
+        ural::any x;
+
+        Type const y_value("42");
+        ural::any y(y_value);
+
+        x.swap(y);
+
+        BOOST_CHECK(!x.empty());
+        BOOST_CHECK(x.get_pointer<Type>() != nullptr);
+        BOOST_CHECK_EQUAL(*x.get_pointer<Type>(), y_value);
+
+        BOOST_CHECK(y.empty());
+    }
+
+    BOOST_CHECK_EQUAL(Type::active_objects(), old_active);
+}
+
+BOOST_AUTO_TEST_CASE(any_swap_member_value_and_empty)
+{
+    typedef ural::regular_tracer<std::string> Type;
+
+    auto const old_active = Type::active_objects();
+
+    {
+        ural::any x;
+
+        Type const y_value("42");
+        ural::any y(y_value);
+
+        y.swap(x);
+
+        BOOST_CHECK(!x.empty());
+        BOOST_CHECK(x.get_pointer<Type>() != nullptr);
+        BOOST_CHECK_EQUAL(*x.get_pointer<Type>(), y_value);
+
+        BOOST_CHECK(y.empty());
+    }
+
+    BOOST_CHECK_EQUAL(Type::active_objects(), old_active);
+}
+
+BOOST_AUTO_TEST_CASE(any_swap_member_value_and_value)
+{
+    typedef ural::regular_tracer<int> Tx;
+    typedef ural::regular_tracer<std::string> Ty;
+
+    auto const Tx_old_active = Tx::active_objects();
+    auto const Ty_old_active = Ty::active_objects();
+
+    {
+        Tx const x_value(42);
+        ural::any x(x_value);
+
+        Ty const y_value("42");
+        ural::any y(y_value);
+
+        x.swap(y);
+
+        BOOST_CHECK(!x.empty());
+        BOOST_CHECK(x.get_pointer<Ty>() != nullptr);
+        BOOST_CHECK_EQUAL(*x.get_pointer<Ty>(), y_value);
+
+        BOOST_CHECK(!y.empty());
+        BOOST_CHECK(y.get_pointer<Tx>() != nullptr);
+        BOOST_CHECK_EQUAL(*y.get_pointer<Tx>(), x_value);
+    }
+
+    BOOST_CHECK_EQUAL(Tx::active_objects(), Tx_old_active);
+    BOOST_CHECK_EQUAL(Ty::active_objects(), Ty_old_active);
+}
+
 BOOST_AUTO_TEST_CASE(any_get_const_pointer_test)
 {
     typedef std::string Type;
