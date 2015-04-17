@@ -30,15 +30,80 @@
 
 namespace ural
 {
+    class any_base
+    {
+    public:
+        // Создание, копирование, уничтожение
+        any_base()
+         : ptr_(nullptr)
+         , destroy_(&any_base::destructor_empty)
+        {}
+
+        template <class Copy>
+        any_base(any_base const & x, Copy copy_fn)
+         : ptr_(copy_fn(x.ptr_))
+         , destroy_(x.destroy_)
+        {}
+
+        template <class T>
+        explicit any_base(T && x)
+         : ptr_(new typename std::decay<T>::type(std::forward<T>(x)))
+         , destroy_(&any_base::destructor_impl<typename std::decay<T>::type>)
+        {}
+
+        any_base(any_base && x)
+         : ptr_(std::move(x.ptr_))
+         , destroy_(std::move(x.destroy_))
+        {
+            x.ptr_ = nullptr;
+            x.destroy_ = &any_base::destructor_empty;
+        }
+
+        any_base(any_base &) = delete;
+        any_base(any_base const &) = delete;
+
+        ~any_base()
+        {
+            this->destroy_(ptr_);
+        }
+
+        void swap(any_base & x)
+        {
+            using std::swap;
+            swap(this->ptr_, x.ptr_);
+            swap(this->destroy_, x.destroy_);
+        }
+
+        // Доступ к данным
+        void * data() const
+        {
+            return ptr_;
+        }
+
+    private:
+        static void destructor_empty(void *)
+        {}
+
+        template <class T>
+        static void destructor_impl(void * ptr)
+        {
+            delete static_cast<T*>(ptr);
+        }
+
+    private:
+        void * ptr_;
+        ural::function_ptr_wrapper<void(void*)> destroy_;
+    };
+
     /** @brief Контейнер, который может хратить не более одного значения любого
     типа.
-    @todo Операции перемещения и swap (метод и свободная функция)
-    @todo Операторы == и <
     @todo Операции копирования
+    @todo Реализовать typeid и копирование за счёт концепций
+    @todo Операторы == и <
     @todo Поддержка распределителей памяти
     @todo Конструктор с размещением any(emplace_ctor<T>{}, args...)?
     @todo Ещё какая-либо функциональность контейнеров
-    @todo Оптимальная структура виртуальных таблиц: что лучше съэкономить --
+    @todo Оптимальная структура виртуальных таблиц: что лучше сэкономить --
     память или один уровень косвенности? Можно ли реализовать так, чтобы можно
     было настраивать поддерживаемые операции, но при этом размер объекта не
     зависел от количества поддерживаемых значений?
@@ -53,6 +118,11 @@ namespace ural
     friend bool operator==(any const & x, any const & y);
     friend bool operator<(any const & x, any const & y);
 
+    friend void swap(any & x, any & y)
+    {
+        return x.swap(y);
+    }
+
     public:
         // Создание, копирование, уничтожение
         /** @brief Конструктор без параметров
@@ -60,9 +130,9 @@ namespace ural
         @post <tt> this->empty() == true </tt>
         */
         any()
-         : type_(&typeid(void))
-         , ptr_(nullptr)
-         , destroy_(&any::destructor_empty)
+         : data_()
+         , type_(&typeid(void))
+         , copy_(&any::copy_empty)
         {}
 
         /** @brief Конструктор
@@ -72,12 +142,22 @@ namespace ural
         */
         template <class T>
         explicit any(T && x)
-         : type_(&typeid(x))
-         , ptr_(new typename std::decay<T>::type(std::forward<T>(x)))
-         , destroy_(&any::destructor_impl<typename std::decay<T>::type>)
+         : data_(std::forward<T>(x))
+         , type_(&typeid(x))
+         , copy_(&any::copy_impl<typename std::decay<T>::type>)
         {}
 
-        any(any const & x);
+        //@{
+        any(any & x)
+         : any(static_cast<any const &>(x))
+        {}
+
+        any(any const & x)
+         : data_(x.data_, x.copy_)
+         , type_(x.type_)
+         , copy_(x.copy_)
+        {}
+        //@}
 
         /** @brief Конструктор перемещения
         @param x объект, содержимое которого будет перемещенно в данный объект
@@ -85,33 +165,51 @@ namespace ural
         @post <tt> x.empty() == true </tt>
         */
         any(any && x)
-         : type_(std::move(x.type_))
-         , ptr_(std::move(x.ptr_))
-         , destroy_(std::move(x.destroy_))
+         : data_(std::move(x.data_))
+         , type_(std::move(x.type_))
+         , copy_(std::move(x.copy_))
         {
             x.type_= &typeid(void);
-            x.ptr_ = nullptr;
-            x.destroy_ = &any::destructor_empty;
+            x.copy_ = &any::copy_empty;
+        }
+
+        //@{
+        any & operator=(any & x)
+        {
+            return *this = ural::as_const(x);
         }
 
         any & operator=(any const & x);
-        any & operator=(any && x);
+        //@}
+
+        /** @brief Оператор присваивания с перемещением
+        @param x присваиваемый объект
+        @return <tt> *this </tt>
+        @post <tt> *this </tt> равен значению, которое @c x имел до вызова
+        оператора.
+        */
+        any & operator=(any && x)
+        {
+            this->swap(x);
+            return *this;
+        }
 
         template <class T>
         any & operator=(T && x);
 
         /// @brief Деструктор
-        ~any()
-        {
-            this->destroy_(ptr_);
-        }
+        ~any() = default;
 
+        /** @brief Обмен содержимого данного объекта и @c x
+        @param x объект, с которым производится обмен
+        @post Содержимое <tt> *this </tt> и @c x меняется местами
+        */
         void swap(any & x)
         {
             using std::swap;
+            data_.swap(x.data_);
             swap(this->type_, x.type_);
-            swap(this->ptr_, x.ptr_);
-            swap(this->destroy_, x.destroy_);
+            swap(this->copy_, x.copy_);
         }
 
         // Доступ к данным
@@ -134,7 +232,7 @@ namespace ural
 
             if(this->type() == typeid(DT))
             {
-                return static_cast<T const *>(ptr_);
+                return static_cast<T const *>(data_.data());
             }
             else
             {
@@ -150,8 +248,7 @@ namespace ural
         */
         bool empty() const
         {
-            assert(type_ != nullptr);
-            return *type_ == typeid(void);
+            return data_.data() == nullptr;
         }
 
         /** @brief Доступ к информации о типе хранимого объекта
@@ -167,19 +264,21 @@ namespace ural
         }
 
     private:
-        static void destructor_empty(void *)
-        {}
+        static void * copy_empty(void *)
+        {
+            return nullptr;
+        }
 
         template <class T>
-        static void destructor_impl(void * ptr)
+        static void * copy_impl(void * ptr)
         {
-            delete static_cast<T*>(ptr);
+            return new T(*static_cast<T*>(ptr));
         }
 
     private:
+        any_base data_;
         std::type_info const * type_;
-        void * ptr_;
-        ural::function_ptr_wrapper<void(void*)> destroy_;
+        ural::function_ptr_wrapper<void*(void*)> copy_;
     };
 }
 // namespace ural
