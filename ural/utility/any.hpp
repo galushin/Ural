@@ -179,7 +179,11 @@ namespace ural
             return *this = ural::as_const(x);
         }
 
-        any & operator=(any const & x);
+        any & operator=(any const & x)
+        {
+            any(x).swap(*this);
+            return *this;
+        }
         //@}
 
         /** @brief Оператор присваивания с перемещением
