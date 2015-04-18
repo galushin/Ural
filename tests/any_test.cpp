@@ -438,6 +438,8 @@ BOOST_AUTO_TEST_CASE(any_get_const_pointer_test)
 
     BOOST_CHECK(a0.get_pointer<Type>() == nullptr);
     BOOST_CHECK(a0.get_pointer<int>() == nullptr);
+    BOOST_CHECK_THROW(a0.get<int>(), ural::bad_any_cast);
+    BOOST_CHECK_THROW(a0.get<Type>(), ural::bad_any_cast);
 
     // Не пустой
     auto const value = Type("42");
@@ -445,9 +447,12 @@ BOOST_AUTO_TEST_CASE(any_get_const_pointer_test)
 
     BOOST_REQUIRE(a1.get_pointer<Type>() != nullptr);
     BOOST_CHECK(a1.get_pointer<int>()  == nullptr);
+    BOOST_CHECK_THROW(a1.get<int>(), ural::bad_any_cast);
 
     BOOST_CHECK_EQUAL(*a1.get_pointer<Type>(), value);
     BOOST_CHECK_EQUAL(*a1.get_pointer<Type const>(), value);
+    BOOST_CHECK_EQUAL(a1.get<Type>(), value);
+    BOOST_CHECK_EQUAL(a1.get<Type const>(), value);
 }
 
 BOOST_AUTO_TEST_CASE(any_get_pointer_test)
@@ -459,6 +464,9 @@ BOOST_AUTO_TEST_CASE(any_get_pointer_test)
 
     BOOST_CHECK(a0.get_pointer<Type>() == nullptr);
     BOOST_CHECK(a0.get_pointer<int>() == nullptr);
+    BOOST_CHECK(a0.get_pointer<Type>() == nullptr);
+    BOOST_CHECK_THROW(a0.get<int>(), ural::bad_any_cast);
+    BOOST_CHECK_THROW(a0.get<Type>(), ural::bad_any_cast);
 
     // Не пустой
     auto const value = Type("42");
@@ -467,9 +475,45 @@ BOOST_AUTO_TEST_CASE(any_get_pointer_test)
     BOOST_CHECK(a1.get_pointer<int>()  == nullptr);
     BOOST_REQUIRE(a1.get_pointer<Type>() != nullptr);
 
+    // через указатель
     auto const new_value = Type("ABC");
     *a1.get_pointer<Type>() = new_value;
 
     BOOST_REQUIRE(a1.get_pointer<Type>() != nullptr);
     BOOST_CHECK_EQUAL(*ural::as_const(a1).get_pointer<Type>(), new_value);
+
+    // через ссылку
+    auto const value_3 = Type("FooBar");
+    a1.get<Type>() = value_3;
+
+    BOOST_CHECK_EQUAL(ural::as_const(a1).get<Type>(), value_3);
+}
+
+BOOST_AUTO_TEST_CASE(any_equal_to_operator_test)
+{
+    typedef int T1;
+    typedef std::string T2;
+
+    auto const v1 = T1(42);
+    auto const v1_1 = T1(13);
+
+    auto const v2 = T2("ABC");
+
+    ural::any a0;
+    ural::any a1(v1);
+    ural::any a1_1(v1_1);
+    ural::any a2(v2);
+
+    BOOST_CHECK(a0 == a0);
+    BOOST_CHECK(a0 != a1);
+    BOOST_CHECK(a0 != a2);
+
+    BOOST_CHECK(a1 != a0);
+    BOOST_CHECK(a1 == a1);
+    BOOST_CHECK(a1 != a1_1);
+    BOOST_CHECK(a1 != a2);
+
+    BOOST_CHECK(a2 != a0);
+    BOOST_CHECK(a2 != a1);
+    BOOST_CHECK(a2 == a2);
 }

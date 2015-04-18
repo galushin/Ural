@@ -30,6 +30,10 @@
 
 namespace ural
 {
+    struct bad_any_cast
+     : public std::bad_cast
+    {};
+
     class any_base
     {
     public:
@@ -97,9 +101,8 @@ namespace ural
 
     /** @brief Контейнер, который может хратить не более одного значения любого
     типа.
-    @todo Операции копирования
     @todo Реализовать typeid и копирование за счёт концепций
-    @todo Операторы == и <
+    @todo Оператор <
     @todo Поддержка распределителей памяти
     @todo Конструктор с размещением any(emplace_ctor<T>{}, args...)?
     @todo Ещё какая-либо функциональность контейнеров
@@ -112,13 +115,38 @@ namespace ural
     value_or, непроверяемое разыменование, optional и expected
     @todo Оптимизация хранения указателей: как на объекты, так и на функциии,
     переменные-члены и функции-члены
+    @todo Использовать "универсальное равенство" (пустые классы всегда равны?)
+    @todo Свободные функции преобразования
     */
     class any
     {
-    friend bool operator==(any const & x, any const & y);
-    friend bool operator<(any const & x, any const & y);
+    /** @brief Оператор "равно"
+    @param x левый операнд
+    @param y правый операнд
+    @return Если @c x и @c y хранят объекты разного типа, то @b false, иначе
+    --- <tt> x.get<T>() == y.get<T> </tt>, где @c T --- тип объектов, хранящихся
+    в @c x и @c y.
+    */
+    friend bool operator==(any const & x, any const & y) noexcept
+    {
+        if(x.type() != y.type())
+        {
+            return false;
+        }
+        else
+        {
+            assert(x.equal_ == y.equal_);
+            return x.equal_(x.data_.data(), y.data_.data());
+        }
+    }
 
-    friend void swap(any & x, any & y)
+    friend bool operator<(any const & x, any const & y) noexcept;
+
+    /** @brief Обмен содержимого данного объекта и @c x
+    @param x, y объект, между которым производится обмен
+    @post Содержимое @c x и @c y меняется местами
+    */
+    friend void swap(any & x, any & y) noexcept
     {
         return x.swap(y);
     }
@@ -129,10 +157,11 @@ namespace ural
         @post <tt> this->type() == typeid(void) </tt>
         @post <tt> this->empty() == true </tt>
         */
-        any()
+        any() noexcept
          : data_()
          , type_(&typeid(void))
          , copy_(&any::copy_empty)
+         , equal_(&any::equal_empty)
         {}
 
         /** @brief Конструктор
@@ -145,9 +174,14 @@ namespace ural
          : data_(std::forward<T>(x))
          , type_(&typeid(x))
          , copy_(&any::copy_impl<typename std::decay<T>::type>)
+         , equal_(&any::equal_impl<typename std::decay<T>::type>)
         {}
 
         //@{
+        /** @brief Конструктор копий
+        @param x копируемый объект
+        @post <tt> *this </tt> становится равным @c y
+        */
         any(any & x)
          : any(static_cast<any const &>(x))
         {}
@@ -156,6 +190,7 @@ namespace ural
          : data_(x.data_, x.copy_)
          , type_(x.type_)
          , copy_(x.copy_)
+         , equal_(x.equal_)
         {}
         //@}
 
@@ -164,13 +199,15 @@ namespace ural
         @post <tt> *this </tt> будет равен @c x до вызова конструктора
         @post <tt> x.empty() == true </tt>
         */
-        any(any && x)
+        any(any && x) noexcept
          : data_(std::move(x.data_))
          , type_(std::move(x.type_))
          , copy_(std::move(x.copy_))
+         , equal_(std::move(x.equal_))
         {
             x.type_= &typeid(void);
             x.copy_ = &any::copy_empty;
+            x.equal_ = &any::equal_empty;
         }
 
         //@{
@@ -192,7 +229,7 @@ namespace ural
         @post <tt> *this </tt> равен значению, которое @c x имел до вызова
         оператора.
         */
-        any & operator=(any && x)
+        any & operator=(any && x) noexcept
         {
             this->swap(x);
             return *this;
@@ -208,12 +245,13 @@ namespace ural
         @param x объект, с которым производится обмен
         @post Содержимое <tt> *this </tt> и @c x меняется местами
         */
-        void swap(any & x)
+        void swap(any & x) noexcept
         {
             using std::swap;
             data_.swap(x.data_);
             swap(this->type_, x.type_);
             swap(this->copy_, x.copy_);
+            swap(this->equal_, x.equal_);
         }
 
         // Доступ к данным
@@ -224,13 +262,13 @@ namespace ural
         на данный объект, иначе --- @b nullptr
         */
         template <class T>
-        T * get_pointer()
+        T * get_pointer() noexcept
         {
             return const_cast<T*>(ural::as_const(*this).get_pointer<T>());
         }
 
         template <class T>
-        T const * get_pointer() const
+        T const * get_pointer() const noexcept
         {
             typedef typename std::decay<T>::type DT;
 
@@ -245,12 +283,34 @@ namespace ural
         }
         //@}
 
+        //@{
+        template <class T>
+        T & get()
+        {
+            return const_cast<T&>(ural::as_const(*this).get<T>());
+        }
+
+        template <class T>
+        T const & get() const
+        {
+            if(auto * p = this->get_pointer<T>())
+            {
+                return *p;
+            }
+            else
+            {
+                // @todo Улучшить диагностику
+                throw ural::bad_any_cast{};
+            }
+        }
+        //@}
+
         // Свойства
         /** @brief Проверка того, что данный объект не хранит значение
         @return @b true, если данный объект не хранит значение, иначе --
         @b false
         */
-        bool empty() const
+        bool empty() const noexcept
         {
             return data_.data() == nullptr;
         }
@@ -260,7 +320,7 @@ namespace ural
         <tt> typeid(void) </tt>, иначе -- информацию о типе, хранящемся в данном
         объекте.
         */
-        std::type_info const & type() const
+        std::type_info const & type() const noexcept
         {
             assert(type_ != nullptr);
 
@@ -276,13 +336,29 @@ namespace ural
         template <class T>
         static void * copy_impl(void * ptr)
         {
+            assert(ptr != nullptr);
             return new T(*static_cast<T*>(ptr));
+        }
+
+        static bool equal_empty(void *, void *)
+        {
+            return true;
+        }
+
+        template <class T>
+        static bool equal_impl(void * px, void * py)
+        {
+            assert(px != nullptr);
+            assert(py != nullptr);
+
+            return *static_cast<T*>(px) == *static_cast<T*>(py);
         }
 
     private:
         any_base data_;
         std::type_info const * type_;
         ural::function_ptr_wrapper<void*(void*)> copy_;
+        ural::function_ptr_wrapper<bool(void*, void*)> equal_;
     };
 }
 // namespace ural
