@@ -22,6 +22,7 @@
  Реализация шаблона проектирования "Хранитель"
 */
 
+#include <ural/operators.hpp>
 #include <ural/functional/make_callable.hpp>
 #include <ural/utility.hpp>
 
@@ -30,6 +31,7 @@
 
 namespace ural
 {
+    /// @brief Класс исключения "Преобразование @c any в неправильный тип"
     struct bad_any_cast
      : public std::bad_cast
     {};
@@ -85,9 +87,15 @@ namespace ural
         }
 
     private:
+        /// @brief Реализация деструктора для пустого @c any
         static void destructor_empty(void *)
         {}
 
+        /** @brief Реализация деструктора для непустого @c any
+        @tparam T тип хранимого объекта
+        @param ptr указатель на хранимый объект
+        @post освобождает память, выделенную для хранения объекта
+        */
         template <class T>
         static void destructor_impl(void * ptr)
         {
@@ -101,6 +109,7 @@ namespace ural
 
     /** @brief Контейнер, который может хратить не более одного значения любого
     типа.
+    @todo Свободные функции преобразования
     @todo Реализовать typeid и копирование за счёт концепций
     @todo Оператор <
     @todo Поддержка распределителей памяти
@@ -110,13 +119,11 @@ namespace ural
     память или один уровень косвенности? Можно ли реализовать так, чтобы можно
     было настраивать поддерживаемые операции, но при этом размер объекта не
     зависел от количества поддерживаемых значений?
-    @todo Разные методы доступа к данным: проверяемое разыменование (get),
-    указатель на базовый класс - через механизм обработи исключений,
-    value_or, непроверяемое разыменование, optional и expected
+    @todo Разные методы доступа к данным: указатель на базовый класс - через
+    механизм обработи исключений, value_or, непроверяемое разыменование,
+    optional и expected
     @todo Оптимизация хранения указателей: как на объекты, так и на функциии,
     переменные-члены и функции-члены
-    @todo Использовать "универсальное равенство" (пустые классы всегда равны?)
-    @todo Свободные функции преобразования
     */
     class any
     {
@@ -140,6 +147,13 @@ namespace ural
         }
     }
 
+    /** @brief Оператор "меньше"
+    @param x,y операнды
+    @return Если @c x и @c y хранят объекты разного типа, то возвращает
+    <tt> x.type().before(y.type()) </tt>, иначе
+    <tt> x.get<T>() < y.get<T>() </tt>, где @c T --- тип объектов, хранящихся
+    в @c x и @c y.
+    */
     friend bool operator<(any const & x, any const & y) noexcept;
 
     /** @brief Обмен содержимого данного объекта и @c x
@@ -211,6 +225,11 @@ namespace ural
         }
 
         //@{
+        /** @brief Оператор копирующего присваивания
+        @param x присваемый объект
+        @return <tt> *this </tt>
+        @post <tt> *this == x </tt>
+        */
         any & operator=(any & x)
         {
             return *this = ural::as_const(x);
@@ -284,6 +303,13 @@ namespace ural
         //@}
 
         //@{
+        /** @brief Доступ через ссылку
+        @tparam T тип объекта, к которому производится попытка доступа
+        @return Ссылка на хранимый объект, если @c T совпадает с его типом,
+        при этом игнорируются квалификаторы @c const и @c volatile.
+        @throw bad_any_cast, если @c T не совпадает с типом хранимого объекта,
+        при этом игнорируются квалификаторы @c const и @c volatile.
+        */
         template <class T>
         T & get()
         {
@@ -350,6 +376,8 @@ namespace ural
         {
             assert(px != nullptr);
             assert(py != nullptr);
+
+            using ural::operator==;
 
             return *static_cast<T*>(px) == *static_cast<T*>(py);
         }

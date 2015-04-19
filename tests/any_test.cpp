@@ -517,3 +517,20 @@ BOOST_AUTO_TEST_CASE(any_equal_to_operator_test)
     BOOST_CHECK(a2 != a1);
     BOOST_CHECK(a2 == a2);
 }
+
+BOOST_AUTO_TEST_CASE(any_equal_for_empty_class)
+{
+    typedef std::less<int> T1;
+    typedef std::greater<int> T2;
+
+    static_assert(std::is_empty<T1>::value, "");
+    static_assert(std::is_empty<T2>::value, "");
+
+    ural::any const a1(T1{});
+    ural::any const a1_1(T1{});
+
+    ural::any const a2(T2{});
+
+    BOOST_CHECK(a1 == a1_1);
+    BOOST_CHECK(a1 != a2);
+}
