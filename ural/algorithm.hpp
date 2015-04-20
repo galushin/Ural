@@ -1499,6 +1499,11 @@ namespace ural
             s1.shrink_front();
             s2.shrink_front();
 
+            if(ural::size(s1) != ural::size(s2))
+            {
+                return false;
+            }
+
             for(; !!s1; ++ s1)
             {
                 // Пропускаем элементы, которые уже встречались

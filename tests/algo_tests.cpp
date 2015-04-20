@@ -271,6 +271,14 @@ BOOST_AUTO_TEST_CASE(is_permutation_test)
     BOOST_CHECK(!ural::is_permutation(v3, v2));
 }
 
+BOOST_AUTO_TEST_CASE(is_permutation_regression_47)
+{
+    std::string const s1 = "YEAR";
+    std::string const s2 = "NEARLY";
+
+    BOOST_CHECK(!ural::is_permutation(s1, s2));
+}
+
 // 25.2.13
 BOOST_AUTO_TEST_CASE(search_test)
 {
