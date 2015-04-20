@@ -441,6 +441,20 @@ BOOST_AUTO_TEST_CASE(any_get_const_pointer_test)
     BOOST_CHECK_THROW(a0.get<int>(), ural::bad_any_cast);
     BOOST_CHECK_THROW(a0.get<Type>(), ural::bad_any_cast);
 
+    try
+    {
+        a0.get<Type>();
+    }
+    catch(ural::bad_any_cast & e)
+    {
+        BOOST_CHECK(e.source_type_info() == typeid(void));
+        BOOST_CHECK(e.target_type_info() == typeid(Type));
+    }
+    catch(...)
+    {
+        BOOST_CHECK(false);
+    }
+
     // Не пустой
     auto const value = Type("42");
     ural::any const a1(value);
@@ -448,6 +462,20 @@ BOOST_AUTO_TEST_CASE(any_get_const_pointer_test)
     BOOST_REQUIRE(a1.get_pointer<Type>() != nullptr);
     BOOST_CHECK(a1.get_pointer<int>()  == nullptr);
     BOOST_CHECK_THROW(a1.get<int>(), ural::bad_any_cast);
+
+    try
+    {
+        a0.get<int>();
+    }
+    catch(ural::bad_any_cast & e)
+    {
+        BOOST_CHECK(e.source_type_info() == typeid(void));
+        BOOST_CHECK(e.target_type_info() == typeid(int));
+    }
+    catch(...)
+    {
+        BOOST_CHECK(false);
+    }
 
     BOOST_CHECK_EQUAL(*a1.get_pointer<Type>(), value);
     BOOST_CHECK_EQUAL(*a1.get_pointer<Type const>(), value);

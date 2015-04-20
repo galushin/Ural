@@ -34,7 +34,40 @@ namespace ural
     /// @brief Класс исключения "Преобразование @c any в неправильный тип"
     struct bad_any_cast
      : public std::bad_cast
-    {};
+    {
+    public:
+        /** @brief Конструктор
+        @param from информация о типе объекта
+        @param to информация о типе, в который запрашивалось преобразование
+        @post <tt> this->source_type_info() == from </tt>
+        @post <tt> this->target_type_info() == to </tt>
+        */
+        bad_any_cast(std::type_info const & from, std::type_info const & to)
+         : from_(&from)
+         , to_(&to)
+        {}
+
+        /** @brief Информация о типе объекта
+        @return Информация о типе объекта, для которого запрашивается
+        преобразование
+        */
+        std::type_info const & source_type_info() const
+        {
+            return *(this->from_);
+        }
+
+        /** @brief Информация о типе, в который запрашивалось преобразование
+        @return Информация о типе, в который запрашивалось преобразование
+        */
+        std::type_info const & target_type_info() const
+        {
+            return *(this->to_);
+        }
+
+    private:
+        std::type_info const * from_;
+        std::type_info const * to_;
+    };
 
     class any_base
     {
@@ -325,8 +358,7 @@ namespace ural
             }
             else
             {
-                // @todo Улучшить диагностику
-                throw ural::bad_any_cast{};
+                throw ural::bad_any_cast(this->type(), typeid(T));
             }
         }
         //@}
