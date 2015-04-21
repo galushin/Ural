@@ -196,7 +196,6 @@ BOOST_AUTO_TEST_CASE(meta_compose_test)
     BOOST_CHECK(true);
 }
 
-// @todo identity является нейтральным элементом для compose
 BOOST_AUTO_TEST_CASE(meta_compose_respect_identity)
 {
     typedef ural::meta::template_to_applied<std::add_const> F0;
@@ -209,5 +208,28 @@ BOOST_AUTO_TEST_CASE(meta_compose_respect_identity)
     static_assert(std::is_same<F0, Right>::value, "");
     static_assert(std::is_same<F0, Left>::value, "");
     static_assert(std::is_same<Id, Both>::value, "");
+    BOOST_CHECK(true);
+}
+
+BOOST_AUTO_TEST_CASE(meta_pop_front_or_not_empty_test)
+{
+    typedef void Default;
+
+    typedef ::ural::typelist<int, long, long long> Source;
+    typedef ::ural::typelist<long, long long> Expected;
+    typedef typename ural::meta::pop_front_or<Source, Default>::type Result;
+
+    static_assert(std::is_same<Result, Expected>::value, "");
+    BOOST_CHECK(true);
+}
+
+BOOST_AUTO_TEST_CASE(meta_pop_front_or_empty_test)
+{
+    typedef void Default;
+
+    typedef ::ural::typelist<> Source;
+    typedef typename ural::meta::pop_front_or<Source, Default>::type Result;
+
+    static_assert(std::is_same<Result, Default>::value, "");
     BOOST_CHECK(true);
 }

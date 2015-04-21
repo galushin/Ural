@@ -350,8 +350,8 @@ namespace meta
     struct flatten
     {
     private:
-        typedef typename front<Container>::type Head;
-        typedef typename pop_front<Container>::type Tail;
+        typedef typename front_or<Container, Container>::type Head;
+        typedef typename pop_front_or<Container, null_type>::type Tail;
 
         typedef std::is_same<Container, Head> is_atom;
 
@@ -467,13 +467,8 @@ namespace meta
             typedef typename Types::head Head;
             typedef typename Types::tail Tail;
 
-            struct helper
-            {
-                template <class List>
-                struct apply
-                 : push_front<List, Head>
-                {};
-            };
+            using helper = meta::template_bind<meta::push_front, meta::arg<0>,
+                                               meta::constant<Head>>;
 
             typedef typename meta::transform<Tuples, helper>::type List1;
 

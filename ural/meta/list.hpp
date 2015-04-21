@@ -48,18 +48,33 @@ namespace meta
      : declare_type<Container<Value, Args...>>
     {};
 
-    /** @brief Удаление первого элемента из контейнера типов. Если @c Container
-    не содержит элементов или не является контейнером типов, то результатом
-    будет @c null_type
+    /** Удаление первого элемента из контейнера типов. Если @c Container
+    не содержит элементов или не является контейнером типов, то возникнте ошибка
+    компиляции. Если вместо этого нужно вернуть другой тип, то следует
+    воспользоваться шаблоном @c pop_front_or.
+    @brief Удаление первого элемента из контейнера типов.
     @tparam Container контейнер типов
-    @todo возможность задавать значение, возвращаемое, когда убирать нечего
     */
     template <class Container>
     struct pop_front
+     : declare_type<typename Container::tail>
+    {};
+
+    /** Удаление первого элемента из контейнера типов. Если @c Container
+    не содержит элементов или не является контейнером типов, то результатом
+    будет @c Default
+    @brief Удаление первого элемента из контейнера типов.
+    @tparam Container контейнер типов
+    @tparam Default результат для случая, если @c Container пуст или не является
+    контейнером типов
+    */
+    template <class Container, class Default>
+    struct pop_front_or
     {
     private:
         template <class U>
-        static null_type pop_front_helper(...);
+        static Default
+        pop_front_helper(...);
 
         template <class U>
         static typename U::tail
@@ -69,17 +84,24 @@ namespace meta
         typedef decltype(pop_front_helper<Container>(nullptr)) type;
     };
 
-    /** @brief Первый элемент контейнера типов. Если @c Container не является
-    непустым контейнером типов, то результатом будет сам @c Container
+    /** @brief Первый элемент контейнера типов.
     @tparam Container контейнер типов
-    @todo возможность задавать значение, возвращаемое, когда убирать нечего
     */
     template <class Container>
     struct front
+     : declare_type<typename Container::head>
+    {};
+
+    /** @brief Первый элемент контейнера типов. Если @c Container не является
+    непустым контейнером типов, то результатом будет @c Default
+    @tparam Container контейнер типов
+    */
+    template <class Container, class Default = Container>
+    struct front_or
     {
     private:
         template <class U>
-        static U front_helper(...);
+        static Default front_helper(...);
 
         template <class U>
         static typename U::head

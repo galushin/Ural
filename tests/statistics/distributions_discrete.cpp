@@ -15,7 +15,6 @@
 */
 
 // "Математическое" дискретное распределение
-// @todo min и max
 #include <ural/distributions/discrete.hpp>
 #include <ural/math/rational.hpp>
 
