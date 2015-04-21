@@ -1019,6 +1019,9 @@ namespace ural
         template <class InputSequence>
         iterator insert(const_iterator position, InputSequence && seq)
         {
+            policy_type::assert_can_insert_before(this->cbegin(), this->cend(),
+                                                  position);
+
             using ural::sequence;
             auto s = sequence(seq);
 
@@ -1037,8 +1040,6 @@ namespace ural
         */
         iterator insert(const_iterator position, size_type const n, value_type const & value)
         {
-            // @todo Проверки
-
             auto gen = ural::make_value_functor(std::cref(value));
             auto seq = ural::make_generator_sequence(std::move(gen)) | ural::taken(n);
 

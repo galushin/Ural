@@ -32,8 +32,13 @@
 
 namespace ural
 {
-    template <std::intmax_t radix>
-    class digit_arithmetics_result;
+    /** @brief Тип для представления результата операции @c div: одновременного
+    вычисления частного и остатка
+    @tparam T тип операнда
+    @todo для нефундаментальных типов
+    */
+    template <class T>
+    using div_type = decltype(std::div(std::declval<T>(), std::declval<T>()));
 
     /** @brief Класс для представления цифр числа произвольной точности
     @tparam radix основание системы счисления
@@ -242,7 +247,7 @@ namespace ural
         }
 
     private:
-        typedef decltype(std::div(radix, radix)) div_type;
+        typedef div_type<decltype(radix)> div_type;
 
         div_type state_;
     };
@@ -738,6 +743,13 @@ namespace ural
         return integer<radix>{a} < x;
     }
 
+    //@{
+    /** @brief Оператор "равно" для целого числа встроенного типа и числа
+    произвольной точности
+    @param x число произвольной точности
+    @param a  целое число встроенного типа
+    @return <tt> x == integer<radix>(a) </tt>
+    */
     template <class T, std::intmax_t radix>
     typename std::enable_if<std::is_integral<T>::value, bool>::type
     operator==(integer<radix> const & x, T const & a)
@@ -754,8 +766,15 @@ namespace ural
     {
         return x == a;
     }
+    //@}
 
     // Ввод/вывод
+    /** @brief Вывод числа произвольной точности в поток
+    @param os поток вывода
+    @param x число
+    @return <tt> *this </tt>
+    @todo Привести в соответствие с требованиями функции вывода
+    */
     template <class Char, class Traits, std::intmax_t radix>
     std::basic_ostream<Char, Traits> &
     operator<<(std::basic_ostream<Char, Traits> & os, integer<radix> const & x)

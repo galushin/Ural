@@ -356,9 +356,13 @@ namespace ural
         return callable_tracer<F, Tag, Threading>(std::move(f));
     }
 
-    /** @todo Синхронизация?
+    /** @brief Трассирующий распределитель памяти
+    @tparam T тип элементов
+    @tparam Alloc тип базового распределителя памяти
+    @tparam Threading стретегия многопоточности
     */
-    template <class T, class Alloc = std::allocator<T>>
+    template <class T, class Alloc = std::allocator<T>,
+              class Threading = ural::single_thread_policy>
     class tracing_allocator
     {
         friend bool operator==(tracing_allocator const & x,
@@ -368,6 +372,8 @@ namespace ural
         }
 
         typedef Alloc Base;
+
+        typedef typename Threading::atomic_counter_type count_type;
 
     public:
         typedef typename Base::value_type value_type;
@@ -427,22 +433,22 @@ namespace ural
         }
 
         // Трассировка
-        static size_type allocations_count()
+        static count_type allocations_count()
         {
             return tracing_allocator::get_allocations();
         }
 
-        static size_type deallocations_count()
+        static count_type deallocations_count()
         {
             return tracing_allocator::get_deallocations();
         }
 
-        static size_type constructions_count()
+        static count_type constructions_count()
         {
             return tracing_allocator::get_constructions();
         }
 
-        static size_type destructions_count()
+        static count_type destructions_count()
         {
             return tracing_allocator::get_destructions();
         }
@@ -456,27 +462,27 @@ namespace ural
         }
 
     private:
-        static size_type & get_allocations()
+        static count_type & get_allocations()
         {
-            static size_type instance = 0;
+            static count_type instance = 0;
             return instance;
         }
 
-        static size_type & get_deallocations()
+        static count_type & get_deallocations()
         {
-            static size_type instance = 0;
+            static count_type instance = 0;
             return instance;
         }
 
-        static size_type & get_constructions()
+        static count_type & get_constructions()
         {
-            static size_type instance = 0;
+            static count_type instance = 0;
             return instance;
         }
 
-        static size_type & get_destructions()
+        static count_type & get_destructions()
         {
-            static size_type instance = 0;
+            static count_type instance = 0;
             return instance;
         }
 

@@ -57,8 +57,13 @@ namespace ural
     namespace details
     {
         template <class Iterator>
-        bool can_erase(Iterator first, Iterator last, Iterator q)
+        bool is_reachable(Iterator first, Iterator last, Iterator q)
         {
+            if(q == last)
+            {
+                return true;
+            }
+
             for(; first != last; ++ first)
             {
                 if(first == q)
@@ -68,6 +73,12 @@ namespace ural
             }
 
             return false;
+        }
+
+        template <class Iterator>
+        bool can_erase(Iterator first, Iterator last, Iterator q)
+        {
+            return q != last && is_reachable(first, last, q);
         }
 
         template <class Iterator>
@@ -162,7 +173,7 @@ namespace ural
         {
             if(!details::can_erase(first, last, q))
             {
-                throw std::logic_error("Incorect position to erase");
+                throw std::logic_error("Incorrect position to erase");
             }
         }
 
@@ -172,7 +183,18 @@ namespace ural
         {
             if(!details::can_erase(first, last, q1, q2))
             {
-                throw std::logic_error("Incorect range to erase");
+                throw std::logic_error("Incorrect range to erase");
+            }
+        }
+
+        template <class ConstIterator>
+        static void
+        assert_can_insert_before(ConstIterator first, ConstIterator last,
+                                 ConstIterator q)
+        {
+            if(!details::is_reachable(first, last, q))
+            {
+                throw std::logic_error("Unreachable poistion");
             }
         }
     };
@@ -221,6 +243,14 @@ namespace ural
         {
             assert(details::can_erase(first, last, q1, q2));
         }
+
+        template <class ConstIterator>
+        static void
+        assert_can_insert_before(ConstIterator first, ConstIterator last,
+                                 ConstIterator q)
+        {
+            assert(details::is_reachable(first, last, q));
+        }
     };
 
     /** @brief Стратегия проверок контейнеров и последовательностей, не
@@ -255,6 +285,11 @@ namespace ural
         template <class ConstIterator>
         static void assert_can_erase(ConstIterator first, ConstIterator last,
                                      ConstIterator q1, ConstIterator q2);
+
+        template <class ConstIterator>
+        static void
+        assert_can_insert_before(ConstIterator first, ConstIterator last,
+                                 ConstIterator q);
     };
 }
 // namespace ural
