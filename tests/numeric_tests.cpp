@@ -852,9 +852,7 @@ BOOST_AUTO_TEST_CASE(continued_fraction_sqrt_2_convergents)
     typedef int Integer;
     typedef ural::rational<Integer> Rational;
 
-    ural::convergent<Integer> as;
-
-    as.update(1);
+    ural::convergent<Integer> as(1);
     BOOST_CHECK_EQUAL(as.value(), Rational{1});
 
     as.update(2);

@@ -27,34 +27,57 @@
 
 namespace ural
 {
+    /** @brief Класс для вычисления подходящего значения непрерывной дроби
+    @tparam IntType целочисленный типы
+
+    Класс для вычисления подходящего значения непрерывной дроби. Конструктор
+    без аргумента не предоставляется, чтобы значение всегда было определено.
+    */
     template <class IntType>
     class convergent
     {
     public:
+        /// @brief Тип результата
         typedef ural::rational<IntType> result_type;
 
-        convergent()
-         : h_1{1}
-         , k_1{0}
-         , h_2{0}
-         , k_2{1}
+        /** @brief Конструктор
+        @param a целая часть непрерывной дроби
+        @post <tt> this->value() == a/1 </tt>
+
+        Было решено отказаться от использования комбинации "конструктор без
+        аргументов + update(a)", так как аргумент @c a в конструкторе может быть
+        отрицательным числом, а у функции @c update --- натуральным
+        */
+        convergent(IntType const & a)
+         : h_1(a)
+         , k_1(1)
+         , h_2(1)
+         , k_2(0)
         {}
 
+        /** @brief Текущее значение подходящей дроби
+        @return Обыкновенная дробь, являющаяся подходящей дробью
+        */
         result_type value() const
         {
             assert(k_1 != 0);
             return result_type{h_1, k_1};
         }
 
+        /** @brief Уточнение значения дроби
+        @param a новое число
+        @pre <tt> a > 0 </tt>
+        */
         void update(IntType const & a)
         {
-            IntType h = a * h_1 + h_2;
-            IntType k = a * k_1 + k_2;
+            assert(a > 0);
 
-            h_2 = std::move(h_1);
-            k_2 = std::move(k_1);
-            h_1 = std::move(h);
-            k_1 = std::move(k);
+            h_2 += a * h_1;
+            k_2 += a * k_1;
+
+            using std::swap;
+            swap(h_2, h_1);
+            swap(k_2, k_1);
         }
 
     private:
@@ -64,30 +87,47 @@ namespace ural
         IntType k_2;
     };
 
+    /**
+    @todo Превратить в бесконечную последовательность. Конечную
+    последовательность, покрывающую один период, реализовать как адаптер
+    @tparam IntType целочисленный тип
+    */
     template <class IntType>
     class sqrt_as_continued_fraction_sequence
      : public ural::sequence_base<sqrt_as_continued_fraction_sequence<IntType>>
     {
     public:
         // Типы
+        /// @brief Тип значения
         typedef IntType value_type;
 
+        /// @brief Тип ссылки
         typedef value_type const & reference;
+
+        /// @brief Тип указателя
         typedef value_type const * pointer;
 
-        // @todo усилить категорию обхода?
+        // @todo усилить категорию обхода до прямой
+        /// @brief Категория обхода
         typedef single_pass_traversal_tag traversal_tag;
 
+        /// @brief Тип расстояния
         typedef std::intmax_t distance_type;
 
         // Конструкторы
+        /** @brief Конструктор
+        @param value число, из которого извлекается корень
+        @post <tt> this->front() == IntType(sqrt(value)) </tt>
+        */
         explicit sqrt_as_continued_fraction_sequence(IntType value)
-         : N_(value)
-         , a_0_(sqrt_as_continued_fraction_sequence::sqrt_impl(value))
+         : N_(std::move(value))
+         , a_0_(sqrt_as_continued_fraction_sequence::sqrt_impl(N_))
          , a_new_(a_0_)
          , x_(0)
          , denom_(1)
-        {}
+        {
+            // Порядок инициализации важен: N_ до a_0_
+        }
 
         // Однопроходная последовательность
         bool operator!() const
@@ -133,12 +173,18 @@ namespace ural
     private:
         static IntType sqrt_impl(IntType x)
         {
-            // @todo обойтись без вещественных функций
+            // Учитывая, что альтернатива вещественной функции - цикл, я думаю
+            // что лучше оставить как есть
             using std::sqrt;
             return sqrt(x);
         }
     };
 
+    /** @brief Создание последовательности подходящих дробей для корня из целого
+    числа
+    @param n Число, из которого извлекается корень.
+    @return <tt> sqrt_as_continued_fraction_sequence<IntType>(std::move(n)) </tt>
+    */
     template <class IntType>
     sqrt_as_continued_fraction_sequence<IntType>
     sqrt_as_continued_fraction(IntType n)
