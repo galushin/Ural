@@ -382,6 +382,12 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_initialization_test, T,
     BOOST_CHECK_THROW( ural::rational<T>( 3, 0), ural::bad_rational );
     BOOST_CHECK_THROW( ural::rational<T>(-2, 0), ural::bad_rational );
     BOOST_CHECK_THROW( ural::rational<T>( 0, 0), ural::bad_rational );
+
+    auto constexpr ST = ural::safe_tag{};
+
+    BOOST_CHECK_THROW( ural::rational<T>( 3, 0, ST), ural::bad_rational );
+    BOOST_CHECK_THROW( ural::rational<T>(-2, 0, ST), ural::bad_rational );
+    BOOST_CHECK_THROW( ural::rational<T>( 0, 0, ST), ural::bad_rational );
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( rational_assign_test, T, all_signed_test_types )

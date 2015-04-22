@@ -19,6 +19,8 @@
 
 /** @file ural/math/rational.hpp
  @brief Класс рациональных чисел (в том числе --- с поддержкой @b constexpr).
+ @todo Оптимизация временных значений в арифметических операторах, возможно, за
+ счёт шаблонов выражений.
 */
 
 #include <ural/tuple.hpp>
@@ -47,16 +49,14 @@ namespace ural
         {}
     };
 
-    class rational_policy_no_checks
-    {
-    public:
-    };
-
     /** @brief Класс для представления рациональных чисел
     @tparam IntegerType Целочисленный тип
-    @todo Добавить проверки предусловий в небезопасных конструкциях в отладочном
-    режиме
-    @todo Уровень безопасности --- через стратегии
+    @note Уровень безопасности настраивать через стратегии нецелесообразно, так
+    как небезопасными операциями являются только конструкторы. Сделав безопасные
+    конструкции более удобными в использовании, чем небезопасные, мы сделаем
+    первые более привлекательными, тогда небезопасные конструкции чаще будут
+    использоваться только если в тех случаях, когда это действительно необходимо
+    для оптимизации.
     */
     template <class IntegerType>
     class rational
@@ -146,7 +146,6 @@ namespace ural
             return denom != 0 ? abs_constexpr(std::move(denom)) : throw bad_rational{};
         }
 
-
     public:
         // Типы
         /** @brief Тип-тэг, используемый, чтобы показать, что вызывающая сторона
@@ -171,6 +170,16 @@ namespace ural
          : members_{std::move(num), std::move(denom)}
         {}
 
+        /** @brief Конструктор на основе числителя и знаменателя
+        @param num числитель
+        @param denom знаменатель
+        @throw bad_rational, если <tt> denom == 0 </tt>
+        @post <tt> *this == rational(num, denom) </tt>
+        */
+        constexpr rational(IntegerType num, IntegerType denom, safe_tag)
+         : rational(std::move(num), std::move(denom))
+        {}
+
         /** @brief Конструктор с предусловием
         @param num числитель
         @param denom знаменатель
@@ -187,6 +196,10 @@ namespace ural
                     static_cast<IntegerType>(std::move(denom) / g),
                     unsafe_reduced_tag{}}
         {}
+
+        // @todo покрыть тестами
+        constexpr rational(IntegerType num, IntegerType denom, IntegerType g,
+                           safe_tag);
 
         /** @brief Конструктор без параметров
         @post <tt> this->numerator() == 0 </tt>
@@ -210,11 +223,10 @@ namespace ural
         /** @brief Конструктор на основе числителя и знаменателя
         @param num числитель
         @param denom знаменатель
-        @pre <tt> denom != 0 </tt>
+        @throw bad_rational, если <tt> denom == 0 </tt>
         Пусть <tt> g = gcd(abs(num), abs(denom)) </tt>
         @post <tt> this->numerator() == num / g * sign(denom) </tt>
         @post <tt> this->denominator() == abs(denom) / g </tt>
-        @todo оптимизация
         */
         explicit constexpr rational(IntegerType num, IntegerType denom)
          : rational(prepare_numerator(num, denom),
@@ -446,9 +458,13 @@ namespace ural
         return x.numerator() < T{0} ? -std::move(x) : std::move(x);
     }
 
+
     /** @brief Унарный плюс
     @return <tt> x </tt>
-    @todo Две версии: копирование и перемещение?
+    @note Разделение на две перегрузки: константная ссылка и ссылка на временный
+    объект -- нецелесообразно, так как эта функция всегда должна возвращать
+    копию аргумента. Если такое поведение (копирование) не нужно, то можно
+    просто убрать унарный плюс из выражения
     */
     template <class T>
     constexpr rational<T> operator+(rational<T> x)
@@ -459,7 +475,7 @@ namespace ural
     //@{
     /** @brief Унарный минус
     @return <tt> rational<T>(-x.numerator(), x.denominator()) </tt>
-    @todo Реализовать версию с перемещением?
+    @todo Оптимизация для временных объектов
     */
     template <class T>
     constexpr rational<T> operator-(rational<T> const & x)
@@ -785,7 +801,7 @@ namespace ural
 
         // @todo заменить на геометрическую прогрессию
         // с условием останова в виде предиката
-        // for(auto q : ural::geometric_progression(1.0, 1.0 / Q) | filtered(_1 >= eps))???
+        // for(auto q : ural::geometric_progression(1.0, 1.0 / Q) | take_while(_1 >= eps))???
         for(auto q = RealType{1.0}; q >= eps; q /= Q)
         {
             auto const n = r.numerator() / r.denominator();

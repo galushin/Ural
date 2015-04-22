@@ -123,7 +123,7 @@ namespace tags
     struct mean_tag : declare_depend_on<raw_moment_tag<1>>{};
 
     /// @brief Тип-тэг описательной статистики "Дисперсия"
-    struct variance_tag : declare_depend_on<mean_tag>{};
+    struct variance_tag : declare_depend_on<mean_tag, count_tag>{};
 
     /// @brief Тип-тэг описательной статистики "Среднеквадратическое уклонение"
     struct standard_deviation_tag : declare_depend_on<variance_tag>{};
@@ -486,7 +486,6 @@ namespace tags
     @tparam T тип элементов
     @tparam Base базовая описательная статистика
     @tparam Weight тип веса
-    @todo Можно ли обойтись без этого класса вообще?
     */
     template <class T, class Base, class Weight>
     class descriptive<T, statistics::tags::mean_tag, Base, Weight>
@@ -528,8 +527,7 @@ namespace tags
     @tparam T тип элементов
     @tparam Base базовая описательная статистика
     @tparam Weight тип веса
-    @todo Несмещённая дисперсия? Нужно изучить вопрос: чему равна несмещённая
-    дисперсия для взвешенной выборки
+    @todo Нужен ли отдельный тэг для несмещённой дисперсии
     @todo Тип возвращаемого значения
     */
     template <class T, class Base, class Weight>
@@ -540,6 +538,9 @@ namespace tags
         // Типы
         /// @brief Тип для представления математического ожидания
         typedef typename Base::mean_type mean_type;
+
+        /// @brief Тип дисперсии
+        typedef mean_type variance_type;
 
         // Конструкторы
         /** @brief Конструктор без параметров
@@ -584,8 +585,8 @@ namespace tags
         @param x объект-накопитель описательной статистики
         @return <tt> x.variance() </tt>
         */
-        friend mean_type at_tag(descriptive const & x,
-                                statistics::tags::variance_tag)
+        friend variance_type at_tag(descriptive const & x,
+                                    statistics::tags::variance_tag)
         {
             return x.variance();
         }
@@ -593,13 +594,22 @@ namespace tags
         /** @brief Текущее значение дисперсии
         @return Текущее значение дисперсии
         */
-        mean_type variance() const
+        variance_type variance() const
         {
             return sq_ / this->weight_sum();
         }
 
+        variance_type unbiased_variance() const
+        {
+            auto const n = this->count();
+
+            assert(n > 1);
+
+            return this->variance() * n / (n - 1);
+        }
+
     private:
-        mean_type sq_;
+        variance_type sq_;
     };
 
     /** @brief Описательная статистика "среднеквадратическое отклонение"
@@ -614,6 +624,7 @@ namespace tags
     {
     public:
         // Типы
+        /// @brief Тип математического ожидания
         typedef typename Base::mean_type mean_type;
 
         // Конструкторы
