@@ -219,7 +219,6 @@ namespace distributions
         value_type max() const
         {
             assert(!ps_.empty());
-            // @todo всегда ли это безопасно
             return value_type(this->ps_.size() - 1u);
         }
 

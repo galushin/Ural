@@ -390,6 +390,17 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_initialization_test, T,
     BOOST_CHECK_THROW( ural::rational<T>( 0, 0, ST), ural::bad_rational );
 }
 
+BOOST_AUTO_TEST_CASE(rational_three_arg_ctor_safe_tag)
+{
+    typedef ural::rational<int> Rational;
+
+    auto constexpr r = Rational(6, 8, 2, ural::safe_tag{});
+
+    auto constexpr r0 = Rational(6, 8);
+
+    static_assert(r == r0, "");
+}
+
 BOOST_AUTO_TEST_CASE_TEMPLATE( rational_assign_test, T, all_signed_test_types )
 {
     typedef ural::rational<T> Rational;

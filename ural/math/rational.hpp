@@ -111,7 +111,26 @@ namespace ural
         return is;
     }
 
+    //@{
+    /** @brief Унарный минус
+    @return <tt> rational<T>(-x.numerator(), x.denominator()) </tt>
+    */
+    friend constexpr rational operator-(rational const & x)
+    {
+        return rational(-x.numerator(), x.denominator(), IntegerType(1),
+                        unsafe_tag{});
+    }
+
+    friend constexpr rational operator-(rational && x)
+    {
+        return rational(-std::move(std::get<0>(x.members_)),
+                        std::move(std::get<1>(x.members_)),
+                        IntegerType(1), unsafe_tag{});
+    }
+    //@}
+
     private:
+        // @todo Сделать эти функции constexpr, но не const!
         IntegerType & numerator_ref()
         {
             return members_[ural::_1];
@@ -144,6 +163,15 @@ namespace ural
         prepare_denominator(IntegerType denom)
         {
             return denom != 0 ? abs_constexpr(std::move(denom)) : throw bad_rational{};
+        }
+
+        static constexpr IntegerType
+        check_numerator(IntegerType num, IntegerType const & denom,
+                        IntegerType const & g)
+        {
+            return (num % g == 0 && denom % g == 0
+                    && ural::gcd(num / g, denom / g) == 1)
+                    ? num : throw std::logic_error("Incorrect gcd");
         }
 
     public:
@@ -184,6 +212,8 @@ namespace ural
         @param num числитель
         @param denom знаменатель
         @param g наибольший общий множитель @c num и @c denom
+        @pre <tt> num % g == 0 </tt>
+        @pre <tt> denom % g == 0 </tt>
         @pre <tt> НОД(num / g, denom / g) == 1 </tt>
         @pre <tt> g > 0 </tt>
         @pre <tt> denom > 0 </tt>
@@ -197,9 +227,19 @@ namespace ural
                     unsafe_reduced_tag{}}
         {}
 
-        // @todo покрыть тестами
+        /** @brief Конструктор
+        @param num числитель
+        @param denom знаменатель
+        @param g наибольший общий множитель @c num и @c denom
+        @pre <tt> НОД(num / g, denom / g) == 1 </tt>
+        @pre <tt> num % g == 0 </tt>
+        @pre <tt> denom % g == 0 </tt>
+        */
         constexpr rational(IntegerType num, IntegerType denom, IntegerType g,
-                           safe_tag);
+                           safe_tag)
+         : rational(this->check_numerator(std::move(num), denom, g),
+                    std::move(denom))
+        {}
 
         /** @brief Конструктор без параметров
         @post <tt> this->numerator() == 0 </tt>
@@ -471,18 +511,6 @@ namespace ural
     {
         return x;
     }
-
-    //@{
-    /** @brief Унарный минус
-    @return <tt> rational<T>(-x.numerator(), x.denominator()) </tt>
-    @todo Оптимизация для временных объектов
-    */
-    template <class T>
-    constexpr rational<T> operator-(rational<T> const & x)
-    {
-        return rational<T>(-x.numerator(), x.denominator(), T{1}, unsafe_tag{});
-    }
-    //@}
 
     /** @brief Оператор "равно"
     @param x левый операнд
@@ -835,6 +863,10 @@ namespace ural
     дробь в произвольном основании
     */
 
+    /** @brief Является рациональное число бесконечным
+    @param x рациональное число
+    @return <tt> isfinite(x.numerator()) </tt>
+    */
     template <class Integer>
     constexpr bool isfinite(rational<Integer> const & x)
     {
