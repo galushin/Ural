@@ -1890,7 +1890,46 @@ namespace ural
         }
     };
 
-    // Алгоритмы над контейнерами
+    class remove_if_fn
+    {
+    public:
+        /** @brief Оператор вызова функции
+        @param seq входная последовательность
+        @param pred унарный предикат
+        */
+        template <class ForwardSequence, class Predicate>
+        auto operator()(ForwardSequence && seq, Predicate pred) const
+        -> decltype(sequence_fwd<ForwardSequence>(seq))
+        {
+            return this->impl(sequence_fwd<ForwardSequence>(seq),
+                              ural::make_callable(std::move(pred)));
+        }
+
+    private:
+        template <class ForwardSequence, class Predicate>
+        ForwardSequence
+        impl(ForwardSequence in, Predicate pred) const
+        {
+            typedef typename ForwardSequence::value_type Value;
+
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::WritableSequence<ForwardSequence, Value>));
+            BOOST_CONCEPT_ASSERT((concepts::Callable<Predicate, bool(Value)>));
+
+            auto out = find_if_fn{}(std::move(in), pred);
+
+            if(!out)
+            {
+                return out;
+            }
+
+            auto in_filtered = ural::next(out) | ural::removed_if(std::move(pred));
+
+            return ural::move(in_filtered, out)[ural::_2];
+        }
+    };
+
     class remove_fn
     {
     public:
@@ -1933,81 +1972,12 @@ namespace ural
             BOOST_CONCEPT_ASSERT((concepts::WritableSequence<ForwardSequence, value_type>));
             BOOST_CONCEPT_ASSERT((concepts::Callable<BinaryPredicate, bool(value_type, Value)>));
 
-            // @todo устранить дублирование, выделить алгоритмы
-            auto out = ural::find(in, value, pred);
-
-            if(!out)
-            {
-                return out;
-            }
-
-            in = out;
-            ++ in;
-
-            for(; !!in; ++ in)
-            {
-                if(pred(*in, value) == false)
-                {
-                    *out = std::move(*in);
-                    ++ out;
-                }
-            }
-
-            return out;
+            auto pred_1 = std::bind(std::move(pred), ural::_1, std::cref(value));
+            return remove_if_fn{}(in, std::move(pred_1));
         }
     };
 
-    class remove_if_fn
-    {
-    public:
-        /** @brief Оператор вызова функции
-        @param seq входная последовательность
-        @param pred унарный предикат
-        */
-        template <class ForwardSequence, class Predicate>
-        auto operator()(ForwardSequence && seq, Predicate pred) const
-        -> decltype(sequence_fwd<ForwardSequence>(seq))
-        {
-            return this->impl(sequence_fwd<ForwardSequence>(seq),
-                              ural::make_callable(std::move(pred)));
-        }
-
-    private:
-        template <class ForwardSequence, class Predicate>
-        ForwardSequence
-        impl(ForwardSequence in, Predicate pred) const
-        {
-            typedef typename ForwardSequence::value_type Value;
-
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<ForwardSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::WritableSequence<ForwardSequence, Value>));
-            BOOST_CONCEPT_ASSERT((concepts::Callable<Predicate, bool(Value)>));
-
-            // @todo устранить дублирование, выделить алгоритмы
-            auto out = find_if_fn{}(std::move(in), pred);
-
-            if(!out)
-            {
-                return out;
-            }
-
-            in = out;
-            ++ in;
-
-            for(; !!in; ++ in)
-            {
-                if(pred(*in) == false)
-                {
-                    *out = std::move(*in);
-                    ++ out;
-                }
-            }
-
-            return out;
-        }
-    };
-
+    // Алгоритмы над контейнерами
     class remove_if_erase_fn
     {
     public:

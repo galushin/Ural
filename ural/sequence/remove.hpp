@@ -20,6 +20,7 @@
 /** @file ural/sequence/remove.hpp
  @brief Адаптор последовательности, исключающий элементы базовой
  последовательности, удовлетворяющие некоторому условию
+ @todo Конвейерное создание (remove)
 */
 
 #include <ural/algorithm/details/algo_base.hpp>
@@ -155,6 +156,31 @@ namespace ural
         typedef remove_if_sequence<decltype(sequence(std::forward<Input>(in))),
                                    decltype(make_callable(std::move(pred)))> Sequence;
         return Sequence(sequence(std::forward<Input>(in)), make_callable(std::move(pred)));
+    }
+
+    template <class Predicate>
+    class remove_if_sequence_maker
+    {
+    public:
+        explicit remove_if_sequence_maker(Predicate pred)
+         : predicate(std::move(pred))
+        {}
+
+        Predicate predicate;
+    };
+
+    template <class Input, class Predicate>
+    auto operator|(Input && in, remove_if_sequence_maker<Predicate> maker)
+    -> decltype(::ural::make_remove_if_sequence(std::forward<Input>(in), std::move(maker.predicate)))
+    {
+        return ::ural::make_remove_if_sequence(std::forward<Input>(in), std::move(maker.predicate));
+    }
+
+    template <class Predicate>
+    remove_if_sequence_maker<Predicate>
+    removed_if(Predicate pred)
+    {
+        return remove_if_sequence_maker<Predicate>(std::move(pred));
     }
 
     /** @brief Адаптор последовательности, исключающий элементы базовой
