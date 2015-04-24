@@ -636,11 +636,37 @@ namespace ural
     };
     auto constexpr unique_copy = unique_copy_fn{};
 
-    template <class BidirectionalSequence>
-    void reverse(BidirectionalSequence && seq)
+    class reverse_fn
     {
-        return ::ural::details::reverse(sequence_fwd<BidirectionalSequence>(seq));
-    }
+    public:
+        template <class BidirectionalSequence>
+        void operator()(BidirectionalSequence && seq) const
+        {
+            return this->impl(sequence_fwd<BidirectionalSequence>(seq));
+        }
+
+    private:
+        template <class BidirectionalSequence>
+        static void impl(BidirectionalSequence seq)
+        {
+            for(; !!seq; ++seq)
+            {
+                auto seq_next = seq;
+                seq_next.pop_back();
+
+                if(!seq_next)
+                {
+                    break;
+                }
+                else
+                {
+                   ::ural::details::do_swap(*seq, seq.back());
+                }
+                seq = seq_next;
+            }
+        }
+    };
+    auto constexpr reverse = reverse_fn{};
 
     template <class ForwardSequence>
     auto rotate(ForwardSequence && seq)
@@ -683,19 +709,47 @@ namespace ural
     }
 
     // Тусовка
-    template <class RASequence, class URNG>
-    void shuffle(RASequence && s, URNG && g)
+    class shuffle_fn
     {
-        return ::ural::details::shuffle(sequence_fwd<RASequence>(s),
-                                        std::forward<URNG>(g));
-    }
+    public:
+        template <class RASequence, class URNG>
+        void operator()(RASequence && s, URNG && g) const
+        {
+            return this->impl(sequence_fwd<RASequence>(s),
+                              std::forward<URNG>(g));
+        }
 
-    template <class RASequence>
-    void random_shuffle(RASequence && s)
+    private:
+        template <class RASequence, class URNG>
+        static void impl(RASequence s, URNG && g)
+        {
+            if(!s)
+            {
+                return;
+            }
+
+            for(; !!s; s.pop_back())
+            {
+                std::uniform_int_distribution<decltype(s.size())>
+                    d(0, s.size() - 1);
+                auto index = d(g);
+                ::ural::details::do_swap(s[index], s.back());
+            }
+        }
+    };
+    auto constexpr shuffle = shuffle_fn{};
+
+    class random_shuffle_fn
     {
-        ural::c_rand_engine rnd;
-        return ::ural::shuffle(std::forward<RASequence>(s), rnd);
-    }
+    public:
+        template <class RASequence>
+        void operator()(RASequence && s) const
+        {
+            ural::c_rand_engine rnd;
+            return ::ural::shuffle(std::forward<RASequence>(s), rnd);
+        }
+    };
+    auto constexpr random_shuffle = random_shuffle_fn{};
 
     // Разделение
     template <class Input, class UnaryPredicate>
@@ -735,13 +789,28 @@ namespace ural
                                                make_callable(std::move(pred)));
     }
 
-    template <class ForwardSequence, class Predicate>
-    auto partition_point(ForwardSequence && in, Predicate pred)
-    -> decltype(sequence_fwd<ForwardSequence>(in))
+    class partition_point_fn
     {
-        return ::ural::details::partition_point(sequence_fwd<ForwardSequence>(in),
-                                                ural::make_callable(std::move(pred)));
-    }
+    public:
+        template <class ForwardSequence, class Predicate>
+        auto operator()(ForwardSequence && in, Predicate pred) const
+        -> decltype(sequence_fwd<ForwardSequence>(in))
+        {
+            return this->impl(sequence_fwd<ForwardSequence>(in),
+                              ural::make_callable(std::move(pred)));
+        }
+
+    private:
+        template <class ForwardSequence, class Predicate>
+        static ForwardSequence
+        impl(ForwardSequence in, Predicate pred)
+        {
+            // @todo Нужен ли этот вызов?
+            in.shrink_front();
+            return find_if_not_fn{}(std::move(in), std::move(pred));
+        }
+    };
+    auto constexpr partition_point = partition_point_fn{};
 
     // Бинарные кучи
     class is_heap_until_fn
@@ -1112,7 +1181,7 @@ namespace ural
         impl(RASequence in, T const & value, Compare cmp)
         {
             auto pred = std::bind(std::move(cmp), ural::_1, std::cref(value));
-            return ::ural::details::partition_point(std::move(in), std::move(pred));
+            return ::ural::partition_point_fn{}(std::move(in), std::move(pred));
         }
     };
     auto constexpr lower_bound = lower_bound_fn{};
@@ -1149,7 +1218,7 @@ namespace ural
         impl(RASequence in, T const & value, Compare cmp)
         {
             auto pred = ural::not_fn(std::bind(std::move(cmp), std::cref(value), ural::_1));
-            return ::ural::details::partition_point(std::move(in), std::move(pred));
+            return ::ural::partition_point_fn{}(std::move(in), std::move(pred));
         }
     };
     auto constexpr upper_bound = upper_bound_fn{};
@@ -1776,7 +1845,7 @@ namespace ural
 
             if(!r)
             {
-                ::ural::details::reverse(std::move(s));
+                ::ural::reverse_fn{}(std::move(s));
                 return false;
             }
             else
@@ -1788,7 +1857,7 @@ namespace ural
                 {}
 
                 ::ural::details::do_swap(*r1, *r2);
-                ural::details::reverse(r1.traversed_front().base());
+                ural::reverse_fn{}(r1.traversed_front().base());
 
                 return true;
             }
@@ -1955,8 +2024,6 @@ namespace ural
             erase_fn{}(c, to_erase);
             return c;
         }
-
-    private:
     };
 
     class remove_erase_fn
@@ -2026,7 +2093,6 @@ namespace ural
                                     r[ural::_2]);
         }
     };
-
     constexpr auto move_if_noexcept = move_if_noexcept_fn{};
 }
 // namespace ural

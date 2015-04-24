@@ -580,26 +580,6 @@ namespace details
                                            new_value);
     }
 
-    template <class BidirectionalSequence>
-    void reverse(BidirectionalSequence seq)
-    {
-        for(; !!seq; ++seq)
-        {
-            auto seq_next = seq;
-            seq_next.pop_back();
-
-            if(!seq_next)
-            {
-                break;
-            }
-            else
-            {
-               ::ural::details::do_swap(*seq, seq.back());
-            }
-            seq = seq_next;
-        }
-    }
-
     template <class Forward1, class Forward2>
     ural::tuple<Forward1, Forward2>
     rotate(Forward1 in1, Forward2 in2)
@@ -656,23 +636,6 @@ namespace details
 
         return ural::tuple<Forward, Output>{std::move(in_orig),
                                             std::move(r2[ural::_2])};
-    }
-
-    template <class RASequence, class URNG>
-    void shuffle(RASequence s, URNG && g)
-    {
-        if(!s)
-        {
-            return;
-        }
-
-        for(; !!s; s.pop_back())
-        {
-            std::uniform_int_distribution<decltype(s.size())>
-                d(0, s.size() - 1);
-            auto index = d(g);
-            ::ural::details::do_swap(s[index], s.back());
-        }
     }
 
     // Разделение
@@ -782,14 +745,6 @@ namespace details
         typedef ural::tuple<Input, Output1, Output2> Tuple;
         return Tuple(r[ural::_1], r[ural::_2].true_sequence(),
                      r[ural::_2].false_sequence());
-    }
-
-    template <class ForwardSequence, class Predicate>
-    ForwardSequence
-    partition_point(ForwardSequence in, Predicate pred)
-    {
-        in.shrink_front();
-        return find_if_not_fn{}(std::move(in), std::move(pred));
     }
 
     // Бинарные кучи
