@@ -58,7 +58,7 @@ namespace ural
         */
         explicit istream_sequence(IStream & is)
          : is_(is)
-         , value_{}
+         , value_()
         {
             this->init();
         }
@@ -69,7 +69,7 @@ namespace ural
         */
         explicit istream_sequence(IStream & is, T init_value)
          : is_(is)
-         , value_{std::move(init_value)}
+         , value_(std::move(init_value))
         {
             this->init();
         }
@@ -104,10 +104,9 @@ namespace ural
     private:
         void init()
         {
-            if(is_.get())
-            {
-                is_.get() >> value_;
-            }
+            assert(is_.get());
+
+            is_.get() >> value_;
         }
 
     private:

@@ -113,9 +113,12 @@ namespace ural
     }
     //@}
 
+    //@{
     /** @brief Функция, комбинирующая @c sequence и <tt> std::forward </tt>
     @param t аргумент
     @return <tt> sequence(std::forward<Traversable>(t)) </tt>
+    @todo Преобразовать в функциональный объект/шаблон переменной
+    @todo Покрыть вторую перегрузку тестами
     */
     template <class Traversable>
     auto sequence_fwd(typename std::remove_reference<Traversable>::type & t)
@@ -123,6 +126,11 @@ namespace ural
     {
         return sequence(std::forward<Traversable>(t));
     }
+
+    template <class Traversable>
+    auto sequence_fwd(typename std::remove_reference<Traversable>::type && t)
+    -> decltype(sequence(std::forward<Traversable>(t)));
+    //@}
 }
 // namespace ural
 

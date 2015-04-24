@@ -951,7 +951,7 @@ BOOST_AUTO_TEST_CASE(unique_sequence_from_istream_to_ostream)
     std::ostringstream os;
 
     auto in_seq = ural::make_istream_sequence<int>(is) | ural::uniqued;
-    ural::copy(in_seq, ural::make_ostream_sequence(os, ' '));
+    ural::copy(std::move(in_seq), ural::make_ostream_sequence(os, ' '));
 
     BOOST_CHECK_EQUAL(z.str(), os.str());
 }

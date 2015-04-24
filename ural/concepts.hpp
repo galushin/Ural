@@ -94,8 +94,8 @@ namespace concepts
         {
             !seq;
             ++ seq;
-            seq ++;
             seq.pop_front();
+            // Постфиксный инкремент требует создания копий
 
             value_consumer<ural::single_pass_traversal_tag>() = traversal_tag{};
         }
@@ -118,6 +118,7 @@ namespace concepts
             URAL_CONCEPT_ASSERT(Seq, EqualityComparable);
             ural::value_consumer<Seq>() = seq.traversed_front();
             seq.shrink_front();
+            seq ++;
         }
 
     private:

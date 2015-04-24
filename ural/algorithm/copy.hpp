@@ -46,7 +46,7 @@ namespace ural
                 *out = *in;
             }
 
-            return ural::tuple<Input, Output>{in, out};
+            return ural::tuple<Input, Output>(std::move(in), std::move(out));
         }
 
     public:
