@@ -21,6 +21,7 @@
  @brief Аналог <tt> std::vector </tt>
 */
 
+#include <ural/sequence/constant.hpp>
 #include <ural/container/container_facade.hpp>
 #include <ural/memory.hpp>
 #include <ural/sequence/iterator_sequence.hpp>
@@ -603,6 +604,8 @@ namespace ural
         assign(InputIterator first, InputIterator const last)
         {
             // @todo Проверка, что first и last не ссылаются внутрь контейнера
+            // Проблема в том, что first и last могут ссылаться внутрь
+            // контейнера косвенно
             return this->assign(ural::make_iterator_sequence(first, last));
         }
 
@@ -614,9 +617,7 @@ namespace ural
         */
         void assign(size_type n, value_type const & value)
         {
-            // @todo Устранить дублирование
-            auto gen = ural::make_value_functor(std::cref(value));
-            auto seq = ural::make_generator_sequence(std::move(gen)) | ural::taken(n);
+            auto seq = ural::make_constant_sequence(std::cref(value)) | ural::taken(n);
 
             return this->assign(std::move(seq));
         }
@@ -754,7 +755,6 @@ namespace ural
             {
                 this->reserve(new_size);
 
-                // @todo Выделить алгоритм
                 for(auto dn = new_size - this->size(); dn > 0; -- dn)
                 {
                     this->emplace_back();
@@ -1040,8 +1040,7 @@ namespace ural
         */
         iterator insert(const_iterator position, size_type const n, value_type const & value)
         {
-            auto gen = ural::make_value_functor(std::cref(value));
-            auto seq = ural::make_generator_sequence(std::move(gen)) | ural::taken(n);
+            auto seq = ural::make_constant_sequence(std::cref(value)) | ural::taken(n);
 
             return this->insert(position, std::move(seq));
         }
@@ -1057,6 +1056,7 @@ namespace ural
         typename disable_if<std::is_integral<InputIterator>::value, iterator>::type
         insert(const_iterator position, InputIterator first, InputIterator last)
         {
+            // @todo Проверка предусловия
             return this->insert(position, ural::make_iterator_sequence(first, last));
         }
 
@@ -1117,11 +1117,12 @@ namespace ural
             auto source = this->begin() + (last - this->cbegin());
 
             // 2. Перемещаем последние элементы на места удаляемых
-            auto in = ural::make_iterator_sequence(source, this->end());
+            auto in  = ural::make_iterator_sequence(source, this->end());
+            auto out = ural::make_iterator_sequence(sink,   this->end());
 
-            // @todo Можно доказать, что эта последовательность исчерпаетс позже
-            auto out = ural::make_iterator_sequence(sink, this->end());
-
+            // first < last, значит sink < source, значит
+            // out исчерпается позже, чем in
+            // @todo out => out | unchecked
             out = ural::move_if_noexcept(in, out)[ural::_2];
 
             // 3. Удаляем последние элементы
