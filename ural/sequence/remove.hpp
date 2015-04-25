@@ -20,7 +20,6 @@
 /** @file ural/sequence/remove.hpp
  @brief Адаптор последовательности, исключающий элементы базовой
  последовательности, удовлетворяющие некоторому условию
- @todo Конвейерное создание (remove)
 */
 
 #include <ural/algorithm/details/algo_base.hpp>
@@ -309,6 +308,81 @@ namespace ural
     -> decltype(make_remove_sequence(std::forward<Input>(in), value, ural::equal_to<>{}))
     {
         return make_remove_sequence(std::forward<Input>(in), value, ural::equal_to<>{});
+    }
+
+    /** @brief Вспомогательный объект для конвейерного создания
+    @c remove_sequence
+    @tparam T тип значения, которое должно быть исключено из последовательности.
+    @tparam BinaryPredicate тип бинарного предиката, используемого для
+    определения значений, которые нужно исключить из последовательности.
+    */
+    template <class T, class BinaryPredicate>
+    class remove_sequence_maker
+    {
+    public:
+        /** @brief Конструктор
+        @param x значение, которое должно быть исключено из последовательности.
+        @param eq бинарный предикат
+        @note В отличие от стандартного алгоритма @c remove, параметр @c x будет
+        скопирован. Чтобы избежать копирования, используйте на формальном
+        аргументе обёртку <tt> std::cref </tt>
+        */
+        explicit remove_sequence_maker(T x, BinaryPredicate eq)
+         : predicate(std::move(eq))
+         , value(std::move(x))
+        {}
+
+        /// @brief Предикат
+        BinaryPredicate predicate;
+
+        /// @brief Исключаемое значение
+        T value;
+
+    };
+
+    /** @brief Конвейерное создание @c remove_sequence
+    @param in входная последовательность
+    @param maker вспомогательный объект, хранящий информацию об исключаемом
+    значении
+    */
+    template <class Input, class T, class BinPred>
+    auto operator|(Input && in, remove_sequence_maker<T, BinPred> maker)
+    -> decltype(::ural::make_remove_sequence(std::forward<Input>(in), std::move(maker.value), std::move(maker.predicate)))
+    {
+        return ::ural::make_remove_sequence(std::forward<Input>(in),
+                                            std::move(maker.value),
+                                            std::move(maker.predicate));
+    }
+
+    /** @brief Создание вспомогательного объекта для конвейерного создания
+    @c remove_sequence
+    @param value значение, которое должно быть исключено из последовательности.
+    @param bin_pred бинарный предикат, используемый для определения значений,
+    которые нужно исключить из последовательности.
+    @note В отличие от стандартного алгоритма @c remove, параметр @c value будет
+    скопирован. Чтобы избежать копирования, используйте на формальном аргументе
+    обёртку <tt> std::cref </tt>
+    */
+    template <class T, class BinaryPredicate>
+    remove_sequence_maker<T, BinaryPredicate>
+    removed(T value, BinaryPredicate bin_pred)
+    {
+        return remove_sequence_maker<T, BinaryPredicate>(std::move(value),
+                                                         std::move(bin_pred));
+    }
+
+    /** @brief Создание вспомогательного объекта для конвейерного создания
+    @c remove_sequence
+    @param value значение, которое должно быть исключено из последовательности.
+    @note В отличие от стандартного алгоритма @c remove, параметр @c value будет
+    скопирован. Чтобы избежать копирования, используйте на формальном аргументе
+    обёртку <tt> std::cref </tt>
+    */
+    template <class T>
+    remove_sequence_maker<T, ural::equal_to<>>
+    removed(T value)
+    {
+        return removed(std::move(value), ural::equal_to<>{});
     }
 }
 // namespace ural
