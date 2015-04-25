@@ -213,7 +213,10 @@ namespace concepts
             typedef decltype(*seq = make_value()) AssignResult;
 
             // @todo begin?
-//            @todo BOOST_CONCEPT_ASSERT((boost::OutputIterator<Seq, T>));
+            /* @todo OutputIterator
+            Проблема в том, что концепция boost::OutputIterator<I, T> объявляет
+            переменную типа T, что приводит к проблемам, когда T -- ссылка
+            */
         }
 
     private:

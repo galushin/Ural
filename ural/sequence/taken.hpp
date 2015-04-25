@@ -58,6 +58,7 @@ namespace ural
         /** @brief Конструктор
         @param seq исходная последовательность
         @param count число элементов, которое должно быть извлечено
+        @pre @c seq должна содержать по меньшей мере @c count элементов
         @post <tt> this->base() == seq </tt>
         @post <tt> this->count() == count </tt>
         */
@@ -71,7 +72,7 @@ namespace ural
         */
         bool operator!() const
         {
-            return !this->base() || this->count() == 0;
+            return this->count() == 0;
         }
 
         /** @brief Текущий элемент последовательности
@@ -80,6 +81,7 @@ namespace ural
         */
         reference front() const
         {
+            assert(!!this->base());
             return *this->base();
         }
 
@@ -89,6 +91,7 @@ namespace ural
         void pop_front()
         {
             assert(this->count() > 0);
+            assert(!!this->base());
 
             ++ impl_[ural::_1];
             -- ural::get(impl_[ural::_2]);
@@ -171,10 +174,10 @@ namespace ural
     */
     template <class Sequence, class Size>
     auto operator|(Sequence && seq, taken_helper<Size> helper)
-    -> take_sequence<decltype(sequence(std::forward<Sequence>(seq))), Size>
+    -> take_sequence<decltype(::ural::sequence_fwd<Sequence>(seq)), Size>
     {
-        typedef take_sequence<decltype(sequence(std::forward<Sequence>(seq))), Size> Result;
-        return Result{sequence(std::forward<Sequence>(seq)), helper.count};
+        typedef take_sequence<decltype(::ural::sequence_fwd<Sequence>(seq)), Size> Result;
+        return Result(::ural::sequence_fwd<Sequence>(seq), helper.count);
     }
 
     /** @brief Функция создания @c take_helper

@@ -48,6 +48,8 @@ namespace ural
     /** @brief Последовательность на основе пары итераторов
     @tparam Iterator тип итератора
     @tparam Policy тип политики обработки ошибок
+    @todo Разные типы начального и конечного итератора, чтобы поддержать
+    интервалы Э. Ниблера
     */
     template <class Iterator, class Policy = container_checking_throw_policy>
     class iterator_sequence

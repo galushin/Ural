@@ -20,6 +20,7 @@
 /** @file ural/algorithm.hpp
  @brief Обобщённые алгоритмы
  @todo Проверка концепций
+ @todo Добавить требования к конечности интервалов
 */
 
 /** @defgroup Algorithms Алгоритмы
