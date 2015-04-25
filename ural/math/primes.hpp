@@ -142,7 +142,7 @@ namespace ural
         template <class IntType, class Input>
         bool operator()(IntType const & x, Input && ds) const
         {
-            for(auto seq = ural::sequence(std::forward<Input>(ds)); !!seq; ++ seq)
+            for(auto seq = ::ural::sequence_fwd<Input>(ds); !!seq; ++ seq)
             {
                 using ural::gcd;
                 if(gcd(x, *seq) != 1)

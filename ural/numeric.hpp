@@ -39,7 +39,7 @@ namespace ural
         Incrementable
         operator()(ForwardSequence && seq, Incrementable init_value) const
         {
-            return impl(ural::sequence(std::forward<ForwardSequence>(seq)),
+            return impl(::ural::sequence_fwd<ForwardSequence>(seq),
                         std::move(init_value));
         }
 
@@ -64,7 +64,7 @@ namespace ural
         template <class Input, class T, class BinaryOperation>
         T operator()(Input && in, T init_value, BinaryOperation op) const
         {
-            return impl(sequence(std::forward<Input>(in)),
+            return impl(::ural::sequence_fwd<Input>(in),
                         std::move(init_value),
                         ural::make_callable(std::move(op)));
         }
@@ -98,8 +98,8 @@ namespace ural
         T operator()(Input1 && in1, Input2 && in2, T init_value,
                      BinaryOperation1 add, BinaryOperation2 mult) const
         {
-            return impl(sequence(std::forward<Input1>(in1)),
-                        sequence(std::forward<Input2>(in2)),
+            return impl(::ural::sequence_fwd<Input1>(in1),
+                        ::ural::sequence_fwd<Input2>(in2),
                         std::move(init_value),
                         ural::make_callable(std::move(add)),
                         ural::make_callable(std::move(mult)));
@@ -229,11 +229,11 @@ namespace ural
 
     template <class RASequence1, class RASequence2>
     auto make_convolution_sequence(RASequence1 && s1, RASequence2 && s2)
-    -> convolution_sequence<decltype(sequence(std::forward<RASequence1>(s1))),
-                            decltype(sequence(std::forward<RASequence2>(s2)))>
+    -> convolution_sequence<decltype(::ural::sequence_fwd<RASequence1>(s1)),
+                            decltype(::ural::sequence_fwd<RASequence2>(s2))>
     {
-        return {sequence(std::forward<RASequence1>(s1)),
-                sequence(std::forward<RASequence2>(s2))};
+        return {::ural::sequence_fwd<RASequence1>(s1),
+                ::ural::sequence_fwd<RASequence2>(s2)};
     }
 
     class discrete_convolution_functor

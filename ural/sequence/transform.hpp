@@ -190,12 +190,12 @@ namespace ural
     template <class Function, class... Inputs>
     auto make_transform_sequence(Function f, Inputs && ... in)
     -> transform_sequence<decltype(ural::make_callable(std::move(f))),
-                          decltype(sequence(std::forward<Inputs>(in)))...>
+                          decltype(::ural::sequence_fwd<Inputs>(in))...>
     {
         typedef transform_sequence<decltype(ural::make_callable(std::move(f))),
-                          decltype(sequence(std::forward<Inputs>(in)))...> Result;
+                          decltype(::ural::sequence_fwd<Inputs>(in))...> Result;
         return Result(ural::make_callable(std::move(f)),
-                      sequence(std::forward<Inputs>(in))...);
+                      ::ural::sequence_fwd<Inputs>(in)...);
     }
 
     /** @brief Вспомогательный объект для создания @c transform_sequence

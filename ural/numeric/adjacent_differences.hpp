@@ -117,13 +117,13 @@ namespace ural
     */
     template <class Input, class BinaryOperation>
     auto adjacent_differences(Input && in, BinaryOperation sub)
-    -> adjacent_differences_sequence<decltype(sequence(std::forward<Input>(in))),
+    -> adjacent_differences_sequence<decltype(::ural::sequence_fwd<Input>(in)),
                                      decltype(make_callable(std::move(sub)))>
     {
-        typedef adjacent_differences_sequence<decltype(sequence(std::forward<Input>(in))),
+        typedef adjacent_differences_sequence<decltype(::ural::sequence_fwd<Input>(in)),
                                               decltype(make_callable(std::move(sub)))> Result;
-        return Result{sequence(std::forward<Input>(in)),
-                      make_callable(std::move(sub))};
+        return Result(::ural::sequence_fwd<Input>(in),
+                      make_callable(std::move(sub)));
     }
 
     /** @brief Создание последовательности разностей соседних элементов
@@ -133,7 +133,7 @@ namespace ural
     */
     template <class Input>
     auto adjacent_differences(Input && in)
-    -> adjacent_differences_sequence<decltype(sequence(std::forward<Input>(in))),
+    -> adjacent_differences_sequence<decltype(::ural::sequence_fwd<Input>(in)),
                                      ural::minus<>>
     {
         return adjacent_differences(std::forward<Input>(in), ural::minus<>{});

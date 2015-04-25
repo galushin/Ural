@@ -217,10 +217,10 @@ namespace ural
     */
     template <class BidirectionalSequence>
     auto make_reverse_sequence(BidirectionalSequence && seq)
-    -> reverse_sequence<decltype(sequence(std::forward<BidirectionalSequence>(seq)))>
+    -> reverse_sequence<decltype(::ural::sequence_fwd<BidirectionalSequence>(seq))>
     {
-        typedef reverse_sequence<decltype(sequence(std::forward<BidirectionalSequence>(seq)))> Seq;
-        return Seq{sequence(std::forward<BidirectionalSequence>(seq))};
+        typedef reverse_sequence<decltype(::ural::sequence_fwd<BidirectionalSequence>(seq))> Seq;
+        return Seq(::ural::sequence_fwd<BidirectionalSequence>(seq));
     }
 
     template <class BidirectionalSequence>

@@ -51,7 +51,7 @@ namespace ural
     OStream &
     write_delimeted(OStream & os, Sequence && seq, Delim const & delim)
     {
-        auto s = sequence(std::forward<Sequence>(seq));
+        auto s = ::ural::sequence_fwd<Sequence>(seq);
 
         if(!s)
         {
@@ -91,9 +91,9 @@ namespace ural
 
     template <class Sequence, class Delimeter>
     auto delimeted(Sequence && seq, Delimeter delim)
-    -> delimeted_helper<decltype(sequence(std::forward<Sequence>(seq))), Delimeter>
+    -> delimeted_helper<decltype(::ural::sequence_fwd<Sequence>(seq)), Delimeter>
     {
-        return {sequence(std::forward<Sequence>(seq)), std::move(delim)};
+        return {::ural::sequence_fwd<Sequence>(seq), std::move(delim)};
     }
 
     /** @brief Вывод таблицы в поток

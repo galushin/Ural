@@ -1093,7 +1093,7 @@ namespace tags
         typedef descriptives_facade<Value, Tags> Result;
 
         using ural::sequence;
-        auto seq = sequence(std::forward<Input>(in));
+        auto seq = ::ural::sequence_fwd<Input>(in);
 
         if(!seq)
         {

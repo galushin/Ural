@@ -43,14 +43,14 @@ namespace ural
     распределителя памяти и т.д.
     @param seq последовательность
     @return <tt> Container<Value>(begin(s), end(s)) </tt>, где @c s есть
-    <tt> sequence(std::forward<Sequence>(seq)) </tt>, а @c Value --- тип
+    <tt> ::ural::sequence_fwd<Sequence>(seq) </tt>, а @c Value --- тип
     значений последовательности @c s.
     */
     template <class Sequence, template <class...> class Container, class... Args>
     auto operator|(Sequence && seq, to_container<Container, Args...>)
-    -> Container<typename decltype(sequence(std::forward<Sequence>(seq)))::value_type, Args...>
+    -> Container<typename decltype(::ural::sequence_fwd<Sequence>(seq))::value_type, Args...>
     {
-        typedef decltype(sequence(std::forward<Sequence>(seq))) Seq;
+        typedef decltype(::ural::sequence_fwd<Sequence>(seq)) Seq;
         typedef typename Seq::value_type Value;
 
         auto s = ural::sequence_fwd<Sequence>(seq);
@@ -96,7 +96,7 @@ namespace ural
 
         Map<Key, Mapped, Args...> result;
 
-        for(auto && x : sequence(std::forward<Sequence>(seq)))
+        for(auto && x : ::ural::sequence_fwd<Sequence>(seq))
         {
             result.emplace_hint(result.end(),
                                 get(std::forward<decltype(x)>(x), ural::_1),

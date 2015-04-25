@@ -145,10 +145,10 @@ namespace ural
     */
     template <class Sequence>
     auto make_move_sequence(Sequence && seq)
-    -> move_sequence<decltype(sequence(std::forward<Sequence>(seq)))>
+    -> move_sequence<decltype(::ural::sequence_fwd<Sequence>(seq))>
     {
-        typedef move_sequence<decltype(sequence(std::forward<Sequence>(seq)))> Result;
-        return Result{sequence(std::forward<Sequence>(seq))};
+        typedef move_sequence<decltype(::ural::sequence_fwd<Sequence>(seq))> Result;
+        return Result(::ural::sequence_fwd<Sequence>(seq));
     }
 
     /** @brief Создание последовательности на основе

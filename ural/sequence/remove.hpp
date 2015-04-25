@@ -149,12 +149,12 @@ namespace ural
     */
     template <class Input, class Predicate>
     auto make_remove_if_sequence(Input && in, Predicate pred)
-    -> remove_if_sequence<decltype(sequence(std::forward<Input>(in))),
+    -> remove_if_sequence<decltype(::ural::sequence_fwd<Input>(in)),
                           decltype(make_callable(std::move(pred)))>
     {
-        typedef remove_if_sequence<decltype(sequence(std::forward<Input>(in))),
+        typedef remove_if_sequence<decltype(::ural::sequence_fwd<Input>(in)),
                                    decltype(make_callable(std::move(pred)))> Sequence;
-        return Sequence(sequence(std::forward<Input>(in)), make_callable(std::move(pred)));
+        return Sequence(::ural::sequence_fwd<Input>(in), make_callable(std::move(pred)));
     }
 
     template <class Predicate>
@@ -289,12 +289,12 @@ namespace ural
     */
     template <class Input, class T, class BinaryPredicate>
     auto make_remove_sequence(Input && in, T const & value, BinaryPredicate pred)
-    -> remove_sequence<decltype(sequence(std::forward<Input>(in))), T,
+    -> remove_sequence<decltype(::ural::sequence_fwd<Input>(in)), T,
                        decltype(make_callable(std::move(pred)))>
     {
-        typedef remove_sequence<decltype(sequence(std::forward<Input>(in))), T,
+        typedef remove_sequence<decltype(::ural::sequence_fwd<Input>(in)), T,
                        decltype(make_callable(std::move(pred)))> Sequence;
-        return Sequence(sequence(std::forward<Input>(in)), value,
+        return Sequence(::ural::sequence_fwd<Input>(in), value,
                         make_callable(std::move(pred)));
     }
 

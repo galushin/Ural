@@ -238,12 +238,13 @@ namespace ural
     */
     template <class Forward, class BinaryPredicate>
     auto make_unique_sequence(Forward && in, BinaryPredicate pred)
-    -> unique_sequence<decltype(sequence(std::forward<Forward>(in))),
+    -> unique_sequence<decltype(::ural::sequence_fwd<Forward>(in)),
                         decltype(make_callable(std::move(pred)))>
     {
-        typedef unique_sequence<decltype(sequence(std::forward<Forward>(in))),
-                        decltype(make_callable(std::move(pred)))> Seq;
-        return Seq(sequence(std::forward<Forward>(in)), make_callable(std::move(pred)));
+        typedef unique_sequence<decltype(::ural::sequence_fwd<Forward>(in)),
+                                decltype(make_callable(std::move(pred)))> Seq;
+        return Seq(::ural::sequence_fwd<Forward>(in),
+                   make_callable(std::move(pred)));
     }
 
     /** @brief Функция создания @c unique_sequence
@@ -253,12 +254,12 @@ namespace ural
     */
     template <class Forward>
     auto make_unique_sequence(Forward && in)
-    -> unique_sequence<decltype(sequence(std::forward<Forward>(in)))>
+    -> unique_sequence<decltype(::ural::sequence_fwd<Forward>(in))>
     {
-        typedef unique_sequence<decltype(sequence(std::forward<Forward>(in)))>
+        typedef unique_sequence<decltype(::ural::sequence_fwd<Forward>(in))>
             Result;
 
-         return Result{sequence(std::forward<Forward>(in))};
+         return Result(::ural::sequence_fwd<Forward>(in));
     }
 
     /** @brief Тип вспомогательного объека для создания @c unique_sequence
@@ -296,7 +297,7 @@ namespace ural
     */
     template <class Forward>
     auto operator|(Forward && in, uniqued_helper)
-    -> unique_sequence<decltype(sequence(std::forward<Forward>(in)))>
+    -> unique_sequence<decltype(::ural::sequence_fwd<Forward>(in))>
     {
         return ::ural::make_unique_sequence(std::forward<Forward>(in));
     }
@@ -308,7 +309,7 @@ namespace ural
     */
     template <class Forward, class Predicate>
     auto operator|(Forward && in, uniqued_helper_custom<Predicate> helper)
-    -> unique_sequence<decltype(sequence(std::forward<Forward>(in))), Predicate>
+    -> unique_sequence<decltype(::ural::sequence_fwd<Forward>(in)), Predicate>
     {
         return ::ural::make_unique_sequence(std::forward<Forward>(in),
                                             helper.predicate);

@@ -105,11 +105,11 @@ namespace ural
     */
     template <class... Inputs>
     auto make_zip_sequence(Inputs && ... ins)
-    -> zip_sequence<decltype(sequence(std::forward<Inputs>(ins)))...>
+    -> zip_sequence<decltype(::ural::sequence_fwd<Inputs>(ins))...>
     {
-        typedef zip_sequence<decltype(sequence(std::forward<Inputs>(ins)))...>
+        typedef zip_sequence<decltype(::ural::sequence_fwd<Inputs>(ins))...>
             Result;
-        return Result(sequence(std::forward<Inputs>(ins))...);
+        return Result(::ural::sequence_fwd<Inputs>(ins)...);
     }
 }
 // namespace ural
