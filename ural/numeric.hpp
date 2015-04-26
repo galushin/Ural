@@ -126,13 +126,69 @@ namespace ural
         }
     };
 
+    class partial_sum_fn
+    {
+    public:
+        template <class Input, class Output>
+        auto operator()(Input && in, Output && out) const
+        -> tuple<decltype(sequence_fwd<Input>(in)),
+                 decltype(sequence_fwd<Output>(out))>
+        {
+            return (*this)(sequence_fwd<Input>(in), sequence_fwd<Output>(out),
+                           ural::plus<>{});
+        }
+
+        template <class Input, class Output, class BinaryFunction>
+        auto operator()(Input && in, Output && out, BinaryFunction bin_op) const
+        -> tuple<decltype(sequence_fwd<Input>(in)),
+                 decltype(sequence_fwd<Output>(out))>
+        {
+            auto in_sum = ural::partial_sums(sequence_fwd<Input>(in),
+                                             ural::make_callable(std::move(bin_op)));
+            auto res = ural::copy_fn{}(std::move(in_sum),
+                                       sequence_fwd<Output>(out));
+
+            // @todo move первого аргумента
+            return ural::make_tuple(res[ural::_1].base(),
+                                    std::move(res[ural::_2]));
+        }
+    };
+
+    class adjacent_difference_fn
+    {
+    public:
+        template <class Input, class Output>
+        auto operator()(Input && in, Output && out) const
+        -> tuple<decltype(sequence_fwd<Input>(in)),
+                 decltype(sequence_fwd<Output>(out))>
+        {
+            return (*this)(sequence_fwd<Input>(in), sequence_fwd<Output>(out),
+                           ural::minus<>{});
+        }
+
+        template <class Input, class Output, class BinaryFunction>
+        auto operator()(Input && in, Output && out, BinaryFunction bin_op) const
+        -> tuple<decltype(sequence_fwd<Input>(in)),
+                 decltype(sequence_fwd<Output>(out))>
+        {
+            auto in_dif = ural::adjacent_differences(sequence_fwd<Input>(in),
+                                                     ural::make_callable(std::move(bin_op)));
+            auto res = ural::copy_fn{}(std::move(in_dif),
+                                       sequence_fwd<Output>(out));
+
+            // @todo move первого аргумента
+            return ural::make_tuple(res[ural::_1].base(),
+                                    std::move(res[ural::_2]));
+        }
+    };
+
     namespace
     {
         // 26.7 Обобщённые численные операции
         constexpr auto const accumulate = accumulate_fn{};
         constexpr auto const inner_product = inner_product_fn{};
-        // @todo partial_sum
-        // @todo adjacent_difference
+        constexpr auto const partial_sum = partial_sum_fn{};
+        constexpr auto const adjacent_difference = adjacent_difference_fn{};
         constexpr auto const iota = iota_fn{};
     }
 
