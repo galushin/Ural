@@ -77,7 +77,6 @@ namespace ural
         }
         //@}
     };
-    auto constexpr ref = ref_fn{};
 
     /** @brief Класс функционального объекта для создания
     <tt> std::reference_wrapper </tt> c добавлением константности.
@@ -125,7 +124,6 @@ namespace ural
         }
         //@}
     };
-    auto constexpr cref = cref_fn{};
 
     /** @brief Функциональный объект без аргументов, возвращающий фиксированное
     знчение
@@ -431,12 +429,78 @@ namespace ural
         }
     };
 
-    template <class Action, class T>
-    T modify_return_old(Action action, T & x)
+    /** @brief Тип функционального объекта для функции @c empty и аналогичной
+    функциональности
+    */
+    class empty_fn
     {
-        auto old_value = T(x);
-        action(x);
-        return old_value;
+    private:
+        template <class Container>
+        static bool empty_impl(Container const & x,
+                               declare_type<decltype(x.empty())> *)
+        {
+            return x.empty();
+        }
+
+        template <class Container>
+        static bool empty_impl(Container const & x, ...)
+        {
+            return x.size() == 0;
+        }
+
+        template <class T, std::size_t N>
+        static bool empty_impl(T (&)[N], std::nullptr_t )
+        {
+            return N == 0;
+        }
+
+    public:
+        /** @brief Оператор вызова функции
+        @param x контейнер @c STL, "почти контейнер" или встроенный массив
+        @return Если @c x имеет функцию-член @c empty, то возвращает
+        <tt> x.empty </tt>, если @c x -- встроенный C-массив известного размера
+        @c N то возвращает @c N, в остальных случаях возвращает
+        <tt> x.size() == 0 </tt>
+        */
+        template <class Container>
+        bool operator()(Container const & x) const
+        {
+            return this->empty_impl(x, nullptr);
+        }
+    };
+
+    /** @brief Обобщённая реализация операций вида "изменить и вернуть
+    копию оригинала в состоянии до изменения"
+    */
+    class modify_return_old_fn
+    {
+    public:
+        /** @brief Оператор вызова функции
+        @param action функциональный объект, выполняющий изменение
+        @param x ссылка на объект, который должен быть изменён
+        @return Копию @c x до вызова этой функции
+        */
+        template <class Action, class T>
+        T operator()(Action action, T & x) const
+        {
+            auto old_value = T(x);
+            action(x);
+            return old_value;
+        }
+    };
+
+    namespace
+    {
+        // Обобщённые операции
+        constexpr auto const modify_return_old = modify_return_old_fn{};
+
+        // Управление передачей параметров
+        constexpr auto const ref = ref_fn{};
+        constexpr auto const cref = cref_fn{};
+
+        // Операции контейнеров
+        constexpr auto const empty = empty_fn{};
+        constexpr auto const pop_front = pop_front_fn{};
     }
 }
 // namespace ural

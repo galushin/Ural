@@ -21,7 +21,7 @@
  @brief Определения основных типов, используемых библиотекой
 */
 
-#include <ural/type_traits.hpp>
+#include <type_traits>
 
 /// @brief Макрос для предотвращения макро-подстановки при объявлении функции
 #define URAL_PREVENT_MACRO_SUBSTITUTION
@@ -103,50 +103,6 @@ namespace ural
         void operator=(T const &)
         {}
     };
-
-    /** @brief Тип функционального объекта для функции @c empty и аналогичной
-    функциональности
-    @todo Найти лучшее место для empty_fn и empty, а затем удалить заголовочный
-    файл ural\type_traits.hpp
-    */
-    class empty_fn
-    {
-    private:
-        template <class Container>
-        static bool empty_impl(Container const & x,
-                               declare_type<decltype(x.empty())> *)
-        {
-            return x.empty();
-        }
-
-        template <class Container>
-        static bool empty_impl(Container const & x, ...)
-        {
-            return x.size() == 0;
-        }
-
-        template <class T, std::size_t N>
-        static bool empty_impl(T (&)[N], std::nullptr_t )
-        {
-            return N == 0;
-        }
-
-    public:
-        /** @brief Оператор вызова функции
-        @param x контейнер @c STL, "почти контейнер" или встроенный массив
-        @return Если @c x имеет функцию-член @c empty, то возвращает
-        <tt> x.empty </tt>, если @c x -- встроенный C-массив известного размера
-        @c N то возвращает @c N, в остальных случаях возвращает
-        <tt> x.size() == 0 </tt>
-        */
-        template <class Container>
-        bool operator()(Container const & x) const
-        {
-            return this->empty_impl(x, nullptr);
-        }
-    };
-
-    auto constexpr empty = empty_fn{};
 }
 // namespace ural
 

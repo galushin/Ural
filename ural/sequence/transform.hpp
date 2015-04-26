@@ -100,8 +100,7 @@ namespace ural
         */
         void pop_front()
         {
-            constexpr pop_front_fn fn{};
-            ural::tuples::for_each(impl_.second(), fn);
+            ural::tuples::for_each(impl_.second(), ural::pop_front);
         }
 
         /** @brief Передний элемент

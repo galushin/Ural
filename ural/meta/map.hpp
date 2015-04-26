@@ -18,6 +18,7 @@
 */
 
 #include <ural/defs.hpp>
+#include <ural/type_traits.hpp>
 
 /** @file ural/meta/map.hpp
  @brief Ассоциативный контейнер для типов
