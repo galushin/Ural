@@ -723,19 +723,45 @@ BOOST_AUTO_TEST_CASE(generate_test)
 
 BOOST_AUTO_TEST_CASE(generate_n_test)
 {
+    // Подготовка
     auto const n = int{5};
 
     std::vector<int> r_std;
     auto r_ural = r_std;
 
+    // std
     auto counter = int{0};
     auto gen = [&]{ return counter++; };
     std::generate_n(r_std | ural::back_inserter, n, gen);
 
+    // ural
     counter = 0;
     ural::copy(ural::make_generator_sequence(gen) | ural::taken(n),
                r_ural | ural::back_inserter);
 
+    // Проверка
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
+                                  r_ural.begin(), r_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(generate_n_terse_test)
+{
+    // Подготовка
+    auto const n = int{5};
+
+    std::vector<int> r_std;
+    auto r_ural = r_std;
+
+    // std
+    auto counter = int{0};
+    auto gen = [&]{ return counter++; };
+    std::generate_n(r_std | ural::back_inserter, n, gen);
+
+    // ural
+    counter = 0;
+    ural::generate_n(gen, n, r_ural | ural::back_inserter);
+
+    // Проверка
     BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
                                   r_ural.begin(), r_ural.end());
 }
@@ -1067,15 +1093,36 @@ BOOST_AUTO_TEST_CASE(reversed_reverse_test)
 
 BOOST_AUTO_TEST_CASE(reversed_copy_test)
 {
+    // Исходные данные
     std::list<int> const src = {1, 2, 3, 4, 5, 6};
 
+    // std
     std::list<int> r_std;
-
     std::reverse_copy(src.begin(), src.end(), std::back_inserter(r_std));
 
+    // ural
     auto const r_ural
         = src | ural::reversed | ural::to_container<std::list>{};
 
+    // Проверка
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
+                                  r_ural.begin(), r_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(reverse_copy_test)
+{
+    // Исходные данные
+    std::list<int> const src = {1, 2, 3, 4, 5, 6};
+
+    // std
+    std::list<int> r_std;
+    std::reverse_copy(src.begin(), src.end(), std::back_inserter(r_std));
+
+    // ural
+    std::list<int> r_ural;
+    ural::reverse_copy(src, r_ural | ural::back_inserter);
+
+    // Проверка
     BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
                                   r_ural.begin(), r_ural.end());
 }
@@ -1669,18 +1716,42 @@ BOOST_AUTO_TEST_CASE(binary_search_test)
 }
 
 // 25.4.4 Слияние
-BOOST_AUTO_TEST_CASE(merge_test)
+BOOST_AUTO_TEST_CASE(merged_test)
 {
+    // Исходные данные
     std::vector<int> const v1{1,2,3,4,5,6,7,8};
     std::vector<int> const v2{        5,  7,  9,10};
 
+    // std
     std::vector<int> std_merge;
     std::merge(v1.begin(), v1.end(), v2.begin(), v2.end(),
                std::back_inserter(std_merge));
 
+    // ural
     auto const ural_merge
-        = ural::merge(v1, v2) | ural::to_container<std::vector>{};
+        = ural::merged(v1, v2) | ural::to_container<std::vector>{};
 
+    // Проверка
+    BOOST_CHECK_EQUAL_COLLECTIONS(std_merge.begin(), std_merge.end(),
+                                  ural_merge.begin(), ural_merge.end());
+}
+
+BOOST_AUTO_TEST_CASE(merge_test)
+{
+    // Исходные данные
+    std::vector<int> const v1{1,2,3,4,5,6,7,8};
+    std::vector<int> const v2{        5,  7,  9,10};
+
+    // std
+    std::vector<int> std_merge;
+    std::merge(v1.begin(), v1.end(), v2.begin(), v2.end(),
+               std::back_inserter(std_merge));
+
+    // ural
+    std::vector<int> ural_merge;
+    ural::merge(v1, v2, ural_merge | ural::back_inserter);
+
+    // Проверка
     BOOST_CHECK_EQUAL_COLLECTIONS(std_merge.begin(), std_merge.end(),
                                   ural_merge.begin(), ural_merge.end());
 }

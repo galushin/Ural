@@ -46,6 +46,8 @@
 */
 
 #include <ural/math.hpp>
+#include <ural/sequence/set_operations.hpp>
+#include <ural/sequence/taken.hpp>
 #include <ural/sequence/filtered.hpp>
 #include <ural/sequence/transform.hpp>
 #include <ural/sequence/moved.hpp>
@@ -765,6 +767,20 @@ namespace ural
         }
     };
 
+    class generate_n_fn
+    {
+    public:
+        template <class Generator, class N, class Output>
+        auto operator()(Generator gen, N n, Output && out) const
+        -> decltype(ural::sequence_fwd<Output>(out))
+        {
+            auto in = ural::make_generator_sequence(ural::make_callable(gen))
+                    | ural::taken(n);
+            return ural::copy_fn{}(std::move(in),
+                                   ural::sequence_fwd<Output>(out))[ural::_2];
+        }
+    };
+
     class fill_fn
     {
     public:
@@ -843,6 +859,24 @@ namespace ural
                 }
                 seq = seq_next;
             }
+        }
+    };
+
+    class reverse_copy_fn
+    {
+    public:
+        template <class Bidirectional, class Output>
+        auto operator()(Bidirectional && in, Output && out) const
+        -> ural::tuple<decltype(::ural::sequence_fwd<Bidirectional>(in)),
+                       decltype(::ural::sequence_fwd<Output>(out))>
+        {
+            auto in_reversed = ::ural::sequence_fwd<Bidirectional>(in)
+                             | ural::reversed;
+            auto result = ural::copy_fn{}(std::move(in_reversed),
+                                          ::ural::sequence_fwd<Output>(out));
+            // @todo move первой последовательности
+            return ural::make_tuple(result[ural::_1].base(),
+                                    std::move(result[ural::_2]));
         }
     };
 
@@ -1747,6 +1781,38 @@ namespace ural
         }
     };
 
+    class merge_fn
+    {
+    public:
+        template <class Input1, class Input2, class Output>
+        auto operator()(Input1 && in1, Input2 && in2, Output && out) const
+        -> tuple<decltype(::ural::sequence_fwd<Input1>(in1)),
+                 decltype(::ural::sequence_fwd<Input2>(in2)),
+                 decltype(::ural::sequence_fwd<Output>(out))>
+        {
+            return (*this)(std::forward<Input1>(in1), std::forward<Input2>(in2),
+                           std::forward<Output>(out), ural::less<>{});
+        }
+
+        template <class Input1, class Input2, class Output, class Compare>
+        auto operator()(Input1 && in1, Input2 && in2, Output && out,
+                        Compare cmp) const
+        -> tuple<decltype(::ural::sequence_fwd<Input1>(in1)),
+                 decltype(::ural::sequence_fwd<Input2>(in2)),
+                 decltype(::ural::sequence_fwd<Output>(out))>
+        {
+            auto inputs = ::ural::merged(::ural::sequence_fwd<Input1>(in1),
+                                         ::ural::sequence_fwd<Input2>(in2),
+                                         ::ural::make_callable(std::move(cmp)));
+            auto result = ural::copy_fn{}(std::move(inputs),
+                                          ::ural::sequence_fwd<Output>(out));
+            // @todo move для первых двух последовательностей
+            return ural::make_tuple(result[ural::_1].first_base(),
+                                    result[ural::_1].second_base(),
+                                    std::move(result[ural::_2]));
+        }
+    };
+
     class inplace_merge_fn
     {
     public:
@@ -2455,7 +2521,7 @@ namespace ural
 
         // 25.3.7 Порождение
         constexpr auto const generate = generate_fn{};
-        // @todo generate_n (с преобразованием в функциональный объект)
+        constexpr auto const generate_n = generate_n_fn{};
 
         // 25.3.8 Удаление
         constexpr auto const remove = remove_fn{};
@@ -2468,7 +2534,7 @@ namespace ural
 
         // 25.3.10 Обращение
         constexpr auto const reverse = reverse_fn{};
-        // @todo reverse_copy
+        constexpr auto const reverse_copy = reverse_copy_fn{};
 
         // 25.3.11 Вращение
         constexpr auto const rotate = rotate_fn{};
@@ -2513,7 +2579,7 @@ namespace ural
         constexpr auto const binary_search = binary_search_fn{};
 
         // 25.4.4 Слияние
-        // @todo merge
+        constexpr auto const merge = merge_fn{};
         constexpr auto const inplace_merge = inplace_merge_fn{};
 
         // 25.4.5 Операции с сортированными множествами
@@ -2542,8 +2608,6 @@ namespace ural
         // 25.4.9 Порождение перестановка
         constexpr auto const next_permutation = next_permutation_fn{};
         constexpr auto const prev_permutation = prev_permutation_fn{};
-
-        // @todo остальные алгоритмы
     }
 }
 // namespace ural

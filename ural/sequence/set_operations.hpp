@@ -21,6 +21,8 @@
  @brief Последовательности для операций над отсортированными множествами
 */
 
+#include <ural/sequence/make.hpp>
+#include <ural/concepts.hpp>
 #include <ural/functional.hpp>
 #include <ural/optional.hpp>
 
@@ -148,6 +150,22 @@ namespace ural
             return static_cast<Compare const &>(*this);
         }
 
+        /** @brief Первая входная последовательность
+        @return Константная ссылка на первую входную последовательность
+        */
+        Input1 const & first_base() const
+        {
+            return this->in1_;
+        }
+
+        /** @brief Вторая входная последовательность
+        @return Константная ссылка на вторую входную последовательность
+        */
+        Input2 const & second_base() const
+        {
+            return this->in2_;
+        }
+
     private:
         void seek()
         {
@@ -184,7 +202,7 @@ namespace ural
     };
 
     template <class Input1, class Input2, class Compare>
-    auto merge(Input1 && in1, Input2 && in2, Compare cmp)
+    auto merged(Input1 && in1, Input2 && in2, Compare cmp)
     -> merge_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
                                  decltype(::ural::sequence_fwd<Input2>(in2)),
                                  decltype(ural::make_callable(std::move(cmp)))>
@@ -193,18 +211,19 @@ namespace ural
                                  decltype(::ural::sequence_fwd<Input2>(in2)),
                                  decltype(ural::make_callable(std::move(cmp)))> Result;
 
-        return Result{::ural::sequence_fwd<Input1>(in1),
+        return Result(::ural::sequence_fwd<Input1>(in1),
                       ::ural::sequence_fwd<Input2>(in2),
-                      ural::make_callable(std::move(cmp))};
+                      ural::make_callable(std::move(cmp)));
     }
 
     template <class Input1, class Input2>
-    auto merge(Input1 && in1, Input2 && in2)
+    auto merged(Input1 && in1, Input2 && in2)
     -> merge_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
                                  decltype(::ural::sequence_fwd<Input2>(in2))>
     {
-        return merge(std::forward<Input1>(in1), std::forward<Input2>(in2),
-                     ural::less<>{});
+        return ::ural::merged(std::forward<Input1>(in1),
+                              std::forward<Input2>(in2),
+                              ural::less<>{});
     }
 
     /** @brief Последовательность элементов, полученная в результате пересечения
