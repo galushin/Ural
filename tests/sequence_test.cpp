@@ -59,9 +59,10 @@ BOOST_AUTO_TEST_CASE(istream_sequence_regression_1)
 
     std::vector<double> r_ural;
 
-    for(auto const & x : ural::make_istream_sequence<double>(str2))
+    // @todo можно ли это заменить на for для интервалаов?
+    for(auto s = ural::make_istream_sequence<double>(str2); !!s; ++ s)
     {
-        r_ural.push_back(x);
+        r_ural.push_back(*s);
     }
 
     BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
@@ -79,7 +80,7 @@ BOOST_AUTO_TEST_CASE(ostream_sequence_test)
     std::copy(xs.begin(), xs.end(), std::ostream_iterator<Value>(os_std, " "));
 
     auto seq = ural::make_ostream_sequence<Value>(os_ural, " ");
-    std::copy(xs.begin(), xs.end(), seq);
+    std::copy(xs.begin(), xs.end(), std::move(seq));
 
     BOOST_CHECK_EQUAL(os_std.str(), os_ural.str());
 
@@ -99,7 +100,7 @@ BOOST_AUTO_TEST_CASE(ostream_sequence_test_auto)
     std::copy(xs.begin(), xs.end(), std::ostream_iterator<Value>(os_std, " "));
 
     auto seq = ural::make_ostream_sequence(os_ural, " ");
-    ural::copy(xs, seq);
+    ural::copy(xs, std::move(seq));
 
     BOOST_CHECK_EQUAL(os_std.str(), os_ural.str());
 

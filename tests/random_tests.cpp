@@ -408,7 +408,7 @@ namespace
         std::vector<typename InputSequence::value_type> u(prob.size());
         typename InputSequence::value_type N = 0;
 
-        for(auto s = sequence(in); !!s; ++ s)
+        for(auto s = ::ural::sequence_fwd<InputSequence>(in); !!s; ++ s)
         {
             auto v = *s;
 

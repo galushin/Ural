@@ -71,6 +71,12 @@ namespace ural
          : Base_class{std::move(gen)}
         {}
 
+        generator_sequence(generator_sequence const &) = delete;
+        generator_sequence(generator_sequence &&) = default;
+
+        generator_sequence & operator=(generator_sequence const &) = delete;
+        generator_sequence & operator=(generator_sequence &&) = default;
+
         // Однопроходная последовательность
         /** @brief Провекра исчерпания последовательности
         @return @b false.

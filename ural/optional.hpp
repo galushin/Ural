@@ -535,8 +535,9 @@ namespace details
         //@{
         constexpr const T & value() const
         {
-            return !!*this ? **this
-                             : throw bad_optional_access{"optional::value"}, **this;
+            return !*this
+                   ? (throw bad_optional_access("optional::value")), **this
+                   : **this;
         }
 
         T& value()

@@ -88,9 +88,14 @@ namespace ural
         @note <tt> this->base().front() </tt> и <tt> this->front() </tt>
         ссылаются на разные элементы в случае однопроходной последовательности
         */
-        Input const & base() const
+        Input const & base() const &
         {
             return this->base_impl(traversal_tag{});
+        }
+
+        Input && base() &&
+        {
+            return std::move(this->base_impl(traversal_tag()));
         }
 
         /** @brief Используемый предикат
@@ -178,9 +183,19 @@ namespace ural
         }
 
         // Базовая последовательность
+        Input & base_impl(single_pass_traversal_tag)
+        {
+            return this->next_;
+        }
+
         Input const & base_impl(single_pass_traversal_tag) const
         {
             return this->next_;
+        }
+
+        Input & base_impl(forward_traversal_tag)
+        {
+            return this->current_;
         }
 
         Input const & base_impl(forward_traversal_tag) const

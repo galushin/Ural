@@ -74,6 +74,12 @@ namespace ural
             this->init();
         }
 
+        istream_sequence(istream_sequence const & ) = delete;
+        istream_sequence(istream_sequence && ) = default;
+
+        istream_sequence & operator=(istream_sequence const & ) = delete;
+        istream_sequence & operator=(istream_sequence && ) = default;
+
         // Однопроходная последовательность
         /** @brief Проверка исчерпания
         @return @b true, если последовательность исчерпана, иначе @b --- false

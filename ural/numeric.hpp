@@ -148,8 +148,7 @@ namespace ural
             auto res = ural::copy_fn{}(std::move(in_sum),
                                        sequence_fwd<Output>(out));
 
-            // @todo move первого аргумента
-            return ural::make_tuple(res[ural::_1].base(),
+            return ural::make_tuple(std::move(res[ural::_1]).base(),
                                     std::move(res[ural::_2]));
         }
     };
@@ -175,9 +174,7 @@ namespace ural
                                                      ural::make_callable(std::move(bin_op)));
             auto res = ural::copy_fn{}(std::move(in_dif),
                                        sequence_fwd<Output>(out));
-
-            // @todo move первого аргумента
-            return ural::make_tuple(res[ural::_1].base(),
+            return ural::make_tuple(std::move(res[ural::_1]).base(),
                                     std::move(res[ural::_2]));
         }
     };

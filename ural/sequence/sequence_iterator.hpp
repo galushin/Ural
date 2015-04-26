@@ -122,7 +122,7 @@ namespace ural
         @post <tt> *this </tt> Будет посещать те же элементы, что и @c s
         */
         sequence_iterator(Sequence s)
-         : impl_{std::move(s)}
+         : impl_(std::move(s))
         {}
 
         // Итератор ввода

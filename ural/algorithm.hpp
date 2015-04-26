@@ -592,7 +592,8 @@ namespace ural
             auto in_f = sequence_fwd<Input>(in) | ural::filtered(pred);
             auto res = ural::copy_fn{}(std::move(in_f), sequence_fwd<Output>(out));
 
-            return ural::make_tuple(res[ural::_1].base(), res[ural::_2]);
+            return ural::make_tuple(std::move(res[ural::_1]).base(),
+                                    std::move(res[ural::_2]));
         }
     };
 
@@ -826,7 +827,7 @@ namespace ural
             auto u_in = ::ural::make_unique_sequence(std::forward<Input>(in),
                                                      std::move(bin_pred));
             auto r = ural::copy_fn{}(std::move(u_in), std::forward<Output>(out));
-            return ural::make_tuple(std::move(r[ural::_1].base()),
+            return ural::make_tuple(std::move(r[ural::_1]).base(),
                                     std::move(r[ural::_2]));
         }
     };
@@ -874,8 +875,7 @@ namespace ural
                              | ural::reversed;
             auto result = ural::copy_fn{}(std::move(in_reversed),
                                           ::ural::sequence_fwd<Output>(out));
-            // @todo move первой последовательности
-            return ural::make_tuple(result[ural::_1].base(),
+            return ural::make_tuple(std::move(result[ural::_1]).base(),
                                     std::move(result[ural::_2]));
         }
     };
