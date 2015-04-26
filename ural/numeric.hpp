@@ -32,7 +32,7 @@
 
 namespace ural
 {
-    class
+    class iota_fn
     {
     public:
         template <class ForwardSequence, class Incrementable>
@@ -55,10 +55,9 @@ namespace ural
 
             return init_value;
         }
-    }
-    constexpr iota{};
+    };
 
-    class
+    class accumulate_fn
     {
     public:
         template <class Input, class T, class BinaryOperation>
@@ -87,10 +86,9 @@ namespace ural
 
             return init_value;
         }
-    }
-    constexpr accumulate {};
+    };
 
-    class
+    class inner_product_fn
     {
     public:
         template <class Input1, class Input2, class T,
@@ -126,8 +124,17 @@ namespace ural
 
             return value;
         }
+    };
+
+    namespace
+    {
+        // 26.7 Обобщённые численные операции
+        constexpr auto const accumulate = accumulate_fn{};
+        constexpr auto const inner_product = inner_product_fn{};
+        // @todo partial_sum
+        // @todo adjacent_difference
+        constexpr auto const iota = iota_fn{};
     }
-    constexpr inner_product{};
 
     /**
     @todo Можно ли ослабить требования к входным последовательностям?

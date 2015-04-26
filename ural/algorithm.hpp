@@ -198,54 +198,43 @@ namespace ural
         }
     };
 
-    auto constexpr all_of = all_of_fn{};
-    auto constexpr none_of = none_of_fn{};
-    auto constexpr any_of = any_of_fn{};
-
-    auto constexpr for_each = for_each_fn{};
-
-    auto constexpr find = find_fn{};
-    auto constexpr find_if = find_if_fn{};
-    auto constexpr find_if_not = find_if_not_fn{};
-
-    auto constexpr count = count_fn{};
-    auto constexpr count_if = count_if_fn{};
-
-    template <class Forward1, class Forward2, class BinaryPredicate>
-    auto find_end(Forward1 && in, Forward2 && s, BinaryPredicate bin_pred)
-    -> decltype(sequence_fwd<Forward1>(in))
+    class find_first_of_fn
     {
-        return ::ural::details::find_end(sequence_fwd<Forward1>(in),
-                                         sequence_fwd<Forward2>(s),
-                                         make_callable(std::move(bin_pred)));
-    }
+    public:
+        template <class Input, class Forward>
+        auto operator()(Input && in, Forward && s) const
+        -> decltype(sequence_fwd<Input>(in))
+        {
+            return (*this)(std::forward<Input>(in),
+                           std::forward<Forward>(s),
+                           ural::equal_to<>{});
+        }
 
-    template <class Forward1, class Forward2>
-    auto find_end(Forward1 && in, Forward2 && s)
-    -> decltype(sequence_fwd<Forward1>(in))
-    {
-        return ::ural::find_end(std::forward<Forward1>(in),
-                                std::forward<Forward2>(s),
-                                ural::equal_to<>{});
-    }
+        template <class Input, class Forward, class BinaryPredicate>
+        auto operator()(Input && in, Forward && s, BinaryPredicate bin_pred) const
+        -> decltype(sequence_fwd<Input>(in))
+        {
+            return this->impl(sequence_fwd<Input>(in),
+                              sequence_fwd<Forward>(s),
+                              make_callable(std::move(bin_pred)));
+        }
 
-    template <class Input, class Forward, class BinaryPredicate>
-    auto find_first_of(Input && in, Forward && s, BinaryPredicate bin_pred)
-    -> decltype(sequence_fwd<Input>(in))
-    {
-        return ::ural::details::find_first_of(sequence_fwd<Input>(in),
-                                              sequence_fwd<Forward>(s),
-                                              make_callable(std::move(bin_pred)));
-    }
+    private:
+        template <class Input, class Forward, class BinaryPredicate>
+        static Input impl(Input in, Forward s, BinaryPredicate bin_pred)
+        {
+            for(; !!in; ++ in)
+            {
+                auto r = find_fn{}(s, *in, bin_pred);
 
-    template <class Input, class Forward>
-    auto find_first_of(Input && in, Forward && s)
-    -> decltype(sequence_fwd<Input>(in))
-    {
-        return ::ural::find_first_of(std::forward<Input>(in),
-                                     std::forward<Forward>(s),
-                                     ural::equal_to<>{});
-    }
+                if(!!r)
+                {
+                    return in;
+                }
+            }
+            return in;
+        }
+    };
 
     /**
     @todo уменьшить дублирование с find_first_of
@@ -275,7 +264,7 @@ namespace ural
         {
             for(; !!in; ++ in)
             {
-                auto r = ::ural::find(s, *in, bin_pred);
+                auto r = ::ural::find_fn{}(s, *in, bin_pred);
 
                 if(!r)
                 {
@@ -287,97 +276,309 @@ namespace ural
         }
     };
 
-    auto constexpr find_first_not_of = find_first_not_of_fn{};
-
-    template <class Forward, class BinaryPredicate>
-    auto adjacent_find(Forward && s, BinaryPredicate pred)
-    -> decltype(sequence_fwd<Forward>(s))
+    class adjacent_find_fn
     {
-        return ::ural::details::adjacent_find(sequence_fwd<Forward>(s),
-                                              ural::make_callable(std::move(pred)));
-    }
+    public:
+        template <class Forward>
+        auto operator()(Forward && s) const
+        -> decltype(sequence_fwd<Forward>(s))
+        {
+            return (*this)(std::forward<Forward>(s), ::ural::equal_to<>{});
+        }
 
-    template <class Forward>
-    auto adjacent_find(Forward && s)
-    -> decltype(sequence_fwd<Forward>(s))
-    {
-        return ::ural::adjacent_find(std::forward<Forward>(s),
-                                     ::ural::equal_to<>{});
-    }
+        template <class Forward, class BinaryPredicate>
+        auto operator()(Forward && s, BinaryPredicate pred) const
+        -> decltype(sequence_fwd<Forward>(s))
+        {
+            return this->impl(sequence_fwd<Forward>(s),
+                              ural::make_callable(std::move(pred)));
+        }
+    private:
+        template <class Forward, class BinaryPredicate>
+        static Forward impl(Forward s, BinaryPredicate pred)
+        {
+            if(!s)
+            {
+                return s;
+            }
 
-    template <class Forward1, class Forward2, class BinaryPredicate>
-    auto search(Forward1 && in, Forward2 && s, BinaryPredicate bin_pred)
-    -> decltype(sequence_fwd<Forward1>(in))
-    {
-        return ::ural::details::search(sequence_fwd<Forward1>(in),
-                                       sequence_fwd<Forward2>(s),
-                                       ural::make_callable(std::move(bin_pred)));
-    }
+            auto s_next = ural::next(s);
 
-    template <class Forward1, class Forward2>
-    auto search(Forward1 && in, Forward2 && s)
-    -> decltype(sequence_fwd<Forward1>(in))
-    {
-        return ::ural::search(std::forward<Forward1>(in),
-                              std::forward<Forward2>(s),
-                              ural::equal_to<>{});
-    }
+            for(; !!s_next; ++ s_next)
+            {
+                if(pred(*s, *s_next))
+                {
+                    return s;
+                }
+                s = s_next;
+            }
+            return s_next;
+        }
+    };
 
-    template <class Forward, class Size, class T,  class BinaryPredicate>
-    auto search_n(Forward && in, Size count, T const & value,
-                  BinaryPredicate bin_pred)
-    -> decltype(sequence_fwd<Forward>(in))
+    class mismatch_fn
     {
-        return ::ural::details::search_n(sequence_fwd<Forward>(in),
-                                         std::move(count), value,
-                                         ural::make_callable(std::move(bin_pred)));
-    }
+    public:
+        template <class Input1, class Input2>
+        auto operator()(Input1 && in1, Input2 && in2) const
+        -> tuple<decltype(sequence_fwd<Input1>(in1)),
+                 decltype(sequence_fwd<Input2>(in2))>
+        {
+            return (*this)(std::forward<Input1>(in1),
+                           std::forward<Input2>(in2), ural::equal_to<>());
+        }
 
-    template <class Forward, class Size, class T>
-    auto search_n(Forward && in, Size count, T const & value)
-    -> decltype(sequence_fwd<Forward>(in))
-    {
-        return ::ural::search_n(std::forward<Forward>(in), std::move(count),
-                                value, ural::equal_to<>{});
-    }
+        template <class Input1, class Input2, class BinaryPredicate>
+        auto operator()(Input1 && in1, Input2 && in2, BinaryPredicate pred) const
+        -> tuple<decltype(sequence_fwd<Input1>(in1)),
+                 decltype(sequence_fwd<Input2>(in2))>
+        {
+            return this->impl(sequence_fwd<Input1>(in1),
+                              sequence_fwd<Input2>(in2),
+                              make_callable(std::move(pred)));
+        }
 
-    template <class Input1, class Input2, class BinaryPredicate>
-    bool equal(Input1 && in1, Input2 && in2, BinaryPredicate pred)
-    {
-        return ::ural::details::equal(sequence_fwd<Input1>(in1),
-                                      sequence_fwd<Input2>(in2),
-                                      ural::make_callable(std::move(pred)));
-    }
+    private:
+        template <class Input1, class Input2, class BinaryPredicate>
+        static tuple<Input1, Input2>
+        impl(Input1 in1, Input2 in2, BinaryPredicate pred)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input2>));
+            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input2>));
+            BOOST_CONCEPT_ASSERT((concepts::Callable<BinaryPredicate,
+                                                     bool(decltype(*in1), decltype(*in2))>));
 
-    template <class Input1, class Input2>
-    bool equal(Input1 && in1, Input2 && in2)
-    {
-        return ::ural::equal(std::forward<Input1>(in1),
-                             std::forward<Input2>(in2), ural::equal_to<>());
-    }
+            typedef tuple<Input1, Input2> Tuple;
+            for(; !!in1 && !!in2; ++ in1, ++ in2)
+            {
+                if(!pred(*in1, *in2))
+                {
+                    break;
+                }
+            }
+            return Tuple{std::move(in1), std::move(in2)};
+        }
+    };
 
-    template <class Input1, class Input2, class BinaryPredicate>
-    auto mismatch(Input1 && in1, Input2 && in2, BinaryPredicate pred)
-    -> tuple<decltype(sequence_fwd<Input1>(in1)),
-             decltype(sequence_fwd<Input2>(in2))>
+    class equal_fn
     {
-        return ::ural::details::mismatch(sequence_fwd<Input1>(in1),
-                                         sequence_fwd<Input2>(in2),
-                                         make_callable(std::move(pred)));
-    }
+    public:
+        template <class Input1, class Input2>
+        bool operator()(Input1 && in1, Input2 && in2) const
+        {
+            return (*this)(std::forward<Input1>(in1),
+                           std::forward<Input2>(in2), ural::equal_to<>());
+        }
 
-    template <class Input1, class Input2>
-    auto mismatch(Input1 && in1, Input2 && in2)
-    -> tuple<decltype(sequence_fwd<Input1>(in1)),
-             decltype(sequence_fwd<Input2>(in2))>
+        template <class Input1, class Input2, class BinaryPredicate>
+        bool operator()(Input1 && in1, Input2 && in2, BinaryPredicate pred) const
+        {
+            return this->impl(sequence_fwd<Input1>(in1),
+                              sequence_fwd<Input2>(in2),
+                              ural::make_callable(std::move(pred)));
+        }
+    private:
+        template <class Input1, class Input2, class BinaryPredicate>
+        static bool impl(Input1 in1, Input2 in2, BinaryPredicate pred)
+        {
+            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input1>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input1>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input2>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input2>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate,
+                                                           bool(decltype(*in1), decltype(*in2))>));
+
+            auto const r = ural::mismatch_fn{}(std::move(in1), std::move(in2),
+                                               std::move(pred));
+            return !r[ural::_1] && !r[ural::_2];
+        }
+    };
+
+    class search_fn
     {
-        return ::ural::mismatch(std::forward<Input1>(in1),
-                                std::forward<Input2>(in2), ural::equal_to<>());
-    }
+    public:
+        template <class Forward1, class Forward2>
+        auto operator()(Forward1 && in, Forward2 && s) const
+        -> decltype(sequence_fwd<Forward1>(in))
+        {
+            return (*this)(std::forward<Forward1>(in),
+                           std::forward<Forward2>(s),
+                           ural::equal_to<>{});
+        }
+
+        template <class Forward1, class Forward2, class BinaryPredicate>
+        auto operator()(Forward1 && in, Forward2 && s, BinaryPredicate bin_pred) const
+        -> decltype(sequence_fwd<Forward1>(in))
+        {
+            return this->impl(sequence_fwd<Forward1>(in),
+                              sequence_fwd<Forward2>(s),
+                              ural::make_callable(std::move(bin_pred)));
+        }
+
+    private:
+        template<class Forward1, class Forward2, class BinaryPredicate>
+        static Forward1 impl(Forward1 in, Forward2 s, BinaryPredicate p)
+        {
+            BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<Forward1>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Forward1>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<Forward2>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Forward2>));
+
+            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate,
+                                                           bool(decltype(*in), decltype(*s))>));
+
+            for(;; ++ in)
+            {
+                auto i = in;
+                auto i_s = s;
+                for(;; ++ i, ++ i_s)
+                {
+                    if(!i_s)
+                    {
+                        return in;
+                    }
+                    if(!i)
+                    {
+                        return i;
+                    }
+                    if(!p(*i, *i_s))
+                    {
+                        break;
+                    }
+                }
+            }
+            assert(false);
+        }
+    };
+
+    class find_end_fn
+    {
+    public:
+        template <class Forward1, class Forward2>
+        auto operator()(Forward1 && in, Forward2 && s) const
+        -> decltype(sequence_fwd<Forward1>(in))
+        {
+            return (*this)(std::forward<Forward1>(in),
+                           std::forward<Forward2>(s),
+                           ural::equal_to<>{});
+        }
+
+        template <class Forward1, class Forward2, class BinaryPredicate>
+        auto operator()(Forward1 && in, Forward2 && s, BinaryPredicate bin_pred) const
+        -> decltype(sequence_fwd<Forward1>(in))
+        {
+            return this->impl(sequence_fwd<Forward1>(in),
+                              sequence_fwd<Forward2>(s),
+                              make_callable(std::move(bin_pred)));
+        }
+    private:
+        template <class Forward1, class Forward2, class BinaryPredicate>
+        static Forward1
+        impl(Forward1 in, Forward2 s, BinaryPredicate bin_pred)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward1>));
+            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Forward1>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward2>));
+            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Forward2>));
+
+            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate,
+                                                           bool(decltype(*in), decltype(*s))>));
+            if(!s)
+            {
+                return in;
+            }
+
+            auto result = ::ural::search_fn{}(in, s, bin_pred);;
+            auto new_result = result;
+
+            for(;;)
+            {
+                if(!new_result)
+                {
+                    return result;
+                }
+                else
+                {
+                    result = std::move(new_result);
+                    in = result;
+                    ++ in;
+                    new_result = ::ural::search_fn{}(in, s, bin_pred);
+                }
+            }
+            return result;
+        }
+    };
+
+    class search_n_fn
+    {
+    public:
+        template <class Forward, class Size, class T>
+        auto operator()(Forward && in, Size count, T const & value) const
+        -> decltype(sequence_fwd<Forward>(in))
+        {
+            return (*this)(std::forward<Forward>(in), std::move(count),
+                           value, ural::equal_to<>{});
+        }
+
+        template <class Forward, class Size, class T,  class BinaryPredicate>
+        auto operator()(Forward && in, Size count, T const & value,
+                        BinaryPredicate bin_pred) const
+        -> decltype(sequence_fwd<Forward>(in))
+        {
+            return this->impl(sequence_fwd<Forward>(in),
+                              std::move(count), value,
+                              ural::make_callable(std::move(bin_pred)));
+        }
+
+    private:
+        template <class Forward, class Size, class T,  class BinaryPredicate>
+        static Forward impl(Forward in, Size const n, T const & value,
+                            BinaryPredicate bin_pred)
+        {
+            BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<Forward>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Forward>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate, bool(decltype(*in), T)>));
+
+            if(n == 0)
+            {
+                return in;
+            }
+
+            for(; !!in; ++ in)
+            {
+                if(!bin_pred(*in, value))
+                {
+                    continue;
+                }
+
+                auto candidate = in;
+                Size cur_count = 0;
+
+                while(true)
+                {
+                    ++ cur_count;
+                    if(cur_count == n)
+                    {
+                        return candidate;
+                    }
+                    ++ in;
+                    if(!in)
+                    {
+                        return in;
+                    }
+                    if(!bin_pred(*in, value))
+                    {
+                        break;
+                    }
+                }
+            }
+            return in;
+        }
+    };
 
     // Модифицирующие последовательность алгоритмы
-    auto constexpr copy = copy_fn{};
-
     class copy_if_fn
     {
     public:
@@ -387,15 +588,11 @@ namespace ural
                  decltype(sequence_fwd<Output>(out))>
         {
             auto in_f = sequence_fwd<Input>(in) | ural::filtered(pred);
-            auto res = ural::copy(std::move(in_f), sequence_fwd<Output>(out));
+            auto res = ural::copy_fn{}(std::move(in_f), sequence_fwd<Output>(out));
 
             return ural::make_tuple(res[ural::_1].base(), res[ural::_2]);
         }
-
-    private:
     };
-
-    auto constexpr copy_if = copy_if_fn{};
 
     class move_fn
     {
@@ -406,12 +603,10 @@ namespace ural
                  decltype(sequence_fwd<Output>(out))>
         {
             auto in_moved = ural::sequence_fwd<Input>(in) | ural::moved;
-            auto res = ural::copy(std::move(in_moved), sequence_fwd<Output>(out));
+            auto res = ural::copy_fn{}(std::move(in_moved), sequence_fwd<Output>(out));
             return ural::make_tuple(res[ural::_1].base(), res[ural::_2]);
         }
     };
-
-    auto constexpr move = move_fn{};
 
     // copy_backward
     class copy_backward_fn
@@ -431,8 +626,8 @@ namespace ural
         tuple<Bidir1, Bidir2>
         impl(Bidir1 in, Bidir2 out) const
         {
-            auto res = ural::copy(std::move(in) | ural::reversed,
-                                  std::move(out) | ural::reversed);
+            auto res = ural::copy_fn{}(std::move(in) | ural::reversed,
+                                       std::move(out) | ural::reversed);
 
             return ural::make_tuple(std::move(res[ural::_1].base()),
                                     std::move(res[ural::_2].base()));
@@ -459,18 +654,16 @@ namespace ural
         tuple<Bidir1, Bidir2>
         impl(Bidir1 in, Bidir2 out) const
         {
-            auto res = ural::move(std::move(in) | ural::reversed | ural::moved,
-                                  std::move(out) | ural::reversed);
+            auto res = ural::move_fn{}(std::move(in) | ural::reversed | ural::moved,
+                                       std::move(out) | ural::reversed);
 
             return ural::make_tuple(std::move(res[ural::_1].base().base()),
                                     std::move(res[ural::_2].base()));
         }
     };
 
-    auto constexpr move_backward = move_backward_fn{};
-
     // 25.3.4
-    class transform_f
+    class transform_fn
     {
     public:
         /** @brief Преобразование последовательности
@@ -544,8 +737,6 @@ namespace ural
         }
     };
 
-    auto constexpr transform = transform_f{};
-
     class generate_fn
     {
     public:
@@ -597,18 +788,6 @@ namespace ural
         }
     };
 
-    auto constexpr fill = fill_fn{};
-    auto constexpr generate = generate_fn{};
-
-    template <class Forward1, class Forward2>
-    auto swap_ranges(Forward1 && s1, Forward2 && s2)
-    -> ural::tuple<decltype(sequence_fwd<Forward1>(s1)),
-                   decltype(sequence_fwd<Forward2>(s2))>
-    {
-        return ::ural::details::swap_ranges(sequence_fwd<Forward1>(s1),
-                                            sequence_fwd<Forward2>(s2));
-    }
-
     /** @brief Тип функционального объекта копирования неповторяющихся значений
     */
     class unique_copy_fn
@@ -630,12 +809,11 @@ namespace ural
         {
             auto u_in = ::ural::make_unique_sequence(std::forward<Input>(in),
                                                      std::move(bin_pred));
-            auto r = ural::copy(std::move(u_in), std::forward<Output>(out));
+            auto r = ural::copy_fn{}(std::move(u_in), std::forward<Output>(out));
             return ural::make_tuple(std::move(r[ural::_1].base()),
                                     std::move(r[ural::_2]));
         }
     };
-    auto constexpr unique_copy = unique_copy_fn{};
 
     class reverse_fn
     {
@@ -667,47 +845,107 @@ namespace ural
             }
         }
     };
-    auto constexpr reverse = reverse_fn{};
 
-    template <class ForwardSequence>
-    auto rotate(ForwardSequence && seq)
-    -> decltype(sequence_fwd<ForwardSequence>(seq))
+    class rotate_copy_fn
     {
-        return ::ural::details::rotate(sequence_fwd<ForwardSequence>(seq));
-    }
+    public:
+        template <class Forward, class Output>
+        auto operator()(Forward && in, Output && out) const
+        -> ural::tuple<decltype(sequence_fwd<Forward>(in)),
+                       decltype(sequence_fwd<Output>(out))>
+        {
+            return this->impl(sequence_fwd<Forward>(in),
+                              sequence_fwd<Output>(out));
+        }
 
-    template <class Forward, class Output>
-    auto rotate_copy(Forward && in, Output && out)
-    -> ural::tuple<decltype(sequence_fwd<Forward>(in)),
-                   decltype(sequence_fwd<Output>(out))>
-    {
-        return ::ural::details::rotate_copy(sequence_fwd<Forward>(in),
-                                            sequence_fwd<Output>(out));
-    }
+    private:
+        template <class Forward, class Output>
+        static ural::tuple<Forward, Output>
+        impl(Forward in, Output out)
+        {
+            auto const n = ural::size(in);
+            auto in_orig = ural::next(in.original(), n);
 
-    template <class ForwardSequence, class T, class BinaryPredicate>
-    void replace(ForwardSequence && seq, T const & old_value, T const & new_value,
-                 BinaryPredicate bin_pred)
-    {
-        return ::ural::details::replace(sequence_fwd<ForwardSequence>(seq),
-                                        old_value, new_value,
-                                        make_callable(std::move(bin_pred)));
-    }
+            auto in_1 = in.traversed_front();
+            auto r1 = copy_fn{}(std::move(in), std::move(out));
+            auto r2 = copy_fn{}(in_1, std::move(r1[ural::_2]));
 
-    template <class ForwardSequence, class T>
-    void replace(ForwardSequence && seq, T const & old_value, T const & new_value)
-    {
-        return ::ural::replace(std::forward<ForwardSequence>(seq),
-                               old_value, new_value, ural::equal_to<>{});
-    }
+            return ural::tuple<Forward, Output>{std::move(in_orig),
+                                                std::move(r2[ural::_2])};
+        }
+    };
 
-    template <class ForwardSequence, class Predicate, class T>
-    void replace_if(ForwardSequence && seq, Predicate pred, T const & new_value)
+    class replace_if_fn
     {
-        return ::ural::details::replace_if(sequence_fwd<ForwardSequence>(seq),
-                                           make_callable(std::move(pred)),
+    public:
+        template <class ForwardSequence, class Predicate, class T>
+        void operator()(ForwardSequence && seq,
+                        Predicate pred, T const & new_value) const
+        {
+            return this->impl(sequence_fwd<ForwardSequence>(seq),
+                              make_callable(std::move(pred)), new_value);
+        }
+
+    private:
+        template <class ForwardSequence, class Predicate, class T>
+        static void
+        impl(ForwardSequence seq, Predicate pred, T const & new_value)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::WritableSequence<ForwardSequence, T>));
+            BOOST_CONCEPT_ASSERT((concepts::Callable<Predicate, bool(decltype(*seq))>));
+
+            for(; !!seq; ++ seq)
+            {
+                if(pred(*seq))
+                {
+                    *seq = new_value;
+                }
+            }
+        }
+    };
+
+    class replace_fn
+    {
+    public:
+        template <class ForwardSequence, class T>
+        void operator()(ForwardSequence && seq,
+                        T const & old_value, T const & new_value) const
+        {
+            return (*this)(std::forward<ForwardSequence>(seq),
+                           old_value, new_value, ural::equal_to<>{});
+        }
+
+        template <class ForwardSequence, class T, class BinaryPredicate>
+        void operator()(ForwardSequence && seq,
+                        T const & old_value, T const & new_value,
+                        BinaryPredicate bin_pred) const
+        {
+            return this->impl(sequence_fwd<ForwardSequence>(seq),
+                              old_value, new_value,
+                              make_callable(std::move(bin_pred)));
+        }
+
+    private:
+        template <class ForwardSequence, class T, class BinaryPredicate>
+        static void
+        impl(ForwardSequence seq, T const & old_value, T const & new_value,
+             BinaryPredicate bin_pred)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::WritableSequence<ForwardSequence, T>));
+
+            BOOST_CONCEPT_ASSERT((concepts::Callable<BinaryPredicate, bool(decltype(*seq), T)>));
+
+            auto const pred = std::bind(std::move(bin_pred), ural::_1,
+                                        std::cref(old_value));
+
+            return ::ural::replace_if_fn{}(std::move(seq), std::move(pred),
                                            new_value);
-    }
+        }
+    };
 
     // Тусовка
     class shuffle_fn
@@ -738,7 +976,6 @@ namespace ural
             }
         }
     };
-    auto constexpr shuffle = shuffle_fn{};
 
     class random_shuffle_fn
     {
@@ -747,48 +984,171 @@ namespace ural
         void operator()(RASequence && s) const
         {
             ural::c_rand_engine rnd;
-            return ::ural::shuffle(std::forward<RASequence>(s), rnd);
+            return ::ural::shuffle_fn{}(std::forward<RASequence>(s), rnd);
         }
     };
-    auto constexpr random_shuffle = random_shuffle_fn{};
 
     // Разделение
-    template <class Input, class UnaryPredicate>
-    bool is_partitioned(Input && in, UnaryPredicate pred)
+    class is_partitioned_fn
     {
-        return ::ural::details::is_partitioned(sequence_fwd<Input>(in),
-                                               make_callable(std::move(pred)));
-    }
+    public:
+        template <class Input, class UnaryPredicate>
+        bool operator()(Input && in, UnaryPredicate pred) const
+        {
+            return this->impl(sequence_fwd<Input>(in),
+                              make_callable(std::move(pred)));
+        }
 
-    template <class ForwardSequence, class UnaryPredicate>
-    auto partition(ForwardSequence && in, UnaryPredicate pred)
-    -> decltype(sequence_fwd<ForwardSequence>(in))
-    {
-        return ::ural::details::partition(sequence_fwd<ForwardSequence>(in),
-                                          make_callable(std::move(pred)));
-    }
+    private:
+        template <class Input, class UnaryPredicate>
+        static bool impl(Input in, UnaryPredicate pred)
+        {
+            auto tail = find_if_not_fn{}(std::move(in), pred);
+            return !find_if_fn{}(std::move(tail), std::move(pred));
+        }
+    };
 
-    template <class ForwardSequence, class UnaryPredicate>
-    auto stable_partition(ForwardSequence && in, UnaryPredicate pred)
-    -> decltype(sequence_fwd<ForwardSequence>(in))
+    class partition_fn
     {
-        auto s = sequence_fwd<ForwardSequence>(in);
-        return ::ural::details::stable_partition(std::move(s),
-                                                 make_callable(std::move(pred)));
-    }
+    public:
+        template <class ForwardSequence, class UnaryPredicate>
+        auto operator()(ForwardSequence && in, UnaryPredicate pred) const
+        -> decltype(sequence_fwd<ForwardSequence>(in))
+        {
+            return this->impl(sequence_fwd<ForwardSequence>(in),
+                              make_callable(std::move(pred)));
+        }
+    private:
+        template <class ForwardSequence, class UnaryPredicate>
+        static ForwardSequence
+        impl(ForwardSequence in, UnaryPredicate pred)
+        {
+            // пропускаем ведущие "хорошие" элеменнов
+            auto sink = find_if_not_fn{}(std::move(in), pred);
 
-    template <class Input, class Output1, class Output2, class UnaryPredicate>
-    auto partition_copy(Input && in, Output1 && out_true, Output2 && out_false,
-                        UnaryPredicate pred)
-    -> ural::tuple<decltype(sequence_fwd<Input>(in)),
-                   decltype(sequence_fwd<Output1>(out_true)),
-                   decltype(sequence_fwd<Output2>(out_false))>
+            in = sink;
+            ++ in;
+            in = find_if_fn{}(std::move(in), pred);
+
+            for(; !!in; ++ in)
+            {
+                if(pred(*in))
+                {
+                    ::ural::details::do_swap(*sink, *in);
+                    ++ sink;
+                }
+            }
+            return sink;
+        }
+    };
+
+    class stable_partition_fn
     {
-        return ::ural::details::partition_copy(sequence_fwd<Input>(in),
-                                               sequence_fwd<Output1>(out_true),
-                                               sequence_fwd<Output2>(out_false),
-                                               make_callable(std::move(pred)));
-    }
+    public:
+        template <class ForwardSequence, class UnaryPredicate>
+        auto operator()(ForwardSequence && in, UnaryPredicate pred) const
+        -> decltype(sequence_fwd<ForwardSequence>(in))
+        {
+            return this->impl(sequence_fwd<ForwardSequence>(in),
+                              make_callable(std::move(pred)));
+        }
+
+    private:
+        template <class ForwardSequence, class UnaryPredicate>
+        ForwardSequence
+        impl_inplace(ForwardSequence in, UnaryPredicate pred) const
+        {
+            auto const n = ural::size(in);
+
+            assert(!!in);
+            assert(n > 0);
+            assert(!pred(*in));
+            assert(!in.traversed_front());
+
+            auto const s_orig = ural::shrink_front(in);
+
+            if(n == 1)
+            {
+                return s_orig;
+            }
+
+            // Разделяем первую половину
+            auto const n_left = n/2;
+            auto s = ural::next(s_orig, n_left);
+
+            auto r_left = this->impl_inplace(s.traversed_front(), pred);
+
+            // Разделяем вторую половину
+            auto s_right = find_if_not_fn{}(ural::shrink_front(s), pred);
+
+            if(!!s_right)
+            {
+                auto r_right = this->impl_inplace(ural::shrink_front(s_right), pred);
+                ural::advance(s_right, ural::size(r_right.traversed_front()));
+            }
+
+            // Поворачиваем
+            auto r = ::ural::rotate_fn{}(ural::shrink_front(r_left),
+                                         s_right.traversed_front());
+
+            // Возвращаем результат
+            auto nt = ::ural::size(r_left.traversed_front());
+            nt += ::ural::size(r[ural::_1].traversed_front());
+
+            return ural::next(s_orig, nt);
+        }
+
+        template <class ForwardSequence, class UnaryPredicate>
+        ForwardSequence
+        impl(ForwardSequence in, UnaryPredicate pred) const
+        {
+            in.shrink_front();
+            in = find_if_not_fn{}(std::move(in), pred);
+
+            if(!in)
+            {
+                return in;
+            }
+
+            // Разделяем на месте
+            auto s = ural::shrink_front(std::move(in));
+            auto r = this->impl_inplace(std::move(s), pred);
+            auto const nt = ural::size(r.traversed_front());
+            return ural::next(in, nt);
+        }
+    };
+
+    class partition_copy_fn
+    {
+    public:
+        template <class Input, class Output1, class Output2, class UnaryPredicate>
+        auto operator()(Input && in, Output1 && out_true, Output2 && out_false,
+                        UnaryPredicate pred) const
+        -> ural::tuple<decltype(sequence_fwd<Input>(in)),
+                       decltype(sequence_fwd<Output1>(out_true)),
+                       decltype(sequence_fwd<Output2>(out_false))>
+        {
+            return this->impl(sequence_fwd<Input>(in),
+                              sequence_fwd<Output1>(out_true),
+                              sequence_fwd<Output2>(out_false),
+                              make_callable(std::move(pred)));
+        }
+
+    private:
+        template <class Input, class Output1, class Output2, class UnaryPredicate>
+        static ural::tuple<Input, Output1, Output2>
+        impl(Input in, Output1 out_true, Output2 out_false, UnaryPredicate pred)
+        {
+            auto out = ural::make_partition_sequence(std::move(out_true),
+                                                     std::move(out_false),
+                                                     std::move(pred));
+            auto r = copy_fn{}(std::move(in), std::move(out));
+
+            typedef ural::tuple<Input, Output1, Output2> Tuple;
+            return Tuple(r[ural::_1], r[ural::_2].true_sequence(),
+                         r[ural::_2].false_sequence());
+        }
+    };
 
     class partition_point_fn
     {
@@ -811,7 +1171,6 @@ namespace ural
             return find_if_not_fn{}(std::move(in), std::move(pred));
         }
     };
-    auto constexpr partition_point = partition_point_fn{};
 
     // Бинарные кучи
     class is_heap_until_fn
@@ -864,8 +1223,6 @@ namespace ural
         }
     };
 
-    auto constexpr is_heap_until = ::ural::is_heap_until_fn{};
-
     class is_heap_fn
     {
     public:
@@ -890,10 +1247,9 @@ namespace ural
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
             BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
 
-            return !::ural::is_heap_until(seq, cmp);
+            return !::ural::is_heap_until_fn{}(seq, cmp);
         }
     };
-    auto constexpr is_heap = is_heap_fn{};
 
     class heap_sink_fn
     {
@@ -972,8 +1328,6 @@ namespace ural
         }
     };
 
-    auto constexpr make_heap = make_heap_fn{};
-
     class push_heap_fn
     {
     public:
@@ -1015,7 +1369,7 @@ namespace ural
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
             BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
 
-            assert(::ural::is_heap_until(seq, cmp).size() <= 1);
+            assert(::ural::is_heap_until_fn{}(seq, cmp).size() <= 1);
 
             if(seq.size() >= 1)
             {
@@ -1025,7 +1379,6 @@ namespace ural
             assert(is_heap_fn{}(seq, cmp));
         }
     };
-    auto constexpr push_heap = push_heap_fn{};
 
     class pop_heap_fn
     {
@@ -1063,7 +1416,6 @@ namespace ural
             heap_sink_fn{}(seq, 0*N, N-1, cmp);
         }
     };
-    auto constexpr pop_heap = pop_heap_fn{};
 
     class sort_heap_fn
     {
@@ -1109,7 +1461,6 @@ namespace ural
             assert(::ural::is_sorted_fn{}(seq, cmp));
         }
     };
-    auto constexpr sort_heap = sort_heap_fn{};
 
     class heap_select_fn
     {
@@ -1185,7 +1536,6 @@ namespace ural
             return ::ural::partition_point_fn{}(std::move(in), std::move(pred));
         }
     };
-    auto constexpr lower_bound = lower_bound_fn{};
 
     class upper_bound_fn
     {
@@ -1222,7 +1572,6 @@ namespace ural
             return ::ural::partition_point_fn{}(std::move(in), std::move(pred));
         }
     };
-    auto constexpr upper_bound = upper_bound_fn{};
 
     class binary_search_fn
     {
@@ -1250,7 +1599,6 @@ namespace ural
             return !!in && !cmp(value, *in);
         }
     };
-    auto constexpr binary_search = binary_search_fn{};
 
     class equal_range_fn
     {
@@ -1286,13 +1634,6 @@ namespace ural
             return in;
         }
     };
-    auto constexpr equal_range = equal_range_fn{};
-
-    auto constexpr is_sorted_until = is_sorted_until_fn{};
-    auto constexpr is_sorted = is_sorted_fn{};
-
-    auto constexpr sort = sort_fn{};
-    auto constexpr stable_sort = stable_sort_fn{};
 
     class partial_sort_fn
     {
@@ -1333,7 +1674,6 @@ namespace ural
             sort_heap_fn{}(s.traversed_front(), cmp);
         }
     };
-    auto constexpr partial_sort = partial_sort_fn{};
 
     class partial_sort_copy_fn
     {
@@ -1382,7 +1722,6 @@ namespace ural
             return out;
         }
     };
-    auto constexpr partial_sort_copy = partial_sort_copy_fn{};
 
     class nth_element_fn
     {
@@ -1407,7 +1746,6 @@ namespace ural
             return heap_select_fn{}(std::move(s), std::move(cmp));
         }
     };
-    auto constexpr nth_element = nth_element_fn{};
 
     class inplace_merge_fn
     {
@@ -1469,7 +1807,7 @@ namespace ural
                 s1_cut = upper_bound_fn{}(s1, *s2_cut, cmp);
             }
 
-            ::ural::details::rotate(s1_cut, s2_cut.traversed_front());
+            ::ural::rotate_fn{}(s1_cut, s2_cut.traversed_front());
 
             auto s_new = s.original();
 
@@ -1489,7 +1827,6 @@ namespace ural
             inplace_merge_fn::impl(s2_new, cmp);
         }
     };
-    auto constexpr inplace_merge = inplace_merge_fn{};
 
     class lexicographical_compare_fn
     {
@@ -1536,8 +1873,6 @@ namespace ural
         }
     };
 
-    auto constexpr lexicographical_compare = lexicographical_compare_fn{};
-
     class is_permutation_fn
     {
     public:
@@ -1563,8 +1898,8 @@ namespace ural
         static bool
         impl(Forward1 s1, Forward2 s2, BinaryPredicate pred)
         {
-            std::tie(s1, s2) = ural::details::mismatch(std::move(s1), std::move(s2),
-                                                       pred);
+            std::tie(s1, s2) = ural::mismatch_fn{}(std::move(s1), std::move(s2),
+                                                   pred);
 
             s1.shrink_front();
             s2.shrink_front();
@@ -1595,7 +1930,6 @@ namespace ural
             return true;
         }
     };
-    auto constexpr is_permutation = is_permutation_fn{};
 
     // Операции с множествами
     class includes_fn
@@ -1647,8 +1981,6 @@ namespace ural
         }
     };
 
-    auto constexpr includes = includes_fn{};
-
     // Поиск наибольшего и наименьшего
     class min_element_fn
     {
@@ -1669,7 +2001,7 @@ namespace ural
 
             auto seq = in | ural::outdirected;
 
-            acc = ::ural::for_each(std::move(seq), std::move(acc));
+            acc = ::ural::for_each_fn{}(std::move(seq), std::move(acc));
 
             return acc.result();
         }
@@ -1690,8 +2022,6 @@ namespace ural
         }
     };
 
-    auto constexpr min_element = min_element_fn{};
-
     class max_element_fn
     {
     private:
@@ -1701,8 +2031,8 @@ namespace ural
         {
             auto transposed_cmp = ural::make_binary_reverse_args(std::move(cmp));
 
-            return ::ural::min_element(std::move(in),
-                                       std::move(transposed_cmp));
+            return ::ural::min_element_fn{}(std::move(in),
+                                            std::move(transposed_cmp));
         }
 
     public:
@@ -1721,8 +2051,6 @@ namespace ural
             return (*this)(sequence_fwd<ForwardSequence>(in), ural::less<>{});
         }
     };
-
-    auto constexpr max_element = max_element_fn{};
 
     class minmax_element_fn
     {
@@ -1798,8 +2126,6 @@ namespace ural
             return Tuple{acc_min.result(), acc_max.result()};
         }
     };
-
-    auto constexpr minmax_element = minmax_element_fn{};
 
     // Перестановки
     class next_permutation_fn
@@ -1927,7 +2253,7 @@ namespace ural
 
             auto in_filtered = ural::next(out) | ural::removed_if(std::move(pred));
 
-            return ural::move(in_filtered, out)[ural::_2];
+            return ural::move_fn{}(in_filtered, out)[ural::_2];
         }
     };
 
@@ -2018,18 +2344,11 @@ namespace ural
     };
 
     auto constexpr const erase = erase_fn{};
-
-    auto constexpr const remove = remove_fn{};
     auto constexpr const remove_erase = remove_erase_fn{};
 
-    auto constexpr const remove_if = remove_if_fn{};
     auto constexpr const remove_if_erase = remove_if_erase_fn{};
 
-    auto constexpr const unique = unique_fn{};
     auto constexpr const unique_erase = unique_erase_fn{};
-
-    auto constexpr const next_permutation = next_permutation_fn{};
-    auto constexpr const prev_permutation = prev_permutation_fn{};
 
     class move_if_noexcept_fn
     {
@@ -2058,13 +2377,174 @@ namespace ural
         tuple<Input, Output>
         impl(Input in, Output out) const
         {
-            auto r = ural::copy(std::move(in) | transformed(cref = *this),
-                                std::move(out));
+            auto r = ural::copy_fn{}(std::move(in) | transformed(cref = *this),
+                                     std::move(out));
             return ural::make_tuple(r[ural::_1].bases()[ural::_1],
                                     r[ural::_2]);
         }
     };
     constexpr auto move_if_noexcept = move_if_noexcept_fn{};
+
+    namespace
+    {
+        // 25.2 Немодифицирующие
+        // 25.2.1-3 Кванторы
+        constexpr auto const all_of = all_of_fn{};
+        constexpr auto const none_of = none_of_fn{};
+        constexpr auto const any_of = any_of_fn{};
+
+        // 25.2.4 for_each
+        constexpr auto const for_each = for_each_fn{};
+
+        // 25.2.5 Поиск
+        constexpr auto const find = find_fn{};
+        constexpr auto const find_if = find_if_fn{};
+        constexpr auto const find_if_not = find_if_not_fn{};
+
+        // 25.2.6 Поиск конца подпоследовательности (find_end)
+        constexpr auto const find_end = find_end_fn{};
+
+        // 25.2.7 Поиск первого вхождения
+        constexpr auto const find_first_of = find_first_of_fn{};
+        constexpr auto const find_first_not_of = find_first_not_of_fn{};
+
+        // 25.2.8 Поиск соседних одинаковых элементов
+        constexpr auto const adjacent_find = adjacent_find_fn{};
+
+        // 25.2.9 Подсчёт
+        constexpr auto const count = count_fn{};
+        constexpr auto const count_if = count_if_fn{};
+
+        // 25.2.10 Поиск несовпадения
+        constexpr auto const mismatch = mismatch_fn{};
+
+        // 25.2.11 Равенство
+        constexpr auto const equal = equal_fn{};
+
+        // 25.2.12 Являются ли две последовательности перестановками?
+        constexpr auto const is_permutation = is_permutation_fn{};
+
+        // 25.2.13 Поиск подпоследовательностей
+        constexpr auto const search = search_fn{};
+        constexpr auto const search_n = search_n_fn{};
+
+        // 25.3 Модифицирующие алгоритмы
+        // 25.3.1 Копирование
+        constexpr auto const copy = copy_fn{};
+        // @todo copy_n  copy(in | taken(n), out)
+        constexpr auto const copy_if = copy_if_fn{};
+        constexpr auto const copy_backward = copy_backward_fn{};
+
+        // 25.3.2 Перемещение
+        constexpr auto const move = move_fn{};
+        constexpr auto const move_backward = move_backward_fn{};
+
+        // 25.3.3 Обмен
+        constexpr auto const swap_ranges = swap_ranges_fn{};
+
+        // 25.3.4 Преобразование
+        constexpr auto const transform = transform_fn{};
+
+        // 25.3.5 Замена
+        constexpr auto const replace = replace_fn{};
+        constexpr auto const replace_if = replace_if_fn{};
+        // @todo replace_copy(_if)
+
+        // 25.3.6 Заполнение
+        constexpr auto const fill = fill_fn{};
+
+        // 25.3.7 Порождение
+        constexpr auto const generate = generate_fn{};
+        // @todo generate_n (с преобразованием в функциональный объект)
+
+        // 25.3.8 Удаление
+        constexpr auto const remove = remove_fn{};
+        constexpr auto const remove_if = remove_if_fn{};
+        // @todo remove_copy(_if)
+
+        // 25.3.9 Устранение последовательных дубликатов
+        constexpr auto const unique = unique_fn{};
+        constexpr auto const unique_copy = unique_copy_fn{};
+
+        // 25.3.10 Обращение
+        constexpr auto const reverse = reverse_fn{};
+        // @todo reverse_copy
+
+        // 25.3.11 Вращение
+        constexpr auto const rotate = rotate_fn{};
+        constexpr auto const rotate_copy = rotate_copy_fn{};
+
+        // 25.3.12 Тасовка
+        constexpr auto const shuffle = shuffle_fn{};
+        constexpr auto const random_shuffle = random_shuffle_fn{};
+
+        // 25.3.13 Разделение
+        constexpr auto const is_partitioned = is_partitioned_fn{};
+        constexpr auto const partition = partition_fn{};
+        constexpr auto const stable_partition = stable_partition_fn{};
+        constexpr auto const partition_copy = partition_copy_fn{};
+        constexpr auto const partition_point = partition_point_fn{};
+
+        // 25.4 Сортировка и связанные с ним операции
+        // 25.4.1 Сортировка
+        // 25.4.1.1 Быстрая сортировка
+        constexpr auto const sort = sort_fn{};
+
+        // 25.4.1.2 Устойчивая сортировка
+        constexpr auto const stable_sort = stable_sort_fn{};
+
+        // 25.4.1.3 Частичная сортировка
+        constexpr auto const partial_sort = partial_sort_fn{};
+
+        // 25.4.1.4 Частичная сортировка с копированием
+        constexpr auto const partial_sort_copy = partial_sort_copy_fn{};
+
+        // 25.4.1.5 Проверка сортированности
+        constexpr auto const is_sorted = is_sorted_fn{};
+        constexpr auto const is_sorted_until = is_sorted_until_fn{};
+
+        // 25.4.2 N-ый элемент
+        constexpr auto const nth_element = nth_element_fn{};
+
+        // 25.4.3 Бинарный поиск
+        constexpr auto const lower_bound = lower_bound_fn{};
+        constexpr auto const upper_bound = upper_bound_fn{};
+        constexpr auto const equal_range = equal_range_fn{};
+        constexpr auto const binary_search = binary_search_fn{};
+
+        // 25.4.4 Слияние
+        // @todo merge
+        constexpr auto const inplace_merge = inplace_merge_fn{};
+
+        // 25.4.5 Операции с сортированными множествами
+        constexpr auto const includes = includes_fn{};
+        // @todo set_union
+        // @todo set_intersection
+        // @todo set_difference
+        // @todo set_symmetric_difference
+
+        // 25.4.6 Операции с бинарными кучами
+        constexpr auto const push_heap = push_heap_fn{};
+        constexpr auto const pop_heap = pop_heap_fn{};
+        constexpr auto const make_heap = make_heap_fn{};
+        constexpr auto const sort_heap = sort_heap_fn{};
+        constexpr auto const is_heap = is_heap_fn{};
+        constexpr auto const is_heap_until = is_heap_until_fn{};
+
+        // 25.4.7 Наибольшее и наименьшее значение
+        constexpr auto const min_element = min_element_fn{};
+        constexpr auto const max_element = max_element_fn{};
+        constexpr auto const minmax_element = minmax_element_fn{};
+
+        // 25.4.8 Лексикографическое сравнение
+        constexpr auto const lexicographical_compare = lexicographical_compare_fn{};
+
+        // 25.4.9 Порождение перестановка
+        constexpr auto const next_permutation = next_permutation_fn{};
+        constexpr auto const prev_permutation = prev_permutation_fn{};
+
+        // @todo остальные алгоритмы
+    }
 }
 // namespace ural
 
