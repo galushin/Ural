@@ -37,8 +37,25 @@ typedef boost::mpl::list<std::forward_list<int>,
                          std::list<int>,
                          std::vector<int>> Sources;
 
+// @todo Тесты с минимальными последовательностями
+
 // 25.2 Алгоритмы, не модифицирующие последовательность
 // 25.2.1
+BOOST_AUTO_TEST_CASE(all_of_minimalistic_test)
+{
+    std::istringstream is0("");
+    std::istringstream is1("2 4 6 8 10");
+    std::istringstream is2("2 4 6 7 10");
+
+    typedef int Element;
+
+    auto const is_even = [](Element i){ return i % 2 == 0; };
+
+    BOOST_CHECK_EQUAL(ural::all_of(ural::make_istream_sequence<Element>(is0), is_even), true);
+    BOOST_CHECK_EQUAL(ural::all_of(ural::make_istream_sequence<Element>(is1), is_even), true);
+    BOOST_CHECK_EQUAL(ural::all_of(ural::make_istream_sequence<Element>(is2), is_even), false);
+}
+
 BOOST_AUTO_TEST_CASE_TEMPLATE(all_of_test, Source, Sources)
 {
     typedef typename Source::value_type Element;
@@ -340,7 +357,7 @@ BOOST_AUTO_TEST_CASE(copy_test_different_sizes)
     BOOST_CHECK(!!r2[ural::_2]);
 }
 
-BOOST_AUTO_TEST_CASE(copy_n_test)
+BOOST_AUTO_TEST_CASE(copy_n_analog_test)
 {
     std::string const src = "1234567890";
     std::string r_std;
@@ -351,6 +368,21 @@ BOOST_AUTO_TEST_CASE(copy_n_test)
     std::copy_n(src.begin(), n, std::back_inserter(r_std));
 
     ural::copy(src | ural::taken(n), std::back_inserter(r_ural));
+
+    BOOST_CHECK_EQUAL(r_std, r_ural);
+}
+
+BOOST_AUTO_TEST_CASE(copy_n_test)
+{
+    std::string const src = "1234567890";
+    std::string r_std;
+    std::string r_ural;
+
+    auto const n = 4;
+
+    std::copy_n(src.begin(), n, std::back_inserter(r_std));
+
+    ural::copy_n(src, n, std::back_inserter(r_ural));
 
     BOOST_CHECK_EQUAL(r_std, r_ural);
 }

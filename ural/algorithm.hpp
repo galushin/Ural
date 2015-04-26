@@ -581,6 +581,23 @@ namespace ural
     };
 
     // Модифицирующие последовательность алгоритмы
+    class copy_n_fn
+    {
+    public:
+        template <class Input, class Size, class Output>
+        auto operator()(Input && in, Size n, Output && out) const
+        -> tuple<decltype(::ural::sequence_fwd<Input>(in)),
+                 decltype(::ural::sequence_fwd<Output>(out))>
+        {
+            auto in_n = ::ural::sequence_fwd<Input>(in) | ural::taken(n);
+
+            auto result = ::ural::copy_fn{}(std::move(in_n),
+                                            ::ural::sequence_fwd<Output>(out));
+            return ural::make_tuple(std::move(result[ural::_1]).base(),
+                                    std::move(result[ural::_2]));
+        }
+    };
+
     class copy_if_fn
     {
     public:
@@ -2497,7 +2514,7 @@ namespace ural
         // 25.3 Модифицирующие алгоритмы
         // 25.3.1 Копирование
         constexpr auto const copy = copy_fn{};
-        // @todo copy_n  copy(in | taken(n), out)
+        constexpr auto const copy_n = copy_n_fn{};
         constexpr auto const copy_if = copy_if_fn{};
         constexpr auto const copy_backward = copy_backward_fn{};
 
