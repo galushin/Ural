@@ -2456,6 +2456,46 @@ namespace ural
         }
     };
 
+    class remove_copy_if_fn
+    {
+    public:
+        template <class Input, class Output, class Predicate>
+        auto operator()(Input && in, Output && out, Predicate pred) const
+        -> tuple<decltype(ural::sequence_fwd<Input>(in)),
+                 decltype(ural::sequence_fwd<Output>(out))>
+        {
+            return ural::copy_if_fn{}(std::forward<Input>(in),
+                                      std::forward<Output>(out),
+                                      ural::not_fn(std::move(pred)));
+        }
+    };
+
+    class remove_copy_fn
+    {
+    public:
+        template <class Input, class Output, class T>
+        auto operator()(Input && in, Output && out, T const & value) const
+        -> tuple<decltype(ural::sequence_fwd<Input>(in)),
+                 decltype(ural::sequence_fwd<Output>(out))>
+        {
+            return (*this)(std::forward<Input>(in), std::forward<Output>(out),
+                           value, ural::equal_to<>{});
+        }
+
+        template <class Input, class Output, class T, class BinaryPredicate>
+        auto operator()(Input && in, Output && out, T const & value,
+                        BinaryPredicate bin_pred) const
+        -> tuple<decltype(ural::sequence_fwd<Input>(in)),
+                 decltype(ural::sequence_fwd<Output>(out))>
+        {
+            auto pred = std::bind(ural::make_callable(std::move(bin_pred)),
+                                  ural::_1, std::cref(value));
+            return remove_copy_if_fn{}(std::forward<Input>(in),
+                                       std::forward<Output>(out),
+                                       std::move(pred));
+        }
+    };
+
     // Алгоритмы над контейнерами
     class remove_if_erase_fn
     {
@@ -2601,8 +2641,7 @@ namespace ural
         constexpr auto const replace = replace_fn{};
         constexpr auto const replace_if = replace_if_fn{};
         constexpr auto const replace_copy = replace_copy_fn{};
-        // @todo replace_copy
-        // @todo replace_copy(_if)
+        constexpr auto const replace_copy_if = replace_copy_if_fn{};
 
         // 25.3.6 Заполнение
         constexpr auto const fill = fill_fn{};
@@ -2614,7 +2653,8 @@ namespace ural
         // 25.3.8 Удаление
         constexpr auto const remove = remove_fn{};
         constexpr auto const remove_if = remove_if_fn{};
-        // @todo remove_copy(_if)
+        constexpr auto const remove_copy = remove_copy_fn{};
+        constexpr auto const remove_copy_if = remove_copy_if_fn{};
 
         // 25.3.9 Устранение последовательных дубликатов
         constexpr auto const unique = unique_fn{};

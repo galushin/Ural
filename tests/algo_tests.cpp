@@ -38,6 +38,7 @@ typedef boost::mpl::list<std::forward_list<int>,
                          std::vector<int>> Sources;
 
 // @todo Тесты с минимальными последовательностями
+// @todo Тесты возвращаемых значений
 
 // 25.2 Алгоритмы, не модифицирующие последовательность
 // 25.2.1
@@ -721,6 +722,28 @@ BOOST_AUTO_TEST_CASE(replace_sequence_if_test)
                                   x_ural.begin(), x_ural.end());
 }
 
+BOOST_AUTO_TEST_CASE(replace_copy_if_test)
+{
+    // Подготовка
+    std::forward_list<int> const source{5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
+    auto pred = [](int x) {return x < 5;};
+    auto const new_value = 55;
+
+    // std
+    std::vector<int> x_std;
+    std::replace_copy_if(source.begin(), source.end(),
+                         std::back_inserter(x_std), pred, new_value);
+
+    // ural
+    std::vector<int> x_ural;
+    ural::replace_copy_if(source, x_ural | ural::back_inserter,
+                          pred, new_value);
+
+    // Проверка
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
+
 // 25.3.6 Заполнение
 BOOST_AUTO_TEST_CASE(fill_test)
 {
@@ -881,6 +904,25 @@ BOOST_AUTO_TEST_CASE(remove_sequence_test)
     BOOST_CHECK_EQUAL(s_std, s_ural);
 }
 
+BOOST_AUTO_TEST_CASE(remove_copy_test)
+{
+    // Подготовка
+    auto const source = std::string("Text with some   spaces");
+    auto const to_remove = ' ';
+
+    // std
+    std::string s_std;
+    std::remove_copy(source.begin(), source.end(),
+                     std::back_inserter(s_std), to_remove);
+
+    // ural
+    std::string s_ural;
+    ural::remove_copy(source, s_ural | ural::back_inserter, to_remove);
+
+    // Сравнение
+    BOOST_CHECK_EQUAL(s_std, s_ural);
+}
+
 BOOST_AUTO_TEST_CASE(remove_sequence_test_cref)
 {
     std::string s_std = "Text with some   spaces";
@@ -956,6 +998,25 @@ BOOST_AUTO_TEST_CASE(remove_if_sequence_test)
     auto r = ural::copy(s, s_ural)[ural::_2];
     s_ural.erase(r.begin(), r.end());
 
+    BOOST_CHECK_EQUAL(s_std, s_ural);
+}
+
+BOOST_AUTO_TEST_CASE(remove_copy_if_test)
+{
+    // Подготовка
+    std::string const source = "Text\n with\tsome \t  whitespaces\n\n";
+    auto pred = [](char x){return std::isspace(x);};
+
+    // std
+    std::string s_std;
+    std::remove_copy_if(source.begin(), source.end(),
+                        std::back_inserter(s_std), pred);
+
+    // ural
+    std::string s_ural;
+    ural::remove_copy_if(source, s_ural | ural::back_inserter, pred);
+
+    // Проверка
     BOOST_CHECK_EQUAL(s_std, s_ural);
 }
 
