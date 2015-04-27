@@ -681,6 +681,28 @@ BOOST_AUTO_TEST_CASE(replace_sequence_test)
                                   s_ural.begin(), s_ural.end());
 }
 
+BOOST_AUTO_TEST_CASE(replace_copy_test)
+{
+    // Исходные данные
+    std::vector<int> const source = {5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
+    auto const old_value = 8;
+    auto const new_value = 88;
+
+    // std
+    std::vector<int> s_std;
+    std::replace_copy(source.begin(), source.end(), std::back_inserter(s_std),
+                      old_value, new_value);
+
+    // ural
+    std::vector<int> s_ural;
+    ural::replace_copy(source, s_ural | ural::back_inserter,
+                       old_value, new_value);
+
+    // Проверка
+    BOOST_CHECK_EQUAL_COLLECTIONS(s_std.begin(), s_std.end(),
+                                  s_ural.begin(), s_ural.end());
+}
+
 BOOST_AUTO_TEST_CASE(replace_sequence_if_test)
 {
     std::array<int, 10> const s{5, 7, 4, 2, 8, 6, 1, 9, 0, 3};

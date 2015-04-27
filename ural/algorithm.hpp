@@ -21,6 +21,8 @@
  @brief Обобщённые алгоритмы
  @todo Проверка концепций
  @todo Добавить требования к конечности интервалов
+ @todo Проверить, что все функциональные объекты "создаются" с помощью
+ make_callable
 */
 
 /** @defgroup Algorithms Алгоритмы
@@ -995,6 +997,73 @@ namespace ural
 
             return ::ural::replace_if_fn{}(std::move(seq), std::move(pred),
                                            new_value);
+        }
+    };
+
+    class replace_copy_if_fn
+    {
+    public:
+        template <class Input, class Output, class Predicate, class T>
+        auto operator()(Input && in, Output && out, Predicate pred,
+                        T const & new_value) const
+        -> ural::tuple<decltype(sequence_fwd<Input>(in)),
+                       decltype(sequence_fwd<Output>(out))>
+        {
+            return this->impl(sequence_fwd<Input>(in),
+                              sequence_fwd<Output>(out),
+                              ural::make_callable(std::move(pred)),
+                              new_value);
+        }
+
+    private:
+        template <class Input, class Output, class Predicate, class T>
+        static tuple<Input, Output>
+        impl(Input in, Output out, Predicate pred, T const & new_value)
+        {
+            // @todo Через последовательность и copy?
+            for(; !!in && !!out; ++ in, (void) ++ out)
+            {
+                if(pred(*in))
+                {
+                    *out = new_value;
+                }
+                else
+                {
+                    *out = *in;
+                }
+
+            }
+            return ural::make_tuple(std::move(in), std::move(out));
+        }
+    };
+
+    class replace_copy_fn
+    {
+    public:
+        template <class Input, class Output, class T>
+        auto operator()(Input && in, Output && out, T const & old_value,
+                        T const & new_value) const
+        -> ural::tuple<decltype(sequence_fwd<Input>(in)),
+                       decltype(sequence_fwd<Output>(out))>
+        {
+            return (*this)(std::forward<Input>(in), std::forward<Output>(out),
+                           old_value, new_value, ural::equal_to<>{});
+        }
+
+        template <class Input, class Output, class T, class BinaryPredicate>
+        auto operator()(Input && in, Output && out, T const & old_value,
+                        T const & new_value,
+                        BinaryPredicate bin_pred) const
+        -> ural::tuple<decltype(sequence_fwd<Input>(in)),
+                       decltype(sequence_fwd<Output>(out))>
+        {
+            auto const pred
+                = std::bind(ural::make_callable(std::move(bin_pred)),
+                            std::placeholders::_1,
+                            std::cref(old_value));
+            return ural::replace_copy_if_fn{}(std::forward<Input>(in),
+                                              std::forward<Output>(out),
+                                              std::move(pred), new_value);
         }
     };
 
@@ -2531,6 +2600,8 @@ namespace ural
         // 25.3.5 Замена
         constexpr auto const replace = replace_fn{};
         constexpr auto const replace_if = replace_if_fn{};
+        constexpr auto const replace_copy = replace_copy_fn{};
+        // @todo replace_copy
         // @todo replace_copy(_if)
 
         // 25.3.6 Заполнение
