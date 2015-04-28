@@ -112,46 +112,53 @@ namespace ural
         return tuple<Args && ...>(std::forward<Args>(args)...);
     }
 
-    template <class T>
-    struct strip_ref_wrapper
-     : declare_type<T>
-    {};
-
-    template <class T>
-    struct strip_ref_wrapper<std::reference_wrapper<T>>
-     : declare_type<T &>
-    {};
-
-    template <class T>
-    struct strip_ref_wrapper<const std::reference_wrapper<T>>
-     : declare_type<T &>
-    {};
-
-    template <class... Ts>
-    tuple<typename strip_ref_wrapper<typename std::decay<Ts>::type>::type...>
-    make_tuple(Ts && ... args)
-    {
-        typedef tuple<typename strip_ref_wrapper<typename std::decay<Ts>::type>::type...>
-            Tuple;
-        return Tuple{std::forward<Ts>(args)...};
-    }
-
-    /** @brief Функциональный объект для создания кортежей из пачки аргументов
+    /** @brief Класс функционального объекта для создания кортежей из пачки
+    аргументов
     */
     class make_tuple_functor
     {
+    private:
+        template <class T>
+        struct strip_ref_wrapper
+         : declare_type<T>
+        {};
+
+        template <class T>
+        struct strip_ref_wrapper<std::reference_wrapper<T>>
+         : declare_type<T &>
+        {};
+
+        template <class T>
+        struct strip_ref_wrapper<const std::reference_wrapper<T>>
+         : declare_type<T &>
+        {};
+
+        template <class T>
+        struct tuple_element_type
+         : strip_ref_wrapper<typename std::decay<T>::type>
+        {};
+
     public:
         /** @brief Оператор вызова функции
         @param args аргументы
-        @return <tt> ural::make_tuple(std::forward<Args>(args)...) </tt>
+        @return <tt> Tuple(std::forward<Args>(args)...) </tt>, где @c Tuple ---
+        это <tt> tuple<typename tuple_element_type<Args>::type...> </tt>
         */
         template <class... Args>
-        constexpr auto operator()(Args &&... args) const
-        -> decltype(ural::make_tuple(std::forward<Args>(args)...))
+        constexpr
+        tuple<typename tuple_element_type<Args>::type...>
+        operator()(Args &&... args) const
         {
-            return ural::make_tuple(std::forward<Args>(args)...);
+            typedef tuple<typename tuple_element_type<Args>::type...> Tuple;
+            return Tuple(std::forward<Args>(args)...);
         }
     };
+
+namespace
+{
+    /// @brief Функциональный объект для создания кортежей из пачки аргументов
+    constexpr auto const make_tuple = make_tuple_functor{};
+}
 
 namespace tuples
 {
