@@ -500,7 +500,6 @@ namespace details
         template <class RASequence, class Compare>
         static void impl(RASequence s, Compare cmp)
         {
-            // @todo Реализовать быструю сортировку
             return ::ural::details::insertion_sort(std::move(s), std::move(cmp));
         }
     };

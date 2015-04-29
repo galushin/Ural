@@ -773,7 +773,6 @@ namespace ural
     @param os поток вывода
     @param x число
     @return <tt> *this </tt>
-    @todo Привести в соответствие с требованиями функции вывода
     */
     template <class Char, class Traits, std::intmax_t radix>
     std::basic_ostream<Char, Traits> &
