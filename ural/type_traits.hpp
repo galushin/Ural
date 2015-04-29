@@ -124,6 +124,28 @@ namespace ural
     struct has_pre_decrement
      : decltype(::ural::details::has_pre_decrement_helper<T>(nullptr))
     {};
+
+    //@{
+    /** @brief Класс-характеристика, преобразующая
+    <tt> std::reference_wrapper<T> </tt> в <tt> T & </tt>, а остальные типы
+    оставляющая без изменений
+    @tparam T преобразуемый тип
+    */
+    template <class T>
+    struct reference_wrapper_to_reference
+     : declare_type<T>
+    {};
+
+    template <class T>
+    struct reference_wrapper_to_reference<std::reference_wrapper<T>>
+     : declare_type<T &>
+    {};
+
+    template <class T>
+    struct reference_wrapper_to_reference<const std::reference_wrapper<T>>
+     : declare_type<T &>
+    {};
+    //@}
 }
 // namespace ural
 
