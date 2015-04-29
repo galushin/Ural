@@ -119,23 +119,8 @@ namespace ural
     {
     private:
         template <class T>
-        struct strip_ref_wrapper
-         : declare_type<T>
-        {};
-
-        template <class T>
-        struct strip_ref_wrapper<std::reference_wrapper<T>>
-         : declare_type<T &>
-        {};
-
-        template <class T>
-        struct strip_ref_wrapper<const std::reference_wrapper<T>>
-         : declare_type<T &>
-        {};
-
-        template <class T>
         struct tuple_element_type
-         : strip_ref_wrapper<typename std::decay<T>::type>
+         : reference_wrapper_to_reference<typename std::decay<T>::type>
         {};
 
     public:

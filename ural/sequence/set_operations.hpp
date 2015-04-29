@@ -153,17 +153,27 @@ namespace ural
         /** @brief Первая входная последовательность
         @return Константная ссылка на первую входную последовательность
         */
-        Input1 const & first_base() const
+        Input1 const & first_base() const &
         {
             return this->in1_;
+        }
+
+        Input1 && first_base() &&
+        {
+            return std::move(this->in1_);
         }
 
         /** @brief Вторая входная последовательность
         @return Константная ссылка на вторую входную последовательность
         */
-        Input2 const & second_base() const
+        Input2 const & second_base() const &
         {
             return this->in2_;
+        }
+
+        Input2 && second_base() &&
+        {
+            return std::move(this->in2_);
         }
 
     private:
