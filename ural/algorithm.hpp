@@ -1892,9 +1892,9 @@ namespace ural
                                          ::ural::make_callable(std::move(cmp)));
             auto result = ural::copy_fn{}(std::move(inputs),
                                           ::ural::sequence_fwd<Output>(out));
-            // @todo move для первых двух последовательностей
-            return ural::make_tuple(result[ural::_1].first_base(),
-                                    result[ural::_1].second_base(),
+
+            return ural::make_tuple(std::move(result[ural::_1]).first_base(),
+                                    std::move(result[ural::_1]).second_base(),
                                     std::move(result[ural::_2]));
         }
     };

@@ -92,6 +92,21 @@ BOOST_AUTO_TEST_CASE(any_of_test)
     BOOST_CHECK(!ural::any_of(v, pred));
 }
 
+BOOST_AUTO_TEST_CASE(any_of_minimalistic_test)
+{
+    std::istringstream is0("");
+    std::istringstream is1("2 4 6 8 10");
+    std::istringstream is2("2 4 6 7 10");
+
+    typedef int Element;
+
+    auto const is_odd = [](Element i){ return i % 2 == 1; };
+
+    BOOST_CHECK_EQUAL(ural::any_of(ural::make_istream_sequence<Element>(is0), is_odd), false);
+    BOOST_CHECK_EQUAL(ural::any_of(ural::make_istream_sequence<Element>(is1), is_odd), false);
+    BOOST_CHECK_EQUAL(ural::any_of(ural::make_istream_sequence<Element>(is2), is_odd), true);
+}
+
 // 25.2.3
 BOOST_AUTO_TEST_CASE(none_of_test)
 {
@@ -1865,6 +1880,32 @@ BOOST_AUTO_TEST_CASE(merge_test)
     // ural
     std::vector<int> ural_merge;
     ural::merge(v1, v2, ural_merge | ural::back_inserter);
+
+    // Проверка
+    BOOST_CHECK_EQUAL_COLLECTIONS(std_merge.begin(), std_merge.end(),
+                                  ural_merge.begin(), ural_merge.end());
+}
+
+BOOST_AUTO_TEST_CASE(merge_test_minimalistic)
+{
+    // Исходные данные
+    std::istringstream is1("1 2 3 4 5 6 7 8");
+    std::istringstream is2("        5   7 9 10");
+
+    std::istringstream is1_ural("1 2 3 4 5 6 7 8");
+    std::istringstream is2_ural("        5   7 9 10");
+
+    // std
+    std::vector<int> std_merge;
+    std::merge(std::istream_iterator<int>(is1), std::istream_iterator<int>(),
+               std::istream_iterator<int>(is2), std::istream_iterator<int>(),
+               std::back_inserter(std_merge));
+
+    // ural
+    std::vector<int> ural_merge;
+    ural::merge(ural::make_istream_sequence<int>(is1_ural),
+                ural::make_istream_sequence<int>(is2_ural),
+                ural_merge | ural::back_inserter);
 
     // Проверка
     BOOST_CHECK_EQUAL_COLLECTIONS(std_merge.begin(), std_merge.end(),
