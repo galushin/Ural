@@ -23,6 +23,7 @@
 */
 
 #include <ural/tuple.hpp>
+#include <ural/type_traits.hpp>
 
 #include <ural/functional/cpp_operators.hpp>
 
@@ -34,7 +35,7 @@ namespace ural
     @tparam T тип значения
     */
     template <class Predicate, class T>
-    class replace_if_functor
+    class replace_if_function
     {
     public:
         /// @brief Тип возвращаемого значения
@@ -46,7 +47,7 @@ namespace ural
         @post <tt> this->predicate() == pred </tt>
         @post <tt> this->new_value() == new_value </tt>
         */
-        replace_if_functor(Predicate pred, T new_value)
+        replace_if_function(Predicate pred, T new_value)
          : members_{std::move(pred), new_value}
         {}
 
@@ -94,21 +95,22 @@ namespace ural
     следует обернуть объекты в вызовы std::cref()
     */
     template <class Predicate, class T>
-    replace_if_functor<Predicate, T>
-    make_replace_if_functor(Predicate pred, T const & new_value)
+    replace_if_function<Predicate, typename reference_wrapper_to_reference<T>::type>
+    make_replace_if_function(Predicate pred, T const & new_value)
     {
-        return replace_if_functor<Predicate, T>(std::move(pred), new_value);
+        typedef typename reference_wrapper_to_reference<T>::type T_unwrapped;
+        return replace_if_function<Predicate, T_unwrapped>(std::move(pred), new_value);
     }
 
     /** @brief Функциональный объект, заменяющий заданное значение на новое
     @tparam T тип значения
     @tparam BinaryPredicate бинарный предикат над @c T
     */
-    template <class T, class BinaryPredicate = ural::equal_to<T> >
-    class replace_functor
+    template <class T, class BinaryPredicate = ural::equal_to<> >
+    class replace_function
     {
     friend constexpr bool
-    operator==(replace_functor const & x, replace_functor const & y)
+    operator==(replace_function const & x, replace_function const & y)
     {
         return x.members_ == y.members_;
     }
@@ -127,7 +129,7 @@ namespace ural
         @post <tt> this->old_value() == old_value </tt>
         @post <tt> this->new_value() == new_value </tt>
         */
-        constexpr explicit replace_functor(T old_value, T new_value)
+        constexpr explicit replace_function(T old_value, T new_value)
          : members_{std::move(old_value), std::move(new_value),
                     predicate_type{}}
         {}
@@ -140,7 +142,7 @@ namespace ural
         @post <tt> this->old_value() == old_value </tt>
         @post <tt> this->new_value() == new_value </tt>
         */
-        constexpr explicit replace_functor(T old_value, T new_value,
+        constexpr explicit replace_function(T old_value, T new_value,
                                            BinaryPredicate pred)
          : members_{std::move(old_value), std::move(new_value),
                     make_callable(std::move(pred))}
@@ -186,7 +188,7 @@ namespace ural
         ural::tuple<T, T, predicate_type> members_;
     };
 
-    /** @brief Функция создания @c replace_functor с нестандартным предикатом,
+    /** @brief Функция создания @c replace_function с нестандартным предикатом,
     задающим равенство.
 
     Создаёт функциональный объект, который заменяет значения @c x,
@@ -201,12 +203,15 @@ namespace ural
     следует обернуть объекты в вызовы std::cref()
     */
     template <class T, class BinaryPredicate>
-    constexpr replace_functor<T, BinaryPredicate>
-    make_replace_functor(T old_value, T new_value, BinaryPredicate pred)
+    constexpr replace_function<typename reference_wrapper_to_reference<T>::type,
+                              BinaryPredicate>
+    make_replace_function(T old_value, T new_value, BinaryPredicate pred)
     {
-        return replace_functor<T, BinaryPredicate>{std::move(old_value),
-                                                   std::move(new_value),
-                                                   std::move(pred)};
+        typedef typename reference_wrapper_to_reference<T>::type T_unwrapped;
+        typedef replace_function<T_unwrapped, BinaryPredicate> Function;
+
+        return Function(std::move(old_value), std::move(new_value),
+                        std::move(pred));
     }
 
     /**
@@ -214,13 +219,16 @@ namespace ural
     следует обернуть объекты в вызовы std::cref()
     @param old_value заменяемое значение
     @param new_value новое значение
-    @return <tt> replace_functor<T>(std::move(old_value), std::move(new_value))  </tt>
+    @return <tt> replace_function<T>(std::move(old_value), std::move(new_value))  </tt>
     */
     template <class T>
-    constexpr replace_functor<T, ural::equal_to<T,T>>
-    make_replace_functor(T old_value, T new_value)
+    constexpr replace_function<typename reference_wrapper_to_reference<T>::type,
+                              ural::equal_to<>>
+    make_replace_function(T old_value, T new_value)
     {
-        return replace_functor<T>(std::move(old_value), std::move(new_value));
+        typedef typename reference_wrapper_to_reference<T>::type T_unwrapped;
+        return replace_function<T_unwrapped>(std::move(old_value),
+                                             std::move(new_value));
     }
 }
 // namespace ural

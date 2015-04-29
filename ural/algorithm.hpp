@@ -19,10 +19,6 @@
 
 /** @file ural/algorithm.hpp
  @brief Обобщённые алгоритмы
- @todo Проверка концепций
- @todo Добавить требования к конечности интервалов
- @todo Проверить, что все функциональные объекты "создаются" с помощью
- make_callable
 */
 
 /** @defgroup Algorithms Алгоритмы
@@ -48,6 +44,7 @@
 */
 
 #include <ural/math.hpp>
+#include <ural/sequence/replace.hpp>
 #include <ural/sequence/set_operations.hpp>
 #include <ural/sequence/taken.hpp>
 #include <ural/sequence/filtered.hpp>
@@ -1020,20 +1017,13 @@ namespace ural
         static tuple<Input, Output>
         impl(Input in, Output out, Predicate pred, T const & new_value)
         {
-            // @todo Через последовательность и copy?
-            for(; !!in && !!out; ++ in, (void) ++ out)
-            {
-                if(pred(*in))
-                {
-                    *out = new_value;
-                }
-                else
-                {
-                    *out = *in;
-                }
+            auto in_r = ural::make_replace_if_sequence(std::move(in),
+                                                       std::move(pred),
+                                                       std::cref(new_value));
+            auto r = ural::copy_fn{}(std::move(in_r), std::move(out));
 
-            }
-            return ural::make_tuple(std::move(in), std::move(out));
+            return ural::make_tuple(std::move(r[ural::_1]).bases()[ural::_1],
+                                    std::move(r[ural::_2]));
         }
     };
 
@@ -1057,13 +1047,21 @@ namespace ural
         -> ural::tuple<decltype(sequence_fwd<Input>(in)),
                        decltype(sequence_fwd<Output>(out))>
         {
-            auto const pred
-                = std::bind(ural::make_callable(std::move(bin_pred)),
-                            std::placeholders::_1,
-                            std::cref(old_value));
-            return ural::replace_copy_if_fn{}(std::forward<Input>(in),
-                                              std::forward<Output>(out),
-                                              std::move(pred), new_value);
+            // @todo Выразить через replace_copy_if?
+            auto in_r = ural::make_replace_sequence(std::move(in),
+                                                    std::cref(old_value),
+                                                    std::cref(new_value));
+            auto r = ural::copy_fn{}(std::move(in_r), std::move(out));
+
+            return ural::make_tuple(std::move(r[ural::_1]).bases()[ural::_1],
+                                    std::move(r[ural::_2]));
+//            auto const pred
+//                = std::bind(ural::make_callable(std::move(bin_pred)),
+//                            std::placeholders::_1,
+//                            std::cref(old_value));
+//            return ural::replace_copy_if_fn{}(std::forward<Input>(in),
+//                                              std::forward<Output>(out),
+//                                              std::move(pred), new_value);
         }
     };
 

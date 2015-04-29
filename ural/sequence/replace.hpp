@@ -27,21 +27,36 @@
 
 namespace ural
 {
-    template <class Sequence, class T>
-    auto make_replace_sequence(Sequence && seq, T const & old_value, T const & new_value)
-    -> decltype(::ural::make_transform_sequence(make_replace_functor(old_value, new_value),
+    template <class Sequence, class T, class BinaryPredicate>
+    auto make_replace_sequence(Sequence && seq,
+                               T const & old_value, T const & new_value,
+                               BinaryPredicate bin_pred)
+    -> decltype(::ural::make_transform_sequence(::ural::make_replace_function(old_value, new_value, std::move(bin_pred)),
                                                 std::forward<Sequence>(seq)))
     {
-        return ::ural::make_transform_sequence(make_replace_functor(old_value, new_value),
+        auto f = ::ural::make_replace_function(old_value, new_value,
+                                               std::move(bin_pred));
+        return ::ural::make_transform_sequence(std::move(f),
                                                std::forward<Sequence>(seq));
+
+    }
+
+    template <class Sequence, class T>
+    auto make_replace_sequence(Sequence && seq, T const & old_value, T const & new_value)
+    -> decltype(::ural::make_replace_sequence(std::forward<Sequence>(seq), old_value, new_value, equal_to<>{}))
+    {
+        return ::ural::make_replace_sequence(std::forward<Sequence>(seq),
+                                             old_value, new_value, equal_to<>{});
     }
 
     template <class Sequence, class Predicate, class T>
-    auto make_replace_if_sequence(Sequence && seq, Predicate pred, T const & new_value)
-    -> decltype(::ural::make_transform_sequence(make_replace_if_functor(std::move(pred), new_value),
+    auto make_replace_if_sequence(Sequence && seq, Predicate pred, T new_value)
+    -> decltype(::ural::make_transform_sequence(make_replace_if_function(std::move(pred), std::move(new_value)),
                                                 std::forward<Sequence>(seq)))
     {
-        return ::ural::make_transform_sequence(make_replace_if_functor(std::move(pred), new_value),
+        auto f = ::ural::make_replace_if_function(std::move(pred),
+                                                  std::move(new_value));
+        return ::ural::make_transform_sequence(std::move(f),
                                                std::forward<Sequence>(seq));
     }
 }
