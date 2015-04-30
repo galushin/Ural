@@ -2099,6 +2099,22 @@ BOOST_AUTO_TEST_CASE(includes_test_custom_compare)
 
 BOOST_AUTO_TEST_CASE(set_union_test)
 {
+    std::istringstream is1("1 2 3 4 5");
+    std::istringstream is2("    3 4 5 6 7");
+
+    std::vector<int> const z {1, 2, 3, 4, 5, 6, 7};
+
+    std::vector<int> r_ural;
+    ural::set_union(ural::make_istream_sequence<int>(is1),
+                    ural::make_istream_sequence<int>(is2),
+                    r_ural | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
+                                  r_ural.begin(), r_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(set_union_sequence_test)
+{
     std::vector<int> v1 = {1, 2, 3, 4, 5};
     std::vector<int> v2 = {      3, 4, 5, 6, 7};
 
@@ -2107,13 +2123,30 @@ BOOST_AUTO_TEST_CASE(set_union_test)
                    std::back_inserter(r_std));
 
     auto const r_ural
-        = ural::set_union(v1, v2) | ural::to_container<std::vector>{};
+        = ural::make_set_union_sequence(v1, v2)
+        | ural::to_container<std::vector>{};
 
     BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
                                   r_ural.begin(), r_ural.end());
 }
 
 BOOST_AUTO_TEST_CASE(set_intersection_test)
+{
+    std::istringstream is1("1 2 3 4 5");
+    std::istringstream is2("  2   4 5 6 7");
+
+    std::vector<int> const z {2, 4, 5};
+
+    std::vector<int> r_ural;
+    ural::set_intersection(ural::make_istream_sequence<int>(is1),
+                           ural::make_istream_sequence<int>(is2),
+                           r_ural | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
+                                  r_ural.begin(), r_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(set_intersection_sequence_test)
 {
     std::vector<int> const v1{1,2,3,4,5,6,7,8};
     std::vector<int> const v2{        5,  7,  9,10};
@@ -2124,7 +2157,8 @@ BOOST_AUTO_TEST_CASE(set_intersection_test)
                           std::back_inserter(std_intersection));
 
     auto const ural_intersection
-        = ural::set_intersection(v1, v2) | ural::to_container<std::vector>{};
+        = ural::make_set_intersection_sequence(v1, v2)
+        | ural::to_container<std::vector>{};
 
     BOOST_CHECK_EQUAL_COLLECTIONS(std_intersection.begin(),
                                   std_intersection.end(),
@@ -2134,6 +2168,22 @@ BOOST_AUTO_TEST_CASE(set_intersection_test)
 
 BOOST_AUTO_TEST_CASE(set_difference_test)
 {
+    std::istringstream is1("1 2 3 4 5     8");
+    std::istringstream is2("  2   4 5 6 7");
+
+    std::vector<int> const z {1, 3, 8};
+
+    std::vector<int> r_ural;
+    ural::set_difference(ural::make_istream_sequence<int>(is1),
+                         ural::make_istream_sequence<int>(is2),
+                         r_ural | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
+                                  r_ural.begin(), r_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(set_difference_sequence_test)
+{
     std::vector<int> v1 {1, 2, 5, 5, 5, 9};
     std::vector<int> v2 {2, 5, 7};
 
@@ -2141,26 +2191,71 @@ BOOST_AUTO_TEST_CASE(set_difference_test)
     std::set_difference(v1.begin(), v1.end(), v2.begin(), v2.end(),
                         std::back_inserter(std_diff));
     auto const ural_diff
-        = ural::set_difference(v1, v2) | ural::to_container<std::vector>{};
+        = ural::make_set_difference_sequence(v1, v2)
+        | ural::to_container<std::vector>{};
 
     BOOST_CHECK_EQUAL_COLLECTIONS(std_diff.begin(), std_diff.end(),
                                   ural_diff.begin(), ural_diff.end());
 }
 
-BOOST_AUTO_TEST_CASE(set_symmetric_difference_test)
+BOOST_AUTO_TEST_CASE(set_symmetric_difference_sequence_test)
 {
     std::vector<int> const v1{1,2,3,4,5,6,7,8     };
     std::vector<int> const v2{        5,  7,  9,10};
 
-    std::vector<int> std_intersection;
+    std::vector<int> r_std;
     std::set_symmetric_difference(v1.begin(), v1.end(), v2.begin(), v2.end(),
-                                  std::back_inserter(std_intersection));
+                                  std::back_inserter(r_std));
 
-    auto const ural_intersection
-        = ural::set_symmetric_difference(v1, v2) | ural::to_container<std::vector>{};
+    auto const r_ural
+        = ural::make_set_symmetric_difference_sequence(v1, v2)
+        | ural::to_container<std::vector>{};
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(std_intersection.begin(), std_intersection.end(),
-                                  ural_intersection.begin(), ural_intersection.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_ural.begin(), r_ural.end(),
+                                  r_std.begin(), r_std.end());
+}
+
+BOOST_AUTO_TEST_CASE(set_symmetric_difference_test)
+{
+    std::vector<int> const x1{1,2,3,4,5,6,7,8     };
+    std::vector<int> const x2{        5,  7,  9,10};
+
+    std::vector<int> const z {1, 2, 3, 4, 6, 8, 9, 10};
+
+    // через back_inserter
+    std::vector<int> r_ural;
+    ural::set_symmetric_difference(x1, x2, r_ural | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
+                                  r_ural.begin(), r_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(set_symmetric_difference_regression)
+{
+    std::vector<int> const x1{1, 2, 3, 4, 5,       8};
+    std::vector<int> const x2{   2,    4, 5, 6, 7   };
+    std::vector<int> const z {1,    3,       6, 7, 8};
+
+    std::vector<int> r_ural;
+    ural::set_symmetric_difference(x1, x2, r_ural | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
+                                  r_ural.begin(), r_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(set_symmetric_difference_from_istream)
+{
+    std::istringstream is1("1 2 3 4 5     8");
+    std::istringstream is2("  2   4 5 6 7");
+    std::vector<int> const z {1,    3,       6, 7, 8};
+
+    std::vector<int> r_ural;
+    ural::set_symmetric_difference(ural::make_istream_sequence<int>(is1),
+                                   ural::make_istream_sequence<int>(is2),
+                                   r_ural | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
+                                  r_ural.begin(), r_ural.end());
 }
 
 // 25.4.6 Операции с бинарными кучами

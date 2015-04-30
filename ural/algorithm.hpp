@@ -653,8 +653,6 @@ namespace ural
         }
     };
 
-    auto constexpr copy_backward = copy_backward_fn{};
-
     // move_backward
     class move_backward_fn
     {
@@ -2131,6 +2129,141 @@ namespace ural
         }
     };
 
+    class set_union_fn
+    {
+    public:
+        template <class Input1, class Input2, class Output>
+        auto operator()(Input1 && in1, Input2 && in2, Output && out) const
+        -> tuple<decltype(::ural::sequence_fwd<Input1>(in1)),
+                 decltype(::ural::sequence_fwd<Input2>(in2)),
+                 decltype(::ural::sequence_fwd<Output>(out))>
+        {
+            return (*this)(::ural::sequence_fwd<Input1>(in1),
+                           ::ural::sequence_fwd<Input2>(in2),
+                           ::ural::sequence_fwd<Output>(out),
+                           ural::less<>{});
+        }
+
+        template <class Input1, class Input2, class Output, class Compare>
+        auto operator()(Input1 && in1, Input2 && in2, Output && out,
+                        Compare cmp) const
+        -> tuple<decltype(::ural::sequence_fwd<Input1>(in1)),
+                 decltype(::ural::sequence_fwd<Input2>(in2)),
+                 decltype(::ural::sequence_fwd<Output>(out))>
+        {
+            auto in
+                = ural::make_set_union_sequence(std::forward<Input1>(in1),
+                                                std::forward<Input2>(in2),
+                                                make_callable(std::move(cmp)));
+            auto r = ural::copy_fn{}(std::move(in),
+                                     ::ural::sequence_fwd<Output>(out));
+            return make_tuple(std::move(r[ural::_1]).first_base(),
+                              std::move(r[ural::_1]).second_base(),
+                              std::move(r[ural::_2]));
+        }
+    };
+
+    class set_intersection_fn
+    {
+    public:
+        template <class Input1, class Input2, class Output>
+        auto operator()(Input1 && in1, Input2 && in2, Output && out) const
+        -> tuple<decltype(::ural::sequence_fwd<Input1>(in1)),
+                 decltype(::ural::sequence_fwd<Input2>(in2)),
+                 decltype(::ural::sequence_fwd<Output>(out))>
+        {
+            return (*this)(::ural::sequence_fwd<Input1>(in1),
+                           ::ural::sequence_fwd<Input2>(in2),
+                           ::ural::sequence_fwd<Output>(out),
+                           ural::less<>{});
+        }
+
+        template <class Input1, class Input2, class Output, class Compare>
+        auto operator()(Input1 && in1, Input2 && in2, Output && out,
+                        Compare cmp) const
+        -> tuple<decltype(::ural::sequence_fwd<Input1>(in1)),
+                 decltype(::ural::sequence_fwd<Input2>(in2)),
+                 decltype(::ural::sequence_fwd<Output>(out))>
+        {
+            auto in
+                = ural::make_set_intersection_sequence(std::forward<Input1>(in1),
+                                                       std::forward<Input2>(in2),
+                                                       make_callable(std::move(cmp)));
+            auto r = ural::copy_fn{}(std::move(in),
+                                     ::ural::sequence_fwd<Output>(out));
+            return make_tuple(std::move(r[ural::_1]).first_base(),
+                              std::move(r[ural::_1]).second_base(),
+                              std::move(r[ural::_2]));
+        }
+    };
+
+    class set_difference_fn
+    {
+    public:
+        template <class Input1, class Input2, class Output>
+        auto operator()(Input1 && in1, Input2 && in2, Output && out) const
+        -> tuple<decltype(::ural::sequence_fwd<Input1>(in1)),
+                 decltype(::ural::sequence_fwd<Input2>(in2)),
+                 decltype(::ural::sequence_fwd<Output>(out))>
+        {
+            return (*this)(::ural::sequence_fwd<Input1>(in1),
+                           ::ural::sequence_fwd<Input2>(in2),
+                           ::ural::sequence_fwd<Output>(out),
+                           ural::less<>{});
+        }
+
+        template <class Input1, class Input2, class Output, class Compare>
+        auto operator()(Input1 && in1, Input2 && in2, Output && out,
+                        Compare cmp) const
+        -> tuple<decltype(::ural::sequence_fwd<Input1>(in1)),
+                 decltype(::ural::sequence_fwd<Input2>(in2)),
+                 decltype(::ural::sequence_fwd<Output>(out))>
+        {
+            auto in
+                = ural::make_set_difference_sequence(std::forward<Input1>(in1),
+                                                     std::forward<Input2>(in2),
+                                                     make_callable(std::move(cmp)));
+            auto r = ural::copy_fn{}(std::move(in),
+                                     ::ural::sequence_fwd<Output>(out));
+            return make_tuple(std::move(r[ural::_1]).first_base(),
+                              std::move(r[ural::_1]).second_base(),
+                              std::move(r[ural::_2]));
+        }
+    };
+
+    class set_symmetric_difference_fn
+    {
+    public:
+        template <class Input1, class Input2, class Output>
+        auto operator()(Input1 && in1, Input2 && in2, Output && out) const
+        -> tuple<decltype(::ural::sequence_fwd<Input1>(in1)),
+                 decltype(::ural::sequence_fwd<Input2>(in2)),
+                 decltype(::ural::sequence_fwd<Output>(out))>
+        {
+            return (*this)(::ural::sequence_fwd<Input1>(in1),
+                           ::ural::sequence_fwd<Input2>(in2),
+                           ::ural::sequence_fwd<Output>(out),
+                           ural::less<>{});
+        }
+
+        template <class Input1, class Input2, class Output, class Compare>
+        auto operator()(Input1 && in1, Input2 && in2, Output && out,
+                        Compare cmp) const
+        -> tuple<decltype(::ural::sequence_fwd<Input1>(in1)),
+                 decltype(::ural::sequence_fwd<Input2>(in2)),
+                 decltype(::ural::sequence_fwd<Output>(out))>
+        {
+            auto in = ural::make_set_symmetric_difference_sequence(std::forward<Input1>(in1),
+                                                                   std::forward<Input2>(in2),
+                                                                   make_callable(std::move(cmp)));
+            auto r = ural::copy_fn{}(std::move(in),
+                                     ::ural::sequence_fwd<Output>(out));
+            return make_tuple(std::move(r[ural::_1]).first_base(),
+                              std::move(r[ural::_1]).second_base(),
+                              std::move(r[ural::_2]));
+        }
+    };
+
     // Поиск наибольшего и наименьшего
     class min_element_fn
     {
@@ -2575,7 +2708,7 @@ namespace ural
     };
     constexpr auto move_if_noexcept = move_if_noexcept_fn{};
 
-    namespace
+    inline namespace
     {
         // 25.2 Немодифицирующие
         // 25.2.1-3 Кванторы
@@ -2710,10 +2843,10 @@ namespace ural
 
         // 25.4.5 Операции с сортированными множествами
         constexpr auto const includes = includes_fn{};
-        // @todo set_union
-        // @todo set_intersection
-        // @todo set_difference
-        // @todo set_symmetric_difference
+        constexpr auto const set_union = set_union_fn{};
+        constexpr auto const set_intersection = set_intersection_fn{};
+        constexpr auto const set_difference = set_difference_fn{};
+        constexpr auto const set_symmetric_difference = set_symmetric_difference_fn{};
 
         // 25.4.6 Операции с бинарными кучами
         constexpr auto const push_heap = push_heap_fn{};

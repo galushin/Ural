@@ -85,7 +85,7 @@ namespace ural
         @param in1 первая входная последовательность
         @param in2 вторая входная последовательность
         @param cmp функция сравнения
-        @post <tt> this->functor() == cmp </tt>
+        @post <tt> this->function() == cmp </tt>
         */
         explicit merge_sequence(Input1 in1, Input2 in2, Compare cmp)
          : Base_class(std::move(cmp))
@@ -100,7 +100,7 @@ namespace ural
         */
         bool operator!() const
         {
-            return !in1_ && !in2_;
+            return !state_;
         }
 
         /** @brief Текущий элемент последовательности
@@ -145,7 +145,7 @@ namespace ural
         /** @brief Используемая функция сравнения
         @return Используемая функция сравнения
         */
-        Compare const & functor() const
+        Compare const & function() const
         {
             return static_cast<Compare const &>(*this);
         }
@@ -186,16 +186,20 @@ namespace ural
             }
             if(!in2_)
             {
+                assert(!!in1_);
                 state_ = set_operations_state::first;
                 return;
             }
             if(!in1_)
             {
+                assert(!!in2_);
                 state_ = set_operations_state::second;
                 return;
             }
 
-            if(functor()(*in2_, *in1_))
+            assert(!!in1_ && !!in2_);
+
+            if(this->function()(*in2_, *in1_))
             {
                 state_ = set_operations_state::second;
             }
@@ -281,7 +285,7 @@ namespace ural
         @param in1 первая входная последовательность
         @param in2 вторая входная последовательность
         @param cmp функция сравнения
-        @post <tt> this->functor() == cmp </tt>
+        @post <tt> this->function() == cmp </tt>
         */
         explicit set_intersection_sequence(Input1 in1, Input2 in2, Compare cmp)
          : Base_class{std::move(cmp)}
@@ -320,9 +324,23 @@ namespace ural
         /** @brief Используемая функция сравнения
         @return Используемая функция сравнения
         */
-        Compare const & functor() const
+        Compare const & function() const
         {
             return static_cast<Compare const &>(*this);
+        }
+
+        Input1 const & first_base() const &;
+
+        Input1 && first_base() &&
+        {
+            return std::move(this->in2_);
+        }
+
+        Input2 const & second_base() const &;
+
+        Input2 && second_base() &&
+        {
+            return std::move(this->in2_);
         }
 
     private:
@@ -330,11 +348,11 @@ namespace ural
         {
             for(; !!in1_ && !!in2_;)
             {
-                if(functor()(*in1_, *in2_))
+                if(function()(*in1_, *in2_))
                 {
                     ++ in1_;
                 }
-                else if(functor()(*in2_, *in1_))
+                else if(function()(*in2_, *in1_))
                 {
                     ++ in2_;
                 }
@@ -351,7 +369,7 @@ namespace ural
     };
 
     template <class Input1, class Input2, class Compare>
-    auto set_intersection(Input1 && in1, Input2 && in2, Compare cmp)
+    auto make_set_intersection_sequence(Input1 && in1, Input2 && in2, Compare cmp)
     -> set_intersection_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
                                  decltype(::ural::sequence_fwd<Input2>(in2)),
                                  decltype(ural::make_callable(std::move(cmp)))>
@@ -366,12 +384,13 @@ namespace ural
     }
 
     template <class Input1, class Input2>
-    auto set_intersection(Input1 && in1, Input2 && in2)
+    auto make_set_intersection_sequence(Input1 && in1, Input2 && in2)
     -> set_intersection_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
                                  decltype(::ural::sequence_fwd<Input2>(in2))>
     {
-        return set_intersection(std::forward<Input1>(in1),
-                                std::forward<Input2>(in2), ural::less<>{});
+        return ::ural::make_set_intersection_sequence(std::forward<Input1>(in1),
+                                                      std::forward<Input2>(in2),
+                                                      ural::less<>{});
     }
 
     /** @brief Последовательность элементов, полученная в результате взятия
@@ -419,7 +438,7 @@ namespace ural
         @param in1 первая входная последовательность
         @param in2 вторая входная последовательность
         @param cmp функция сравнения
-        @post <tt> this->functor() == cmp </tt>
+        @post <tt> this->function() == cmp </tt>
         */
         explicit set_difference_sequence(Input1 in1, Input2 in2, Compare cmp)
          : Base_class{std::move(cmp)}
@@ -458,9 +477,23 @@ namespace ural
         /** @brief Используемая функция сравнения
         @return Используемая функция сравнения
         */
-        Compare const & functor() const
+        Compare const & function() const
         {
             return static_cast<Compare const &>(*this);
+        }
+
+        Input1 const & first_base() const &;
+
+        Input1 && first_base() &&
+        {
+            return std::move(this->in2_);
+        }
+
+        Input2 const & second_base() const &;
+
+        Input2 && second_base() &&
+        {
+            return std::move(this->in2_);
         }
 
     private:
@@ -468,11 +501,11 @@ namespace ural
         {
             for(; !!in1_ && !!in2_;)
             {
-                if(functor()(*in1_, *in2_))
+                if(function()(*in1_, *in2_))
                 {
                     break;
                 }
-                else if(functor()(*in2_, *in1_))
+                else if(function()(*in2_, *in1_))
                 {
                     ++ in2_;
                 }
@@ -490,7 +523,7 @@ namespace ural
     };
 
     template <class Input1, class Input2, class Compare>
-    auto set_difference(Input1 && in1, Input2 && in2, Compare cmp)
+    auto make_set_difference_sequence(Input1 && in1, Input2 && in2, Compare cmp)
     -> set_difference_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
                                  decltype(::ural::sequence_fwd<Input2>(in2)),
                                  decltype(ural::make_callable(std::move(cmp)))>
@@ -505,12 +538,13 @@ namespace ural
     }
 
     template <class Input1, class Input2>
-    auto set_difference(Input1 && in1, Input2 && in2)
+    auto make_set_difference_sequence(Input1 && in1, Input2 && in2)
     -> set_difference_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
                                  decltype(::ural::sequence_fwd<Input2>(in2))>
     {
-        return set_difference(std::forward<Input1>(in1),
-                              std::forward<Input2>(in2), ural::less<>{});
+        return ::ural::make_set_difference_sequence(std::forward<Input1>(in1),
+                                                    std::forward<Input2>(in2),
+                                                    ural::less<>{});
     }
 
     /** @brief Последовательность элементов, полученная в результате взятия
@@ -562,7 +596,7 @@ namespace ural
         @param in1 первая входная последовательность
         @param in2 вторая входная последовательность
         @param cmp функция сравнения
-        @post <tt> this->functor() == cmp </tt>
+        @post <tt> this->function() == cmp </tt>
         */
         explicit set_symmetric_difference_sequence(Input1 in1, Input2 in2, Compare cmp)
          : Base_class(std::move(cmp))
@@ -622,9 +656,23 @@ namespace ural
         /** @brief Используемая функция сравнения
         @return Используемая функция сравнения
         */
-        Compare const & functor() const
+        Compare const & function() const
         {
             return static_cast<Compare const &>(*this);
+        }
+
+        Input1 const & first_base() const &;
+
+        Input1 && first_base() &&
+        {
+            return std::move(this->in2_);
+        }
+
+        Input2 const & second_base() const &;
+
+        Input2 && second_base() &&
+        {
+            return std::move(this->in2_);
         }
 
     private:
@@ -632,14 +680,15 @@ namespace ural
         {
             for(; !!in1_ && !!in2_;)
             {
-                if(functor()(*in1_, *in2_))
+                if(function()(*in1_, *in2_))
                 {
                     state_ = set_operations_state::first;
                     return;
                 }
-                else if(functor()(*in2_, *in1_))
+                else if(function()(*in2_, *in1_))
                 {
                     state_ = set_operations_state::second;
+                    return;
                 }
                 else
                 {
@@ -669,7 +718,8 @@ namespace ural
     };
 
     template <class Input1, class Input2, class Compare>
-    auto set_symmetric_difference(Input1 && in1, Input2 && in2, Compare cmp)
+    auto make_set_symmetric_difference_sequence(Input1 && in1, Input2 && in2,
+                                                Compare cmp)
     -> set_symmetric_difference_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
                                  decltype(::ural::sequence_fwd<Input2>(in2)),
                                  decltype(ural::make_callable(std::move(cmp)))>
@@ -684,13 +734,13 @@ namespace ural
     }
 
     template <class Input1, class Input2>
-    auto set_symmetric_difference(Input1 && in1, Input2 && in2)
+    auto make_set_symmetric_difference_sequence(Input1 && in1, Input2 && in2)
     -> set_symmetric_difference_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
                                  decltype(::ural::sequence_fwd<Input2>(in2))>
     {
-        return set_symmetric_difference(std::forward<Input1>(in1),
-                                        std::forward<Input2>(in2),
-                                        ural::less<>{});
+        return ::ural::make_set_symmetric_difference_sequence(std::forward<Input1>(in1),
+                                                              std::forward<Input2>(in2),
+                                                              ural::less<>{});
     }
 
     /** @brief Последовательность элементов, полученная в результате объединения
@@ -742,7 +792,7 @@ namespace ural
         @param in1 первая входная последовательность
         @param in2 вторая входная последовательность
         @param cmp функция сравнения
-        @post <tt> this->functor() == cmp </tt>
+        @post <tt> this->function() == cmp </tt>
         */
         explicit set_union_sequence(Input1 in1, Input2 in2, Compare cmp)
          : Base_class(std::move(cmp))
@@ -803,9 +853,23 @@ namespace ural
         /** @brief Используемая функция сравнения
         @return Используемая функция сравнения
         */
-        Compare const & functor() const
+        Compare const & function() const
         {
             return static_cast<Compare const &>(*this);
+        }
+
+        Input1 const & first_base() const &;
+
+        Input1 && first_base() &&
+        {
+            return std::move(this->in2_);
+        }
+
+        Input2 const & second_base() const &;
+
+        Input2 && second_base() &&
+        {
+            return std::move(this->in2_);
         }
 
     private:
@@ -827,11 +891,11 @@ namespace ural
                 return;
             }
 
-            if(functor()(*in1_, *in2_))
+            if(function()(*in1_, *in2_))
             {
                 state_ = set_operations_state::first;
             }
-            else if(functor()(*in2_, *in1_))
+            else if(function()(*in2_, *in1_))
             {
                 state_ = set_operations_state::second;
             }
@@ -848,7 +912,7 @@ namespace ural
     };
 
     template <class Input1, class Input2, class Compare>
-    auto set_union(Input1 && in1, Input2 && in2, Compare cmp)
+    auto make_set_union_sequence(Input1 && in1, Input2 && in2, Compare cmp)
     -> set_union_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
                           decltype(::ural::sequence_fwd<Input2>(in2)),
                           decltype(ural::make_callable(std::move(cmp)))>
@@ -863,12 +927,13 @@ namespace ural
     }
 
     template <class Input1, class Input2>
-    auto set_union(Input1 && in1, Input2 && in2)
+    auto make_set_union_sequence(Input1 && in1, Input2 && in2)
     -> set_union_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
                                  decltype(::ural::sequence_fwd<Input2>(in2))>
     {
-        return set_union(std::forward<Input1>(in1),
-                         std::forward<Input2>(in2), ural::less<>{});
+        return ::ural::make_set_union_sequence(std::forward<Input1>(in1),
+                                               std::forward<Input2>(in2),
+                                               ural::less<>{});
     }
 }
 // namespace ural
