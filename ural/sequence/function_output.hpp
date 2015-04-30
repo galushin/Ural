@@ -29,6 +29,7 @@ namespace ural
 {
     /** @brief Выходная последовательность, выполняющая вызов функции для
     каждого "записываемого элемента"
+    @tparam UnaryFunction тип унарного функционального объекта
     */
     template <class UnaryFunction>
     class function_output_sequence
@@ -74,6 +75,9 @@ namespace ural
         {}
 
         // Свойства
+        /** @brief Используемый функциональный объект
+        @return Константная ссылка на используемый функциональный объект
+        */
         UnaryFunction const & function() const
         {
             return *this;
@@ -100,12 +104,21 @@ namespace ural
         void pop_front()
         {}
 
+        //@{
+        /** @brief Оператор присваивания
+        @return *this
+        */
         function_output_sequence &
         operator=(function_output_sequence const &) = default;
 
         function_output_sequence &
         operator=(function_output_sequence &) = default;
+        //@}
 
+        /** @brief Передача значения функциональному объекту
+        @param args аргумент
+        @return *this
+        */
         template <class Arg>
         function_output_sequence & operator=(Arg && arg)
         {

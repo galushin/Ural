@@ -31,6 +31,7 @@ namespace ural
     @tparam Number тип числа
     @tparam D тип приращения
     @todo Возможность задавать разные типы наибольшего и наименьшего значений?
+    @todo Возможность задавать категорию обхода
     */
     template <class Number, class D = use_default>
     class numbers_sequence
@@ -130,7 +131,8 @@ namespace ural
         typedef typename std::common_type<T1, T2>::type Number;
         typedef numbers_sequence<Number, D> Seq;
 
-        return Seq{std::move(x_min), std::move(x_max), std::move(step)};
+        // @todo Проверить переполнения и сужения
+        return Seq(std::move(x_min), std::move(x_max), std::move(step));
     }
 
     /** @brief Создание последовательности индексов массива

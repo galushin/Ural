@@ -202,8 +202,8 @@ namespace ural
         return s;
     }
 
-    /** @brief Функциональный объект, вычисляющий размер массивов/контейнеров
-    и последовательностей
+    /** @brief Класс функционального объекта, вычисляющий размер
+    массивов/контейнеров и последовательностей
     */
     class size_fn
     {
@@ -257,7 +257,6 @@ namespace ural
         template <class T, size_t N>
         size_t operator()(T(&a)[N]) const;
     };
-    auto constexpr size = ural::size_fn{};
 
     /** @brief Тип функционального объекта для продвижения последовательности на
     заданное число шагов
@@ -294,22 +293,31 @@ namespace ural
         }
     };
 
-    /** @brief Функциональный объект для продвижения последовательности на
-    заданное число шагов
-    */
-    auto constexpr advance = advance_fn{};
-
     /** @brief Продвижение копии последовательнисти на заданное количество шагов
     @param s последовательность
     @param n количество шагов
     @return Копия последовательность @c s продвинутая на @c n шагов c помощью
     <tt> advance </tt>
+    @todo Преобразовать в функциональный объект
     */
     template <class Sequence>
     Sequence next(Sequence s, typename Sequence::distance_type n = 1)
     {
-        ::ural::advance(s, n);
+        ::ural::advance_fn{}(s, n);
         return s;
+    }
+
+    namespace
+    {
+        /** @brief Функциональный объект для продвижения последовательности на
+        заданное число шагов
+        */
+        constexpr auto const advance = advance_fn{};
+
+        /** @brief Класс функционального объекта, вычисляющий размер
+        массивов/контейнеров и последовательностей
+        */
+        constexpr auto const size = ural::size_fn{};
     }
 }
 // namespace ural

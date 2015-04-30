@@ -150,8 +150,9 @@ namespace ural
             return static_cast<Compare const &>(*this);
         }
 
+        //@{
         /** @brief Первая входная последовательность
-        @return Константная ссылка на первую входную последовательность
+        @return Ссылка на первую входную последовательность
         */
         Input1 const & first_base() const &
         {
@@ -162,9 +163,11 @@ namespace ural
         {
             return std::move(this->in1_);
         }
+        //@}
 
+        //@{
         /** @brief Вторая входная последовательность
-        @return Константная ссылка на вторую входную последовательность
+        @return Cсылка на вторую входную последовательность
         */
         Input2 const & second_base() const &
         {
@@ -175,6 +178,7 @@ namespace ural
         {
             return std::move(this->in2_);
         }
+        //@}
 
     private:
         void seek()

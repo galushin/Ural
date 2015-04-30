@@ -152,7 +152,10 @@ namespace ural
 
     template <class Traversable>
     auto sequence_fwd(typename std::remove_reference<Traversable>::type && t)
-    -> decltype(sequence(std::forward<Traversable>(t)));
+    -> decltype(sequence(std::forward<Traversable>(t)))
+    {
+        return sequence(std::forward<Traversable>(t));
+    }
     //@}
 }
 // namespace ural

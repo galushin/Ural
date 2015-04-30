@@ -29,6 +29,9 @@
 
 namespace ural
 {
+    /** @brief Функциональный объект, реализующий копирование элементов одной
+    последовальности в другую
+    */
     class copy_fn
     {
     private:
@@ -50,6 +53,14 @@ namespace ural
         }
 
     public:
+        /** Копирует элементы последовательности @c in в последовательность
+        @c out по очереди, пока одна из них не будет исчерпана.
+        @brief Копирование последовательностей
+        @param in входная последовательность
+        @param out выходная последовательность
+        @return Кортеж, содержащий непройденные части входной и выходной
+        последовательностей (одна из них будет пустой)
+        */
         template <class Input, class Output>
         auto operator()(Input && in, Output && out) const
         -> decltype(::ural::copy_fn::copy_impl(sequence_fwd<Input>(in),

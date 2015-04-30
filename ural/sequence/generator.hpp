@@ -36,10 +36,10 @@ namespace ural
     {
     public:
         typedef decltype(make_callable(std::declval<Generator>()))
-            functor_type;
+            function_type;
 
     private:
-        typedef sequence_base<generator_sequence, functor_type>
+        typedef sequence_base<generator_sequence, function_type>
             Base_class;
 
         template <class T>
@@ -48,7 +48,7 @@ namespace ural
     public:
         // Типы
         /// @brief Тип ссылки
-        typedef decltype(std::declval<functor_type>()()) reference;
+        typedef decltype(std::declval<function_type>()()) reference;
 
         /// @brief Тип значения
         typedef decltype(make_value(std::declval<reference>())) value_type;
@@ -65,7 +65,7 @@ namespace ural
         // Конструктор
         /** @brief Конструктор
         @param gen функция без аргументо
-        @post <tt> this->functor() == gen </tt>
+        @post <tt> this->function() == gen </tt>
         */
         explicit generator_sequence(Generator gen)
          : Base_class{std::move(gen)}
@@ -91,7 +91,7 @@ namespace ural
         */
         reference front() const
         {
-            return this->functor()();
+            return this->function()();
         }
 
         /// @brief Переход к следующему элементу. Ничего не делает.
@@ -102,7 +102,7 @@ namespace ural
         /** @brief Используемый функциональный объект
         @return Используемый функциональный объект
         */
-        functor_type const & functor() const
+        function_type const & function() const
         {
             return *this;
         }
