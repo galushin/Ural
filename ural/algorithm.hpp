@@ -1047,21 +1047,13 @@ namespace ural
         -> ural::tuple<decltype(sequence_fwd<Input>(in)),
                        decltype(sequence_fwd<Output>(out))>
         {
-            // @todo Выразить через replace_copy_if?
-            auto in_r = ural::make_replace_sequence(std::move(in),
-                                                    std::cref(old_value),
-                                                    std::cref(new_value));
-            auto r = ural::copy_fn{}(std::move(in_r), std::move(out));
-
-            return ural::make_tuple(std::move(r[ural::_1]).bases()[ural::_1],
-                                    std::move(r[ural::_2]));
-//            auto const pred
-//                = std::bind(ural::make_callable(std::move(bin_pred)),
-//                            std::placeholders::_1,
-//                            std::cref(old_value));
-//            return ural::replace_copy_if_fn{}(std::forward<Input>(in),
-//                                              std::forward<Output>(out),
-//                                              std::move(pred), new_value);
+            auto const pred
+                = std::bind(ural::make_callable(std::move(bin_pred)),
+                            std::placeholders::_1,
+                            std::cref(old_value));
+            return ural::replace_copy_if_fn{}(std::forward<Input>(in),
+                                              std::forward<Output>(out),
+                                              std::move(pred), new_value);
         }
     };
 

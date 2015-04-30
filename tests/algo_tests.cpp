@@ -726,6 +726,7 @@ BOOST_AUTO_TEST_CASE(replace_sequence_test)
                                   s_ural.begin(), s_ural.end());
 }
 
+// @todo replace_copy с явно заданным предикатом
 BOOST_AUTO_TEST_CASE(replace_copy_test)
 {
     // Исходные данные
@@ -742,6 +743,31 @@ BOOST_AUTO_TEST_CASE(replace_copy_test)
     std::vector<int> s_ural;
     ural::replace_copy(source, s_ural | ural::back_inserter,
                        old_value, new_value);
+
+    // Проверка
+    BOOST_CHECK_EQUAL_COLLECTIONS(s_std.begin(), s_std.end(),
+                                  s_ural.begin(), s_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(replace_copy_with_pred_regression)
+{
+    // Исходные данные
+    std::vector<int> const source = {5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
+    auto const old_value = 5;
+    auto const new_value = 55;
+
+    auto pred = [=](int x) {return x < old_value;};
+    auto bin_pred = ural::less<>{};
+
+    // std
+    std::vector<int> s_std;
+    std::replace_copy_if(source.begin(), source.end(),
+                         std::back_inserter(s_std), pred, new_value);
+
+    // ural
+    std::vector<int> s_ural;
+    ural::replace_copy(source, s_ural | ural::back_inserter,
+                       old_value, new_value, bin_pred);
 
     // Проверка
     BOOST_CHECK_EQUAL_COLLECTIONS(s_std.begin(), s_std.end(),
@@ -2107,7 +2133,13 @@ BOOST_AUTO_TEST_CASE(includes_test_custom_compare)
     for(auto const & s : vs)
     {
         bool const r_std = std::includes(s.begin(), s.end(),
-                                         v0.begin(), v0.end(), cmp_nocase);        bool const r_ural = ural::includes(s, v0, cmp_nocase);
+                                         v0.begin(), v0.end(), cmp_nocase);        std::istringstream s_stream(s);
+        std::istringstream v0_stream(v0);
+
+        bool const r_ural
+            = ural::includes(ural::make_istream_sequence<char>(s_stream),
+                             ural::make_istream_sequence<char>(v0_stream),
+                             cmp_nocase);
         BOOST_CHECK_EQUAL(r_std, r_ural);
     }
 }
