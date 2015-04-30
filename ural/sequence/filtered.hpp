@@ -45,7 +45,7 @@ namespace ural
             return x.impl_ == y.impl_;
         }
 
-        typedef ural::not_functor<Predicate> NegatedPredicate;
+        typedef ural::not_function<Predicate> NegatedPredicate;
 
         typedef ural::remove_if_sequence<Sequence, NegatedPredicate>
             Impl;

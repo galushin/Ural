@@ -64,8 +64,8 @@ namespace ural
         /** @brief Конструктор
         @param f1 функциональный объект, вычисляющий окончательный результат
         @param f2 функциональный объект, применяемый к аргументам
-        @post <tt> this->first_functor() == f1 </tt>
-        @post <tt> this->second_functor() == f2 </tt>
+        @post <tt> this->first_function() == f1 </tt>
+        @post <tt> this->second_function() == f2 </tt>
         */
         explicit compose_function(UnaryFunction f1, Function f2)
          : base_{std::move(f1), std::move(f2)}

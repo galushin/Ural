@@ -129,21 +129,21 @@ namespace ural
     знчение
     @tparam T тип значения
 
-    Если T --- регулярный тип, то <tt> value_functor<T> </tt> --- тоже,
+    Если T --- регулярный тип, то <tt> value_function<T> </tt> --- тоже,
     регулярный.
 
-    Пусть @c f --- это объект типа, <tt> value_functor<T> </tt>, а @c x ---
+    Пусть @c f --- это объект типа, <tt> value_function<T> </tt>, а @c x ---
     типа @c T.
     Выражение <tt> f = x </tt> выглядит не очень логичным. Если нужно изменить
     значение, которое возвращает @c f, то можно воспользоваться кодом вида
-    <tt> f = value_functor<T>{x} </tt>.
+    <tt> f = value_function<T>{x} </tt>.
 
     Рассматривалась возможность задавать сигнатуру (типы параметров), но она
     была отвергнута, так как лишь усложняет реализацию, а сами параметры вообще
     не используются.
     */
     template <class T>
-    class value_functor
+    class value_function
     {
     public:
         /// @brief Тип возвращаемого значения
@@ -154,7 +154,7 @@ namespace ural
         @post <tt> (*this)()  == T(std::forward<Args>(args)...) </tt>
         */
         template <class... Args>
-        constexpr explicit value_functor(Args &&... args)
+        constexpr explicit value_function(Args &&... args)
          : value_(std::forward<Args>(args)...)
         {}
 
@@ -179,7 +179,7 @@ namespace ural
     */
     template <class T1, class T2>
     constexpr auto
-    operator==(value_functor<T1> const & x, value_functor<T2> const & y)
+    operator==(value_function<T1> const & x, value_function<T2> const & y)
     -> decltype(x() == y())
     {
         return x() == y();
@@ -192,32 +192,32 @@ namespace ural
     */
     template <class T1, class T2>
     constexpr auto
-    operator<(value_functor<T1> const & x, value_functor<T2> const & y)
+    operator<(value_function<T1> const & x, value_function<T2> const & y)
     -> decltype(x() < y())
     {
         return x() < y();
     }
 
-    /** @brief Функция создания @c value_functor
+    /** @brief Функция создания @c value_function
     @param value начальное значение
-    @return <tt> value_functor<T>{value} </tt>
+    @return <tt> value_function<T>{value} </tt>
     */
     template <class T>
-    constexpr value_functor<T>
-    make_value_functor(T const & value)
+    constexpr value_function<T>
+    make_value_function(T const & value)
     {
-        return value_functor<T>{value};
+        return value_function<T>{value};
     }
 
-    /** @brief Функция создания @c value_functor на основе временного объекта
+    /** @brief Функция создания @c value_function на основе временного объекта
     @param value начальное значение
-    @return <tt> value_functor<T>{std::move(value)} </tt>
+    @return <tt> value_function<T>{std::move(value)} </tt>
     */
     template <class T>
-    constexpr value_functor<T>
-    make_value_functor(T && value)
+    constexpr value_function<T>
+    make_value_function(T && value)
     {
-        return value_functor<T>{std::move(value)};
+        return value_function<T>{std::move(value)};
     }
 
     /** @brief Функциональный объект для конструкторов
@@ -324,64 +324,64 @@ namespace ural
     auto make_min_element_accumulator(Value init_value, BinaryPredicate pred)
     -> min_element_accumulator<Value, decltype(ural::make_callable(std::move(pred)))>
     {
-        typedef decltype(ural::make_callable(std::move(pred))) Functor;
-        typedef min_element_accumulator<Value, Functor> Result;
+        typedef decltype(ural::make_callable(std::move(pred))) Function;
+        typedef min_element_accumulator<Value, Function> Result;
         return Result{std::move(init_value), ural::make_callable(std::move(pred))};
     }
 
     /** @brief Адаптор функционального объекта с двумя аргументами, меняющий
     порядок аргументов.
-    @tparam BinaryFunctor Тип функционального объекта с двумя аргументами
+    @tparam BinaryFunction Тип функционального объекта с двумя аргументами
     */
-    template <class BinaryFunctor>
-    class binary_reverse_args_functor
-     : private BinaryFunctor
+    template <class BinaryFunction>
+    class binary_reverse_args_function
+     : private BinaryFunction
     {
-        typedef BinaryFunctor Base;
+        typedef BinaryFunction Base;
 
     public:
         /** @brief Конструктор
         @param f функциональный объект
-        @post <tt> this->functor() == f </tt>
+        @post <tt> this->function() == f </tt>
         */
-        constexpr explicit binary_reverse_args_functor(BinaryFunctor f)
+        constexpr explicit binary_reverse_args_function(BinaryFunction f)
          : Base(std::move(f))
         {}
 
         /** @brief Вычисление значения
         @param x первый аргумент
         @param y второй аргумент
-        @return <tt> this->functor()(std::forward<T2>(y), std::forward<T1>(x)) </tt>
+        @return <tt> this->function()(std::forward<T2>(y), std::forward<T1>(x)) </tt>
         */
         template <class T1, class T2>
         constexpr auto operator()(T1 && x, T2 && y) const
-        -> decltype(std::declval<BinaryFunctor>()(std::forward<T2>(y), std::forward<T1>(x)))
+        -> decltype(std::declval<BinaryFunction>()(std::forward<T2>(y), std::forward<T1>(x)))
         {
-            return this->functor()(std::forward<T2>(y), std::forward<T1>(x));
+            return this->function()(std::forward<T2>(y), std::forward<T1>(x));
         }
 
         /** @brief Адаптируемый функциональный объект
         @return Адаптируемый функциональный объект
         */
-        constexpr BinaryFunctor const & functor() const
+        constexpr BinaryFunction const & function() const
         {
-            return static_cast<BinaryFunctor const &>(*this);
+            return static_cast<BinaryFunction const &>(*this);
         }
     };
 
     /** @brief Создание адаптора функционального объекта с двумя аргументами,
     меняющего порядок аргументов.
     @param f функциональный объект с двумя аргументами
-    @return <tt> Functor{make_callable(std::move(f))} </tt>, где @c Functor ---
-    <tt> binary_reverse_args_functor<decltype(make_callable(std::move(f)))> </tt>
+    @return <tt> Function{make_callable(std::move(f))} </tt>, где @c Function ---
+    <tt> binary_reverse_args_function<decltype(make_callable(std::move(f)))> </tt>
     */
-    template <class BinaryFunctor>
-    constexpr auto make_binary_reverse_args(BinaryFunctor f)
-    -> binary_reverse_args_functor<decltype(make_callable(std::move(f)))>
+    template <class BinaryFunction>
+    constexpr auto make_binary_reverse_args(BinaryFunction f)
+    -> binary_reverse_args_function<decltype(make_callable(std::move(f)))>
     {
-        typedef binary_reverse_args_functor<decltype(make_callable(std::move(f)))>
-            Functor;
-        return Functor{make_callable(std::move(f))};
+        typedef binary_reverse_args_function<decltype(make_callable(std::move(f)))>
+            Function;
+        return Function{make_callable(std::move(f))};
     }
 
     template <class Fun, Fun f>

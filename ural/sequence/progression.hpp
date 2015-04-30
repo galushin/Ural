@@ -28,7 +28,7 @@ namespace ural
                            arithmetic_progression const & y)
         {
             return x.first_ == y.first_ && x.step_ == y.step_
-                   && x.functor() == y.functor();
+                   && x.function() == y.function();
         }
 
         static_assert(!std::is_same<Traversal, bidirectional_traversal_tag>::value,
@@ -60,7 +60,7 @@ namespace ural
         /** @brief Конструктор
         @param first Первый элемент
         @param step Шаг
-        @post <tt> this->functor() == operation_type{} </tt>
+        @post <tt> this->function() == operation_type{} </tt>
         @post <tt> **this == first </tt>
         @post <tt> this->step() == step </tt>
         */
@@ -75,7 +75,7 @@ namespace ural
         @param step Шаг
         @post <tt> **this == first </tt>
         @post <tt> this->step() == step </tt>
-        @post <tt> this->functor() == op </tt>
+        @post <tt> this->function() == op </tt>
         */
         arithmetic_progression(Additive first, Additive step, operation_type op)
          : operation_type(std::move(op))
@@ -87,7 +87,7 @@ namespace ural
         /** @brief Функциональный объект, используемый как операция
         @return Функциональный объект, используемый как операция
         */
-        operation_type const & functor() const
+        operation_type const & function() const
         {
             return static_cast<operation_type const &>(*this);
         }
@@ -117,7 +117,7 @@ namespace ural
         */
         void pop_front()
         {
-            this->first_ = this->functor()(std::move(ural::get(this->first_)),
+            this->first_ = this->function()(std::move(ural::get(this->first_)),
                                            this->step_);
         }
 

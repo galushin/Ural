@@ -60,7 +60,7 @@ namespace ural
 
         // Конструкторы
         /** @brief Конструктор без аргументов
-        @post <tt> this->functor() == UnaryFunction{} </tt>
+        @post <tt> this->function() == UnaryFunction{} </tt>
         */
         function_output_sequence()
          : Base_class()
@@ -122,12 +122,12 @@ namespace ural
         template <class Arg>
         function_output_sequence & operator=(Arg && arg)
         {
-            this->functor_ref()(std::forward<Arg>(arg));
+            this->function_ref()(std::forward<Arg>(arg));
             return *this;
         }
 
     private:
-        UnaryFunction & functor_ref()
+        UnaryFunction & function_ref()
         {
             return static_cast<UnaryFunction &>(*this);
         }
@@ -142,8 +142,8 @@ namespace ural
     auto make_function_output_sequence(UnaryFunction f)
     -> function_output_sequence<decltype(ural::make_callable(std::move(f)))>
     {
-        typedef decltype(ural::make_callable(std::move(f))) Functor;
-        typedef function_output_sequence<Functor> Result;
+        typedef decltype(ural::make_callable(std::move(f))) Function;
+        typedef function_output_sequence<Function> Result;
         return Result(ural::make_callable(std::move(f)));
     }
 }

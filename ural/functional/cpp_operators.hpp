@@ -699,13 +699,13 @@ namespace ural
     @tparam Predicate тип предиката
     */
     template <class Predicate>
-    class not_functor
+    class not_function
      : private compose_function<ural::logical_not<>, Predicate>
     {
         typedef compose_function<ural::logical_not<>, Predicate> Base;
 
         friend constexpr bool
-        operator==(not_functor const & x, not_functor const & y)
+        operator==(not_function const & x, not_function const & y)
         {
             return static_cast<Base const &>(x) ==
                     static_cast<Base const &>(y);
@@ -719,7 +719,7 @@ namespace ural
         /** @brief Конструктор
         @post <tt> this->target() == target_type{} </tt>
         */
-        constexpr not_functor()
+        constexpr not_function()
          : Base{}
         {}
 
@@ -727,7 +727,7 @@ namespace ural
         @param pred предикат
         @post <tt> this->target() == pred </tt>
         */
-        explicit not_functor(Predicate pred)
+        explicit not_function(Predicate pred)
          : Base(ural::logical_not<>{}, std::move(pred))
         {}
 
@@ -756,10 +756,10 @@ namespace ural
     */
     template <class Predicate>
     auto not_fn(Predicate pred)
-    -> not_functor<decltype(make_callable(std::move(pred)))>
+    -> not_function<decltype(make_callable(std::move(pred)))>
     {
-        typedef not_functor<decltype(make_callable(std::move(pred)))> Functor;
-        return Functor{make_callable(std::move(pred))};
+        typedef not_function<decltype(make_callable(std::move(pred)))> Function;
+        return Function{make_callable(std::move(pred))};
     }
 
     // Составные операторы присваивания

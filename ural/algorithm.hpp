@@ -815,7 +815,7 @@ namespace ural
             BOOST_CONCEPT_ASSERT((concepts::WritableSequence<ForwardSequence, T const &>));
 
             return generate_fn{}(std::move(seq),
-                                 ural::value_functor<T const &>(value));
+                                 ural::value_function<T const &>(value));
         }
     };
 

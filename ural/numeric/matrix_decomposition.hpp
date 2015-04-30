@@ -46,7 +46,7 @@ namespace ural
     /** @brief Функциональный объект вычисления скалярного (внутреннего)
     произведения.
     */
-    class inner_prod_functor
+    class inner_prod_function
     {
     public:
         /** @brief Оператор применения функционального объекта
@@ -111,7 +111,7 @@ namespace ural
     tuple<Matrix, typename make_triangular_matrix<Matrix, boost::numeric::ublas::upper>::type>
     QR_decomposition(Matrix Q)
     {
-        return QR_decomposition(std::move(Q), inner_prod_functor{});
+        return QR_decomposition(std::move(Q), inner_prod_function{});
     }
 
     template <class Matrix>

@@ -115,7 +115,7 @@ namespace ural
     /** @brief Класс функционального объекта для создания кортежей из пачки
     аргументов
     */
-    class make_tuple_functor
+    class make_tuple_function
     {
     private:
         template <class T>
@@ -142,7 +142,7 @@ namespace ural
 namespace
 {
     /// @brief Функциональный объект для создания кортежей из пачки аргументов
-    constexpr auto const make_tuple = make_tuple_functor{};
+    constexpr auto const make_tuple = make_tuple_function{};
 }
 
 namespace tuples

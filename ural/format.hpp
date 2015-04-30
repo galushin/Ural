@@ -239,7 +239,7 @@ namespace details
     целых чисел
     */
     template <class Char, class Traits = std::char_traits<Char>>
-    class to_string_functor
+    class to_string_function
     {
     public:
         /** @brief Выполнение преобразования в строку
@@ -257,10 +257,10 @@ namespace details
     };
 
     /// @brief Функциональный объект преобразования в <tt> std::string </tt>
-    auto constexpr to_string = to_string_functor<char>{};
+    auto constexpr to_string = to_string_function<char>{};
 
     /// @brief Функциональный объект преобразования в <tt> std::wstring </tt>s
-    auto constexpr to_wstring = to_string_functor<wchar_t>{};
+    auto constexpr to_wstring = to_string_function<wchar_t>{};
 }
 // namespace ural
 

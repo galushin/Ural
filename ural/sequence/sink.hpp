@@ -34,7 +34,7 @@ namespace ural
     приниматься будет любой тип.
     */
     template <class T = auto_tag>
-    class sink_functor
+    class sink_function
     {
     public:
         /// @brief Тип возвращаемого значения
@@ -42,14 +42,14 @@ namespace ural
 
         //@{
         /// @brief Оператор применения функционального объекта
-        constexpr sink_functor const &
+        constexpr sink_function const &
         operator()(typename boost::call_traits<T>::param_type &) const
         {
             return *this;
         }
 
         template <class Arg>
-        typename std::enable_if<!std::is_same<Arg, T>::value && std::is_same<T, auto_tag>::value, sink_functor>::type const &
+        typename std::enable_if<!std::is_same<Arg, T>::value && std::is_same<T, auto_tag>::value, sink_function>::type const &
         operator()(Arg const &) const
         {
             return *this;
@@ -63,7 +63,7 @@ namespace ural
     этот тип совпадает с @c auto_tag, то приниматься будет любой тип.
     */
     template <class T = auto_tag>
-    using sink_sequence = ural::function_output_sequence<sink_functor<T>>;
+    using sink_sequence = ural::function_output_sequence<sink_function<T>>;
 }
 // namespace ural
 

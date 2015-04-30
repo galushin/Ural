@@ -123,8 +123,8 @@ namespace ural
                    decltype(make_callable(std::move(cmp)))>
     {
         typedef comparer_by<decltype(make_callable(std::move(f))),
-                   decltype(make_callable(std::move(cmp)))> Functor;
-        return Functor(make_callable(std::move(f)), make_callable(std::move(cmp)));
+                   decltype(make_callable(std::move(cmp)))> Function;
+        return Function(make_callable(std::move(f)), make_callable(std::move(cmp)));
     }
 
     /** @brief Создание функционального объекта, сравнивающего объекты по
@@ -136,8 +136,8 @@ namespace ural
     constexpr auto compare_by(UnaryFunction f)
     -> comparer_by<decltype(make_callable(std::move(f)))>
     {
-        typedef comparer_by<decltype(make_callable(std::move(f)))> Functor;
-        return Functor(make_callable(std::move(f)));
+        typedef comparer_by<decltype(make_callable(std::move(f)))> Function;
+        return Function(make_callable(std::move(f)));
     }
 
     /** @brief Создание функционального объекта, проверяющего равенство двух

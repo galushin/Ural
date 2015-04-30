@@ -72,7 +72,7 @@ namespace ural
         @param f функциональный объект, задающий преобразование
         @param in входная последовательность
         @post <tt> this->base() == in </tt>
-        @post <tt> this->functor() == f </tt>
+        @post <tt> this->function() == f </tt>
         */
         explicit transform_sequence(F f, Inputs... in)
          : impl_(std::move(f), Bases_tuple{std::move(in)...})
@@ -130,7 +130,7 @@ namespace ural
         /** @brief Функциональный объект, задающий преобразование
         @return Функциональный объект, задающий преобразование
         */
-        F const & functor() const
+        F const & function() const
         {
             return impl_.first();
         }
@@ -152,7 +152,7 @@ namespace ural
 
         reference deref(Inputs const & ... ins) const
         {
-            return this->functor()((*ins)...);
+            return this->function()((*ins)...);
         }
 
     private:
@@ -161,24 +161,24 @@ namespace ural
 
     /** @brief Итератор, задающий начало преобразующей последовательности
     @param s последовательность
-    @return <tt> {begin(s.bases()[ural::_1]), s.functor()} </tt>
+    @return <tt> {begin(s.bases()[ural::_1]), s.function()} </tt>
     */
     template <class UnaryFunction, class Sequence>
     auto begin(transform_sequence<UnaryFunction, Sequence> const & s)
     -> boost::transform_iterator<UnaryFunction, decltype(begin(s.bases()[ural::_1]))>
     {
-        return {begin(s.bases()[ural::_1]), s.functor()};
+        return {begin(s.bases()[ural::_1]), s.function()};
     }
 
     /** @brief Итератор, задающий конец преобразующей последовательности
     @param s последовательность
-    @return <tt> {end(s.bases()[ural::_1]), s.functor()} </tt>
+    @return <tt> {end(s.bases()[ural::_1]), s.function()} </tt>
     */
     template <class UnaryFunction, class Sequence>
     auto end(transform_sequence<UnaryFunction, Sequence> const & s)
     -> boost::transform_iterator<UnaryFunction, decltype(begin(s.bases()[ural::_1]))>
     {
-        return {end(s.bases()[ural::_1]), s.functor()};
+        return {end(s.bases()[ural::_1]), s.function()};
     }
 
     /** @brief Функция создания @c make_transform_sequence

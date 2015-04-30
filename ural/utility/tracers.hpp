@@ -300,14 +300,14 @@ namespace ural
         {}
 
         /** @brief Оператор вызова
-        @return this->functor()(std::forward<Args>(args)...);
+        @return this->function()(std::forward<Args>(args)...);
         */
         template <class... Args>
         auto operator()(Args && ... args) const
         -> decltype(std::declval<F>()(std::forward<Args>(args)...))
         {
             ++ calls_ref();
-            return this->functor()(std::forward<Args>(args)...);
+            return this->function()(std::forward<Args>(args)...);
         }
 
         /** @brief Количество вызовов
@@ -330,7 +330,7 @@ namespace ural
         /** @brief Используемый функциональный объект
         @return Используемый функциональный объект
         */
-        Base_class const & functor() const
+        Base_class const & function() const
         {
             return *this;
         }

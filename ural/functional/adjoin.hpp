@@ -86,8 +86,8 @@ namespace ural
     -> adjoin_function_type<decltype(ural::make_callable(std::move(fs)))...>
     {
         typedef adjoin_function_type<decltype(ural::make_callable(std::move(fs)))...>
-            Functor;
-        return Functor{ural::make_callable(std::move(fs))...};
+            Function;
+        return Function{ural::make_callable(std::move(fs))...};
     }
 }
 // namespace ural

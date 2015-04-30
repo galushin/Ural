@@ -30,65 +30,65 @@ namespace
     typedef boost::mpl::list<ural::less<int>,
                              ural::less<int, void>,
                              ural::less<void, int>,
-                             ural::less<>> Less_functors;
+                             ural::less<>> Less_functions;
 
     typedef boost::mpl::list<ural::greater<int>,
                              ural::greater<int, void>,
                              ural::greater<void, int>,
-                             ural::greater<>> Greater_functors;
+                             ural::greater<>> Greater_functions;
 
     typedef boost::mpl::list<ural::not_equal_to<int>,
                          ural::not_equal_to<>,
                          ural::not_equal_to<int, void>,
-                         ural::not_equal_to<void, int>> Neq_functors;
+                         ural::not_equal_to<void, int>> Neq_functions;
 
     typedef boost::mpl::list<ural::logical_not<bool>, ural::logical_not<>>
-        Not_functors;
+        Not_functions;
 
     typedef boost::mpl::list<ural::logical_and<bool>,
                          ural::logical_and<>,
                          ural::logical_and<bool, void>,
-                         ural::logical_and<void, bool>> And_functors;
+                         ural::logical_and<void, bool>> And_functions;
 
     typedef boost::mpl::list<ural::logical_or<bool>,
                          ural::logical_or<>,
                          ural::logical_or<bool, void>,
-                         ural::logical_or<void, bool>> Or_functors;
+                         ural::logical_or<void, bool>> Or_functions;
 
     typedef boost::mpl::list<ural::bit_and<int>,
                          ural::bit_and<int, void>,
                          ural::bit_and<void, int>,
-                         ural::bit_and<void, void>> Bit_and_functors;
+                         ural::bit_and<void, void>> Bit_and_functions;
 
     typedef boost::mpl::list<ural::bit_or<int>,
                          ural::bit_or<int, void>,
                          ural::bit_or<void, int>,
-                         ural::bit_or<void, void>> Bit_or_functors;
+                         ural::bit_or<void, void>> Bit_or_functions;
 
     typedef boost::mpl::list<ural::bit_xor<int>,
                          ural::bit_xor<int, void>,
                          ural::bit_xor<void, int>,
-                         ural::bit_xor<void, void>> Bit_xor_functors;
+                         ural::bit_xor<void, void>> Bit_xor_functions;
 
     typedef boost::mpl::list<ural::logical_implication<bool>,
                          ural::logical_implication<bool, void>,
                          ural::logical_implication<void, bool>,
                          ural::logical_implication<void, void>>
-        Implication_functors;
+        Implication_functions;
 
     // Арифметические операторы
     typedef boost::mpl::list<ural::plus<int>,
                              ural::plus<>,
                              ural::plus<int, void>,
-                             ural::plus<void, int>> Plus_functors;
+                             ural::plus<void, int>> Plus_functions;
 
     typedef boost::mpl::list<ural::modulus<int>,
                              ural::modulus<>,
                              ural::modulus<int, void>,
-                             ural::modulus<void, int>> Modulus_functors;
+                             ural::modulus<void, int>> Modulus_functions;
 }
 
-BOOST_AUTO_TEST_CASE(memoize_functor_test)
+BOOST_AUTO_TEST_CASE(memoize_function_test)
 {
     struct Tag;
 
@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE(memoize_functor_test)
     BOOST_CHECK_EQUAL(3U, f_tracer.calls());
 }
 
-BOOST_AUTO_TEST_CASE(memoize_functor_equality)
+BOOST_AUTO_TEST_CASE(memoize_function_equality)
 {
     typedef double(Signature)(double);
     auto const f1 = ural::memoize<Signature>((Signature*)(std::abs));
@@ -139,33 +139,33 @@ BOOST_AUTO_TEST_CASE(memoize_functor_equality)
     BOOST_CHECK(f1 == f2);
 }
 
-BOOST_AUTO_TEST_CASE(functor_tracer_test)
+BOOST_AUTO_TEST_CASE(function_tracer_test)
 {
     typedef double(*Target)(double);
 
-    typedef ural::callable_tracer<Target> Functor;
+    typedef ural::callable_tracer<Target> Function;
 
     // Явное преобразование нужно, так как std::abs --- перегруженная функция
     auto f = ural::make_function_tracer(Target(std::abs));
 
-    static_assert(std::is_same<decltype(f), Functor>::value, "");
+    static_assert(std::is_same<decltype(f), Function>::value, "");
 
-    BOOST_CHECK_EQUAL(0U, Functor::calls());
+    BOOST_CHECK_EQUAL(0U, Function::calls());
 
     f(1.0);
 
-    BOOST_CHECK_EQUAL(1U, Functor::calls());
+    BOOST_CHECK_EQUAL(1U, Function::calls());
 
     f(-1.0);
 
-    BOOST_CHECK_EQUAL(2U, Functor::calls());
+    BOOST_CHECK_EQUAL(2U, Function::calls());
 
-    Functor::reset_calls();
+    Function::reset_calls();
 
-    BOOST_CHECK_EQUAL(0U, Functor::calls());
+    BOOST_CHECK_EQUAL(0U, Function::calls());
 }
 
-BOOST_AUTO_TEST_CASE(replace_functor_test)
+BOOST_AUTO_TEST_CASE(replace_function_test)
 {
     auto const old_value = -1;
     auto const new_value = 1;
@@ -184,7 +184,7 @@ BOOST_AUTO_TEST_CASE(replace_functor_test)
     BOOST_CHECK_EQUAL(other_value, f(other_value));
 }
 
-BOOST_AUTO_TEST_CASE(replace_functor_test_custom_predicate)
+BOOST_AUTO_TEST_CASE(replace_function_test_custom_predicate)
 {
     struct No_equal_op
     {
@@ -286,9 +286,9 @@ BOOST_AUTO_TEST_CASE(compare_by_test_custom_compare)
     }
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(less_test, Functor, Less_functors)
+BOOST_AUTO_TEST_CASE_TEMPLATE(less_test, Function, Less_functions)
 {
-    constexpr Functor cmp {};
+    constexpr Function cmp {};
 
     static_assert(cmp == cmp, "");
     static_assert(!(cmp != cmp), "");
@@ -304,9 +304,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(less_test, Functor, Less_functors)
     BOOST_CHECK_EQUAL(false, cmp(1, 1));
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(greater_test, Functor, Greater_functors)
+BOOST_AUTO_TEST_CASE_TEMPLATE(greater_test, Function, Greater_functions)
 {
-    constexpr Functor cmp {};
+    constexpr Function cmp {};
 
     static_assert(cmp == cmp, "");
     static_assert(!(cmp != cmp), "");
@@ -322,9 +322,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(greater_test, Functor, Greater_functors)
     BOOST_CHECK_EQUAL(false, cmp(1, 1));
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(not_equal_to_test, Functor, Neq_functors)
+BOOST_AUTO_TEST_CASE_TEMPLATE(not_equal_to_test, Function, Neq_functions)
 {
-    constexpr Functor neq {};
+    constexpr Function neq {};
 
     static_assert(neq == neq, "");
     static_assert(!(neq != neq), "");
@@ -340,9 +340,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(not_equal_to_test, Functor, Neq_functors)
     BOOST_CHECK_EQUAL(false, neq(1, 1));
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(logical_not_test, Functor, Not_functors)
+BOOST_AUTO_TEST_CASE_TEMPLATE(logical_not_test, Function, Not_functions)
 {
-    constexpr Functor not_ {};
+    constexpr Function not_ {};
 
     static_assert(not_ == not_, "");
     static_assert(!(not_ != not_), "");
@@ -354,9 +354,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(logical_not_test, Functor, Not_functors)
     BOOST_CHECK_EQUAL(false, not_(true));
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(logical_and_test, Functor, And_functors)
+BOOST_AUTO_TEST_CASE_TEMPLATE(logical_and_test, Function, And_functions)
 {
-    constexpr Functor and_ {};
+    constexpr Function and_ {};
 
     static_assert(and_ == and_, "");
     static_assert(!(and_ != and_), "");
@@ -372,9 +372,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(logical_and_test, Functor, And_functors)
     BOOST_CHECK_EQUAL(true, and_(true, true));
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(logical_or_test, Functor, Or_functors)
+BOOST_AUTO_TEST_CASE_TEMPLATE(logical_or_test, Function, Or_functions)
 {
-    constexpr Functor or_ {};
+    constexpr Function or_ {};
 
     static_assert(or_ == or_, "");
     static_assert(!(or_ != or_), "");
@@ -390,9 +390,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(logical_or_test, Functor, Or_functors)
     BOOST_CHECK_EQUAL(true, or_(true, true));
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(bit_and_test, Functor, Bit_and_functors)
+BOOST_AUTO_TEST_CASE_TEMPLATE(bit_and_test, Function, Bit_and_functions)
 {
-    constexpr auto f = Functor{};
+    constexpr auto f = Function{};
 
     std::uniform_int_distribution<int> d(-100, 100);
 
@@ -402,9 +402,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(bit_and_test, Functor, Bit_and_functors)
     BOOST_CHECK_EQUAL((x & y), f(x, y));
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(bit_or_test, Functor, Bit_or_functors)
+BOOST_AUTO_TEST_CASE_TEMPLATE(bit_or_test, Function, Bit_or_functions)
 {
-    constexpr auto f = Functor{};
+    constexpr auto f = Function{};
 
     std::uniform_int_distribution<int> d(-100, 100);
 
@@ -414,9 +414,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(bit_or_test, Functor, Bit_or_functors)
     BOOST_CHECK_EQUAL((x | y), f(x, y));
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(bit_xor_test, Functor, Bit_xor_functors)
+BOOST_AUTO_TEST_CASE_TEMPLATE(bit_xor_test, Function, Bit_xor_functions)
 {
-    constexpr auto f = Functor{};
+    constexpr auto f = Function{};
 
     std::uniform_int_distribution<int> d(-100, 100);
 
@@ -426,9 +426,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(bit_xor_test, Functor, Bit_xor_functors)
     BOOST_CHECK_EQUAL((x ^ y), f(x, y));
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(logic_implication_test, Functor, Implication_functors)
+BOOST_AUTO_TEST_CASE_TEMPLATE(logic_implication_test, Function, Implication_functions)
 {
-    constexpr auto f = Functor{};
+    constexpr auto f = Function{};
 
     static_assert(f == f, "");
     static_assert(!(f != f), "");
@@ -466,7 +466,7 @@ BOOST_AUTO_TEST_CASE(negate_test_auto)
     BOOST_CHECK_EQUAL(-value, r);
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(modulus_test, Modulus, Modulus_functors)
+BOOST_AUTO_TEST_CASE_TEMPLATE(modulus_test, Modulus, Modulus_functions)
 {
     constexpr Modulus mod {};
 
@@ -506,7 +506,7 @@ BOOST_AUTO_TEST_CASE(bit_not_test)
     BOOST_CHECK_EQUAL(~value, fa(value));
 }
 
-BOOST_AUTO_TEST_CASE(make_functor_for_member_var_test)
+BOOST_AUTO_TEST_CASE(make_function_for_member_var_test)
 {
     typedef std::pair<int, std::string> Type;
 
@@ -565,7 +565,7 @@ BOOST_AUTO_TEST_CASE(make_functor_for_member_var_test)
     BOOST_CHECK_EQUAL(x.first, f(p_x_cv));
 }
 
-BOOST_AUTO_TEST_CASE(make_functor_for_member_var_test_smart_ptr)
+BOOST_AUTO_TEST_CASE(make_function_for_member_var_test_smart_ptr)
 {
     typedef std::pair<int, std::string> Type;
     Type x{42, "abc"};
@@ -590,7 +590,7 @@ BOOST_AUTO_TEST_CASE(make_functor_for_member_var_test_smart_ptr)
     BOOST_CHECK_EQUAL(x.first, f(p_cv));
 }
 
-BOOST_AUTO_TEST_CASE(make_functor_for_member_function_test)
+BOOST_AUTO_TEST_CASE(make_function_for_member_function_test)
 {
     struct Inner
     {
@@ -669,7 +669,7 @@ BOOST_AUTO_TEST_CASE(make_functor_for_member_function_test)
     BOOST_CHECK_EQUAL(0, r_v.get().value);
 }
 
-BOOST_AUTO_TEST_CASE(make_adjoin_functor_test)
+BOOST_AUTO_TEST_CASE(make_adjoin_function_test)
 {
     auto f1 = [](int a) { return a != 0; };
     auto f2 = [](int a) { return a % 2; };
@@ -681,7 +681,7 @@ BOOST_AUTO_TEST_CASE(make_adjoin_functor_test)
     BOOST_CHECK_EQUAL(1, std::get<1>(x));
 }
 
-BOOST_AUTO_TEST_CASE(make_adjoint_functor_constexpr_test)
+BOOST_AUTO_TEST_CASE(make_adjoint_function_constexpr_test)
 {
     auto constexpr f1 = ural::divides<>{};
     auto constexpr f2 = ural::divides<int, void>{};
@@ -717,12 +717,12 @@ BOOST_AUTO_TEST_CASE(make_adjoint_functor_constexpr_test)
     BOOST_CHECK_EQUAL(r4, std::get<3>(x));
 }
 
-BOOST_AUTO_TEST_CASE(value_functor__test)
+BOOST_AUTO_TEST_CASE(value_function__test)
 {
-    typedef ural::value_functor<int> Functor;
+    typedef ural::value_function<int> Function;
 
     auto const n1 = 42;
-    Functor constexpr f1 = ural::make_value_functor(n1);
+    Function constexpr f1 = ural::make_value_function(n1);
 
     BOOST_CHECK_EQUAL(n1, f1());
     BOOST_CHECK_EQUAL(n1, f1(13));
@@ -730,13 +730,13 @@ BOOST_AUTO_TEST_CASE(value_functor__test)
     BOOST_CHECK_EQUAL(n1, f1("abc", 13));
 }
 
-BOOST_AUTO_TEST_CASE(value_functor_equality_test)
+BOOST_AUTO_TEST_CASE(value_function_equality_test)
 {
-    typedef ural::value_functor<int> Functor;
+    typedef ural::value_function<int> Function;
 
     auto const n1 = 42;
-    Functor constexpr f1 = ural::make_value_functor(n1);
-    Functor constexpr f2 = ural::make_value_functor(13);
+    Function constexpr f1 = ural::make_value_function(n1);
+    Function constexpr f2 = ural::make_value_function(13);
 
     auto constexpr r1 = f1();
     auto constexpr r2 = f2();
@@ -751,13 +751,13 @@ BOOST_AUTO_TEST_CASE(value_functor_equality_test)
     BOOST_CHECK(true);
 }
 
-BOOST_AUTO_TEST_CASE(value_functor_less_test)
+BOOST_AUTO_TEST_CASE(value_function_less_test)
 {
-    typedef ural::value_functor<int> Functor;
+    typedef ural::value_function<int> Function;
 
     auto const n42 = 42;
-    Functor constexpr f1 = ural::make_value_functor(13);
-    Functor constexpr f2 = ural::make_value_functor(n42);
+    Function constexpr f1 = ural::make_value_function(13);
+    Function constexpr f2 = ural::make_value_function(n42);
 
     auto constexpr r1 = f1();
     auto constexpr r2 = f2();
@@ -775,7 +775,7 @@ BOOST_AUTO_TEST_CASE(value_functor_less_test)
     BOOST_CHECK(true);
 }
 
-BOOST_AUTO_TEST_CASE(replace_functor_cref_test)
+BOOST_AUTO_TEST_CASE(replace_function_cref_test)
 {
     auto const old_value = 13;
     auto const new_value = 42;
@@ -789,7 +789,7 @@ BOOST_AUTO_TEST_CASE(replace_functor_cref_test)
     BOOST_CHECK_EQUAL(new_value, f(new_value));
 }
 
-BOOST_AUTO_TEST_CASE(replace_functor_custom_predicate_test)
+BOOST_AUTO_TEST_CASE(replace_function_custom_predicate_test)
 {
     auto constexpr old_value = 13;
     auto constexpr new_value = 42;
@@ -823,7 +823,7 @@ namespace
     };
 }
 
-BOOST_AUTO_TEST_CASE(replace_functor_equal_test)
+BOOST_AUTO_TEST_CASE(replace_function_equal_test)
 {
     auto constexpr old_value = 13;
     auto constexpr new_value = 42;
@@ -842,7 +842,7 @@ BOOST_AUTO_TEST_CASE(replace_functor_equal_test)
     BOOST_CHECK(true);
 }
 
-BOOST_AUTO_TEST_CASE(min_element_accumulator_default_functor_test)
+BOOST_AUTO_TEST_CASE(min_element_accumulator_default_function_test)
 {
     typedef ural::min_element_accumulator<int> Accumulator;
     Accumulator acc{42};
@@ -919,7 +919,7 @@ namespace
                                              ural::modulus_assign<void, int>,
                                              ural::modulus_assign<>>;
 }
-BOOST_AUTO_TEST_CASE_TEMPLATE(plus_assign_functor_test, Function, Plus_assigns)
+BOOST_AUTO_TEST_CASE_TEMPLATE(plus_assign_function_test, Function, Plus_assigns)
 {
     auto x = 4;
     auto const y = 3;
@@ -929,7 +929,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(plus_assign_functor_test, Function, Plus_assigns)
     BOOST_CHECK_EQUAL(7, x);
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(minus_assign_functor_test, Function, Minus_assigns)
+BOOST_AUTO_TEST_CASE_TEMPLATE(minus_assign_function_test, Function, Minus_assigns)
 {
     auto x = 4;
     auto const y = 3;
@@ -939,7 +939,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(minus_assign_functor_test, Function, Minus_assigns
     BOOST_CHECK_EQUAL(1, x);
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(mult_assign_functor_test, Function, Mult_assigns)
+BOOST_AUTO_TEST_CASE_TEMPLATE(mult_assign_function_test, Function, Mult_assigns)
 {
     auto x = 4;
     auto const y = 3;
@@ -949,7 +949,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mult_assign_functor_test, Function, Mult_assigns)
     BOOST_CHECK_EQUAL(12, x);
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(divides_assign_functor_test, Function, Divides_assigns)
+BOOST_AUTO_TEST_CASE_TEMPLATE(divides_assign_function_test, Function, Divides_assigns)
 {
     auto x = 18;
     auto const y = 7;
@@ -959,7 +959,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(divides_assign_functor_test, Function, Divides_ass
     BOOST_CHECK_EQUAL(2, x);
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(modulus_assign_functor_test, Function, Modulus_assigns)
+BOOST_AUTO_TEST_CASE_TEMPLATE(modulus_assign_function_test, Function, Modulus_assigns)
 {
     auto x = 18;
     auto const y = 7;

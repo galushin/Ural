@@ -103,7 +103,7 @@ namespace ural
     в динамической памяти, управляемой с помощью <tt> std::unique_ptr </tt>
     @todo Перегрузки с произвольным числом аргументов
     */
-    class to_unqiue_ptr_functor
+    class to_unqiue_ptr_function
     {
     public:
         /** @brief Оператор вызова функции
@@ -117,7 +117,7 @@ namespace ural
         }
     };
 
-    auto constexpr to_unique_ptr = to_unqiue_ptr_functor{};
+    auto constexpr to_unique_ptr = to_unqiue_ptr_function{};
 
     /** @brief Создание копии в динамической памяти
     @param x копируемое значение

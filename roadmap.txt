@@ -190,12 +190,12 @@ partition, stable_partition
 * Унифицировать arithmetic_progression и outdirected
 --------------------------------------------------------------------------------
 D.std.functional
-+ аналог binaryReverseArgs = binary_reverse_args_functor
++ аналог binaryReverseArgs = binary_reverse_args_function
 + аналог not = not_fn
 + adjoin - объединение нескольких функций в одну, возвращающую кортеж
 [2014-03-04-20.52]
 
 * curry - аналог bind, закрепляющий первый аргумент функции
-* compose, pipe - функции создания функциональных объектов compose_functor
+* compose, pipe - функции создания функциональных объектов compose_function
 * toDelegate
 */

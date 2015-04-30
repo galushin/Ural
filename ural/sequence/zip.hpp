@@ -34,7 +34,7 @@ namespace ural
     class zip_sequence
      : public sequence_base<zip_sequence<Inputs...>>
     {
-        typedef transform_sequence<make_tuple_functor, Inputs...> Impl_seq;
+        typedef transform_sequence<make_tuple_function, Inputs...> Impl_seq;
     public:
         // Типы
         /// @brief Тип значения
@@ -58,7 +58,7 @@ namespace ural
         @post <tt> this->bases() == make_callable(ins...) </tt>
         */
         zip_sequence(Inputs... ins)
-         : impl_{make_tuple_functor{}, std::move(ins)...}
+         : impl_{make_tuple_function{}, std::move(ins)...}
         {}
 
         /** @brief Кортеж базовых последовательностей

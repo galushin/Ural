@@ -296,7 +296,7 @@ namespace ural
                 ::ural::sequence_fwd<RASequence2>(s2)};
     }
 
-    class discrete_convolution_functor
+    class discrete_convolution_function
     {
     public:
         template <class Vector>
@@ -314,7 +314,7 @@ namespace ural
         }
     };
 
-    auto constexpr const discrete_convolution = discrete_convolution_functor{};
+    auto constexpr const discrete_convolution = discrete_convolution_function{};
 
     /** @brief Последовательность для вычисления приближённого значения
     квадратого корня по итерационному методу Герона. Смотри, например
