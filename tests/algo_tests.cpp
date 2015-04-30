@@ -124,6 +124,21 @@ BOOST_AUTO_TEST_CASE(none_of_test)
     BOOST_CHECK(ural::none_of(v, pred));
 }
 
+BOOST_AUTO_TEST_CASE(none_of_minimalistic_test)
+{
+    std::istringstream is0("");
+    std::istringstream is1("2 4 6 8 10");
+    std::istringstream is2("2 4 6 7 10");
+
+    typedef int Element;
+
+    auto const is_odd = [](Element i){ return i % 2 == 1; };
+
+    BOOST_CHECK_EQUAL(ural::none_of(ural::make_istream_sequence<Element>(is0), is_odd), true);
+    BOOST_CHECK_EQUAL(ural::none_of(ural::make_istream_sequence<Element>(is1), is_odd), true);
+    BOOST_CHECK_EQUAL(ural::none_of(ural::make_istream_sequence<Element>(is2), is_odd), false);
+}
+
 // 25.2.4
 BOOST_AUTO_TEST_CASE(for_each_test)
 {
@@ -2100,7 +2115,7 @@ BOOST_AUTO_TEST_CASE(set_intersection_test)
 BOOST_AUTO_TEST_CASE(set_difference_test)
 {
     std::vector<int> v1 {1, 2, 5, 5, 5, 9};
-    std::vector<int> v2 {2, 5, 7};
+    std::vector<int> v2 {   2, 5,       7};
 
     std::vector<int> std_diff;
     std::set_difference(v1.begin(), v1.end(), v2.begin(), v2.end(),
