@@ -24,6 +24,7 @@
 #include <iterator>
 #include <valarray>
 
+#include <ural/sequence/iostream.hpp>
 #include <ural/sequence/iterator_sequence.hpp>
 #include <ural/sequence/insertion.hpp>
 
@@ -112,6 +113,28 @@ namespace ural
         }
     }
     //@}
+
+    /** @brief Преобразование потока ввода в последовательность символов
+    @param is поток ввода
+    @return <tt> ::ural::make_istream_sequence<Char>(is) </tt>
+    */
+    template <class Char, class Traits>
+    auto sequence(std::basic_istream<Char, Traits> & is)
+    -> decltype(::ural::make_istream_sequence<Char>(is))
+    {
+        return ::ural::make_istream_sequence<Char>(is);
+    }
+
+    /** @brief Преобразование потока вывода в последовательность символов
+    @param is поток ввода
+    @return <tt> ::ural::make_ostream_sequence(os) </tt>
+    */
+    template <class Char, class Traits>
+    auto sequence(std::basic_ostream<Char, Traits> & os)
+    -> decltype(::ural::make_ostream_sequence(os))
+    {
+        return ::ural::make_ostream_sequence(os);
+    }
 
     //@{
     /** @brief Функция, комбинирующая @c sequence и <tt> std::forward </tt>

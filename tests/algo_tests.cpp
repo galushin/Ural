@@ -385,6 +385,19 @@ BOOST_AUTO_TEST_CASE(copy_test_different_sizes)
     BOOST_CHECK(!!r2[ural::_2]);
 }
 
+BOOST_AUTO_TEST_CASE(copy_to_ostream_test)
+{
+    std::string const src = "1234567890";
+
+    std::string r_std;
+    std::copy(src.begin(), src.end(), std::back_inserter(r_std));
+
+    std::ostringstream os_ural;
+    ural::copy(src, os_ural);
+
+    BOOST_CHECK_EQUAL(r_std, os_ural.str());
+}
+
 BOOST_AUTO_TEST_CASE(copy_n_analog_test)
 {
     std::string const src = "1234567890";
@@ -420,6 +433,7 @@ BOOST_AUTO_TEST_CASE(filtered_test)
     typedef int Type;
     std::vector<Type> const xs = {25, -15, 5, -5, 15};
     auto const pred = [](Type i){return !(i<0);};
+
     typedef decltype(ural::sequence(xs)) Sequence;
 
     static_assert(std::is_empty<decltype(pred)>::value, "");
@@ -726,7 +740,6 @@ BOOST_AUTO_TEST_CASE(replace_sequence_test)
                                   s_ural.begin(), s_ural.end());
 }
 
-// @todo replace_copy с явно заданным предикатом
 BOOST_AUTO_TEST_CASE(replace_copy_test)
 {
     // Исходные данные
@@ -2140,6 +2153,26 @@ BOOST_AUTO_TEST_CASE(includes_test_custom_compare)
             = ural::includes(ural::make_istream_sequence<char>(s_stream),
                              ural::make_istream_sequence<char>(v0_stream),
                              cmp_nocase);
+        BOOST_CHECK_EQUAL(r_std, r_ural);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(includes_test_custom_compare_istream_auto_to_sequence)
+{
+    std::vector<std::string> vs{"abcfhx", "abc", "ac", "g", "acg", {}};
+    std::string v0 {"ABC"};
+
+    auto cmp_nocase = [](char a, char b) {
+    return std::tolower(a) < std::tolower(b);
+    };
+
+    for(auto const & s : vs)
+    {
+        bool const r_std = std::includes(s.begin(), s.end(),
+                                         v0.begin(), v0.end(), cmp_nocase);        std::istringstream s_stream(s);
+        std::istringstream v0_stream(v0);
+
+        bool const r_ural = ural::includes(s_stream, v0_stream, cmp_nocase);
         BOOST_CHECK_EQUAL(r_std, r_ural);
     }
 }
