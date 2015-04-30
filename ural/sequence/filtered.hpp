@@ -124,6 +124,13 @@ namespace ural
         Impl impl_;
     };
 
+    /** @brief Функция создания @c filter_sequence
+    @param seq исходная последовательность
+    @param pred унарный предикат
+    @return <tt> Seq(::ural::sequence_fwd<Sequence>(seq), make_callable(std::move(pred))) </tt>,
+    где @c Seq --- это экземпляр @c filter_sequence с подходящими шаблонными
+    параметрами
+    */
     template <class Sequence, class Predicate>
     auto make_filter_sequence(Sequence && seq, Predicate pred)
     -> filter_sequence<decltype(::ural::sequence_fwd<Sequence>(seq)),
@@ -137,21 +144,37 @@ namespace ural
                       make_callable(std::move(pred)));
     }
 
+    /** @brief Тип вспомогательного объекта, предназначенного для создания
+    @c filter_sequence в конвейерном стиле
+    @tparam Predicate тип унарного предиката
+    */
     template <class Predicate>
     struct filtered_helper
     {
+        /// @brief Тип унарного предиката
         Predicate predicate;
     };
 
+    /** @brief Создание @c filter_sequence в конвейерном стиле
+    @param seq последовательность
+    @param helper объект, содержащий информацию об используемом предикате
+    @return <tt> make_filter_sequence(std::forward<Sequence>(seq),
+                                      std::move(helper.predicate)) </tt>
+    */
     template <class Sequence, class Predicate>
     auto operator|(Sequence && seq, filtered_helper<Predicate> helper)
     -> decltype(make_filter_sequence(std::forward<Sequence>(seq),
                                      helper.predicate))
     {
         return make_filter_sequence(std::forward<Sequence>(seq),
-                                    helper.predicate);
+                                    std::move(helper.predicate));
     }
 
+    /** @brief Создание вспомогательного объекта, предназначенного для создания
+    @c filter_sequence в конвейерном стиле
+    @param pred унарный предикат
+    @return {make_callable(std::move(pred))}
+    */
     template <class Predicate>
     auto filtered(Predicate pred)
     -> filtered_helper<decltype(make_callable(std::move(pred)))>

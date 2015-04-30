@@ -209,8 +209,8 @@ BOOST_AUTO_TEST_CASE(istream_sequence_no_default_ctor_test)
 
     std::istringstream is("42");
 
-    ural::istream_sequence<std::reference_wrapper<int>, std::istream>
-        seq{is, std::ref(var)};
+    ural::istream_sequence<std::istream, std::reference_wrapper<int>>
+        seq(is, std::ref(var));
 
     typedef decltype(seq) Sequence;
 

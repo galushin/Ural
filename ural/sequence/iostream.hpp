@@ -21,24 +21,32 @@
  @brief Последовательности на основе потоков ввода и/или вывода
 */
 
+#include <ural/sequence/base.hpp>
+
 namespace ural
 {
-    /**
-    @brief Последовательность, записывающая элементы в поток вывода
+    /** @brief Последовательность, записывающая элементы в поток вывода
+    @tparam IStream тип потока ввода
+    @tparam T тип элементов последовательности
+    @todo Возможность задавать разделитель
 
     К сожалению, поддерживать типы без конструктора без параметров, в общем
     случае, нельзя. Дело в том, что не существует стандартного механизма
     инициализации из потока ввода. Лучшее, что мы можем сделать --- это
     предоставить возможность задавать начальное значение.
     */
-    template <class T, class IStream = std::istream>
+    template <class IStream = use_default, class T = use_default>
     class istream_sequence
-     : public sequence_base<istream_sequence<T, IStream>>
+     : public sequence_base<istream_sequence<IStream, T>>
     {
     public:
         // Типы
+        /// @brief Тип потока ввода
+        typedef typename default_helper<IStream, std::istream>::type
+            istream_type;
+
         /// @brief Тип значения
-        typedef T value_type;
+        typedef typename default_helper<T, char>::type value_type;
 
         /// @brief Тип ссылки
         typedef value_type const & reference;
@@ -56,7 +64,7 @@ namespace ural
         /** @brief Конструктор
         @param is ссылка на поток ввода
         */
-        explicit istream_sequence(IStream & is)
+        explicit istream_sequence(istream_type & is)
          : is_(is)
          , value_()
         {
@@ -67,7 +75,7 @@ namespace ural
         @param is ссылка на поток ввода
         @param init_value начальное значение
         */
-        explicit istream_sequence(IStream & is, T init_value)
+        explicit istream_sequence(istream_type & is, T init_value)
          : is_(is)
          , value_(std::move(init_value))
         {
@@ -116,7 +124,7 @@ namespace ural
         }
 
     private:
-        std::reference_wrapper<IStream> is_;
+        std::reference_wrapper<istream_type> is_;
         T value_;
     };
 
@@ -126,10 +134,10 @@ namespace ural
     @return <tt> istream_sequence<T, IStream>(is) </tt>
     */
     template <class T, class IStream>
-    istream_sequence<T, IStream>
+    istream_sequence<IStream, T>
     make_istream_sequence(IStream & is)
     {
-        return istream_sequence<T, IStream>(is);
+        return istream_sequence<IStream, T>(is);
     }
 
     /** @brief Вспомогательный класс для определения типа разделителя
@@ -150,8 +158,7 @@ namespace ural
                                              typename Stream::traits_type>>
     {};
 
-    /**
-    @brief Последовательность для потока вывода
+    /** @brief Последовательность для потока вывода
     @tparam OStream Тип потока вывода
     @tparam T тип выводимых объектов
     @tparam Delimeter тип разделителя
@@ -202,7 +209,7 @@ namespace ural
         @param os поток вывода
         @param delim разделитель
         */
-        explicit ostream_sequence(ostream_type & os, Delimeter delim)
+        explicit ostream_sequence(ostream_type & os, delimeter_type delim)
          : data_{os, std::move(delim)}
         {}
 
