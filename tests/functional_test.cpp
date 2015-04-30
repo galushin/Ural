@@ -174,7 +174,7 @@ BOOST_AUTO_TEST_CASE(replace_functor_test)
     BOOST_CHECK(other_value != old_value);
     BOOST_CHECK(other_value != new_value);
 
-    ural::replace_functor<int> const f{old_value, new_value};
+    ural::replace_function<int> const f{old_value, new_value};
 
     BOOST_CHECK_EQUAL(old_value, f.old_value());
     BOOST_CHECK_EQUAL(new_value, f.new_value());
@@ -201,7 +201,7 @@ BOOST_AUTO_TEST_CASE(replace_functor_test_custom_predicate)
     BOOST_CHECK(!eq(other_value, old_value));
     BOOST_CHECK(!eq(other_value, new_value));
 
-    ural::replace_functor<decltype(old_value), decltype(eq)> const
+    ural::replace_function<decltype(old_value), decltype(eq)> const
         f{old_value, new_value, eq};
 
     BOOST_CHECK(eq(old_value, f.old_value()));
@@ -780,8 +780,8 @@ BOOST_AUTO_TEST_CASE(replace_functor_cref_test)
     auto const old_value = 13;
     auto const new_value = 42;
 
-    auto const f = ural::make_replace_functor(ural::cref(old_value),
-                                              ural::cref = new_value);
+    auto const f = ural::make_replace_function(ural::cref(old_value),
+                                               ural::cref = new_value);
 
     BOOST_CHECK(f == f);
 
@@ -794,8 +794,8 @@ BOOST_AUTO_TEST_CASE(replace_functor_custom_predicate_test)
     auto constexpr old_value = 13;
     auto constexpr new_value = 42;
 
-    auto constexpr f = ural::make_replace_functor(old_value, new_value,
-                                                  ural::greater_equal<>{});
+    auto constexpr f = ural::make_replace_function(old_value, new_value,
+                                                   ural::greater_equal<>{});
 
     static_assert(12 == f(12), "");
     static_assert(new_value == f(13), "");
@@ -828,10 +828,10 @@ BOOST_AUTO_TEST_CASE(replace_functor_equal_test)
     auto constexpr old_value = 13;
     auto constexpr new_value = 42;
 
-    auto constexpr f1 = ural::make_replace_functor(old_value, new_value, Equal{true});
-    auto constexpr f2 = ural::make_replace_functor(old_value+1, new_value, Equal{true});
-    auto constexpr f3 = ural::make_replace_functor(old_value, new_value+1, Equal{true});
-    auto constexpr f4 = ural::make_replace_functor(old_value, new_value, Equal{false});
+    auto constexpr f1 = ural::make_replace_function(old_value, new_value, Equal{true});
+    auto constexpr f2 = ural::make_replace_function(old_value+1, new_value, Equal{true});
+    auto constexpr f3 = ural::make_replace_function(old_value, new_value+1, Equal{true});
+    auto constexpr f4 = ural::make_replace_function(old_value, new_value, Equal{false});
 
     static_assert(f1 == f1, "");
 

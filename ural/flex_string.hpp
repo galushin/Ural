@@ -434,8 +434,6 @@ namespace ural
     @tparam Traits класс характеристик символов
     @tparam Allocator распределитель памяти
     @tparam Storage стратегия хранения
-    @todo Оптимизация, в частности - избегать создания временных строк
-    @todo Использовать по умолчанию более эффективную стратегию хранения
     */
     template <class Char = use_default,
               class Traits = use_default,

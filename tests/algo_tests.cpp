@@ -37,9 +37,6 @@ typedef boost::mpl::list<std::forward_list<int>,
                          std::list<int>,
                          std::vector<int>> Sources;
 
-// @todo Тесты с минимальными последовательностями
-// @todo Тесты возвращаемых значений
-
 // 25.2 Алгоритмы, не модифицирующие последовательность
 // 25.2.1
 BOOST_AUTO_TEST_CASE(all_of_minimalistic_test)
@@ -697,6 +694,23 @@ BOOST_AUTO_TEST_CASE(replace_if_test)
                                   x_ural.begin(), x_ural.end());
 }
 
+// @todo Аналогинчые тесты с одним из параметров, обёрнутых в cref
+BOOST_AUTO_TEST_CASE(replace_sequence_test_cref)
+{
+    std::vector<int> s_std = {5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
+    std::vector<int> s_ural = s_std;
+
+    auto const old_value = 8;
+    auto const new_value = 88;
+
+    std::replace(s_std.begin(), s_std.end(), old_value, new_value);
+    ural::copy(ural::make_replace_sequence(s_ural, std::cref(old_value),
+                                           std::cref(new_value)), s_ural);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(s_std.begin(), s_std.end(),
+                                  s_ural.begin(), s_ural.end());
+}
+
 BOOST_AUTO_TEST_CASE(replace_sequence_test)
 {
     std::vector<int> s_std = {5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
@@ -748,6 +762,27 @@ BOOST_AUTO_TEST_CASE(replace_sequence_if_test)
     ural::copy(ural::make_replace_if_sequence(s, pred, new_value),
                x_ural | ural::back_inserter);
 
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(replace_sequence_if_regression_pass_by_cref)
+{
+    // Подготовка
+    std::array<int, 10> const s{5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
+    auto pred = [](int x) {return x < 5;};
+    auto const new_value = 55;
+
+    // std
+    auto x_std = s;
+    std::replace_if(x_std.begin(), x_std.end(), pred, new_value);
+
+    // ural
+    std::vector<int> x_ural;
+    ural::copy(ural::make_replace_if_sequence(s, pred, std::cref(new_value)),
+               x_ural | ural::back_inserter);
+
+    // Сравнение
     BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
                                   x_ural.begin(), x_ural.end());
 }

@@ -31,19 +31,11 @@ namespace ural
     @tparam F тип базового функционального объекта
     @tparam Threading стратегия работы с многопоточьностью
     @tparam Map шаблон ассоциативного контейнера, кэширующего значения
-
-    @todo Тесты с различными типами аргументов
-    @todo Возможность управлять ёмкостью и макс. размером кэша
-    @todo Использовать по умолчанию в качестве контейнера boost::flat_map или аналог
-    @todo Оператор "меньше"
-    @todo Нужно ли реализовать аналогичный класс, основанный на линейном поиске?
-    @todo Оптимизация пустого класса для target_
-    @todo Покрыть тестами конструктор перемещний, операций присваивания и swap
     */
     template <class Signature, class F,
               class Threading = use_default,
               template <class...> class Map = std::map>
-    class memoize_functor;
+    class memoize_function;
 
     /** @brief Адаптор функционального объекта, кэширующий значения
     @tparam R тип возвращаемого значения
@@ -54,9 +46,9 @@ namespace ural
     */
     template <class R, class... Args, class F,
               class Threading, template <class...> class Map>
-    class memoize_functor<R(Args...), F, Threading, Map>
+    class memoize_function<R(Args...), F, Threading, Map>
     {
-    friend bool operator==(memoize_functor const & x, memoize_functor const & y)
+    friend bool operator==(memoize_function const & x, memoize_function const & y)
     {
         return x.target() == y.target();
     }
@@ -87,7 +79,7 @@ namespace ural
         @param f базовый функциональный объект
         @post <tt> this->target() == f </tt>
         */
-        explicit memoize_functor(F f)
+        explicit memoize_function(F f)
          : target_{std::move(f)}
          , cache_{}
          , mutex_{}
@@ -97,24 +89,23 @@ namespace ural
         @param x копируемый объект
         @post <tt> *this == x </tt>
         */
-        memoize_functor(memoize_functor const & x)
+        memoize_function(memoize_function const & x)
          : target_{x.target()}
         {}
 
-        // @todo Реализовать
         /** @brief Конструктор перемещения
         */
-        memoize_functor(memoize_functor &&);
+        memoize_function(memoize_function &&);
 
         /** @brief Оператор копирующего присваивания
         @return <tt> *this </tt>
         */
-        memoize_functor & operator=(memoize_functor const &);
+        memoize_function & operator=(memoize_function const &);
 
         /** @brief Оператор присваивания с перемещением
         @return <tt> *this </tt>
         */
-        memoize_functor & operator=(memoize_functor &&);
+        memoize_function & operator=(memoize_function &&);
 
         // Применение функционального объекта
         /** @brief Применение функционального объекта
@@ -174,7 +165,6 @@ namespace ural
 
         typedef typename threading_policy::mutex_type mutex_type;
 
-        // @todo Можно ли объединить это (см. шаблон Монитор)?
         mutable Cache cache_;
         mutable mutex_type mutex_;
     };
@@ -182,13 +172,13 @@ namespace ural
     /** @brief Мемоизация функционального объекта
     @tparam Signature сигнатура вызова вида R(Args...)
     @param f адаптируемый функциональный объект
-    @return <tt> memoize_functor<Signature, F>{std::move(f)} </tt>
+    @return <tt> memoize_function<Signature, F>{std::move(f)} </tt>
     */
     template <class Signature, class F>
-    memoize_functor<Signature, F>
+    memoize_function<Signature, F>
     memoize(F f)
     {
-        return memoize_functor<Signature, F>{std::move(f)};
+        return memoize_function<Signature, F>{std::move(f)};
     }
 }
 // namespace ural
