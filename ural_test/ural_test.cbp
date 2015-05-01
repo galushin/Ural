@@ -138,6 +138,7 @@
 			<Option target="Debug" />
 		</Unit>
 		<Unit filename="../ural/sequence/by_line.hpp" />
+		<Unit filename="../ural/sequence/cargo.hpp" />
 		<Unit filename="../ural/sequence/constant.hpp" />
 		<Unit filename="../ural/sequence/filtered.hpp" />
 		<Unit filename="../ural/sequence/function_output.hpp" />

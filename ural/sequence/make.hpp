@@ -24,6 +24,7 @@
 #include <iterator>
 #include <valarray>
 
+#include <ural/sequence/cargo.hpp>
 #include <ural/sequence/iostream.hpp>
 #include <ural/sequence/iterator_sequence.hpp>
 #include <ural/sequence/insertion.hpp>
@@ -32,13 +33,26 @@ namespace ural
 {
     /** @brief Создание последовательности на основе контейнера
     @param c контейнер
-    @return <tt> iterator_sequence<decltype(c.begin())>{c.begin(), c.end()}</tt>
+    @return <tt> iterator_sequence<decltype(c.begin())>(c.begin(), c.end())</tt>
     */
     template <class Container>
     auto sequence(Container && c)
-    -> iterator_sequence<decltype(c.begin())>
+    -> typename std::enable_if<std::is_reference<Container>::value,
+                               ::ural::iterator_sequence<decltype(c.begin())>>::type
     {
-        return iterator_sequence<decltype(c.begin())>{c.begin(), c.end()};
+        return iterator_sequence<decltype(c.begin())>(c.begin(), c.end());
+    }
+
+    template <class Container>
+    auto sequence(Container && c)
+    -> typename std::enable_if<!std::is_reference<Container>::value,
+                               ::ural::cargo_sequence<::ural::iterator_sequence<decltype(c.begin())>,
+                                                      Container>>::type
+    {
+        typedef ::ural::cargo_sequence<::ural::iterator_sequence<decltype(c.begin())>, Container>
+            Result;
+        auto seq = ::ural::iterator_sequence<decltype(c.begin())>(c.begin(), c.end());
+        return Result(std::move(seq), std::move(c));
     }
 
     /** @brief Создание последовательности на основе массива фиксированной длины
@@ -141,7 +155,6 @@ namespace ural
     @param t аргумент
     @return <tt> sequence(std::forward<Traversable>(t)) </tt>
     @todo Преобразовать в функциональный объект/шаблон переменной
-    @todo Покрыть вторую перегрузку тестами
     */
     template <class Traversable>
     auto sequence_fwd(typename std::remove_reference<Traversable>::type & t)

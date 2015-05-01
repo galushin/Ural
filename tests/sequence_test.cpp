@@ -14,6 +14,7 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <ural/sequence/cargo.hpp>
 #include <ural/sequence/sink.hpp>
 #include <ural/container/flat_set.hpp>
 #include <ural/algorithm.hpp>
@@ -28,6 +29,75 @@
 #include <iterator>
 #include <set>
 #include <map>
+
+BOOST_AUTO_TEST_CASE(sequence_for_rvalue_container)
+{
+    std::vector<int> const z{11, 11, 22, 33, 55};
+    auto x = z;
+    auto const old_x_data = x.data();
+
+    auto seq = ural::sequence(std::move(x));
+
+    BOOST_CHECK_EQUAL(seq.cargo().data(), old_x_data);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(seq.cargo().begin(),
+                                  seq.cargo().end(),
+                                  z.begin(), z.end());
+
+    BOOST_CHECK(ural::equal(seq, z) == true);
+}
+
+BOOST_AUTO_TEST_CASE(rvalue_container_sort_test)
+{
+    std::vector<int> const z{3, 1, 4, 1, 5};
+
+    auto x1 = z;
+    ural::sort(x1);
+
+    auto x2 = z;
+    auto seq = ::ural::sequence(std::move(x2));
+    ural::sort(seq);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x1.begin(), x1.end(),
+                                  seq.cargo().begin(), seq.cargo().end());
+
+    BOOST_CHECK(ural::equal(x1, seq));
+}
+
+BOOST_AUTO_TEST_CASE(rvalue_container_reverse_test)
+{
+    std::vector<int> const z{3, 1, 4, 1, 5};
+
+    auto x1 = z;
+    ural::reverse(x1);
+
+    auto x2 = z;
+    auto seq = ::ural::sequence(std::move(x2));
+    ural::reverse(seq);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x1.begin(), x1.end(),
+                                  seq.cargo().begin(), seq.cargo().end());
+
+    BOOST_CHECK(ural::equal(x1, seq));
+}
+
+BOOST_AUTO_TEST_CASE(rvalue_container_partial_sort_test)
+{
+    std::vector<int> const z{3, 1, 4, 1, 5};
+    auto const part = z.size() / 2;
+
+    auto x1 = z;
+    ural::partial_sort(x1, part);
+
+    auto x2 = z;
+    auto seq = ::ural::sequence(std::move(x2));
+    ural::partial_sort(seq, part);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x1.begin(), x1.end(),
+                                  seq.cargo().begin(), seq.cargo().end());
+
+    BOOST_CHECK(ural::equal(x1, seq));
+}
 
 BOOST_AUTO_TEST_CASE(istream_sequence_test)
 {

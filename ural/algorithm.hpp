@@ -889,7 +889,7 @@ namespace ural
 
             auto in_1 = in.traversed_front();
             auto r1 = copy_fn{}(std::move(in), std::move(out));
-            auto r2 = copy_fn{}(in_1, std::move(r1[ural::_2]));
+            auto r2 = copy_fn{}(std::move(in_1), std::move(r1[ural::_2]));
 
             return ural::tuple<Forward, Output>{std::move(in_orig),
                                                 std::move(r2[ural::_2])};
