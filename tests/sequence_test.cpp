@@ -143,7 +143,8 @@ BOOST_AUTO_TEST_CASE(move_iterators_to_sequence_test)
 
     auto ms = ural::make_iterator_sequence(m_begin, m_end);
 
-    typedef ural::move_sequence<ural::iterator_sequence<decltype(xs.begin())>>
+    typedef ural::move_sequence<ural::iterator_sequence<decltype(xs.begin()),
+                                                        decltype(xs.end())>>
         MSequence;
 
     static_assert(std::is_same<decltype(ms), MSequence>::value, "");
@@ -160,7 +161,8 @@ BOOST_AUTO_TEST_CASE(ural_move_iterators_to_sequence_test)
 
     auto ms = ural::make_iterator_sequence(m_begin, m_end);
 
-    typedef ural::move_sequence<ural::iterator_sequence<decltype(xs.begin())>>
+    typedef ural::move_sequence<ural::iterator_sequence<decltype(xs.begin()),
+                                                        decltype(xs.end())>>
         MSequence;
 
     static_assert(std::is_same<decltype(ms), MSequence>::value, "");
