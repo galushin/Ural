@@ -187,6 +187,9 @@ namespace ural
         }
     };
 
+    /** @brief Класс функционального объекта, выполняющего поиск элемента
+    последовательности, удовлетворяющего заданному предикату.
+    */
     class find_if_fn
     {
     private:
@@ -209,15 +212,25 @@ namespace ural
         }
 
     public:
+        /** @brief Оператор вызова функции
+        @param in входная последовательность
+        @param pred унарный предикат
+        @return Последовательность @c r, полученная из
+        <tt> ::ural::sequence_fwd<Input>(in) </tt> продвижением до тех пор,
+        пока не выполнится условие <tt> pred(r.front()) != false </tt>.
+        */
         template <class Input, class Predicate>
         auto operator()(Input && in, Predicate pred) const
-        -> decltype(ural::sequence_fwd<Input>(in))
+        -> decltype(::ural::sequence_fwd<Input>(in))
         {
-            return this->impl(sequence_fwd<Input>(in),
-                              ural::make_callable(std::move(pred)));
+            return this->impl(::ural::sequence_fwd<Input>(in),
+                              ::ural::make_callable(std::move(pred)));
         }
     };
 
+    /** @brief Класс функционального объекта, выполняющего поиск заданного
+    значения в последовательности.
+    */
     class find_fn
     {
     private:
@@ -236,22 +249,30 @@ namespace ural
         }
 
     public:
-        template <class Input, class T>
-        auto operator()(Input && in, T const & value) const
-        -> decltype(sequence_fwd<Input>(in))
+        /** @brief Оператор вызова функции
+        @param in входная последовательность
+        @param value значение, которое нужно найти
+        @param pred бинарный предикат, используемый для сравнения элементов
+        последовательности и заданного значения. Если этот параметр не указан,
+        то используется <tt> equal_to<>() </tt>, то есть оператор "равно".
+        @return Последовательность @c r, полученная из
+        <tt> ::ural::sequence_fwd<Input>(in) </tt> продвижением до тех пор, пока
+        не встретится элемент @c x такой, что <tt> pred(r.front(), value) </tt>.
+        */
+        template <class Input, class T,
+                  class BinaryPredicate = ural::equal_to<>>
+        auto operator()(Input && in, T const & value,
+                        BinaryPredicate pred = BinaryPredicate()) const
+        -> decltype(::ural::sequence_fwd<Input>(in))
         {
-            return (*this)(std::forward<Input>(in), value, ural::equal_to<T>{});
-        }
-
-        template <class Input, class T, class BinaryPredicate>
-        auto operator()(Input && in, T const & value, BinaryPredicate pred) const
-        -> decltype(sequence_fwd<Input>(in))
-        {
-            return this->impl(sequence_fwd<Input>(in), value,
+            return this->impl(::ural::sequence_fwd<Input>(in), value,
                               ural::make_callable(std::move(pred)));
         }
     };
 
+    /** @brief Класс функционального объекта, выполняющего поиск элемента
+    последовательности, не удовлетворяющего заданному предикату.
+    */
     class find_if_not_fn
     {
     private:
@@ -266,38 +287,18 @@ namespace ural
         }
 
     public:
+        /** @brief Оператор вызова функции
+        @param in входная последовательность
+        @param pred унарный предикат
+        @return Последовательность @c r, полученная из
+        <tt> ::ural::sequence_fwd<Input>(in) </tt> продвижением до тех пор, пока
+        не выполнится условие <tt> pred(r.front()) == false </tt>.
+        */
         template <class Input, class Predicate>
         auto operator()(Input && in, Predicate pred) const
         -> decltype(sequence_fwd<Input>(in))
         {
             return this->impl(sequence_fwd<Input>(in), std::move(pred));
-        }
-    };
-
-    class none_of_fn
-    {
-    public:
-        template <class Input, class UnaryPredicate>
-        bool operator()(Input && in, UnaryPredicate pred) const
-        {
-            return !find_if_fn{}(std::forward<Input>(in), std::move(pred));
-        }
-    };
-
-    class any_of_fn
-    {
-    public:
-        /** @brief Проверяет, что хотя бы один элемент последовательности
-        удовлетворяет заданному предикату.
-        @param in входная последовтельность
-        @param pred предикат
-        @return @b true, если для хотя бы одного элемента @c x последовательности
-        @c in выполняется <tt> pred(x) != false </tt>
-        */
-        template <class Input, class UnaryPredicate>
-        bool operator()(Input && in, UnaryPredicate pred) const
-        {
-            return !none_of_fn{}(std::forward<Input>(in), std::move(pred));
         }
     };
 

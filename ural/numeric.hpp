@@ -60,19 +60,13 @@ namespace ural
     class accumulate_fn
     {
     public:
-        template <class Input, class T, class BinaryOperation>
-        T operator()(Input && in, T init_value, BinaryOperation op) const
+        template <class Input, class T, class BinaryOperation = ::ural::plus<>>
+        T operator()(Input && in, T init_value,
+                     BinaryOperation op = BinaryOperation()) const
         {
             return impl(::ural::sequence_fwd<Input>(in),
                         std::move(init_value),
                         ural::make_callable(std::move(op)));
-        }
-
-        template <class Input, class T>
-        T operator()(Input && in, T init_value) const
-        {
-            return (*this)(std::forward<Input>(in), std::move(init_value),
-                           ural::plus<>());
         }
 
     private:
@@ -92,23 +86,17 @@ namespace ural
     {
     public:
         template <class Input1, class Input2, class T,
-                class BinaryOperation1, class BinaryOperation2>
+                  class BinaryOperation1 = ::ural::plus<>,
+                  class BinaryOperation2 = ::ural::multiplies<>>
         T operator()(Input1 && in1, Input2 && in2, T init_value,
-                     BinaryOperation1 add, BinaryOperation2 mult) const
+                     BinaryOperation1 add = BinaryOperation1(),
+                     BinaryOperation2 mult = BinaryOperation2()) const
         {
             return impl(::ural::sequence_fwd<Input1>(in1),
                         ::ural::sequence_fwd<Input2>(in2),
                         std::move(init_value),
-                        ural::make_callable(std::move(add)),
-                        ural::make_callable(std::move(mult)));
-        }
-
-        template <class Input1, class Input2, class T>
-        T operator()(Input1 && in1, Input2 && in2, T init_value) const
-        {
-            return (*this)(std::forward<Input1>(in1), std::forward<Input2>(in2),
-                           std::move(init_value),
-                           ural::plus<>{}, ural::multiplies<>{});
+                        ::ural::make_callable(std::move(add)),
+                        ::ural::make_callable(std::move(mult)));
         }
 
     private:
@@ -129,24 +117,17 @@ namespace ural
     class partial_sum_fn
     {
     public:
-        template <class Input, class Output>
-        auto operator()(Input && in, Output && out) const
-        -> tuple<decltype(sequence_fwd<Input>(in)),
-                 decltype(sequence_fwd<Output>(out))>
-        {
-            return (*this)(sequence_fwd<Input>(in), sequence_fwd<Output>(out),
-                           ural::plus<>{});
-        }
-
-        template <class Input, class Output, class BinaryFunction>
-        auto operator()(Input && in, Output && out, BinaryFunction bin_op) const
-        -> tuple<decltype(sequence_fwd<Input>(in)),
-                 decltype(sequence_fwd<Output>(out))>
+        template <class Input, class Output,
+                  class BinaryFunction = ::ural::plus<>>
+        auto operator()(Input && in, Output && out,
+                        BinaryFunction bin_op = BinaryFunction()) const
+        -> tuple<decltype(::ural::sequence_fwd<Input>(in)),
+                 decltype(::ural::sequence_fwd<Output>(out))>
         {
             auto in_sum = ural::partial_sums(sequence_fwd<Input>(in),
-                                             ural::make_callable(std::move(bin_op)));
+                                             ::ural::make_callable(std::move(bin_op)));
             auto res = ural::copy_fn{}(std::move(in_sum),
-                                       sequence_fwd<Output>(out));
+                                       ::ural::sequence_fwd<Output>(out));
 
             return ural::make_tuple(std::move(res[ural::_1]).base(),
                                     std::move(res[ural::_2]));
@@ -156,24 +137,17 @@ namespace ural
     class adjacent_difference_fn
     {
     public:
-        template <class Input, class Output>
-        auto operator()(Input && in, Output && out) const
-        -> tuple<decltype(sequence_fwd<Input>(in)),
-                 decltype(sequence_fwd<Output>(out))>
+        template <class Input, class Output,
+                  class BinaryFunction = ::ural::minus<>>
+        auto operator()(Input && in, Output && out,
+                        BinaryFunction bin_op = BinaryFunction()) const
+        -> tuple<decltype(::ural::sequence_fwd<Input>(in)),
+                 decltype(::ural::sequence_fwd<Output>(out))>
         {
-            return (*this)(sequence_fwd<Input>(in), sequence_fwd<Output>(out),
-                           ural::minus<>{});
-        }
-
-        template <class Input, class Output, class BinaryFunction>
-        auto operator()(Input && in, Output && out, BinaryFunction bin_op) const
-        -> tuple<decltype(sequence_fwd<Input>(in)),
-                 decltype(sequence_fwd<Output>(out))>
-        {
-            auto in_dif = ural::adjacent_differences(sequence_fwd<Input>(in),
-                                                     ural::make_callable(std::move(bin_op)));
+            auto in_dif = ural::adjacent_differences(::ural::sequence_fwd<Input>(in),
+                                                     ::ural::make_callable(std::move(bin_op)));
             auto res = ural::copy_fn{}(std::move(in_dif),
-                                       sequence_fwd<Output>(out));
+                                       ::ural::sequence_fwd<Output>(out));
             return ural::make_tuple(std::move(res[ural::_1]).base(),
                                     std::move(res[ural::_2]));
         }
