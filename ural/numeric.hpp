@@ -23,7 +23,7 @@
 
 #include <ural/math.hpp>
 #include <ural/functional.hpp>
-#include <ural/algorithm/copy.hpp>
+#include <ural/algorithm/core.hpp>
 #include <ural/sequence/all.hpp>
 
 #include <ural/numeric/numbers_sequence.hpp>

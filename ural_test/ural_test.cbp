@@ -83,8 +83,7 @@
 		<Unit filename="../tests/utility_test.cpp" />
 		<Unit filename="../ural/abi.hpp" />
 		<Unit filename="../ural/algorithm.hpp" />
-		<Unit filename="../ural/algorithm/copy.hpp" />
-		<Unit filename="../ural/algorithm/details/algo_base.hpp" />
+		<Unit filename="../ural/algorithm/core.hpp" />
 		<Unit filename="../ural/archetypes.hpp" />
 		<Unit filename="../ural/concepts.hpp" />
 		<Unit filename="../ural/container/container_facade.hpp" />

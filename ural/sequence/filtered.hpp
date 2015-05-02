@@ -23,7 +23,7 @@
 */
 
 #include <ural/sequence/remove.hpp>
-#include <ural/algorithm/details/algo_base.hpp>
+#include <ural/algorithm/core.hpp>
 
 #include <boost/compressed_pair.hpp>
 

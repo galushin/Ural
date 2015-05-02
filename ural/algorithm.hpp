@@ -44,24 +44,225 @@
 */
 
 #include <ural/math.hpp>
+#include <ural/sequence/make.hpp>
+#include <ural/sequence/base.hpp>
+#include <ural/sequence/function_output.hpp>
+#include <ural/sequence/generator.hpp>
+#include <ural/sequence/outdirected.hpp>
+#include <ural/sequence/reversed.hpp>
+#include <ural/sequence/partition.hpp>
 #include <ural/sequence/replace.hpp>
 #include <ural/sequence/set_operations.hpp>
 #include <ural/sequence/taken.hpp>
 #include <ural/sequence/filtered.hpp>
 #include <ural/sequence/transform.hpp>
 #include <ural/sequence/moved.hpp>
-#include <ural/sequence/make.hpp>
 #include <ural/sequence/uniqued.hpp>
 
 #include <ural/functional.hpp>
 #include <ural/random/c_rand_engine.hpp>
 #include <ural/functional/make_callable.hpp>
 
-#include <ural/algorithm/copy.hpp>
-#include <ural/algorithm/details/algo_base.hpp>
+#include <ural/algorithm/core.hpp>
+
+#include <cassert>
 
 namespace ural
 {
+    template <class T1, class T2>
+    void swap(T1 & x, T2 & y);
+
+namespace details
+{
+    class swap_fn
+    {
+    public:
+        template <class T>
+        void operator()(T & x, T & y) const
+        {
+            using std::swap;
+            using ural::swap;
+            using boost::swap;
+            return swap(x, y);
+        }
+    };
+    auto constexpr do_swap = swap_fn{};
+
+    // Бинарные кучи
+    template <class Size>
+    Size heap_parent(Size pos)
+    {
+        return (pos - 1) / 2;
+    }
+
+    template <class Size>
+    Size heap_child_1(Size pos)
+    {
+        return 2 * pos + 1;
+    }
+
+    template <class Size>
+    Size heap_child_2(Size pos)
+    {
+        return 2 * pos + 2;
+    }
+
+    template <class RandomAccessSequence, class Size, class Compare>
+    void heap_swim(RandomAccessSequence seq, Size index, Compare cmp)
+    {
+        for(; index > 0;)
+        {
+            auto const parent = heap_parent(index);
+
+            if(cmp(seq[parent], seq[index]))
+            {
+                ::ural::details::do_swap(seq[parent], seq[index]);
+            }
+
+            index = parent;
+        }
+    }
+}
+// namespace details
+
+    class is_sorted_until_fn
+    {
+    private:
+        template <class ForwardSequence, class Compare>
+        static ForwardSequence
+        impl(ForwardSequence in, Compare cmp)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<decltype(in)>));
+            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<decltype(in)>));
+            BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, bool(decltype(*in), decltype(*in))>));
+
+            if(!in)
+            {
+                return in;
+            }
+
+            auto in_next = ural::next(in);
+
+            for(; !!in_next; ++in_next, ++ in)
+            {
+                if(cmp(*in_next, *in))
+                {
+                    break;
+                }
+            }
+
+            return in_next;
+        }
+
+    public:
+        template <class ForwardSequence, class Compare = ::ural::less<>>
+        auto operator()(ForwardSequence && in, Compare cmp = Compare()) const
+        -> decltype(sequence_fwd<ForwardSequence>(in))
+        {
+            return this->impl(sequence_fwd<ForwardSequence>(in),
+                              ural::make_callable(std::move(cmp)));
+        }
+    };
+
+    class is_sorted_fn
+    {
+    private:
+        template <class ForwardSequence, class Compare>
+        static bool
+        impl(ForwardSequence in, Compare cmp)
+        {
+            BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<decltype(in)>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<decltype(in)>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*in), decltype(*in))>));
+
+            return !is_sorted_until_fn{}(std::move(in), std::move(cmp));
+        }
+
+    public:
+        template <class ForwardSequence, class Compare = ural::less<>>
+        bool operator()(ForwardSequence && in, Compare cmp = Compare()) const
+        {
+            return this->impl(sequence_fwd<ForwardSequence>(in),
+                              ural::make_callable(std::move(cmp)));
+        }
+    };
+
+    class count_if_fn
+    {
+    private:
+        template <class Input, class UnaryPredicate>
+        static typename Input::distance_type
+        impl(Input in, UnaryPredicate pred)
+        {
+            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<UnaryPredicate, bool(decltype(*in))>));
+
+            typename Input::distance_type result{0};
+
+            for(; !!in; ++ in)
+            {
+                if (pred(*in))
+                {
+                    ++ result;
+                }
+            }
+            return result;
+        }
+
+    public:
+        /** @brief Подсчитывает количество элементов последовательности,
+        удовлетворяющих предикату.
+        @param in входная последовтельность
+        @param pred предикат
+        @return Количество элементов @c x последовательности @c in, таких, что
+        <tt> pred(x) != false </tt>.
+        */
+        template <class Input, class UnaryPredicate>
+        auto operator()(Input && in, UnaryPredicate pred) const
+        -> typename decltype(sequence_fwd<Input>(in))::distance_type
+        {
+            return this->impl(sequence_fwd<Input>(in),
+                              ural::make_callable(std::move(pred)));
+        }
+    };
+
+    class count_fn
+    {
+    private:
+        template <class Input, class T, class BinaryPredicate>
+        static typename Input::distance_type
+        impl(Input in, T const & value, BinaryPredicate pred)
+        {
+            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate,
+                                                           bool(decltype(*in), T const &)>));
+
+            return count_if_fn{}(std::move(in),
+                                 std::bind(std::move(pred), ural::_1,
+                                           std::ref(value)));
+        }
+
+    public:
+        /** @brief Подсчитывает количество элементов последовательности, равных
+        заданному значению.
+        @param in входная последовтельность
+        @param value значение
+        @return Количество элементов @c x последовательности @c in, таких, что
+        <tt> x == value </tt>.
+        */
+        template <class Input, class T,
+                  class BinaryPredicate = ::ural::equal_to<>>
+        auto operator()(Input && in, T const & value,
+                        BinaryPredicate pred = BinaryPredicate()) const
+        -> typename decltype(sequence_fwd<Input>(in))::distance_type
+        {
+            return this->impl(sequence_fwd<Input>(in), value,
+                              ural::make_callable(std::move(pred)));
+        }
+    };
+
     // Модифицирующие алгоритмы
     class unique_fn
     {
@@ -247,6 +448,18 @@ namespace ural
         template <class Input, class Forward, class BinaryPredicate>
         static Input impl(Input in, Forward s, BinaryPredicate bin_pred)
         {
+            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input>));
+
+            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
+
+            typedef typename Input::reference Ref1;
+            typedef typename Forward::reference Ref2;
+
+            BOOST_CONCEPT_ASSERT((concepts::Callable<BinaryPredicate,
+                                                     bool(Ref2, Ref1)>));
+
             for(; !!in; ++ in)
             {
                 auto r = find_fn{}(s, *in, bin_pred);
@@ -281,6 +494,17 @@ namespace ural
         template <class Input, class Forward, class BinaryPredicate>
         static Input impl(Input in, Forward s, BinaryPredicate bin_pred)
         {
+            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input>));
+
+            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
+
+            typedef typename Input::reference Ref1;
+            typedef typename Forward::reference Ref2;
+            BOOST_CONCEPT_ASSERT((concepts::Callable<BinaryPredicate,
+                                                     bool(Ref2, Ref1)>));
+
             for(; !!in; ++ in)
             {
                 auto r = ::ural::find_fn{}(s, *in, bin_pred);
@@ -310,6 +534,13 @@ namespace ural
         template <class Forward, class BinaryPredicate>
         static Forward impl(Forward s, BinaryPredicate pred)
         {
+            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
+
+            typedef typename Forward::reference Ref;
+            BOOST_CONCEPT_ASSERT((concepts::Callable<BinaryPredicate,
+                                                     bool(Ref, Ref)>));
+
             if(!s)
             {
                 return s;
@@ -520,6 +751,8 @@ namespace ural
             BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<Forward>));
             BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Forward>));
             BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate, bool(decltype(*in), T)>));
+
+            // todo Проверка концепций для Size
 
             if(n == 0)
             {
@@ -819,6 +1052,30 @@ namespace ural
         }
     };
 
+    class swap_ranges_fn
+    {
+    public:
+        template <class Forward1, class Forward2>
+        auto operator()(Forward1 && s1, Forward2 && s2) const
+        -> ural::tuple<decltype(sequence_fwd<Forward1>(s1)),
+                       decltype(sequence_fwd<Forward2>(s2))>
+        {
+            return this->impl(sequence_fwd<Forward1>(s1),
+                              sequence_fwd<Forward2>(s2));
+        }
+    private:
+        template <class Forward1, class Forward2>
+        static ural::tuple<Forward1, Forward2>
+        impl(Forward1 in1, Forward2 in2)
+        {
+            for(; !!in1 && !!in2; ++ in1, ++ in2)
+            {
+                ::ural::details::do_swap(*in1, *in2);
+            }
+            return ural::tuple<Forward1, Forward2>{in1, in2};
+        }
+    };
+
     class reverse_fn
     {
     public:
@@ -832,6 +1089,9 @@ namespace ural
         template <class BidirectionalSequence>
         static void impl(BidirectionalSequence seq)
         {
+            BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequence<decltype(seq)>));
+            // @todo Проверить, что можно обменивать
+
             for(; !!seq; ++seq)
             {
                 auto seq_next = seq;
@@ -864,6 +1124,70 @@ namespace ural
                                           ::ural::sequence_fwd<Output>(out));
             return ural::make_tuple(std::move(result[ural::_1]).base(),
                                     std::move(result[ural::_2]));
+        }
+    };
+
+    class rotate_fn
+    {
+    public:
+        template <class ForwardSequence>
+        auto operator()(ForwardSequence && seq) const
+        -> decltype(sequence_fwd<ForwardSequence>(seq))
+        {
+            return this->impl(sequence_fwd<ForwardSequence>(seq));
+        }
+
+        template <class Forward1, class Forward2>
+        auto operator()(Forward1 && in1, Forward2 && in2) const
+        -> ural::tuple<decltype(sequence_fwd<Forward1>(in1)),
+                       decltype(sequence_fwd<Forward2>(in2))>
+        {
+            return this->impl(sequence_fwd<Forward1>(in1),
+                              sequence_fwd<Forward2>(in2));
+        }
+
+    private:
+        template <class Forward1, class Forward2>
+        ural::tuple<Forward1, Forward2>
+        impl(Forward1 in1, Forward2 in2) const
+        {
+            in1.shrink_front();
+            in2.shrink_front();
+
+            if(!in1 || !in2)
+            {
+                return ural::tuple<Forward1, Forward2>{std::move(in1),
+                                                       std::move(in2)};
+            }
+
+            auto r = ::ural::swap_ranges_fn{}(in1, in2);
+
+            if(!r[ural::_1] && !r[ural::_2])
+            {
+                return r;
+            }
+            else if(!r[ural::_1])
+            {
+                assert(!r[ural::_1]);
+                return this->impl(r[ural::_2].traversed_front(),
+                                  ::ural::shrink_front(r[ural::_2]));
+            }
+            else
+            {
+                assert(!r[ural::_2]);
+                return this->impl(::ural::shrink_front(r[ural::_1]), in2);
+            }
+        }
+
+        template <class ForwardSequence>
+        ForwardSequence impl(ForwardSequence seq) const
+        {
+            auto seq_old = seq.original();
+
+            this->impl(seq.traversed_front(), ural::shrink_front(seq));
+
+            ural::advance(seq_old, seq.size());
+            return seq_old;
         }
     };
 
@@ -1027,6 +1351,11 @@ namespace ural
         template <class RASequence, class URNG>
         static void impl(RASequence s, URNG && g)
         {
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            // @todo Проверить, что можно обменивать
+
+            BOOST_CONCEPT_ASSERT((concepts::Uniform_random_number_generator<typename std::decay<URNG>::type>));
+
             if(!s)
             {
                 return;
@@ -1088,6 +1417,11 @@ namespace ural
         static ForwardSequence
         impl(ForwardSequence in, UnaryPredicate pred)
         {
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
+            // @todo Проверить, что можно обменивать
+
+            BOOST_CONCEPT_ASSERT((concepts::Callable<UnaryPredicate, bool(decltype(*in))>));
+
             // пропускаем ведущие "хорошие" элеменнов
             auto sink = find_if_not_fn{}(std::move(in), pred);
 
@@ -1255,6 +1589,8 @@ namespace ural
         impl(RandomAccessSequence seq, Compare cmp)
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<decltype(seq)>));
+            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<decltype(seq)>));
+
             BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
 
             // Пустая последовательность - куча
@@ -1297,6 +1633,8 @@ namespace ural
         impl(RASequence seq, Compare cmp)
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<RASequence>));
+
             BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
 
             return !::ural::is_heap_until_fn{}(seq, cmp);
@@ -1330,6 +1668,14 @@ namespace ural
         template <class RASequence, class Size, class Compare>
         void impl(RASequence seq, Size first, Size last, Compare cmp) const
         {
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<RASequence>));
+            // @todo Проверить, что можно обменивать
+
+            // @todo Требования к Size
+
+            BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
+
             assert(ural::to_signed(last) <= seq.size());
 
             for(; first != last;)
@@ -1593,6 +1939,9 @@ namespace ural
         template <class RASequence, class T, class Compare>
         static bool impl(RASequence in, T const & value, Compare cmp)
         {
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<RASequence>));
+
             // @todo Добавить проверки концепций
             in = lower_bound_fn{}(std::move(in), value, cmp);
 
@@ -1616,6 +1965,7 @@ namespace ural
         template <class RASequence, class T, class Compare>
         static RASequence impl(RASequence in, T const & value, Compare cmp)
         {
+            // @todo Проверки концепций
             // @todo Оптимизация
             auto lower = lower_bound_fn{}(in, value, cmp);
             auto upper = upper_bound_fn{}(in, value, cmp);
@@ -1626,6 +1976,85 @@ namespace ural
             in += n_lower;
             in.pop_back(n_upper);
             return in;
+        }
+    };
+
+    class insertion_sort_fn
+    {
+    public:
+        template <class RASequence, class Compare>
+        void operator()(RASequence && s, Compare cmp) const
+        {
+            return this->impl(::ural::sequence_fwd<RASequence>(s),
+                              ::ural::make_callable(std::move(cmp)));
+        }
+
+    private:
+        template <class RASequence, class Compare>
+        static void impl(RASequence s, Compare cmp)
+        {
+            BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(s)>));
+
+            // @todo Заменить эти два требования на возможность обмена
+            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<decltype(s)>));
+            BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<decltype(s), decltype(*s)>));
+
+            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*s), decltype(*s))>));
+
+            if(!s)
+            {
+                return;
+            }
+
+            typedef decltype(s.size()) Index;
+
+            for(Index i = 1; i != s.size(); ++ i)
+            for(Index j = i; j > 0; -- j)
+            {
+                if(cmp(s[j], s[j-1]))
+                {
+                    ::ural::details::do_swap(s[j], s[j-1]);
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+    };
+
+    class sort_fn
+    {
+    public:
+        template <class RASequence, class Compare = ::ural::less<>>
+        void operator()(RASequence && s, Compare cmp = Compare()) const
+        {
+            return this->impl(sequence_fwd<RASequence>(s),
+                              ural::make_callable(std::move(cmp)));
+        }
+    private:
+        template <class RASequence, class Compare>
+        static void impl(RASequence s, Compare cmp)
+        {
+            return ::ural::insertion_sort_fn{}(std::move(s), std::move(cmp));
+        }
+    };
+
+    class stable_sort_fn
+    {
+    public:
+        template <class RASequence, class Compare = ::ural::less<>>
+        void operator()(RASequence && s, Compare cmp = Compare()) const
+        {
+            return this->impl(sequence_fwd<RASequence>(s),
+                              ural::make_callable(std::move(cmp)));
+        }
+
+    private:
+        template <class RASequence, class Compare>
+        static void impl(RASequence s, Compare cmp)
+        {
+            return ::ural::insertion_sort_fn{}(std::move(s), std::move(cmp));
         }
     };
 
@@ -2542,6 +2971,8 @@ namespace ural
 
         // 25.4 Сортировка и связанные с ним операции
         // 25.4.1 Сортировка
+        // @todo объект для insertion_sort?
+
         // 25.4.1.1 Быстрая сортировка
         constexpr auto const sort = sort_fn{};
 

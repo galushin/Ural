@@ -35,7 +35,15 @@ namespace ural
     class cargo_sequence
      : public sequence_base<cargo_sequence<Sequence, T>>
     {
-    friend bool operator==(cargo_sequence const & x, cargo_sequence const & y);
+    /** @brief Оператор "равно"
+    @param x левый операнд
+    @param y правый операнд
+    @return <tt> x.base() == y.base() </tt>
+    */
+    friend bool operator==(cargo_sequence const & x, cargo_sequence const & y)
+    {
+        return x.base() == y.base();
+    }
 
     public:
         // Типы
@@ -127,6 +135,12 @@ namespace ural
         }
 
         // Двусторонняя последовательность
+        /** @breif Задняя пройденная часть последовательности
+        @return Задняя пройденная часть последовательности
+        @todo Оптимизация: может быть лучше возвращать base().traversed_front()?
+        */
+        cargo_sequence traversed_back() const;
+
         /** @brief Доступ к последнему непройденному элементу последовательности
         @pre <tt> !*this == false </tt>
         @return Ссылка на последний непройденный элемент последовательности
@@ -135,6 +149,8 @@ namespace ural
         {
             return this->base().back();
         }
+
+        void shrink_back();
 
         /** @brief Переход к следующему элементу в задней части
         последовательности

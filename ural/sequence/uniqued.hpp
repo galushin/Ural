@@ -21,7 +21,8 @@
  @brief Последовательность неповторяющихся соседних элементов
 */
 
-#include <ural/algorithm/details/algo_base.hpp>
+#include <ural/algorithm/core.hpp>
+#include <ural/sequence/base.hpp>
 
 namespace ural
 {

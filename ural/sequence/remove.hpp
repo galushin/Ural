@@ -22,7 +22,7 @@
  последовательности, удовлетворяющие некоторому условию
 */
 
-#include <ural/algorithm/details/algo_base.hpp>
+#include <ural/algorithm/core.hpp>
 
 namespace ural
 {
