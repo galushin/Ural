@@ -62,6 +62,7 @@ namespace ural
         @pre @c seq должна содержать по меньшей мере @c count элементов
         @post <tt> this->base() == seq </tt>
         @post <tt> this->count() == count </tt>
+        @todo Добавить проверку, что @c count - конечное число
         */
         explicit take_sequence(Sequence seq, Size count)
          : impl_(std::move(seq), Count_type{std::move(count)})

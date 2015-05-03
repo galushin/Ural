@@ -35,6 +35,13 @@ namespace ural
     class iota_fn
     {
     public:
+        /** @brief Заполняет последовательность @c seq последовательными
+        значениями, начиная с @c init_value
+        @param seq последовательность
+        @param init_value начальное значение
+        @return Значение, следующее за тем, которое было присвоено последнему
+        элементу последовательности
+        */
         template <class ForwardSequence, class Incrementable>
         Incrementable
         operator()(ForwardSequence && seq, Incrementable init_value) const
@@ -66,7 +73,7 @@ namespace ural
         {
             return impl(::ural::sequence_fwd<Input>(in),
                         std::move(init_value),
-                        ural::make_callable(std::move(op)));
+                        ::ural::make_callable(std::move(op)));
         }
 
     private:
@@ -105,7 +112,6 @@ namespace ural
         T impl(Input1 in1, Input2 in2, T value,
                BinaryOperation1 add, BinaryOperation2 mult) const
         {
-            // @todo обработка ситуации с разной длинной последовательности
             auto in_prod = ural::make_transform_sequence(std::move(mult),
                                                          std::move(in1),
                                                          std::move(in2));
@@ -118,6 +124,13 @@ namespace ural
     class partial_sum_fn
     {
     public:
+        /** @brief Запись частичных сумм входной последовательности в выходную
+        @param in входная последовательность
+        @param out выходная последовательность
+        @param bin_op операция, используемая для вычисления суммы. По умолчанию
+        используется <tt> ::ural::plus<> </tt>, то есть оператор "плюс".
+        @return Непройденные части входной и выходной последовательностей.
+        */
         template <class Input, class Output,
                   class BinaryFunction = ::ural::plus<>>
         auto operator()(Input && in, Output && out,
@@ -138,6 +151,15 @@ namespace ural
     class adjacent_difference_fn
     {
     public:
+        /** @brief Запись разностей соседних элементов входной
+        последовательности в выходную
+        @param in входная последовательность
+        @param out выходная последовательность
+        @param bin_op операция, используемая для вычисления разности.
+        По умолчанию используется <tt> ::ural::minus<> </tt>, то есть оператор
+        "минус".
+        @return Непройденные части входной и выходной последовательностей.
+        */
         template <class Input, class Output,
                   class BinaryFunction = ::ural::minus<>>
         auto operator()(Input && in, Output && out,
@@ -164,10 +186,7 @@ namespace ural
         constexpr auto const iota = iota_fn{};
     }
 
-    /**
-    @todo Можно ли ослабить требования к входным последовательностям?
-    @todo Настройка операций сложения и умножения?
-    @todo Проверка случая пустых контейнеров и контейнеров с одним элементом
+    /** @brief Последовательность, реализующая операцию свёртки
     @tparam RASequence1 тип первой последовательности
     @tparam RASequence2 тип второй последовательности
     */
@@ -277,7 +296,6 @@ namespace ural
         template <class Vector>
         Vector operator()(Vector const & x, Vector const & y) const
         {
-            // @todo Оптимизированная версия (быстрое преобразование Фурье)
             assert(!ural::empty(x) || !ural::empty(y));
 
             Vector result(x.size() + y.size() - 1);
@@ -294,8 +312,6 @@ namespace ural
     /** @brief Последовательность для вычисления приближённого значения
     квадратого корня по итерационному методу Герона. Смотри, например
     http://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Babylonian_method
-    @todo отделить критерий остановки, пусть исходная последовательность будет
-    бесконечной.
     */
     template <class RealType>
     class sqrt_heron_sequence
@@ -364,8 +380,6 @@ namespace ural
 
     /** @brief Последовательность строк треугольника Паскаля
     @tparam Vector тип массива, используемого для хранения строк
-    @todo Можно ли ослабить требования к контейнеру?
-    @todo Можно ли усилит категорию обхода?
     */
     template <class Vector>
     class pascal_triangle_rows_sequence
