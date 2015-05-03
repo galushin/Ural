@@ -84,7 +84,7 @@ namespace ural
                 end_ = begin_;
 
                 // @todo можно ли присваивать без конструирования?
-                for(; n > 0; -- n, ++ end_)
+                for(; n > 0; -- n, (void) ++ end_)
                 {
                     A::construct(end_);
                 }
@@ -257,7 +257,7 @@ namespace ural
 
             assert(this->size() + n <= this->capacity());
 
-            for(; n > 0; -- n, ++end_)
+            for(; n > 0; -- n, (void) ++end_)
             {
                 A::construct(end_, c);
             }
@@ -269,7 +269,7 @@ namespace ural
         */
         void pop_back(size_type n)
         {
-            for(; n > 0; -- n, -- end_)
+            for(; n > 0; -- n, (void) -- end_)
             {
                 A::destroy(end_ - 1);
             }

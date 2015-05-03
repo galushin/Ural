@@ -47,7 +47,7 @@ namespace ural
             BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
             BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<Output, typename Input::reference>));
 
-            for(; !!in && !!out; ++ in, ++ out)
+            for(; !!in && !!out; ++ in, (void) ++ out)
             {
                 *out = *in;
             }

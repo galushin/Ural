@@ -143,7 +143,7 @@ namespace details
 
             auto in_next = ural::next(in);
 
-            for(; !!in_next; ++in_next, ++ in)
+            for(; !!in_next; ++in_next, (void) ++ in)
             {
                 if(cmp(*in_next, *in))
                 {
@@ -157,10 +157,10 @@ namespace details
     public:
         template <class ForwardSequence, class Compare = ::ural::less<>>
         auto operator()(ForwardSequence && in, Compare cmp = Compare()) const
-        -> decltype(sequence_fwd<ForwardSequence>(in))
+        -> decltype(::ural::sequence_fwd<ForwardSequence>(in))
         {
-            return this->impl(sequence_fwd<ForwardSequence>(in),
-                              ural::make_callable(std::move(cmp)));
+            return this->impl(::ural::sequence_fwd<ForwardSequence>(in),
+                              ::ural::make_callable(std::move(cmp)));
         }
     };
 
@@ -588,7 +588,7 @@ namespace details
                                                      bool(decltype(*in1), decltype(*in2))>));
 
             typedef tuple<Input1, Input2> Tuple;
-            for(; !!in1 && !!in2; ++ in1, ++ in2)
+            for(; !!in1 && !!in2; ++ in1, (void) ++ in2)
             {
                 if(!pred(*in1, *in2))
                 {
@@ -658,7 +658,7 @@ namespace details
             {
                 auto i = in;
                 auto i_s = s;
-                for(;; ++ i, ++ i_s)
+                for(;; ++ i, (void) ++ i_s)
                 {
                     if(!i_s)
                     {
@@ -1068,7 +1068,7 @@ namespace details
         static ural::tuple<Forward1, Forward2>
         impl(Forward1 in1, Forward2 in2)
         {
-            for(; !!in1 && !!in2; ++ in1, ++ in2)
+            for(; !!in1 && !!in2; ++ in1, (void) ++ in2)
             {
                 ::ural::details::do_swap(*in1, *in2);
             }
@@ -2275,7 +2275,7 @@ namespace details
             BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input2>));
             BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*in1), decltype(*in2))>));
 
-            for(; !!in1 && !!in2; ++ in1, ++ in2)
+            for(; !!in1 && !!in2; ++ in1, (void) ++ in2)
             {
                 if(cmp(*in1, *in2))
                 {

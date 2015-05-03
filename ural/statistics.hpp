@@ -1139,7 +1139,7 @@ namespace tags
         ++ in_seq;
         ++ ws_seq;
 
-        for(; !!in_seq && !!ws_seq; ++ in_seq, ++ ws_seq)
+        for(; !!in_seq && !!ws_seq; ++ in_seq, (void) ++ ws_seq)
         {
             r(*in_seq, *ws_seq);
         }

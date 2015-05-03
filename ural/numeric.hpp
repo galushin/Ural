@@ -48,7 +48,7 @@ namespace ural
         Incrementable
         impl(ForwardSequence seq, Incrementable init_value) const
         {
-            for(; !!seq; ++ seq, ++ init_value)
+            for(; !!seq; ++ seq, (void) ++ init_value)
             {
                 *seq = init_value;
             }
@@ -105,12 +105,13 @@ namespace ural
         T impl(Input1 in1, Input2 in2, T value,
                BinaryOperation1 add, BinaryOperation2 mult) const
         {
-            for(; !!in1 && !!in2; ++ in1, ++in2)
-            {
-                value = add(std::move(value), mult(*in1, *in2));
-            }
-
-            return value;
+            // @todo обработка ситуации с разной длинной последовательности
+            auto in_prod = ural::make_transform_sequence(std::move(mult),
+                                                         std::move(in1),
+                                                         std::move(in2));
+            return ::ural::accumulate_fn{}(std::move(in_prod),
+                                           std::move(value),
+                                           std::move(add));
         }
     };
 
