@@ -61,65 +61,35 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(all_of_test, Source, Sources)
 // 25.2.2
 BOOST_AUTO_TEST_CASE(any_of_test)
 {
-    std::vector<int> v(10, 2);
-    std::partial_sum(v.cbegin(), v.cend(), v.begin());
+    typedef ural_test::istringstream_helper<int> Source;
 
-    auto const pred = [](int i){ return i % 7 == 0; };
+    Source is0{};
+    Source is1{2, 4, 6, 8, 10};
+    Source is2{2, 4, 6, 7, 10};
 
-    BOOST_CHECK(std::any_of(v.cbegin(), v.cend(), pred));
-    BOOST_CHECK(ural::any_of(v, pred));
+    auto const is_odd = [](typename Source::const_reference i)
+                         { return i % 2 == 1; };
 
-    v[6] = 13;
-
-    BOOST_CHECK(!std::any_of(v.cbegin(), v.cend(), pred));
-    BOOST_CHECK(!ural::any_of(v, pred));
-}
-
-BOOST_AUTO_TEST_CASE(any_of_minimalistic_test)
-{
-    std::istringstream is0("");
-    std::istringstream is1("2 4 6 8 10");
-    std::istringstream is2("2 4 6 7 10");
-
-    typedef int Element;
-
-    auto const is_odd = [](Element i){ return i % 2 == 1; };
-
-    BOOST_CHECK_EQUAL(ural::any_of(ural::make_istream_sequence<Element>(is0), is_odd), false);
-    BOOST_CHECK_EQUAL(ural::any_of(ural::make_istream_sequence<Element>(is1), is_odd), false);
-    BOOST_CHECK_EQUAL(ural::any_of(ural::make_istream_sequence<Element>(is2), is_odd), true);
+    BOOST_CHECK_EQUAL(ural::any_of(is0, is_odd), false);
+    BOOST_CHECK_EQUAL(ural::any_of(is1, is_odd), false);
+    BOOST_CHECK_EQUAL(ural::any_of(is2, is_odd), true);
 }
 
 // 25.2.3
 BOOST_AUTO_TEST_CASE(none_of_test)
 {
-    std::vector<int> v(10, 2);
-    std::partial_sum(v.cbegin(), v.cend(), v.begin());
+    typedef ural_test::istringstream_helper<int> Source;
 
-    auto const pred = [](int i){ return i % 7 == 0; };
+    Source is0{};
+    Source is1{2, 4, 6, 8, 10};
+    Source is2{2, 4, 6, 7, 10};
 
-    BOOST_CHECK(!std::none_of(v.cbegin(), v.cend(), pred));
-    BOOST_CHECK(!ural::none_of(v, pred));
+    auto const is_odd = [](typename Source::const_reference i)
+                         { return i % 2 == 1; };
 
-    v[6] = 13;
-
-    BOOST_CHECK(std::none_of(v.cbegin(), v.cend(), pred));
-    BOOST_CHECK(ural::none_of(v, pred));
-}
-
-BOOST_AUTO_TEST_CASE(none_of_minimalistic_test)
-{
-    std::istringstream is0("");
-    std::istringstream is1("2 4 6 8 10");
-    std::istringstream is2("2 4 6 7 10");
-
-    typedef int Element;
-
-    auto const is_odd = [](Element i){ return i % 2 == 1; };
-
-    BOOST_CHECK_EQUAL(ural::none_of(ural::make_istream_sequence<Element>(is0), is_odd), true);
-    BOOST_CHECK_EQUAL(ural::none_of(ural::make_istream_sequence<Element>(is1), is_odd), true);
-    BOOST_CHECK_EQUAL(ural::none_of(ural::make_istream_sequence<Element>(is2), is_odd), false);
+    BOOST_CHECK_EQUAL(ural::none_of(is0, is_odd), true);
+    BOOST_CHECK_EQUAL(ural::none_of(is1, is_odd), true);
+    BOOST_CHECK_EQUAL(ural::none_of(is2, is_odd), false);
 }
 
 // 25.2.4
@@ -140,29 +110,97 @@ BOOST_AUTO_TEST_CASE(for_each_test)
 }
 
 // 25.2.5
-BOOST_AUTO_TEST_CASE(find_fail_test)
+BOOST_AUTO_TEST_CASE(find_fail_test_istream)
 {
-    std::vector<int> v{0, 1, 2, 3, 4};
+    ural_test::istringstream_helper<int> v{0, 1, 2, 3, 4};
 
     auto const value = -1;
 
-    auto s = ural::find(v, value);
+    auto const r_ural = ural::find(v, value);
 
-    BOOST_CHECK(std::find(v.begin(), v.end(), value) == v.end());
-    BOOST_CHECK(!s);
+    BOOST_CHECK(!r_ural);
+}
+
+BOOST_AUTO_TEST_CASE(find_fail_test_forward_list)
+{
+    std::forward_list<int> const v{0, 1, 2, 3, 4};
+
+    auto const value = -1;
+
+    auto const r_std = std::find(v.begin(), v.end(), value);
+    auto const r_ural = ural::find(v, value);
+
+    BOOST_CHECK(r_std == v.end());
+    BOOST_CHECK(!r_ural);
+
+    BOOST_CHECK(r_ural.traversed_begin() == v.begin());
+    BOOST_CHECK(r_ural.begin() == v.end());
+    BOOST_CHECK(r_ural.end() == v.end());
+}
+
+BOOST_AUTO_TEST_CASE(find_fail_test_list)
+{
+    std::list<int> const v{0, 1, 2, 3, 4};
+
+    auto const value = -1;
+
+    auto const r_std = std::find(v.begin(), v.end(), value);
+    auto const r_ural = ural::find(v, value);
+
+    BOOST_CHECK(r_std == v.end());
+    BOOST_CHECK(!r_ural);
+
+    BOOST_CHECK(r_ural.traversed_begin() == v.begin());
+    BOOST_CHECK(r_ural.begin() == v.end());
+    BOOST_CHECK(r_ural.end() == v.end());
+    BOOST_CHECK(r_ural.traversed_end() == v.end());
 }
 
 BOOST_AUTO_TEST_CASE(find_success_test)
 {
-    std::vector<int> v{0, 1, 2, 3, 4};
+    ural_test::istringstream_helper<int> v{0, 1, 2, 3, 4};
 
     auto const value = 2;
 
-    auto s = ural::find(v, value);
+    auto r_ural = ural::find(v, value);
 
-    BOOST_CHECK(!!s);
-    BOOST_CHECK_EQUAL(value, *s);
-    BOOST_CHECK(std::find(v.begin(), v.end(), value) == s.begin());
+    BOOST_CHECK(!!r_ural);
+    BOOST_CHECK_EQUAL(value, *r_ural);
+}
+
+BOOST_AUTO_TEST_CASE(find_success_test_forward_list)
+{
+    std::forward_list<int> v{0, 1, 2, 3, 4};
+
+    auto const value = 2;
+
+    auto r_std = std::find(v.begin(), v.end(), value);
+    auto r_ural = ural::find(v, value);
+
+    BOOST_CHECK(!!r_ural);
+    BOOST_CHECK_EQUAL(value, *r_ural);
+
+    BOOST_CHECK(r_ural.traversed_begin() == v.begin());
+    BOOST_CHECK(r_ural.begin() == r_std);
+    BOOST_CHECK(r_ural.end() == v.end());
+}
+
+BOOST_AUTO_TEST_CASE(find_success_test_list)
+{
+    std::list<int> v{0, 1, 2, 3, 4};
+
+    auto const value = 2;
+
+    auto r_std = std::find(v.begin(), v.end(), value);
+    auto r_ural = ural::find(v, value);
+
+    BOOST_CHECK(!!r_ural);
+    BOOST_CHECK_EQUAL(value, *r_ural);
+
+    BOOST_CHECK(r_ural.traversed_begin() == v.begin());
+    BOOST_CHECK(r_ural.begin() == r_std);
+    BOOST_CHECK(r_ural.end() == v.end());
+    BOOST_CHECK(r_ural.traversed_end() == v.end());
 }
 
 // 25.2.6
