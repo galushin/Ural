@@ -15,6 +15,7 @@
 */
 
 #include "rnd.hpp"
+#include "defs.hpp"
 
 #include <ural/container/vector.hpp>
 
@@ -33,43 +34,28 @@
 #include <ural/sequence/all.hpp>
 #include <ural/utility/tracers.hpp>
 
-typedef boost::mpl::list<std::forward_list<int>,
+namespace
+{
+    typedef boost::mpl::list<std::forward_list<int>,
                          std::list<int>,
-                         std::vector<int>> Sources;
+                         std::vector<int>,
+                         ural_test::istringstream_helper<int>> Sources;
+}
 
 // 25.2 Алгоритмы, не модифицирующие последовательность
 // 25.2.1
-BOOST_AUTO_TEST_CASE(all_of_minimalistic_test)
-{
-    std::istringstream is0("");
-    std::istringstream is1("2 4 6 8 10");
-    std::istringstream is2("2 4 6 7 10");
-
-    typedef int Element;
-
-    auto const is_even = [](Element i){ return i % 2 == 0; };
-
-    BOOST_CHECK_EQUAL(ural::all_of(ural::make_istream_sequence<Element>(is0), is_even), true);
-    BOOST_CHECK_EQUAL(ural::all_of(ural::make_istream_sequence<Element>(is1), is_even), true);
-    BOOST_CHECK_EQUAL(ural::all_of(ural::make_istream_sequence<Element>(is2), is_even), false);
-}
-
 BOOST_AUTO_TEST_CASE_TEMPLATE(all_of_test, Source, Sources)
 {
-    typedef typename Source::value_type Element;
+    Source is0{};
+    Source is1{2, 4, 6, 8, 10};
+    Source is2{2, 4, 6, 7, 10};
 
-    Source v(10, 2);
-    std::partial_sum(v.cbegin(), v.cend(), v.begin());
+    auto const is_even = [](typename Source::const_reference i)
+                         { return i % 2 == 0; };
 
-    auto const pred = [](Element i){ return i % 2 == 0; };
-
-    BOOST_CHECK(std::all_of(v.cbegin(), v.cend(), pred));
-    BOOST_CHECK(ural::all_of(v, pred));
-
-    v.front() = 1;
-
-    BOOST_CHECK(!std::all_of(v.cbegin(), v.cend(), pred));
-    BOOST_CHECK(!ural::all_of(v, pred));
+    BOOST_CHECK_EQUAL(ural::all_of(is0, is_even), true);
+    BOOST_CHECK_EQUAL(ural::all_of(is1, is_even), true);
+    BOOST_CHECK_EQUAL(ural::all_of(is2, is_even), false);
 }
 
 // 25.2.2
