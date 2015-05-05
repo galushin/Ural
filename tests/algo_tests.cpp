@@ -206,24 +206,30 @@ BOOST_AUTO_TEST_CASE(find_success_test_list)
 // 25.2.6
 BOOST_AUTO_TEST_CASE(find_end_test_success)
 {
-    std::vector<int> const v{1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4};
-    std::list<int> const t1{1, 2, 3};
+    std::forward_list<int> const v{1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4};
+    std::forward_list<int> const t1{1, 2, 3};
 
     auto r_std = std::find_end(v.begin(), v.end(), t1.begin(), t1.end());
     auto r_ural = ural::find_end(v, t1);
 
-    BOOST_CHECK_EQUAL(std::distance(r_std, v.end()), r_ural.size());
+    BOOST_CHECK(r_ural.traversed_begin() == v.begin());
+    BOOST_CHECK(r_ural.begin() == r_std);
+    BOOST_CHECK(r_ural.end() == v.end());
 }
 
 BOOST_AUTO_TEST_CASE(find_end_test_fail)
 {
-    std::vector<int> const v{1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4};
-    std::list<int> const t2{4, 5, 6};
+    std::forward_list<int> const v{1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4};
+    std::forward_list<int> const t2{4, 5, 6};
 
     auto r_std = std::find_end(v.begin(), v.end(), t2.begin(), t2.end());
     auto r_ural = ural::find_end(v, t2);
 
-    BOOST_CHECK_EQUAL(std::distance(r_std, v.end()), r_ural.size());
+    BOOST_CHECK(r_ural.traversed_begin() == v.begin());
+    BOOST_CHECK(r_ural.begin() == r_std);
+    BOOST_CHECK(r_ural.end() == v.end());
+
+    BOOST_CHECK_EQUAL(std::distance(r_std, v.end()), ::ural::size(r_ural));
 }
 
 // 25.2.7
@@ -452,6 +458,50 @@ BOOST_AUTO_TEST_CASE(copy_n_test)
     BOOST_CHECK_EQUAL(r_std, r_ural);
 }
 
+BOOST_AUTO_TEST_CASE(copy_n_test_to_longer_container)
+{
+    std::string const src = "1234567890";
+    auto const n = 4;
+
+    std::string r_std(src, 0, n + 2);
+    std::string r_ural = r_std;
+    BOOST_CHECK_EQUAL(r_std, r_ural);
+
+    auto const result_std  = std::copy_n(src.begin(), n, r_std.begin());
+    auto const result_ural = ural::copy_n(src, n, r_ural);
+
+    BOOST_CHECK_EQUAL(r_std, r_ural);
+
+    BOOST_CHECK(result_ural[ural::_1].begin() == src.begin() + n);
+    BOOST_CHECK(result_ural[ural::_1].end() == src.end());
+
+    BOOST_CHECK_EQUAL(result_ural[ural::_2].size(), r_std.end() - result_std);
+    BOOST_CHECK(result_ural[ural::_2].end() == r_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(copy_n_test_to_shorter_container)
+{
+    std::string const src = "1234567890";
+    auto const n = 4;
+
+    std::string r_std(src, 0, n - 2);
+    std::string r_ural = r_std;
+    BOOST_CHECK_EQUAL(r_std, r_ural);
+
+    auto const n0 = std::min<size_t>(n, r_std.size());
+
+    auto const result_std  = std::copy_n(src.begin(), n0, r_std.begin());
+    auto const result_ural = ural::copy_n(src, n, r_ural);
+
+    BOOST_CHECK_EQUAL(r_std, r_ural);
+
+    BOOST_CHECK(result_ural[ural::_1].begin() == src.begin() + n0);
+    BOOST_CHECK(result_ural[ural::_1].end() == src.end());
+
+    BOOST_CHECK_EQUAL(result_ural[ural::_2].size(), r_std.end() - result_std);
+    BOOST_CHECK(result_ural[ural::_2].end() == r_ural.end());
+}
+
 BOOST_AUTO_TEST_CASE(filtered_test)
 {
     typedef int Type;
@@ -490,6 +540,31 @@ BOOST_AUTO_TEST_CASE(copy_if_test)
     BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
                                   r_ural.begin(), r_ural.end());
 }
+
+BOOST_AUTO_TEST_CASE(copy_if_test_to_longer_container)
+{
+    typedef int Type;
+    std::vector<Type> const xs = {25, -15, 5, -5, 15};
+    auto const pred = [](Type i){return !(i<0);};
+
+    std::vector<Type> r_std(xs.size() + 2, 42);
+    std::vector<Type> r_ural(r_std);
+
+    auto const result_std = std::copy_if(xs.begin(), xs.end(), r_std.begin(), pred);
+    auto const result_ural = ural::copy_if(xs, r_ural, pred);
+
+    BOOST_CHECK(result_ural[ural::_1].begin() == xs.end());
+    BOOST_CHECK(result_ural[ural::_1].end() == xs.end());
+
+    BOOST_CHECK_EQUAL(result_ural[ural::_2].begin() - r_ural.begin(),
+                      result_std - r_std.begin());
+    BOOST_CHECK(result_ural[ural::_2].end() == r_ural.end());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
+                                  r_ural.begin(), r_ural.end());
+}
+
+// @todo Копирование в более короткую последовательность
 
 BOOST_AUTO_TEST_CASE(filtered_getters_test)
 {
