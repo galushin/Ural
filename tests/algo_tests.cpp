@@ -564,7 +564,35 @@ BOOST_AUTO_TEST_CASE(copy_if_test_to_longer_container)
                                   r_ural.begin(), r_ural.end());
 }
 
-// @todo Копирование в более короткую последовательность
+BOOST_AUTO_TEST_CASE(copy_if_test_to_shorter_container)
+{
+    // Подготовка
+    typedef int Type;
+    std::vector<Type> const xs = {25, -15, 5, -5, 15, -13, -42, 18};
+    auto const pred = [](Type i){return !(i<0);};
+
+    // ural
+    std::vector<Type> r_ural(::ural::count_if(xs, pred)/2, 42);
+
+    auto const result_ural = ural::copy_if(xs, r_ural, pred);
+
+    // std
+    std::vector<Type> r_std;
+    std::copy_if(xs.begin(), xs.end(), r_std | ural::back_inserter, pred);
+    r_std.resize(r_ural.size());
+
+    // Проверки
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_ural.begin(), r_ural.end(),
+                                  r_std.begin(), r_std.end());
+
+    BOOST_CHECK_EQUAL(::ural::count_if(result_ural[ural::_1].traversed_front(),
+                                       pred),
+                      ural::to_signed(r_ural.size()));
+    BOOST_CHECK(result_ural[ural::_1].end() == xs.end());
+
+    BOOST_CHECK(result_ural[ural::_2].begin() == r_ural.end());
+    BOOST_CHECK(result_ural[ural::_2].end() == r_ural.end());
+}
 
 BOOST_AUTO_TEST_CASE(filtered_getters_test)
 {

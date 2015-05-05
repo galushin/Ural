@@ -122,9 +122,14 @@ namespace ural
         /** @brief Базовая последовательность
         @return Базовая последовательность
         */
-        Sequence const & base() const
+        Sequence const & base() const &
         {
             return impl_[ural::_1];
+        }
+
+        Sequence && base() &&
+        {
+            return std::move(impl_[ural::_1]);
         }
 
         /** @brief Оставшееся количество элементов

@@ -182,8 +182,8 @@ namespace details
         template <class ForwardSequence, class Compare = ural::less<>>
         bool operator()(ForwardSequence && in, Compare cmp = Compare()) const
         {
-            return this->impl(sequence_fwd<ForwardSequence>(in),
-                              ural::make_callable(std::move(cmp)));
+            return this->impl(::ural::sequence_fwd<ForwardSequence>(in),
+                              ::ural::make_callable(std::move(cmp)));
         }
     };
 
@@ -222,8 +222,8 @@ namespace details
         auto operator()(Input && in, UnaryPredicate pred) const
         -> typename decltype(sequence_fwd<Input>(in))::distance_type
         {
-            return this->impl(sequence_fwd<Input>(in),
-                              ural::make_callable(std::move(pred)));
+            return this->impl(::ural::sequence_fwd<Input>(in),
+                              ::ural::make_callable(std::move(pred)));
         }
     };
 
@@ -256,10 +256,10 @@ namespace details
                   class BinaryPredicate = ::ural::equal_to<>>
         auto operator()(Input && in, T const & value,
                         BinaryPredicate pred = BinaryPredicate()) const
-        -> typename decltype(sequence_fwd<Input>(in))::distance_type
+        -> typename decltype(::ural::sequence_fwd<Input>(in))::distance_type
         {
-            return this->impl(sequence_fwd<Input>(in), value,
-                              ural::make_callable(std::move(pred)));
+            return this->impl(::ural::sequence_fwd<Input>(in), value,
+                              ::ural::make_callable(std::move(pred)));
         }
     };
 
@@ -362,10 +362,10 @@ namespace details
         */
         template <class Input, class UnaryFunction>
         auto operator()(Input && in, UnaryFunction f) const
-        -> decltype(ural::make_callable(std::move(f)))
+        -> decltype(::ural::make_callable(std::move(f)))
         {
-            return for_each_fn::impl(sequence_fwd<Input>(in),
-                                     ural::make_callable(std::move(f)));
+            return for_each_fn::impl(::ural::sequence_fwd<Input>(in),
+                                     ::ural::make_callable(std::move(f)));
         }
     };
 
@@ -814,11 +814,12 @@ namespace details
     public:
         template <class Input, class Output, class Predicate>
         auto operator()(Input && in, Output && out, Predicate pred) const
-        -> tuple<decltype(sequence_fwd<Input>(in)),
-                 decltype(sequence_fwd<Output>(out))>
+        -> tuple<decltype(::ural::sequence_fwd<Input>(in)),
+                 decltype(::ural::sequence_fwd<Output>(out))>
         {
-            auto in_f = sequence_fwd<Input>(in) | ural::filtered(pred);
-            auto res = ural::copy_fn{}(std::move(in_f), sequence_fwd<Output>(out));
+            auto in_f = ::ural::sequence_fwd<Input>(in) | ural::filtered(pred);
+            auto res = ural::copy_fn{}(std::move(in_f),
+                                       ::ural::sequence_fwd<Output>(out));
 
             return ural::make_tuple(std::move(res[ural::_1]).base(),
                                     std::move(res[ural::_2]));
@@ -830,11 +831,12 @@ namespace details
     public:
         template <class Input, class Output>
         auto operator()(Input && in, Output && out) const
-        -> tuple<decltype(sequence_fwd<Input>(in)),
-                 decltype(sequence_fwd<Output>(out))>
+        -> tuple<decltype(::ural::sequence_fwd<Input>(in)),
+                 decltype(::ural::sequence_fwd<Output>(out))>
         {
-            auto in_moved = ural::sequence_fwd<Input>(in) | ural::moved;
-            auto res = ural::copy_fn{}(std::move(in_moved), sequence_fwd<Output>(out));
+            auto in_moved = ::ural::sequence_fwd<Input>(in) | ural::moved;
+            auto res = ural::copy_fn{}(std::move(in_moved),
+                                       ::ural::sequence_fwd<Output>(out));
             return ural::make_tuple(res[ural::_1].base(), res[ural::_2]);
         }
     };
@@ -845,11 +847,11 @@ namespace details
     public:
         template <class Bidir1, class Bidir2>
         auto operator()(Bidir1 && in, Bidir2 && out) const
-        -> tuple<decltype(sequence_fwd<Bidir1>(in)),
-                 decltype(sequence_fwd<Bidir2>(out))>
+        -> tuple<decltype(::ural::sequence_fwd<Bidir1>(in)),
+                 decltype(::ural::sequence_fwd<Bidir2>(out))>
         {
-            return this->impl(sequence_fwd<Bidir1>(in),
-                              sequence_fwd<Bidir2>(out));
+            return this->impl(::ural::sequence_fwd<Bidir1>(in),
+                              ::ural::sequence_fwd<Bidir2>(out));
         }
 
     private:
@@ -871,11 +873,11 @@ namespace details
     public:
         template <class Bidir1, class Bidir2>
         auto operator()(Bidir1 && in, Bidir2 && out) const
-        -> tuple<decltype(sequence_fwd<Bidir1>(in)),
-                 decltype(sequence_fwd<Bidir2>(out))>
+        -> tuple<decltype(::ural::sequence_fwd<Bidir1>(in)),
+                 decltype(::ural::sequence_fwd<Bidir2>(out))>
         {
-            return this->impl(sequence_fwd<Bidir1>(in),
-                              sequence_fwd<Bidir2>(out));
+            return this->impl(::ural::sequence_fwd<Bidir1>(in),
+                              ::ural::sequence_fwd<Bidir2>(out));
         }
 
     private:
@@ -904,12 +906,12 @@ namespace details
         */
         template <class Input, class Output, class UnaryFunction>
         auto operator()(Input && in, Output && out, UnaryFunction f) const
-        -> tuple<decltype(sequence_fwd<Input>(in)),
-                 decltype(sequence_fwd<Output>(out))>
+        -> tuple<decltype(::ural::sequence_fwd<Input>(in)),
+                 decltype(::ural::sequence_fwd<Output>(out))>
         {
-            return this->impl(sequence_fwd<Input>(in),
-                              sequence_fwd<Output>(out),
-                              ural::make_callable(std::move(f)));
+            return this->impl(::ural::sequence_fwd<Input>(in),
+                              ::ural::sequence_fwd<Output>(out),
+                              ::ural::make_callable(std::move(f)));
         }
 
         /** @brief Преобразование двух последовательностей
@@ -923,14 +925,14 @@ namespace details
         template <class Input1, class Input2, class Output, class BinaryFunction>
         auto operator()(Input1 && in1, Input2 && in2, Output && out,
                         BinaryFunction f) const
-        -> tuple<decltype(sequence_fwd<Input1>(in1)),
-                 decltype(sequence_fwd<Input2>(in2)),
-                 decltype(sequence_fwd<Output>(out))>
+        -> tuple<decltype(::ural::sequence_fwd<Input1>(in1)),
+                 decltype(::ural::sequence_fwd<Input2>(in2)),
+                 decltype(::ural::sequence_fwd<Output>(out))>
         {
-            return this->impl(sequence_fwd<Input1>(in1),
-                              sequence_fwd<Input2>(in2),
-                              sequence_fwd<Output>(out),
-                              ural::make_callable(std::move(f)));
+            return this->impl(::ural::sequence_fwd<Input1>(in1),
+                              ::ural::sequence_fwd<Input2>(in2),
+                              ::ural::sequence_fwd<Output>(out),
+                              ::ural::make_callable(std::move(f)));
         }
 
     private:
@@ -971,10 +973,10 @@ namespace details
     public:
         template <class ForwardSequence, class Generator>
         auto operator()(ForwardSequence && seq, Generator gen) const
-        -> decltype(ural::sequence_fwd<ForwardSequence>(seq))
+        -> decltype(::ural::sequence_fwd<ForwardSequence>(seq))
         {
-            return this->impl(ural::sequence_fwd<ForwardSequence>(seq),
-                              ural::make_callable(std::move(gen)));
+            return this->impl(::ural::sequence_fwd<ForwardSequence>(seq),
+                              ::ural::make_callable(std::move(gen)));
         }
 
     private:
@@ -988,7 +990,7 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<ForwardSequence>));
             BOOST_CONCEPT_ASSERT((concepts::WritableSequence<ForwardSequence, result_type>));
 
-            auto r = copy_fn{}(ural::make_generator_sequence(std::move(gen)),
+            auto r = copy_fn{}(::ural::make_generator_sequence(std::move(gen)),
                                std::move(seq));
             return r[ural::_2];
         }
@@ -999,12 +1001,11 @@ namespace details
     public:
         template <class Generator, class N, class Output>
         auto operator()(Generator gen, N n, Output && out) const
-        -> decltype(ural::sequence_fwd<Output>(out))
+        -> decltype(::ural::sequence_fwd<Output>(out))
         {
-            auto in = ural::make_generator_sequence(ural::make_callable(gen))
-                    | ural::taken(n);
-            return ural::copy_fn{}(std::move(in),
-                                   ural::sequence_fwd<Output>(out))[ural::_2];
+            auto in = ural::make_generator_sequence(::ural::make_callable(gen));
+            return ::ural::copy_n_fn{}(::std::move(in), std::move(n),
+                                       ::ural::sequence_fwd<Output>(out))[ural::_2];
         }
     };
 
@@ -1057,11 +1058,11 @@ namespace details
     public:
         template <class Forward1, class Forward2>
         auto operator()(Forward1 && s1, Forward2 && s2) const
-        -> ural::tuple<decltype(sequence_fwd<Forward1>(s1)),
-                       decltype(sequence_fwd<Forward2>(s2))>
+        -> ural::tuple<decltype(::ural::sequence_fwd<Forward1>(s1)),
+                       decltype(::ural::sequence_fwd<Forward2>(s2))>
         {
-            return this->impl(sequence_fwd<Forward1>(s1),
-                              sequence_fwd<Forward2>(s2));
+            return this->impl(::ural::sequence_fwd<Forward1>(s1),
+                              ::ural::sequence_fwd<Forward2>(s2));
         }
     private:
         template <class Forward1, class Forward2>
@@ -1082,7 +1083,7 @@ namespace details
         template <class BidirectionalSequence>
         void operator()(BidirectionalSequence && seq) const
         {
-            return this->impl(sequence_fwd<BidirectionalSequence>(seq));
+            return this->impl(::ural::sequence_fwd<BidirectionalSequence>(seq));
         }
 
     private:
@@ -1132,18 +1133,18 @@ namespace details
     public:
         template <class ForwardSequence>
         auto operator()(ForwardSequence && seq) const
-        -> decltype(sequence_fwd<ForwardSequence>(seq))
+        -> decltype(::ural::sequence_fwd<ForwardSequence>(seq))
         {
-            return this->impl(sequence_fwd<ForwardSequence>(seq));
+            return this->impl(::ural::sequence_fwd<ForwardSequence>(seq));
         }
 
         template <class Forward1, class Forward2>
         auto operator()(Forward1 && in1, Forward2 && in2) const
-        -> ural::tuple<decltype(sequence_fwd<Forward1>(in1)),
-                       decltype(sequence_fwd<Forward2>(in2))>
+        -> ural::tuple<decltype(::ural::sequence_fwd<Forward1>(in1)),
+                       decltype(::ural::sequence_fwd<Forward2>(in2))>
         {
-            return this->impl(sequence_fwd<Forward1>(in1),
-                              sequence_fwd<Forward2>(in2));
+            return this->impl(::ural::sequence_fwd<Forward1>(in1),
+                              ::ural::sequence_fwd<Forward2>(in2));
         }
 
     private:
@@ -1196,11 +1197,11 @@ namespace details
     public:
         template <class Forward, class Output>
         auto operator()(Forward && in, Output && out) const
-        -> ural::tuple<decltype(sequence_fwd<Forward>(in)),
-                       decltype(sequence_fwd<Output>(out))>
+        -> ural::tuple<decltype(::ural::sequence_fwd<Forward>(in)),
+                       decltype(::ural::sequence_fwd<Output>(out))>
         {
-            return this->impl(sequence_fwd<Forward>(in),
-                              sequence_fwd<Output>(out));
+            return this->impl(::ural::sequence_fwd<Forward>(in),
+                              ::ural::sequence_fwd<Output>(out));
         }
 
     private:
@@ -1227,8 +1228,8 @@ namespace details
         void operator()(ForwardSequence && seq,
                         Predicate pred, T const & new_value) const
         {
-            return this->impl(sequence_fwd<ForwardSequence>(seq),
-                              make_callable(std::move(pred)), new_value);
+            return this->impl(::ural::sequence_fwd<ForwardSequence>(seq),
+                              ::ural::make_callable(std::move(pred)), new_value);
         }
 
     private:
@@ -1291,12 +1292,12 @@ namespace details
         template <class Input, class Output, class Predicate, class T>
         auto operator()(Input && in, Output && out, Predicate pred,
                         T const & new_value) const
-        -> ural::tuple<decltype(sequence_fwd<Input>(in)),
-                       decltype(sequence_fwd<Output>(out))>
+        -> ural::tuple<decltype(::ural::sequence_fwd<Input>(in)),
+                       decltype(::ural::sequence_fwd<Output>(out))>
         {
-            return this->impl(sequence_fwd<Input>(in),
-                              sequence_fwd<Output>(out),
-                              ural::make_callable(std::move(pred)),
+            return this->impl(::ural::sequence_fwd<Input>(in),
+                              ::ural::sequence_fwd<Output>(out),
+                              ::ural::make_callable(std::move(pred)),
                               new_value);
         }
 
@@ -1343,7 +1344,7 @@ namespace details
         template <class RASequence, class URNG>
         void operator()(RASequence && s, URNG && g) const
         {
-            return this->impl(sequence_fwd<RASequence>(s),
+            return this->impl(::ural::sequence_fwd<RASequence>(s),
                               std::forward<URNG>(g));
         }
 
@@ -1389,7 +1390,7 @@ namespace details
         template <class Input, class UnaryPredicate>
         bool operator()(Input && in, UnaryPredicate pred) const
         {
-            return this->impl(sequence_fwd<Input>(in),
+            return this->impl(::ural::sequence_fwd<Input>(in),
                               make_callable(std::move(pred)));
         }
 
@@ -1407,10 +1408,10 @@ namespace details
     public:
         template <class ForwardSequence, class UnaryPredicate>
         auto operator()(ForwardSequence && in, UnaryPredicate pred) const
-        -> decltype(sequence_fwd<ForwardSequence>(in))
+        -> decltype(::ural::sequence_fwd<ForwardSequence>(in))
         {
-            return this->impl(sequence_fwd<ForwardSequence>(in),
-                              make_callable(std::move(pred)));
+            return this->impl(::ural::sequence_fwd<ForwardSequence>(in),
+                              ::ural::make_callable(std::move(pred)));
         }
     private:
         template <class ForwardSequence, class UnaryPredicate>
@@ -1446,10 +1447,10 @@ namespace details
     public:
         template <class ForwardSequence, class UnaryPredicate>
         auto operator()(ForwardSequence && in, UnaryPredicate pred) const
-        -> decltype(sequence_fwd<ForwardSequence>(in))
+        -> decltype(::ural::sequence_fwd<ForwardSequence>(in))
         {
-            return this->impl(sequence_fwd<ForwardSequence>(in),
-                              make_callable(std::move(pred)));
+            return this->impl(::ural::sequence_fwd<ForwardSequence>(in),
+                              ::ural::make_callable(std::move(pred)));
         }
 
     private:
@@ -1523,14 +1524,14 @@ namespace details
         template <class Input, class Output1, class Output2, class UnaryPredicate>
         auto operator()(Input && in, Output1 && out_true, Output2 && out_false,
                         UnaryPredicate pred) const
-        -> ural::tuple<decltype(sequence_fwd<Input>(in)),
-                       decltype(sequence_fwd<Output1>(out_true)),
-                       decltype(sequence_fwd<Output2>(out_false))>
+        -> ural::tuple<decltype(::ural::sequence_fwd<Input>(in)),
+                       decltype(::ural::sequence_fwd<Output1>(out_true)),
+                       decltype(::ural::sequence_fwd<Output2>(out_false))>
         {
-            return this->impl(sequence_fwd<Input>(in),
-                              sequence_fwd<Output1>(out_true),
-                              sequence_fwd<Output2>(out_false),
-                              make_callable(std::move(pred)));
+            return this->impl(::ural::sequence_fwd<Input>(in),
+                              ::ural::sequence_fwd<Output1>(out_true),
+                              ::ural::sequence_fwd<Output2>(out_false),
+                              ::ural::make_callable(std::move(pred)));
         }
 
     private:
@@ -1554,10 +1555,10 @@ namespace details
     public:
         template <class ForwardSequence, class Predicate>
         auto operator()(ForwardSequence && in, Predicate pred) const
-        -> decltype(sequence_fwd<ForwardSequence>(in))
+        -> decltype(::ural::sequence_fwd<ForwardSequence>(in))
         {
-            return this->impl(sequence_fwd<ForwardSequence>(in),
-                              ural::make_callable(std::move(pred)));
+            return this->impl(::ural::sequence_fwd<ForwardSequence>(in),
+                              ::ural::make_callable(std::move(pred)));
         }
 
     private:
@@ -1577,10 +1578,10 @@ namespace details
     public:
         template <class RASequence, class Compare = ural::less<>>
         auto operator()(RASequence && seq, Compare cmp = Compare()) const
-        -> decltype(sequence_fwd<RASequence>(seq))
+        -> decltype(::ural::sequence_fwd<RASequence>(seq))
         {
-            return this->impl(sequence_fwd<RASequence>(seq),
-                              make_callable(std::move(cmp)));
+            return this->impl(::ural::sequence_fwd<RASequence>(seq),
+                              ::ural::make_callable(std::move(cmp)));
         }
 
     private:
@@ -1624,7 +1625,7 @@ namespace details
         bool operator()(RASequence && seq, Compare cmp = Compare()) const
         {
             return this->impl(::ural::sequence_fwd<RASequence>(seq),
-                              make_callable(std::move(cmp)));
+                              ::ural::make_callable(std::move(cmp)));
         }
 
     private:
@@ -1702,8 +1703,8 @@ namespace details
         template <class RASequence, class Compare = ural::less<>>
         void operator()(RASequence && seq, Compare cmp = Compare()) const
         {
-            return this->impl(sequence_fwd<RASequence>(seq),
-                              ural::make_callable(std::move(cmp)));
+            return this->impl(::ural::sequence_fwd<RASequence>(seq),
+                              ::ural::make_callable(std::move(cmp)));
         }
 
     private:
@@ -1834,8 +1835,8 @@ namespace details
         template <class RASequence, class Compare = ::ural::less<>>
         void operator()(RASequence && s, Compare cmp = Compare()) const
         {
-            return this->impl(ural::sequence_fwd<RASequence>(s),
-                              ural::make_callable(std::move(cmp)));
+            return this->impl(::ural::sequence_fwd<RASequence>(s),
+                              ::ural::make_callable(std::move(cmp)));
         }
 
     private:
@@ -1931,8 +1932,8 @@ namespace details
         bool operator()(RASequence && in, T const & value,
                         Compare cmp = Compare()) const
         {
-            return this->impl(sequence_fwd<RASequence>(in), value,
-                              make_callable(std::move(cmp)));
+            return this->impl(::ural::sequence_fwd<RASequence>(in), value,
+                              ::ural::make_callable(std::move(cmp)));
         }
 
     private:
@@ -2029,8 +2030,8 @@ namespace details
         template <class RASequence, class Compare = ::ural::less<>>
         void operator()(RASequence && s, Compare cmp = Compare()) const
         {
-            return this->impl(sequence_fwd<RASequence>(s),
-                              ural::make_callable(std::move(cmp)));
+            return this->impl(::ural::sequence_fwd<RASequence>(s),
+                              ::ural::make_callable(std::move(cmp)));
         }
     private:
         template <class RASequence, class Compare>
@@ -2046,8 +2047,8 @@ namespace details
         template <class RASequence, class Compare = ::ural::less<>>
         void operator()(RASequence && s, Compare cmp = Compare()) const
         {
-            return this->impl(sequence_fwd<RASequence>(s),
-                              ural::make_callable(std::move(cmp)));
+            return this->impl(::ural::sequence_fwd<RASequence>(s),
+                              ::ural::make_callable(std::move(cmp)));
         }
 
     private:
@@ -2184,8 +2185,8 @@ namespace details
         void operator()(BidirectionalSequence && s,
                         Compare cmp = Compare()) const
         {
-            return this->impl(sequence_fwd<BidirectionalSequence>(s),
-                              ural::make_callable(std::move(cmp)));
+            return this->impl(::ural::sequence_fwd<BidirectionalSequence>(s),
+                              ::ural::make_callable(std::move(cmp)));
         }
 
     private:
@@ -2607,8 +2608,8 @@ namespace details
         template <class BiSequence, class Compare = ::ural::less<>>
         bool operator()(BiSequence && s, Compare cmp = Compare()) const
         {
-            return this->impl(sequence_fwd<BiSequence>(s),
-                              ural::make_callable(std::move(cmp)));
+            return this->impl(::ural::sequence_fwd<BiSequence>(s),
+                              ::ural::make_callable(std::move(cmp)));
 
         }
 
@@ -2664,8 +2665,8 @@ namespace details
         template <class BiSequence, class Compare = ::ural::less<>>
         bool operator()(BiSequence && s, Compare cmp = Compare()) const
         {
-            return this->impl(sequence_fwd<BiSequence>(s),
-                              ural::make_callable(std::move(cmp)));
+            return this->impl(::ural::sequence_fwd<BiSequence>(s),
+                              ::ural::make_callable(std::move(cmp)));
 
         }
 
@@ -2687,10 +2688,10 @@ namespace details
         */
         template <class ForwardSequence, class Predicate>
         auto operator()(ForwardSequence && seq, Predicate pred) const
-        -> decltype(sequence_fwd<ForwardSequence>(seq))
+        -> decltype(::ural::sequence_fwd<ForwardSequence>(seq))
         {
-            return this->impl(sequence_fwd<ForwardSequence>(seq),
-                              ural::make_callable(std::move(pred)));
+            return this->impl(::ural::sequence_fwd<ForwardSequence>(seq),
+                              ::ural::make_callable(std::move(pred)));
         }
 
     private:
@@ -2759,8 +2760,8 @@ namespace details
     public:
         template <class Input, class Output, class Predicate>
         auto operator()(Input && in, Output && out, Predicate pred) const
-        -> tuple<decltype(ural::sequence_fwd<Input>(in)),
-                 decltype(ural::sequence_fwd<Output>(out))>
+        -> tuple<decltype(::ural::sequence_fwd<Input>(in)),
+                 decltype(::ural::sequence_fwd<Output>(out))>
         {
             return ural::copy_if_fn{}(std::forward<Input>(in),
                                       std::forward<Output>(out),
@@ -2837,11 +2838,11 @@ namespace details
     public:
         template <class Input, class Output>
         auto operator()(Input && in, Output && out) const
-        -> tuple<decltype(ural::sequence_fwd<Input>(in)),
-                 decltype(ural::sequence_fwd<Output>(out))>
+        -> tuple<decltype(::ural::sequence_fwd<Input>(in)),
+                 decltype(::ural::sequence_fwd<Output>(out))>
         {
-            return this->impl(ural::sequence_fwd<Input>(in),
-                              ural::sequence_fwd<Output>(out));
+            return this->impl(::ural::sequence_fwd<Input>(in),
+                              ::ural::sequence_fwd<Output>(out));
         }
 
         template <class T>
