@@ -360,6 +360,8 @@ namespace ural
     @tparam T тип элементов
     @tparam Alloc тип базового распределителя памяти
     @tparam Threading стретегия многопоточности
+    @todo Использовать allocator_traits для propagate_on_container*, когда
+    компилятор будет определять его корректно
     */
     template <class T, class Alloc = std::allocator<T>,
               class Threading = ural::single_thread_policy>
@@ -376,22 +378,50 @@ namespace ural
         typedef typename Threading::atomic_counter_type count_type;
 
     public:
-        typedef typename Base::value_type value_type;
-        typedef typename Base::size_type size_type;
-        typedef typename Base::difference_type difference_type;
-        typedef typename Base::const_reference const_reference;
-        typedef typename Base::reference reference;
-        typedef typename Base::pointer pointer;
+        /// @brief Тип объектов, создаваемых данным распределителем
+        typedef typename std::allocator_traits<Base>::value_type value_type;
+
+        /// @brief Тип для представления размера
+        typedef typename std::allocator_traits<Base>::size_type size_type;
+
+        /// @brief Тип разности значений указателя
+        typedef typename std::allocator_traits<Base>::difference_type difference_type;
+
+        /// @brief Тип указателя
+        typedef typename std::allocator_traits<Base>::pointer pointer;
+
+        /// @brief Тип константного указателя
         typedef typename Base::const_pointer const_pointer;
 
+        /** @brief Нужно ли передавать распределитель памяти при копирующем
+        присваивании контейнера
+        */
         typedef std::true_type propagate_on_container_copy_assignment;
+
+        /** @brief Нужно ли передавать распределитель памяти при присваивании
+        контейнера с перемещением
+        */
         typedef std::true_type propagate_on_container_move_assignment;
+
+        /** @brief Нужно ли передавать распределитель памяти при обмене
+        контейнеров
+        */
         typedef std::true_type propagate_on_container_swap;
 
+        /** @brief Конструктор
+        @param id идентификатор
+        @post <tt> this->id() == id </tt>
+        */
         explicit tracing_allocator(int id = 0)
          : id_{id}
         {}
 
+        /** @brief Выделение памяти
+        @param n количество элементов типа @c T, которое должно помещаться
+        в выделенную область памяти
+        @return Указатель на область памяти, достаточную для размещения @c n
+        объектов типа @c T
+        */
         pointer allocate(size_type n)
         {
             ++ tracing_allocator::get_allocations();
@@ -399,6 +429,11 @@ namespace ural
             return a_.allocate(n);
         }
 
+        /** @brief Освобождение памяти
+        @param p указатель на область памяти, которая должна быть освобождена
+        @param n размер освобождаемой области памяти, измеренный в
+        <tt> sizeof(T) </tt>
+        */
         void deallocate(pointer p, size_type n)
         {
             ++ tracing_allocator::get_deallocations();
@@ -406,6 +441,13 @@ namespace ural
             return a_.deallocate(p, n);
         }
 
+        /** @brief Создание элемента, в области памяти на которую ссылается
+        указатель @c p
+        @param p указатель
+        @param args список аргументов для конструктора
+        @post Указатель @c p ссылается на объект, созданный с помощью
+        конструктора <tt> T(std::forward<Args>(args)...) </tt>
+        */
         template <class... Args>
         void construct(pointer p, Args && ... args)
         {
@@ -414,6 +456,12 @@ namespace ural
             a_.construct(p, std::forward<Args>(args)...);
         }
 
+        /** @brief Уничтожение элемента, на который ссылается указатель @c p
+        @param p указатель
+        @pre Указатель @c p должен ссылаться на элемент, созданный
+        распределителем памяти @c a таким, что <tt> *this == a </tt>
+        @post Указатель @c p ссылается на неинициализированную область памяти
+        */
         void destroy(pointer p)
         {
             ++ tracing_allocator::get_destructions();
@@ -424,35 +472,52 @@ namespace ural
         template <class U>
         struct rebind
         {
+            /// @brief Тип распределителя памяти для типа @c U
             typedef tracing_allocator<U, Alloc> other;
         };
 
+        /** @brief Идентификатор распределителя памяти
+        @return Идентификатор распределителя памяти
+        */
         int id() const
         {
             return this->id_;
         }
 
         // Трассировка
+        /** @brief Количество выполенных операций выделения памяти
+        @return Количество выполненных операций выделения памяти
+        */
         static count_type allocations_count()
         {
             return tracing_allocator::get_allocations();
         }
 
+        /** @brief Количество выполенных операций освобождения памяти
+        @return Количество выполненных операций освобождения памяти
+        */
         static count_type deallocations_count()
         {
             return tracing_allocator::get_deallocations();
         }
 
+        /** @brief Количество элементов, созданных данным распределителем
+        @return Количество элементов, созданных данным распределителем
+        */
         static count_type constructions_count()
         {
             return tracing_allocator::get_constructions();
         }
 
+        /** @brief Количество элементов, уничтоженных данным распределителем
+        @return Количество элементов, уничтоженных данным распределителем
+        */
         static count_type destructions_count()
         {
             return tracing_allocator::get_destructions();
         }
 
+        /// @brief Сброс информации о количесве выполненных операций
         static void reset_traced_info()
         {
             tracing_allocator::get_allocations() = 0;

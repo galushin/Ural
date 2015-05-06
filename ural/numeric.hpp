@@ -21,6 +21,10 @@
  @brief Обобщённые численные операции
 */
 
+/** @defgroup Numerics обобщённые численные операции
+ @brief Обобщённые реализации численных операций
+*/
+
 #include <ural/math.hpp>
 #include <ural/functional.hpp>
 #include <ural/algorithm/core.hpp>
@@ -32,6 +36,10 @@
 
 namespace ural
 {
+    /** @ingroup Numerics
+    @brief Тип функционального объекта для заполнения последовательности
+    последовательными значениями
+    */
     class iota_fn
     {
     public:
@@ -64,9 +72,20 @@ namespace ural
         }
     };
 
+    /** @ingroup Numerics
+    @brief Тип функционального объекта для вычисления суммы элементов
+    последовательности
+    */
     class accumulate_fn
     {
     public:
+        /** @brief Вычисление суммы элементов последовательности
+        @param in последовательность
+        @param init_value начальное значение
+        @param op бинарная операция, используемая в качестве сложения элементов
+        @return Сумма @c init_value и всех элементов последовательности
+        @todo Вывод начального значения?
+        */
         template <class Input, class T, class BinaryOperation = ::ural::plus<>>
         T operator()(Input && in, T init_value,
                      BinaryOperation op = BinaryOperation()) const
@@ -89,9 +108,24 @@ namespace ural
         }
     };
 
+    /** @ingroup Numerics
+    @brief Тип функционального объекта объект для вычисления внутреннего произведения
+    */
     class inner_product_fn
     {
     public:
+        /** @brief Вычисление внутреннего произведения, то есть суммы
+        произведений соответствующих элементов, двух последовательностей
+        @param in1, in2 входные последовательности
+        @param init_value начальное значения, определяющее тип результата
+        @param add функциональный объект, определяющий операцию сложения
+        @param mult функциональный объект, определяющий операцию умножения
+        элементов
+        @return Сумма произведений соответствующих элементов двух
+        последовательностей
+        @todo Что делать с последовательностями разной длинны?
+        @todo Перегрузка с выводом типа результата?
+        */
         template <class Input1, class Input2, class T,
                   class BinaryOperation1 = ::ural::plus<>,
                   class BinaryOperation2 = ::ural::multiplies<>>
@@ -121,6 +155,9 @@ namespace ural
         }
     };
 
+    /** @ingroup Numerics
+    @brief Тип функционального объекта для вычисления частичных сумм
+    */
     class partial_sum_fn
     {
     public:

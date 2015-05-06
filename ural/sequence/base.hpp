@@ -97,6 +97,9 @@ namespace ural
         }
 
     public:
+        /** @brief Проверка исчерпания последовательности
+        @return @b true, если последовательность исчерпана, иначе --- @b false
+        */
         bool empty() const
         {
             return !static_cast<Seq const &>(*this);

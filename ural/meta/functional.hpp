@@ -120,6 +120,7 @@ namespace meta
             using F = typename std::conditional<if_value::value, Then, Else>::type;
 
         public:
+            /// @brief Тип-результат
             using type = typename meta::apply<F, Args...>::type;
         };
     };
@@ -139,6 +140,7 @@ namespace meta
             typedef typename meta::apply<Function, Args...>::type R1;
 
         public:
+            /// @brief Тип-результат
             typedef typename meta::apply<UnaryFunction, R1>::type type;
         };
     };
@@ -158,10 +160,13 @@ namespace meta
             typedef std::is_same<F1, ural::meta::identity> F1_is_Id;
             typedef std::is_same<F2, ural::meta::identity> F2_is_Id;
 
+            typedef ural::declare_type<F2> Then;
+            typedef std::conditional<F2_is_Id::value, F1, F12> Else;
+
         public:
+            /// @brief Тип-результат
            typedef typename std::conditional<F1_is_Id::value,
-                                             ural::declare_type<F2>,
-                                             std::conditional<F2_is_Id::value, F1, F12>>::type::type type;
+                                             Then, Else>::type::type type;
         };
 
         template <class F1>

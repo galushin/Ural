@@ -81,6 +81,7 @@ namespace meta
         pop_front_helper(void*);
 
     public:
+        /// @brief Тип-результат
         typedef decltype(pop_front_helper<Container>(nullptr)) type;
     };
 
@@ -108,6 +109,7 @@ namespace meta
         front_helper(void*);
 
     public:
+        /// @brief Тип-результат
         typedef decltype(front_helper<Container>(nullptr)) type;
     };
 

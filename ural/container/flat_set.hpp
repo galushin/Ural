@@ -17,7 +17,7 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/** @file ural/container/flat_map.hpp
+/** @file ural/container/flat_set.hpp
  @brief Аналог <tt> std::set </tt>, хранящий элементы в виде массива, а не
  дерева.
 */

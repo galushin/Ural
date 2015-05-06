@@ -17,7 +17,7 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/** @brief ural/statistics/probability.hpp
+/** @file ural/statistics/probability.hpp
  @brief Класс для представления вероятностей
 */
 

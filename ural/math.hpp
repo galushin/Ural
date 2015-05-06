@@ -300,6 +300,10 @@ namespace ural
         class abs_constexpr_fn
         {
         public:
+            /** @brief Оператор вычисления значения функции
+            @param x число
+            @return Модуль @c x
+            */
             template <class T>
             constexpr auto operator()(T const & x) const
             -> decltype(abs_constexpr(x))

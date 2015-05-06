@@ -17,7 +17,7 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/** @file ural/algorithm/copy.hpp
+/** @file ural/algorithm/core.hpp
  @brief Базовые алгоритмы, через которые реализуются многие другие алгоритмы
  и последовательности.
  @note Этот файл предназначен для разработчиков библиотеки, не включайте его

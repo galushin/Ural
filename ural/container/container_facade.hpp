@@ -17,17 +17,17 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/** @file ural/container/facade.hpp
- @brief Определение операций, неспецифичных для конкретных конейнеров
+/** @file ural/container/container_facade.hpp
+ @brief РћРїСЂРµРґРµР»РµРЅРёРµ РѕРїРµСЂР°С†РёР№, РЅРµСЃРїРµС†РёС„РёС‡РЅС‹С… РґР»СЏ РєРѕРЅРєСЂРµС‚РЅС‹С… РєРѕРЅРµР№РЅРµСЂРѕРІ
 */
 
 #include <ural/algorithm.hpp>
 
 namespace ural
 {
-    /** @brief Базовый класс (CRTP), определяющий операции, не зависящие от
-    реализации конкретных контейнеров
-    @tparam Container тип контейнера
+    /** @brief Р‘Р°Р·РѕРІС‹Р№ РєР»Р°СЃСЃ (CRTP), РѕРїСЂРµРґРµР»СЏСЋС‰РёР№ РѕРїРµСЂР°С†РёРё, РЅРµ Р·Р°РІРёСЃСЏС‰РёРµ РѕС‚
+    СЂРµР°Р»РёР·Р°С†РёРё РєРѕРЅРєСЂРµС‚РЅС‹С… РєРѕРЅС‚РµР№РЅРµСЂРѕРІ
+    @tparam Container С‚РёРї РєРѕРЅС‚РµР№РЅРµСЂР°
     */
     template <class Container>
     struct container_facade
@@ -37,9 +37,9 @@ namespace ural
         container_facade() = default;
 
     public:
-        /** @brief Оператор "равно"
-        @param x левый операнд
-        @param y правый операнд
+        /** @brief РћРїРµСЂР°С‚РѕСЂ "СЂР°РІРЅРѕ"
+        @param x Р»РµРІС‹Р№ РѕРїРµСЂР°РЅРґ
+        @param y РїСЂР°РІС‹Р№ РѕРїРµСЂР°РЅРґ
         @return <tt> ural::equal(x, y) </tt>
         */
         friend bool operator==(Container const & x, Container const & y)
@@ -47,9 +47,9 @@ namespace ural
             return ural::equal(x, y);
         }
 
-        /** @brief Оператор "меньше"
-        @param x левый операнд
-        @param y правый операнд
+        /** @brief РћРїРµСЂР°С‚РѕСЂ "РјРµРЅСЊС€Рµ"
+        @param x Р»РµРІС‹Р№ РѕРїРµСЂР°РЅРґ
+        @param y РїСЂР°РІС‹Р№ РѕРїРµСЂР°РЅРґ
         @return <tt> ural::lexicographical_compare(x, y) </tt>
         */
         friend bool operator<(Container const & x, Container const & y)

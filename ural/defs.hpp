@@ -47,7 +47,10 @@ namespace ural
     template <class Head, class... Others>
     struct typelist<Head, Others...>
     {
+        /// @brief Первый элемент списка типов
         typedef Head head;
+
+        /// @brief Остальные элементы списка типов
         typedef typelist<Others...> tail;
     };
 

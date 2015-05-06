@@ -211,11 +211,17 @@ namespace distributions
             return this->ps_;
         }
 
+        /** @brief Наименьшее возможноей значение
+        @return <tt> value_type(0) </tt>
+        */
         value_type min() const
         {
             return value_type(0);
         }
 
+        /** @brief Наибольшее возможноей значение
+        @return Наибольшее возможное значение
+        */
         value_type max() const
         {
             assert(!ps_.empty());

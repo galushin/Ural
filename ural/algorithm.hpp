@@ -31,7 +31,7 @@
  изменяющие порядок элементов существующих последовательностей.
 */
 
-/** @defgroup MutatingSequenceOperations
+/** @defgroup MutatingSequenceOperations Модифицирующие операции
  @ingroup Algorithms
  @brief Операции, формирующие новые последовательности или меняющие порядок
  элементов существующих последовательностей.
@@ -77,12 +77,17 @@ namespace details
     class swap_fn
     {
     public:
+        /** @brief Оператор применения функции.
+        @details Производит неквалифицированный вызов функции @c swap. При этом
+        включает перегрузки этой функции из пространства имён @c std, @c ural,
+        @c boost
+        */
         template <class T>
         void operator()(T & x, T & y) const
         {
-            using std::swap;
-            using ural::swap;
-            using boost::swap;
+            using ::std::swap;
+            using ::ural::swap;
+            using ::boost::swap;
             return swap(x, y);
         }
     };
@@ -1037,6 +1042,12 @@ namespace details
     class unique_copy_fn
     {
     public:
+        /** @brief Копирование неповторяющихся (подряд) значений
+        @param in входная последовательность
+        @param out выходная последовательность
+        @param bin_pred бинарный предикат
+        @return Кортеж, содержащий непройденные части последовательностей
+        */
         template <class Input, class Output,
                   class BinaryPredicate = ural::equal_to<>>
         auto operator()(Input && in, Output && out,
@@ -1056,6 +1067,10 @@ namespace details
     class swap_ranges_fn
     {
     public:
+        /** @brief Обмен соответствующих элементов последовательностей
+        @param s1, s2 входные последовательности
+        @return Кортеж, содержащий непройденные части последовательностей
+        */
         template <class Forward1, class Forward2>
         auto operator()(Forward1 && s1, Forward2 && s2) const
         -> ural::tuple<decltype(::ural::sequence_fwd<Forward1>(s1)),
@@ -2027,6 +2042,11 @@ namespace details
     class sort_fn
     {
     public:
+        /** @brief Сортировка
+        @param s сортируемая последовательность
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> less<> </tt>, то есть оператор "меньше".
+        */
         template <class RASequence, class Compare = ::ural::less<>>
         void operator()(RASequence && s, Compare cmp = Compare()) const
         {
@@ -2044,6 +2064,12 @@ namespace details
     class stable_sort_fn
     {
     public:
+        /** @brief Устойчивая сортировка, то есть сортировка, сохраняющая
+        относительный порядок эквивалентных элементов
+        @param s сортируемая последовательность
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> less<> </tt>, то есть оператор "меньше".
+        */
         template <class RASequence, class Compare = ::ural::less<>>
         void operator()(RASequence && s, Compare cmp = Compare()) const
         {

@@ -447,6 +447,7 @@ namespace ural
         которого равен заданному значению
         @param n количество элементов
         @param value значение
+        @param a распределитель памяти
         @pre @c T должно быть @c CopyConstructible для @c vector
         @post <tt> this->size() == n </tt>
         @post Для любого @c i из интервала <tt> [0; this->size()) </tt>
@@ -464,6 +465,7 @@ namespace ural
         @tparam InputIterator тип итератора
         @param first итератор, задающий начало интервала
         @param last итератор, задающий конец интервала
+        @param a распределитель памяти
         @pre <tt> [first; last) </tt> должен быть действительным интервалом
         @pre @c T должен быть @c EmplaceConstructible для @c vector из
         <tt> *i </tt>.
@@ -534,8 +536,9 @@ namespace ural
 
         /** @brief Конструктор на основе списка инициализаторов
         @param values список инициализаторов
+        @param a распределитель памяти
         @post Эквивалентно <tt> vector(values.begin(), value.end()) </tt>
-        @post <tt> this->get_allocator() </tt>
+        @post <tt> this->get_allocator() == a </tt>
         */
         vector(std::initializer_list<value_type> values,
                allocator_type const & a = allocator_type())
@@ -575,6 +578,12 @@ namespace ural
             return *this;
         }
 
+        /** @brief Замена текущих элементов на значения элементов
+        последовательности @c seq
+        @param seq последовательность
+        @post <tt> *this == vector(std::forward<InputSequence>(seq)) </tt>
+        @return <tt> *this </tt>
+        */
         template <class InputSequence>
         void assign(InputSequence && seq)
         {
@@ -792,7 +801,7 @@ namespace ural
             return data_.capacity();
         }
 
-        /** @breif Проверка пустоты контейнера
+        /** @brief Проверка пустоты контейнера
         @return <tt> this->begin() == this->end() </tt>
         */
         bool empty() const noexcept
@@ -996,7 +1005,7 @@ namespace ural
         /** @brief Вставляет копию @c x перед @c position
         @param position константный итератор, определяющий позицию, перед
         которой должен быть вставлен новый элемент
-        @param args аргументы конструктора для создания нового объекта
+        @param x ссылка на объект, который нужно добавить в контейнер
         @return итератор, ссылающийся на новый элемент.
         */
         iterator insert(const_iterator position, value_type const & x)
@@ -1008,7 +1017,7 @@ namespace ural
         помощью конструктора перемещения
         @param position константный итератор, определяющий позицию, перед
         которой должен быть вставлен новый элемент
-        @param args аргументы конструктора для создания нового объекта
+        @param x ссылка на временный объект, который нужно добавить в контейнер
         @return итератор, ссылающийся на новый элемент.
         */
         iterator insert(const_iterator position, value_type && x)
@@ -1016,6 +1025,16 @@ namespace ural
             return this->emplace(position, std::move(x));
         }
 
+        /** @brief Вставка элементов последовательности @c seq в позиции,
+        определяемой итератором @c position
+        @param position константный итератор, определяющий позицию, перед
+        которой должен быть вставлен новый элемент
+        @param seq последовательность элементов, который должны быть вставлены
+        в контейнер
+        @todo Написать постусловие
+        @todo Исключить эту функцию из списка перегрузок, если @c InputSequence
+        не является последовательностью
+        */
         template <class InputSequence>
         iterator insert(const_iterator position, InputSequence && seq)
         {

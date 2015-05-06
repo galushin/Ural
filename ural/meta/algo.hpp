@@ -137,6 +137,7 @@ namespace meta
         typedef typename transform<Tail, UnaryFunction>::type New_tail;
 
     public:
+        /// @brief Тип-результат
         typedef typename push_front<New_tail, New_head>::type type;
     };
 
@@ -168,9 +169,7 @@ namespace meta
 
     template <class Eq>
     struct unique<null_type, Eq>
-    {
-        typedef null_type type;
-    };
+     : declare_type<null_type>{};
 
     /** @brief Копирование списка типов в обратном порядке
     @tparam Container исходный список типов
@@ -302,6 +301,7 @@ namespace meta
             Implementor;
 
     public:
+        /// @brief Тип-результат
         typedef typename meta::apply<Implementor, Input, Predicate, T_new>::type type;
     };
 
@@ -312,6 +312,7 @@ namespace meta
         typedef bind<meta::is_same, arg<0>, constant<T_old>> Predicate;
 
     public:
+        /// @brief Тип-резульат
         typedef typename replace_if<Input, Predicate, T_new>::type type;
     };
 
@@ -411,6 +412,7 @@ namespace meta
         typedef typename append<Tail, R1>::type R2;
 
     public:
+        /// @brief Тип-результат
         typedef typename push_front<R2, Head>::type type;
     };
 
@@ -450,6 +452,7 @@ namespace meta
         typedef typename cartesian_product<typename Input::tail>::type
             new_tail;
     public:
+        /// @brief Тип-результат
         typedef typename push_front<new_tail, new_head>::type type;
     };
 
@@ -484,6 +487,7 @@ namespace meta
         {};
 
     public:
+        /// @brief Тип-результат
         typedef typename combine<Input1, CP_of_others>::type type;
     };
 }
