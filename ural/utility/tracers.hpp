@@ -360,8 +360,8 @@ namespace ural
     @tparam T тип элементов
     @tparam Alloc тип базового распределителя памяти
     @tparam Threading стретегия многопоточности
-    @todo Использовать allocator_traits для propagate_on_container*, когда
-    компилятор будет определять его корректно
+    @todo Определить свободную функцию swap, правильно работающую с
+    базовым распределителем памяти
     */
     template <class T, class Alloc = std::allocator<T>,
               class Threading = ural::single_thread_policy>
@@ -396,15 +396,19 @@ namespace ural
         /** @brief Нужно ли передавать распределитель памяти при копирующем
         присваивании контейнера
         */
-        typedef std::true_type propagate_on_container_copy_assignment;
+        typedef typename std::allocator_traits<Base>::propagate_on_container_copy_assignment
+            propagate_on_container_copy_assignment;
 
         /** @brief Нужно ли передавать распределитель памяти при присваивании
         контейнера с перемещением
         */
-        typedef std::true_type propagate_on_container_move_assignment;
+        typedef typename std::allocator_traits<Base>::propagate_on_container_move_assignment
+            propagate_on_container_move_assignment;
 
         /** @brief Нужно ли передавать распределитель памяти при обмене
         контейнеров
+        @note Данный распределитель содержит состояние (идентификатор),
+        следовательно, его нужно обменивать.
         */
         typedef std::true_type propagate_on_container_swap;
 

@@ -1129,6 +1129,11 @@ namespace details
     class reverse_copy_fn
     {
     public:
+        /** @brief Копирование последовательности в обратном порядке
+        @param in входная последовательность
+        @param out выходная последовательность
+        @return Кортеж, содержащий непройденные части последовательностей
+        */
         template <class Bidirectional, class Output>
         auto operator()(Bidirectional && in, Output && out) const
         -> ural::tuple<decltype(::ural::sequence_fwd<Bidirectional>(in)),
@@ -1210,6 +1215,11 @@ namespace details
     class rotate_copy_fn
     {
     public:
+        /** @brief Копирование "повёрной" последовательности
+        @param in входная последовательность
+        @param out выходная последовательность
+        @return Кортеж, содержащий непройденные части последовательностей
+        */
         template <class Forward, class Output>
         auto operator()(Forward && in, Output && out) const
         -> ural::tuple<decltype(::ural::sequence_fwd<Forward>(in)),
@@ -1304,6 +1314,16 @@ namespace details
     class replace_copy_if_fn
     {
     public:
+        /** @brief Копирование последовательности с заменой элементов,
+        удовлетворяющих заданному предикату
+        @param in входная последовательность
+        @param out выходная последовательность
+        @param pred унарный предикат, определяющий, какие элементы нужно
+        заменить
+        @param new_value значение, на которое нужно заменить элементы,
+        удовлетворяющие предикату @c pred.
+        @return Кортеж, содержащий непройденные части последовательностей
+        */
         template <class Input, class Output, class Predicate, class T>
         auto operator()(Input && in, Output && out, Predicate pred,
                         T const & new_value) const
@@ -1334,6 +1354,17 @@ namespace details
     class replace_copy_fn
     {
     public:
+        /** @brief Копирование с заменой
+        @details Копирование с заменой элементов @c x для которых выполняется
+        условие <tt> bin_pred(x, old_value) </tt> на @c new_value
+        @param in входная последовательность
+        @param out выходная последовательность
+        @param old_value значение, которое нужно заменить
+        @param new_value значение, на которое нужно заменить @c old_value
+        @param bin_pred бинарный предикат, если он не задан, то используется
+        <tt> equal_to<> </tt>, то есть оператор "равно"
+        @return Кортеж, содержащий непройденные части последовательностей
+        */
         template <class Input, class Output, class T,
                   class BinaryPredicate = ::ural::equal_to<>>
         auto operator()(Input && in, Output && out, T const & old_value,
@@ -1356,6 +1387,10 @@ namespace details
     class shuffle_fn
     {
     public:
+        /** @brief Случайная тасовка элементов последовательности
+        @param s последовательность произвольного доступа
+        @param g генератор равномерно распределённых случайных чисел
+        */
         template <class RASequence, class URNG>
         void operator()(RASequence && s, URNG && g) const
         {
@@ -1390,6 +1425,9 @@ namespace details
     class random_shuffle_fn
     {
     public:
+        /** @brief Случайная тасовка элементов последовательности
+        @param s последовательность произвольного доступа
+        */
         template <class RASequence>
         void operator()(RASequence && s) const
         {
@@ -1402,6 +1440,13 @@ namespace details
     class is_partitioned_fn
     {
     public:
+        /** @brief Проверка того, что последовательность является разделённой
+        согласно предикату.
+        @param in входная последовательность
+        @param pred унарный предикат
+        @return @b true, если есть все элементы @c in, удовлетворяющие предикату
+        @c pred предшествуют элементам, не удовлетворяющим этому предикату.
+        */
         template <class Input, class UnaryPredicate>
         bool operator()(Input && in, UnaryPredicate pred) const
         {
@@ -2372,6 +2417,15 @@ namespace details
     class includes_fn
     {
     public:
+        /** @brief Проверка того, что одно множество включает другое как
+        подмножество.
+        @param in1 первая последовательность
+        @param in2 вторая последовательность
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> less<> </tt>, то есть оператор "меньше".
+        @return @b true, если @c in1 включает все элементы @c in2, иначе ---
+        @b false.
+        */
         template <class Input1, class  Input2, class Compare = ::ural::less<>>
         bool operator()(Input1 && in1, Input2 && in2,
                         Compare cmp = Compare()) const
@@ -2415,6 +2469,14 @@ namespace details
     class set_union_fn
     {
     public:
+        /** @brief Теоретико-множественное объединение двух множеств
+        @param in1 первая входная последовательность
+        @param in2 вторая входная последовательность
+        @param out выходная последовательность
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> less<> </tt>, то есть оператор "меньше".
+        @return Непройденные части входных и выходной последовательностей
+        */
         template <class Input1, class Input2, class Output,
                   class Compare = ::ural::less<>>
         auto operator()(Input1 && in1, Input2 && in2, Output && out,
@@ -2438,6 +2500,14 @@ namespace details
     class set_intersection_fn
     {
     public:
+        /** @brief Теоретико-множественное пересечение двух множеств
+        @param in1 первая входная последовательность
+        @param in2 вторая входная последовательность
+        @param out выходная последовательность
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> less<> </tt>, то есть оператор "меньше".
+        @return Непройденные части входных и выходной последовательностей
+        */
         template <class Input1, class Input2, class Output,
                   class Compare = ::ural::less<>>
         auto operator()(Input1 && in1, Input2 && in2, Output && out,
@@ -2461,6 +2531,14 @@ namespace details
     class set_difference_fn
     {
     public:
+        /** @brief Теоретико-множественная разность двух множеств
+        @param in1 первая входная последовательность
+        @param in2 вторая входная последовательность
+        @param out выходная последовательность
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> less<> </tt>, то есть оператор "меньше".
+        @return Непройденные части входных и выходной последовательностей
+        */
         template <class Input1, class Input2, class Output,
                   class Compare = ::ural::less<>>
         auto operator()(Input1 && in1, Input2 && in2, Output && out,
@@ -2484,6 +2562,14 @@ namespace details
     class set_symmetric_difference_fn
     {
     public:
+        /** @brief Теоретико-множественная симметричная разность двух множеств
+        @param in1 первая входная последовательность
+        @param in2 вторая входная последовательность
+        @param out выходная последовательность
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> less<> </tt>, то есть оператор "меньше".
+        @return Непройденные части входных и выходной последовательностей
+        */
         template <class Input1, class Input2, class Output,
                   class Compare = ::ural::less<>>
         auto operator()(Input1 && in1, Input2 && in2, Output && out,
