@@ -19,6 +19,7 @@
 
 /** @file ural/algorithm.hpp
  @brief Обобщённые алгоритмы
+ @todo Сгруппировать объявления переменных
 */
 
 /** @defgroup Algorithms Алгоритмы
@@ -160,6 +161,11 @@ namespace details
         }
 
     public:
+        /** @brief Пропуск отсортированной части последовательности
+        @param in входная последовательность.
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> ural::less<> </tt>, то есть оператор "меньше"
+        */
         template <class ForwardSequence, class Compare = ::ural::less<>>
         auto operator()(ForwardSequence && in, Compare cmp = Compare()) const
         -> decltype(::ural::sequence_fwd<ForwardSequence>(in))
@@ -184,6 +190,14 @@ namespace details
         }
 
     public:
+        /** @brief Проверка того, что последовательность является упорядоченной
+        @param in входная последовательность
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> ural::less<> </tt>, то есть оператор "меньше"
+        @return @b true, если для любых двух элементов @c x и @c y
+        последовательности @c in, таких, что @c x предшествует @c y, выполняется
+        условие <tt> cmp(x, y) != false </tt>
+        */
         template <class ForwardSequence, class Compare = ural::less<>>
         bool operator()(ForwardSequence && in, Compare cmp = Compare()) const
         {
@@ -274,7 +288,8 @@ namespace details
     public:
         /** @brief Устранение последовательных дубликатов
         @param seq последовательность
-        @param pred бинарный предикат
+        @param pred бинарный предикат, по умолчанию используется
+        <tt> ::ural::equal_to<> </tt>, то есть оператор "равно".
         */
         template <class ForwardSequence,
                   class BinaryPredicate = ::ural::equal_to<>>
@@ -312,6 +327,11 @@ namespace details
     class erase_fn
     {
     public:
+        /** @brief Удаление последовательности элементов из контейнера
+        @param c контейнер
+        @param seq последовательность элементов контейнера @c seq
+        @return Аналог <tt> c.erase(seq.begin(), seq.end()) </tt>
+        */
         template <class Container, class Iterator, class Policy>
         auto operator()(Container & c,
                         iterator_sequence<Iterator, Policy> seq) const
@@ -438,6 +458,12 @@ namespace details
     class find_first_of_fn
     {
     public:
+        /** @brief Поиск первого появления элемента последовательности
+        @param in последовательность, в которой осуществляется поиск
+        @param s последовательность искомых элементов
+        @param bin_pred бинарный предикат, по умолчанию используется
+        <tt> ::ural::equal_to<> </tt>, то есть оператор "равно"
+        */
         template <class Input, class Forward,
                   class BinaryPredicate = ::ural::equal_to<>>
         auto operator()(Input && in, Forward && s,
@@ -484,6 +510,13 @@ namespace details
     class find_first_not_of_fn
     {
     public:
+        /** @brief Поиск первого элемента, не являющегося элементом другой
+        заданной последовательности
+        @param in последовательность, в которой осуществляется поиск
+        @param s последовательность искомых элементов
+        @param bin_pred бинарный предикат, по умолчанию используется
+        <tt> ::ural::equal_to<> </tt>, то есть оператор "равно"
+        */
         template <class Input, class Forward,
                   class BinaryPredicate = ::ural::equal_to<>>
         auto operator()(Input && in, Forward && s,
@@ -536,8 +569,13 @@ namespace details
                               ::ural::make_callable(std::move(pred)));
         }
     private:
+        /** @brief Поиск соседних элементов, удовлетворяющих заданному условию
+        @param s входная последовательность
+        @param bin_pred бинарный предикат
+        @todo значение по умолчанию для BinaryPredicate?
+        */
         template <class Forward, class BinaryPredicate>
-        static Forward impl(Forward s, BinaryPredicate pred)
+        static Forward impl(Forward s, BinaryPredicate bin_pred)
         {
             BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
@@ -555,7 +593,7 @@ namespace details
 
             for(; !!s_next; ++ s_next)
             {
-                if(pred(*s, *s_next))
+                if(bin_pred(*s, *s_next))
                 {
                     return s;
                 }
@@ -568,16 +606,22 @@ namespace details
     class mismatch_fn
     {
     public:
+        /** @brief Поиск пары несовпадающих соответствующих элементов
+        @param in1 первая входная последовательность
+        @param in2 вторая входная последовательность
+        @param bin_pred бинарный предикат, по умолчанию используется
+        <tt> ::ural::equal_to<> </tt>, то есть оператор "равно"
+        */
         template <class Input1, class Input2,
                   class BinaryPredicate = ::ural::equal_to<>>
         auto operator()(Input1 && in1, Input2 && in2,
-                        BinaryPredicate pred = BinaryPredicate()) const
+                        BinaryPredicate bin_pred = BinaryPredicate()) const
         -> tuple<decltype(::ural::sequence_fwd<Input1>(in1)),
                  decltype(::ural::sequence_fwd<Input2>(in2))>
         {
             return this->impl(::ural::sequence_fwd<Input1>(in1),
                               ::ural::sequence_fwd<Input2>(in2),
-                              ::ural::make_callable(std::move(pred)));
+                              ::ural::make_callable(std::move(bin_pred)));
         }
 
     private:
@@ -607,6 +651,14 @@ namespace details
     class equal_fn
     {
     public:
+        /** @brief Проверка равенства двух последовательностей
+        @param in1 первая входная последовательность
+        @param in2 вторая входная последовательность
+        @param bin_pred бинарный предикат, по умолчанию используется
+        <tt> ::ural::equal_to<> </tt>, то есть оператор "равно"
+        @return @b true, если последовательности @c in1 и @c in2 имеют равную
+        длину и их соответствующие элементы удовлетворяют предикату @c bin_pred.
+        */
         template <class Input1, class Input2,
                   class BinaryPredicate = ::ural::equal_to<>>
         bool operator()(Input1 && in1, Input2 && in2,
@@ -1760,6 +1812,12 @@ namespace details
     class make_heap_fn
     {
     public:
+        /** @brief Преобразование последовательности в бинарную кучу
+        @param seq последовательность
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> less<> </tt>, то есть оператор "меньше".
+        @post <tt> is_heap(std::forward<RASequence>(seq), cmp) </tt>
+        */
         template <class RASequence, class Compare = ural::less<>>
         void operator()(RASequence && seq, Compare cmp = Compare()) const
         {
@@ -1826,6 +1884,11 @@ namespace details
     class pop_heap_fn
     {
     public:
+        /** @brief Удаление первого элемента из кучи
+        @param seq последовательность, представляющая собой бинарную кучу
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> less<> </tt>, то есть оператор "меньше".
+        */
         template <class RASequence, class Compare = ural::less<>>
         void operator()(RASequence && seq, Compare cmp = Compare()) const
         {
@@ -1940,6 +2003,14 @@ namespace details
     class lower_bound_fn
     {
     public:
+        /** @brief Поиск нижней грани
+        @param in последовательность
+        @param value значение
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> less<> </tt>, то есть оператор "меньше"
+        @pre Элементы @c e последовательности @c in должны быть разделены
+        относительно предиката <tt> cmp(e, value) </tt>.
+        */
         template <class RASequence, class T, class Compare = ::ural::less<>>
         auto operator()(RASequence && in, T const & value,
                         Compare cmp = Compare()) const
@@ -1966,6 +2037,8 @@ namespace details
         @param value значение
         @param cmp функция сравнения, по умолчанию используется
         <tt> less<> </tt>, то есть оператор "меньше"
+        @pre Элементы @c e последовательности @c in должны быть разделены
+        относительно предиката <tt> cmp(e, value) </tt>.
         */
         template <class RASequence, class T, class Compare = ::ural::less<>>
         auto operator()(RASequence && in, T const & value,
@@ -1988,6 +2061,18 @@ namespace details
     class binary_search_fn
     {
     public:
+        /** @brief Проверка того, что значение принадлежит упорядоченной
+        последовательности
+        @param in последовательность
+        @param value значение
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> less<> </tt>, то есть оператор "меньше".
+        @pre Элементы @c e последовательности @c in должны быть разделены
+        относительно предиката <tt> cmp(e, value) </tt>.
+        @return @b true, если существует элементы @c e последовательности @c in
+        эквивалентный @c value, то есть такой, для которого выполняется условие
+        <tt> cmp(e, value) == cmp(value, e) == false </tt>.
+        */
         template <class RASequence, class T, class Compare = ::ural::less<>>
         bool operator()(RASequence && in, T const & value,
                         Compare cmp = Compare()) const
@@ -2013,6 +2098,15 @@ namespace details
     class equal_range_fn
     {
     public:
+        /** @brief Поиск подпоследовательности элементов, эквивалентных данному
+        значению
+        @param in входная последовательность
+        @param value значение
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> less<> </tt>, то есть оператор "меньше".
+        @pre Элементы @c e последовательности @c in должны быть разделены
+        относительно предиката <tt> cmp(e, value) </tt>.
+        */
         template <class RASequence, class T, class Compare = ::ural::less<>>
         auto operator()(RASequence && in, T const & value,
                         Compare cmp = Compare()) const
@@ -2043,6 +2137,11 @@ namespace details
     class insertion_sort_fn
     {
     public:
+        /** @brief Сортировка вставками
+        @param s сортируемая последовательность
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> less<> </tt>, то есть оператор "меньше".
+        */
         template <class RASequence, class Compare>
         void operator()(RASequence && s, Compare cmp) const
         {
@@ -2087,7 +2186,7 @@ namespace details
     class sort_fn
     {
     public:
-        /** @brief Сортировка
+        /** @brief Сортировка со сложностью <tt> N log(N) </tt>
         @param s сортируемая последовательность
         @param cmp функция сравнения, по умолчанию используется
         <tt> less<> </tt>, то есть оператор "меньше".
@@ -2134,6 +2233,13 @@ namespace details
     {
     public:
         // @todo перегрузка, сортирующая traversed_front
+        /** @brief Частичная сортировка
+        @param s входная последовательность
+        @param part количество начальных элементов, которые должны быть
+        отсортированны
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> less<> </tt>, то есть оператор "меньше".
+        */
         template <class RASequence, class Size, class Compare = ::ural::less<>>
         void operator()(RASequence && s, Size part,
                         Compare cmp = Compare()) const
@@ -2170,6 +2276,13 @@ namespace details
     class partial_sort_copy_fn
     {
     public:
+        /** @brief Копирование наименьших элементов @c in в @c out по порядку
+        @param in входная последовательность
+        @param out выходная последовательность
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> less<> </tt>, то есть оператор "меньше".
+        @todo Возвращать необработанные части обоих последовательностей
+        */
         template <class Input, class RASequence, class Compare = ::ural::less<>>
         auto operator()(Input && in, RASequence && out,
                         Compare cmp = Compare()) const
@@ -2211,6 +2324,19 @@ namespace details
     class nth_element_fn
     {
     public:
+        /** @brief Определение N-го элемента сортированной последовательности
+        @details Переупорядочение последовательности таким образом, что
+        на месте, соответствующему началу непройденной части последовательности
+        оказывается элемент, который занимал бы это место после полной
+        сортировки последовательности (с учётом передней пройденной части).
+        Кроме того, элементы передней пройденной части последовательности
+        становятся оказываются меньшими, чем элементы непройденной части
+        последовательности.
+        @param s последовательность
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> less<> </tt>, то есть оператор "меньше".
+        @todo перегрузка, получающая номер элемента
+        */
         template <class RASequence, class Compare = ::ural::less<>>
         void operator()(RASequence && s, Compare cmp = Compare()) const
         {
@@ -2229,6 +2355,15 @@ namespace details
     class merge_fn
     {
     public:
+        /** @brief Слияние двух последовательностей путём копирования в выходную
+        последовательность
+        @param in1 первая входная последовательность
+        @param in1 вторая входная последовательность
+        @param out выходная последовательность
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> less<> </tt>, то есть оператор "меньше".
+        @return Кортеж, содержащий непройденные части последовательностей
+        */
         template <class Input1, class Input2, class Output,
                   class Compare = ::ural::less<>>
         auto operator()(Input1 && in1, Input2 && in2, Output && out,
@@ -2252,6 +2387,12 @@ namespace details
     class inplace_merge_fn
     {
     public:
+        /** @brief Слияние передней пройденной и непройденной части
+        последовательности
+        @param s последовательность
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> less<> </tt>, то есть оператор "меньше".
+        */
         template <class BidirectionalSequence, class Compare = ::ural::less<>>
         void operator()(BidirectionalSequence && s,
                         Compare cmp = Compare()) const
@@ -2327,6 +2468,14 @@ namespace details
     class lexicographical_compare_fn
     {
     public:
+        /** @brief Проверка того, что @c in1 лексикографически предшествует
+        @c in2.
+        @param in1 первая входная последовательность
+        @param in2 вторая входная последовательность
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> less<> </tt>, то есть оператор "меньше".
+        @return @b true, если @c in1 лексикографически предшествует @c in2
+        */
         template <class Input1, class  Input2, class Compare = ::ural::less<>>
         bool operator()(Input1 && in1, Input2 && in2,
                         Compare cmp = Compare()) const
@@ -2614,6 +2763,11 @@ namespace details
             return acc.result();
         }
     public:
+        /** @brief Поиск наименьшего элемента последовательности.
+        @param in входная последовательность
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> ural::less<> </tt>, то есть оператор "меньше".
+        */
         template <class ForwardSequence, class Compare = ::ural::less<>>
         auto operator()(ForwardSequence && in, Compare cmp = Compare()) const
         -> decltype(::ural::sequence_fwd<ForwardSequence>(in))
@@ -2637,6 +2791,11 @@ namespace details
         }
 
     public:
+        /** @brief Поиск наибольшего элемента последовательности.
+        @param in входная последовательность
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> ural::less<> </tt>, то есть оператор "меньше".
+        */
         template <class ForwardSequence, class Compare = ::ural::less<>>
         auto operator()(ForwardSequence && in, Compare cmp = Compare()) const
         -> decltype(::ural::sequence_fwd<ForwardSequence>(in))
@@ -2649,6 +2808,16 @@ namespace details
     class minmax_element_fn
     {
     public:
+        /** @brief Поиск наибольшего и наименьшего элементов последовательности.
+        Выполняется быстрее, чем выполнение алгоритмов @c min_element и
+        @c max_element по-отдельности.
+        @param in входная последовательность
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> ural::less<> </tt>, то есть оператор "меньше".
+        @return Кортеж, первый элемент которого совпадает с
+        <tt> min_element(std::forward<ForwardSequence>(in), cmp) </tt>, а второй
+        --- с <tt> max_element(std::forward<ForwardSequence>(in), cmp) </tt>
+        */
         template <class ForwardSequence, class Compare = ::ural::less<>>
         auto operator()(ForwardSequence && in, Compare cmp = Compare()) const
         -> ural::tuple<decltype(::ural::sequence_fwd<ForwardSequence>(in)),
@@ -2717,6 +2886,14 @@ namespace details
     class next_permutation_fn
     {
     public:
+        /** @brief Порождение лексикографически следующей перестановки. Если
+        такой перестановки нет, то выполняет обращение последовательности.
+        @param s последовательность
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> ural::less<> </tt>, то есть оператор "меньше".
+        @return Если последовательность @c s в начале выполнения операции
+        упорядочена по убыванию, то @b false, иначе @b --- @b true.
+        */
         template <class BiSequence, class Compare = ::ural::less<>>
         bool operator()(BiSequence && s, Compare cmp = Compare()) const
         {
@@ -2774,6 +2951,14 @@ namespace details
     class prev_permutation_fn
     {
     public:
+        /** @brief Порождение лексикографически предыдущей перестановки. Если
+        такой перестановки нет, то выполняет обращение последовательности.
+        @param s последовательность
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> ural::less<> </tt>, то есть оператор "меньше"
+        @return Если последовательность @c s в начале выполнения операции
+        упорядочена по возрастанию, то @b false, иначе @b --- @b true.
+        */
         template <class BiSequence, class Compare = ::ural::less<>>
         bool operator()(BiSequence && s, Compare cmp = Compare()) const
         {
@@ -2870,6 +3055,13 @@ namespace details
     class remove_copy_if_fn
     {
     public:
+        /** @brief Копирование элементов @c x одной последовательности в другую
+        за исключением удовлетворяющих предикату @c pred.
+        @param in входная последовательность
+        @param out выходная последовательность
+        @param pred унарный предикат
+        @return Кортеж, содержащий непройденные части последовательности
+        */
         template <class Input, class Output, class Predicate>
         auto operator()(Input && in, Output && out, Predicate pred) const
         -> tuple<decltype(::ural::sequence_fwd<Input>(in)),
@@ -2884,6 +3076,15 @@ namespace details
     class remove_copy_fn
     {
     public:
+        /** @brief Копирование элементов @c x одной последовательности в другую
+        за исключением удовлетворяющих <tt> bin_pred(x, value) != false </tt>.
+        @param in входная последовательность
+        @param out выходная последовательность
+        @param value значение, которое не нужно копировать
+        @param bin_pred бинарный предикат, по умолчанию используется
+        <tt> ::ural::equal_to<> </tt>, то есть оператор "равно"
+        @return Кортеж, содержащий непройденные части последовательности
+        */
         template <class Input, class Output, class T,
                   class BinaryPredicate = ::ural::equal_to<>>
         auto operator()(Input && in, Output && out, T const & value,
@@ -2964,7 +3165,7 @@ namespace details
                                   T const &, T &&>::type
         operator()(T & x) const
         {
-            return std::move(x);
+            return std::move_if_noexcept(x);
         }
 
     private:
