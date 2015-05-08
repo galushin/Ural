@@ -21,7 +21,8 @@
  @brief Обобщённые численные операции
 */
 
-/** @defgroup Numerics обобщённые численные операции
+/** @defgroup Numerics Обобщённые численные операции
+ @ingroup Algorithms
  @brief Обобщённые реализации численных операций
 */
 
@@ -109,7 +110,8 @@ namespace ural
     };
 
     /** @ingroup Numerics
-    @brief Тип функционального объекта объект для вычисления внутреннего произведения
+    @brief Тип функционального объекта объект для вычисления внутреннего
+    произведения
     */
     class inner_product_fn
     {
@@ -185,6 +187,10 @@ namespace ural
         }
     };
 
+    /** @ingroup Numerics
+    @brief Тип функционального объекта для вычисления разностей соседних
+    элементов
+    */
     class adjacent_difference_fn
     {
     public:

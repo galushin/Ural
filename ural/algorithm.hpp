@@ -131,6 +131,10 @@ namespace details
 }
 // namespace details
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для пропуска отсортированной части
+    последовательности
+    */
     class is_sorted_until_fn
     {
     private:
@@ -175,6 +179,10 @@ namespace details
         }
     };
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для проверки того, что последовательность
+    является упорядоченной
+    */
     class is_sorted_fn
     {
     private:
@@ -2070,10 +2078,14 @@ namespace details
         }
     };
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта преобразования последовательности
+    в бинарную кучу.
+    */
     class sort_heap_fn
     {
     public:
-        /** @brief Оператор вызова функции
+        /** @brief Преобразование последовательности в бинарную кучу.
         @param seq последовательность произвольного доступа
         @param cmp функция сравнения, по умолчанию используется
         <tt> less<> </tt>, то есть оператор "меньше"
@@ -2152,7 +2164,9 @@ namespace details
     };
     auto constexpr heap_select = heap_select_fn{};
 
-    // Сортировка
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для поиска нижней грани
+    */
     class lower_bound_fn
     {
     public:
@@ -2182,6 +2196,9 @@ namespace details
         }
     };
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для поиска верхней грани
+    */
     class upper_bound_fn
     {
     public:
@@ -2248,6 +2265,10 @@ namespace details
         }
     };
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для поиска подпоследовательности
+    элементов, эквивалентных данному
+    */
     class equal_range_fn
     {
     public:
@@ -2287,6 +2308,9 @@ namespace details
         }
     };
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для сортировки вставками
+    */
     class insertion_sort_fn
     {
     public:
@@ -2336,6 +2360,9 @@ namespace details
         }
     };
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для быстрой сортировки
+    */
     class sort_fn
     {
     public:
@@ -2358,6 +2385,9 @@ namespace details
         }
     };
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для устойчивой сортировки
+    */
     class stable_sort_fn
     {
     public:
@@ -2382,6 +2412,9 @@ namespace details
         }
     };
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для частичной сортировки
+    */
     class partial_sort_fn
     {
     public:
@@ -2426,6 +2459,10 @@ namespace details
         }
     };
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для копирование наименьших элементов
+    одной последовательности в другую по порядку
+    */
     class partial_sort_copy_fn
     {
     public:
@@ -2474,6 +2511,10 @@ namespace details
         }
     };
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для определение N-го элемента
+    сортированной последовательности.
+    */
     class nth_element_fn
     {
     public:
