@@ -394,7 +394,8 @@ namespace details
         }
     };
 
-    /** @brief Класс функционального объекта, проверяющего, что все элементы
+    /** @ingroup NonModifyingSequenceOperations
+    @brief Класс функционального объекта, проверяющего, что все элементы
     последовательности удовлетворяют предикату.
     */
     class all_of_fn
@@ -414,7 +415,8 @@ namespace details
         }
     };
 
-    /** @brief Класс функционального объекта, проверяющего, что ни один
+    /** @ingroup NonModifyingSequenceOperations
+    @brief Класс функционального объекта, проверяющего, что ни один
     элемент последовательности не удовлетворяет предикату.
     */
     class none_of_fn
@@ -435,7 +437,8 @@ namespace details
         }
     };
 
-    /** @brief Класс функционального объекта, проверяющего, что хотя бы один
+    /** @ingroup NonModifyingSequenceOperations
+    @brief Класс функционального объекта, проверяющего, что хотя бы один
     элемент последовательности удовлетворяет предикату.
     */
     class any_of_fn
@@ -455,6 +458,10 @@ namespace details
         }
     };
 
+    /** @ingroup NonModifyingSequenceOperations
+    @brief Поиск первого элемента последовательности, эквивалентного одному из
+    элементов другой последовательности
+    */
     class find_first_of_fn
     {
     public:
@@ -504,7 +511,9 @@ namespace details
         }
     };
 
-    /**
+    /** @ingroup NonModifyingSequenceOperations
+    @brief Поиск первого элемента последовательности, не эквивалентного
+    ни одному из элементов другой последовательности
     @todo уменьшить дублирование с find_first_of
     */
     class find_first_not_of_fn
@@ -557,9 +566,17 @@ namespace details
         }
     };
 
+    /** @ingroup NonModifyingSequenceOperations
+    @brief Класс функционального объекта для поиска двух соседних элементов
+    последовательности, удовлетворяющих заданному условию
+    */
     class adjacent_find_fn
     {
     public:
+        /** @brief Поиск соседних элементов, удовлетворяющих заданному условию
+        @param s входная последовательность
+        @param bin_pred бинарный предикат
+        */
         template <class Forward, class BinaryPredicate = ::ural::equal_to<>>
         auto operator()(Forward && s,
                         BinaryPredicate pred = BinaryPredicate()) const
@@ -569,11 +586,6 @@ namespace details
                               ::ural::make_callable(std::move(pred)));
         }
     private:
-        /** @brief Поиск соседних элементов, удовлетворяющих заданному условию
-        @param s входная последовательность
-        @param bin_pred бинарный предикат
-        @todo значение по умолчанию для BinaryPredicate?
-        */
         template <class Forward, class BinaryPredicate>
         static Forward impl(Forward s, BinaryPredicate bin_pred)
         {
@@ -603,6 +615,10 @@ namespace details
         }
     };
 
+    /** @ingroup NonModifyingSequenceOperations
+    @brief Класс функционального объекта для поиска первой пары соответствующих
+    элементов последовательностей, которые не являются эквивалентными
+    */
     class mismatch_fn
     {
     public:
@@ -648,6 +664,10 @@ namespace details
         }
     };
 
+    /** @ingroup NonModifyingSequenceOperations
+    @brief Класс функционального объекта проверки эквивалентности двух
+    последовательностей
+    */
     class equal_fn
     {
     public:
@@ -685,9 +705,17 @@ namespace details
         }
     };
 
+    /** @ingroup NonModifyingSequenceOperations
+    @brief Класс функционального объекта для поиска подпоследовательности
+    */
     class search_fn
     {
     public:
+        /** @brief Поиск подпоследовательности
+        @param in последовательность
+        @param s искомая подпоследовательность
+        @param bin_pred бинарный предикат
+        */
         template <class Forward1, class Forward2,
                   class BinaryPredicate = ::ural::equal_to<>>
         auto operator()(Forward1 && in, Forward2 && s,
@@ -735,9 +763,19 @@ namespace details
         }
     };
 
+    /** @ingroup NonModifyingSequenceOperations
+    @brief Класс функционального объекта для поиска последнего вхождения
+    подпоследовательности в последовательность
+    */
     class find_end_fn
     {
     public:
+        /** @brief Поиск последнего вхождения подпоследовательности
+        @param in последовательность
+        @param s подпоследовательность
+        @param bin_pred бинарный предикат, по умолчанию используется
+        <tt> equal_to<> </tt>, то есть оператор "равно"
+        */
         template <class Forward1, class Forward2,
                   class BinaryPredicate = ::ural::equal_to<>>
         auto operator()(Forward1 && in, Forward2 && s,
@@ -786,6 +824,10 @@ namespace details
         }
     };
 
+    /** @ingroup NonModifyingSequenceOperations
+    @brief Функциональный объект поиска подпоследовательности одинаковых
+    элементов заданной длины
+    */
     class search_n_fn
     {
     public:
@@ -849,6 +891,10 @@ namespace details
     };
 
     // Модифицирующие последовательность алгоритмы
+    /** @ingroup MutatingSequenceOperations
+    @brief Класс функционального объекта копирования заданного количества
+    элементов одной последовательности в другую последовательность
+    */
     class copy_n_fn
     {
     public:
@@ -866,6 +912,11 @@ namespace details
         }
     };
 
+    /** @ingroup MutatingSequenceOperations
+    @brief Класс функционального объекта копирования элементов одной
+    последовательности, которые удовлетворяют заданному предикату, в другую
+    последовательность
+    */
     class copy_if_fn
     {
     public:
@@ -883,6 +934,10 @@ namespace details
         }
     };
 
+    /** @ingroup MutatingSequenceOperations
+    @brief Класс функционального объекта перемещения элементов одной
+    последовательности в другую последовательность
+    */
     class move_fn
     {
     public:
@@ -899,6 +954,10 @@ namespace details
     };
 
     // copy_backward
+    /** @ingroup MutatingSequenceOperations
+    @brief Класс функционального объекта копирования элементов одной
+    последовательности в другую последовательность, начиная с последнего.
+    */
     class copy_backward_fn
     {
     public:
@@ -925,6 +984,10 @@ namespace details
     };
 
     // move_backward
+    /** @ingroup MutatingSequenceOperations
+    @brief Класс функционального объекта перемещения элементов одной
+    последовательности в другую последовательность, начиная с последнего.
+    */
     class move_backward_fn
     {
     public:
@@ -951,6 +1014,11 @@ namespace details
     };
 
     // 25.3.4
+    /** @ingroup MutatingSequenceOperations
+    @brief Класс функционального объекта преобразования элементов одной или
+    двух входных последовательностей и записи полученных значений в другую
+    последовательность.
+    */
     class transform_fn
     {
     public:
@@ -1025,9 +1093,18 @@ namespace details
         }
     };
 
+    /** @ingroup MutatingSequenceOperations
+    @brief Класс функционального объекта заполнения последовательности
+    результатами вызова заднной функции без параметров
+    */
     class generate_fn
     {
     public:
+        /** @brief Заполнение последовательности результатами вызова заднной
+        функции без параметров
+        @param seq последовательность
+        @param gen генератор, то есть функция без параметров
+        */
         template <class ForwardSequence, class Generator>
         auto operator()(ForwardSequence && seq, Generator gen) const
         -> decltype(::ural::sequence_fwd<ForwardSequence>(seq))
@@ -1053,6 +1130,11 @@ namespace details
         }
     };
 
+    /** @ingroup MutatingSequenceOperations
+    @brief Класс функционального объекта для присваивания заданному количеству
+    элементов последовательности результатами вызова заднной функции без
+    параметров.
+    */
     class generate_n_fn
     {
     public:
@@ -1066,6 +1148,10 @@ namespace details
         }
     };
 
+    /** @ingroup MutatingSequenceOperations
+    @brief Класс функционального объекта заполнения последовательности
+    заданными значениями
+    */
     class fill_fn
     {
     public:
@@ -1089,7 +1175,8 @@ namespace details
         }
     };
 
-    /** @brief Тип функционального объекта копирования неповторяющихся значений
+    /** @ingroup MutatingSequenceOperations
+    @brief Тип функционального объекта копирования неповторяющихся значений
     */
     class unique_copy_fn
     {
@@ -1116,6 +1203,10 @@ namespace details
         }
     };
 
+    /** @ingroup MutatingSequenceOperations
+    @brief Тип функционального объекта обмена соответствующих элементов двух
+    последовательностей
+    */
     class swap_ranges_fn
     {
     public:
@@ -1144,9 +1235,15 @@ namespace details
         }
     };
 
+    /** @ingroup MutatingSequenceOperations
+    @brief Тип функционального объекта обращения последовательности
+    */
     class reverse_fn
     {
     public:
+        /** @brief Обращение последовательности
+        @param seq последовательность
+        */
         template <class BidirectionalSequence>
         void operator()(BidirectionalSequence && seq) const
         {
@@ -1178,6 +1275,10 @@ namespace details
         }
     };
 
+    /** @ingroup MutatingSequenceOperations
+    @brief Тип функционального объекта копирования элементов последовательности
+    в обратном порядке.
+    */
     class reverse_copy_fn
     {
     public:
@@ -1200,6 +1301,9 @@ namespace details
         }
     };
 
+    /** @ingroup MutatingSequenceOperations
+    @brief Тип функционального объекта "поворота" последовательности
+    */
     class rotate_fn
     {
     public:
@@ -1264,6 +1368,10 @@ namespace details
         }
     };
 
+    /** @ingroup MutatingSequenceOperations
+    @brief Тип функционального объекта копирования элементов последовательности
+    с поворотом.
+    */
     class rotate_copy_fn
     {
     public:
@@ -1298,9 +1406,20 @@ namespace details
         }
     };
 
+    /** @ingroup MutatingSequenceOperations
+    @brief Тип функционального объекта для замены элементов последовательности,
+    которые удовлетворяют заданному предикату, на новое значение
+    */
     class replace_if_fn
     {
     public:
+        /** @brief Замена элементов, удовлетворяющих предикату, новым значением
+        @param seq последовательность
+        @param pred унарный предикат
+        @param new_value новое значение
+        @post Всем элементам @c x последовательности @c seq присваивается
+        значение @c new_value
+        */
         template <class ForwardSequence, class Predicate, class T>
         void operator()(ForwardSequence && seq,
                         Predicate pred, T const & new_value) const
@@ -1329,6 +1448,10 @@ namespace details
         }
     };
 
+    /** @ingroup MutatingSequenceOperations
+    @brief Тип функционального объекта для замены элементов последовательности,
+    эквивалентных заданному значению, на новое значение.
+    */
     class replace_fn
     {
     public:
@@ -1363,6 +1486,11 @@ namespace details
         }
     };
 
+    /** @ingroup MutatingSequenceOperations
+    @brief Тип функционального объекта копирования элементов последовательности
+    с заменой элементов, которые удовлетворяют заданному предикату, на новое
+    значение.
+    */
     class replace_copy_if_fn
     {
     public:
@@ -1403,6 +1531,10 @@ namespace details
         }
     };
 
+    /** @ingroup MutatingSequenceOperations
+    @brief Тип функционального объекта копирования элементов последовательности
+    с заменой элементов, эквивалентных заданному значению, на новое значение.
+    */
     class replace_copy_fn
     {
     public:
@@ -1436,6 +1568,10 @@ namespace details
     };
 
     // Тусовка
+    /** @ingroup MutatingSequenceOperations
+    @brief Тип функционального объекта для случайной тасовка элементов
+    последовательности.
+    */
     class shuffle_fn
     {
     public:
@@ -1515,6 +1651,10 @@ namespace details
         }
     };
 
+    /** @ingroup MutatingSequenceOperations
+    @brief Тип функционального объекта для разделения последовательности
+    согласно заданному предикату
+    */
     class partition_fn
     {
     public:
@@ -1554,6 +1694,10 @@ namespace details
         }
     };
 
+    /** @ingroup MutatingSequenceOperations
+    @brief Тип функционального объекта для устойчивого разделения
+    последовательности согласно заданному предикату.
+    */
     class stable_partition_fn
     {
     public:
@@ -1630,6 +1774,11 @@ namespace details
         }
     };
 
+    /** @ingroup MutatingSequenceOperations
+    @brief Тип функционального объекта для копирования последовательности таким
+    образом, что выходная последовательность оказывается разделенной согласно
+    заданному предикату.
+    */
     class partition_copy_fn
     {
     public:
@@ -1662,6 +1811,10 @@ namespace details
         }
     };
 
+    /** @ingroup MutatingSequenceOperations
+    @brief Тип функционального объекта для поиска точки разделения
+    последовательности
+    */
     class partition_point_fn
     {
     public:
