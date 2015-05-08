@@ -1166,7 +1166,8 @@ BOOST_AUTO_TEST_CASE(remove_sequence_test_cref)
                 s_std.end());
 
     // ural
-    auto r = ural::copy(s_ural | ural::removed(std::cref(to_remove)), s_ural)[ural::_2];
+    // @todo Передача по ссылке to_remove
+    auto r = ural::copy(s_ural | ural::removed(to_remove), s_ural)[ural::_2];
     s_ural.erase(r.begin(), r.end());
 
     // Сравнение
@@ -2498,7 +2499,7 @@ BOOST_AUTO_TEST_CASE(make_heap_test)
 {
     std::vector<int> v { 3, 1, 4, 1, 5, 9 };
 
-    auto cmp = ural::callable_tracer<ural::less<decltype(v.front())>>{};
+    auto cmp = ural::callable_tracer<ural::less<int>>{};
     cmp.reset_calls();
 
     ural::make_heap(v, cmp);
@@ -2512,7 +2513,7 @@ BOOST_AUTO_TEST_CASE(make_heap_odd_size_test)
 {
     std::vector<int> v { 3, 1, 4, 1, 5, 9, 2};
 
-    auto cmp = ural::callable_tracer<ural::less<decltype(v.front())>>{};
+    auto cmp = ural::callable_tracer<ural::less<int>>{};
     cmp.reset_calls();
 
     ural::make_heap(v, cmp);

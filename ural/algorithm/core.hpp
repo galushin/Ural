@@ -84,9 +84,8 @@ namespace ural
         static Input
         impl(Input in, Predicate pred)
         {
-            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Predicate, bool(decltype(*in))>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallablePredicate<Predicate, Input>));
 
             for(; !!in; ++ in)
             {
@@ -125,10 +124,8 @@ namespace ural
         static Input
         impl(Input in, T const & value, BinaryPredicate bin_pred)
         {
-            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate,
-                                                           bool(decltype(*in), T const &)>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallableRelation<BinaryPredicate, Input, T const *>));
 
             auto pred = std::bind(std::move(bin_pred), ural::_1, std::cref(value));
 
@@ -153,7 +150,7 @@ namespace ural
         -> decltype(::ural::sequence_fwd<Input>(in))
         {
             return this->impl(::ural::sequence_fwd<Input>(in), value,
-                              ural::make_callable(std::move(pred)));
+                              ::ural::make_callable(std::move(pred)));
         }
     };
 
@@ -166,9 +163,8 @@ namespace ural
         template <class Input, class Predicate>
         static Input impl(Input in, Predicate pred)
         {
-            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Predicate, bool(decltype(*in))>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallablePredicate<Predicate, Input>));
 
             return find_if_fn{}(std::move(in), ural::not_fn(std::move(pred)));
         }

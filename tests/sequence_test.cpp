@@ -451,7 +451,7 @@ BOOST_AUTO_TEST_CASE(sequence_for_each_test)
 BOOST_AUTO_TEST_CASE(filtered_sequence_for_each)
 {
     std::vector<int> x = {1, 2, 3, 4, 5, 6, 7, 8};
-    auto s = x | ural::filtered([](int & x) { return x % 3 == 0;});
+    auto s = x | ural::filtered([](int const & x) { return x % 3 == 0;});
 
     std::vector<int> r;
     std::vector<int> const z  = {3, 6};

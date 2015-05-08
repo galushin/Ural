@@ -134,14 +134,14 @@ namespace ural
     template <class Sequence, class Predicate>
     auto make_filter_sequence(Sequence && seq, Predicate pred)
     -> filter_sequence<decltype(::ural::sequence_fwd<Sequence>(seq)),
-                       decltype(make_callable(std::move(pred)))>
+                       decltype(::ural::make_callable(std::move(pred)))>
     {
         typedef decltype(::ural::sequence_fwd<Sequence>(seq)) Seq;
-        typedef decltype(make_callable(std::move(pred))) Pred;
+        typedef decltype(::ural::make_callable(std::move(pred))) Pred;
         typedef filter_sequence<Seq, Pred> Result;
 
         return Result(::ural::sequence_fwd<Sequence>(seq),
-                      make_callable(std::move(pred)));
+                      ::ural::make_callable(std::move(pred)));
     }
 
     /** @brief Тип вспомогательного объекта, предназначенного для создания

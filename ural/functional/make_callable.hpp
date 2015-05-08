@@ -391,6 +391,9 @@ namespace ural
         }
     };
     auto constexpr make_callable = make_callable_fn{};
+
+    template <class T>
+    using FunctionType = decltype(::ural::make_callable_fn{}(std::declval<T>()));
 }
 // namespace ural
 

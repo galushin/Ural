@@ -272,7 +272,7 @@ namespace ural
         {
             members_[ural::_1]
                 = find_fn{}(std::move(members_[ural::_1]),
-                            std::cref(this->removed_value()),
+                            this->removed_value(),
                             ural::not_fn(this->predicate()));
         }
 
@@ -290,12 +290,12 @@ namespace ural
     template <class Input, class T, class BinaryPredicate>
     auto make_remove_sequence(Input && in, T const & value, BinaryPredicate pred)
     -> remove_sequence<decltype(::ural::sequence_fwd<Input>(in)), T,
-                       decltype(make_callable(std::move(pred)))>
+                       decltype(::ural::make_callable(std::move(pred)))>
     {
         typedef remove_sequence<decltype(::ural::sequence_fwd<Input>(in)), T,
                        decltype(make_callable(std::move(pred)))> Sequence;
         return Sequence(::ural::sequence_fwd<Input>(in), value,
-                        make_callable(std::move(pred)));
+                        ::ural::make_callable(std::move(pred)));
     }
 
     /** @brief Функция создания @c remove_sequence

@@ -20,6 +20,7 @@
 /** @file ural/algorithm.hpp
  @brief Обобщённые алгоритмы
  @todo Сгруппировать объявления переменных
+ @todo Проверка концепций в операторах ()
 */
 
 /** @defgroup Algorithms Алгоритмы
@@ -221,9 +222,8 @@ namespace details
         static typename Input::distance_type
         impl(Input in, UnaryPredicate pred)
         {
-            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<UnaryPredicate, bool(decltype(*in))>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallablePredicate<UnaryPredicate, Input>));
 
             typename Input::distance_type result{0};
 
@@ -261,10 +261,8 @@ namespace details
         static typename Input::distance_type
         impl(Input in, T const & value, BinaryPredicate pred)
         {
-            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate,
-                                                           bool(decltype(*in), T const &)>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallableRelation<BinaryPredicate, Input, T const *>));
 
             return count_if_fn{}(std::move(in),
                                  std::bind(std::move(pred), ural::_1,
@@ -378,9 +376,8 @@ namespace details
         template <class Input, class UnaryFunction>
         static UnaryFunction impl(Input in, UnaryFunction f)
         {
-            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<UnaryFunction, void(decltype(*in))>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<UnaryFunction, Input>));
 
             auto r = ural::copy_fn{}(in, ural::make_function_output_sequence(std::move(f)));
             return r[ural::_2].function();
@@ -494,17 +491,9 @@ namespace details
         template <class Input, class Forward, class BinaryPredicate>
         static Input impl(Input in, Forward s, BinaryPredicate bin_pred)
         {
-            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input>));
-
-            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
-
-            typedef typename Input::reference Ref1;
-            typedef typename Forward::reference Ref2;
-
-            BOOST_CONCEPT_ASSERT((concepts::Callable<BinaryPredicate,
-                                                     bool(Ref2, Ref1)>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallablePredicate<BinaryPredicate, Input, Forward>));
 
             for(; !!in; ++ in)
             {
@@ -597,12 +586,8 @@ namespace details
         template <class Forward, class BinaryPredicate>
         static Forward impl(Forward s, BinaryPredicate bin_pred)
         {
-            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
-
-            typedef typename Forward::reference Ref;
-            BOOST_CONCEPT_ASSERT((concepts::Callable<BinaryPredicate,
-                                                     bool(Ref, Ref)>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallableRelation<BinaryPredicate, Forward>));
 
             if(!s)
             {
@@ -653,12 +638,9 @@ namespace details
         static tuple<Input1, Input2>
         impl(Input1 in1, Input2 in2, BinaryPredicate pred)
         {
-            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input1>));
-            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input1>));
-            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input2>));
-            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input2>));
-            BOOST_CONCEPT_ASSERT((concepts::Callable<BinaryPredicate,
-                                                     bool(decltype(*in1), decltype(*in2))>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input2>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallableRelation<BinaryPredicate, Input1, Input2>));
 
             typedef tuple<Input1, Input2> Tuple;
             for(; !!in1 && !!in2; ++ in1, (void) ++ in2)
@@ -700,12 +682,10 @@ namespace details
         template <class Input1, class Input2, class BinaryPredicate>
         static bool impl(Input1 in1, Input2 in2, BinaryPredicate pred)
         {
-            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input1>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input1>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input2>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input2>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate,
-                                                           bool(decltype(*in1), decltype(*in2))>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input2>));
+
+            BOOST_CONCEPT_ASSERT((concepts::IndirectlyComparable<Input1, Input2, BinaryPredicate>));
 
             auto const r = ural::mismatch_fn{}(std::move(in1), std::move(in2),
                                                std::move(pred));
@@ -739,13 +719,9 @@ namespace details
         template<class Forward1, class Forward2, class BinaryPredicate>
         static Forward1 impl(Forward1 in, Forward2 s, BinaryPredicate p)
         {
-            BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<Forward1>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Forward1>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<Forward2>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Forward2>));
-
-            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate,
-                                                           bool(decltype(*in), decltype(*s))>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward1>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward2>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectlyComparable<Forward1, Forward2, BinaryPredicate>));
 
             for(;; ++ in)
             {
@@ -800,12 +776,9 @@ namespace details
         impl(Forward1 in, Forward2 s, BinaryPredicate bin_pred)
         {
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward1>));
-            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Forward1>));
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward2>));
-            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Forward2>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallableRelation<BinaryPredicate, Forward1, Forward2>));
 
-            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate,
-                                                           bool(decltype(*in), decltype(*s))>));
             if(!s)
             {
                 return in;
@@ -835,6 +808,7 @@ namespace details
     /** @ingroup NonModifyingSequenceOperations
     @brief Функциональный объект поиска подпоследовательности одинаковых
     элементов заданной длины
+    @todo Size должно быть равно DifferenceType<Forward>
     */
     class search_n_fn
     {
@@ -851,15 +825,14 @@ namespace details
         }
 
     private:
-        template <class Forward, class Size, class T,  class BinaryPredicate>
-        static Forward impl(Forward in, Size const n, T const & value,
+        template <class Forward, class T,  class BinaryPredicate>
+        static Forward impl(Forward in,
+                            DifferenceType<Forward> const n,
+                            T const & value,
                             BinaryPredicate bin_pred)
         {
-            BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<Forward>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Forward>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<BinaryPredicate, bool(decltype(*in), T)>));
-
-            // todo Проверка концепций для Size
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectlyComparable<Forward, T const *, BinaryPredicate>));
 
             if(n == 0)
             {
@@ -874,7 +847,7 @@ namespace details
                 }
 
                 auto candidate = in;
-                Size cur_count = 0;
+                auto cur_count = DifferenceType<Forward>{0};
 
                 while(true)
                 {
@@ -1858,14 +1831,12 @@ namespace details
         }
 
     private:
-        template <class RandomAccessSequence, class Compare>
-        static RandomAccessSequence
-        impl(RandomAccessSequence seq, Compare cmp)
+        template <class RASequence, class Compare>
+        static RASequence
+        impl(RASequence seq, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<decltype(seq)>));
-            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<decltype(seq)>));
-
-            BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallableRelation<Compare, RASequence>));
 
             // Пустая последовательность - куча
             if(!seq)
@@ -1907,9 +1878,7 @@ namespace details
         impl(RASequence seq, Compare cmp)
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
-            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<RASequence>));
-
-            BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallableRelation<Compare, RASequence>));
 
             return !::ural::is_heap_until_fn{}(seq, cmp);
         }
@@ -2684,11 +2653,9 @@ namespace details
         static bool
         impl(Input1 in1, Input2 in2, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input1>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input1>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input2>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input2>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*in1), decltype(*in2))>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input2>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallableRelation<Compare, Input1, Input2>));
 
             for(; !!in1 && !!in2; ++ in1, (void) ++ in2)
             {
@@ -2723,6 +2690,10 @@ namespace details
         static bool
         impl(Forward1 s1, Forward2 s2, BinaryPredicate pred)
         {
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward1>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward2>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectlyComparable<Forward1, Forward2, BinaryPredicate>));
+
             std::tie(s1, s2) = ural::mismatch_fn{}(std::move(s1), std::move(s2),
                                                    pred);
 
@@ -2940,6 +2911,9 @@ namespace details
         static ForwardSequence
         impl(ForwardSequence in, Compare cmp)
         {
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallableRelation<Compare, ForwardSequence>));
+
             if(!in)
             {
                 return in;
@@ -2978,6 +2952,9 @@ namespace details
         static ForwardSequence
         impl(ForwardSequence in, Compare cmp)
         {
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallableRelation<Compare, ForwardSequence>));
+
             auto transposed_cmp = ural::make_binary_reverse_args(std::move(cmp));
 
             return ::ural::min_element_fn{}(std::move(in),
@@ -3026,6 +3003,9 @@ namespace details
         static tuple<ForwardSequence, ForwardSequence>
         impl(ForwardSequence in, Compare cmp)
         {
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallableRelation<Compare, ForwardSequence>));
+
             typedef tuple<ForwardSequence, ForwardSequence> Tuple;
 
             if(!in)
@@ -3100,12 +3080,9 @@ namespace details
         template <class BiSequence, class Compare>
         bool impl(BiSequence s, Compare cmp) const
         {
-            typedef typename BiSequence::value_type Value;
-
             BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequence<BiSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<BiSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::WritableSequence<BiSequence, Value>));
-            BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, bool(Value, Value)>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallableRelation<Compare, BiSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<BiSequence, Compare>));
 
             if(!s)
             {
@@ -3165,6 +3142,10 @@ namespace details
         template <class BiSequence, class Compare>
         bool impl(BiSequence s, Compare cmp) const
         {
+            BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequence<BiSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallableRelation<Compare, BiSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<BiSequence, Compare>));
+
             auto constexpr f = next_permutation_fn{};
             return f(std::move(s), ::ural::not_fn(std::move(cmp)));
         }

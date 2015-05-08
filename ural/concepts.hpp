@@ -21,6 +21,7 @@
  @brief Классы для проверки концепций
 */
 
+#include <ural/type_traits.hpp>
 #include <ural/archetypes.hpp>
 #include <ural/defs.hpp>
 #include <ural/sequence/base.hpp>
@@ -40,11 +41,86 @@
 
 namespace ural
 {
+    template <class T, class U>
+    using CommonType = typename std::common_type<T, U>::type;
+
+    /**
+    @todo Покрыть тестами: массивы известной и неизвестной длины,
+    типы c T::element_type
+    */
+    template <class T, class = void>
+    struct value_type
+    {};
+
+    template <class T>
+    struct value_type<T*, void>
+     : std::enable_if<!std::is_void<T>::value,
+                      typename std::remove_cv<T>::type>
+    {};
+
+    template <class T>
+    struct value_type<T, void_t<typename T::value_type>>
+     : std::enable_if<!std::is_void<typename T::value_type>::value,
+                      typename T::value_type>
+    {};
+
+    template <class T>
+    using ValueType = typename value_type<T>::type;
+
+    template <class Sequence>
+    using DifferenceType = typename Sequence::distance_type;
+
+    template <class Readable>
+    using ReferenceType = decltype(*std::declval<Readable>());
+
 /** @namespace concepts
  @brief Концепции --- коллекции требований к типам
 */
 namespace concepts
 {
+    template <class T, class U>
+    struct Convertible
+    {
+    public:
+        BOOST_CONCEPT_USAGE(Convertible)
+        {
+            static_assert(std::is_convertible<T, U>::value, "");
+        }
+    };
+
+    template <class T, class U>
+    struct Common
+    {
+    public:
+        BOOST_CONCEPT_USAGE(Common)
+        {
+            [](T t) -> CT { return std::forward<T>(t); };
+            [](U u) -> CT { return std::forward<U>(u); };
+        }
+
+    private:
+        typedef CommonType<T, U> CT;
+    };
+
+    template <class T>
+    struct MoveConstructible
+    {
+        static_assert(std::is_move_constructible<T>::value, "");
+    };
+
+    template <class T>
+    struct CopyConstructible
+     : MoveConstructible<T>
+    {
+        static_assert(std::is_copy_constructible<T>::value, "");
+    };
+
+    template <class T>
+    struct Destructible
+    {
+        static_assert(std::is_destructible<T>::value, "");
+    };
+
     /** @brief Концепция-функция "допускающий копирующее присваивание"
     @tparam T тип, проверяемый на соответствие концепции
     */
@@ -58,10 +134,10 @@ namespace concepts
     @tparam T тип, проверяемый на соответствие концепции
     */
     template <class T>
-    constexpr bool SemiRegular()
+    constexpr bool Semiregular()
     {
-        return ::ural::concepts::CopyAssignable<T>()
-            && std::is_copy_assignable<T>::value;
+        // @todo В соответствии с range extensions
+        return concepts::CopyAssignable<T>();
     }
 
     /** @brief Концепция-функция "допускающий проверку на равенство"
@@ -79,8 +155,69 @@ namespace concepts
     template <class T>
     constexpr bool Regular()
     {
-        return SemiRegular<T>() && EqualityComparable<T>();
+        return Semiregular<T>() && EqualityComparable<T>();
     }
+
+    /** @brief Концепция последовательности, допускающей чтение
+    @tparam Seq тип последовательности, для которого проверяется концепция
+    */
+    template <class Seq>
+    class Readable
+    {
+    public:
+        /// @brief Примеры использования
+        BOOST_CONCEPT_USAGE(Readable)
+        {
+            // @todo нужно ли это требование ?
+            // static_assert(concepts::Semiregular<Seq>(), "");
+
+            typedef decltype(*seq) Result;
+
+            static_assert(std::is_convertible<Result, Value const &>::value, "");
+        }
+
+    private:
+        typedef typename ::ural::ValueType<Seq> Value;
+        static Seq seq;
+    };
+
+    template <class Seq>
+    using ReadableSequence = Readable<Seq>;
+
+    template <class Out, class T>
+    struct MoveWritable
+    {
+    public:
+        BOOST_CONCEPT_USAGE(MoveWritable)
+        {
+            [](Out out, T v){ *out = std::move(v); };
+        }
+    };
+
+    /** @brief Конпцепция последовательности, допускающей запись
+    @tparam Seq тип последовательности, для которого проверяется концепция
+    @tparam T тип записываемого значения
+    */
+    template <class Seq, class T>
+    class WritableSequence
+    {
+    public:
+        /// @brief Примеры использования
+        BOOST_CONCEPT_USAGE(WritableSequence)
+        {
+            typedef decltype(*seq = make_value()) AssignResult;
+
+            // @todo begin?
+            /* @todo OutputIterator
+            Проблема в том, что концепция boost::OutputIterator<I, T> объявляет
+            переменную типа T, что приводит к проблемам, когда T -- ссылка
+            */
+        }
+
+    private:
+        static Seq seq;
+        static T make_value();
+    };
 
     /** @brief Концепция однопроходной последовательности
     @tparam тип последовательности, для которого проверяется концепция
@@ -104,12 +241,24 @@ namespace concepts
         typedef typename Seq::traversal_tag traversal_tag;
     };
 
+    template <class Seq>
+    struct InputSequence
+    {
+        // @todo Как в Range extensions
+    public:
+        BOOST_CONCEPT_USAGE(InputSequence)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Seq>));
+            BOOST_CONCEPT_ASSERT((concepts::Readable<Seq>));
+        }
+    };
+
     /** @brief Концепция прямой последовательности
     @tparam тип последовательности, для которого проверяется концепция
     */
     template <class Seq>
     class ForwardSequence
-     : SinglePassSequence<Seq>
+     : InputSequence<Seq>
     {
     public:
         /// @brief Проверка неявных интерфейсов
@@ -171,57 +320,132 @@ namespace concepts
         typedef typename Seq::reference reference;
     };
 
-    /** @brief Концепция последовательности, допускающей чтение
-    @tparam Seq тип последовательности, для которого проверяется концепция
-    */
-    template <class Seq>
-    class ReadableSequence
+    template <class Seq, class Out>
+    struct IndirectlyMovable
+     : concepts::Readable<Seq>
+     , concepts::MoveWritable<Out, ValueType<Seq>>
     {
-    public:
-        /// @brief Примеры использования
-        BOOST_CONCEPT_USAGE(ReadableSequence)
+        BOOST_CONCEPT_USAGE(IndirectlyMovable)
         {
-            decltype(consume_ref(*seq));
-            decltype(consume_ref(seq.front()));
-
-            decltype(consume_value(*seq));
-            decltype(consume_value(seq.front()));
+            static_assert(concepts::Semiregular<Out>(), "");
         }
-
-    private:
-        static Seq seq;
-        typedef typename Seq::reference reference;
-        typedef typename Seq::value_type value_type;
-        typedef typename Seq::distance_type distance_type;
-        typedef typename Seq::pointer pointer;
-
-        static void consume_ref(reference);
-        static void consume_value(value_type);
     };
 
-    /** @brief Конпцепция последовательности, допускающей запись
-    @tparam Seq тип последовательности, для которого проверяется концепция
-    @tparam T тип записываемого значения
-    */
-    template <class Seq, class T>
-    class WritableSequence
+    template <class F, class... Args>
+    using ResultType = decltype(std::declval<F>()(std::declval<Args>()...));
+
+    template <class F, class... Args>
+    struct Function
+     : concepts::Destructible<F>
+     , concepts::CopyConstructible<F>
     {
     public:
-        /// @brief Примеры использования
-        BOOST_CONCEPT_USAGE(WritableSequence)
+        BOOST_CONCEPT_USAGE(Function)
         {
-            typedef decltype(*seq = make_value()) AssignResult;
+            static_assert(std::is_same<F *, decltype(&f)>::value, "");
+            static_assert(noexcept(f.~F()), "");
 
-            // @todo begin?
-            /* @todo OutputIterator
-            Проблема в том, что концепция boost::OutputIterator<I, T> объявляет
-            переменную типа T, что приводит к проблемам, когда T -- ссылка
-            */
+
+            typedef decltype(f(std::declval<Args>()...)) Result;
+            static_assert(std::is_same<ResultType<F, Args...>, Result>::value, "");
         }
+        // @todo Нужно ли проверять new и delete?
+        // @todo Как проверить, что &f == std::adderssof(f)?
 
     private:
-        static Seq seq;
-        static T make_value();
+        using Result = ResultType<F, Args...>;
+        static F f;
+    };
+
+    template <class F, class... Args>
+    struct RegularFunction
+     : concepts::Function<F, Args...>
+    {};
+
+    template <class F, class... Args>
+    struct Predicate
+     : concepts::RegularFunction<F, Args...>
+     , concepts::Convertible<ResultType<F, Args...>, bool>
+    {};
+
+    template <class R, class... Args>
+    struct Relation;
+
+    template <class R, class T>
+    struct Relation<R, T>
+     : concepts::Predicate<R, T, T>
+    {};
+
+    template <class R, class T, class U>
+    struct Relation<R, T, U>
+    {
+    public:
+        BOOST_CONCEPT_USAGE(Relation)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::Relation<R, T>));
+            BOOST_CONCEPT_ASSERT((concepts::Relation<R, U>));
+            BOOST_CONCEPT_ASSERT((concepts::Common<T, U>));
+            BOOST_CONCEPT_ASSERT((concepts::Relation<R, CommonType<T, U>>));
+
+            [](R r, T a, T b) -> bool { return r(a, b); };
+            [](R r, T a, T b) -> bool { return r(b, a); };
+        }
+    };
+
+    template <class F, class... Seqs>
+    struct IndirectCallable
+     : Function<FunctionType<F>, ReferenceType<Seqs>...>
+    {
+        // @todo Проверить, что Seqs - Readable
+    };
+
+    template <class F, class... Seqs>
+    struct IndirectCallablePredicate
+     : Predicate<FunctionType<F>, ValueType<Seqs>...>
+    {
+        // @todo Проверить, что Seqs - Readable
+    };
+
+    template <class F, class S1, class S2 = S1>
+    struct IndirectCallableRelation
+     : concepts::Relation<FunctionType<F>, ValueType<S1>, ValueType<S2>>
+    {
+    public:
+        BOOST_CONCEPT_USAGE(IndirectCallableRelation)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::Readable<S1>));
+            BOOST_CONCEPT_ASSERT((concepts::Readable<S2>));
+        }
+    };
+
+    template <class Seq1, class Seq2, class R>
+    struct IndirectlyComparable
+     : IndirectCallableRelation<R, Seq1, Seq2>
+    {};
+
+    template <class Seq>
+    struct Permutable
+     : concepts::ForwardSequence<Seq>
+     // @todo Уточнить второй шаблонный параметр
+     , concepts::IndirectlyMovable<Seq, Seq>
+    {
+    public:
+        BOOST_CONCEPT_USAGE(Permutable)
+        {
+            URAL_CONCEPT_ASSERT(ValueType<Seq>, Semiregular);
+        }
+    };
+
+    template <class S, class R = ::ural::less<>>
+    struct Sortable
+    {
+    public:
+        BOOST_CONCEPT_USAGE(Sortable)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<S>));
+            BOOST_CONCEPT_ASSERT((concepts::Permutable<S>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallableRelation<R, S>));
+        }
     };
 
     /** @brief Концепция вызываемого объекта
@@ -229,7 +453,7 @@ namespace concepts
     @tparam Signature сигнатура
     */
     template <class F, class Signature>
-    class Callable;
+    struct Callable;
 
     /** @brief Специалиазация
     @tparam F тип объекта, для которого проверяется концепция
@@ -239,7 +463,7 @@ namespace concepts
     не проверяется.
     */
     template <class F, class R, class... Args>
-    class Callable<F, R(Args...)>
+    struct Callable<F, R(Args...)>
     {
     public:
         /// @brief Примеры использования
