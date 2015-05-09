@@ -42,10 +42,9 @@ namespace ural
         static ural::tuple<Input, Output>
         copy_impl(Input in, Output out)
         {
-            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Output>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<Output, typename Input::reference>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Output>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<Input, Output>));
 
             for(; !!in && !!out; ++ in, (void) ++ out)
             {
@@ -66,11 +65,11 @@ namespace ural
         */
         template <class Input, class Output>
         auto operator()(Input && in, Output && out) const
-        -> decltype(::ural::copy_fn::copy_impl(sequence_fwd<Input>(in),
-                                               sequence_fwd<Output>(out)))
+        -> decltype(::ural::copy_fn::copy_impl(::ural::sequence_fwd<Input>(in),
+                                               ::ural::sequence_fwd<Output>(out)))
         {
-            return ::ural::copy_fn::copy_impl(sequence_fwd<Input>(in),
-                                              sequence_fwd<Output>(out));
+            return ::ural::copy_fn::copy_impl(::ural::sequence_fwd<Input>(in),
+                                              ::ural::sequence_fwd<Output>(out));
         }
     };
 

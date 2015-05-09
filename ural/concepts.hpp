@@ -73,6 +73,13 @@ namespace ural
     template <class Readable>
     using ReferenceType = decltype(*std::declval<Readable>());
 
+    template <class F, class... Args>
+    using ResultType = decltype(std::declval<F>()(std::declval<Args>()...));
+
+    template <class F, class... Ins>
+    using IndirectCallableResultType
+        = ResultType<FunctionType<F>, ValueType<Ins>...>;
+
 /** @namespace concepts
  @brief Концепции --- коллекции требований к типам
 */
@@ -119,6 +126,18 @@ namespace concepts
     struct Destructible
     {
         static_assert(std::is_destructible<T>::value, "");
+    };
+
+    template <class T, class U = T>
+    struct Swappable
+    {
+    public:
+        BOOST_CONCEPT_USAGE(Swappable)
+        {
+            using std::swap;
+            [](T t, U u) { swap(std::forward<T>(t), std::forward<U>(u)); };
+            [](T t, U u) { swap(std::forward<U>(u), std::forward<T>(t)); };
+        }
     };
 
     /** @brief Концепция-функция "допускающий копирующее присваивание"
@@ -190,7 +209,7 @@ namespace concepts
     public:
         BOOST_CONCEPT_USAGE(MoveWritable)
         {
-            [](Out out, T v){ *out = std::move(v); };
+            [](Out out, T && v){ *out = std::move(v); };
         }
     };
 
@@ -199,11 +218,11 @@ namespace concepts
     @tparam T тип записываемого значения
     */
     template <class Seq, class T>
-    class WritableSequence
+    class Writable
     {
     public:
         /// @brief Примеры использования
-        BOOST_CONCEPT_USAGE(WritableSequence)
+        BOOST_CONCEPT_USAGE(Writable)
         {
             typedef decltype(*seq = make_value()) AssignResult;
 
@@ -218,6 +237,9 @@ namespace concepts
         static Seq seq;
         static T make_value();
     };
+
+    template <class Seq, class T>
+    using WritableSequence = Writable<Seq, T>;
 
     /** @brief Концепция однопроходной последовательности
     @tparam тип последовательности, для которого проверяется концепция
@@ -250,6 +272,17 @@ namespace concepts
         {
             BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Seq>));
             BOOST_CONCEPT_ASSERT((concepts::Readable<Seq>));
+        }
+    };
+
+    template <class Seq, class T>
+    struct OutputSequence
+    {
+    public:
+        BOOST_CONCEPT_USAGE(OutputSequence)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Seq>));
+            BOOST_CONCEPT_ASSERT((concepts::Writable<Seq, T>));
         }
     };
 
@@ -322,17 +355,42 @@ namespace concepts
 
     template <class Seq, class Out>
     struct IndirectlyMovable
-     : concepts::Readable<Seq>
-     , concepts::MoveWritable<Out, ValueType<Seq>>
     {
         BOOST_CONCEPT_USAGE(IndirectlyMovable)
         {
-            static_assert(concepts::Semiregular<Out>(), "");
+            // @todo нужно ли это static_assert(concepts::Semiregular<Out>(), "");?
+            BOOST_CONCEPT_ASSERT((concepts::Readable<Seq>));
+            BOOST_CONCEPT_ASSERT((concepts::MoveWritable<Out, ReferenceType<Seq>>));
         }
     };
 
-    template <class F, class... Args>
-    using ResultType = decltype(std::declval<F>()(std::declval<Args>()...));
+    template <class Seq, class Out>
+    struct IndirectlyCopyable
+    {
+        BOOST_CONCEPT_USAGE(IndirectlyCopyable)
+        {
+            // @todo нужно ли это static_assert(concepts::Semiregular<Seq>(), "");?
+
+            BOOST_CONCEPT_ASSERT((concepts::Readable<Seq>));
+            // @todo нужно ли это BOOST_CONCEPT_ASSERT((concepts::IndirectlyMovable<Seq, Out>))?;
+            BOOST_CONCEPT_ASSERT((concepts::Writable<Out, ReferenceType<Seq>>));
+        }
+    };
+
+    template <class S1, class S2>
+    class IndirectlySwappable
+    {
+    public:
+        BOOST_CONCEPT_USAGE(IndirectlySwappable)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::Readable<S1>));
+            BOOST_CONCEPT_ASSERT((concepts::Readable<S2>));
+            BOOST_CONCEPT_ASSERT((concepts::Swappable<ReferenceType<S1>,
+                                                      ReferenceType<S2>>));
+            BOOST_CONCEPT_ASSERT((concepts::Swappable<ReferenceType<S1>>));
+            BOOST_CONCEPT_ASSERT((concepts::Swappable<ReferenceType<S2>>));
+        }
+    };
 
     template <class F, class... Args>
     struct Function
