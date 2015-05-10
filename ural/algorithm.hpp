@@ -221,6 +221,10 @@ namespace details
         }
     };
 
+    /** @ingroup NonModifyingSequenceOperations
+    @brief Тип функционального объекта для подсчёта количества элементов,
+    удовлетворяющих заданному предикату.
+    */
     class count_if_fn
     {
     private:
@@ -260,6 +264,10 @@ namespace details
         }
     };
 
+    /** @ingroup NonModifyingSequenceOperations
+    @brief Тип функционального объекта для подсчёта количества элементов,
+    эквивалентных заданному значению.
+    */
     class count_fn
     {
     private:
@@ -295,6 +303,10 @@ namespace details
     };
 
     // Модифицирующие алгоритмы
+    /** @ingroup MutatingSequenceOperations
+    @brief Тип функционального объекта для устранение последовательных
+    дубликатов из последовательности.
+    */
     class unique_fn
     {
     public:
@@ -352,6 +364,9 @@ namespace details
         }
     };
 
+    /** @brief Функциональный объект для удаления последовательных дубликатов
+    из контейнера.
+    */
     class unique_erase_fn
     {
     public:
@@ -1747,6 +1762,10 @@ namespace details
     };
 
     // Разделение
+    /** @ingroup MutatingSequenceOperations
+    @brief Тип функционального объекта для проверки того, последовательность
+    является разделённой согласно предикату.
+    */
     class is_partitioned_fn
     {
     public:
@@ -2020,9 +2039,21 @@ namespace details
     };
 
     // Бинарные кучи
+    /** @ingroup SortingOperations
+    @brief Тип функционального поиска префикса последовательности, являющегося
+    бинарной кучей.
+    */
     class is_heap_until_fn
     {
     public:
+        /** @brief Поиск префикса последовательности, являющегося бинарной
+        кучей.
+        @param seq последовательность
+        @param cmp функция сравнения
+        @return Последовательность @c r такая, что
+        <tt> original(r) == sequence(seq) </tt>, <tt> r.traversed_front() </tt>
+        является наибольшим префиксом @c seq, который является бинарной кучей.
+        */
         template <class RASequence, class Compare = ural::less<>>
         auto operator()(RASequence && seq, Compare cmp = Compare()) const
         -> decltype(::ural::sequence_fwd<RASequence>(seq))
@@ -2063,9 +2094,19 @@ namespace details
         }
     };
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для проверки того, что последовательность
+    является бинарной кучей.
+    */
     class is_heap_fn
     {
     public:
+        /** @brief Проверка того, что последовательность является бинарной
+        кучей.
+        @param seq последовательность
+        @param cmp функция сравнения
+        @return @b true, если @c seq является кучей, иначе --- @b false.
+        */
         template <class RASequence, class Compare = ::ural::less<>>
         bool operator()(RASequence && seq, Compare cmp = Compare()) const
         {
@@ -2140,6 +2181,10 @@ namespace details
         }
     };
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для преобразование последовательности
+    в бинарную кучу
+    */
     class make_heap_fn
     {
     public:
@@ -2148,6 +2193,7 @@ namespace details
         @param cmp функция сравнения, по умолчанию используется
         <tt> less<> </tt>, то есть оператор "меньше".
         @post <tt> is_heap(std::forward<RASequence>(seq), cmp) </tt>
+        @todo Возвращать исчерпанную последовательность.
         */
         template <class RASequence, class Compare = ural::less<>>
         void operator()(RASequence && seq, Compare cmp = Compare()) const
@@ -2173,6 +2219,9 @@ namespace details
         }
     };
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для добавления элемента в кучу.
+    */
     class push_heap_fn
     {
     public:
@@ -2212,6 +2261,9 @@ namespace details
         }
     };
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для удаления первого элемента из кучи
+    */
     class pop_heap_fn
     {
     public:
@@ -2414,11 +2466,15 @@ namespace details
         }
     };
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для проверки того, что значение
+    принадлежит упорядоченной последовательности.
+    */
     class binary_search_fn
     {
     public:
         /** @brief Проверка того, что значение принадлежит упорядоченной
-        последовательности
+        последовательности.
         @param in последовательность
         @param value значение
         @param cmp функция сравнения, по умолчанию используется
@@ -2754,6 +2810,10 @@ namespace details
         }
     };
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для слияния сортированных
+    последовательности.
+    */
     class merge_fn
     {
     public:
@@ -2786,11 +2846,15 @@ namespace details
         }
     };
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для слияния сортированных частей
+    последовательности.
+    */
     class inplace_merge_fn
     {
     public:
         /** @brief Слияние передней пройденной и непройденной части
-        последовательности
+        последовательности.
         @param s последовательность
         @param cmp функция сравнения, по умолчанию используется
         <tt> less<> </tt>, то есть оператор "меньше".
@@ -2870,6 +2934,10 @@ namespace details
         }
     };
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта, проверяющего, что одна
+    последовательность лексикографически предшествует другой.
+    */
     class lexicographical_compare_fn
     {
     public:
@@ -2981,6 +3049,10 @@ namespace details
     };
 
     // Операции с множествами
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для проверки того, что одно множество
+    является подмножеством другого.
+    */
     class includes_fn
     {
     public:
@@ -3031,6 +3103,9 @@ namespace details
         }
     };
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для построения объединения двух множеств.
+    */
     class set_union_fn
     {
     public:
@@ -3062,6 +3137,9 @@ namespace details
         }
     };
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для построения пересечения двух множеств.
+    */
     class set_intersection_fn
     {
     public:
@@ -3093,6 +3171,9 @@ namespace details
         }
     };
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для построения разности двух множеств.
+    */
     class set_difference_fn
     {
     public:
@@ -3124,6 +3205,10 @@ namespace details
         }
     };
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для построения симметричной разности
+    двух множеств.
+    */
     class set_symmetric_difference_fn
     {
     public:
@@ -3155,6 +3240,10 @@ namespace details
     };
 
     // Поиск наибольшего и наименьшего
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для поиска наименьшего элемента
+    последовательности.
+    */
     class min_element_fn
     {
     private:
@@ -3202,6 +3291,10 @@ namespace details
         }
     };
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для поиска наибольшего элемента
+    последовательности.
+    */
     class max_element_fn
     {
     private:
@@ -3239,6 +3332,10 @@ namespace details
         }
     };
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для поиска наименьшего и наибольшего
+    элементов последовательности.
+    */
     class minmax_element_fn
     {
     public:
@@ -3320,6 +3417,10 @@ namespace details
     };
 
     // Перестановки
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта, порождающего лексикографически
+    следующей перестановки.
+    */
     class next_permutation_fn
     {
     public:
@@ -3382,6 +3483,10 @@ namespace details
         }
     };
 
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта, порождающего лексикографически
+    предыдущей перестановки.
+    */
     class prev_permutation_fn
     {
     public:
@@ -3414,6 +3519,10 @@ namespace details
         }
     };
 
+    /** @ingroup MutatingSequenceOperations
+    @brief Тип функционального объекта, устраняющего из последовательности
+    элементы, удовлетворяющих заданному предикату.
+    */
     class remove_if_fn
     {
     public:
@@ -3454,6 +3563,10 @@ namespace details
         }
     };
 
+    /** @ingroup MutatingSequenceOperations
+    @brief Тип функционального объекта, устраняющего из последовательности
+    элементы, находящиеся в заднному отношении с заданным значением.
+    */
     class remove_fn
     {
     public:
@@ -3490,6 +3603,11 @@ namespace details
         }
     };
 
+    /** @ingroup MutatingSequenceOperations
+    @brief Тип функционального объекта, выполняющего копирование элементов одной
+    последовательности в другую за исключением удовлетворяющих заданному
+    предикату.
+    */
     class remove_copy_if_fn
     {
     public:
@@ -3511,6 +3629,10 @@ namespace details
         }
     };
 
+    /** @ingroup MutatingSequenceOperations
+    @brief Тип функционального объекта, выполняющего копирование элементов одной
+    последовательности в другую за исключением эквивалентных заданному значению.
+    */
     class remove_copy_fn
     {
     public:
