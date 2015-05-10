@@ -87,16 +87,23 @@ namespace ural
         */
         template <size_t Index>
         constexpr typename std::tuple_element<Index, Base>::type const &
-        operator[](ural::placeholder<Index>) const
+        operator[](ural::placeholder<Index>) const &
         {
             return std::get<Index>(*this);
         }
 
         template <size_t Index>
         typename std::tuple_element<Index, Base>::type &
-        operator[](ural::placeholder<Index>)
+        operator[](ural::placeholder<Index>) &
         {
             return std::get<Index>(*this);
+        }
+
+        template <size_t Index>
+        typename std::tuple_element<Index, Base>::type &&
+        operator[](ural::placeholder<Index>) &&
+        {
+            return std::move(std::get<Index>(*this));
         }
         //@}
     };

@@ -30,6 +30,17 @@
 #include <set>
 #include <map>
 
+BOOST_AUTO_TEST_CASE(sequence_for_lvalue_container)
+{
+    std::vector<int> const z{11, 11, 22, 33, 55};
+
+    auto seq = ::ural::sequence(z);
+
+    typedef ural::iterator_sequence<decltype(z.begin())> IS;
+
+    static_assert(std::is_same<decltype(seq), IS>::value, "");
+}
+
 BOOST_AUTO_TEST_CASE(sequence_for_rvalue_container)
 {
     std::vector<int> const z{11, 11, 22, 33, 55};

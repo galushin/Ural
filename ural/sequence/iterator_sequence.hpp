@@ -97,6 +97,32 @@ namespace ural
          : members_(Front_type(std::move(first)), Back_type(std::move(last)))
         {}
 
+        /** @brief Конструктор на основе совместимой последовательности
+        @param seq последовательность
+        @post <tt> *this == seq </tt>
+        @todo Оптимизация (rvalue)
+        */
+        template <class I1, class S1, class P1>
+        iterator_sequence(iterator_sequence<I1, S1, P1> seq)
+         : members_(Front_type(std::move(seq).members()[ural::_1]),
+                    Back_type(std::move(seq).members()[ural::_2]))
+        {}
+
+        /** @brief Оператор присваивания совместимой последовательности
+        @param seq последовательность
+        @post <tt> *this == seq </tt>
+        @return <tt> *this </tt>
+        */
+        template <class I1, class S1, class P1>
+        iterator_sequence &
+        operator=(iterator_sequence<I1, S1, P1> seq)
+        {
+            // @todo Оптимизация (rvalue)
+            this->members_[ural::_1] = std::move(seq).members()[ural::_1];
+            this->members_[ural::_2] = std::move(seq).members()[ural::_2];
+            return *this;
+        }
+
         /** @brief Проверка исчерпания последовательности
         @return @b true, если в последовательности больше нет элементов,
         иначе --- @b false.
@@ -307,9 +333,14 @@ namespace ural
         typedef tuple<Front_type, Back_type> Members;
 
     public:
-        Members const & members() const
+        Members const & members() const &
         {
             return this->members_;
+        }
+
+        Members && members() &&
+        {
+            return std::move(this->members_);
         }
 
     private:

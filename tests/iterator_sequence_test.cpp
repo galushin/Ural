@@ -27,6 +27,60 @@
 #include <ural/numeric.hpp>
 #include <ural/sequence/all.hpp>
 
+BOOST_AUTO_TEST_CASE(iterator_sequence_compatible_init)
+{
+    std::vector<int> xs = {1, 2, 3, 4};
+    auto const & cr = xs;
+
+    auto s = ural::sequence(xs);
+    auto sc = ural::sequence(cr);
+
+    auto sc1 = decltype(sc)(s);
+
+    BOOST_CHECK(sc1 == sc);
+}
+
+BOOST_AUTO_TEST_CASE(iterator_sequence_compatible_move_init)
+{
+    std::vector<int> xs = {1, 2, 3, 4};
+    auto const & cr = xs;
+
+    auto s = ural::sequence(xs);
+    auto sc = ural::sequence(cr);
+
+    auto const s_old = s;
+    auto sc1 = decltype(sc)(std::move(s));
+
+    BOOST_CHECK(sc1 == s_old);
+}
+
+BOOST_AUTO_TEST_CASE(iterator_sequence_compatible_assign)
+{
+    std::vector<int> xs = {1, 2, 3, 4};
+    auto const & cr = xs;
+
+    auto s = ural::sequence(xs);
+    auto sc = ural::sequence(cr);
+
+    sc = s;
+
+    BOOST_CHECK(sc == s);
+}
+
+BOOST_AUTO_TEST_CASE(iterator_sequence_compatible_move_assign)
+{
+    std::vector<int> xs = {1, 2, 3, 4};
+    auto const & cr = xs;
+
+    auto s = ural::sequence(xs);
+    auto sc = ural::sequence(cr);
+
+    auto const s_old = s;
+    sc = std::move(s);
+
+    BOOST_CHECK(sc == s_old);
+}
+
 BOOST_AUTO_TEST_CASE(copy_sequence_test_via_details)
 {
     std::vector<int> const xs = {1, 2, 3, 4};

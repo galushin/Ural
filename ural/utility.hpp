@@ -196,11 +196,31 @@ namespace ural
         with_old_value(with_old_value &&) = default;
         //@}
 
+        template <class U>
+        with_old_value(with_old_value<U> const & x);
+
+        template <class U>
+        with_old_value(with_old_value<U> && x)
+         : value_(std::move(x).value())
+         , old_value_(std::move(x).old_value())
+        {}
+
         //@{
         /// @brief Оператор присваивания копий
         with_old_value & operator=(with_old_value const &) = default;
         with_old_value & operator=(with_old_value &&) = default;
         //@}
+
+        template <class U>
+        with_old_value & operator=(with_old_value<U> const & x);
+
+        template <class U>
+        with_old_value & operator=(with_old_value<U> && x)
+        {
+            this->value_ = std::move(x).value();
+            this->old_value_ = std::move(x).old_value();
+            return *this;
+        }
 
         /** @brief Оператор присваивания значения
         @param new_value новое значение
@@ -233,25 +253,37 @@ namespace ural
         /** @brief Текущее значение
         @return Ссылка на текущее значение
         */
-        T & value()
+        T & value() &
         {
-            return value_;
+            return this->value_;
         }
 
-        constexpr T const & value() const
+        T && value() &&
+        {
+            return std::move(this->value_);
+        }
+
+        constexpr T const & value() const &
         {
             return value_;
         }
         //@}
 
+        //@{
+        T && old_value() &&
+        {
+            return std::move(this->old_value_);
+        }
+
         /** @brief Исходное значение
         @return Значение <tt> this->value() </tt> сразу после конструктора или
         последнего вызова <tt> this->commit() </tt>.
         */
-        constexpr T const & old_value() const
+        constexpr T const & old_value() const &
         {
             return old_value_;
         }
+        //@}
 
         // Подтверждение и откат
         /** @brief Подтверждение изменений
