@@ -387,9 +387,11 @@ namespace concepts
         {
             BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<Seq>));
 
-            ural::value_consumer<Seq>() = seq.traversed_front();
             seq.shrink_front();
             seq ++;
+            seq.traversed_front();
+            // @todo Проверить, что тип traversed_front совпадает с Seq или
+            // tf - прямая последовательность
         }
 
     private:
@@ -409,8 +411,11 @@ namespace concepts
         {
             seq.pop_back();
             value_consumer<reference>() = seq.back();
-            value_consumer<Seq>() = seq.traversed_back();
             seq.shrink_back();
+            seq.traversed_back();
+
+            // @todo Проверить, что traversed_back либо BidirectionalSequence,
+            // либо совпадает с Seq
         }
 
     private:

@@ -1840,10 +1840,13 @@ BOOST_AUTO_TEST_CASE(sort_test)
     auto x_ural = x_std;
 
     std::sort(x_std.begin(), x_std.end());
-    ural::sort(x_ural);
+    auto const result = ural::sort(x_ural);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
                                   x_ural.begin(), x_ural.end());
+
+    BOOST_CHECK(!result);
+    BOOST_CHECK(::ural::sequence(x_ural) == result.traversed_front());
 }
 
 namespace
@@ -1880,10 +1883,13 @@ BOOST_AUTO_TEST_CASE(stable_sort_test)
     auto x_ural = x_std;
 
     std::stable_sort(x_std.begin(), x_std.end());
-    ural::stable_sort(x_ural);
+    auto const result = ural::stable_sort(x_ural);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
                                   x_ural.begin(), x_ural.end());
+
+    BOOST_CHECK(!result);
+    BOOST_CHECK(::ural::sequence(x_ural) == result.traversed_front());
 }
 
 BOOST_AUTO_TEST_CASE(partial_sort_test)
@@ -2528,9 +2534,12 @@ BOOST_AUTO_TEST_CASE(sort_heap_test)
     std::vector<int> v { 3, 1, 4, 1, 5, 9 };
 
     ural::make_heap(v);
-    ural::sort_heap(v);
+    auto const result = ural::sort_heap(v);
 
     BOOST_CHECK(std::is_sorted(v.begin(), v.end()));
+
+    BOOST_CHECK(!result);
+    BOOST_CHECK(::ural::sequence(v) == result.traversed_front());
 }
 
 BOOST_AUTO_TEST_CASE(is_heap_test)

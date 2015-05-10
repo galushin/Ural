@@ -2260,9 +2260,13 @@ namespace details
         @param cmp функция сравнения, по умолчанию используется
         <tt> less<> </tt>, то есть оператор "меньше"
         @post <tt> is_sorted(seq, cmp) </tt>
+        @return Последовательность, полученная
+        <tt>::ural::sequence_fwd<RASequence>(seq)</tt> путём продвижения до
+        исчерпания.
         */
         template <class RASequence, class Compare = ural::less<>>
-        void operator()(RASequence && seq, Compare cmp = Compare()) const
+        auto operator()(RASequence && seq, Compare cmp = Compare()) const
+        -> decltype(::ural::sequence_fwd<RASequence>(seq))
         {
             return this->impl(::ural::sequence_fwd<RASequence>(seq),
                               ::ural::make_callable(std::move(cmp)));
@@ -2270,7 +2274,7 @@ namespace details
 
     private:
         template <class RASequence, class Compare>
-        static void
+        static RASequence
         impl(RASequence seq, Compare cmp)
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
@@ -2282,8 +2286,12 @@ namespace details
                 pop_heap_fn{}(seq, cmp);
                 seq.pop_back();
             }
+            assert(!seq);
+            assert(::ural::is_sorted_fn{}(seq.traversed_back(), cmp));
 
-            assert(::ural::is_sorted_fn{}(seq, cmp));
+            auto result = seq.traversed_back();
+            result += result.size();
+            return result;
         }
     };
 
@@ -2504,9 +2512,12 @@ namespace details
         @param s сортируемая последовательность
         @param cmp функция сравнения, по умолчанию используется
         <tt> less<> </tt>, то есть оператор "меньше".
+        @return Последовательность, полученная из @c s путём продвижения до
+        исчерпания.
         */
         template <class RASequence, class Compare>
-        void operator()(RASequence && s, Compare cmp) const
+        auto operator()(RASequence && s, Compare cmp) const
+        -> decltype(::ural::sequence_fwd<RASequence>(s))
         {
             return this->impl(::ural::sequence_fwd<RASequence>(s),
                               ::ural::make_callable(std::move(cmp)));
@@ -2514,19 +2525,14 @@ namespace details
 
     private:
         template <class RASequence, class Compare>
-        static void impl(RASequence s, Compare cmp)
+        static RASequence impl(RASequence s, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(s)>));
-
-            // @todo Заменить эти два требования на возможность обмена
-            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<decltype(s)>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<decltype(s), decltype(*s)>));
-
-            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*s), decltype(*s))>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<RASequence, Compare>));
 
             if(!s)
             {
-                return;
+                return s;
             }
 
             typedef decltype(s.size()) Index;
@@ -2543,12 +2549,14 @@ namespace details
                     break;
                 }
             }
+
+            s += s.size();
+            return s;
         }
     };
 
     /** @ingroup SortingOperations
     @brief Тип функционального объекта для быстрой сортировки
-    @todo Возвращать последовательность
     */
     class sort_fn
     {
@@ -2557,16 +2565,19 @@ namespace details
         @param s сортируемая последовательность
         @param cmp функция сравнения, по умолчанию используется
         <tt> less<> </tt>, то есть оператор "меньше".
+        @return Последовательность, полученная из @c s путём продвижения до
+        исчерпания.
         */
         template <class RASequence, class Compare = ::ural::less<>>
-        void operator()(RASequence && s, Compare cmp = Compare()) const
+        auto operator()(RASequence && s, Compare cmp = Compare()) const
+        -> decltype(::ural::sequence_fwd<RASequence>(s))
         {
             return this->impl(::ural::sequence_fwd<RASequence>(s),
                               ::ural::make_callable(std::move(cmp)));
         }
     private:
         template <class RASequence, class Compare>
-        static void impl(RASequence s, Compare cmp)
+        static RASequence impl(RASequence s, Compare cmp)
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
             BOOST_CONCEPT_ASSERT((concepts::Sortable<RASequence, Compare>));
@@ -2577,7 +2588,6 @@ namespace details
 
     /** @ingroup SortingOperations
     @brief Тип функционального объекта для устойчивой сортировки
-    @todo Возвращать последовательность
     */
     class stable_sort_fn
     {
@@ -2587,9 +2597,12 @@ namespace details
         @param s сортируемая последовательность
         @param cmp функция сравнения, по умолчанию используется
         <tt> less<> </tt>, то есть оператор "меньше".
+        @return Последовательность, полученная из @c s путём продвижения до
+        исчерпания.
         */
         template <class RASequence, class Compare = ::ural::less<>>
-        void operator()(RASequence && s, Compare cmp = Compare()) const
+        auto operator()(RASequence && s, Compare cmp = Compare()) const
+        -> decltype(::ural::sequence_fwd<RASequence>(s))
         {
             return this->impl(::ural::sequence_fwd<RASequence>(s),
                               ::ural::make_callable(std::move(cmp)));
@@ -2597,7 +2610,7 @@ namespace details
 
     private:
         template <class RASequence, class Compare>
-        static void impl(RASequence s, Compare cmp)
+        static RASequence impl(RASequence s, Compare cmp)
         {
             return ::ural::insertion_sort_fn{}(std::move(s), std::move(cmp));
         }
@@ -3173,7 +3186,12 @@ namespace details
         @param in входная последовательность
         @param cmp функция сравнения, по умолчанию используется
         <tt> ural::less<> </tt>, то есть оператор "меньше".
-        @todo тип возвращаемого значения как в Range extensions
+        @return Последовательность @c r такая, что
+        <tt> original(r) == sequence(in) </tt>, а для любого элемента @c x
+        последовательности @c in, выполняется условие
+        <tt> cmp(x, r.front()) == false </tt>, а среди элементов
+        последовательности <tt> r.traversed_front() </tt> нет элементов,
+        эквивалентных <tt> r.front() </tt>.
         */
         template <class ForwardSequence, class Compare = ::ural::less<>>
         auto operator()(ForwardSequence && in, Compare cmp = Compare()) const
@@ -3205,6 +3223,12 @@ namespace details
         @param in входная последовательность
         @param cmp функция сравнения, по умолчанию используется
         <tt> ural::less<> </tt>, то есть оператор "меньше".
+        @return Последовательность @c r такая, что
+        <tt> original(r) == sequence(in) </tt>, а для любого элемента @c x
+        последовательности @c in, выполняется условие
+        <tt> cmp(r.front(), x) == false </tt>, а среди элементов
+        последовательности <tt> r.traversed_front() </tt> нет элементов,
+        эквивалентных <tt> r.front() </tt>.
         */
         template <class ForwardSequence, class Compare = ::ural::less<>>
         auto operator()(ForwardSequence && in, Compare cmp = Compare()) const

@@ -121,12 +121,13 @@ namespace ural
         // Прямая последовательность
         /** @breif Передняя пройденная часть последовательности
         @return Передняя пройденная часть последовательности
-        @todo Оптимизация: может быть лучше возвращать base().traversed_front()?
         */
-        cargo_sequence traversed_front() const
+        Sequence traversed_front() const &
         {
-            return cargo_sequence(this->base().traversed_front(), this->cargo());
+            return this->members_[ural::_1].traversed_front();
         }
+
+        cargo_sequence traversed_front() &&;
 
         /// @brief Отбросить переднюю пройденную часть последовательности
         void shrink_front()
@@ -137,9 +138,13 @@ namespace ural
         // Двусторонняя последовательность
         /** @breif Задняя пройденная часть последовательности
         @return Задняя пройденная часть последовательности
-        @todo Оптимизация: может быть лучше возвращать base().traversed_front()?
         */
-        cargo_sequence traversed_back() const;
+        Sequence traversed_back() const &
+        {
+            return this->members_[ural::_1].traversed_back();
+        }
+
+        cargo_sequence traversed_back() &&;
 
         /** @brief Доступ к последнему непройденному элементу последовательности
         @pre <tt> !*this == false </tt>
