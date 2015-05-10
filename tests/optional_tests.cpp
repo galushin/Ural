@@ -1546,7 +1546,7 @@ BOOST_AUTO_TEST_CASE(optional_int_test)
 {
     typedef int Type;
 
-    URAL_CONCEPT_ASSERT(ural::optional<Type>, ural::concepts::Regular);
+    BOOST_CONCEPT_ASSERT((ural::concepts::Regular<ural::optional<Type>>));
 
     // Конструктор копирования
     {

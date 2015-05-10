@@ -153,29 +153,117 @@ namespace concepts
     @tparam T тип, проверяемый на соответствие концепции
     */
     template <class T>
-    constexpr bool Semiregular()
+    class Semiregular
     {
         // @todo В соответствии с range extensions
-        return concepts::CopyAssignable<T>();
-    }
+        static_assert(concepts::CopyAssignable<T>(), "");
+    };
 
     /** @brief Концепция-функция "допускающий проверку на равенство"
     @tparam T тип, проверяемый на соответствие концепции
     */
-    template <class T>
-    constexpr bool EqualityComparable()
+    template <class T, class U = T>
+    class EqualityComparable
     {
-        return boost::has_equal_to<T>::value;
-    }
+    public:
+        BOOST_CONCEPT_USAGE(EqualityComparable)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::Common<T, U>));
+            BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<T>));
+            BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<U>));
+            BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<CommonType<T, U>>));
+
+            ural::value_consumer<bool>() = (a == b);
+            ural::value_consumer<bool>() = (a != b);
+            ural::value_consumer<bool>() = (b == a);
+            ural::value_consumer<bool>() = (b != a);
+
+            // @todo семантические требования
+        }
+
+    private:
+        static T a;
+        static U b;
+    };
+
+    template <class T>
+    class EqualityComparable<T>
+    {
+    public:
+        BOOST_CONCEPT_USAGE(EqualityComparable)
+        {
+            ural::value_consumer<bool>() = (a == b);
+            ural::value_consumer<bool>() = (a != b);
+            ural::value_consumer<bool>() = (b == a);
+            ural::value_consumer<bool>() = (b != a);
+
+            // @todo семантические требования
+        }
+
+    private:
+        static T a;
+        static T b;
+    };
 
     /** @brief Концепция регулярного типа
     @tparam T тип, для которого проверяется концепция
     */
     template <class T>
-    constexpr bool Regular()
+    class Regular
+     : Semiregular<T>
+     , EqualityComparable<T>
+    {};
+
+    template <class T, class U = T>
+    struct TotallyOrdered
     {
-        return Semiregular<T>() && EqualityComparable<T>();
-    }
+    public:
+        BOOST_CONCEPT_USAGE(TotallyOrdered)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::Common<T, U>));
+            BOOST_CONCEPT_ASSERT((concepts::TotallyOrdered<T>));
+            BOOST_CONCEPT_ASSERT((concepts::TotallyOrdered<U>));
+            BOOST_CONCEPT_ASSERT((concepts::TotallyOrdered<CommonType<T, U>>));
+            BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<T, U>));
+
+            ural::value_consumer<bool>() = a < b;
+            ural::value_consumer<bool>() = a > b;
+            ural::value_consumer<bool>() = a <= b;
+            ural::value_consumer<bool>() = a >= b;
+
+            ural::value_consumer<bool>() = b < a;
+            ural::value_consumer<bool>() = b > a;
+            ural::value_consumer<bool>() = b <= a;
+            ural::value_consumer<bool>() = b >= a;
+
+            // @todo Семантические требования
+        }
+
+    private:
+        static T a;
+        static U b;
+    };
+
+    template <class T>
+    struct TotallyOrdered<T>
+    {
+    public:
+        BOOST_CONCEPT_USAGE(TotallyOrdered)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<T>));
+
+            ural::value_consumer<bool>() = a < b;
+            ural::value_consumer<bool>() = a > b;
+            ural::value_consumer<bool>() = a <= b;
+            ural::value_consumer<bool>() = a >= b;
+
+            // @todo Семантические требования
+        }
+
+    private:
+        static T a;
+        static T b;
+    };
 
     /** @brief Концепция последовательности, допускающей чтение
     @tparam Seq тип последовательности, для которого проверяется концепция
@@ -297,7 +385,8 @@ namespace concepts
         /// @brief Проверка неявных интерфейсов
         BOOST_CONCEPT_USAGE(ForwardSequence)
         {
-            URAL_CONCEPT_ASSERT(Seq, EqualityComparable);
+            BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<Seq>));
+
             ural::value_consumer<Seq>() = seq.traversed_front();
             seq.shrink_front();
             seq ++;
@@ -490,7 +579,7 @@ namespace concepts
     public:
         BOOST_CONCEPT_USAGE(Permutable)
         {
-            URAL_CONCEPT_ASSERT(ValueType<Seq>, Semiregular);
+            BOOST_CONCEPT_ASSERT((concepts::Semiregular<ValueType<Seq>>));
         }
     };
 
@@ -582,8 +671,8 @@ namespace concepts
             P p0 = d0.param();
 
             BOOST_CONCEPT_ASSERT((boost::CopyConstructible<P>));
-            URAL_CONCEPT_ASSERT(P, CopyAssignable);
-            URAL_CONCEPT_ASSERT(P, EqualityComparable);
+            URAL_CONCEPT_ASSERT(P, concepts::CopyAssignable);
+            BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<P>));
 
             static_assert(std::is_same<D, PD>::value, "");
 

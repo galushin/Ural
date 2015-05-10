@@ -1166,7 +1166,7 @@ namespace details
         static ForwardSequence
         impl(ForwardSequence seq, T const & value)
         {
-            URAL_CONCEPT_ASSERT(T, concepts::Semiregular);
+            BOOST_CONCEPT_ASSERT((concepts::Semiregular<T>));
             BOOST_CONCEPT_ASSERT((concepts::OutputSequence<ForwardSequence, T>));
 
             return generate_fn{}(std::move(seq),
@@ -1444,7 +1444,7 @@ namespace details
         impl(ForwardSequence seq, Predicate pred, T const & new_value)
         {
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
-            URAL_CONCEPT_ASSERT(T, concepts::Semiregular);
+            BOOST_CONCEPT_ASSERT((concepts::Semiregular<T>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectCallablePredicate<Predicate, ForwardSequence>));
             BOOST_CONCEPT_ASSERT((concepts::Writable<ForwardSequence, T>));
 
@@ -1484,7 +1484,7 @@ namespace details
              BinaryPredicate bin_pred)
         {
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
-            URAL_CONCEPT_ASSERT(T2, concepts::Semiregular);
+            BOOST_CONCEPT_ASSERT((concepts::Semiregular<T2>));
             BOOST_CONCEPT_ASSERT((concepts::Writable<ForwardSequence, T2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectCallableRelation<BinaryPredicate, ForwardSequence, T1 const *>));
 
@@ -1532,7 +1532,7 @@ namespace details
         impl(Input in, Output out, Predicate pred, T const & new_value)
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
-            URAL_CONCEPT_ASSERT(T, concepts::Semiregular);
+            BOOST_CONCEPT_ASSERT((concepts::Semiregular<T>));
             BOOST_CONCEPT_ASSERT((concepts::Writable<Output, T>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<Input, Output>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectCallablePredicate<Predicate, Input>));
@@ -2213,6 +2213,10 @@ namespace details
         static RASequence
         impl(RASequence in, T const & value, Compare cmp)
         {
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::TotallyOrdered<T>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallableRelation<Compare, T const *, RASequence>));
+
             auto pred = std::bind(std::move(cmp), ural::_1, std::cref(value));
             return ::ural::partition_point_fn{}(std::move(in), std::move(pred));
         }
@@ -2245,6 +2249,10 @@ namespace details
         static RASequence
         impl(RASequence in, T const & value, Compare cmp)
         {
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::TotallyOrdered<T>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallableRelation<Compare, T const *, RASequence>));
+
             auto pred = ural::not_fn(std::bind(std::move(cmp), std::cref(value), ural::_1));
             return ::ural::partition_point_fn{}(std::move(in), std::move(pred));
         }
@@ -2277,8 +2285,9 @@ namespace details
         template <class RASequence, class T, class Compare>
         static bool impl(RASequence in, T const & value, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
-            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::TotallyOrdered<T>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallableRelation<Compare, T const *, RASequence>));
 
             // @todo Добавить проверки концепций
             in = lower_bound_fn{}(std::move(in), value, cmp);
@@ -2316,7 +2325,10 @@ namespace details
         template <class RASequence, class T, class Compare>
         static RASequence impl(RASequence in, T const & value, Compare cmp)
         {
-            // @todo Проверки концепций
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::TotallyOrdered<T>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallableRelation<Compare, T const *, RASequence>));
+
             // @todo Оптимизация
             auto lower = lower_bound_fn{}(in, value, cmp);
             auto upper = upper_bound_fn{}(in, value, cmp);
@@ -2403,6 +2415,9 @@ namespace details
         template <class RASequence, class Compare>
         static void impl(RASequence s, Compare cmp)
         {
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<RASequence, Compare>));
+
             return ::ural::insertion_sort_fn{}(std::move(s), std::move(cmp));
         }
     };
@@ -2564,6 +2579,9 @@ namespace details
         template <class RASequence, class Compare>
         static void impl(RASequence s, Compare cmp)
         {
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<RASequence, Compare>));
+
             return heap_select_fn{}(std::move(s), std::move(cmp));
         }
     };
