@@ -2639,6 +2639,9 @@ namespace details
         template <class BidirectionalSequence, class Compare>
         static void impl(BidirectionalSequence s, Compare cmp)
         {
+            BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequence<BidirectionalSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<BidirectionalSequence, Compare>));
+
             auto s1 = s.traversed_front();
             auto s2 = ural::shrink_front(s);
 
@@ -2824,11 +2827,9 @@ namespace details
         template <class Input1, class  Input2, class Compare>
         static bool impl(Input1 in1, Input2 in2, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input1>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Input2>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input1>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Input2>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*in1), decltype(*in2))>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input2>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallableRelation<Compare, Input1, Input2>));
 
             for(; !!in1 && !!in2;)
             {
@@ -3557,6 +3558,7 @@ namespace details
 
         // 25.4.4 Слияние
         constexpr auto const merge = merge_fn{};
+        // @todo merge_move
         constexpr auto const inplace_merge = inplace_merge_fn{};
 
         // 25.4.5 Операции с сортированными множествами
