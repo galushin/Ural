@@ -171,7 +171,11 @@ namespace details
         /** @brief Пропуск отсортированной части последовательности
         @param in входная последовательность.
         @param cmp функция сравнения, по умолчанию используется
-        <tt> ural::less<> </tt>, то есть оператор "меньше"
+        <tt> ural::less<> </tt>, то есть оператор "меньше".
+        @return Последовательность @c r, такая, что
+        <tt> original(r) == in </tt>,
+        <tt> r.traversed_front() </tt> является отсортированным в соответствии с
+        @c cmp и <tt> cmp(r.traversed_front().back(), r.front()) == false </tt>.
         */
         template <class ForwardSequence, class Compare = ::ural::less<>>
         auto operator()(ForwardSequence && in, Compare cmp = Compare()) const
@@ -249,7 +253,7 @@ namespace details
         */
         template <class Input, class UnaryPredicate>
         auto operator()(Input && in, UnaryPredicate pred) const
-        -> typename decltype(sequence_fwd<Input>(in))::distance_type
+        -> typename decltype(::ural::sequence_fwd<Input>(in))::distance_type
         {
             return this->impl(::ural::sequence_fwd<Input>(in),
                               ::ural::make_callable(std::move(pred)));
@@ -277,7 +281,7 @@ namespace details
         @param in входная последовтельность
         @param value значение
         @return Количество элементов @c x последовательности @c in, таких, что
-        <tt> x == value </tt>.
+        <tt> pred(x, value) == true </tt>.
         */
         template <class Input, class T,
                   class BinaryPredicate = ::ural::equal_to<>>
@@ -298,6 +302,8 @@ namespace details
         @param seq последовательность
         @param pred бинарный предикат, по умолчанию используется
         <tt> ::ural::equal_to<> </tt>, то есть оператор "равно".
+        @return Последовательность, передняя пройденная часть которой содержит
+        неустранённые элементы, причём исходной для неё является @c seq.
         */
         template <class ForwardSequence,
                   class BinaryPredicate = ::ural::equal_to<>>
@@ -388,6 +394,7 @@ namespace details
         @param in входная последовательность
         @param f функциональный объект
         @return @c f
+        @todo Изменить тип возвращаемого значения на tuple<Input, UnaryFunction>
         */
         template <class Input, class UnaryFunction>
         auto operator()(Input && in, UnaryFunction f) const
@@ -473,7 +480,10 @@ namespace details
         @param in последовательность, в которой осуществляется поиск
         @param s последовательность искомых элементов
         @param bin_pred бинарный предикат, по умолчанию используется
-        <tt> ::ural::equal_to<> </tt>, то есть оператор "равно"
+        <tt> ::ural::equal_to<> </tt>, то есть оператор "равно".
+        @return Последовательность @c r, полученная из
+        <tt> ::ural::sequence_fwd<Input>(in) </tt> продвижением до тех пор, пока
+        <tt> r.front() </tt> не станет эквивалентным одному из элементов @c s.
         */
         template <class Input, class Forward,
                   class BinaryPredicate = ::ural::equal_to<>>
@@ -572,6 +582,10 @@ namespace details
         /** @brief Поиск соседних элементов, удовлетворяющих заданному условию
         @param s входная последовательность
         @param bin_pred бинарный предикат
+        @return Последовательность @c r, полученная из
+        <tt> ::ural::sequence_fwd<Forward>(s) </tt> продвижением до тех пор,
+        пока первый непройденный и следующий за ним элементым данной
+        последовательности не станут эквивалентными в смысле @c pred.
         */
         template <class Forward, class BinaryPredicate = ::ural::equal_to<>>
         auto operator()(Forward && s,
@@ -618,7 +632,12 @@ namespace details
         @param in1 первая входная последовательность
         @param in2 вторая входная последовательность
         @param bin_pred бинарный предикат, по умолчанию используется
-        <tt> ::ural::equal_to<> </tt>, то есть оператор "равно"
+        <tt> ::ural::equal_to<> </tt>, то есть оператор "равно".
+        @return Кортеж из двух последовательностей @c r1 и @c r2, полученных
+        продвижением <tt> ::ural::sequence_fwd<Input1>(in1) </tt>
+        и <tt> ::ural::sequence_fwd<Input1>(in2) </tt> соответственно синхронно
+        до тех пор, пока их первые элементы не станут неэквивалентными в смысле
+        @c bin_pred.
         */
         template <class Input1, class Input2,
                   class BinaryPredicate = ::ural::equal_to<>>
@@ -702,6 +721,9 @@ namespace details
         @param in последовательность
         @param s искомая подпоследовательность
         @param bin_pred бинарный предикат
+        @return Последовательность, полученная из @c in продвижением до тех
+        пора, пока @c s не станет эквивалентной в смысле @c pred префиксу её
+        непройденной части.
         */
         template <class Forward1, class Forward2,
                   class BinaryPredicate = ::ural::equal_to<>>
@@ -758,6 +780,11 @@ namespace details
         @param s подпоследовательность
         @param bin_pred бинарный предикат, по умолчанию используется
         <tt> equal_to<> </tt>, то есть оператор "равно"
+        @return Последовательность @c r, полученная из
+        <tt> ::ural::sequence_fwd<Input>(in) </tt> продвижением таким образом,
+        что @c s является эквивалентом префикса непройденной части этой
+        последовательности, причём @c s встречается в непройденной части
+        этой последовательности ровно один раз.
         */
         template <class Forward1, class Forward2,
                   class BinaryPredicate = ::ural::equal_to<>>
@@ -812,6 +839,15 @@ namespace details
     class search_n_fn
     {
     public:
+        /** @brief Поиска подпоследовательности одинаковых значений заданной
+        длины.
+        @param in входная последовательность
+        @param count длина подполседовательности
+        @param value значение
+        @return Последовательность, полученная из @c in продвижением до тех пор,
+        пока её префикс не будет содержать подряд @c count элементов,
+        эквивалентных @c value.
+        */
         template <class Forward, class Size, class T,
                   class BinaryPredicate = ::ural::equal_to<>>
         auto operator()(Forward && in, Size count, T const & value,
@@ -874,10 +910,18 @@ namespace details
     /** @ingroup MutatingSequenceOperations
     @brief Класс функционального объекта копирования заданного количества
     элементов одной последовательности в другую последовательность
+    @todo Что делать, если было скопировано менее @c n элементов?
     */
     class copy_n_fn
     {
     public:
+        /** @brief Копирование заданного количества элементов из @c in в
+        @c out по порядку.
+        @param in входная последовательность
+        @param n количество элементов, которые должны быть скопированы
+        @param out выходная последовательность
+        @return Кортеж, состоящий из непройденных частей последовательностей.
+        */
         template <class Input, class Size, class Output>
         auto operator()(Input && in, Size n, Output && out) const
         -> tuple<decltype(::ural::sequence_fwd<Input>(in)),
@@ -895,11 +939,19 @@ namespace details
     /** @ingroup MutatingSequenceOperations
     @brief Класс функционального объекта копирования элементов одной
     последовательности, которые удовлетворяют заданному предикату, в другую
-    последовательность
+    последовательность.
     */
     class copy_if_fn
     {
     public:
+        /** @brief Копирование элементов одной последовательности,
+        удовлетворяющих заданному предикату, в другую последовательность по
+        порядку.
+        @param in входная последовательность
+        @param out выходная последовательность
+        @param pred унарный предикат
+        @return Кортеж, состоящий из непройденных частей последовательностей.
+        */
         template <class Input, class Output, class Predicate>
         auto operator()(Input && in, Output && out, Predicate pred) const
         -> tuple<decltype(::ural::sequence_fwd<Input>(in)),
@@ -922,6 +974,13 @@ namespace details
     class copy_backward_fn
     {
     public:
+        /** @brief Копирует элементы последовательности @c in в @c out в
+        обратном порядке, пока одна из них не будет исчерпана.
+        @param in входная последовательность
+        @param out выходная последовательность
+        @return Кортеж, содержащий непройденные части входной и выходной
+        последовательностей (одна из них будет пустой).
+        */
         template <class Bidir1, class Bidir2>
         auto operator()(Bidir1 && in, Bidir2 && out) const
         -> tuple<decltype(::ural::sequence_fwd<Bidir1>(in)),
@@ -956,6 +1015,14 @@ namespace details
     class move_fn
     {
     public:
+        /** @brief Перемещение элементов последовательности @c in в
+        последовательность @c out по очереди, пока одна из них не будет
+        исчерпана.
+        @param in входная последовательность
+        @param out выходная последовательность
+        @return Кортеж, содержащий непройденные части входной и выходной
+        последовательностей (одна из них будет пустой).
+        */
         template <class Input, class Output>
         auto operator()(Input && in, Output && out) const
         -> tuple<decltype(::ural::sequence_fwd<Input>(in)),
@@ -976,6 +1043,13 @@ namespace details
     class move_backward_fn
     {
     public:
+        /** @brief Перемещает элементы последовательности @c in в @c out в
+        обратном порядке, пока одна из них не будет исчерпана.
+        @param in входная последовательность
+        @param out выходная последовательность
+        @return Кортеж, содержащий непройденные части входной и выходной
+        последовательностей (одна из них будет пустой).
+        */
         template <class Bidir1, class Bidir2>
         auto operator()(Bidir1 && in, Bidir2 && out) const
         -> tuple<decltype(::ural::sequence_fwd<Bidir1>(in)),
@@ -1106,6 +1180,8 @@ namespace details
         функции без параметров
         @param seq последовательность
         @param gen генератор, то есть функция без параметров
+        @return Последовательность, полученная из @c seq продвижением до
+        исчерпания.
         */
         template <class Output, class Generator>
         auto operator()(Output && seq, Generator gen) const
@@ -1137,6 +1213,14 @@ namespace details
     class generate_n_fn
     {
     public:
+        /** @brief Присваивает заданному количеству элементов последовательности
+        результаты вызова <tt> gen() </tt>.
+        @param gen фунцкия, которая может быть вызвана без аргументов
+        @param n количество
+        @param out выходная последовательность
+        @todo n должно иметь тип DifferenceType<Output>
+        @return Непройденная часть @c out
+        */
         template <class Generator, class N, class Output>
         auto operator()(Generator gen, N n, Output && out) const
         -> decltype(::ural::sequence_fwd<Output>(out))
@@ -1154,6 +1238,13 @@ namespace details
     class fill_fn
     {
     public:
+        /** @brief Присваивает всем элементам последовательности заданное
+        значение
+        @param seq последовательность
+        @param value значение
+        @return Последовательность, полученная из @c seq продвижением до
+        исчерпания.
+        */
         template <class ForwardSequence, class T>
         auto operator()(ForwardSequence && seq, T const & value) const
         -> decltype(sequence_fwd<ForwardSequence>(seq))
@@ -1246,6 +1337,7 @@ namespace details
     public:
         /** @brief Обращение последовательности
         @param seq последовательность
+        @todo Возвращать последовательность
         */
         template <class BidirectionalSequence>
         void operator()(BidirectionalSequence && seq) const
@@ -1419,6 +1511,7 @@ namespace details
     /** @ingroup MutatingSequenceOperations
     @brief Тип функционального объекта для замены элементов последовательности,
     которые удовлетворяют заданному предикату, на новое значение
+    @todo Возвращать последовательность
     */
     class replace_if_fn
     {
@@ -1427,8 +1520,8 @@ namespace details
         @param seq последовательность
         @param pred унарный предикат
         @param new_value новое значение
-        @post Всем элементам @c x последовательности @c seq присваивается
-        значение @c new_value
+        @post Всем элементам @c x последовательности @c seq, удовлетворяющим
+        предикату @c pred, присваивается значение @c new_value.
         */
         template <class ForwardSequence, class Predicate, class T>
         void operator()(ForwardSequence && seq,
@@ -1462,10 +1555,21 @@ namespace details
     @brief Тип функционального объекта для замены элементов последовательности,
     эквивалентных заданному значению, на новое значение.
     @todo Разный тип new_value и old_value
+    @todo Возвращать последовательность
     */
     class replace_fn
     {
     public:
+        /** @brief Замена элементов, эквивалентных заданному значению, нового
+        значения
+        @param seq последовательность
+        @param old_value значение, которое нужно заменить.
+        @param new_value новое значение
+        @param bin_pred бинарный предикат
+        @post Всем элементам @c x последовательности @c seq, эквивалентных
+        @c old_value в смысле предиката @c bin_pred, присваивается значение
+        @c new_value.
+        */
         template <class ForwardSequence, class T,
                   class BinaryPredicate = ::ural::equal_to<>>
         void operator()(ForwardSequence && seq,
@@ -1587,6 +1691,7 @@ namespace details
     /** @ingroup MutatingSequenceOperations
     @brief Тип функционального объекта для случайной тасовка элементов
     последовательности.
+    @todo Возвращать последовательность
     */
     class shuffle_fn
     {
@@ -1678,6 +1783,17 @@ namespace details
     class partition_fn
     {
     public:
+        /** @brief Разделение последовательности в соответствие с предикатом
+        @param in последовательность
+        @param pred предикат
+        @post Переставляет элементы @c in таким образом, что все элемнты,
+        удовлетворяющие @c pred оказываются перед элементами, не
+        удовлетворяющими этому предикату.
+        @return Последовательность @c r такая, что:
+        <tt> original(r) == sequence_fwd<ForwardSequence>(in) </tt>,
+        <tt> all_of(r.traversed_front(), pred) != false </tt> и
+        <tt> none_of(r, pred) != false </tt>.
+        */
         template <class ForwardSequence, class UnaryPredicate>
         auto operator()(ForwardSequence && in, UnaryPredicate pred) const
         -> decltype(::ural::sequence_fwd<ForwardSequence>(in))
@@ -1721,6 +1837,19 @@ namespace details
     class stable_partition_fn
     {
     public:
+        /** @brief Разделение последовательности в соответствие с предикатом
+        @param in последовательность
+        @param pred предикат
+        @post Переставляет элементы @c in таким образом, что все элемнты,
+        удовлетворяющие @c pred оказываются перед элементами, не
+        удовлетворяющими этому предикату.
+        @post Является устойчивым алгоритмом, то есть сохраняет относительный
+        порядок эквивалентных элементов.
+        @return Последовательность @c r такая, что:
+        <tt> original(r) == sequence_fwd<ForwardSequence>(in) </tt>,
+        <tt> all_of(r.traversed_front(), pred) != false </tt> и
+        <tt> none_of(r, pred) != false </tt>.
+        */
         template <class ForwardSequence, class UnaryPredicate>
         auto operator()(ForwardSequence && in, UnaryPredicate pred) const
         -> decltype(::ural::sequence_fwd<ForwardSequence>(in))
@@ -1800,13 +1929,23 @@ namespace details
     };
 
     /** @ingroup MutatingSequenceOperations
-    @brief Тип функционального объекта для копирования последовательности таким
-    образом, что выходная последовательность оказывается разделенной согласно
-    заданному предикату.
+    @brief Тип функционального объекта для копирования элементов
+    последовательности в две разные последовательности в зависимости от того,
+    удовлетворяют ли они предикату.
     */
     class partition_copy_fn
     {
     public:
+        /** @brief Копирование элементов последовательности в две разные
+        последовательности в зависимости от того, удовлетворяют ли они
+        заданному предикату.
+        @param in входная последовательность
+        @param out_true, выходная последовательность для элементов,
+        удовлетворяющих предикату @c pred.
+        @param out_false, выходная последовательность для элементов, не
+        удовлетворяющих предикату @c pred.
+        @return Кортеж, содержащий непройденные части последовательностей.
+        */
         template <class Input, class Output1, class Output2, class UnaryPredicate>
         auto operator()(Input && in, Output1 && out_true, Output2 && out_false,
                         UnaryPredicate pred) const
@@ -1849,6 +1988,15 @@ namespace details
     class partition_point_fn
     {
     public:
+        /** @brief Поиск точки разделения
+        @param in последовательность
+        @param pred предикат
+        @pre <tt> is_partitioned(in, pred) </tt>
+        @return Последовательность @c r такая, что:
+        <tt> original(r) == sequence_fwd<ForwardSequence>(in) </tt>,
+        <tt> all_of(r.traversed_front(), pred) != false </tt> и
+        <tt> none_of(r, pred) != false </tt>.
+        */
         template <class ForwardSequence, class Predicate>
         auto operator()(ForwardSequence && in, Predicate pred) const
         -> decltype(::ural::sequence_fwd<ForwardSequence>(in))
@@ -2009,12 +2157,12 @@ namespace details
         }
 
     private:
-        template <class RandomAccessSequence, class Compare>
+        template <class RASequence, class Compare>
         static void
-        impl(RandomAccessSequence seq, Compare cmp)
+        impl(RASequence seq, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(seq)>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<RASequence, Compare>));
 
             for(auto n = seq.size() / 2; n > 0; -- n)
             {
@@ -2051,7 +2199,7 @@ namespace details
         impl(RASequence seq, Compare cmp)
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<RASequence, Compare>));
 
             assert(::ural::is_heap_until_fn{}(seq, cmp).size() <= 1);
 
@@ -2084,8 +2232,8 @@ namespace details
         static void
         impl(RASequence seq, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<RASequence>));
-            BOOST_CONCEPT_ASSERT((ural::concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<RASequence, Compare>));
 
             assert(is_heap_fn{}(seq, cmp));
             auto const N = seq.size();
@@ -2126,7 +2274,7 @@ namespace details
         impl(RASequence seq, Compare cmp)
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<RASequence, Compare>));
 
             assert(is_heap_fn{}(seq, cmp));
             for(auto n = seq.size(); n > 0; --n)
@@ -2311,6 +2459,10 @@ namespace details
         <tt> less<> </tt>, то есть оператор "меньше".
         @pre Элементы @c e последовательности @c in должны быть разделены
         относительно предиката <tt> cmp(e, value) </tt>.
+        @return Кортеж, равный
+        <tt> make_tuple(lower_bound(std::forward<RASequence>(in), T, cmp),
+                        upper_bound(std::forward<RASequence>(in), T, cmp)),
+        </tt>.
         */
         template <class RASequence, class T, class Compare = ::ural::less<>>
         auto operator()(RASequence && in, T const & value,
@@ -2396,6 +2548,7 @@ namespace details
 
     /** @ingroup SortingOperations
     @brief Тип функционального объекта для быстрой сортировки
+    @todo Возвращать последовательность
     */
     class sort_fn
     {
@@ -2424,6 +2577,7 @@ namespace details
 
     /** @ingroup SortingOperations
     @brief Тип функционального объекта для устойчивой сортировки
+    @todo Возвращать последовательность
     */
     class stable_sort_fn
     {
@@ -2451,6 +2605,7 @@ namespace details
 
     /** @ingroup SortingOperations
     @brief Тип функционального объекта для частичной сортировки
+    @todo Возвращать последовательность
     */
     class partial_sort_fn
     {
@@ -2508,7 +2663,6 @@ namespace details
         @param out выходная последовательность
         @param cmp функция сравнения, по умолчанию используется
         <tt> less<> </tt>, то есть оператор "меньше".
-        @todo Возвращать необработанные части обоих последовательностей
         */
         template <class Input, class RASequence, class Compare = ::ural::less<>>
         auto operator()(Input && in, RASequence && out,
@@ -2551,6 +2705,7 @@ namespace details
     /** @ingroup SortingOperations
     @brief Тип функционального объекта для определение N-го элемента
     сортированной последовательности.
+    @todo Возвращать последовательность
     */
     class nth_element_fn
     {
@@ -2596,7 +2751,7 @@ namespace details
         @param out выходная последовательность
         @param cmp функция сравнения, по умолчанию используется
         <tt> less<> </tt>, то есть оператор "меньше".
-        @return Кортеж, содержащий непройденные части последовательностей
+        @return Кортеж, содержащий непройденные части последовательностей.
         */
         template <class Input1, class Input2, class Output,
                   class Compare = ::ural::less<>>
@@ -2746,9 +2901,20 @@ namespace details
         }
     };
 
+    /** @ingroup NonModifyingSequenceOperations
+    @brief Функциональный объект для проверки того, что одна последовательность
+    является перестановкой другой
+    */
     class is_permutation_fn
     {
     public:
+        /** @brief Проверка того, что одна последовательность являются
+        перестановкой другой.
+        @param s1, s2 прямые последовательности
+        @param pred бинарный предикат
+        @return @b true, если для каждого элемента @c s1 существует эквивалентый
+        в смысле @c pred элемент @c s2.
+        */
         template <class Forward1, class Forward2,
                   class BinaryPredicate = ::ural::equal_to<>>
         bool operator()(Forward1 && s1, Forward2 && s2,
@@ -3227,9 +3393,12 @@ namespace details
     class remove_if_fn
     {
     public:
-        /** @brief Оператор вызова функции
+        /** @brief Устраняет из @c seq элементы, удовлетворяющие предикату
+        @c pred.
         @param seq входная последовательность
         @param pred унарный предикат
+        @return Последовательность, передняя пройденная часть которой содержит
+        неустранённые элементы, причём исходной для неё является @c seq.
         */
         template <class ForwardSequence, class Predicate>
         auto operator()(ForwardSequence && seq, Predicate pred) const
@@ -3264,10 +3433,13 @@ namespace details
     class remove_fn
     {
     public:
-        /** @brief Оператор вызова функции
+        /** @brief Устраняет из @c seq элементы, эквивалентные в смысле @c pred
+        @c value.
         @param seq входная последовательность
         @param value значение
         @param pred бинарный предикат, определяющий эквивалентность элементов
+        @return Последовательность, передняя пройденная часть которой содержит
+        неустранённые элементы, причём исходной для неё является @c seq.
         */
         template <class ForwardSequence, class Value,
                   class BinaryPredicate = ::ural::equal_to<>>

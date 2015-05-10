@@ -61,7 +61,7 @@ namespace ural
         @param in входная последовательность
         @param out выходная последовательность
         @return Кортеж, содержащий непройденные части входной и выходной
-        последовательностей (одна из них будет пустой)
+        последовательностей (одна из них будет пустой).
         */
         template <class Input, class Output>
         auto operator()(Input && in, Output && out) const
