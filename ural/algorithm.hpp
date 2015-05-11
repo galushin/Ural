@@ -1417,6 +1417,16 @@ namespace details
     class rotate_fn
     {
     public:
+        /** @brief Обменивает местами переднюю пройденную и непройденную части
+        последовательности.
+        @param seq последовательность
+        @post Обменивает местами переднюю пройденную и непройденную части
+        последовательности.
+        @return Последовательность @c r такая, что
+        <tt> original(r) == original(seq) </tt> и
+        <tt> rotate_fn{}(r) </tt> приведёт к тому, что будет получена исходная
+        последовательность.
+        */
         template <class ForwardSequence>
         auto operator()(ForwardSequence && seq) const
         -> decltype(::ural::sequence_fwd<ForwardSequence>(seq))
@@ -2419,6 +2429,10 @@ namespace details
         <tt> less<> </tt>, то есть оператор "меньше"
         @pre Элементы @c e последовательности @c in должны быть разделены
         относительно предиката <tt> cmp(e, value) </tt>.
+        @return Последовательность @c r такая, что
+        <tt> original(r) == sequence(in) </tt> и <tt> r.traversed_front() </tt>
+        является наибольшей возможной последовательностью, всё элементы @c x
+        которой удовлетворяют условию <tt> cmp(x, value) </tt>.
         */
         template <class RASequence, class T, class Compare = ::ural::less<>>
         auto operator()(RASequence && in, T const & value,
@@ -2455,6 +2469,10 @@ namespace details
         <tt> less<> </tt>, то есть оператор "меньше"
         @pre Элементы @c e последовательности @c in должны быть разделены
         относительно предиката <tt> cmp(e, value) </tt>.
+        @return Последовательность @c r такая, что
+        <tt> original(r) == sequence(in) </tt> и <tt> r.traversed_front() </tt>
+        является наибольшей возможной последовательностью, всё элементы @c x
+        которой удовлетворяют условию <tt> !cmp(value, x) </tt>.
         */
         template <class RASequence, class T, class Compare = ::ural::less<>>
         auto operator()(RASequence && in, T const & value,
@@ -2535,6 +2553,9 @@ namespace details
         <tt> less<> </tt>, то есть оператор "меньше".
         @pre Элементы @c e последовательности @c in должны быть разделены
         относительно предиката <tt> cmp(e, value) </tt>.
+        @return Последовательность @c r такая, что
+        <tt> original(r) == sequence(in) </tt>, причём все элементы @c r
+        эквивалентны @c value в смысле отношения @c cmp.
         */
         template <class RASequence, class T, class Compare = ::ural::less<>>
         auto operator()(RASequence && in, T const & value,
