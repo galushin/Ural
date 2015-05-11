@@ -1233,11 +1233,12 @@ namespace details
         @param gen фунцкия, которая может быть вызвана без аргументов
         @param n количество
         @param out выходная последовательность
-        @todo n должно иметь тип DifferenceType<Output>
         @return Непройденная часть @c out
+        @todo n должно иметь тип DifferenceType<Output>
+        @todo Что делать, если посещено менее @c n элементов?
         */
         template <class Generator, class N, class Output>
-        auto operator()(Generator gen, N n, Output && out) const
+        auto operator()(Output && out, N n, Generator gen) const
         -> decltype(::ural::sequence_fwd<Output>(out))
         {
             auto in = ural::make_generator_sequence(::ural::make_callable(gen));
@@ -1262,9 +1263,9 @@ namespace details
         */
         template <class ForwardSequence, class T>
         auto operator()(ForwardSequence && seq, T const & value) const
-        -> decltype(sequence_fwd<ForwardSequence>(seq))
+        -> decltype(::ural::sequence_fwd<ForwardSequence>(seq))
         {
-            return this->impl(sequence_fwd<ForwardSequence>(seq), value);
+            return this->impl(::ural::sequence_fwd<ForwardSequence>(seq), value);
         }
 
     private:
@@ -1277,6 +1278,31 @@ namespace details
 
             return generate_fn{}(std::move(seq),
                                  ural::value_function<T const &>(value));
+        }
+    };
+
+    /** @ingroup MutatingSequenceOperations
+    @brief Класс функционального объекта для присваивания заданному количеству
+    элементов последовательности заданного значения.
+    */
+    class fill_n_fn
+    {
+    public:
+        /** @brief Присваивает заданному количеству элементов последовательности
+        значение @c value
+        @param out выходная последовательность
+        @param n количество элементов
+        @param value значение, которое должно быть присвоено элементам
+        @return Непройденная часть @c out
+        @todo n должен иметь тип разности для @c Output
+        */
+        template <class Output, class Size, class T>
+        auto operator()(Output && out, Size n, T const & value) const
+        -> decltype(::ural::sequence_fwd<Output>(out))
+        {
+            auto gen = ::ural::value_function<T const &>(value);
+            return ::ural::generate_n_fn{}(std::forward<Output>(out),
+                                           std::move(n), std::move(gen));
         }
     };
 
@@ -3852,7 +3878,7 @@ namespace details
 
         // 25.3.6 Заполнение
         constexpr auto const fill = fill_fn{};
-        // @todo fill_n
+        constexpr auto const fill_n = fill_n_fn{};
 
         // 25.3.7 Порождение
         constexpr auto const generate = generate_fn{};

@@ -1001,6 +1001,26 @@ BOOST_AUTO_TEST_CASE(fill_n_test)
     auto const n = v_std.size() / 2;
     auto const value = -1;
 
+    auto const r_std = std::fill_n(v_std.begin(), n, value);
+
+    auto const r_ural = ural::fill_n(v_ural, n, value);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
+                                  v_ural.begin(), v_ural.end());
+
+    BOOST_CHECK_EQUAL(r_ural.begin() - v_ural.begin(), r_std - v_std.begin());
+    BOOST_CHECK(r_ural.end() == v_ural.end());
+    BOOST_CHECK(r_ural.traversed_front().begin() == v_ural.begin());
+}
+
+BOOST_AUTO_TEST_CASE(fill_n_test_via_sequence_and_copy)
+{
+    std::vector<int> v_std{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    auto v_ural = v_std;
+
+    auto const n = v_std.size() / 2;
+    auto const value = -1;
+
     std::fill_n(v_std.begin(), n, value);
     auto r = ural::fill(v_ural | ural::taken(n), value);
 
@@ -1067,7 +1087,7 @@ BOOST_AUTO_TEST_CASE(generate_n_terse_test)
 
     // ural
     counter = 0;
-    ural::generate_n(gen, n, r_ural | ural::back_inserter);
+    ural::generate_n(r_ural | ural::back_inserter, n, gen);
 
     // Проверка
     BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
