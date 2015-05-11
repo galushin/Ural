@@ -1897,12 +1897,19 @@ BOOST_AUTO_TEST_CASE(partial_sort_test)
     std::array<int, 10> const xs {5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
     auto ys = xs;
 
-    ural::partial_sort(ys, 3);
+    auto const part = 3;
 
-    BOOST_CHECK(std::is_sorted(ys.begin(), ys.begin() + 3));
+    auto const result = ural::partial_sort(ys, part);
+
+    BOOST_CHECK(std::is_sorted(ys.begin(), ys.begin() + part));
     BOOST_CHECK(ural::is_permutation(xs, ys));
-    BOOST_CHECK(std::all_of(ys.begin() + 3, ys.end(),
+    BOOST_CHECK(std::all_of(ys.begin() + part, ys.end(),
                             [=](int x) {return x >= ys[2];}));
+
+    BOOST_CHECK(result.begin() == ys.end());
+    BOOST_CHECK(result.end()   == ys.end());
+    BOOST_CHECK(result.traversed_front().begin() == ys.begin());
+    BOOST_CHECK(result.traversed_front().end()   == ys.end());
 }
 
 BOOST_AUTO_TEST_CASE(partial_sort_reversed_test)
@@ -1988,7 +1995,7 @@ BOOST_AUTO_TEST_CASE(nth_element_test)
     auto s_std = ural::sequence(x_std) + pos_1;
     auto s_ural = ural::sequence(x_ural) + pos_1;
 
-    ural::nth_element(s_ural);
+    auto result = ural::nth_element(s_ural);
 
     BOOST_CHECK(ural::is_permutation(x_std, x_ural));
     BOOST_CHECK_EQUAL(x_std[pos_1], x_ural[pos_1]);
@@ -1996,6 +2003,11 @@ BOOST_AUTO_TEST_CASE(nth_element_test)
     BOOST_CHECK(ural::is_permutation(s_std, s_ural));
     BOOST_CHECK(ural::is_permutation(s_std.traversed_front(),
                                      s_ural.traversed_front()));
+
+    BOOST_CHECK(result.begin() == x_ural.end());
+    BOOST_CHECK(result.end()   == x_ural.end());
+    BOOST_CHECK(result.traversed_front().begin() == x_ural.begin());
+    BOOST_CHECK(result.traversed_front().end()   == x_ural.end());
 }
 
 // 25.4.3 Бинарный поиск
@@ -2146,10 +2158,15 @@ BOOST_AUTO_TEST_CASE(inplace_merge_test_empty)
 
     auto s = ::ural::sequence(x_ural);
     s += pos;
-    ural::inplace_merge(s);
+    auto result = ural::inplace_merge(s);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
                                   x_ural.begin(), x_ural.end());
+
+    BOOST_CHECK(result.begin() == x_ural.end());
+    BOOST_CHECK(result.end()   == x_ural.end());
+    BOOST_CHECK(result.traversed_front().begin() == x_ural.begin());
+    BOOST_CHECK(result.traversed_front().end()   == x_ural.end());
 }
 
 BOOST_AUTO_TEST_CASE(inplace_merge_test_1)
@@ -2493,7 +2510,12 @@ BOOST_AUTO_TEST_CASE(pop_heap_test)
     while(!ural::empty(v))
     {
         auto const old_top = v.front();
-        ural::pop_heap(v);
+        auto result = ural::pop_heap(v);
+
+        BOOST_CHECK(result.begin() == result.end());
+        BOOST_CHECK(result.begin() == v.end());
+        BOOST_CHECK(result.traversed_front().begin() == v.begin());
+        BOOST_CHECK(result.traversed_front().end() == v.end());
 
         BOOST_CHECK_EQUAL(old_top, v.back());
         v.pop_back();
@@ -2508,11 +2530,16 @@ BOOST_AUTO_TEST_CASE(make_heap_test)
     auto cmp = ural::callable_tracer<ural::less<int>>{};
     cmp.reset_calls();
 
-    ural::make_heap(v, cmp);
+    auto result = ural::make_heap(v, cmp);
 
     BOOST_CHECK(std::is_heap(v.begin(), v.end()));
 
     BOOST_CHECK_GE(3*v.size(), cmp.calls());
+
+    BOOST_CHECK(result.begin() == result.end());
+    BOOST_CHECK(result.begin() == v.end());
+    BOOST_CHECK(result.traversed_front().begin() == v.begin());
+    BOOST_CHECK(result.traversed_front().end() == v.end());
 }
 
 BOOST_AUTO_TEST_CASE(make_heap_odd_size_test)

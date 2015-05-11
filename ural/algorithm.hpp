@@ -2193,10 +2193,12 @@ namespace details
         @param cmp функция сравнения, по умолчанию используется
         <tt> less<> </tt>, то есть оператор "меньше".
         @post <tt> is_heap(std::forward<RASequence>(seq), cmp) </tt>
-        @todo Возвращать исчерпанную последовательность.
+        @return Последовательность, полученная из std::forward<RASequence>(seq)
+        путём продвижения до исчерпания.
         */
         template <class RASequence, class Compare = ural::less<>>
-        void operator()(RASequence && seq, Compare cmp = Compare()) const
+        auto operator()(RASequence && seq, Compare cmp = Compare()) const
+        -> decltype(::ural::sequence_fwd<RASequence>(seq))
         {
             return this->impl(::ural::sequence_fwd<RASequence>(seq),
                               ::ural::make_callable(std::move(cmp)));
@@ -2204,7 +2206,7 @@ namespace details
 
     private:
         template <class RASequence, class Compare>
-        static void
+        static RASequence
         impl(RASequence seq, Compare cmp)
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
@@ -2216,6 +2218,8 @@ namespace details
             }
 
             assert(is_heap_fn{}(seq, cmp));
+
+            return seq += seq.size();
         }
     };
 
@@ -2271,9 +2275,13 @@ namespace details
         @param seq последовательность, представляющая собой бинарную кучу
         @param cmp функция сравнения, по умолчанию используется
         <tt> less<> </tt>, то есть оператор "меньше".
+        @return Последовательность, полученная
+        <tt>::ural::sequence_fwd<RASequence>(seq)</tt> путём продвижения до
+        исчерпания.
         */
         template <class RASequence, class Compare = ural::less<>>
-        void operator()(RASequence && seq, Compare cmp = Compare()) const
+        auto operator()(RASequence && seq, Compare cmp = Compare()) const
+        -> decltype(::ural::sequence_fwd<RASequence>(seq))
         {
             return this->impl(::ural::sequence_fwd<RASequence>(seq),
                               ::ural::make_callable(std::move(cmp)));
@@ -2281,7 +2289,7 @@ namespace details
 
     private:
         template <class RASequence, class Compare>
-        static void
+        static RASequence
         impl(RASequence seq, Compare cmp)
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
@@ -2290,13 +2298,13 @@ namespace details
             assert(is_heap_fn{}(seq, cmp));
             auto const N = seq.size();
 
-            if(N <= 1)
+            if(N > 1)
             {
-                return;
+                ::ural::details::do_swap(seq[0], seq[N-1]);
+                heap_sink_fn{}(seq, 0*N, N-1, cmp);
             }
 
-            ::ural::details::do_swap(seq[0], seq[N-1]);
-            heap_sink_fn{}(seq, 0*N, N-1, cmp);
+            return seq += N;
         }
     };
 
@@ -2351,10 +2359,14 @@ namespace details
     {
     public:
         template <class RASequence, class Compare = ::ural::less<>>
-        void operator()(RASequence && s, Compare cmp = Compare()) const
+        auto operator()(RASequence && s, Compare cmp = Compare()) const
+        -> decltype(::ural::sequence_fwd<RASequence>(s))
         {
-            return this->impl(::ural::sequence_fwd<RASequence>(s),
-                              ::ural::make_callable(std::move(cmp)));
+            // @todo Подумать, что можно возвращать из impl
+            auto seq = ::ural::sequence_fwd<RASequence>(s);
+            this->impl(seq, ::ural::make_callable(std::move(cmp)));
+            seq += seq.size();
+            return seq;
         }
 
     private:
@@ -2363,7 +2375,7 @@ namespace details
         impl(RASequence s, Compare cmp)
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, bool(decltype(*s), decltype(*s))>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<RASequence, Compare>));
 
             if(!s)
             {
@@ -2523,10 +2535,6 @@ namespace details
         <tt> less<> </tt>, то есть оператор "меньше".
         @pre Элементы @c e последовательности @c in должны быть разделены
         относительно предиката <tt> cmp(e, value) </tt>.
-        @return Кортеж, равный
-        <tt> make_tuple(lower_bound(std::forward<RASequence>(in), T, cmp),
-                        upper_bound(std::forward<RASequence>(in), T, cmp)),
-        </tt>.
         */
         template <class RASequence, class T, class Compare = ::ural::less<>>
         auto operator()(RASequence && in, T const & value,
@@ -2674,7 +2682,6 @@ namespace details
 
     /** @ingroup SortingOperations
     @brief Тип функционального объекта для частичной сортировки
-    @todo Возвращать последовательность
     */
     class partial_sort_fn
     {
@@ -2686,14 +2693,20 @@ namespace details
         отсортированны
         @param cmp функция сравнения, по умолчанию используется
         <tt> less<> </tt>, то есть оператор "меньше".
+        @return Последовательность, полученная из
+        <tt> ::ural::sequence_fwd<RASequence>(s) </tt> продвижением до
+        исчерпания.
         */
         template <class RASequence, class Size, class Compare = ::ural::less<>>
-        void operator()(RASequence && s, Size part,
-                        Compare cmp = Compare()) const
+        auto operator()(RASequence && s, Size part, Compare cmp = Compare()) const
+        -> decltype(::ural::sequence_fwd<RASequence>(s))
         {
-            return this->impl(::ural::sequence_fwd<RASequence>(s),
-                              std::move(part),
-                              ::ural::make_callable(std::move(cmp)));
+            // @todo Подумать, что можно возвращать из impl
+            auto seq = ::ural::sequence_fwd<RASequence>(s);
+            this->impl(seq, std::move(part),
+                       ::ural::make_callable(std::move(cmp)));
+            seq += seq.size();
+            return seq;
         }
 
     private:
@@ -2774,7 +2787,6 @@ namespace details
     /** @ingroup SortingOperations
     @brief Тип функционального объекта для определение N-го элемента
     сортированной последовательности.
-    @todo Возвращать последовательность
     */
     class nth_element_fn
     {
@@ -2790,10 +2802,14 @@ namespace details
         @param s последовательность
         @param cmp функция сравнения, по умолчанию используется
         <tt> less<> </tt>, то есть оператор "меньше".
+        @return Последовательность, полученная из
+        <tt> ::ural::sequence_fwd<RASequence>(s) </tt>, продвижением до
+        исчерпания.
         @todo перегрузка, получающая номер элемента
         */
         template <class RASequence, class Compare = ::ural::less<>>
-        void operator()(RASequence && s, Compare cmp = Compare()) const
+        auto operator()(RASequence && s, Compare cmp = Compare()) const
+        -> decltype(::ural::sequence_fwd<RASequence>(s))
         {
             return this->impl(::ural::sequence_fwd<RASequence>(s),
                               ::ural::make_callable(std::move(cmp)));
@@ -2801,7 +2817,7 @@ namespace details
 
     private:
         template <class RASequence, class Compare>
-        static void impl(RASequence s, Compare cmp)
+        static RASequence impl(RASequence s, Compare cmp)
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
             BOOST_CONCEPT_ASSERT((concepts::Sortable<RASequence, Compare>));
@@ -2858,13 +2874,19 @@ namespace details
         @param s последовательность
         @param cmp функция сравнения, по умолчанию используется
         <tt> less<> </tt>, то есть оператор "меньше".
+        @return Последовательность, полученная
+        <tt>::ural::sequence_fwd<RASequence>(seq)</tt> путём продвижения до
+        исчерпания.
         */
         template <class BidirectionalSequence, class Compare = ::ural::less<>>
-        void operator()(BidirectionalSequence && s,
-                        Compare cmp = Compare()) const
+        auto operator()(BidirectionalSequence && s, Compare cmp = Compare()) const
+        -> decltype(::ural::sequence_fwd<BidirectionalSequence>(s))
         {
-            return this->impl(::ural::sequence_fwd<BidirectionalSequence>(s),
-                              ::ural::make_callable(std::move(cmp)));
+            // @todo Подумать, что возвращать из impl
+            auto seq = ::ural::sequence_fwd<BidirectionalSequence>(s);
+            this->impl(seq, ::ural::make_callable(std::move(cmp)));
+            seq += seq.size();
+            return seq;
         }
 
     private:
