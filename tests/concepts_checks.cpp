@@ -33,7 +33,8 @@ BOOST_AUTO_TEST_CASE(archetype_check)
 
     ural::archetypes::callable<void(Type &)> action;
 
-    ural::value_consumer<decltype(action)>() = ural::for_each(in1, action);
+    ural::value_consumer<ural::tuple<decltype(in1), decltype(action)>>()
+        = ural::for_each(in1, action);
 
     ural::value_consumer<decltype(in1)>() = ural::find(in1, Type{});
     ural::value_consumer<decltype(in1)>() = ural::find(in1, Type{}, bin_pred);

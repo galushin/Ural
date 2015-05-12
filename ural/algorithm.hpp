@@ -394,13 +394,15 @@ namespace details
     {
     private:
         template <class Input, class UnaryFunction>
-        static UnaryFunction impl(Input in, UnaryFunction f)
+        static tuple<Input, UnaryFunction>
+        impl(Input in, UnaryFunction f)
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<UnaryFunction, Input>));
 
             auto r = ural::copy_fn{}(in, ural::make_function_output_sequence(std::move(f)));
-            return r[ural::_2].function();
+            return ::ural::make_tuple(std::move(r[ural::_1]),
+                                      std::move(r[ural::_2]).function());
         }
 
     public:
@@ -408,12 +410,15 @@ namespace details
         последовательности
         @param in входная последовательность
         @param f функциональный объект
-        @return @c f
-        @todo Изменить тип возвращаемого значения на tuple<Input, UnaryFunction>
+        @return Кортеж, первый компонент которого получается продвижением
+        <tt> ::ural::sequence_fwd<Input>(in) </tt> до исчерпания, а второй
+        --- <tt> ::ural::make_callable(std::move(f)) </tt> после его применения
+        ко всем элементам последовательности.
         */
         template <class Input, class UnaryFunction>
         auto operator()(Input && in, UnaryFunction f) const
-        -> decltype(::ural::make_callable(std::move(f)))
+        -> tuple<decltype(::ural::sequence_fwd<Input>(in)),
+                 decltype(::ural::make_callable(std::move(f)))>
         {
             return for_each_fn::impl(::ural::sequence_fwd<Input>(in),
                                      ::ural::make_callable(std::move(f)));
@@ -1378,7 +1383,7 @@ namespace details
     public:
         /** @brief Обращение последовательности
         @param seq последовательность
-        @todo Возвращать последовательность
+        @todo Возвращать исчерпанную последовательность
         */
         template <class BidirectionalSequence>
         void operator()(BidirectionalSequence && seq) const
@@ -1562,7 +1567,6 @@ namespace details
     /** @ingroup MutatingSequenceOperations
     @brief Тип функционального объекта для замены элементов последовательности,
     которые удовлетворяют заданному предикату, на новое значение
-    @todo Возвращать последовательность
     */
     class replace_if_fn
     {
@@ -1573,10 +1577,14 @@ namespace details
         @param new_value новое значение
         @post Всем элементам @c x последовательности @c seq, удовлетворяющим
         предикату @c pred, присваивается значение @c new_value.
+        @return Последовательность, полученная из
+        <tt> ::ural::sequence_fwd<ForwardSequence>(seq) </tt> продвижением до
+        исчерпания.
         */
         template <class ForwardSequence, class Predicate, class T>
-        void operator()(ForwardSequence && seq,
+        auto operator()(ForwardSequence && seq,
                         Predicate pred, T const & new_value) const
+        -> decltype(::ural::sequence_fwd<ForwardSequence>(seq))
         {
             return this->impl(::ural::sequence_fwd<ForwardSequence>(seq),
                               ::ural::make_callable(std::move(pred)), new_value);
@@ -1584,7 +1592,7 @@ namespace details
 
     private:
         template <class ForwardSequence, class Predicate, class T>
-        static void
+        static ForwardSequence
         impl(ForwardSequence seq, Predicate pred, T const & new_value)
         {
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
@@ -1599,14 +1607,15 @@ namespace details
                     *seq = new_value;
                 }
             }
+
+            return seq;
         }
     };
 
     /** @ingroup MutatingSequenceOperations
     @brief Тип функционального объекта для замены элементов последовательности,
     эквивалентных заданному значению, на новое значение.
-    @todo Разный тип new_value и old_value
-    @todo Возвращать последовательность
+    @todo Разный тип new_value и old_value (начать с покрытия этого случая тестами)
     */
     class replace_fn
     {
@@ -1620,12 +1629,16 @@ namespace details
         @post Всем элементам @c x последовательности @c seq, эквивалентных
         @c old_value в смысле предиката @c bin_pred, присваивается значение
         @c new_value.
+        @return Последовательность, полученная из
+        <tt> ::ural::sequence_fwd<ForwardSequence>(seq) </tt> продвижением до
+        исчерпания.
         */
         template <class ForwardSequence, class T,
                   class BinaryPredicate = ::ural::equal_to<>>
-        void operator()(ForwardSequence && seq,
+        auto operator()(ForwardSequence && seq,
                         T const & old_value, T const & new_value,
                         BinaryPredicate bin_pred = BinaryPredicate()) const
+        -> decltype(::ural::sequence_fwd<ForwardSequence>(seq))
         {
             return this->impl(::ural::sequence_fwd<ForwardSequence>(seq),
                               old_value, new_value,
@@ -1634,7 +1647,7 @@ namespace details
 
     private:
         template <class ForwardSequence, class T1, class T2, class BinaryPredicate>
-        static void
+        static ForwardSequence
         impl(ForwardSequence seq, T1 const & old_value, T2 const & new_value,
              BinaryPredicate bin_pred)
         {
@@ -1742,7 +1755,6 @@ namespace details
     /** @ingroup MutatingSequenceOperations
     @brief Тип функционального объекта для случайной тасовка элементов
     последовательности.
-    @todo Возвращать последовательность
     */
     class shuffle_fn
     {
@@ -1750,9 +1762,13 @@ namespace details
         /** @brief Случайная тасовка элементов последовательности
         @param s последовательность произвольного доступа
         @param g генератор равномерно распределённых случайных чисел
+        @return Последовательность, полученаня из
+        <tt> ::ural::sequence_fwd<RASequence>(s) </tt> продвижением до
+        исчерпания.
         */
         template <class RASequence, class URNG>
-        void operator()(RASequence && s, URNG && g) const
+        auto operator()(RASequence && s, URNG && g) const
+        -> decltype(::ural::sequence_fwd<RASequence>(s))
         {
             return this->impl(::ural::sequence_fwd<RASequence>(s),
                               std::forward<URNG>(g));
@@ -1760,26 +1776,22 @@ namespace details
 
     private:
         template <class RASequence, class URNG>
-        static void impl(RASequence s, URNG && g)
+        static RASequence impl(RASequence s, URNG && g)
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
             BOOST_CONCEPT_ASSERT((concepts::Uniform_random_number_generator<typename std::decay<URNG>::type>));
             BOOST_CONCEPT_ASSERT((concepts::Permutable<RASequence>));
             BOOST_CONCEPT_ASSERT((concepts::Convertible<ResultType<URNG>, DifferenceType<RASequence>>));
 
-
-            if(!s)
-            {
-                return;
-            }
-
-            for(; !!s; s.pop_back())
+            for(; !!s; ++s)
             {
                 std::uniform_int_distribution<decltype(s.size())>
                     d(0, s.size() - 1);
                 auto index = d(g);
-                ::ural::details::do_swap(s[index], s.back());
+                ::ural::details::do_swap(s[index], s.front());
             }
+
+            return s;
         }
     };
 
@@ -1788,9 +1800,13 @@ namespace details
     public:
         /** @brief Случайная тасовка элементов последовательности
         @param s последовательность произвольного доступа
+        @return Последовательность, полученная из
+        <tt> ::ural::sequence_fwd<RASequence>(s) </tt> продвижением до
+        исчерпания.
         */
         template <class RASequence>
-        void operator()(RASequence && s) const
+        auto operator()(RASequence && s) const
+        -> decltype(::ural::sequence_fwd<RASequence>(s))
         {
             ural::c_rand_engine rnd;
             return ::ural::shuffle_fn{}(std::forward<RASequence>(s), rnd);
@@ -3335,7 +3351,7 @@ namespace details
 
             auto seq = in | ural::outdirected;
 
-            acc = ::ural::for_each_fn{}(std::move(seq), std::move(acc));
+            acc = ::ural::for_each_fn{}(std::move(seq), std::move(acc))[ural::_2];
 
             return acc.result();
         }

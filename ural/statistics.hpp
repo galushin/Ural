@@ -1103,7 +1103,7 @@ namespace tags
         Result r{*seq};
         ++ seq;
 
-        return ural::for_each(seq, std::move(r));
+        return ural::for_each(seq, std::move(r))[ural::_2];
     }
 
     /** @brief Алгоритм сбора описательных статистик

@@ -96,18 +96,25 @@ BOOST_AUTO_TEST_CASE(none_of_test)
 BOOST_AUTO_TEST_CASE(for_each_test)
 {
     std::vector<int> x_std = {1, 2, 3, 4, 5};
-    std::vector<int> x_ural = x_std;
+    std::forward_list<int> x_ural(x_std.begin(), x_std.end());
 
     auto const action = [](int & x) {x *= 2;};
 
     auto const r_std = std::for_each(x_std.begin(), x_std.end(), +action);
     auto const r_ural = ural::for_each(x_ural, +action);
 
-    BOOST_CHECK_EQUAL(r_std, r_ural.target());
+    BOOST_CHECK(r_ural[ural::_1].traversed_front().begin() == x_ural.begin());
+    BOOST_CHECK(r_ural[ural::_1].traversed_front().end() == x_ural.end());
+    BOOST_CHECK(r_ural[ural::_1].begin() == x_ural.end());
+    BOOST_CHECK(r_ural[ural::_1].end() == x_ural.end());
+
+    BOOST_CHECK_EQUAL(r_std, r_ural[ural::_2].target());
 
     BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
                                   x_ural.begin(), x_ural.end());
 }
+
+// @todo Тест for_each с входной последовательностью
 
 // 25.2.5
 BOOST_AUTO_TEST_CASE(find_fail_test_istream)
@@ -806,13 +813,19 @@ BOOST_AUTO_TEST_CASE(transform_2_test_eager)
 BOOST_AUTO_TEST_CASE(replace_test)
 {
     std::vector<int> s_std = {5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
-    std::vector<int> s_ural = s_std;
+    std::forward_list<int> s_ural(s_std.begin(), s_std.end());
 
     auto const old_value = 8;
     auto const new_value = 88;
 
     std::replace(s_std.begin(), s_std.end(), old_value, new_value);
-    ural::replace(s_ural, old_value, new_value);
+
+    auto const r_ural = ural::replace(s_ural, old_value, new_value);
+
+    BOOST_CHECK(r_ural.traversed_front().begin() == s_ural.begin());
+    BOOST_CHECK(r_ural.traversed_front().end() == s_ural.end());
+    BOOST_CHECK(r_ural.begin() == s_ural.end());
+    BOOST_CHECK(r_ural.end() == s_ural.end());
 
     BOOST_CHECK_EQUAL_COLLECTIONS(s_std.begin(), s_std.end(),
                                   s_ural.begin(), s_ural.end());
@@ -823,13 +836,18 @@ BOOST_AUTO_TEST_CASE(replace_if_test)
     std::array<int, 10> const s{5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
 
     auto x_std = s;
-    auto x_ural = s;
+    std::forward_list<int> x_ural(s.begin(), s.end());
 
     auto pred = [](int x) {return x < 5;};
     auto const new_value = 55;
 
     std::replace_if(x_std.begin(), x_std.end(), pred, new_value);
-    ural::replace_if(x_ural, pred, new_value);
+    auto const r_ural = ural::replace_if(x_ural, pred, new_value);
+
+    BOOST_CHECK(r_ural.traversed_front().begin() == x_ural.begin());
+    BOOST_CHECK(r_ural.traversed_front().end() == x_ural.end());
+    BOOST_CHECK(r_ural.begin() == x_ural.end());
+    BOOST_CHECK(r_ural.end() == x_ural.end());
 
     BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
                                   x_ural.begin(), x_ural.end());
@@ -1437,9 +1455,7 @@ BOOST_AUTO_TEST_CASE(reverse_test)
 
     std::reverse(x_std.begin(), x_std.end());
     ural::reverse(x_ural);
-
-    BOOST_CHECK(x_std == x_ural);
-
+    // @todo тест возвращаемого значения
     BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
                                   x_ural.begin(), x_ural.end());
 }
@@ -1592,13 +1608,20 @@ BOOST_AUTO_TEST_CASE(shuffle_test)
 
     auto const v_old = v;
 
-    ural::shuffle(v, ural_test::random_engine());
+    auto const result = ural::shuffle(v, ural_test::random_engine());
+
+    BOOST_CHECK(result.traversed_front().begin() == v.begin());
+    BOOST_CHECK(result.traversed_front().end() == v.end());
+    BOOST_CHECK(result.begin() == v.end());
+    BOOST_CHECK(result.end() == v.end());
 
     BOOST_CHECK_EQUAL(v.size(), v_old.size());
 
     BOOST_CHECK(std::is_permutation(v.begin(), v.end(), v_old.begin()));
 
     BOOST_CHECK(ural::is_permutation(v, v_old));
+
+    // @todo тест того, что перестановки случайные
 }
 
 BOOST_AUTO_TEST_CASE(random_shuffle_test)
@@ -1607,13 +1630,20 @@ BOOST_AUTO_TEST_CASE(random_shuffle_test)
 
     auto const v_old = v;
 
-    ural::random_shuffle(v);
+    auto const result = ural::random_shuffle(v);
+
+    BOOST_CHECK(result.traversed_front().begin() == v.begin());
+    BOOST_CHECK(result.traversed_front().end() == v.end());
+    BOOST_CHECK(result.begin() == v.end());
+    BOOST_CHECK(result.end() == v.end());
 
     BOOST_CHECK_EQUAL(v.size(), v_old.size());
 
     BOOST_CHECK(std::is_permutation(v.begin(), v.end(), v_old.begin()));
 
     BOOST_CHECK(ural::is_permutation(v, v_old));
+
+    // @todo тест того, что перестановки случайные
 }
 
 // 25.3.13 Разделение

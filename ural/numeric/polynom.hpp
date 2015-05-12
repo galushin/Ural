@@ -122,7 +122,7 @@ namespace ural
         horner_accumulator<result_type, X const &> acc(x, *s);
         ++ s;
 
-        return ural::for_each(std::move(s), acc).value();
+        return ural::for_each(std::move(s), acc)[ural::_2].value();
     }
 
     template <class A, class X, class Alloc>

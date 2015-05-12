@@ -337,7 +337,7 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
 
     // Вычисляем выборочную ковариационную матрицу
     auto acc = ural::for_each(sample,
-                              ural::covariance_matrix_accumulator<Vector>(dim));
+                              ural::covariance_matrix_accumulator<Vector>(dim))[ural::_2];
 
     auto S = acc.covariance_matrix();
 
@@ -433,7 +433,7 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
     // Проверить, что scores - некоррелированные, m = 0, s = 1
     {
         auto acc = ural::for_each(scores,
-                                  ural::covariance_matrix_accumulator<Vector>(dim));
+                                  ural::covariance_matrix_accumulator<Vector>(dim))[ural::_2];
 
         auto S = acc.covariance_matrix();
 
