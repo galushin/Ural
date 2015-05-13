@@ -21,18 +21,19 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <forward_list>
-#include <list>
-#include <vector>
-
-#include <boost/mpl/list.hpp>
-
 #include <ural/sequence/transform.hpp>
 #include <ural/numeric/numbers_sequence.hpp>
 #include <ural/algorithm.hpp>
 #include <ural/memory.hpp>
 #include <ural/sequence/all.hpp>
 #include <ural/utility/tracers.hpp>
+
+#include <forward_list>
+#include <forward_list>
+#include <list>
+#include <vector>
+
+#include <boost/mpl/list.hpp>
 
 namespace
 {
@@ -2639,6 +2640,53 @@ BOOST_AUTO_TEST_CASE(is_heap_test_all_permutations)
 }
 
 // 25.4.7 Минимум и максимум
+BOOST_AUTO_TEST_CASE(min_max_for_values_test)
+{
+    constexpr auto const v1 = 5;
+    constexpr auto const v2 = 17;
+
+    static_assert(ural::min(v1, v1) == v1, "");
+    static_assert(ural::min(v1, v2) == v1, "");
+    static_assert(ural::min(v2, v1) == v1, "");
+    static_assert(ural::min(v2, v2) == v2, "");
+
+    static_assert(ural::max(v1, v1) == v1, "");
+    static_assert(ural::max(v1, v2) == v2, "");
+    static_assert(ural::max(v2, v1) == v2, "");
+    static_assert(ural::max(v2, v2) == v2, "");
+
+    typedef std::pair<int const &, int const &> Pair;
+
+    static_assert(ural::minmax(v1, v1) == Pair(v1, v1), "");
+    static_assert(ural::minmax(v1, v2) == Pair(v1, v2), "");
+    static_assert(ural::minmax(v2, v1) == Pair(v1, v2), "");
+    static_assert(ural::minmax(v2, v2) == Pair(v2, v2), "");
+
+    BOOST_CHECK(true);
+}
+
+BOOST_AUTO_TEST_CASE(min_max_stability_test)
+{
+    auto const v1 = 'a';
+    auto const v2 = 'A';
+
+    auto cmp = [](char x, char y) { return std::toupper(x) < std::toupper(y); };
+
+     BOOST_CHECK_EQUAL(ural::min(v1, v2, cmp), v1);
+     BOOST_CHECK_EQUAL(ural::min(v2, v1, cmp), v2);
+
+     BOOST_CHECK_EQUAL(ural::max(v1, v2, cmp), v1);
+     BOOST_CHECK_EQUAL(ural::max(v2, v1, cmp), v2);
+
+     BOOST_CHECK_EQUAL(ural::minmax(v1, v2, cmp).first, v1);
+     BOOST_CHECK_EQUAL(ural::minmax(v1, v2, cmp).second, v2);
+
+     BOOST_CHECK_EQUAL(ural::minmax(v2, v1, cmp).first, v2);
+     BOOST_CHECK_EQUAL(ural::minmax(v2, v1, cmp).second, v1);
+}
+
+// @todo перегрузки min/max/minmax для интервалов и списков инициализации
+
 BOOST_AUTO_TEST_CASE(min_element_test)
 {
     std::vector<int> const v{3, 1, 4, 1, 5, 9, 2, 6, 5};

@@ -3326,6 +3326,106 @@ namespace details
 
     // Поиск наибольшего и наименьшего
     /** @ingroup SortingOperations
+    @brief Тип функционального объекта для поиска наименьшего значения
+    */
+    class min_fn
+    {
+    public:
+        /** @brief Определение наименьшего из двух значений
+        @param x, y аргументы
+        @pre @c T должен быть @c TotallyOrdered
+        @return Наименьший из @c x и @c y, если они равны, то возвращает @c x.
+        */
+        template <class T>
+        constexpr T const & operator()(T const & x, T const & y) const
+        {
+            return (*this)(x, y, ural::less<>{});
+        }
+
+        /** @brief Определение наименьшего из двух значений
+        @param x, y аргументы
+        @param cmp функция сравнения
+        @pre @c Compare должент быть <tt> Relation<FunctionType<Comp>, T> </tt>
+        @return Если <tt> cmp(y, x) </tt>, то возвращает @c y, иначе --- @c x.
+        */
+        template <class T, class Compare>
+        constexpr T const &
+        operator()(T const & x, T const & y, Compare cmp) const
+        {
+            return cmp(y, x) ? y : x;
+        }
+    };
+
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для поиска наибольшего значения
+    @note А. Степанов считает, что при эквивалентности аргументов нужно
+    возвращать второй, чтобы обеспечить устойчивость.
+    */
+    class max_fn
+    {
+    public:
+        /** @brief Определение наибольшего из двух значений
+        @pre @c T должен быть @c TotallyOrdered
+        @param x, y аргументы
+        @return Если <tt> cmp(x, y) </tt>, то возвращает @c y, иначе --- @c x.
+        */
+        template <class T>
+        constexpr T const & operator()(T const & x, T const & y) const
+        {
+            return (*this)(x, y, ural::less<>{});
+        }
+
+        /** @brief Определение наибольшего из двух значений
+        @param x, y аргументы
+        @param cmp функция сравнения
+        @pre @c Compare должент быть <tt> Relation<FunctionType<Comp>, T> </tt>
+        @return Наибольший из @c x и @c y, если они равны, то возвращает @c x.
+        */
+        template <class T, class Compare>
+        constexpr T const &
+        operator()(T const & x, T const & y, Compare cmp) const
+        {
+            return cmp(x, y) ? y : x;
+        }
+    };
+
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для поиска наименьшего и наибольшего
+    значений одновременно.
+    */
+    class minmax_fn
+    {
+    public:
+        /** @brief Определение наименьшего и наименьшего из двух значений
+        @pre @c T должен быть @c TotallyOrdered
+        @param x, y аргументы
+        @return Если <tt> y < x </tt>, то возвращает <tt> {y, x} </tt>, иначе
+        --- <tt> {x, y} </tt>.
+        */
+        template <class T>
+        constexpr std::pair<T const &, T const &>
+        operator()(T const & x, T const & y) const
+        {
+            return (*this)(x, y, ural::less<>{});
+        }
+
+        /** @brief Определение наименьшего и наименьшего из двух значений
+        @param x, y аргументы
+        @param cmp функция сравнения
+        @pre @c Compare должент быть <tt> Relation<FunctionType<Comp>, T> </tt>
+        Если <tt> cmp(y, x) </tt>, то возвращает <tt> {y, x} </tt>, иначе
+        --- <tt> {x, y} </tt>.
+        */
+        template <class T, class Compare>
+        constexpr std::pair<T const &, T const &>
+        operator()(T const & x, T const & y, Compare cmp) const
+        {
+            using Pair = std::pair<T const &, T const &>;
+            return cmp(y, x) ? Pair(y, x) : Pair(x, y);
+        }
+    };
+
+    /** @ingroup SortingOperations
     @brief Тип функционального объекта для поиска наименьшего элемента
     последовательности.
     */
@@ -3980,6 +4080,9 @@ namespace details
         constexpr auto const is_heap_until = is_heap_until_fn{};
 
         // 25.4.7 Наибольшее и наименьшее значение
+        constexpr auto const min = min_fn{};
+        constexpr auto const max = max_fn{};
+        constexpr auto const minmax = minmax_fn{};
         constexpr auto const min_element = min_element_fn{};
         constexpr auto const max_element = max_element_fn{};
         constexpr auto const minmax_element = minmax_element_fn{};
