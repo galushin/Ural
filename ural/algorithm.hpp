@@ -22,7 +22,8 @@
  @todo Сгруппировать объявления переменных
  @todo Проверка концепций в операторах ()
  @todo Проверить возможность замены ForwardSequence на OutputSequence
- @todo Стоит ли определить типы возврщаемых значений как в Range extensions
+ @todo Определить типы возврщаемых значений как в Range extensions
+ @todo устранить дублирование в алгортмах за счёт CRTP/Фасадов
 */
 
 /** @defgroup Algorithms Алгоритмы
@@ -3354,6 +3355,45 @@ namespace details
         {
             return cmp(y, x) ? y : x;
         }
+
+        /** @brief Определение наименьшего из значений в списке инициализаторов
+        @param values список инициализаторов
+        @pre <tt> values.begin() != values.end() </tt>
+        @return Наименьшее значение в списке инициализаторов
+        */
+        template <class T>
+        constexpr T
+        operator()(std::initializer_list<T> values) const
+        {
+            return (*this)(values, ::ural::less<>{});
+        }
+
+        /** @brief Определение наименьшего из значений в списке инициализаторов
+        @param values список инициализаторов
+        @param cmp функция сравнения
+        @pre <tt> values.begin() != values.end() </tt>
+        @return Наименьшее значение в списке инициализаторов
+        */
+        template <class T, class Compare>
+        constexpr T
+        operator()(std::initializer_list<T> values, Compare cmp) const
+        {
+            return values.size() > 0
+                   ? this->impl(values.begin() + 1, values.end(),
+                                std::move(cmp), *(values.begin()))
+                   : throw std::logic_error("Must be not empty");
+        }
+
+    private:
+        template <class T, class Compare>
+        constexpr T
+        impl(T const * first, T const * last, Compare cmp, T result) const
+        {
+            return first == last
+                   ? std::move(result)
+                   : this->impl(first + 1, last, std::move(cmp),
+                                (*this)(result, *first, cmp));
+        }
     };
 
     /** @ingroup SortingOperations
@@ -3386,6 +3426,45 @@ namespace details
         operator()(T const & x, T const & y, Compare cmp) const
         {
             return cmp(x, y) ? y : x;
+        }
+
+        /** @brief Определение наибольшего из значений в списке инициализаторов
+        @param values список инициализаторов
+        @pre <tt> values.begin() != values.end() </tt>
+        @return Наибольшее значение в списке инициализаторов
+        */
+        template <class T>
+        constexpr T
+        operator()(std::initializer_list<T> values) const
+        {
+            return (*this)(values, ::ural::less<>{});
+        }
+
+        /** @brief Определение наибольшего из значений в списке инициализаторов
+        @param values список инициализаторов
+        @param cmp функция сравнения
+        @pre <tt> values.begin() != values.end() </tt>
+        @return Наибольшее значение в списке инициализаторов
+        */
+        template <class T, class Compare>
+        constexpr T
+        operator()(std::initializer_list<T> values, Compare cmp) const
+        {
+            return values.size() > 0
+                   ? this->impl(values.begin() + 1, values.end(),
+                                std::move(cmp), *(values.begin()))
+                   : throw std::logic_error("Must be not empty");
+        }
+
+    private:
+        template <class T, class Compare>
+        constexpr T
+        impl(T const * first, T const * last, Compare cmp, T result) const
+        {
+            return first == last
+                   ? std::move(result)
+                   : this->impl(first + 1, last, std::move(cmp),
+                                (*this)(result, *first, cmp));
         }
     };
 
@@ -3422,6 +3501,61 @@ namespace details
         {
             using Pair = std::pair<T const &, T const &>;
             return cmp(y, x) ? Pair(y, x) : Pair(x, y);
+        }
+
+        /** @brief Определение наименьшего и наибольшего из значений в списке
+        инициализаторов
+        @param values список инициализаторов
+        @pre <tt> values.begin() != values.end() </tt>
+        @return <tt> std::pair<T, T>(x, y) </tt>, где @c x --- наименьшее, а
+        @c y --- наибольшее из значений в списке инициализаторов.
+        */
+        template <class T>
+        constexpr std::pair<T, T>
+        operator()(std::initializer_list<T> values) const
+        {
+            return (*this)(values, ::ural::less<>{});
+        }
+
+        /** @brief Определение наименьшего и наибольшего из значений в списке
+        инициализаторов
+        @param values список инициализаторов
+        @param cmp функция сравнения
+        @pre <tt> values.begin() != values.end() </tt>
+        @return <tt> std::pair<T, T>(x, y) </tt>, где @c x --- наименьшее, а
+        @c y --- наибольшее из значений в списке инициализаторов.
+        */
+        template <class T, class Compare>
+        constexpr std::pair<T, T>
+        operator()(std::initializer_list<T> values, Compare cmp) const
+        {
+            return values.size() > 0
+                   ? this->impl(values.begin() + 1, values.end(),
+                                std::move(cmp),
+                                std::make_pair(*(values.begin()), *(values.begin())))
+                   : throw std::logic_error("Must be not empty");
+        }
+
+    private:
+        template <class T, class Compare>
+        constexpr std::pair<T, T>
+        impl(T const * first, T const * last, Compare cmp,
+             std::pair<T, T> result) const
+        {
+            return first == last
+                   ? std::move(result)
+                   : this->impl(first + 1, last, std::move(cmp),
+                                this->update_minmax_pair(*first, cmp, result));
+        }
+
+        template <class T, class Compare>
+        constexpr std::pair<T, T>
+        update_minmax_pair(T x, Compare cmp, std::pair<T, T> p) const
+        {
+            return cmp(x, p.first)
+                   ? std::make_pair(std::move(x), std::move(p.second))
+                   : cmp(p.second, x) ? std::make_pair(std::move(p.first), std::move(x))
+                                      : std::move(p);
         }
     };
 

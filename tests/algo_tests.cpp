@@ -2672,20 +2672,58 @@ BOOST_AUTO_TEST_CASE(min_max_stability_test)
 
     auto cmp = [](char x, char y) { return std::toupper(x) < std::toupper(y); };
 
-     BOOST_CHECK_EQUAL(ural::min(v1, v2, cmp), v1);
-     BOOST_CHECK_EQUAL(ural::min(v2, v1, cmp), v2);
+    BOOST_CHECK_EQUAL(ural::min(v1, v2, cmp), v1);
+    BOOST_CHECK_EQUAL(ural::min(v2, v1, cmp), v2);
 
-     BOOST_CHECK_EQUAL(ural::max(v1, v2, cmp), v1);
-     BOOST_CHECK_EQUAL(ural::max(v2, v1, cmp), v2);
+    BOOST_CHECK_EQUAL(ural::max(v1, v2, cmp), v1);
+    BOOST_CHECK_EQUAL(ural::max(v2, v1, cmp), v2);
 
-     BOOST_CHECK_EQUAL(ural::minmax(v1, v2, cmp).first, v1);
-     BOOST_CHECK_EQUAL(ural::minmax(v1, v2, cmp).second, v2);
+    BOOST_CHECK_EQUAL(ural::minmax(v1, v2, cmp).first, v1);
+    BOOST_CHECK_EQUAL(ural::minmax(v1, v2, cmp).second, v2);
 
-     BOOST_CHECK_EQUAL(ural::minmax(v2, v1, cmp).first, v2);
-     BOOST_CHECK_EQUAL(ural::minmax(v2, v1, cmp).second, v1);
+    BOOST_CHECK_EQUAL(ural::minmax(v2, v1, cmp).first, v2);
+    BOOST_CHECK_EQUAL(ural::minmax(v2, v1, cmp).second, v1);
 }
 
-// @todo перегрузки min/max/minmax для интервалов и списков инициализации
+BOOST_AUTO_TEST_CASE(min_max_for_init_list_test)
+{
+    constexpr auto const r = ::ural::min({3, 1, 4, 1, 5, 9, 2});
+    constexpr auto const R = ::ural::max({3, 1, 4, 1, 5, 9, 2});
+    constexpr auto const rR = ::ural::minmax({3, 1, 4, 1, 5, 9, 2});
+
+    static_assert(r == 1, "");
+    static_assert(R == 9, "");
+    static_assert(rR.first == 1, "");
+    static_assert(rR.second == 9, "");
+
+    std::initializer_list<int> e;
+
+    BOOST_CHECK_THROW(::ural::min(e), std::logic_error);
+    BOOST_CHECK_THROW(::ural::max(e), std::logic_error);
+    BOOST_CHECK_THROW(::ural::minmax(e), std::logic_error);
+}
+
+BOOST_AUTO_TEST_CASE(min_max_for_init_list_stability)
+{
+     auto cmp = [](char x, char y) { return std::toupper(x) < std::toupper(y); };
+
+    auto const r = ::ural::min({'c', 'a', 'd', 'A', 'E', 'Z', 'B'}, cmp);
+    auto const R = ::ural::max({'c', 'a', 'd', 'A', 'E', 'Z', 'B'}, cmp);
+    auto const rR = ::ural::minmax({'c', 'a', 'd', 'A', 'E', 'Z', 'B'}, cmp);
+
+    BOOST_CHECK_EQUAL(r, 'a');
+    BOOST_CHECK_EQUAL(R, 'Z');
+    BOOST_CHECK_EQUAL(rR.first, 'a');
+    BOOST_CHECK_EQUAL(rR.second, 'Z');
+
+    std::initializer_list<char> e;
+
+    BOOST_CHECK_THROW(::ural::min(e, cmp), std::logic_error);
+    BOOST_CHECK_THROW(::ural::max(e, cmp), std::logic_error);
+    BOOST_CHECK_THROW(::ural::minmax(e, cmp), std::logic_error);
+}
+
+// @todo перегрузки min/max/minmax для интервалов
 
 BOOST_AUTO_TEST_CASE(min_element_test)
 {
