@@ -1616,7 +1616,6 @@ namespace details
     /** @ingroup MutatingSequenceOperations
     @brief Тип функционального объекта для замены элементов последовательности,
     эквивалентных заданному значению, на новое значение.
-    @todo Разный тип new_value и old_value (начать с покрытия этого случая тестами)
     */
     class replace_fn
     {
@@ -1634,10 +1633,10 @@ namespace details
         <tt> ::ural::sequence_fwd<ForwardSequence>(seq) </tt> продвижением до
         исчерпания.
         */
-        template <class ForwardSequence, class T,
+        template <class ForwardSequence, class T1, class T2,
                   class BinaryPredicate = ::ural::equal_to<>>
         auto operator()(ForwardSequence && seq,
-                        T const & old_value, T const & new_value,
+                        T1 const & old_value, T2 const & new_value,
                         BinaryPredicate bin_pred = BinaryPredicate()) const
         -> decltype(::ural::sequence_fwd<ForwardSequence>(seq))
         {

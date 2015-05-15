@@ -14,6 +14,7 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <ural/math/rational.hpp>
 #include <ural/math.hpp>
 #include <ural/utility/tracers.hpp>
 #include <ural/functional.hpp>
@@ -167,19 +168,22 @@ BOOST_AUTO_TEST_CASE(function_tracer_test)
 
 BOOST_AUTO_TEST_CASE(replace_function_test)
 {
-    auto const old_value = -1;
+    auto const old_value = ::ural::rational<int>(-1);
     auto const new_value = 1;
     auto const other_value = 42;
 
     BOOST_CHECK(other_value != old_value);
     BOOST_CHECK(other_value != new_value);
 
-    ural::replace_function<int> const f{old_value, new_value};
+    ural::replace_function<::ural::rational<int>, int> const
+        f{old_value, new_value};
 
     BOOST_CHECK_EQUAL(old_value, f.old_value());
     BOOST_CHECK_EQUAL(new_value, f.new_value());
 
-    BOOST_CHECK_EQUAL(new_value, f(old_value));
+    BOOST_CHECK_EQUAL(old_value.denominator(), 1);
+
+    BOOST_CHECK_EQUAL(new_value, f(old_value.numerator()));
     BOOST_CHECK_EQUAL(new_value, f(new_value));
     BOOST_CHECK_EQUAL(other_value, f(other_value));
 }
@@ -201,7 +205,7 @@ BOOST_AUTO_TEST_CASE(replace_function_test_custom_predicate)
     BOOST_CHECK(!eq(other_value, old_value));
     BOOST_CHECK(!eq(other_value, new_value));
 
-    ural::replace_function<decltype(old_value), decltype(eq)> const
+    ural::replace_function<decltype(old_value), decltype(new_value), decltype(eq)> const
         f{old_value, new_value, eq};
 
     BOOST_CHECK(eq(old_value, f.old_value()));

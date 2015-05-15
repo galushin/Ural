@@ -27,9 +27,9 @@
 
 namespace ural
 {
-    template <class Sequence, class T, class BinaryPredicate>
+    template <class Sequence, class T1, class T2, class BinaryPredicate>
     auto make_replace_sequence(Sequence && seq,
-                               T const & old_value, T const & new_value,
+                               T1 const & old_value, T2 const & new_value,
                                BinaryPredicate bin_pred)
     -> decltype(::ural::make_transform_sequence(::ural::make_replace_function(old_value, new_value, std::move(bin_pred)),
                                                 std::forward<Sequence>(seq)))
@@ -41,8 +41,8 @@ namespace ural
 
     }
 
-    template <class Sequence, class T>
-    auto make_replace_sequence(Sequence && seq, T const & old_value, T const & new_value)
+    template <class Sequence, class T1, class T2>
+    auto make_replace_sequence(Sequence && seq, T1 const & old_value, T2 const & new_value)
     -> decltype(::ural::make_replace_sequence(std::forward<Sequence>(seq), old_value, new_value, equal_to<>{}))
     {
         return ::ural::make_replace_sequence(std::forward<Sequence>(seq),

@@ -103,10 +103,11 @@ namespace ural
     }
 
     /** @brief Функциональный объект, заменяющий заданное значение на новое
+    @tparam T_old тип старого значения
     @tparam T тип значения
     @tparam BinaryPredicate бинарный предикат над @c T
     */
-    template <class T, class BinaryPredicate = ural::equal_to<> >
+    template <class T_old, class T, class BinaryPredicate = ural::equal_to<> >
     class replace_function
     {
     friend constexpr bool
@@ -129,7 +130,7 @@ namespace ural
         @post <tt> this->old_value() == old_value </tt>
         @post <tt> this->new_value() == new_value </tt>
         */
-        constexpr explicit replace_function(T old_value, T new_value)
+        constexpr explicit replace_function(T_old old_value, T new_value)
          : members_{std::move(old_value), std::move(new_value),
                     predicate_type{}}
         {}
@@ -142,8 +143,8 @@ namespace ural
         @post <tt> this->old_value() == old_value </tt>
         @post <tt> this->new_value() == new_value </tt>
         */
-        constexpr explicit replace_function(T old_value, T new_value,
-                                           BinaryPredicate pred)
+        constexpr explicit replace_function(T_old old_value, T new_value,
+                                            BinaryPredicate pred)
          : members_{std::move(old_value), std::move(new_value),
                     make_callable(std::move(pred))}
         {}
@@ -152,7 +153,7 @@ namespace ural
         /** @brief Заменяемое значение
         @return Заменяемое значение
         */
-        constexpr T const & old_value() const
+        constexpr T_old const & old_value() const
         {
             return members_[ural::_1];
         }
@@ -185,7 +186,7 @@ namespace ural
         }
 
     private:
-        ural::tuple<T, T, predicate_type> members_;
+        ural::tuple<T_old, T, predicate_type> members_;
     };
 
     /** @brief Функция создания @c replace_function с нестандартным предикатом,
@@ -202,13 +203,15 @@ namespace ural
     По умолчанию сохраняются значения, а не ссылки. Чтобы избежать копирования,
     следует обернуть объекты в вызовы std::cref()
     */
-    template <class T, class BinaryPredicate>
-    constexpr replace_function<typename reference_wrapper_to_reference<T>::type,
-                              BinaryPredicate>
-    make_replace_function(T old_value, T new_value, BinaryPredicate pred)
+    template <class T1, class T2, class BinaryPredicate>
+    constexpr replace_function<typename reference_wrapper_to_reference<T1>::type,
+                               typename reference_wrapper_to_reference<T2>::type,
+                               BinaryPredicate>
+    make_replace_function(T1 old_value, T2 new_value, BinaryPredicate pred)
     {
-        typedef typename reference_wrapper_to_reference<T>::type T_unwrapped;
-        typedef replace_function<T_unwrapped, BinaryPredicate> Function;
+        typedef typename reference_wrapper_to_reference<T1>::type T1_unwrapped;
+        typedef typename reference_wrapper_to_reference<T2>::type T2_unwrapped;
+        typedef replace_function<T1_unwrapped, T2_unwrapped, BinaryPredicate> Function;
 
         return Function(std::move(old_value), std::move(new_value),
                         std::move(pred));
@@ -221,14 +224,16 @@ namespace ural
     @param new_value новое значение
     @return <tt> replace_function<T>(std::move(old_value), std::move(new_value))  </tt>
     */
-    template <class T>
-    constexpr replace_function<typename reference_wrapper_to_reference<T>::type,
-                              ural::equal_to<>>
-    make_replace_function(T old_value, T new_value)
+    template <class T1, class T2>
+    constexpr replace_function<typename reference_wrapper_to_reference<T1>::type,
+                               typename reference_wrapper_to_reference<T2>::type,
+                               ural::equal_to<>>
+    make_replace_function(T1 old_value, T2 new_value)
     {
-        typedef typename reference_wrapper_to_reference<T>::type T_unwrapped;
-        return replace_function<T_unwrapped>(std::move(old_value),
-                                             std::move(new_value));
+        typedef typename reference_wrapper_to_reference<T1>::type T1_unwrapped;
+        typedef typename reference_wrapper_to_reference<T2>::type T2_unwrapped;
+        typedef replace_function<T1_unwrapped, T2_unwrapped> Function;
+        return Function(std::move(old_value), std::move(new_value));
     }
 }
 // namespace ural

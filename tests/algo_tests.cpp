@@ -21,6 +21,7 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <ural/math/rational.hpp>
 #include <ural/sequence/transform.hpp>
 #include <ural/numeric/numbers_sequence.hpp>
 #include <ural/algorithm.hpp>
@@ -811,15 +812,17 @@ BOOST_AUTO_TEST_CASE(transform_2_test_eager)
 }
 
 // 25.3.5 Замена
-BOOST_AUTO_TEST_CASE(replace_test)
+BOOST_AUTO_TEST_CASE(replace_test_different_types)
 {
     std::vector<int> s_std = {5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
     std::forward_list<int> s_ural(s_std.begin(), s_std.end());
 
-    auto const old_value = 8;
+    auto const old_value = ural::rational<int>(8);
     auto const new_value = 88;
 
-    std::replace(s_std.begin(), s_std.end(), old_value, new_value);
+    BOOST_CHECK_EQUAL(old_value.denominator(), 1);
+
+    std::replace(s_std.begin(), s_std.end(), old_value.numerator(), new_value);
 
     auto const r_ural = ural::replace(s_ural, old_value, new_value);
 
@@ -860,10 +863,12 @@ BOOST_AUTO_TEST_CASE(replace_sequence_test_cref)
     std::vector<int> s_std = {5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
     std::vector<int> s_ural = s_std;
 
-    auto const old_value = 8;
+    auto const old_value = ural::rational<int>(8);
     auto const new_value = 88;
 
-    std::replace(s_std.begin(), s_std.end(), old_value, new_value);
+    BOOST_CHECK_EQUAL(old_value.denominator(), 1);
+
+    std::replace(s_std.begin(), s_std.end(), old_value.numerator(), new_value);
     ural::copy(ural::make_replace_sequence(s_ural, std::cref(old_value),
                                            std::cref(new_value)), s_ural);
 

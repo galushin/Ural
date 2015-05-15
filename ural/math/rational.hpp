@@ -255,7 +255,7 @@ namespace ural
         @post <tt> this->numerator() == x </tt>
         @post <tt> this->denominator() == 1 </tt>
         */
-        explicit constexpr rational(IntegerType x)
+        constexpr rational(IntegerType x)
          : rational(IntegerType{std::move(x)}, IntegerType(1),
                     unsafe_reduced_tag{})
         {}
@@ -268,7 +268,7 @@ namespace ural
         @post <tt> this->numerator() == num / g * sign(denom) </tt>
         @post <tt> this->denominator() == abs(denom) / g </tt>
         */
-        explicit constexpr rational(IntegerType num, IntegerType denom)
+        constexpr rational(IntegerType num, IntegerType denom)
          : rational(prepare_numerator(num, denom),
                     prepare_denominator(denom),
                     ural::gcd(num, denom),
