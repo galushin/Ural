@@ -42,10 +42,10 @@ namespace ural
     {};
 
     struct finite_random_access_traversal_tag
-     : random_access_traversal_tag
+     : bidirectional_traversal_tag
     {
     public:
-        constexpr operator bidirectional_traversal_tag() const;
+        constexpr operator random_access_traversal_tag() const;
     };
 
     single_pass_traversal_tag

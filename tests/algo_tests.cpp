@@ -1452,6 +1452,29 @@ BOOST_AUTO_TEST_CASE(unique_sequence_move_only)
 }
 
 // 25.3.10 Обращение
+BOOST_AUTO_TEST_CASE(reverse_forward_test)
+{
+    std::vector<int> const src = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+
+    for(auto n : ural::numbers(0, src.size() + 1))
+    {
+        BOOST_CHECK_LE(n, src.size());
+
+        std::list<int> c_std(src.begin(), src.begin() + n);
+        std::forward_list<int> c_ural(c_std.begin(), c_std.end());
+
+        std::reverse(c_std.begin(), c_std.end());
+
+        auto const result = ural::reverse(c_ural);
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(c_std.begin(), c_std.end(),
+                                      c_ural.begin(), c_ural.end());
+
+        BOOST_CHECK(result.traversed_begin() == c_ural.begin());
+        BOOST_CHECK(result.begin() == c_ural.end());
+        BOOST_CHECK(result.end() == c_ural.end());
+    }
+}
 BOOST_AUTO_TEST_CASE(reverse_test)
 {
     std::list<int> const src = {1, 2, 3, 4, 5, 6};
@@ -1460,10 +1483,15 @@ BOOST_AUTO_TEST_CASE(reverse_test)
     auto x_ural = src;
 
     std::reverse(x_std.begin(), x_std.end());
-    ural::reverse(x_ural);
-    // @todo тест возвращаемого значения
+    auto const result = ural::reverse(x_ural);
+
     BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
                                   x_ural.begin(), x_ural.end());
+
+    BOOST_CHECK(result.traversed_begin() == x_ural.begin());
+    BOOST_CHECK(result.begin() == x_ural.end());
+    BOOST_CHECK(result.end() == x_ural.end());
+    BOOST_CHECK(result.traversed_end() == x_ural.end());
 }
 
 BOOST_AUTO_TEST_CASE(reversed_reverse_test)

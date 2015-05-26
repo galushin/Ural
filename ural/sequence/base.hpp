@@ -310,6 +310,18 @@ namespace ural
         return s;
     }
 
+    class exhaust_front_fn
+    {
+    public:
+        template <class Sequence>
+        Sequence operator()(Sequence s) const
+        {
+            // @todo Добавить в концепцию
+            s.exhaust_front();
+            return s;
+        }
+    };
+
     namespace
     {
         /** @brief Функциональный объект для продвижения последовательности на
@@ -321,6 +333,10 @@ namespace ural
         массивов/контейнеров и последовательностей
         */
         constexpr auto const size = ural::size_fn{};
+
+        constexpr auto const exhaust_front = ::ural::exhaust_front_fn{};
+
+        // @todo Добавить exhaust_back, в том числе в концепцию
     }
 }
 // namespace ural

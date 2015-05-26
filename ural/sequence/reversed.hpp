@@ -110,6 +110,16 @@ namespace ural
             return base_.shrink_back();
         }
 
+        /** @brief Исчерпание последовательности за константное время в прямом
+        порядке
+        @post <tt> !*this == true </tt>
+        @pre <tt> *this </tt> должна быть конечной
+        */
+        void exhaust_front()
+        {
+            return this->base_.exhaust_back();
+        }
+
         // Двусторонняя последовательность
         /** @brief Задний элемент последовательности
         @pre <tt> !*this == false </tt>
@@ -139,6 +149,12 @@ namespace ural
         {
             return base_.shrink_front();
         }
+
+        /** @brief Исчерпание последовательности в обратном порядке за
+        константное время
+        @post <tt> !*this == true </tt>
+        */
+        void exhaust_back();
 
         // Последовательность произвольного доступа
         /** @brief Индексированный доступ

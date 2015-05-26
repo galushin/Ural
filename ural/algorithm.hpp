@@ -74,6 +74,10 @@
 
 namespace ural
 {
+    // @todo Где это должно быть?
+    template <class S>
+    using SequenceType = decltype(sequence(std::declval<S>()));
+
     template <class T1, class T2>
     void swap(T1 & x, T2 & y);
 
@@ -1378,26 +1382,71 @@ namespace details
 
     /** @ingroup MutatingSequenceOperations
     @brief Тип функционального объекта обращения последовательности
+    @todo Отдельный алгоритм для последовательностей с произвольным доступом
     */
     class reverse_fn
     {
     public:
         /** @brief Обращение последовательности
         @param seq последовательность
-        @todo Возвращать исчерпанную последовательность
         */
         template <class BidirectionalSequence>
-        void operator()(BidirectionalSequence && seq) const
+        auto operator()(BidirectionalSequence && seq) const
+        -> decltype(::ural::sequence_fwd<BidirectionalSequence>(seq))
         {
-            return this->impl(::ural::sequence_fwd<BidirectionalSequence>(seq));
+            typedef typename SequenceType<decltype(seq)>::traversal_tag
+                Traversal;
+
+            return this->impl(::ural::sequence_fwd<BidirectionalSequence>(seq),
+                              Traversal());
         }
 
     private:
+        template <class ForwardSequence, class Size>
+        void impl_n(ForwardSequence seq, Size n) const
+        {
+            while(n > 1)
+            {
+                auto const n1 = n / 2;
+                auto const n2 = n - n1;
+
+                auto s2 = ::ural::next(seq, n2);
+
+                // size(s2) = size(seq) - n2 = n - n2 = n1
+                ::ural::swap_ranges_fn{}(seq | ural::taken(n1),
+                                         s2  | ural::taken(n1))[ural::_2];
+
+                this->impl_n(std::move(s2), n1);
+
+                n = n1;
+            }
+        }
+
+        template <class ForwardSequence>
+        ForwardSequence impl(ForwardSequence seq, forward_traversal_tag) const
+        {
+            // @todo Выделить алгоритм?
+            DifferenceType<ForwardSequence> n = 0;
+            auto result = seq;
+
+            for(; !!result; ++ result)
+            {
+                ++ n;
+            }
+
+            this->impl_n(std::move(seq), std::move(n));
+
+            return result;
+        }
+
         template <class BidirectionalSequence>
-        static void impl(BidirectionalSequence seq)
+        static BidirectionalSequence
+        impl(BidirectionalSequence seq, bidirectional_traversal_tag)
         {
             BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequence<decltype(seq)>));
             BOOST_CONCEPT_ASSERT((concepts::Permutable<decltype(seq)>));
+
+            auto result = ::ural::exhaust_front(seq);
 
             for(; !!seq; ++seq)
             {
@@ -1414,6 +1463,8 @@ namespace details
                 }
                 seq = seq_next;
             }
+
+            return result;
         }
     };
 

@@ -186,6 +186,18 @@ namespace ural
                                      this->traversed_end());
         }
 
+        /** @brief Исчерпание последовательности за константное время в прямом
+        порядке
+        @post <tt> !*this == true </tt>
+        @pre <tt> *this </tt> должна быть конечной
+        */
+        void exhaust_front()
+        {
+            this->members_[ural::_1] = this->end();
+
+            assert(!*this == true);
+        }
+
         // Двусторонняя последовательность
         /** @brief Переход к следующему элементу в задней части
         последовательности
@@ -222,6 +234,18 @@ namespace ural
         void shrink_back()
         {
             members_[ural::_2].commit();
+        }
+
+        /** @brief Исчерпание последовательности за константное время в обратном
+        порядке
+        @post <tt> !*this == true </tt>
+        @pre <tt> *this </tt> должна быть конечной
+        */
+        void exhaust_back()
+        {
+            this->members_[ural::_2] = this->begin();
+
+            assert(!*this == true);
         }
 
         // Последовательность произвольного доступа
