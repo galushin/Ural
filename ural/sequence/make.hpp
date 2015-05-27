@@ -72,11 +72,13 @@ namespace ural
     @return <tt> output_iterator_sequence<decltype(i)>(std::move(i)) </tt>
     */
     template <class Container>
-    output_iterator_sequence<std::back_insert_iterator<Container>>
+    output_iterator_sequence<std::back_insert_iterator<Container>,
+                             typename Container::difference_type>
     sequence(std::back_insert_iterator<Container> i)
     {
         typedef std::back_insert_iterator<Container> Iterator;
-        return output_iterator_sequence<Iterator>(std::move(i));
+        typedef typename Container::difference_type Diff;
+        return output_iterator_sequence<Iterator, Diff>(std::move(i));
     }
 
     /** @brief Создание последовательности на основе итератора вставки в начало
@@ -85,11 +87,13 @@ namespace ural
     @return <tt> output_iterator_sequence<decltype(i)>(std::move(i)) </tt>
     */
     template <class Container>
-    output_iterator_sequence<std::front_insert_iterator<Container>>
+    output_iterator_sequence<std::front_insert_iterator<Container>,
+                             typename Container::difference_type>
     sequence(std::front_insert_iterator<Container> i)
     {
         typedef std::front_insert_iterator<Container> Iterator;
-        return output_iterator_sequence<Iterator>(std::move(i));
+        typedef typename Container::difference_type Diff;
+        return output_iterator_sequence<Iterator, Diff>(std::move(i));
     }
 
     //@{

@@ -31,15 +31,19 @@ namespace ural
     /** @brief Последовательности на основе итераторов-вставок и других выходных
     итераторов
     @tparam OutputIterator тип выходного итератора
+    @tparam D тип расстояния
     */
-    template <class OutputIterator>
+    template <class OutputIterator, class D>
     class output_iterator_sequence
-     : public sequence_base<output_iterator_sequence<OutputIterator>>
+     : public sequence_base<output_iterator_sequence<OutputIterator, D>>
     {
     public:
         // Типы
         /// @brief Тип возвращаемого значения для оператора *
         typedef decltype(*std::declval<OutputIterator>())  reference;
+
+        /// @brief Тип расстояния
+        typedef D distance_type;
 
         /// @brief Категория обхода
         typedef single_pass_traversal_tag traversal_tag;

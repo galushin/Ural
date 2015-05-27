@@ -19,6 +19,7 @@
 
 /** @file ural/concepts.hpp
  @brief Классы для проверки концепций
+ @todo избавиться от лямбда-функций в требованиях
 */
 
 #include <ural/type_traits.hpp>
@@ -67,6 +68,7 @@ namespace ural
     template <class T>
     using ValueType = typename value_type<T>::type;
 
+    // @todo улучшить реализацию
     template <class Sequence>
     using DifferenceType = typename Sequence::distance_type;
 
@@ -79,6 +81,10 @@ namespace ural
     template <class F, class... Ins>
     using IndirectCallableResultType
         = ResultType<FunctionType<F>, ValueType<Ins>...>;
+
+    // @todo найти место для этого
+    template <class S>
+    using SequenceType = decltype(sequence(std::declval<S>()));
 
 /** @namespace concepts
  @brief Концепции --- коллекции требований к типам
@@ -347,6 +353,7 @@ namespace concepts
             value_consumer<ural::single_pass_traversal_tag>() = traversal_tag{};
         }
     private:
+        // @todo потребовать наличия типа расстояния (раз есть ++)
         static Seq seq;
         typedef typename Seq::traversal_tag traversal_tag;
     };
@@ -376,6 +383,8 @@ namespace concepts
 
     /** @brief Концепция прямой последовательности
     @tparam тип последовательности, для которого проверяется концепция
+    @todo Разделить на конечные и бесконечные, в конечные добавить exhaust_front
+    @todo Добавить функцию original
     */
     template <class Seq>
     class ForwardSequence
@@ -416,6 +425,8 @@ namespace concepts
 
             // @todo Проверить, что traversed_back либо BidirectionalSequence,
             // либо совпадает с Seq
+
+            seq.exhaust_back();
         }
 
     private:
@@ -539,9 +550,14 @@ namespace concepts
             BOOST_CONCEPT_ASSERT((concepts::Common<T, U>));
             BOOST_CONCEPT_ASSERT((concepts::Relation<R, CommonType<T, U>>));
 
-            [](R r, T a, T b) -> bool { return r(a, b); };
-            [](R r, T a, T b) -> bool { return r(b, a); };
+            BOOST_CONCEPT_ASSERT((Convertible<decltype(r(a, b)), bool>));
+            BOOST_CONCEPT_ASSERT((Convertible<decltype(r(b, a)), bool>));
         }
+
+    private:
+        static R r;
+        static T a;
+        static T b;
     };
 
     template <class F, class... Seqs>
@@ -552,18 +568,18 @@ namespace concepts
     };
 
     template <class F, class... Seqs>
-    struct IndirectCallablePredicate
+    struct IndirectPredicate
      : Predicate<FunctionType<F>, ValueType<Seqs>...>
     {
         // @todo Проверить, что Seqs - Readable
     };
 
     template <class F, class S1, class S2 = S1>
-    struct IndirectCallableRelation
+    struct IndirectRelation
      : concepts::Relation<FunctionType<F>, ValueType<S1>, ValueType<S2>>
     {
     public:
-        BOOST_CONCEPT_USAGE(IndirectCallableRelation)
+        BOOST_CONCEPT_USAGE(IndirectRelation)
         {
             BOOST_CONCEPT_ASSERT((concepts::Readable<S1>));
             BOOST_CONCEPT_ASSERT((concepts::Readable<S2>));
@@ -572,7 +588,7 @@ namespace concepts
 
     template <class Seq1, class Seq2, class R>
     struct IndirectlyComparable
-     : IndirectCallableRelation<R, Seq1, Seq2>
+     : IndirectRelation<R, Seq1, Seq2>
     {};
 
     template <class Seq>
@@ -588,6 +604,24 @@ namespace concepts
         }
     };
 
+    template <class I1, class I2, class O, class R = ural::less<>>
+    struct Mergeable
+    {
+    public:
+        BOOST_CONCEPT_USAGE(Mergeable)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<I1>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<I2>));
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<O>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<I1, O>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<I2, O>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectlyComparable<I1, I2, R>));
+
+            // @todo R должно быть строгим слабым упорядочением
+            // @todo Если R == less<>, то значения I1 и I2 должны быть TotallyOrdered
+        }
+    };
+
     template <class S, class R = ::ural::less<>>
     struct Sortable
     {
@@ -596,9 +630,47 @@ namespace concepts
         {
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<S>));
             BOOST_CONCEPT_ASSERT((concepts::Permutable<S>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectCallableRelation<R, S>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<R, S>));
         }
     };
+
+    template <class S>
+    struct Sequenced
+    {
+        // @todo требования
+    private:
+        typedef SequenceType<S> sequence_type;
+    };
+
+    template <class S>
+    struct SinglePassSequenced
+     : Sequenced<S>
+     , SinglePassSequence<SequenceType<S>>
+    {};
+
+    template <class S>
+    struct InputSequenced
+     : concepts::SinglePassSequenced<S>
+     , concepts::InputSequence<::ural::SequenceType<S>>
+    {};
+
+    template <class S>
+    struct ForwardSequenced
+     : concepts::InputSequenced<S>
+     , concepts::ForwardSequence<::ural::SequenceType<S>>
+    {};
+
+    template <class S>
+    struct BidirectionalSequenced
+     : concepts::ForwardSequenced<S>
+     , concepts::BidirectionalSequence<::ural::SequenceType<S>>
+    {};
+
+    template <class S>
+    struct RandomAccessSequenced
+     : concepts::BidirectionalSequenced<S>
+     , concepts::RandomAccessSequence<::ural::SequenceType<S>>
+    {};
 
     /** @brief Концепция вызываемого объекта
     @tparam F тип объекта, для которого проверяется концепция

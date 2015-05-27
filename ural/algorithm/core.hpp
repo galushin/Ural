@@ -68,6 +68,11 @@ namespace ural
         -> decltype(::ural::copy_fn::copy_impl(::ural::sequence_fwd<Input>(in),
                                                ::ural::sequence_fwd<Output>(out)))
         {
+            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequenced<Output>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<SequenceType<Input>,
+                                                               SequenceType<Output>>));
+
             return ::ural::copy_fn::copy_impl(::ural::sequence_fwd<Input>(in),
                                               ::ural::sequence_fwd<Output>(out));
         }
@@ -84,7 +89,7 @@ namespace ural
         impl(Input in, Predicate pred)
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectCallablePredicate<Predicate, Input>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<Predicate, Input>));
 
             for(; !!in; ++ in)
             {
@@ -108,6 +113,9 @@ namespace ural
         auto operator()(Input && in, Predicate pred) const
         -> decltype(::ural::sequence_fwd<Input>(in))
         {
+            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<Predicate, SequenceType<Input>>));
+
             return this->impl(::ural::sequence_fwd<Input>(in),
                               ::ural::make_callable(std::move(pred)));
         }
@@ -124,7 +132,7 @@ namespace ural
         impl(Input in, T const & value, BinaryPredicate bin_pred)
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectCallableRelation<BinaryPredicate, Input, T const *>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate, Input, T const *>));
 
             auto pred = std::bind(std::move(bin_pred), ural::_1, std::cref(value));
 
@@ -148,6 +156,9 @@ namespace ural
                         BinaryPredicate pred = BinaryPredicate()) const
         -> decltype(::ural::sequence_fwd<Input>(in))
         {
+            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate, SequenceType<Input>, T const *>));
+
             return this->impl(::ural::sequence_fwd<Input>(in), value,
                               ::ural::make_callable(std::move(pred)));
         }
@@ -163,7 +174,7 @@ namespace ural
         static Input impl(Input in, Predicate pred)
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectCallablePredicate<Predicate, Input>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<Predicate, Input>));
 
             return find_if_fn{}(std::move(in), ural::not_fn(std::move(pred)));
         }
@@ -178,9 +189,12 @@ namespace ural
         */
         template <class Input, class Predicate>
         auto operator()(Input && in, Predicate pred) const
-        -> decltype(sequence_fwd<Input>(in))
+        -> decltype(::ural::sequence_fwd<Input>(in))
         {
-            return this->impl(sequence_fwd<Input>(in), std::move(pred));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<Predicate, SequenceType<Input>>));
+
+            return this->impl(::ural::sequence_fwd<Input>(in), std::move(pred));
         }
     };
 }
