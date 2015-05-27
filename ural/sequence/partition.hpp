@@ -22,6 +22,9 @@
  последовательностей, в зависимости от значения предиката
 */
 
+#include <ural/sequence/base.hpp>
+#include <ural/sequence/make.hpp>
+
 namespace ural
 {
     /** @brief Последовательность вывода, записывающая значения в одну из двух

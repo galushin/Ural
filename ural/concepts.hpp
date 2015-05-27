@@ -637,7 +637,13 @@ namespace concepts
     template <class S>
     struct Sequenced
     {
-        // @todo требования
+        // В Range extensions требуется, чтобы begin и end имели константную
+        // сложность. Нужно ли нам потребовать этого от sequence?
+        BOOST_CONCEPT_USAGE(Sequenced)
+        {
+            typedef decltype(sequence(std::declval<S>())) Seq;
+            static_assert(std::is_same<Seq, sequence_type>::value, "");
+        }
     private:
         typedef SequenceType<S> sequence_type;
     };
