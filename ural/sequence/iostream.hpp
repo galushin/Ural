@@ -58,7 +58,7 @@ namespace ural
         typedef single_pass_traversal_tag traversal_tag;
 
         /// @brief Тип расстояния
-        typedef size_t distance_type;
+        typedef typename istream_type::off_type distance_type;
 
         // Конструкторы
         /** @brief Конструктор
@@ -189,7 +189,7 @@ namespace ural
         typedef void value_type;
 
         /// @brief Тип расстояния
-        typedef void difference_type;
+        typedef typename ostream_type::off_type difference_type;
 
         /// @brief Тип указателя
         typedef void pointer;

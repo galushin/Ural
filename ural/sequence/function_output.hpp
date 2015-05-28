@@ -30,8 +30,9 @@ namespace ural
     /** @brief Выходная последовательность, выполняющая вызов функции для
     каждого "записываемого элемента"
     @tparam UnaryFunction тип унарного функционального объекта
+    @tparam D тип расстояния, по умолчанию используется <tt>std::ptrdiff_t</tt>
     */
-    template <class UnaryFunction>
+    template <class UnaryFunction, class D = use_default>
     class function_output_sequence
      : public ural::sequence_base<function_output_sequence<UnaryFunction>,
                                    UnaryFunction>
@@ -50,7 +51,7 @@ namespace ural
         typedef void value_type;
 
         /// @brief Тип расстояния
-        typedef void difference_type;
+        typedef typename default_helper<D, std::ptrdiff_t>::type difference_type;
 
         /// @brief Тип указателя
         typedef void pointer;

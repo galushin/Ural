@@ -28,8 +28,10 @@ namespace ural
 {
     /** @brief Последовательность на основе функции без аргументов
     @tparam Generator функция без аргументов
+    @tparam D тип расстояния, по умолчанию используется <tt>std::ptrdiff_t</tt>
     */
-    template <class Generator>
+    template <class Generator,
+              class D = use_default>
     class generator_sequence
      : public sequence_base<generator_sequence<Generator>,
                             decltype(make_callable(std::declval<Generator>()))>
@@ -54,7 +56,7 @@ namespace ural
         typedef decltype(make_value(std::declval<reference>())) value_type;
 
         /// @brief Тип расстояния
-        typedef size_t distance_type;
+        typedef typename default_helper<D, std::ptrdiff_t>::type distance_type;
 
         /// @brief Категория обхода
         typedef single_pass_traversal_tag traversal_tag;

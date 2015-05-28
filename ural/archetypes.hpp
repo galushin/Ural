@@ -75,8 +75,9 @@ namespace archetypes
 
     /** @brief Архетип последовательности ввода
     @tparam Value тип значения
+    @tparam D тип расстояния, по умолчанию используется std::ptrdiff_t
     */
-    template <class Value>
+    template <class Value, class D = use_default>
     class input_sequence
      : public ural::sequence_base<input_sequence<Value>>
     {
@@ -91,7 +92,7 @@ namespace archetypes
         typedef value_type * pointer;
 
         /// @brief Тип для представления расстояния
-        typedef size_t distance_type;
+        typedef DefaultedType<D, std::ptrdiff_t> distance_type;
 
         /// @brief Тэг категории обхода
         typedef single_pass_traversal_tag traversal_tag;

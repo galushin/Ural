@@ -44,9 +44,14 @@ namespace ural
         typedef T type;
     };
 
-    // Нужно ли использовать трюк из N3911
+    // Трюк из N3911
     template <class... Args>
-    using void_t = void;
+    struct declare_void
+     : declare_type<void>
+    {};
+
+    template <class... Args>
+    using void_t = typename declare_void<Args...>::type;
 
     /** @brief Синоним для <tt> typename std::decay<T>::type </tt>
     @tparam T тип-аргумент

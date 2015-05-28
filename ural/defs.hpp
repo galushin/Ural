@@ -95,6 +95,14 @@ namespace ural
      : std::conditional<std::is_same<T, use_default>::value, Default, T>
     {};
 
+    /** @brief Шаблонный синоним для @c default_helper
+    @tparam T тип
+    @tparam D тип, который нужно использовать, если @c T совпадает с
+    @c use_default
+    */
+    template <class T, class D>
+    using DefaultedType = typename default_helper<T, D>::type;
+
     /** @brief Вспомогательный класс, которому можно присвоить значение
     заданного типа
     @tparam T тип присваемоего значения

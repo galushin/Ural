@@ -91,8 +91,9 @@ namespace ural
     @todo Превратить в бесконечную последовательность. Конечную
     последовательность, покрывающую один период, реализовать как адаптер
     @tparam IntType целочисленный тип
+    @tparam D тип расстояния, по умолчанию используется std::intmax_t
     */
-    template <class IntType>
+    template <class IntType, class D = use_default>
     class sqrt_as_continued_fraction_sequence
      : public ural::sequence_base<sqrt_as_continued_fraction_sequence<IntType>>
     {
@@ -112,7 +113,7 @@ namespace ural
         typedef single_pass_traversal_tag traversal_tag;
 
         /// @brief Тип расстояния
-        typedef std::intmax_t distance_type;
+        typedef typename default_helper<D, std::intmax_t>::type distance_type;
 
         // Конструкторы
         /** @brief Конструктор

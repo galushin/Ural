@@ -22,10 +22,11 @@
  @todo избавиться от лямбда-функций в требованиях
 */
 
+#include <ural/sequence/make.hpp>
+
 #include <ural/type_traits.hpp>
 #include <ural/archetypes.hpp>
 #include <ural/defs.hpp>
-#include <ural/sequence/base.hpp>
 
 #include <boost/concept_check.hpp>
 #include <boost/concept/usage.hpp>
@@ -68,9 +69,23 @@ namespace ural
     template <class T>
     using ValueType = typename value_type<T>::type;
 
-    // @todo улучшить реализацию
-    template <class Sequence>
-    using DifferenceType = typename Sequence::distance_type;
+    template <class T, class = void>
+    struct difference_type;
+
+    template <class T>
+    struct difference_type<T, void_t<typename T::difference_type>>
+     : std::enable_if<!std::is_void<typename T::difference_type>::value,
+                      typename T::difference_type>
+    {};
+
+    template <class T>
+    struct difference_type<T, void_t<typename T::distance_type>>
+    : std::enable_if<!std::is_void<typename T::distance_type>::value,
+                     typename T::distance_type>
+    {};
+
+    template <class T>
+    using DifferenceType = typename difference_type<T>::type;
 
     template <class Readable>
     using ReferenceType = decltype(*std::declval<Readable>());
@@ -82,15 +97,25 @@ namespace ural
     using IndirectCallableResultType
         = ResultType<FunctionType<F>, ValueType<Ins>...>;
 
-    // @todo найти место для этого
     template <class S>
-    using SequenceType = decltype(sequence(std::declval<S>()));
+    struct sequence_type
+     : declare_type<decltype(sequence(std::declval<S>()))>
+    {};
+
+    template <class S>
+    using SequenceType = typename sequence_type<S>::type;
 
 /** @namespace concepts
  @brief Концепции --- коллекции требований к типам
 */
 namespace concepts
 {
+    template <class T, class U>
+    struct Same
+    {
+        static_assert(std::is_same<T, U>::value, "Concept violation: Same");
+    };
+
     template <class T, class U>
     struct Convertible
     {
@@ -335,6 +360,25 @@ namespace concepts
     template <class Seq, class T>
     using WritableSequence = Writable<Seq, T>;
 
+    template <class T>
+    struct WeakIncrementable
+     : private Semiregular<T>
+     , private Same<T &, decltype(++ std::declval<T&>())>
+    {
+    public:
+        BOOST_CONCEPT_USAGE(WeakIncrementable)
+        {
+            // @todo как в Range Extensions?
+        }
+    };
+
+    template <class T>
+    struct Incrementable
+     : private Regular<T>
+     , private concepts::WeakIncrementable<T>
+     , private concepts::Same<T, decltype(std::declval<T&>()++)>
+    {};
+
     /** @brief Концепция однопроходной последовательности
     @tparam тип последовательности, для которого проверяется концепция
     */
@@ -353,9 +397,10 @@ namespace concepts
             value_consumer<ural::single_pass_traversal_tag>() = traversal_tag{};
         }
     private:
-        // @todo потребовать наличия типа расстояния (раз есть ++)
         static Seq seq;
         typedef typename Seq::traversal_tag traversal_tag;
+
+        typedef DifferenceType<Seq> difference_type;
     };
 
     template <class Seq>
@@ -389,6 +434,7 @@ namespace concepts
     template <class Seq>
     class ForwardSequence
      : InputSequence<Seq>
+     , Incrementable<Seq>
     {
     public:
         /// @brief Проверка неявных интерфейсов
@@ -397,10 +443,12 @@ namespace concepts
             BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<Seq>));
 
             seq.shrink_front();
-            seq ++;
             seq.traversed_front();
+
             // @todo Проверить, что тип traversed_front совпадает с Seq или
             // tf - прямая последовательность
+
+            static_assert(std::is_same<decltype(seq.front()), decltype(*seq)>::value, "");
         }
 
     private:

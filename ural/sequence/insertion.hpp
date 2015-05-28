@@ -33,9 +33,9 @@ namespace ural
     @tparam OutputIterator тип выходного итератора
     @tparam D тип расстояния
     */
-    template <class OutputIterator, class D>
-    class output_iterator_sequence
-     : public sequence_base<output_iterator_sequence<OutputIterator, D>>
+    template <class OutputIterator, class D = use_default>
+    class weak_output_iterator_sequence
+     : public sequence_base<weak_output_iterator_sequence<OutputIterator, D>>
     {
     public:
         // Типы
@@ -43,7 +43,7 @@ namespace ural
         typedef decltype(*std::declval<OutputIterator>())  reference;
 
         /// @brief Тип расстояния
-        typedef D distance_type;
+        typedef typename default_helper<D, std::ptrdiff_t>::type distance_type;
 
         /// @brief Категория обхода
         typedef single_pass_traversal_tag traversal_tag;
@@ -53,7 +53,7 @@ namespace ural
         @param iter итератор, на основе которого будет создана данная
         последовательность
         */
-        explicit output_iterator_sequence(OutputIterator iter)
+        explicit weak_output_iterator_sequence(OutputIterator iter)
          : iter_(std::move(iter))
         {}
 
@@ -163,6 +163,9 @@ namespace ural
     public:
         /// @brief Категория обхода
         typedef single_pass_traversal_tag traversal_tag;
+
+        /// @brief Тип расстояния
+        typedef typename Container::difference_type difference_type;
 
         /** @brief Конструктор
         @param c контейнер, в который будет производится вставка

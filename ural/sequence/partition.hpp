@@ -22,6 +22,7 @@
  последовательностей, в зависимости от значения предиката
 */
 
+#include <ural/concepts.hpp>
 #include <ural/sequence/base.hpp>
 #include <ural/sequence/make.hpp>
 
@@ -43,6 +44,10 @@ namespace ural
         // Типы
         /// @brief Категория обхода
         typedef single_pass_traversal_tag traversal_tag;
+
+        /// @brief Тип расстояния
+        typedef CommonType<DifferenceType<Output1>, DifferenceType<Output2>>
+            difference_type;
 
         // Конструкторы
         /** @brief Конструктор
