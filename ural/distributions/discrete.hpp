@@ -110,7 +110,7 @@ namespace distributions
             }
             else
             {
-                auto const w_sum = ural::accumulate(ps_, weight_type{0});
+                auto const w_sum = ural::accumulate(ps_, probability_type{0});
 
                 assert(w_sum > 0);
 

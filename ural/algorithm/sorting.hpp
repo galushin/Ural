@@ -1408,7 +1408,7 @@ namespace ural
         {
             BOOST_CONCEPT_ASSERT((concepts::Relation<FunctionType<Compare>, T>));
 
-            return cmp(y, x) ? y : x;
+            return ural::make_callable(std::move(cmp))(y, x) ? y : x;
         }
 
         /** @brief Определение наименьшего из значений в списке инициализаторов
@@ -1428,11 +1428,10 @@ namespace ural
 
         /** @brief Определение наименьшего из значений в списке инициализаторов
         @param values список инициализаторов
-        @param cmp функция сравнения
         @pre <tt> values.begin() != values.end() </tt>
         @return Наименьшее значение в списке инициализаторов
         */
-        template <class T, class Compare>
+        template <class T, class Compare = ::ural::less<>>
         constexpr T
         operator()(std::initializer_list<T> values, Compare cmp) const
         {
@@ -1490,7 +1489,7 @@ namespace ural
         {
             BOOST_CONCEPT_ASSERT((concepts::Relation<FunctionType<Compare>, T>));
 
-            return cmp(x, y) ? y : x;
+            return ural::make_callable(std::move(cmp))(x, y) ? y : x;
         }
 
         /** @brief Определение наибольшего из значений в списке инициализаторов
@@ -1575,7 +1574,8 @@ namespace ural
             BOOST_CONCEPT_ASSERT((concepts::Relation<FunctionType<Compare>, T>));
 
             using Pair = std::pair<T const &, T const &>;
-            return cmp(y, x) ? Pair(y, x) : Pair(x, y);
+            return ural::make_callable(std::move(cmp))(y, x)
+                   ? Pair(y, x) : Pair(x, y);
         }
 
         /** @brief Определение наименьшего и наибольшего из значений в списке

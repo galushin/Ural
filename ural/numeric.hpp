@@ -19,7 +19,6 @@
 
 /** @file ural/numeric.hpp
  @brief Обобщённые численные операции
- @todo Проверки концепций в алгоритмах (придётся действовать самому)
 */
 
 /** @defgroup Numerics Обобщённые численные операции
@@ -52,19 +51,29 @@ namespace ural
         @return Значение, следующее за тем, которое было присвоено последнему
         элементу последовательности
         */
-        template <class ForwardSequence, class Incrementable>
+        template <class Output, class Incrementable>
         Incrementable
-        operator()(ForwardSequence && seq, Incrementable init_value) const
+        operator()(Output && seq, Incrementable init_value) const
         {
-            return impl(::ural::sequence_fwd<ForwardSequence>(seq),
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequenced<Output>));
+            BOOST_CONCEPT_ASSERT((concepts::OutputSequence<SequenceType<Output>,
+                                                           Incrementable>));
+            BOOST_CONCEPT_ASSERT((concepts::Semiregular<Incrementable>));
+            BOOST_CONCEPT_ASSERT((concepts::WeakIncrementable<Incrementable>));
+
+            return impl(::ural::sequence_fwd<Output>(seq),
                         std::move(init_value));
         }
 
     private:
-        template <class ForwardSequence, class Incrementable>
+        template <class Output, class Incrementable>
         Incrementable
-        impl(ForwardSequence seq, Incrementable init_value) const
+        impl(Output seq, Incrementable init_value) const
         {
+            BOOST_CONCEPT_ASSERT((concepts::OutputSequence<Output, Incrementable>));
+            BOOST_CONCEPT_ASSERT((concepts::Semiregular<Incrementable>));
+            BOOST_CONCEPT_ASSERT((concepts::WeakIncrementable<Incrementable>));
+
             for(; !!seq; ++ seq, (void) ++ init_value)
             {
                 *seq = init_value;
@@ -87,20 +96,41 @@ namespace ural
         @param op бинарная операция, используемая в качестве сложения элементов
         @return Сумма @c init_value и всех элементов последовательности
         @todo Вывод начального значения?
+        @note Порядок вычисления гарантирован, поэтому мы не требуем
+        ассоциативности @c BinaryOperation.
         */
-        template <class Input, class T, class BinaryOperation = ::ural::plus<>>
+        template <class Input,
+                  class T,
+                  class BinaryOperation = ::ural::plus<>>
         T operator()(Input && in, T init_value,
                      BinaryOperation op = BinaryOperation()) const
         {
+            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<BinaryOperation, T const *,
+                                                             SequenceType<Input>>));
+            BOOST_CONCEPT_ASSERT((concepts::Semiregular<T>));
+
+            typedef IndirectCallableResultType<BinaryOperation, T const *,
+                                               SequenceType<Input>> Result;
+
+            BOOST_CONCEPT_ASSERT((concepts::Same<T, Result>));
+
             return impl(::ural::sequence_fwd<Input>(in),
                         std::move(init_value),
                         ::ural::make_callable(std::move(op)));
         }
 
     private:
-        template <class InputSequence, class T, class BinaryOperation>
-        T impl(InputSequence in, T init_value, BinaryOperation op) const
+        template <class Input, class T, class BinaryOperation>
+        T impl(Input in, T init_value, BinaryOperation op) const
         {
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<BinaryOperation, T const *, Input>));
+            BOOST_CONCEPT_ASSERT((concepts::Semiregular<T>));
+
+            typedef IndirectCallableResultType<BinaryOperation, T const *, Input> Result;
+            BOOST_CONCEPT_ASSERT((concepts::Same<T, Result>));
+
             for(; !!in; ++ in)
             {
                 init_value = op(std::move(init_value), *in);
@@ -128,6 +158,8 @@ namespace ural
         последовательностей
         @todo Что делать с последовательностями разной длинны?
         @todo Перегрузка с выводом типа результата?
+        @note Порядок вычисления гарантирован, поэтому мы не требуем
+        ассоциативности @c BinaryOperation1.
         */
         template <class Input1, class Input2, class T,
                   class BinaryOperation1 = ::ural::plus<>,
@@ -136,6 +168,21 @@ namespace ural
                      BinaryOperation1 add = BinaryOperation1(),
                      BinaryOperation2 mult = BinaryOperation2()) const
         {
+            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input2>));
+            BOOST_CONCEPT_ASSERT((concepts::Semiregular<T>));
+
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<BinaryOperation2,
+                                                             SequenceType<Input1>,
+                                                             SequenceType<Input2>>));
+
+            typedef IndirectCallableResultType<BinaryOperation2, SequenceType<Input1>,
+                                               SequenceType<Input2>> Product;
+            BOOST_CONCEPT_ASSERT((concepts::Function<BinaryOperation1, T, Product>));
+
+            typedef ResultType<BinaryOperation1, T, Product> Result;
+            BOOST_CONCEPT_ASSERT((concepts::Same<Result, T>));
+
             return impl(::ural::sequence_fwd<Input1>(in1),
                         ::ural::sequence_fwd<Input2>(in2),
                         std::move(init_value),
@@ -149,6 +196,18 @@ namespace ural
         T impl(Input1 in1, Input2 in2, T value,
                BinaryOperation1 add, BinaryOperation2 mult) const
         {
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input2>));
+            BOOST_CONCEPT_ASSERT((concepts::Semiregular<T>));
+
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<BinaryOperation2, Input1, Input2>));
+
+            typedef IndirectCallableResultType<BinaryOperation2, Input1, Input2> Product;
+            BOOST_CONCEPT_ASSERT((concepts::Function<BinaryOperation1, T, Product>));
+
+            typedef ResultType<BinaryOperation1, T, Product> Result;
+            BOOST_CONCEPT_ASSERT((concepts::Same<Result, T>));
+
             auto in_prod = ural::make_transform_sequence(std::move(mult),
                                                          std::move(in1),
                                                          std::move(in2));
@@ -178,6 +237,16 @@ namespace ural
         -> tuple<decltype(::ural::sequence_fwd<Input>(in)),
                  decltype(::ural::sequence_fwd<Output>(out))>
         {
+            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<BinaryFunction,
+                                                             SequenceType<Input>,
+                                                             SequenceType<Input>>));
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequenced<Output>));
+
+            typedef IndirectCallableResultType<BinaryFunction, SequenceType<Input>,
+                                               SequenceType<Input>> Result;
+            BOOST_CONCEPT_ASSERT((concepts::Writable<SequenceType<Output>, Result>));
+
             auto in_sum = ural::partial_sums(sequence_fwd<Input>(in),
                                              ::ural::make_callable(std::move(bin_op)));
             auto res = ural::copy_fn{}(std::move(in_sum),
@@ -211,6 +280,16 @@ namespace ural
         -> tuple<decltype(::ural::sequence_fwd<Input>(in)),
                  decltype(::ural::sequence_fwd<Output>(out))>
         {
+            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<BinaryFunction,
+                                                             SequenceType<Input>,
+                                                             SequenceType<Input>>));
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequenced<Output>));
+
+            typedef IndirectCallableResultType<BinaryFunction, SequenceType<Input>,
+                                               SequenceType<Input>> Result;
+            BOOST_CONCEPT_ASSERT((concepts::Writable<SequenceType<Output>, Result>));
+
             auto in_dif = ural::adjacent_differences(::ural::sequence_fwd<Input>(in),
                                                      ::ural::make_callable(std::move(bin_op)));
             auto res = ural::copy_fn{}(std::move(in_dif),
