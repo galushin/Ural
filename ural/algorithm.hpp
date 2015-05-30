@@ -26,7 +26,6 @@
  @todo Проверить возможность замены ForwardSequence на OutputSequence
  @todo Определить типы возврщаемых значений как в Range extensions
  @todo устранить дублирование в алгортмах за счёт CRTP/Фасадов
- @todo min/max/minmax для последовательностей
 */
 
 /** @defgroup Algorithms Алгоритмы

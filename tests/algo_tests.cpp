@@ -2698,6 +2698,33 @@ BOOST_AUTO_TEST_CASE(min_max_for_values_test)
     BOOST_CHECK(true);
 }
 
+BOOST_AUTO_TEST_CASE(regression_min_max_not_converting_compare_to_function)
+{
+    struct Inner
+    {
+    bool operator==(Inner const & that) const
+    {
+        return this->a == that.a;
+    }
+
+    bool is_lesser(Inner const & that) const
+    {
+        return this->a < that.a;
+    }
+
+    public:
+        int a;
+    };
+
+    auto const one = Inner{1};
+    auto const two = Inner{2};
+
+    BOOST_CHECK(ural::min(one, two, &Inner::is_lesser) == one);
+    BOOST_CHECK(ural::max(one, two, &Inner::is_lesser) == two);
+    BOOST_CHECK(ural::minmax(two, one, &Inner::is_lesser).first == one);
+    BOOST_CHECK(ural::minmax(two, one, &Inner::is_lesser).second == two);
+}
+
 BOOST_AUTO_TEST_CASE(min_max_stability_test)
 {
     auto const v1 = 'a';
