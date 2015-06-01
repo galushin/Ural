@@ -19,7 +19,6 @@
 
 /** @file ural/concepts.hpp
  @brief Классы для проверки концепций
- @todo избавиться от лямбда-функций в требованиях
 */
 
 #include <ural/sequence/make.hpp>
@@ -46,26 +45,67 @@ namespace ural
     template <class T, class U>
     using CommonType = typename std::common_type<T, U>::type;
 
-    /**
-    @todo Покрыть тестами: массивы известной и неизвестной длины,
-    типы c T::element_type
+    /** @brief Класс-характеристика для определения типа элемента или
+    указываемого объекта
+    @tparam T тип
     */
     template <class T, class = void>
     struct value_type
     {};
 
+    /** @brief Специализация для встроенных указателей
+    @tparam T тип указываемого объекта
+    */
     template <class T>
     struct value_type<T*, void>
      : std::enable_if<!std::is_void<T>::value,
                       typename std::remove_cv<T>::type>
     {};
 
+    /** @brief Специализация для встроенных массивов известной длины
+    @tparam T тип элемента
+    @tparam N количество элементов
+    */
+    template <class T, std::size_t N>
+    struct value_type<T[N]>
+     : declare_type<T>
+    {};
+
+    /** @brief Специализация для встроенных массивов неизвестной длины
+    @tparam T тип элемента
+    */
+    template <class T>
+    struct value_type<T[]>
+     : declare_type<T>
+    {};
+
+    /** @brief Специализация для классов, определяющих @c value_type
+    @tparam T тип
+    */
     template <class T>
     struct value_type<T, void_t<typename T::value_type>>
      : std::enable_if<!std::is_void<typename T::value_type>::value,
                       typename T::value_type>
     {};
 
+    /** @brief Специализация для классов, определяющих @c element_type
+    @tparam T тип
+    */
+    template <class T>
+    struct value_type<T, void_t<typename T::element_type>>
+     : std::enable_if<!std::is_void<typename T::element_type>::value,
+                      typename T::element_type>
+    {};
+
+    /** @brief Синоним для типа элементов составного объекта и указываемого
+    объекта (умных) указателей.
+    @details Для типов, имеющих typedef-объявление @c value_type или
+    @c element_type, результатом будет этот тип, если он не совпадает с @b void.
+    Для встроенных указателей результатом будет тип указываемого объекта, если
+    он не совпадает с @b void. Пользователи могут адаптироват свои классы,
+    специализируя класс-характеристику @c value_type.
+    @tparam T тип составного объекта или (умного) указателя
+    */
     template <class T>
     using ValueType = typename value_type<T>::type;
 

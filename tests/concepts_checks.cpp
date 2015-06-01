@@ -80,3 +80,18 @@ BOOST_AUTO_TEST_CASE(has_pre_decrement_test)
     BOOST_CHECK_EQUAL(ural::has_pre_decrement<int*>(), true);
     BOOST_CHECK_EQUAL(ural::has_pre_decrement<void*>(), false);
 }
+
+BOOST_AUTO_TEST_CASE(value_type_for_c_arrays)
+{
+    typedef int T;
+
+    typedef T ArrayN[10];
+    typedef T Array[];
+    typedef std::unique_ptr<T> Pointer;
+
+    static_assert(std::is_same<T, ural::ValueType<ArrayN>>::value, "");
+    static_assert(std::is_same<T, ural::ValueType<Array>>::value, "");
+    static_assert(std::is_same<T, ural::ValueType<Pointer>>::value, "");
+
+    BOOST_CHECK(true);
+}
