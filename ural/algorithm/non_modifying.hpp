@@ -28,8 +28,9 @@
 */
 
 #include <ural/sequence/function_output.hpp>
-
+#include <ural/sequence/make.hpp>
 #include <ural/algorithm/core.hpp>
+#include <ural/concepts.hpp>
 
 namespace ural
 {
