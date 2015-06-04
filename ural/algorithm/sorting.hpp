@@ -238,20 +238,25 @@ namespace ural
     class heap_sink_fn
     {
     public:
-        template <class RASequence, class Size, class Compare = ::ural::less<>>
-        void operator()(RASequence && seq, Size first, Size last,
+        template <class RASequenced, class Compare = ::ural::less<>>
+        void operator()(RASequenced && seq,
+                        DifferenceType<SequenceType<RASequenced>> first,
+                        DifferenceType<SequenceType<RASequenced>> last,
                         Compare cmp = Compare()) const
         {
-            return this->impl(::ural::sequence_fwd<RASequence>(seq),
-                              first, last,
+            return this->impl(::ural::sequence_fwd<RASequenced>(seq),
+                              std::move(first), std::move(last),
                               ::ural::make_callable(std::move(cmp)));
         }
 
     private:
-        template <class RASequence, class Size, class Compare>
+        template <class RASequence, class Compare>
         static void
-        update_largest(RASequence seq, Size & largest, Size candidate,
-                       Size last, Compare cmp)
+        update_largest(RASequence seq,
+                       DifferenceType<RASequence> & largest,
+                       DifferenceType<RASequence> candidate,
+                       DifferenceType<RASequence> last,
+                       Compare cmp)
         {
             if(candidate < last && cmp(seq[largest], seq[candidate]))
             {
@@ -259,16 +264,15 @@ namespace ural
             }
         }
 
-        template <class RASequence, class Size, class Compare>
-        void impl(RASequence seq, Size first, Size last, Compare cmp) const
+        template <class RASequence, class Compare>
+        void impl(RASequence seq,
+                  DifferenceType<RASequence> first,
+                  DifferenceType<RASequence> last,
+                  Compare cmp) const
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
-            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<RASequence>));
-            // @todo Проверить, что можно обменивать
-
-            // @todo Требования к Size
-
-            BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, bool(decltype(*seq), decltype(*seq))>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<RASequence, Compare>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, RASequence>));
 
             assert(ural::to_signed(last) <= seq.size());
 
