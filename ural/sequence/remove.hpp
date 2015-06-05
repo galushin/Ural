@@ -289,11 +289,13 @@ namespace ural
     */
     template <class Input, class T, class BinaryPredicate>
     auto make_remove_sequence(Input && in, T const & value, BinaryPredicate pred)
-    -> remove_sequence<decltype(::ural::sequence_fwd<Input>(in)), T,
+    -> remove_sequence<decltype(::ural::sequence_fwd<Input>(in)),
+                       typename reference_wrapper_to_reference<T>::type,
                        decltype(::ural::make_callable(std::move(pred)))>
     {
-        typedef remove_sequence<decltype(::ural::sequence_fwd<Input>(in)), T,
-                       decltype(make_callable(std::move(pred)))> Sequence;
+        typedef remove_sequence<decltype(::ural::sequence_fwd<Input>(in)),
+                                typename reference_wrapper_to_reference<T>::type,
+                                decltype(make_callable(std::move(pred)))> Sequence;
         return Sequence(::ural::sequence_fwd<Input>(in), value,
                         ::ural::make_callable(std::move(pred)));
     }

@@ -288,7 +288,7 @@ namespace ural
             @todo constexpr?
             */
             template <class T>
-            auto operator()(T const & x) const
+            constexpr auto operator()(T const & x) const
             -> decltype(abs(x))
             {
                 return abs(x);
