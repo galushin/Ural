@@ -17,8 +17,10 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <ural/functional/make_callable.hpp>
 #include <ural/type_traits.hpp>
 #include <ural/defs.hpp>
+
 #include <boost/call_traits.hpp>
 
 /** @file ural/functional/make_callable.hpp

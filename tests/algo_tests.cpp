@@ -1160,25 +1160,6 @@ BOOST_AUTO_TEST_CASE(remove_sequence_test_make_function)
     BOOST_CHECK_EQUAL(s_std, s_ural);
 }
 
-BOOST_AUTO_TEST_CASE(remove_sequence_test)
-{
-    std::string s_std = "Text with some   spaces";
-    auto s_ural = s_std;
-
-    auto const to_remove = ' ';
-
-    // std
-    s_std.erase(std::remove(s_std.begin(), s_std.end(), to_remove),
-                s_std.end());
-
-    // ural
-    auto r = ural::copy(s_ural | ural::removed(to_remove), s_ural)[ural::_2];
-    s_ural.erase(r.begin(), r.end());
-
-    // Сравнение
-    BOOST_CHECK_EQUAL(s_std, s_ural);
-}
-
 BOOST_AUTO_TEST_CASE(remove_copy_test)
 {
     // Подготовка
@@ -1198,6 +1179,25 @@ BOOST_AUTO_TEST_CASE(remove_copy_test)
     BOOST_CHECK_EQUAL(s_std, s_ural);
 }
 
+BOOST_AUTO_TEST_CASE(remove_sequence_test)
+{
+    std::string s_std = "Text with some   spaces";
+    auto s_ural = s_std;
+
+    auto const to_remove = ' ';
+
+    // std
+    s_std.erase(std::remove(s_std.begin(), s_std.end(), to_remove),
+                s_std.end());
+
+    // ural
+    auto r = ural::copy(s_ural | ural::removed(to_remove), s_ural)[ural::_2];
+    s_ural.erase(r.begin(), r.end());
+
+    // Сравнение
+    BOOST_CHECK_EQUAL(s_std, s_ural);
+}
+
 BOOST_AUTO_TEST_CASE(remove_sequence_test_cref)
 {
     std::string s_std = "Text with some   spaces";
@@ -1210,8 +1210,7 @@ BOOST_AUTO_TEST_CASE(remove_sequence_test_cref)
                 s_std.end());
 
     // ural
-    // @todo Передача по ссылке to_remove
-    auto r = ural::copy(s_ural | ural::removed(to_remove), s_ural)[ural::_2];
+    auto r = ural::copy(s_ural | ural::removed(std::cref(to_remove)), s_ural)[ural::_2];
     s_ural.erase(r.begin(), r.end());
 
     // Сравнение
