@@ -136,10 +136,10 @@
 		<Unit filename="../ural/random.hpp" />
 		<Unit filename="../ural/random/c_rand_engine.hpp" />
 		<Unit filename="../ural/sequence/all.hpp" />
-		<Unit filename="../ural/sequence/all_tuples.hpp" />
 		<Unit filename="../ural/sequence/base.hpp" />
 		<Unit filename="../ural/sequence/by_line.hpp" />
 		<Unit filename="../ural/sequence/cargo.hpp" />
+		<Unit filename="../ural/sequence/cartesian_product.hpp" />
 		<Unit filename="../ural/sequence/constant.hpp" />
 		<Unit filename="../ural/sequence/filtered.hpp" />
 		<Unit filename="../ural/sequence/function_output.hpp" />

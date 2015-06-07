@@ -40,8 +40,8 @@
 
 #include <iterator>
 
+#include <ural/sequence/cartesian_product.hpp>
 #include <ural/sequence/to.hpp>
-#include <ural/sequence/all_tuples.hpp>
 #include <ural/sequence/base.hpp>
 #include <ural/sequence/make.hpp>
 #include <ural/sequence/moved.hpp>

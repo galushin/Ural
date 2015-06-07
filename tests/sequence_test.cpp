@@ -330,10 +330,10 @@ BOOST_AUTO_TEST_CASE(arithmetic_progression_size_test)
     BOOST_CHECK_LE(sizeof(s), sizeof(0) * 3);
 }
 
-BOOST_AUTO_TEST_CASE(all_tuples_test)
+BOOST_AUTO_TEST_CASE(cartesian_product_sequence_test)
 {
     auto digits = ural::make_arithmetic_progression(0, 1) | ural::taken(10);
-    auto s2 = ural::make_all_tuples_sequence(digits, digits);
+    auto s2 = ural::make_cartesian_product_sequence(digits, digits);
 
     std::set<int> r2;
 
@@ -411,10 +411,10 @@ BOOST_AUTO_TEST_CASE(arithmetic_progression_equality_test)
     BOOST_CHECK(a3 != a4);
 }
 
-BOOST_AUTO_TEST_CASE(all_tuples_is_sorted_test)
+BOOST_AUTO_TEST_CASE(cartesian_product_sequence_is_sorted_test)
 {
     auto digits = ural::make_arithmetic_progression(0, 1) | ural::taken(10);
-    auto s2 = ural::make_all_tuples_sequence(digits, digits);
+    auto s2 = ural::make_cartesian_product_sequence(digits, digits);
 
     std::vector<decltype(s2)::value_type> r2;
 
@@ -424,14 +424,14 @@ BOOST_AUTO_TEST_CASE(all_tuples_is_sorted_test)
     BOOST_CHECK(std::is_sorted(r2.begin(), r2.end()));
 }
 
-BOOST_AUTO_TEST_CASE(all_tuples_regression_ctor)
+BOOST_AUTO_TEST_CASE(cartesian_product_sequence_regression_ctor)
 {
     std::vector<int> const x_std = {1, 2, 3, 4, 5};
 
     auto seq = ural::sequence(x_std);
     ++ seq;
 
-    auto ts = ural::make_all_tuples_sequence(seq, seq);
+    auto ts = ural::make_cartesian_product_sequence(seq, seq);
 
     for(; !!ts; ++ ts)
     {
