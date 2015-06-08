@@ -17,7 +17,7 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/** @file ural/sequence/all_tuples.hpp
+/** @file ural/sequence/cartesian_product.hpp
  @brief Последовательность всех кортежей
  @todo Устранить дублирование с @c transform_sequence
 */
@@ -35,11 +35,10 @@ namespace ural
     соблазнительной, но, к сожалению, это невозможно, так как требуется
     обнаружение "переполнения" для переноса разрядов.
     @todo Усилить категорию обхода
-    @todo Переименовать в cartesian_product (декартово произведение)
     */
     template <class... Inputs>
-    class all_tuples_sequence
-     : public sequence_base<all_tuples_sequence<Inputs...>>
+    class cartesian_product_sequence
+     : public sequence_base<cartesian_product_sequence<Inputs...>>
     {
     public:
         // Типы
@@ -68,7 +67,7 @@ namespace ural
         @param ins базовые последовательности
         @post <tt> this->base() == make_tuple(ins...) </tt>
         */
-        explicit all_tuples_sequence(Inputs... ins)
+        explicit cartesian_product_sequence(Inputs... ins)
          : bases_{std::move(ins)...}
         {
             typedef typename std::tuple_element<0, decltype(bases_)>::type
@@ -95,7 +94,7 @@ namespace ural
         reference front() const
         {
             auto f = [this](Inputs const & ... args)->reference
-                     { return this->deref(args...); };
+                     { return reference((*args)...); };
 
             return apply(f, bases_);
         }
@@ -145,11 +144,6 @@ namespace ural
             }
         }
 
-        reference deref(Inputs const & ... ins) const
-        {
-            return reference((*ins)...);
-        }
-
     private:
         tuple<Inputs...> bases_;
     };
@@ -158,10 +152,10 @@ namespace ural
     @param ins базовые последовательности
     */
     template <class... Inputs>
-    auto make_all_tuples_sequence(Inputs && ... ins)
-    -> all_tuples_sequence<decltype(::ural::sequence_fwd<Inputs>(ins))...>
+    auto make_cartesian_product_sequence(Inputs && ... ins)
+    -> cartesian_product_sequence<decltype(::ural::sequence_fwd<Inputs>(ins))...>
     {
-        typedef all_tuples_sequence<decltype(::ural::sequence_fwd<Inputs>(ins))...>
+        typedef cartesian_product_sequence<decltype(::ural::sequence_fwd<Inputs>(ins))...>
             Result;
         return Result(::ural::sequence_fwd<Inputs>(ins)...);
     }
