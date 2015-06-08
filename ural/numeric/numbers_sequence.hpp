@@ -98,6 +98,12 @@ namespace ural
             data_[ural::_1] += data_[ural::_3];
         }
 
+        // Последовательность известной длины
+        constexpr distance_type size() const
+        {
+            return (data_[ural::_2] - data_[ural::_1]) / data_[ural::_3];
+        }
+
     private:
         ural::tuple<Number, Number, distance_type> data_;
     };
