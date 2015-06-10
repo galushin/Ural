@@ -14,6 +14,7 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <ural/sequence/chunks.hpp>
 #include <ural/sequence/cargo.hpp>
 #include <ural/sequence/sink.hpp>
 #include <ural/container/flat_set.hpp>
@@ -794,4 +795,29 @@ BOOST_AUTO_TEST_CASE(iterator_sequence_for_istream_iterator_regression)
     ural::copy(seq, x | ural::back_inserter);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
+}
+
+// @todo преобразовать в шаблон
+BOOST_AUTO_TEST_CASE(chunks_sequence_test)
+{
+    typedef std::vector<int> Source;
+
+    auto const seq = ural::numbers(1, 8);
+    Source src(begin(seq), end(seq));
+
+    typedef ural::ValueType<Source> Value;
+    std::vector<std::vector<Value>> expected { {1, 2, 3}, {4, 5, 6}, {7}};
+
+    auto ch = ::ural::make_chunks_sequence(src, 3);
+    for(auto const & r : expected)
+    {
+        BOOST_CHECK(!!ch);
+        BOOST_CHECK(::ural::equal(r, *ch));
+        BOOST_CHECK_EQUAL_COLLECTIONS(r.begin(), r.end(),
+                                      begin(*ch), end(*ch));
+
+        ++ ch;
+    }
+
+    BOOST_CHECK(!ch);
 }

@@ -20,6 +20,7 @@
 /** @file ural/sequence/taken.hpp
  @brief Адаптер последовательности, ограничивающий базовую последовательность
  заданным числом элементов
+ @todo По умолчанию для Size использовать DifferenceType<Size>
 */
 
 #include <ural/sequence/make.hpp>
@@ -34,7 +35,7 @@ namespace ural
     @tparam Size тип количества элементов, которые должны быть взяты из базовой
     последовательности
     */
-    template <class Sequence, class Size>
+    template <class Sequence, class Size = DifferenceType<Sequence>>
     class take_sequence
      : public sequence_base<take_sequence<Sequence, Size>>
     {
@@ -136,6 +137,7 @@ namespace ural
 
         /** @brief Оставшееся количество элементов
         @return Оставшееся количество элементов
+        @todo переименовать в size?
         */
         Size const & count() const
         {
