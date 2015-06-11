@@ -14,6 +14,8 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "defs.hpp"
+
 #include <ural/sequence/chunks.hpp>
 #include <ural/sequence/cargo.hpp>
 #include <ural/sequence/sink.hpp>
@@ -27,6 +29,7 @@
 #include <boost/mpl/list.hpp>
 #include <boost/test/unit_test.hpp>
 
+#include <forward_list>
 #include <iterator>
 #include <set>
 #include <map>
@@ -797,11 +800,21 @@ BOOST_AUTO_TEST_CASE(iterator_sequence_for_istream_iterator_regression)
     BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
 }
 
-// @todo преобразовать в шаблон
+BOOST_AUTO_TEST_CASE(take_sequence_more_than_size)
+{
+    std::vector<int> const z{11, 11, 22, 33, 55};
+
+    std::vector<int> result;
+
+    ural::copy(z | ural::taken(z.size() + 10),  result | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
+                                  result.begin(), result.end());
+}
+
 BOOST_AUTO_TEST_CASE(chunks_sequence_test)
 {
-    typedef std::vector<int> Source;
-
+    typedef std::forward_list<int> Source;
     auto const seq = ural::numbers(1, 8);
     Source src(begin(seq), end(seq));
 
@@ -809,12 +822,18 @@ BOOST_AUTO_TEST_CASE(chunks_sequence_test)
     std::vector<std::vector<Value>> expected { {1, 2, 3}, {4, 5, 6}, {7}};
 
     auto ch = ::ural::make_chunks_sequence(src, 3);
+
+    BOOST_CONCEPT_ASSERT((::ural::concepts::ForwardSequence<decltype(ch)>));
+
     for(auto const & r : expected)
     {
+        std::vector<Value> a;
+        ural::copy(*ch, a | ural::back_inserter);
+
         BOOST_CHECK(!!ch);
         BOOST_CHECK(::ural::equal(r, *ch));
         BOOST_CHECK_EQUAL_COLLECTIONS(r.begin(), r.end(),
-                                      begin(*ch), end(*ch));
+                                      a.begin(), a.end());
 
         ++ ch;
     }

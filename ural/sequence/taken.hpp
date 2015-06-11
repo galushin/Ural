@@ -34,6 +34,10 @@ namespace ural
     @tparam Sequence тип последовательности
     @tparam Size тип количества элементов, которые должны быть взяты из базовой
     последовательности
+    @todo take_sequence не может быть двусторонней, уточнить traversal_tag
+    @todo Для последовательностей произвольного доступа можно оптимизировать:
+    узнать точный размер в конструкторе, а следовательно делать меньше проверок
+    в operator!, быстрее выполнять exhaust_front
     */
     template <class Sequence, class Size = DifferenceType<Sequence>>
     class take_sequence
@@ -75,7 +79,7 @@ namespace ural
         */
         bool operator!() const
         {
-            return this->count() == 0;
+            return this->count() == 0 || !this->base();
         }
 
         /** @brief Текущий элемент последовательности
@@ -108,6 +112,12 @@ namespace ural
         {
             return take_sequence(this->base().traversed_front(),
                                  this->init_count() - this->count());
+        }
+
+        void exhaust_front()
+        {
+            for(; !!*this; ++*this)
+            {}
         }
 
         /// @brief Отбрасывание пройденной части последовательности

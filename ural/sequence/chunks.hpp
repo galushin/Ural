@@ -20,7 +20,7 @@
 /** @file ural/sequence/chunks.hpp
  @brief Представление последовательности в виде последовательности
  последовательностей одинаковой длины (кроме, возможно, последней).
- @todo Ослабление требований
+ @todo Реализовать функции прямой последовательности
 */
 
 #include <ural/sequence/taken.hpp>
@@ -32,6 +32,7 @@ namespace ural
     /** @brief Адаптор последовательности, разделяющий её на
     подпоследовательности одинаковой длины (кроме, возможно, последней).
     @tparam Sequence базовая последовательность
+    @todo Добавить требование, что Sequence должна быть хотя бы прямой
     */
     template <class Sequence>
     class chunks_sequence
@@ -39,8 +40,17 @@ namespace ural
     {
     public:
         // Типы
+        /// @brief Тип значения
+        typedef take_sequence<Sequence> value_type;
+
         /// @brief Тип ссылки
-        typedef take_sequence<Sequence> reference;
+        typedef value_type reference;
+
+        /// @brief Категория обхода
+        typedef forward_traversal_tag traversal_tag;
+
+        /// @brief Тип расстояния
+        using distance_type = DifferenceType<Sequence>;
 
         // Конструкторы
         /** @brief Конструктор
@@ -49,7 +59,7 @@ namespace ural
         @post <tt> this->base() == seq </tt>
         @post <tt> this->chunk_size() == n </tt>
         */
-        chunks_sequence(Sequence seq, DifferenceType<Sequence> n)
+        chunks_sequence(Sequence seq, distance_type n)
          : seq_(std::move(seq))
          , n_(n)
         {}
@@ -66,7 +76,7 @@ namespace ural
         /** @brief Размер подпоследовательностей
         @return Размер подпоследовательностей
         */
-        DifferenceType<Sequence> chunk_size() const
+        distance_type chunk_size() const
         {
             return this->n_;
         }
@@ -86,7 +96,7 @@ namespace ural
         */
         reference front() const
         {
-            return seq_ | ural::taken(this->current_chunk_size());
+            return seq_ | ural::taken(this->chunk_size());
         }
 
         /** @brief Переход к следующему элементу
@@ -94,17 +104,19 @@ namespace ural
         */
         void pop_front()
         {
-            ural::advance(seq_, this->current_chunk_size());
+            auto s = this->front();
+            s.exhaust_front();
+            seq_ = std::move(s).base();
         }
+
+        // Прямая последовательность
+        void shrink_front();
+
+        chunks_sequence traversed_front();
 
     private:
-        DifferenceType<Sequence> current_chunk_size() const
-        {
-            return std::min(this->chunk_size(), this->base().size());
-        }
-
         Sequence seq_;
-        DifferenceType<Sequence> n_;
+        distance_type n_;
     };
 
     /** @brief Функция создания @c chunk_sequence
@@ -121,6 +133,10 @@ namespace ural
         typedef chunks_sequence<SequenceType<Sequenced>> Result;
         return Result(::ural::sequence_fwd<Sequenced>(seq), std::move(n));
     }
+
+    template <class Sequence>
+    bool operator==(chunks_sequence<Sequence> const & x,
+                    chunks_sequence<Sequence> const & y);
 }
 // namespace ural
 
