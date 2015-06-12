@@ -13,18 +13,21 @@
     You should have received a copy of the GNU General Public License
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include <ural/sequence/delimit.hpp>
 
 #include "defs.hpp"
 
+#include <ural/sequence/to.hpp>
 #include <ural/sequence/chunks.hpp>
 #include <ural/sequence/cargo.hpp>
 #include <ural/sequence/sink.hpp>
-#include <ural/container/flat_set.hpp>
-#include <ural/algorithm.hpp>
 #include <ural/sequence/all.hpp>
 #include <ural/sequence/zip.hpp>
 #include <ural/sequence/map.hpp>
 #include <ural/sequence/progression.hpp>
+
+#include <ural/algorithm.hpp>
+#include <ural/container/flat_set.hpp>
 
 #include <boost/mpl/list.hpp>
 #include <boost/test/unit_test.hpp>
@@ -315,16 +318,16 @@ BOOST_AUTO_TEST_CASE(ostream_sequence_default_test)
 
     typedef ural::ostream_sequence<OStream, int> S1;
 
-    static_assert(std::is_same<std::string, S1::delimeter_type>::value, "");
+    static_assert(std::is_same<std::string, S1::delimiter_type>::value, "");
 
     typedef ural::ostream_sequence<OStream> S2;
 
-    static_assert(std::is_same<std::string, S2::delimeter_type>::value, "");
+    static_assert(std::is_same<std::string, S2::delimiter_type>::value, "");
 
     typedef ural::ostream_sequence<> S3;
 
     static_assert(std::is_same<std::ostream, S3::ostream_type>::value, "");
-    static_assert(std::is_same<std::string, S3::delimeter_type>::value, "");
+    static_assert(std::is_same<std::string, S3::delimiter_type>::value, "");
 }
 
 BOOST_AUTO_TEST_CASE(arithmetic_progression_size_test)
@@ -839,4 +842,115 @@ BOOST_AUTO_TEST_CASE(chunks_sequence_test)
     }
 
     BOOST_CHECK(!ch);
+}
+
+BOOST_AUTO_TEST_CASE(delimit_sequence_test)
+{
+    std::vector<int> src2 = {3, 1, 4, 1, 5, 9, 2, 6, 5, 3};
+    ural_test::istringstream_helper<int> src1(src2.begin(), src2.end());
+
+    auto const value = 5;
+
+    auto seq = ::ural::make_delimit_sequence(src1, value);
+    BOOST_CONCEPT_ASSERT((ural::concepts::InputSequence<decltype(seq)>));
+
+    std::vector<int> result;
+    ural::copy(std::move(seq), result | ural::back_inserter);
+
+    auto const expected = ural::find(src2, value).traversed_front();
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(result.begin(), result.end(),
+                                  expected.begin(), expected.end());
+}
+
+BOOST_AUTO_TEST_CASE(delimit_sequence_test_cref)
+{
+    std::vector<int> src2 = {3, 1, 4, 1, 5, 9, 2, 6, 5, 3};
+    ural_test::istringstream_helper<int> src1(src2.begin(), src2.end());
+
+    auto const value = 5;
+
+    auto seq = src1 | ::ural::delimit(std::cref(value));
+    BOOST_CONCEPT_ASSERT((ural::concepts::InputSequence<decltype(seq)>));
+
+    std::vector<int> result;
+    ural::copy(std::move(seq), result | ural::back_inserter);
+
+    auto const expected = ural::find(src2, value).traversed_front();
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(result.begin(), result.end(),
+                                  expected.begin(), expected.end());
+}
+
+BOOST_AUTO_TEST_CASE(delimit_sequence_forward_test)
+{
+    std::forward_list<int> src = {3, 1, 4, 1, 5, 9, 2, 6, 5, 3};
+    auto const value = 5;
+
+    auto seq = ::ural::make_delimit_sequence(src, std::cref(value));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<decltype(seq)>));
+
+    auto const expected = ural::find(src, value).traversed_front();
+
+    std::vector<int> result;
+    seq = ural::copy(std::move(seq), result | ural::back_inserter)[ural::_1];
+
+    auto seq_traversed = seq.traversed_front();
+
+    BOOST_CHECK(seq_traversed == expected);
+
+    BOOST_CHECK(true);
+}
+
+BOOST_AUTO_TEST_CASE(delimit_sequence_equality_test)
+{
+    std::forward_list<int> src1 = {3, 1, 4, 1, 5, 9, 2, 6, 5, 3};
+    std::forward_list<int> src0;
+
+    auto const value1 = 5;
+    auto const value2 = 9;
+
+    BOOST_CHECK(value1 != value2);
+
+    auto const eq1 = +[](int x, int y) { return x == y; };
+    auto const eq2 = +[](int x, int y) { return x != y; };
+
+    BOOST_CHECK(eq1 != eq2);
+
+    auto s1   = ::ural::make_delimit_sequence(src1, value1, eq1);
+    auto s1_1 = s1;
+
+    auto s2 = ::ural::make_delimit_sequence(src0, value1, eq1);
+    auto s3 = ::ural::make_delimit_sequence(src1, value2, eq1);
+    auto s4 = ::ural::make_delimit_sequence(src1, value1, eq2);
+
+    BOOST_CHECK(s1 == s1);
+    BOOST_CHECK(s1 == s1_1);
+
+    BOOST_CHECK(s1 != s2);
+    BOOST_CHECK(s1 != s3);
+    BOOST_CHECK(s1 != s4);
+}
+
+BOOST_AUTO_TEST_CASE(delimit_sequence_shrink_front_test)
+{
+    std::vector<int> src = {3, 1, 4, 1, 5, 9, 2, 6, 5, 3};
+
+    auto const d = 2;
+    auto const value = 5;
+
+    auto s1 = ::ural::make_iterator_sequence(src.begin(), src.end());
+    auto ds1 = ::ural::make_delimit_sequence(s1, value);
+
+    auto s2 = ::ural::make_iterator_sequence(src.begin() + d, src.end());
+    BOOST_CHECK(s1 != s2);
+
+    auto ds2 = ::ural::make_delimit_sequence(s2, value);
+    BOOST_CHECK(ds1 != ds2);
+
+    ural::advance(ds1, d);
+    ds1.shrink_front();
+
+    BOOST_CHECK(ds1.base() == ds2.base());
+    BOOST_CHECK(ds1 == ds2);
 }

@@ -49,7 +49,7 @@ namespace ural
     */
     template <class OStream, class Sequence, class Delim>
     OStream &
-    write_delimeted(OStream & os, Sequence && seq, Delim const & delim)
+    write_delimited(OStream & os, Sequence && seq, Delim const & delim)
     {
         auto s = ::ural::sequence_fwd<Sequence>(seq);
 
@@ -69,29 +69,29 @@ namespace ural
         return os;
     }
 
-    template <class Sequence, class Delimeter>
-    class delimeted_helper
+    template <class Sequence, class Delimiter>
+    class delimited_helper
     {
     public:
-        delimeted_helper(Sequence seq, Delimeter delim)
+        delimited_helper(Sequence seq, Delimiter delim)
          : sequence(std::move(seq))
-         , delimeter(std::move(delim))
+         , delimiter(std::move(delim))
         {}
 
         Sequence sequence;
-        Delimeter delimeter;
+        Delimiter delimiter;
     };
 
     template <class OStream, class Seq, class Delim>
-    OStream & operator<<(OStream & os, delimeted_helper<Seq, Delim> && d)
+    OStream & operator<<(OStream & os, delimited_helper<Seq, Delim> && d)
     {
-        return ural::write_delimeted(os, std::move(d.sequence),
-                                     std::move(d.delimeter));
+        return ural::write_delimited(os, std::move(d.sequence),
+                                     std::move(d.delimiter));
     }
 
-    template <class Sequence, class Delimeter>
-    auto delimeted(Sequence && seq, Delimeter delim)
-    -> delimeted_helper<decltype(::ural::sequence_fwd<Sequence>(seq)), Delimeter>
+    template <class Sequence, class delimiter>
+    auto delimited(Sequence && seq, delimiter delim)
+    -> delimited_helper<decltype(::ural::sequence_fwd<Sequence>(seq)), delimiter>
     {
         return {::ural::sequence_fwd<Sequence>(seq), std::move(delim)};
     }
@@ -105,7 +105,7 @@ namespace ural
     {
         for(auto & row : table)
         {
-            ural::write_delimeted(os, row, "\t") << "\n";
+            ural::write_delimited(os, row, "\t") << "\n";
         }
         return os;
     }

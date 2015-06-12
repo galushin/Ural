@@ -120,7 +120,9 @@ namespace ural
             {}
         }
 
-        /// @brief Отбрасывание пройденной части последовательности
+        /** @brief Отбрасывание пройденной части последовательности
+        @post <tt> !this->traversed_front() </tt>
+        */
         void shrink_front()
         {
             impl_[ural::_1].shrink_front();

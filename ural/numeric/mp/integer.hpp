@@ -797,12 +797,12 @@ namespace ural
 
         if(radix <= 16)
         {
-            ural::write_delimeted(os, x.digits() | ural::reversed,
-                                  ural::no_delimeter{});
+            ural::write_delimited(os, x.digits() | ural::reversed,
+                                  ural::no_delimiter{});
         }
         else
         {
-            ural::write_delimeted(os, x.digits() | ural::reversed, ':');
+            ural::write_delimited(os, x.digits() | ural::reversed, ':');
         }
 
 

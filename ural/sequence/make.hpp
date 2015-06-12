@@ -248,6 +248,8 @@ namespace ural
             /// @brief Проверка неявных интерфейсов
             BOOST_CONCEPT_USAGE(ForwardSequence)
             {
+                value_consumer<ural::forward_traversal_tag>() = traversal_tag{};
+
                 BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<Seq>));
 
                 seq.shrink_front();
@@ -260,6 +262,7 @@ namespace ural
             }
 
         private:
+            using traversal_tag = typename Seq::traversal_tag;
             static Seq seq;
         };
 

@@ -29,7 +29,7 @@
 namespace ural
 {
     /// @brief Перечисление "Сохранять ли разделитель в конце строки)
-    enum class keep_delimeter
+    enum class keep_delimiter
     {
         no = 0,
         yes = 1
@@ -68,15 +68,15 @@ namespace ural
         // Конструкторы
         /** @brief Конструктор
         @param is поток ввода
-        @param delimeter символ-разделитель
+        @param delimiter символ-разделитель
         @param kd флаг, показывающий, нужно ли сохранять символ-разделитель в
         конце строки.
         */
         explicit by_line_sequence(IStream && is,
-                                  char_type delimeter = char_type('\n'),
-                                  keep_delimeter kd = keep_delimeter::no)
+                                  char_type delimiter = char_type('\n'),
+                                  keep_delimiter kd = keep_delimiter::no)
          : is_{std::forward<IStream>(is)}
-         , delim_(std::move(delimeter))
+         , delim_(std::move(delimiter))
          , kd_{kd}
         {
             this->seek();
@@ -117,7 +117,7 @@ namespace ural
             using std::getline;
             getline(is_.get(), reader_, delim_);
 
-            if(kd_ == keep_delimeter::yes && is_.get().eof() == false)
+            if(kd_ == keep_delimiter::yes && is_.get().eof() == false)
             {
                 reader_.push_back(delim_);
             }
@@ -130,7 +130,7 @@ namespace ural
         Holder is_;
         value_type reader_;
         char_type delim_;
-        keep_delimeter kd_;
+        keep_delimiter kd_;
     };
 
     /** @brief Создание последовательности, читающей поток ввода построчно
@@ -147,33 +147,33 @@ namespace ural
     /** @brief Создание последовательности, читающей поток ввода блоками,
     разделёнными заданным символом.
     @param is ссылка на поток ввода
-    @param delimeter символ-разделитель
-    @return <tt> by_line_sequence<IStream>(is, std::move(delimeter)) </tt>
+    @param delimiter символ-разделитель
+    @return <tt> by_line_sequence<IStream>(is, std::move(delimiter)) </tt>
     */
     template <class IStream>
     by_line_sequence<IStream>
     by_line(IStream && is,
-            typename std::remove_reference<IStream>::type::char_type delimeter)
+            typename std::remove_reference<IStream>::type::char_type delimiter)
     {
         return by_line_sequence<IStream>(std::forward<IStream>(is),
-                                         std::move(delimeter));
+                                         std::move(delimiter));
     }
 
      /** @brief Создание последовательности, читающей поток ввода блоками,
     разделёнными заданным символом.
     @param is ссылка на поток ввода
-    @param delimeter символ-разделитель
+    @param delimiter символ-разделитель
     @param kd показывает, нужно ли сохранять символы разделители
-    @return <tt> by_line_sequence<IStream>(is, std::move(delimeter), kd) </tt>
+    @return <tt> by_line_sequence<IStream>(is, std::move(delimiter), kd) </tt>
     */
     template <class IStream>
     by_line_sequence<IStream>
     by_line(IStream && is,
-            typename std::remove_reference<IStream>::type::char_type delimeter,
-            keep_delimeter kd)
+            typename std::remove_reference<IStream>::type::char_type delimiter,
+            keep_delimiter kd)
     {
         return by_line_sequence<IStream>(std::forward<IStream>(is),
-                                         std::move(delimeter), kd);
+                                         std::move(delimiter), kd);
     }
 }
 // namespace ural
