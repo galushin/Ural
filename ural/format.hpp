@@ -49,7 +49,7 @@ namespace ural
     */
     template <class OStream, class Sequence, class Delim>
     OStream &
-    write_delimited(OStream & os, Sequence && seq, Delim const & delim)
+    write_separated(OStream & os, Sequence && seq, Delim const & delim)
     {
         auto s = ::ural::sequence_fwd<Sequence>(seq);
 
@@ -69,31 +69,31 @@ namespace ural
         return os;
     }
 
-    template <class Sequence, class Delimiter>
-    class delimited_helper
+    template <class Sequence, class Separator>
+    class separated_helper
     {
     public:
-        delimited_helper(Sequence seq, Delimiter delim)
+        separated_helper(Sequence seq, Separator delim)
          : sequence(std::move(seq))
-         , delimiter(std::move(delim))
+         , separator(std::move(delim))
         {}
 
         Sequence sequence;
-        Delimiter delimiter;
+        Separator separator;
     };
 
-    template <class OStream, class Seq, class Delim>
-    OStream & operator<<(OStream & os, delimited_helper<Seq, Delim> && d)
+    template <class OStream, class Seq, class Separator>
+    OStream & operator<<(OStream & os, separated_helper<Seq, Separator> && d)
     {
-        return ural::write_delimited(os, std::move(d.sequence),
-                                     std::move(d.delimiter));
+        return ural::write_separated(os, std::move(d.sequence),
+                                     std::move(d.separator));
     }
 
-    template <class Sequence, class delimiter>
-    auto delimited(Sequence && seq, delimiter delim)
-    -> delimited_helper<decltype(::ural::sequence_fwd<Sequence>(seq)), delimiter>
+    template <class Sequence, class Separator>
+    auto separated(Sequence && seq, Separator separator)
+    -> separated_helper<decltype(::ural::sequence_fwd<Sequence>(seq)), Separator>
     {
-        return {::ural::sequence_fwd<Sequence>(seq), std::move(delim)};
+        return {::ural::sequence_fwd<Sequence>(seq), std::move(separator)};
     }
 
     /** @brief Вывод таблицы в поток
@@ -105,7 +105,7 @@ namespace ural
     {
         for(auto & row : table)
         {
-            ural::write_delimited(os, row, "\t") << "\n";
+            ural::write_separated(os, row, "\t") << "\n";
         }
         return os;
     }

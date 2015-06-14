@@ -177,10 +177,10 @@ BOOST_AUTO_TEST_CASE(ostream_delimited_test)
     std::vector<int> const xs = {1, 2, 3, 4, 5};
 
     std::ostringstream os_1;
-    ural::write_delimited(os_1, xs, ", ") << "\n";
+    ural::write_separated(os_1, xs, ", ") << "\n";
 
     std::ostringstream os_2;
-    os_2 << ural::delimited(xs, ", ") << "\n";
+    os_2 << ural::separated(xs, ", ") << "\n";
 
     BOOST_CHECK_EQUAL(os_1.str(), os_2.str());
 }
