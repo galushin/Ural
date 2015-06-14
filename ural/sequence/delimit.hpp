@@ -22,6 +22,7 @@
  последовательности до первого элемента, эквивалентного заданному значению.
 */
 
+#include <ural/utility/pipeable.hpp>
 #include <ural/sequence/make.hpp>
 #include <ural/sequence/base.hpp>
 
@@ -167,50 +168,42 @@ namespace ural
         FunctionType<BinaryPredicate> eq_;
     };
 
-    /** @brief Создание адаптор последовательности, содержащие все элементы
-    исходной последовательности до первого элемента, эквивалентного заданному
-    значению
-    @param in входная последовательность
-    @param value искомое значение
-    @param bin_pred бинарный предикат
-    @return <tt> Seq(::ural::sequence_fwd<Sequenced>(in), std::move(value),
-                     ural::make_callable(std::move(bin_pred))) </tt>, где
-    @c Seq есть <tt> delimit_sequence<SequenceType<Sequenced>, Value, BinaryPredicate> </tt>
-    */
-    template <class Sequenced, class Value,
-              class BinaryPredicate = ural::equal_to<>>
-    delimit_sequence<SequenceType<Sequenced>, Value, BinaryPredicate>
-    make_delimit_sequence(Sequenced && in, Value value,
-                          BinaryPredicate bin_pred = BinaryPredicate())
+    namespace details
     {
-        using Seq = delimit_sequence<SequenceType<Sequenced>, Value, BinaryPredicate>;
-        return Seq(::ural::sequence_fwd<Sequenced>(in),
-                   std::move(value),
-                   std::move(bin_pred));
+        struct make_delimit_sequence_fn
+        {
+            /** @brief Создание адаптор последовательности, содержащие все элементы
+            исходной последовательности до первого элемента, эквивалентного заданному
+            значению
+            @param in входная последовательность
+            @param value искомое значение
+            @param bin_pred бинарный предикат
+            @return <tt> Seq(::ural::sequence_fwd<Sequenced>(in), std::move(value),
+                             ural::make_callable(std::move(bin_pred))) </tt>, где
+            @c Seq есть <tt> delimit_sequence<SequenceType<Sequenced>, Value, BinaryPredicate> </tt>
+            */
+            template <class Sequenced, class Value,
+                      class BinaryPredicate = ural::equal_to<>>
+            delimit_sequence<SequenceType<Sequenced>, Value, BinaryPredicate>
+            operator()(Sequenced && in, Value value,
+                       BinaryPredicate bin_pred = BinaryPredicate()) const
+            {
+                using Seq = delimit_sequence<SequenceType<Sequenced>, Value, BinaryPredicate>;
+                return Seq(::ural::sequence_fwd<Sequenced>(in),
+                           std::move(value),
+                           std::move(bin_pred));
+            }
+        };
     }
+    // namespace details
 
-    template <class Value, class BinaryPredicate>
-    class delimit_sequence_pipe
+    namespace
     {
-    public:
-        Value delimiter;
-        BinaryPredicate relation;
-    };
+        constexpr auto const make_delimit_sequence
+            = ::ural::details::make_delimit_sequence_fn{};
 
-    template <class Sequenced, class Value, class BinaryPredicate>
-    delimit_sequence<SequenceType<Sequenced>, Value, BinaryPredicate>
-    operator|(Sequenced && seq, delimit_sequence_pipe<Value, BinaryPredicate> pipe)
-    {
-        return make_delimit_sequence(std::forward<Sequenced>(seq),
-                                     std::move(pipe.delimiter),
-                                     std::move(pipe.relation));
-    }
-
-    template <class Value, class BinaryPredicate = ural::equal_to<>>
-    delimit_sequence_pipe<Value, BinaryPredicate>
-    delimit(Value value, BinaryPredicate bin_pred = BinaryPredicate())
-    {
-        return {std::move(value), std::move(bin_pred)};
+        constexpr auto const delimited =
+            ::ural::pipeable_maker<::ural::details::make_delimit_sequence_fn>{};
     }
 }
 // namespace ural

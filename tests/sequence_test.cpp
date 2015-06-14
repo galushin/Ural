@@ -468,14 +468,17 @@ BOOST_AUTO_TEST_CASE(sequence_for_each_test)
 
 BOOST_AUTO_TEST_CASE(filtered_sequence_for_each)
 {
-    std::vector<int> x = {1, 2, 3, 4, 5, 6, 7, 8};
-    auto s = x | ural::filtered([](int const & x) { return x % 3 == 0;});
+    std::forward_list<int> xs = {1, 2, 3, 4, 5, 6, 7, 8};
+    auto s = xs | ural::filtered([](int const & x) { return x % 3 == 0;});
+
+    BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<decltype(s)>));
 
     std::vector<int> r;
     std::vector<int> const z  = {3, 6};
 
-    // Цикл вместо алгоритма используется специально
-    for(auto & x : s)
+    // Цикл вместо алгоритма используется специально, чтобы проверить, что
+    // тип ссылки - неконстантная ссылка
+    for(decltype(xs)::value_type & x : s)
     {
         r.push_back(x);
     }
@@ -870,7 +873,7 @@ BOOST_AUTO_TEST_CASE(delimit_sequence_test_cref)
 
     auto const value = 5;
 
-    auto seq = src1 | ::ural::delimit(std::cref(value));
+    auto seq = src1 | ::ural::delimited(std::cref(value));
     BOOST_CONCEPT_ASSERT((ural::concepts::InputSequence<decltype(seq)>));
 
     std::vector<int> result;
