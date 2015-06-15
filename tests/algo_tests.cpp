@@ -772,8 +772,10 @@ BOOST_AUTO_TEST_CASE(eager_transform_test_return_value)
 
 BOOST_AUTO_TEST_CASE(transform_2_test)
 {
-    std::vector<int> const x1 = {1, 20, 30, 40, 50};
+    std::vector<int> const x1 = {1, 20, 30, 40};
     std::vector<int> const x2 = {10, 2, 30, 4, 5};
+
+    assert(x1.size() <= x2.size());
 
     std::vector<bool> z_std;
     std::vector<bool> z_ural;
@@ -786,6 +788,9 @@ BOOST_AUTO_TEST_CASE(transform_2_test)
 
     auto seq = ural::make_transform_sequence(f_ural, x1, x2);
     ural::copy(std::move(seq), std::back_inserter(z_ural));
+
+    BOOST_CHECK_EQUAL(ural::to_unsigned(seq.size()),
+                      std::min(x1.size(), x2.size()));
 
     BOOST_CHECK_EQUAL_COLLECTIONS(z_std.begin(), z_std.end(),
                                   z_ural.begin(), z_ural.end());
