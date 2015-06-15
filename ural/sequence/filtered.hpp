@@ -103,6 +103,24 @@ namespace ural
             return impl_.pop_front();
         }
 
+        // Прямая последовательность
+        /** @brief Пройденная часть последовательности
+        @return Пройденная часть последовательности
+        */
+        filter_sequence traversed_front() const
+        {
+            return filter_sequence(impl_.traversed_front().base(),
+                                   this->predicate());
+        }
+
+        /** @brief Отбрасывание пройденной части последовательности
+        @post <tt> !this->traversed_front() </tt>
+        */
+        void shrink_front()
+        {
+            return this->impl_.shrink_front();
+        }
+
         // Адаптор последовательности
         /** @brief Предикат
         @return Используемый предикат
