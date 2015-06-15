@@ -486,6 +486,17 @@ BOOST_AUTO_TEST_CASE(filtered_sequence_for_each)
     BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(), r.begin(), r.end());
 }
 
+BOOST_AUTO_TEST_CASE(filtered_sequence_is_permuation)
+{
+    std::list<int> const xs1 = {3, 1, 4, 1, 5, 9, 2, 6};
+    std::forward_list<int> const xs2(xs1.rbegin(), xs1.rend());
+
+    auto const pred = +[](int const & x) { return x % 3 == 0;};
+
+    BOOST_CHECK(ural::is_permutation(xs1 | ural::filtered(pred),
+                                     xs2 | ural::filtered(pred)));
+}
+
 BOOST_AUTO_TEST_CASE(zip_sequence_bases_access)
 {
     std::vector<int> const x = {1, 2, 3, 4, 5};

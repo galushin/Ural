@@ -113,6 +113,24 @@ namespace ural
             this->seek();
         }
 
+        // Прямая последовательность
+         /** @brief Пройденная часть последовательности
+        @return Пройденная часть последовательности
+        */
+        remove_if_sequence traversed_front() const
+        {
+            return remove_if_sequence(this->base().traversed_front(),
+                                      this->predicate());
+        }
+
+        /** @brief Отбрасывание пройденной части последовательности
+        @post <tt> !this->traversed_front() </tt>
+        */
+        void shrink_front()
+        {
+            return ural::get(members_, ural::_1).shrink_front();
+        }
+
         // Адаптор последовательности
         /** @brief Базовая последовательность
         @return Базовая последовательность
