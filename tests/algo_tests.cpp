@@ -21,6 +21,7 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <ural/numeric.hpp>
 #include <ural/math/rational.hpp>
 #include <ural/sequence/transform.hpp>
 #include <ural/numeric/numbers_sequence.hpp>
@@ -116,7 +117,18 @@ BOOST_AUTO_TEST_CASE(for_each_test)
                                   x_ural.begin(), x_ural.end());
 }
 
-// @todo Тест for_each с входной последовательностью
+BOOST_AUTO_TEST_CASE(for_each_input_sequence_test)
+{
+    std::vector<int> const x{1, 2, 3, 4, 5};
+    ural_test::istringstream_helper<int> x_ural(x.begin(), x.end());
+
+    int sum = 0;
+    auto acc = [&sum](auto x) { sum += x; };
+
+    ural::for_each(x_ural, acc);
+
+    BOOST_CHECK_EQUAL(sum, ural::accumulate(x, 0));
+}
 
 // 25.2.5
 BOOST_AUTO_TEST_CASE(find_fail_test_istream)

@@ -121,7 +121,8 @@ namespace ural
             BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<UnaryFunction, Input>));
 
-            auto r = ural::copy_fn{}(in, ural::make_function_output_sequence(std::move(f)));
+            auto r = ural::copy_fn{}(std::move(in),
+                                     ural::make_function_output_sequence(std::move(f)));
             return ::ural::make_tuple(std::move(r[ural::_1]),
                                       std::move(r[ural::_2]).function());
         }
