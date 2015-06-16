@@ -410,13 +410,14 @@ BOOST_AUTO_TEST_CASE(search_n_test)
 // 25.3.1 Копирование
 BOOST_AUTO_TEST_CASE(copy_test)
 {
-    std::vector<int> const xs = {1, 2, 3, 4};
+    std::vector<int> const src = {1, 2, 3, 4};
+    ural_test::istringstream_helper<int> xs(src.begin(), src.end());
 
     std::vector<int> x1;
 
     ural::copy(xs, std::back_inserter(x1));
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(xs.begin(), xs.end(), x1.begin(), x1.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(src.begin(), src.end(), x1.begin(), x1.end());
 }
 
 BOOST_AUTO_TEST_CASE(copy_test_different_sizes)
@@ -466,13 +467,14 @@ BOOST_AUTO_TEST_CASE(copy_n_analog_test)
 
 BOOST_AUTO_TEST_CASE(copy_n_test)
 {
-    std::string const src = "1234567890";
+    std::string const str = "1234567890";
+    ural_test::istringstream_helper<char> src(str.begin(), str.end());
     std::string r_std;
     std::string r_ural;
 
     auto const n = 4;
 
-    std::copy_n(src.begin(), n, std::back_inserter(r_std));
+    std::copy_n(str.begin(), n, std::back_inserter(r_std));
 
     ural::copy_n(src, n, std::back_inserter(r_ural));
 
@@ -548,15 +550,16 @@ BOOST_AUTO_TEST_CASE(filtered_test)
 BOOST_AUTO_TEST_CASE(copy_if_test)
 {
     typedef int Type;
-    std::vector<Type> const xs = {25, -15, 5, -5, 15};
+    std::vector<Type> const src_std = {25, -15, 5, -5, 15};
+    ural_test::istringstream_helper<Type> src_ural(src_std.begin(), src_std.end());
+
     auto const pred = [](Type i){return !(i<0);};
 
     std::vector<Type> r_std;
-
-    std::copy_if (xs.begin(), xs.end(), std::back_inserter(r_std) , pred);
+    std::copy_if(src_std.begin(), src_std.end(), std::back_inserter(r_std) , pred);
 
     std::vector<Type> r_ural;
-    ural::copy_if(xs, r_ural | ural::back_inserter, pred);
+    ural::copy_if(src_ural, r_ural | ural::back_inserter, pred);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
                                   r_ural.begin(), r_ural.end());
@@ -642,7 +645,7 @@ BOOST_AUTO_TEST_CASE(filtered_getters_test)
 BOOST_AUTO_TEST_CASE(copy_backward_test)
 {
     std::vector<int> x_std = {1, 2, 3, 4, 5};
-    std::vector<int> x_ural = x_std;
+    std::vector<int> x_ural(x_std.begin(), x_std.end());
 
     std::copy_backward(x_std.begin(), x_std.end() - 1, x_std.end());
 
@@ -651,6 +654,64 @@ BOOST_AUTO_TEST_CASE(copy_backward_test)
 
     BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
                                   x_ural.begin(), x_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(copy_backward_to_shorter)
+{
+    std::list<int> const src = {1, 2, 3, 4, 5};
+    std::list<int> out(src.size() / 2, -1);
+
+    BOOST_CHECK(out.empty() == false);
+    BOOST_CHECK_LE(out.size(), src.size());
+
+    auto const result = ::ural::copy_backward(src, out);
+
+    auto const copied_begin = std::next(src.begin(), src.size() - out.size());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(copied_begin, src.end(),
+                                  out.begin(), out.end());
+
+    BOOST_CHECK(result[ural::_1].traversed_begin() == src.begin());
+    BOOST_CHECK(result[ural::_1].begin() == src.begin());
+    BOOST_CHECK(result[ural::_1].end() == copied_begin);
+    BOOST_CHECK(result[ural::_1].traversed_end() == src.end());
+
+    BOOST_CHECK(result[ural::_2].traversed_begin() == out.begin());
+    BOOST_CHECK(result[ural::_2].begin() == out.begin());
+    BOOST_CHECK(result[ural::_2].end() == out.begin());
+    BOOST_CHECK(result[ural::_2].traversed_end() == out.end());
+}
+
+BOOST_AUTO_TEST_CASE(copy_backward_to_longer)
+{
+    std::list<int> const src = {1, 2, 3, 4, 5};
+    std::list<int> out(src.size() * 2, -1);
+    auto const out_old = out;
+
+    BOOST_CHECK(out.empty() == false);
+    BOOST_CHECK_GE(out.size(), src.size());
+
+    auto const result = ::ural::copy_backward(src, out);
+
+    auto const dn = out.size() - src.size();
+
+    auto const writed_begin = std::next(out.begin(), dn);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(out.begin(), writed_begin,
+                                  out_old.begin(), std::next(out_old.begin(), dn));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(src.begin(), src.end(),
+                                  writed_begin, out.end());
+
+    BOOST_CHECK(result[ural::_1].traversed_begin() == src.begin());
+    BOOST_CHECK(result[ural::_1].begin() == src.begin());
+    BOOST_CHECK(result[ural::_1].end() == src.begin());
+    BOOST_CHECK(result[ural::_1].traversed_end() == src.end());
+
+    BOOST_CHECK(result[ural::_2].traversed_begin() == out.begin());
+    BOOST_CHECK(result[ural::_2].begin() == out.begin());
+    BOOST_CHECK(result[ural::_2].end() == writed_begin);
+    BOOST_CHECK(result[ural::_2].traversed_end() == out.end());
 }
 
 // 25.3.2 Перемещение

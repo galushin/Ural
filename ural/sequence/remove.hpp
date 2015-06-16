@@ -132,13 +132,20 @@ namespace ural
         }
 
         // Адаптор последовательности
+        //@{
         /** @brief Базовая последовательность
         @return Базовая последовательность
         */
-        Input const & base() const
+        Input const & base() const &
         {
             return ural::get(members_, ural::_1);
         }
+
+        Input && base() &&
+        {
+            return std::move(this->mutable_base());
+        }
+        //@}
 
         /** @brief Используемый предикат
         @return Используемый предикат
@@ -149,10 +156,14 @@ namespace ural
         }
 
     private:
+        Input & mutable_base()
+        {
+            return ural::get(members_, ural::_1);
+        }
         void seek()
         {
-            ural::get(members_, ural::_1)
-                =  find_if_not_fn{}(this->base(), this->predicate());
+            this->mutable_base() = find_if_not_fn{}(std::move(this->mutable_base()),
+                                                    this->predicate());
         }
 
     private:

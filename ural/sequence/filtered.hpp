@@ -130,13 +130,20 @@ namespace ural
             return impl_.predicate().target();
         }
 
+        //@{
         /** @brief Базовая последовательность
         @return Базовая последовательность
         */
-        Sequence const & base() const
+        Sequence const & base() const &
         {
-            return impl_.base();
+            return this->impl_.base();
         }
+
+        Sequence && base() &&
+        {
+            return std::move(this->impl_).base();
+        }
+        //@}
 
     private:
         Impl impl_;
