@@ -420,21 +420,61 @@ BOOST_AUTO_TEST_CASE(copy_test)
     BOOST_CHECK_EQUAL_COLLECTIONS(src.begin(), src.end(), x1.begin(), x1.end());
 }
 
-BOOST_AUTO_TEST_CASE(copy_test_different_sizes)
+BOOST_AUTO_TEST_CASE(copy_to_shorter_test)
 {
     std::vector<int> const xs = {1, 2, 3, 4};
 
     std::vector<int> x1(xs.size() - 2, 0);
-    std::vector<int> x2(xs.size() + 2, 0);
+
+    BOOST_CHECK_LE(x1.size(), xs.size());
 
     auto const r1 = ural::copy(xs, x1);
-    auto const r2 = ural::copy(xs, x2);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x1.begin(), x1.end(),
+                                  xs.begin(), xs.begin() + x1.size());
 
     BOOST_CHECK(!!r1[ural::_1]);
     BOOST_CHECK(!r1[ural::_2]);
 
+    BOOST_CHECK(r1[ural::_1].traversed_begin() == xs.begin());
+    BOOST_CHECK(r1[ural::_1].begin() == xs.begin() + (xs.size() - x1.size()));
+    BOOST_CHECK(r1[ural::_1].end() == xs.end());
+    BOOST_CHECK(r1[ural::_1].traversed_end() == xs.end());
+
+    BOOST_CHECK(r1[ural::_2].traversed_begin() == x1.begin());
+    BOOST_CHECK(r1[ural::_2].begin() == x1.end());
+    BOOST_CHECK(r1[ural::_2].end() == x1.end());
+    BOOST_CHECK(r1[ural::_2].traversed_end() == x1.end());
+}
+
+BOOST_AUTO_TEST_CASE(copy_to_longer_test)
+{
+    std::vector<int> const xs = {1, 2, 3, 4};
+
+    std::vector<int> x2(xs.size() + 2, 0);
+    auto const x2_old = x2;
+
+    BOOST_CHECK_GE(x2.size(), xs.size());
+
+    auto const r2 = ural::copy(xs, x2);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x2.begin(), x2.begin() + xs.size(),
+                                  xs.begin(), xs.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(x2.begin() + xs.size(), x2.end(),
+                                  x2_old.begin() + xs.size(), x2_old.end());
+
     BOOST_CHECK(!r2[ural::_1]);
     BOOST_CHECK(!!r2[ural::_2]);
+
+    BOOST_CHECK(r2[ural::_1].traversed_begin() == xs.begin());
+    BOOST_CHECK(r2[ural::_1].begin() == xs.end());
+    BOOST_CHECK(r2[ural::_1].end() == xs.end());
+    BOOST_CHECK(r2[ural::_1].traversed_end() == xs.end());
+
+    BOOST_CHECK(r2[ural::_2].traversed_begin() == x2.begin());
+    BOOST_CHECK(r2[ural::_2].begin() == x2.begin() + xs.size());
+    BOOST_CHECK(r2[ural::_2].end() == x2.end());
+    BOOST_CHECK(r2[ural::_2].traversed_end() == x2.end());
 }
 
 BOOST_AUTO_TEST_CASE(copy_to_ostream_test)
@@ -742,6 +782,7 @@ BOOST_AUTO_TEST_CASE(moved_test)
 }
 
 // move
+// @todo move Минимизация требований к последовательностям
 BOOST_AUTO_TEST_CASE(eager_move_test)
 {
     std::vector<std::string> src = {"Alpha", "Beta", "Gamma"};
@@ -761,6 +802,77 @@ BOOST_AUTO_TEST_CASE(eager_move_test)
     }
 }
 
+BOOST_AUTO_TEST_CASE(move_to_shorter_test)
+{
+    std::vector<std::string> xs = {"Alpha", "Beta", "Gamma", "Delta"};
+    auto const xs_old = xs;
+
+    std::vector<std::string> x1(xs.size() - 2, "Omega");
+
+    BOOST_CHECK_LE(x1.size(), xs.size());
+
+    auto const r1 = ural::move(xs, x1);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x1.begin(), x1.end(),
+                                  xs_old.begin(), xs_old.begin() + x1.size());
+
+    for(auto i : ural::indices_of(x1))
+    {
+        BOOST_CHECK_NE(xs[i], xs_old[i]);
+    }
+    BOOST_CHECK_EQUAL_COLLECTIONS(xs.begin() + x1.size(), xs.end(),
+                                  xs_old.begin() + x1.size(), xs_old.end());
+
+    BOOST_CHECK(!!r1[ural::_1]);
+    BOOST_CHECK(!r1[ural::_2]);
+
+    BOOST_CHECK(r1[ural::_1].traversed_begin() == xs.begin());
+    BOOST_CHECK(r1[ural::_1].begin() == xs.begin() + (xs.size() - x1.size()));
+    BOOST_CHECK(r1[ural::_1].end() == xs.end());
+    BOOST_CHECK(r1[ural::_1].traversed_end() == xs.end());
+
+    BOOST_CHECK(r1[ural::_2].traversed_begin() == x1.begin());
+    BOOST_CHECK(r1[ural::_2].begin() == x1.end());
+    BOOST_CHECK(r1[ural::_2].end() == x1.end());
+    BOOST_CHECK(r1[ural::_2].traversed_end() == x1.end());
+}
+
+BOOST_AUTO_TEST_CASE(move_to_longer_test)
+{
+    std::vector<std::string> xs = {"Alpha", "Beta", "Gamma", "Delta"};
+    auto const xs_old = xs;
+
+    std::vector<std::string> x2(xs.size() + 2, "Omega");
+    auto const x2_old = x2;
+
+    BOOST_CHECK_GE(x2.size(), xs.size());
+
+    auto const r2 = ural::move(xs, x2);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x2.begin(), x2.begin() + xs.size(),
+                                  xs_old.begin(), xs_old.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(x2.begin() + xs.size(), x2.end(),
+                                  x2_old.begin() + xs.size(), x2_old.end());
+
+    for(auto i : ural::indices_of(xs))
+    {
+        BOOST_CHECK_NE(xs[i], xs_old[i]);
+    }
+
+    BOOST_CHECK(!r2[ural::_1]);
+    BOOST_CHECK(!!r2[ural::_2]);
+
+    BOOST_CHECK(r2[ural::_1].traversed_begin() == xs.begin());
+    BOOST_CHECK(r2[ural::_1].begin() == xs.end());
+    BOOST_CHECK(r2[ural::_1].end() == xs.end());
+    BOOST_CHECK(r2[ural::_1].traversed_end() == xs.end());
+
+    BOOST_CHECK(r2[ural::_2].traversed_begin() == x2.begin());
+    BOOST_CHECK(r2[ural::_2].begin() == x2.begin() + xs.size());
+    BOOST_CHECK(r2[ural::_2].end() == x2.end());
+    BOOST_CHECK(r2[ural::_2].traversed_end() == x2.end());
+}
+
 BOOST_AUTO_TEST_CASE(move_backward_test)
 {
     std::vector<std::string> x_std = {"one", "two", "three", "four", "five"};
@@ -773,6 +885,74 @@ BOOST_AUTO_TEST_CASE(move_backward_test)
 
     BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
                                   x_ural.begin(), x_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(move_backward_to_shorter_test)
+{
+    std::vector<std::string> xs = {"Alpha", "Beta", "Gamma", "Delta"};
+    auto const xs_old = xs;
+
+    std::vector<std::string> x1(xs.size() - 2, "Omega");
+
+    BOOST_CHECK_LE(x1.size(), xs.size());
+
+    auto const r1 = ural::move_backward(xs, x1);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x1.begin(), x1.end(),
+                                  xs_old.end() - x1.size(), xs_old.end());
+
+    for(size_t i = xs_old.size() - x1.size(); i != xs_old.size(); ++ i)
+    {
+        BOOST_CHECK_NE(xs[i], xs_old[i]);
+    }
+    BOOST_CHECK_EQUAL_COLLECTIONS(xs.begin(), xs.end() -  x1.size(),
+                                  xs_old.begin(), xs_old.end() - x1.size());
+
+    BOOST_CHECK(r1[ural::_1].traversed_begin() == xs.begin());
+    BOOST_CHECK(r1[ural::_1].begin() == xs.begin());
+    BOOST_CHECK(r1[ural::_1].end() == xs.end() - x1.size());
+    BOOST_CHECK(r1[ural::_1].traversed_end() == xs.end());
+
+    BOOST_CHECK(r1[ural::_2].traversed_begin() == x1.begin());
+    BOOST_CHECK(r1[ural::_2].begin() == x1.begin());
+    BOOST_CHECK(r1[ural::_2].end() == x1.begin());
+    BOOST_CHECK(r1[ural::_2].traversed_end() == x1.end());
+}
+
+BOOST_AUTO_TEST_CASE(move_backward_to_longer_test)
+{
+    std::vector<std::string> xs = {"Alpha", "Beta", "Gamma", "Delta"};
+    auto const xs_old = xs;
+
+    std::vector<std::string> x2(xs.size() + 2, "Omega");
+    auto const x2_old = x2;
+
+    BOOST_CHECK_GE(x2.size(), xs.size());
+
+    auto const r2 = ural::move_backward(xs, x2);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x2.begin(), x2.end() - xs.size(),
+                                  x2_old.begin(), x2_old.end() - xs.size());
+    BOOST_CHECK_EQUAL_COLLECTIONS(x2.end() - xs.size(), x2.end(),
+                                  xs_old.begin(), xs_old.end());
+
+    for(auto i : ural::indices_of(xs))
+    {
+        BOOST_CHECK_NE(xs[i], xs_old[i]);
+    }
+
+    BOOST_CHECK(!r2[ural::_1]);
+    BOOST_CHECK(!!r2[ural::_2]);
+
+    BOOST_CHECK(r2[ural::_1].traversed_begin() == xs.begin());
+    BOOST_CHECK(r2[ural::_1].begin() == xs.begin());
+    BOOST_CHECK(r2[ural::_1].end() == xs.begin());
+    BOOST_CHECK(r2[ural::_1].traversed_end() == xs.end());
+
+    BOOST_CHECK(r2[ural::_2].traversed_begin() == x2.begin());
+    BOOST_CHECK(r2[ural::_2].begin() == x2.begin());
+    BOOST_CHECK(r2[ural::_2].end() == x2.end() - xs.size());
+    BOOST_CHECK(r2[ural::_2].traversed_end() == x2.end());
 }
 
 // 25.3.3 Обмен интервалов
