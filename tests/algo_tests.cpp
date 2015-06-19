@@ -956,10 +956,13 @@ BOOST_AUTO_TEST_CASE(move_backward_to_longer_test)
 }
 
 // 25.3.3 Обмен интервалов
-BOOST_AUTO_TEST_CASE(swap_ranges_test)
+BOOST_AUTO_TEST_CASE(swap_ranges_test_shorter_1)
 {
-    std::vector<int> const x1 = {1, 2, 3, 4, 5};
-    std::list<int> const x2   = {-1, -2, -3, -4, -5};
+    std::forward_list<int> const x1 = {1, 2, 3, 4};
+    std::forward_list<int> const x2   = {-1, -2, -3, -4, -5};
+
+     BOOST_CHECK_LE(std::distance(x1.begin(), x1.end()),
+                   std::distance(x2.begin(), x2.end()));
 
     auto y1 = x1;
     auto y2 = x2;
@@ -967,10 +970,48 @@ BOOST_AUTO_TEST_CASE(swap_ranges_test)
     auto r = ural::swap_ranges(y1, y2);
 
     BOOST_CHECK(!r[ural::_1] || !r[ural::_2]);
-    BOOST_CHECK_EQUAL(ural::size(r[ural::_1]), ural::size(r[ural::_2]));
+    BOOST_CHECK_EQUAL(ural::size(r[ural::_1].traversed_front()),
+                      ural::size(r[ural::_2].traversed_front()));
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(y1.begin(), y1.end(), x2.begin(), x2.end());
-    BOOST_CHECK_EQUAL_COLLECTIONS(y2.begin(), y2.end(), x1.begin(), x1.end());
+    auto const n = std::min(std::distance(x1.begin(), x1.end()),
+                            std::distance(x2.begin(), x2.end()));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(y1.begin(), y1.end(),
+                                  x2.begin(), std::next(x2.begin(), n));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(y2.begin(), std::next(y2.begin(), n),
+                                  x1.begin(), x1.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(std::next(y2.begin(), n), y2.end(),
+                                  std::next(x2.begin(), n), x2.end());
+}
+
+BOOST_AUTO_TEST_CASE(swap_ranges_test_shorter_2)
+{
+    std::forward_list<int> const x1 = {1, 2, 3, 4, 5};
+    std::forward_list<int> const x2   = {-1, -2, -3, -4};
+
+    BOOST_CHECK_GE(std::distance(x1.begin(), x1.end()),
+                   std::distance(x2.begin(), x2.end()));
+
+    auto y1 = x1;
+    auto y2 = x2;
+
+    auto r = ural::swap_ranges(y1, y2);
+
+    BOOST_CHECK(!r[ural::_1] || !r[ural::_2]);
+    BOOST_CHECK_EQUAL(ural::size(r[ural::_1].traversed_front()),
+                      ural::size(r[ural::_2].traversed_front()));
+
+    auto const n = std::min(std::distance(x1.begin(), x1.end()),
+                            std::distance(x2.begin(), x2.end()));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(y1.begin(), std::next(y1.begin(), n),
+                                  x2.begin(), x2.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(std::next(y1.begin(), n), y1.end(),
+                                  std::next(x1.begin(), n), x1.end());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(y2.begin(), y2.end(),
+                                  x1.begin(), std::next(x1.begin(), n));
 }
 
 // 25.3.4 Преобразование
@@ -993,15 +1034,16 @@ BOOST_AUTO_TEST_CASE(transform_test)
 
 BOOST_AUTO_TEST_CASE(eager_transform_test)
 {
-    std::string const s("hello");
-    std::string x_std;
-    std::string x_ural;
+    std::string str("hello");
+    std::istringstream is(str);
 
     auto f = std::ptr_fun<int, int>(std::toupper);
 
-    std::transform(s.begin(), s.end(), std::back_inserter(x_std), f);
+    std::string x_std;
+    std::transform(str.begin(), str.end(), std::back_inserter(x_std), f);
 
-    auto result = ural::transform(s, x_ural | ural::back_inserter, f);
+    std::string x_ural;
+    auto result = ural::transform(is, x_ural | ural::back_inserter, f);
 
     BOOST_CHECK(!result[ural::_1]);
     BOOST_CHECK(!!result[ural::_2]);
@@ -1034,12 +1076,12 @@ BOOST_AUTO_TEST_CASE(transform_2_test)
     std::vector<bool> z_ural;
 
     std::less_equal<int> constexpr f_std{};
-    ural::less_equal<> constexpr f_ural{};
-
     std::transform(x1.begin(), x1.end(), x2.begin(),
                    std::back_inserter(z_std), f_std);
 
-    auto seq = ural::make_transform_sequence(f_ural, x1, x2);
+    // x2 и x1 переставлены специально
+    ural::greater_equal<> constexpr f_ural{};
+    auto seq = ural::make_transform_sequence(f_ural, x2, x1);
     ural::copy(std::move(seq), std::back_inserter(z_ural));
 
     BOOST_CHECK_EQUAL(ural::to_unsigned(seq.size()),

@@ -462,7 +462,7 @@ namespace details
 
             typedef tuple<Input, Output> Tuple;
 
-            return Tuple{std::move(r[ural::_1].bases()[ural::_1]),
+            return Tuple{std::move(r[ural::_1]).bases()[ural::_1],
                          std::move(r[ural::_2])};
         }
 
