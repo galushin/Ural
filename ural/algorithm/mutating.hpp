@@ -485,8 +485,8 @@ namespace details
 
             typedef tuple<Input1, Input2, Output> Tuple;
 
-            return Tuple{std::move(r[ural::_1].bases()[ural::_1]),
-                         std::move(r[ural::_1].bases()[ural::_2]),
+            return Tuple{std::move(r[ural::_1]).bases()[ural::_1],
+                         std::move(r[ural::_1]).bases()[ural::_2],
                          std::move(r[ural::_2])};
         }
     };

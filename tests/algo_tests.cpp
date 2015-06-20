@@ -783,7 +783,7 @@ BOOST_AUTO_TEST_CASE(moved_test)
 
 // move
 // @todo move Минимизация требований к последовательностям
-BOOST_AUTO_TEST_CASE(eager_move_test)
+BOOST_AUTO_TEST_CASE(move_test)
 {
     std::vector<std::string> src = {"Alpha", "Beta", "Gamma"};
 
@@ -1015,7 +1015,7 @@ BOOST_AUTO_TEST_CASE(swap_ranges_test_shorter_2)
 }
 
 // 25.3.4 Преобразование
-BOOST_AUTO_TEST_CASE(transform_test)
+BOOST_AUTO_TEST_CASE(transform_sequence_test)
 {
     std::string const s("hello");
     std::string x_std;
@@ -1032,7 +1032,7 @@ BOOST_AUTO_TEST_CASE(transform_test)
                                   x_ural.begin(), x_ural.end());
 }
 
-BOOST_AUTO_TEST_CASE(eager_transform_test)
+BOOST_AUTO_TEST_CASE(transform_test)
 {
     std::string str("hello");
     std::istringstream is(str);
@@ -1052,7 +1052,7 @@ BOOST_AUTO_TEST_CASE(eager_transform_test)
                                   x_ural.begin(), x_ural.end());
 }
 
-BOOST_AUTO_TEST_CASE(eager_transform_test_return_value)
+BOOST_AUTO_TEST_CASE(transform_test_return_value)
 {
     std::string const s("hello");
     std::string x_ural(s.size() / 2, '?');
@@ -1061,40 +1061,38 @@ BOOST_AUTO_TEST_CASE(eager_transform_test_return_value)
 
     auto result = ural::transform(s, x_ural, f);
 
+    std::string x_std;
+    std::transform(s.begin(), s.begin() + x_ural.size(),
+                   std::back_inserter(x_std), f);
+
+    BOOST_CHECK_EQUAL(x_ural, x_std);
+
+    BOOST_CHECK_LE(x_ural.size(), s.size());
+
+    BOOST_CHECK(result[ural::_1].traversed_begin() == s.begin());
+    BOOST_CHECK(result[ural::_1].begin() == s.begin() + x_ural.size());
+    BOOST_CHECK(result[ural::_1].end() == s.end());
+    BOOST_CHECK(result[ural::_1].traversed_end() == s.end());
+
+    BOOST_CHECK(result[ural::_2].traversed_begin() == x_ural.begin());
+    BOOST_CHECK(result[ural::_2].begin() == x_ural.end());
+    BOOST_CHECK(result[ural::_2].end() == x_ural.end());
+    BOOST_CHECK(result[ural::_2].traversed_end() == x_ural.end());
+
     BOOST_CHECK(!!result[ural::_1]);
     BOOST_CHECK(!result[ural::_2]);
 }
 
-BOOST_AUTO_TEST_CASE(transform_2_test)
+// @todo тесты возвращаемых значений transform
+BOOST_AUTO_TEST_CASE(transform_2_test_shorter_in1)
 {
-    std::vector<int> const x1 = {1, 20, 30, 40};
-    std::vector<int> const x2 = {10, 2, 30, 4, 5};
+    std::vector<int> const src1 = {1, 20, 30, 40};
+    std::vector<int> const src2 = {10, 2, 30, 4, 5};
 
-    assert(x1.size() <= x2.size());
+    BOOST_CHECK_LE(src1.size(), src2.size());
 
-    std::vector<bool> z_std;
-    std::vector<bool> z_ural;
-
-    std::less_equal<int> constexpr f_std{};
-    std::transform(x1.begin(), x1.end(), x2.begin(),
-                   std::back_inserter(z_std), f_std);
-
-    // x2 и x1 переставлены специально
-    ural::greater_equal<> constexpr f_ural{};
-    auto seq = ural::make_transform_sequence(f_ural, x2, x1);
-    ural::copy(std::move(seq), std::back_inserter(z_ural));
-
-    BOOST_CHECK_EQUAL(ural::to_unsigned(seq.size()),
-                      std::min(x1.size(), x2.size()));
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(z_std.begin(), z_std.end(),
-                                  z_ural.begin(), z_ural.end());
-}
-
-BOOST_AUTO_TEST_CASE(transform_2_test_eager)
-{
-    std::forward_list<int> const x1 = {1, 20, 30, 40, 50};
-    std::list<int> const x2 = {10, 2, 30, 4, 5};
+    ural_test::istringstream_helper<int> x1(src1.begin(), src1.end());
+    ural_test::istringstream_helper<int> x2(src2.begin(), src2.end());
 
     std::vector<bool> z_std;
     std::vector<bool> z_ural;
@@ -1102,12 +1100,64 @@ BOOST_AUTO_TEST_CASE(transform_2_test_eager)
     std::less_equal<int> constexpr f_std{};
     ural::less_equal<> constexpr f_ural{};
 
-    std::transform(x1.begin(), x1.end(), x2.begin(),
+    std::transform(src1.begin(), src1.end(), src2.begin(),
                    std::back_inserter(z_std), f_std);
 
     ural::transform(x1, x2, std::back_inserter(z_ural), f_ural);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(z_std.begin(), z_std.end(),
+                                  z_ural.begin(), z_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(transform_2_test_shorter_in2)
+{
+    std::vector<int> const src1 = {1, 20, 30, 40, 50};
+    std::vector<int> const src2 = {10, 2, 30, 4};
+
+    BOOST_CHECK_GE(src1.size(), src2.size());
+
+    ural_test::istringstream_helper<int> x1(src1.begin(), src1.end());
+    ural_test::istringstream_helper<int> x2(src2.begin(), src2.end());
+
+    std::vector<bool> z_std;
+    std::vector<bool> z_ural;
+
+    std::less_equal<int> constexpr f_std{};
+    ural::less_equal<> constexpr f_ural{};
+
+    // std ограничивает по первой последовательности
+    std::transform(src1.begin(), std::next(src1.begin(), src2.size()),
+                   src2.begin(),
+                   std::back_inserter(z_std), f_std);
+
+    ural::transform(x1, x2, std::back_inserter(z_ural), f_ural);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(z_std.begin(), z_std.end(),
+                                  z_ural.begin(), z_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(transform_2_test_shorter_out)
+{
+    std::vector<int> const src1 = {1, 20, 30, 40};
+    std::vector<int> const src2 = {10, 2, 30, 4, 5};
+
+    BOOST_CHECK_LE(src1.size(), src2.size());
+
+    ural_test::istringstream_helper<int> x1(src1.begin(), src1.end());
+    ural_test::istringstream_helper<int> x2(src2.begin(), src2.end());
+
+    std::vector<int> z_std;
+    std::vector<int> z_ural(std::min(src1.size(), src2.size()) - 1, -1);
+
+    std::plus<int> constexpr f_std{};
+    ural::plus<> constexpr f_ural{};
+
+    std::transform(src1.begin(), src1.end(), src2.begin(),
+                   std::back_inserter(z_std), f_std);
+
+    ural::transform(x1, x2, z_ural, f_ural);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(z_std.begin(), z_std.begin() + z_ural.size(),
                                   z_ural.begin(), z_ural.end());
 }
 

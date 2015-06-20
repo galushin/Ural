@@ -96,7 +96,7 @@ namespace ural
             auto f = [this](Inputs const & ... args)->reference
                      { return reference((*args)...); };
 
-            return apply(f, bases_);
+            return ::ural::apply(f, bases_);
         }
 
         /** @brief Переход к следующему элементу

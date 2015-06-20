@@ -160,7 +160,6 @@ namespace ural
         distance_type
         size_impl(distance_type current, placeholder<index> p) const
         {
-            //  @todo исправить
             return this->size_impl(std::min(current, this->bases()[p].size()),
                                    placeholder<index+1>());
         }
