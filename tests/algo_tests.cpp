@@ -2630,35 +2630,37 @@ BOOST_AUTO_TEST_CASE(min_max_for_init_list_stability)
 
 BOOST_AUTO_TEST_CASE(min_element_test)
 {
-    std::vector<int> const v{3, 1, 4, 1, 5, 9, 2, 6, 5};
+    std::forward_list<int> const v{3, 1, 4, 1, 5, 9, 2, 6, 5};
 
     auto std_result = std::min_element(std::begin(v), std::end(v));
     auto ural_result = ural::min_element(v);
 
     BOOST_CHECK_EQUAL(std::distance(std_result, v.end()),
-                      ural_result.size());
+                      ural::size(ural_result));
     BOOST_CHECK(!!ural_result);
     BOOST_CHECK_EQUAL(*std_result, *ural_result);
 }
 
 BOOST_AUTO_TEST_CASE(max_element_test)
 {
-    std::vector<int> const v{ 3, 1, -14, 1, 5, 9 };
+    std::forward_list<int> const v{ 3, 1, -14, 1, 5, 9 };
     auto std_result = std::max_element(v.begin(), v.end());
     auto ural_result = ural::max_element(v);
 
-    BOOST_CHECK_EQUAL(std::distance(std_result, v.end()), ural_result.size());
+    BOOST_CHECK_EQUAL(std::distance(std_result, v.end()),
+                      ural::size(ural_result));
 }
 
 BOOST_AUTO_TEST_CASE(max_element_test_custom_compare)
 {
     auto abs_compare = [](int a, int b) {return (std::abs(a) < std::abs(b));};
 
-    std::vector<int> const v{ 3, 1, -14, 1, 5, 9 };
+    std::forward_list<int> const v{ 3, 1, -14, 1, 5, 9 };
     auto std_result = std::max_element(v.begin(), v.end(), +abs_compare);
     auto ural_result = ural::max_element(v, +abs_compare);
 
-    BOOST_CHECK_EQUAL(std::distance(std_result, v.end()), ural_result.size());
+    BOOST_CHECK_EQUAL(std::distance(std_result, v.end()),
+                      ural::size(ural_result));
 }
 
 #include <ural/math.hpp>
@@ -2669,31 +2671,38 @@ BOOST_AUTO_TEST_CASE(max_element_using_compare_by)
 
     static_assert(std::is_empty<decltype(sq_cmp)>::value, "Must be empty!");
 
-    std::vector<int> const v{ 3, 1, -14, 1, 5, 9 };
+    std::forward_list<int> const v{ 3, 1, -14, 1, 5, 9 };
     auto std_result = std::max_element(v.begin(), v.end(), sq_cmp);
     auto ural_result = ural::max_element(v, sq_cmp);
 
-    BOOST_CHECK_EQUAL(std::distance(std_result, v.end()), ural_result.size());
+    BOOST_CHECK_EQUAL(std::distance(std_result, v.end()),
+                      ural::size(ural_result));
 }
 
 BOOST_AUTO_TEST_CASE(minmax_element_test)
 {
-    std::vector<int> const v{ 3, 1, -14, 1, 5, 9 };
+    std::forward_list<int> const v{ 3, 1, -14, 1, 5, 9 };
     auto std_result = std::minmax_element(v.begin(), v.end());
     auto ural_result = ural::minmax_element(v);
 
     BOOST_CHECK_EQUAL(std::distance(std_result.first, v.end()),
-                      ural_result[ural::_1].size());
+                      ural::size(ural_result[ural::_1]));
     BOOST_CHECK_EQUAL(std::distance(std_result.second, v.end()),
-                      ural_result[ural::_2].size());
+                      ural::size(ural_result[ural::_2]));
 }
 
 // 25.4.8 Лексикографическое сравнение
 BOOST_AUTO_TEST_CASE(lexicographical_compare_test)
 {
-    BOOST_CHECK_EQUAL(false, ural::lexicographical_compare("", ""));
+    typedef std::istringstream S;
+    S is0_1("");
+    S is0_2("");
+    S ab("ab");
+    S abc("abc");
 
-    BOOST_CHECK_EQUAL(true, ural::lexicographical_compare("ab", "abc"));
+    BOOST_CHECK_EQUAL(false, ural::lexicographical_compare(is0_1, is0_2));
+
+    BOOST_CHECK_EQUAL(true, ural::lexicographical_compare(ab, abc));
     BOOST_CHECK_EQUAL(false, ural::lexicographical_compare("abc", "ab"));
 
     BOOST_CHECK_EQUAL(true, ural::lexicographical_compare("abcd", "abed"));
@@ -2703,8 +2712,8 @@ BOOST_AUTO_TEST_CASE(lexicographical_compare_test)
 // 25.4.9 Порождение перестановок
 BOOST_AUTO_TEST_CASE(next_permutation_test)
 {
-    typedef std::string String;
-    String x {"1234"};
+    typedef std::list<int> String;
+    String x {1, 2, 3, 4};
     std::vector<String> r_std;
 
     do
@@ -2721,14 +2730,13 @@ BOOST_AUTO_TEST_CASE(next_permutation_test)
     }
     while(ural::next_permutation(x));
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
-                                  r_ural.begin(), r_ural.end());
+    BOOST_CHECK(r_std == r_ural);
 }
 
 BOOST_AUTO_TEST_CASE(prev_permutation_test)
 {
-    typedef std::string String;
-    String x {"4321"};
+    typedef std::list<int> String;
+    String x {4, 3, 2, 1};
     std::vector<String> r_std;
 
     do
@@ -2745,8 +2753,7 @@ BOOST_AUTO_TEST_CASE(prev_permutation_test)
     }
     while(ural::prev_permutation(x));
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
-                                  r_ural.begin(), r_ural.end());
+    BOOST_CHECK(r_std == r_ural);
 }
 
 // Комбинирование вызовов модифицирующих алгоритмов с erase
