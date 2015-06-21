@@ -13,10 +13,12 @@
     You should have received a copy of the GNU General Public License
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <ural/sequence/delimit.hpp>
+
+#include <ural/math/rational.hpp>
 
 #include "defs.hpp"
 
+#include <ural/sequence/delimit.hpp>
 #include <ural/sequence/to.hpp>
 #include <ural/sequence/chunks.hpp>
 #include <ural/sequence/cargo.hpp>
@@ -466,6 +468,52 @@ BOOST_AUTO_TEST_CASE(sequence_for_each_test)
                                   x_ural.begin(), x_ural.end());
 }
 
+BOOST_AUTO_TEST_CASE(filtered_test)
+{
+    typedef int Type;
+    std::vector<Type> const xs = {25, -15, 5, -5, 15};
+    auto const pred = [](Type i){return !(i<0);};
+
+    typedef decltype(ural::sequence(xs)) Sequence;
+
+    static_assert(std::is_empty<decltype(pred)>::value, "");
+    BOOST_CHECK_EQUAL(sizeof(Sequence), sizeof(boost::compressed_pair<Sequence, decltype(pred)>));
+
+    std::vector<Type> r_std;
+
+    std::copy_if (xs.begin(), xs.end(), std::back_inserter(r_std) , pred);
+
+    auto const r_ural
+        = xs | ural::filtered(pred) | ural::to_container<std::vector>{};
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
+                                  r_ural.begin(), r_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(filtered_getters_test)
+{
+    typedef int Type;
+    std::vector<Type> const xs = {25, -15, 5, -5, 15};
+    std::vector<Type> const xs_1 = xs;
+
+    auto const pred_1 = +[](Type i){return !(i<0);};
+    auto const pred_2 = +[](Type i){return !(i<=0);};
+
+    auto s1 = xs | ural::filtered(pred_1);
+    auto s11 = xs | ural::filtered(pred_1);
+    auto s2 = xs | ural::filtered(pred_2);
+    auto s3 = xs_1 | ural::filtered(pred_1);
+
+    BOOST_CHECK(pred_1 == s1.predicate());
+    BOOST_CHECK(pred_2 == s2.predicate());
+
+    BOOST_CHECK(s1 == s1);
+    BOOST_CHECK(s1 == s11);
+    BOOST_CHECK(s2 == s2);
+    BOOST_CHECK(s1 != s2);
+    BOOST_CHECK(s1 != s3);
+}
+
 BOOST_AUTO_TEST_CASE(filtered_sequence_for_each)
 {
     std::forward_list<int> xs = {1, 2, 3, 4, 5, 6, 7, 8};
@@ -495,6 +543,21 @@ BOOST_AUTO_TEST_CASE(filtered_sequence_is_permuation)
 
     BOOST_CHECK(ural::is_permutation(xs1 | ural::filtered(pred),
                                      xs2 | ural::filtered(pred)));
+}
+
+BOOST_AUTO_TEST_CASE(copy_n_analog_test)
+{
+    std::string const src = "1234567890";
+    std::string r_std;
+    std::string r_ural;
+
+    auto const n = 4;
+
+    std::copy_n(src.begin(), n, std::back_inserter(r_std));
+
+    ural::copy(src | ural::taken(n), std::back_inserter(r_ural));
+
+    BOOST_CHECK_EQUAL(r_std, r_ural);
 }
 
 BOOST_AUTO_TEST_CASE(zip_sequence_bases_access)
@@ -691,6 +754,32 @@ BOOST_AUTO_TEST_CASE(moved_from_value_cpp_17_test)
                                   x_ural.begin(), x_ural.end());
 }
 
+BOOST_AUTO_TEST_CASE(moved_test)
+{
+    typedef std::unique_ptr<int> Type;
+
+    std::vector<int> const ys = {25, -15, 5, -5, 15};
+
+    auto xs1 = ys | ural::transformed(ural::to_unique_ptr)
+                  | ural::to_container<std::vector>{};
+
+    auto xs2 = ys | ural::transformed(ural::to_unique_ptr)
+                  | ural::to_container<std::vector>{};
+
+    std::vector<Type> r_std;
+    std::vector<Type> r_ural;
+
+    std::move(xs1.begin(), xs1.end(), std::back_inserter(r_std));
+
+    ural::copy(xs2 | ural::moved, r_ural | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL(r_std.size(), r_ural.size());
+    BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.end(),
+                             [](Type const & x) {return !x;}));
+
+    BOOST_CHECK(ural::equal(r_std, r_ural, ural::equal_by(ural::dereference<>{})));
+}
+
 BOOST_AUTO_TEST_CASE(move_iterator_cpp_11_moving_from_return_by_value_regression)
 {
     std::string const s("hello");
@@ -770,6 +859,427 @@ BOOST_AUTO_TEST_CASE(transform_sequence_iterators)
 
     BOOST_CHECK(bf.functor() == f);
     BOOST_CHECK(ef.functor() == f);
+}
+
+BOOST_AUTO_TEST_CASE(transform_sequence_test)
+{
+    std::string const s("hello");
+    std::string x_std;
+
+    auto f = std::ptr_fun<int, int>(std::toupper);
+
+    std::transform(s.begin(), s.end(), std::back_inserter(x_std), f);
+
+    auto const x_ural
+        = ural::make_transform_sequence(f, s)
+        | ural::to_container<std::basic_string>{};
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
+
+// @todo Аналогинчые тесты с одним из параметров, обёрнутых в cref
+BOOST_AUTO_TEST_CASE(replace_sequence_test_cref)
+{
+    std::vector<int> s_std = {5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
+    std::vector<int> s_ural = s_std;
+
+    auto const old_value = ural::rational<int>(8);
+    auto const new_value = 88;
+
+    BOOST_CHECK_EQUAL(old_value.denominator(), 1);
+
+    std::replace(s_std.begin(), s_std.end(), old_value.numerator(), new_value);
+    ural::copy(ural::make_replace_sequence(s_ural, std::cref(old_value),
+                                           std::cref(new_value)), s_ural);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(s_std.begin(), s_std.end(),
+                                  s_ural.begin(), s_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(replace_sequence_test)
+{
+    std::vector<int> s_std = {5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
+    std::vector<int> s_ural = s_std;
+
+    auto const old_value = 8;
+    auto const new_value = 88;
+
+    std::replace(s_std.begin(), s_std.end(), old_value, new_value);
+    ural::copy(ural::make_replace_sequence(s_ural, old_value, new_value), s_ural);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(s_std.begin(), s_std.end(),
+                                  s_ural.begin(), s_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(replace_sequence_if_test)
+{
+    std::array<int, 10> const s{5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
+
+    auto x_std = s;
+    std::vector<int> x_ural;
+
+    auto pred = [](int x) {return x < 5;};
+    auto const new_value = 55;
+
+    std::replace_if(x_std.begin(), x_std.end(), pred, new_value);
+    ural::copy(ural::make_replace_if_sequence(s, pred, new_value),
+               x_ural | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(replace_sequence_if_regression_pass_by_cref)
+{
+    // Подготовка
+    std::array<int, 10> const s{5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
+    auto pred = [](int x) {return x < 5;};
+    auto const new_value = 55;
+
+    // std
+    auto x_std = s;
+    std::replace_if(x_std.begin(), x_std.end(), pred, new_value);
+
+    // ural
+    std::vector<int> x_ural;
+    ural::copy(ural::make_replace_if_sequence(s, pred, std::cref(new_value)),
+               x_ural | ural::back_inserter);
+
+    // Сравнение
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(fill_n_test_via_sequence_and_copy)
+{
+    std::vector<int> v_std{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    auto v_ural = v_std;
+
+    auto const n = v_std.size() / 2;
+    auto const value = -1;
+
+    std::fill_n(v_std.begin(), n, value);
+    auto r = ural::fill(v_ural | ural::taken(n), value);
+
+    BOOST_CHECK_EQUAL(ural::to_signed(n), r.base().traversed_front().size());
+    BOOST_CHECK_EQUAL(ural::to_signed(v_std.size() - n), r.base().size());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
+                                  v_ural.begin(), v_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(generate_test)
+{
+    std::vector<int> r_std(5);
+    auto r_ural = r_std;
+
+    auto counter = int{0};
+    auto gen = [&]{ return counter++; };
+    std::generate(r_std.begin(), r_std.end(), gen);
+
+    counter = 0;
+
+    ural::copy(ural::make_generator_sequence(gen), r_ural);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
+                                  r_ural.begin(), r_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(generate_n_test)
+{
+    // Подготовка
+    auto const n = int{5};
+
+    std::vector<int> r_std;
+    auto r_ural = r_std;
+
+    // std
+    auto counter = int{0};
+    auto gen = [&]{ return counter++; };
+    std::generate_n(r_std | ural::back_inserter, n, gen);
+
+    // ural
+    counter = 0;
+    ural::copy(ural::make_generator_sequence(gen) | ural::taken(n),
+               r_ural | ural::back_inserter);
+
+    // Проверка
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
+                                  r_ural.begin(), r_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(remove_sequence_test_make_function)
+{
+    std::string s_std = "Text with some   spaces";
+    auto s_ural = s_std;
+
+    auto const to_remove = ' ';
+
+    // std
+    s_std.erase(std::remove(s_std.begin(), s_std.end(), to_remove),
+                s_std.end());
+
+    // ural
+    auto s = ural::make_remove_sequence(s_ural, to_remove);
+    auto r = ural::copy(s, s_ural)[ural::_2];
+    s_ural.erase(r.begin(), r.end());
+
+    // Сравнение
+    BOOST_CHECK_EQUAL(s_std, s_ural);
+}
+
+BOOST_AUTO_TEST_CASE(remove_sequence_test)
+{
+    std::string s_std = "Text with some   spaces";
+    auto s_ural = s_std;
+
+    auto const to_remove = ' ';
+
+    // std
+    s_std.erase(std::remove(s_std.begin(), s_std.end(), to_remove),
+                s_std.end());
+
+    // ural
+    auto r = ural::copy(s_ural | ural::removed(to_remove), s_ural)[ural::_2];
+    s_ural.erase(r.begin(), r.end());
+
+    // Сравнение
+    BOOST_CHECK_EQUAL(s_std, s_ural);
+}
+
+BOOST_AUTO_TEST_CASE(remove_sequence_test_cref)
+{
+    std::string s_std = "Text with some   spaces";
+    auto s_ural = s_std;
+
+    auto const to_remove = ' ';
+
+    // std
+    s_std.erase(std::remove(s_std.begin(), s_std.end(), to_remove),
+                s_std.end());
+
+    // ural
+    auto r = ural::copy(s_ural | ural::removed(std::cref(to_remove)), s_ural)[ural::_2];
+    s_ural.erase(r.begin(), r.end());
+
+    // Сравнение
+    BOOST_CHECK_EQUAL(s_std, s_ural);
+}
+
+BOOST_AUTO_TEST_CASE(remove_if_sequence_test)
+{
+    std::string s_std = "Text\n with\tsome \t  whitespaces\n\n";
+    auto s_ural = s_std;
+
+    auto pred = [](char x){return std::isspace(x);};
+
+    s_std.erase(std::remove_if(s_std.begin(), s_std.end(), pred), s_std.end());
+
+    auto s = ural::make_remove_if_sequence(s_ural, pred);
+    auto r = ural::copy(s, s_ural)[ural::_2];
+    s_ural.erase(r.begin(), r.end());
+
+    BOOST_CHECK_EQUAL(s_std, s_ural);
+}
+
+BOOST_AUTO_TEST_CASE(unique_sequence_test)
+{
+    std::forward_list<int> v1{1, 2, 2, 2, 3, 3, 2, 2, 1};
+    auto v2 = v1;
+
+    auto const last = std::unique(v1.begin(), v1.end());
+    std::forward_list<int> r_std(v1.begin(), last);
+
+    auto const r_ural
+        = v2 | ural::uniqued | ural::to_container<std::forward_list>{};
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(), r_ural.begin(),
+                                  r_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(unique_sequence_test_custom_predicate)
+{
+    std::string const src = "The      string    with many       spaces!";
+
+    auto const pred = [](char c1, char c2){ return c1 == ' ' && c2 == ' '; };
+
+    std::string s_std;
+    std::unique_copy(src.begin(), src.end(), std::back_inserter(s_std), pred);
+
+    auto const s_ural
+        = src | ural::uniqued(pred) | ural::to_container<std::basic_string>{};
+
+    BOOST_CHECK_EQUAL(s_std, s_ural);
+}
+
+BOOST_AUTO_TEST_CASE(unique_sequence_from_istream_to_ostream)
+{
+    // Готовим строку с данными
+    std::list<int> const v1{1, 2, 2, 2, 3, 3, 2, 2, 1};
+
+    std::ostringstream src;
+    ural::copy(v1, ural::make_ostream_sequence(src, ' '));
+
+    auto v2 = v1;
+    ural::unique_erase(v2);
+
+    std::ostringstream z;
+    ural::copy(v2, ural::make_ostream_sequence(z, ' '));
+
+    // Сам алгоритм
+    std::istringstream is(src.str());
+    std::ostringstream os;
+
+    auto in_seq = ural::make_istream_sequence<int>(is) | ural::uniqued;
+    ural::copy(std::move(in_seq), ural::make_ostream_sequence(os, ' '));
+
+    BOOST_CHECK_EQUAL(z.str(), os.str());
+}
+
+BOOST_AUTO_TEST_CASE(unique_sequence_move_only)
+{
+    std::forward_list<int> src{1, 2, 2, 2, 3, 3, 2, 2, 1};
+
+    typedef std::unique_ptr<int> Pointer;
+
+    std::vector<Pointer> v1;
+    std::vector<Pointer> v2;
+
+    for(auto & y : src)
+    {
+        auto constexpr f = ural::to_unique_ptr;
+
+        v1.emplace_back(f(y));
+        v2.emplace_back(f(y));
+    }
+
+    auto const eq = [](Pointer const & x, Pointer const & y)
+    {
+        return (!!x && !!y) ? (*x == *y) : (!x && !y);
+    };
+
+    auto const last = std::unique(v1.begin(), v1.end(), eq);
+
+    auto const r_ural
+        = v2 | ural::uniqued(eq) | ural::moved | ural::to_container<std::vector>{};
+
+    BOOST_CHECK_EQUAL(last - v1.begin(), r_ural.end() - r_ural.begin());
+
+    for(auto i : ural::numbers(0, last - v1.begin()))
+    {
+        BOOST_CHECK(!!v1[i]);
+        BOOST_CHECK(!!r_ural[i]);
+        BOOST_CHECK_EQUAL(*v1[i], *r_ural[i]);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(reversed_copy_test)
+{
+    // Исходные данные
+    std::list<int> const src = {1, 2, 3, 4, 5, 6};
+
+    // std
+    std::list<int> r_std;
+    std::reverse_copy(src.begin(), src.end(), std::back_inserter(r_std));
+
+    // ural
+    auto const r_ural
+        = src | ural::reversed | ural::to_container<std::list>{};
+
+    // Проверка
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
+                                  r_ural.begin(), r_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(merged_test)
+{
+    // Исходные данные
+    std::vector<int> const v1{1,2,3,4,5,6,7,8};
+    std::vector<int> const v2{        5,  7,  9,10};
+
+    // std
+    std::vector<int> std_merge;
+    std::merge(v1.begin(), v1.end(), v2.begin(), v2.end(),
+               std::back_inserter(std_merge));
+
+    // ural
+    auto const ural_merge
+        = ural::merged(v1, v2) | ural::to_container<std::vector>{};
+
+    // Проверка
+    BOOST_CHECK_EQUAL_COLLECTIONS(std_merge.begin(), std_merge.end(),
+                                  ural_merge.begin(), ural_merge.end());
+}
+
+BOOST_AUTO_TEST_CASE(set_union_sequence_test)
+{
+    std::vector<int> v1 = {1, 2, 3, 4, 5};
+    std::vector<int> v2 = {      3, 4, 5, 6, 7};
+
+    std::vector<long> r_std;
+    std::set_union(v1.begin(), v1.end(), v2.begin(), v2.end(),
+                   std::back_inserter(r_std));
+
+    auto const r_ural
+        = ural::make_set_union_sequence(v1, v2)
+        | ural::to_container<std::vector>{};
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
+                                  r_ural.begin(), r_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(set_intersection_sequence_test)
+{
+    std::vector<int> const v1{1,2,3,4,5,6,7,8};
+    std::vector<int> const v2{        5,  7,  9,10};
+
+    std::vector<int> std_intersection;
+    std::set_intersection(v1.begin(), v1.end(),
+                          v2.begin(), v2.end(),
+                          std::back_inserter(std_intersection));
+
+    auto const ural_intersection
+        = ural::make_set_intersection_sequence(v1, v2)
+        | ural::to_container<std::vector>{};
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(std_intersection.begin(),
+                                  std_intersection.end(),
+                                  ural_intersection.begin(),
+                                  ural_intersection.end());
+}
+
+BOOST_AUTO_TEST_CASE(set_difference_sequence_test)
+{
+    std::vector<int> v1 {1, 2, 5, 5, 5, 9};
+    std::vector<int> v2 {   2, 5,       7};
+
+    std::vector<int> std_diff;
+    std::set_difference(v1.begin(), v1.end(), v2.begin(), v2.end(),
+                        std::back_inserter(std_diff));
+    auto const ural_diff
+        = ural::make_set_difference_sequence(v1, v2)
+        | ural::to_container<std::vector>{};
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(std_diff.begin(), std_diff.end(),
+                                  ural_diff.begin(), ural_diff.end());
+}
+
+BOOST_AUTO_TEST_CASE(set_symmetric_difference_sequence_test)
+{
+    std::vector<int> const v1{1,2,3,4,5,6,7,8     };
+    std::vector<int> const v2{        5,  7,  9,10};
+
+    std::vector<int> r_std;
+    std::set_symmetric_difference(v1.begin(), v1.end(), v2.begin(), v2.end(),
+                                  std::back_inserter(r_std));
+
+    auto const r_ural
+        = ural::make_set_symmetric_difference_sequence(v1, v2)
+        | ural::to_container<std::vector>{};
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_ural.begin(), r_ural.end(),
+                                  r_std.begin(), r_std.end());
 }
 
 BOOST_AUTO_TEST_CASE(to_container_additional_parameters)
