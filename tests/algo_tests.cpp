@@ -2375,10 +2375,11 @@ BOOST_AUTO_TEST_CASE(set_difference_test)
 
 BOOST_AUTO_TEST_CASE(set_symmetric_difference_test)
 {
-    std::vector<int> const x1{1,2,3,4,5,6,7,8     };
-    std::vector<int> const x2{        5,  7,  9,10};
+    using Source = ural_test::istringstream_helper<int>;
 
-    std::vector<int> const z {1, 2, 3, 4, 6, 8, 9, 10};
+    Source x1          {1, 2, 3, 4, 5, 6, 7, 8       };
+    Source x2          {            5,    7,    9, 10};
+    std::vector<int> const z {1, 2, 3, 4,    6,    8, 9, 10};
 
     // через back_inserter
     std::vector<int> r_ural;
@@ -2394,6 +2395,8 @@ BOOST_AUTO_TEST_CASE(set_symmetric_difference_regression)
     std::vector<int> const x2{   2,    4, 5, 6, 7   };
     std::vector<int> const z {1,    3,       6, 7, 8};
 
+    BOOST_CHECK_GE(x1.back(), x2.back());
+
     std::vector<int> r_ural;
     ural::set_symmetric_difference(x1, x2, r_ural | ural::back_inserter);
 
@@ -2403,20 +2406,55 @@ BOOST_AUTO_TEST_CASE(set_symmetric_difference_regression)
 
 BOOST_AUTO_TEST_CASE(set_symmetric_difference_from_istream)
 {
-    std::istringstream is1("1 2 3 4 5     8");
-    std::istringstream is2("  2   4 5 6 7");
-    std::vector<int> const z {1,    3,       6, 7, 8};
+    using Source = ural_test::istringstream_helper<int>;
+
+    Source x1                {1, 2, 3, 4, 5, 6, 7, 8       };
+    Source x2                {            5,    7,    9, 10};
+    std::vector<int> const z {1, 2, 3, 4,    6,    8, 9, 10};
 
     std::vector<int> r_ural;
-    ural::set_symmetric_difference(ural::make_istream_sequence<int>(is1),
-                                   ural::make_istream_sequence<int>(is2),
-                                   r_ural | ural::back_inserter);
+    ural::set_symmetric_difference(x1, x2, r_ural | ural::back_inserter);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
                                   r_ural.begin(), r_ural.end());
 }
 
-// 25.4.6 Операции с бинарными кучами
+BOOST_AUTO_TEST_CASE(set_symmetric_difference_to_short)
+{
+    std::vector<int> const x1{1, 2, 3, 4, 5,       8};
+    std::vector<int> const x2{   2,    4, 5, 6, 7   };
+    std::vector<int> const z {1,    3,       6, 7, 8};
+
+    std::vector<int> r_ural(z.size() / 2, - 1);
+
+    assert(!r_ural.empty());
+    assert(r_ural.size() < z.size());
+
+    auto result = ural::set_symmetric_difference(x1, x2, r_ural);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_ural.begin(), r_ural.end(),
+                                  z.begin(), z.begin() + r_ural.size());
+
+    BOOST_CHECK(result[ural::_1].original() == ural::sequence(x1));
+    BOOST_CHECK(!!result[ural::_1]);
+    BOOST_CHECK_LE(r_ural.back(), result[ural::_1].front());
+
+    BOOST_CHECK(result[ural::_2].original() == ural::sequence(x2));
+    BOOST_CHECK(!!result[ural::_2]);
+    BOOST_CHECK_LE(r_ural.back(), result[ural::_2].front());
+
+    BOOST_CHECK(result[ural::_3].original() == ural::sequence(r_ural));
+    BOOST_CHECK(!result[ural::_3]);
+
+    std::vector<int> r_std;
+    std::set_symmetric_difference(result[ural::_1].traversed_begin(),
+                                  result[ural::_1].begin(),
+                                  result[ural::_2].traversed_begin(),
+                                  result[ural::_2].begin(),
+                                  std::back_inserter(r_std));
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_ural.begin(), r_ural.end(),
+                                  r_std.begin(), r_std.end());
+}
 
 BOOST_AUTO_TEST_CASE(regression_33_set_operations_first_base)
 {
@@ -2441,6 +2479,8 @@ BOOST_AUTO_TEST_CASE(regression_33_set_operations_first_base)
     BOOST_CHECK(r_sdiff[ural::_1].original() == ural::sequence(x1));
     BOOST_CHECK(r_sdiff[ural::_2].original() == ural::sequence(x2));
 }
+
+// 25.4.6 Операции с бинарными кучами
 BOOST_AUTO_TEST_CASE(push_heap_test)
 {
     std::vector<int> v { 3, 1, 4, 1, 5, 9 };
