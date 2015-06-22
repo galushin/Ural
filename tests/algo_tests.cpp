@@ -2418,6 +2418,29 @@ BOOST_AUTO_TEST_CASE(set_symmetric_difference_from_istream)
 
 // 25.4.6 Операции с бинарными кучами
 
+BOOST_AUTO_TEST_CASE(regression_33_set_operations_first_base)
+{
+    std::list<int> const x1{1, 2, 3, 4, 5,       8};
+    std::vector<int> const x2{   2,    4, 5, 6, 7   };
+
+    std::forward_list<int> out;
+
+    auto r_union = ural::set_union(x1, x2, out);
+    BOOST_CHECK(r_union[ural::_1].original() == ural::sequence(x1));
+    BOOST_CHECK(r_union[ural::_2].original() == ural::sequence(x2));
+
+    auto r_inter = ural::set_intersection(x1, x2, out);
+    BOOST_CHECK(r_inter[ural::_1].original() == ural::sequence(x1));
+    BOOST_CHECK(r_inter[ural::_2].original() == ural::sequence(x2));
+
+    auto r_diff  = ural::set_difference(x1, x2, out);
+    BOOST_CHECK(r_diff[ural::_1].original() == ural::sequence(x1));
+    BOOST_CHECK(r_diff[ural::_2].original() == ural::sequence(x2));
+
+    auto r_sdiff = ural::set_symmetric_difference(x1, x2, out);
+    BOOST_CHECK(r_sdiff[ural::_1].original() == ural::sequence(x1));
+    BOOST_CHECK(r_sdiff[ural::_2].original() == ural::sequence(x2));
+}
 BOOST_AUTO_TEST_CASE(push_heap_test)
 {
     std::vector<int> v { 3, 1, 4, 1, 5, 9 };

@@ -337,7 +337,7 @@ namespace ural
 
         Input1 && first_base() &&
         {
-            return std::move(this->in2_);
+            return std::move(this->in1_);
         }
 
         Input2 const & second_base() const &;
@@ -490,7 +490,7 @@ namespace ural
 
         Input1 && first_base() &&
         {
-            return std::move(this->in2_);
+            return std::move(this->in1_);
         }
 
         Input2 const & second_base() const &;
@@ -669,7 +669,7 @@ namespace ural
 
         Input1 && first_base() &&
         {
-            return std::move(this->in2_);
+            return std::move(this->in1_);
         }
 
         Input2 const & second_base() const &;
@@ -866,7 +866,7 @@ namespace ural
 
         Input1 && first_base() &&
         {
-            return std::move(this->in2_);
+            return std::move(this->in1_);
         }
 
         Input2 const & second_base() const &;
