@@ -311,7 +311,8 @@ namespace ural
         @post <tt> is_heap(seq, cmp) </tt>
         */
         template <class RASequenced, class Compare = ural::less<>>
-        void operator()(RASequenced && seq, Compare cmp = Compare()) const
+        SequenceType<RASequenced>
+        operator()(RASequenced && seq, Compare cmp = Compare()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequenced<RASequenced>));
             BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<RASequenced>, Compare>));
@@ -322,8 +323,8 @@ namespace ural
 
     private:
         template <class RASequence, class Compare>
-        static void
-        impl(RASequence seq, Compare cmp)
+        RASequence
+        impl(RASequence seq, Compare cmp) const
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
             BOOST_CONCEPT_ASSERT((concepts::Sortable<RASequence, Compare>));
@@ -336,6 +337,9 @@ namespace ural
             }
 
             assert(is_heap_fn{}(seq, cmp));
+
+            seq += seq.size();
+            return seq;
         }
     };
 

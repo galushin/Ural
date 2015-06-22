@@ -2417,6 +2417,7 @@ BOOST_AUTO_TEST_CASE(set_symmetric_difference_from_istream)
 }
 
 // 25.4.6 Операции с бинарными кучами
+
 BOOST_AUTO_TEST_CASE(push_heap_test)
 {
     std::vector<int> v { 3, 1, 4, 1, 5, 9 };
@@ -2424,7 +2425,13 @@ BOOST_AUTO_TEST_CASE(push_heap_test)
     for(auto i : ural::indices_of(v))
     {
         BOOST_CHECK(std::is_heap(v.begin(), v.begin() + i));
-        ural::push_heap(ural::make_iterator_sequence(v.begin(), v.begin()+i+1));
+
+        auto seq = ural::make_iterator_sequence(v.begin(), v.begin()+i+1);
+        auto result = ural::push_heap(seq);
+
+        BOOST_CHECK(result.traversed_front() == seq);
+        BOOST_CHECK(!result);
+        BOOST_CHECK(!result.traversed_back());
     }
     BOOST_CHECK(std::is_heap(v.begin(), v.end()));
 }
@@ -2476,7 +2483,11 @@ BOOST_AUTO_TEST_CASE(make_heap_odd_size_test)
     auto cmp = ural::callable_tracer<ural::less<int>>{};
     cmp.reset_calls();
 
-    ural::make_heap(v, cmp);
+    auto const result = ural::make_heap(v, cmp);
+
+    BOOST_CHECK(result.traversed_front() == ural::sequence(v));
+    BOOST_CHECK(!result);
+    BOOST_CHECK(!result.traversed_back());
 
     BOOST_CHECK(std::is_heap(v.begin(), v.end()));
 
