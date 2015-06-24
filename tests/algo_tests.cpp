@@ -2359,18 +2359,63 @@ BOOST_AUTO_TEST_CASE(set_intersection_test)
 
 BOOST_AUTO_TEST_CASE(set_difference_test)
 {
-    std::istringstream is1("1 2 3 4 5     8");
-    std::istringstream is2("  2   4 5 6 7");
-
-    std::vector<int> const z {1, 3, 8};
+    ural_test::istringstream_helper<int> is1{1, 2, 3, 4, 5,      8};
+    ural_test::istringstream_helper<int> is2{   2,    4, 5, 6, 7  };
+    std::vector<int> const z                {1,    3,            8};
 
     std::vector<int> r_ural;
-    ural::set_difference(ural::make_istream_sequence<int>(is1),
-                         ural::make_istream_sequence<int>(is2),
-                         r_ural | ural::back_inserter);
+    ural::set_difference(is1, is2, r_ural | ural::back_inserter);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
                                   r_ural.begin(), r_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(set_difference_test_unexhausted_2)
+{
+    ural_test::istringstream_helper<int> is1{1, 2, 3, 4, 5,      8};
+    ural_test::istringstream_helper<int> is2{   2,    4, 5, 6, 7,  9};
+    std::vector<int> const z                {1,    3,            8};
+
+    std::vector<int> r_ural;
+    ural::set_difference(is1, is2, r_ural | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
+                                  r_ural.begin(), r_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(set_difference_test_to_short)
+{
+    std::vector<int> is1     {1, 2, 3, 4, 5,       8};
+    std::vector<int> is2     {   2,    4, 5, 6, 7,   9};
+    std::vector<int> const z {1,    3,             8};
+
+    std::vector<int> r_ural(z.size() / 2, -1);
+
+    auto result = ural::set_difference(is1, is2, r_ural);
+
+    BOOST_CHECK(result[ural::_1].original() == ural::sequence(is1));
+    BOOST_CHECK(!!result[ural::_1]);
+    BOOST_CHECK_LE(r_ural.back(), result[ural::_1].front());
+
+    BOOST_CHECK(result[ural::_2].original() == ural::sequence(is2));
+    BOOST_CHECK(!!result[ural::_2]);
+    BOOST_CHECK_LE(r_ural.back(), result[ural::_2].front());
+
+    BOOST_CHECK(result[ural::_3].original() == ural::sequence(r_ural));
+    BOOST_CHECK(!result[ural::_3]);
+
+    assert(r_ural.size() < z.size());
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_ural.begin(), r_ural.end(),
+                                  z.begin(), z.begin() + r_ural.size());
+
+    std::vector<int> r_std;
+    std::set_difference(result[ural::_1].traversed_begin(),
+                        result[ural::_1].begin(),
+                        result[ural::_2].traversed_begin(),
+                        result[ural::_2].begin(),
+                        r_std | ural::back_inserter);
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_ural.begin(), r_ural.end(),
+                                  r_std.begin(), r_std.end());
 }
 
 BOOST_AUTO_TEST_CASE(set_symmetric_difference_test)
