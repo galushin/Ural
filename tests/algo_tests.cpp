@@ -2341,6 +2341,78 @@ BOOST_AUTO_TEST_CASE(set_union_test)
                                   r_ural.begin(), r_ural.end());
 }
 
+BOOST_AUTO_TEST_CASE(set_union_test_shorter_in_1)
+{
+    std::vector<int> const is1{1, 2, 3, 4, 5,};
+    std::vector<int> const is2{      3, 4, 5, 6, 7};
+    std::vector<int> const z  {1, 2, 3, 4, 5, 6, 7};
+
+    BOOST_CHECK_LE(is1.back(), is2.back());
+
+    std::vector<int> r_ural;
+    auto result = ural::set_union(is1, is2, r_ural | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
+                                  r_ural.begin(), r_ural.end());
+
+    BOOST_CHECK(!result[ural::_1]);
+    BOOST_CHECK(!result[ural::_2]);
+    BOOST_CHECK(!!result[ural::_3]);
+}
+
+BOOST_AUTO_TEST_CASE(set_union_test_shorter_in_2)
+{
+    std::vector<int> const is1{1, 2, 3, 4, 5,    7};
+    std::vector<int> const is2{      3, 4, 5, 6};
+    std::vector<int> const z  {1, 2, 3, 4, 5, 6, 7};
+
+    BOOST_CHECK_LE(is2.back(), is1.back());
+
+    std::vector<int> r_ural;
+    auto result = ural::set_union(is1, is2, r_ural | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
+                                  r_ural.begin(), r_ural.end());
+
+    BOOST_CHECK(!result[ural::_1]);
+    BOOST_CHECK(!result[ural::_2]);
+    BOOST_CHECK(!!result[ural::_3]);
+}
+
+BOOST_AUTO_TEST_CASE(set_union_test_shorter_out)
+{
+    std::vector<int> const is1{1, 2, 3, 4, 5,};
+    std::vector<int> const is2{      3, 4, 5, 6, 7};
+    std::vector<int> const z  {1, 2, 3, 4, 5, 6, 7};
+
+    std::vector<int> r_ural(z.size() / 2, -1);
+    BOOST_CHECK_LE(r_ural.size(), z.size());
+    BOOST_CHECK(r_ural.empty() == false);
+
+    auto result = ural::set_union(is1, is2, r_ural);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_ural.begin(), r_ural.end(),
+                                  z.begin(), z.begin() + r_ural.size());
+
+    BOOST_CHECK(!!result[ural::_1]);
+    BOOST_CHECK(!!result[ural::_2]);
+    BOOST_CHECK(!result[ural::_3]);
+
+    BOOST_CHECK(result[ural::_1].original() == ural::sequence(is1));
+    BOOST_CHECK(result[ural::_2].original() == ural::sequence(is2));
+    BOOST_CHECK(result[ural::_3].original() == ural::sequence(r_ural));
+
+    std::vector<int> r_std;
+    std::set_union(result[ural::_1].traversed_begin(),
+                   result[ural::_1].begin(),
+                   result[ural::_2].traversed_begin(),
+                   result[ural::_2].begin(),
+                   std::back_inserter(r_std));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_ural.begin(), r_ural.end(),
+                                  r_std.begin(), r_std.end());
+}
+
 BOOST_AUTO_TEST_CASE(set_intersection_test)
 {
     std::istringstream is1("1 2 3 4 5");
