@@ -1948,24 +1948,31 @@ BOOST_AUTO_TEST_CASE(partial_sort_copy_test)
     std::vector<int> r1_std{10, 11, 12};
     std::vector<int> r1_ural{10, 11, 12};
 
-    std::vector<int> r2_std{10, 11, 12, 13, 14, 15, 16};
-    std::vector<int> r2_ural{10, 11, 12, 13, 14, 15, 16};
-
     auto pos_std = std::partial_sort_copy(v0.begin(), v0.end(),
                                           r1_std.begin(), r1_std.end());
     auto pos_ural = ural::partial_sort_copy(v0, r1_ural);
 
+    BOOST_CHECK(pos_ural.original() == ural::sequence(r1_ural));
     BOOST_CHECK_EQUAL(r1_std.end() - pos_std, pos_ural.size());
     BOOST_CHECK_EQUAL(pos_std - r1_std.begin(), pos_ural.traversed_front().size());
 
     BOOST_CHECK_EQUAL_COLLECTIONS(r1_std.begin(), r1_std.end(),
                                   r1_ural.begin(), r1_ural.end());
+}
 
-    pos_std = std::partial_sort_copy(v0.begin(), v0.end(),
+BOOST_AUTO_TEST_CASE(partial_sort_copy_test_custom_predicate_to_greater)
+{
+    std::list<int> const v0{4, 2, 5, 1, 3};
+
+    std::vector<int> r2_std{10, 11, 12, 13, 14, 15, 16};
+    std::vector<int> r2_ural{10, 11, 12, 13, 14, 15, 16};
+
+    auto pos_std = std::partial_sort_copy(v0.begin(), v0.end(),
                                      r2_std.begin(), r2_std.end(),
                                      std::greater<int>());
-    pos_ural = ural::partial_sort_copy(v0, r2_ural, ural::greater<>());
+    auto pos_ural = ural::partial_sort_copy(v0, r2_ural, ural::greater<>());
 
+    BOOST_CHECK(pos_ural.original() == ural::sequence(r2_ural));
     BOOST_CHECK_EQUAL(r2_std.end() - pos_std, pos_ural.size());
     BOOST_CHECK_EQUAL(pos_std - r2_std.begin(), pos_ural.traversed_front().size());
 
@@ -1993,9 +2000,12 @@ BOOST_AUTO_TEST_CASE(is_sorted_until_test)
 
     do
     {
-        auto n_std = nums.end() - std::is_sorted_until(nums.begin(), nums.end());
-        auto n_ural = ural::is_sorted_until(nums).size();
-        BOOST_CHECK_EQUAL(n_std, n_ural);
+        auto result_std = std::is_sorted_until(nums.begin(), nums.end());
+        auto result_ural = ural::is_sorted_until(nums);
+
+        BOOST_CHECK(result_ural.original() == ural::sequence(nums));
+        BOOST_CHECK(result_ural.begin() == result_std);
+        BOOST_CHECK(result_ural.end() == nums.end());
     }
     while(std::next_permutation(nums.begin(), nums.end()));
 }
