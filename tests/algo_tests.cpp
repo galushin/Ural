@@ -1814,14 +1814,22 @@ BOOST_AUTO_TEST_CASE(partition_copy_test)
 
 BOOST_AUTO_TEST_CASE(partition_copy_return_value_test)
 {
+    // Подготовка
     std::array<int, 10> const src = {1,2,3,4,5,6,7,8,9,10};
+
     std::vector<int> true_sink(src.size(), -1);
+    auto const true_sink_old = true_sink;
+
     std::vector<int> false_sink(src.size(), -1);
+    auto const false_sink_old = false_sink;
 
     auto const pred = [] (int x) {return x % 2 == 0;};
 
+    // Выполнение операции
     auto r = ural::partition_copy(src, true_sink, false_sink, pred);
 
+    // Проверки
+    assert(src.size() < true_sink.size() + false_sink.size());
     BOOST_CHECK(!r[ural::_1]);
     BOOST_CHECK_EQUAL(ural::to_signed(src.size()),
                       r[ural::_2].traversed_front().size()
@@ -1829,6 +1837,21 @@ BOOST_AUTO_TEST_CASE(partition_copy_return_value_test)
 
     BOOST_CHECK(ural::all_of(r[ural::_2].traversed_front(), pred));
     BOOST_CHECK(ural::none_of(r[ural::_3].traversed_front(), pred));
+
+    std::vector<int> y;
+    ural::copy(r[ural::_2].traversed_front(), y | ural::back_inserter);
+    ural::copy(r[ural::_3].traversed_front(), y | ural::back_inserter);
+
+    BOOST_CHECK(ural::is_permutation(y, src));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(true_sink.end() - r[ural::_2].size(),
+                                  true_sink.end(),
+                                  true_sink_old.end() - r[ural::_2].size(),
+                                  true_sink_old.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(false_sink.end() - r[ural::_2].size(),
+                                  false_sink.end(),
+                                  false_sink.end() - r[ural::_2].size(),
+                                  false_sink.end());
 }
 
 BOOST_AUTO_TEST_CASE(partition_point_test)
