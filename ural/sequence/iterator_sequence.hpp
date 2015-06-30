@@ -328,7 +328,7 @@ namespace ural
         */
         sentinel const & traversed_end() const
         {
-            return members_[ural::_2].old_value();
+            return this->traversed_end_impl(traversal_tag{});
         }
 
         friend iterator begin(iterator_sequence const & s)
@@ -342,6 +342,16 @@ namespace ural
         }
 
     private:
+        sentinel const & traversed_end_impl(forward_traversal_tag) const
+        {
+            return members_[ural::_2];
+        }
+
+        sentinel const & traversed_end_impl(bidirectional_traversal_tag) const
+        {
+            return members_[ural::_2].old_value();
+        }
+
         static auto constexpr is_forward
             = std::is_convertible<traversal_tag, forward_traversal_tag>::value;
 

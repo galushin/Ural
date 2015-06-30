@@ -1650,6 +1650,8 @@ BOOST_AUTO_TEST_CASE(partition_test)
 
     auto r_ural = ural::partition(ys, is_even);
 
+    BOOST_CHECK(r_ural.original() == ural::sequence(ys));
+
     BOOST_CHECK(ural::is_permutation(ys, xs));
     BOOST_CHECK(ural::is_partitioned(ys, is_even));
 
@@ -1772,7 +1774,7 @@ BOOST_AUTO_TEST_CASE(stable_partition_test_4)
 
 BOOST_AUTO_TEST_CASE(stable_partition_test_9)
 {
-    std::vector<int> const src {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    std::list<int> const src {1, 2, 3, 4, 5, 6, 7, 8, 9};
     auto v_std = src;
     auto v_ural = src;
 
@@ -1780,6 +1782,11 @@ BOOST_AUTO_TEST_CASE(stable_partition_test_9)
 
     std::stable_partition(v_std.begin(), v_std.end(), pred);
     auto r_ural = ural::stable_partition(v_ural, pred);
+
+    BOOST_CHECK(r_ural.original() == ural::sequence(v_ural));
+    BOOST_CHECK(!r_ural.traversed_back());
+
+    BOOST_CHECK(ural::is_permutation(v_ural, src));
 
     BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
                                   v_ural.begin(), v_ural.end());
@@ -1794,19 +1801,23 @@ BOOST_AUTO_TEST_CASE(stable_partition_test_9)
 
 BOOST_AUTO_TEST_CASE(partition_copy_test)
 {
-    std::array<int, 10> const src = {1,2,3,4,5,6,7,8,9,10};
+    // Подготовка
+    std::vector<int> xs = {1,2,3,4,5,6,7,8,9,10};
+    ural_test::istringstream_helper<int> src(xs.begin(), xs.end());
     std::list<int> true_sink;
     std::forward_list<int> false_sink;
 
     auto const pred = [] (int x) {return x % 2 == 0;};
 
+    // Выполнение операции
     ural::partition_copy(src, true_sink | ural::back_inserter,
                          std::front_inserter(false_sink), pred);
 
+    // Проверка
     BOOST_CHECK(ural::all_of(true_sink, pred));
     BOOST_CHECK(ural::none_of(false_sink, pred));
 
-    for(auto const & x : src)
+    for(auto const & x : xs)
     {
         BOOST_CHECK(!!ural::find(true_sink, x) || !!ural::find(false_sink, x));
     }

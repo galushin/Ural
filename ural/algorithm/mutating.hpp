@@ -1678,8 +1678,9 @@ namespace details
             auto r = copy_fn{}(std::move(in), std::move(out));
 
             typedef ural::tuple<Input, Output1, Output2> Tuple;
-            return Tuple(r[ural::_1], r[ural::_2].true_sequence(),
-                         r[ural::_2].false_sequence());
+            return Tuple(std::move(r[ural::_1]),
+                         std::move(r[ural::_2]).true_sequence(),
+                         std::move(r[ural::_2]).false_sequence());
         }
     };
 
