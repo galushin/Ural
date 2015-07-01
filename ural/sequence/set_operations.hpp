@@ -61,12 +61,11 @@ namespace ural
 
     public:
         /// @brief Тип ссылки
-        typedef typename std::common_type<typename Input1::reference,
-                                          typename Input2::reference>::type reference;
+        typedef CommonType<typename Input1::reference, typename Input2::reference>
+            reference;
 
         /// @brief Тип значения
-        typedef typename std::common_type<typename Input1::value_type,
-                                          typename Input2::value_type>::type value_type;
+        typedef CommonType<ValueType<Input1>, ValueType<Input2>> value_type;
 
         /// @brief Категория обхода
         typedef typename common_tag<typename Input1::traversal_tag,
@@ -74,12 +73,12 @@ namespace ural
                                     forward_traversal_tag>::type traversal_tag;
 
         /// @brief Тип указателя
-        typedef typename std::common_type<typename Input1::pointer,
-                                          typename Input2::pointer>::type pointer;
+        typedef CommonType<typename Input1::pointer, typename Input2::pointer>
+            pointer;
 
         /// @brief Тип расстояния
-        typedef typename std::common_type<typename Input1::distance_type,
-                                          typename Input2::distance_type>::type distance_type;
+        typedef CommonType<DifferenceType<Input1>, DifferenceType<Input2>>
+            distance_type;
 
         /** @brief Конструктор
         @param in1 первая входная последовательность
@@ -272,7 +271,7 @@ namespace ural
         typedef typename Input1::reference reference;
 
         /// @brief Тип значения
-        typedef typename Input1::value_type value_type;
+        typedef ValueType<Input1> value_type;
 
         /// @brief Категория обхода
         typedef typename common_tag<typename Input1::traversal_tag,
@@ -283,7 +282,7 @@ namespace ural
         typedef typename Input1::pointer pointer;
 
         /// @brief Тип расстояния
-        typedef typename Input1::distance_type distance_type;
+        typedef DifferenceType<Input1> distance_type;
 
         /** @brief Конструктор
         @param in1 первая входная последовательность
@@ -425,7 +424,7 @@ namespace ural
         typedef typename Input1::reference reference;
 
         /// @brief Тип значения
-        typedef typename Input1::value_type value_type;
+        typedef ValueType<Input1> value_type;
 
         /// @brief Категория обхода
         typedef typename common_tag<typename Input1::traversal_tag,
@@ -436,7 +435,7 @@ namespace ural
         typedef typename Input1::pointer pointer;
 
         /// @brief Тип расстояния
-        typedef typename Input1::distance_type distance_type;
+        typedef DifferenceType<Input1> distance_type;
 
         /** @brief Конструктор
         @param in1 первая входная последовательность
@@ -576,12 +575,11 @@ namespace ural
         typedef sequence_base<set_symmetric_difference_sequence, Compare> Base_class;
     public:
         /// @brief Тип ссылки
-        typedef typename std::common_type<typename Input1::reference,
-                                          typename Input2::reference>::type reference;
+        typedef CommonType<typename Input1::reference, typename Input2::reference>
+            reference;
 
         /// @brief Тип значения
-        typedef typename std::common_type<typename Input1::value_type,
-                                          typename Input2::value_type>::type value_type;
+        typedef CommonType<ValueType<Input1>, ValueType<Input2>> value_type;
 
         /// @brief Категория обхода
         typedef typename common_tag<typename Input1::traversal_tag,
@@ -589,12 +587,12 @@ namespace ural
                                     forward_traversal_tag>::type traversal_tag;
 
         /// @brief Тип указателя
-        typedef typename std::common_type<typename Input1::pointer,
-                                          typename Input2::pointer>::type pointer;
+        typedef CommonType<typename Input1::pointer, typename Input2::pointer>
+            pointer;
 
         /// @brief Тип расстояния
-        typedef typename std::common_type<typename Input1::distance_type,
-                                          typename Input2::distance_type>::type distance_type;
+        typedef CommonType<DifferenceType<Input1>, DifferenceType<Input2>>
+            distance_type;
 
         /** @brief Конструктор
         @param in1 первая входная последовательность
@@ -772,12 +770,11 @@ namespace ural
         typedef sequence_base<set_union_sequence, Compare> Base_class;
     public:
         /// @brief Тип ссылки
-        typedef typename std::common_type<typename Input1::reference,
-                                          typename Input2::reference>::type reference;
+        typedef CommonType<typename Input1::reference, typename Input2::reference>
+            reference;
 
         /// @brief Тип значения
-        typedef typename std::common_type<typename Input1::value_type,
-                                          typename Input2::value_type>::type value_type;
+        typedef CommonType<ValueType<Input1>, ValueType<Input2>> value_type;
 
         /// @brief Категория обхода
         typedef typename common_tag<typename Input1::traversal_tag,
@@ -785,12 +782,12 @@ namespace ural
                                     forward_traversal_tag>::type traversal_tag;
 
         /// @brief Тип указателя
-        typedef typename std::common_type<typename Input1::pointer,
-                                          typename Input2::pointer>::type pointer;
+        typedef CommonType<typename Input1::pointer, typename Input2::pointer>
+            pointer;
 
         /// @brief Тип расстояния
-        typedef typename std::common_type<typename Input1::distance_type,
-                                          typename Input2::distance_type>::type distance_type;
+        typedef CommonType<DifferenceType<Input1>, DifferenceType<Input2>>
+            distance_type;
 
         /** @brief Конструктор
         @param in1 первая входная последовательность

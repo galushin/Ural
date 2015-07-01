@@ -319,13 +319,13 @@ namespace ural
     {
     private:
         template <class Input, class UnaryPredicate>
-        static typename Input::distance_type
+        static DifferenceType<Input>
         impl(Input in, UnaryPredicate pred)
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<UnaryPredicate, Input>));
 
-            typename Input::distance_type result{0};
+            DifferenceType<Input> result{0};
 
             for(; !!in; ++ in)
             {
@@ -347,7 +347,7 @@ namespace ural
         */
         template <class Input, class UnaryPredicate>
         auto operator()(Input && in, UnaryPredicate pred) const
-        -> typename decltype(::ural::sequence_fwd<Input>(in))::distance_type
+        -> DifferenceType<SequenceType<Input>>
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<UnaryPredicate,
@@ -366,7 +366,7 @@ namespace ural
     {
     private:
         template <class Input, class T, class BinaryPredicate>
-        static typename Input::distance_type
+        static DifferenceType<Input>
         impl(Input in, T const & value, BinaryPredicate pred)
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
@@ -389,7 +389,7 @@ namespace ural
                   class BinaryPredicate = ::ural::equal_to<>>
         auto operator()(Input && in, T const & value,
                         BinaryPredicate pred = BinaryPredicate()) const
-        -> typename decltype(::ural::sequence_fwd<Input>(in))::distance_type
+        -> DifferenceType<SequenceType<Input>>
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate,

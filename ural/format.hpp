@@ -112,10 +112,10 @@ namespace ural
 
     template <class String>
     class basic_istringstream
-     : public std::basic_istringstream<typename String::value_type,
+     : public std::basic_istringstream<ValueType<String>,
                                        typename String::traits_type>
     {
-        typedef std::basic_istringstream<typename String::value_type,
+        typedef std::basic_istringstream<ValueType<String>,
                                          typename String::traits_type> Base;
 
     public:

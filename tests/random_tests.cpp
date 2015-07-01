@@ -87,6 +87,8 @@ md5 contributions   llvm/lib/Support/MD5.cpp llvm/include/llvm/Support/MD5.h
 
 #include <sstream>
 
+using ::ural::ValueType;
+
 // Типы
 BOOST_AUTO_TEST_CASE(discrete_distribution_types_test)
 {
@@ -144,7 +146,7 @@ namespace
     template <class Vector>
     Vector & normalize_weights(Vector & ws)
     {
-        auto w_sum = ural::accumulate(ws, typename Vector::value_type{0});
+        auto w_sum = ural::accumulate(ws, ValueType<Vector>{0});
 
         ural::for_each(ws, [=](typename Vector::reference x) { x /= w_sum;});
 
@@ -405,8 +407,8 @@ namespace
     ural::probability<>
     pearson_test(InputSequence && in, Probabilities const & prob)
     {
-        std::vector<typename InputSequence::value_type> u(prob.size());
-        typename InputSequence::value_type N = 0;
+        std::vector<ValueType<InputSequence>> u(prob.size());
+        ValueType<InputSequence> N = 0;
 
         for(auto s = ::ural::sequence_fwd<InputSequence>(in); !!s; ++ s)
         {

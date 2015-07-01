@@ -313,7 +313,7 @@ namespace ural
 
         private:
             static Seq seq;
-            typedef typename Seq::distance_type distance_type;
+            typedef DifferenceType<Seq> distance_type;
             typedef typename Seq::reference reference;
         };
 

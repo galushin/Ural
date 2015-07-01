@@ -41,7 +41,7 @@ namespace ural
             Base_class;
     public:
         /// @brief Тип значения
-        typedef typename Input::value_type value_type;
+        typedef ValueType<Input> value_type;
 
         /// @brief Тип ссылки
         typedef value_type const & reference;
@@ -53,7 +53,7 @@ namespace ural
         typedef value_type const & pointer;
 
         /// @brief Тип расстояния
-        typedef typename Input::distance_type distance_type;
+        typedef DifferenceType<Input> distance_type;
 
         /// @brief Тип операции, используемой для вычисления суммы
         typedef BinaryOperation operation_type;

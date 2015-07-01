@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(vector_value_type)
     typedef ural::vector<T> Vector;
 
     // строка 1
-    static_assert(std::is_same<Vector::value_type, T>::value, "");
+    static_assert(std::is_same<::ural::ValueType<Vector>, T>::value, "");
 }
 
 // @todo Тест строки 12 для случая, когда вектор не может передать владение
@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE(vector_n_copies_of_t)
     typedef ural::vector<T> Vector;
 
     auto const n = Vector::size_type(5);
-    auto const t = Vector::value_type(42);
+    auto const t = ::ural::ValueType<Vector>(42);
 
     Vector x(n, t);
 

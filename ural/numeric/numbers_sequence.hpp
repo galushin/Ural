@@ -112,13 +112,13 @@ namespace ural
     @param x_min наименьшее значение
     @param x_max наибольшее значение
     @return <tt> numbers_sequence<T>(std::move(x_min), std::move(x_max)) </tt>,
-    где @c T --- <tt> typename std::common_type<T1, T2>::type </tt>
+    где @c T --- <tt> CommonType<T1, T2> </tt>
     */
     template <class T1, class T2>
-    numbers_sequence<typename std::common_type<T1, T2>::type>
+    numbers_sequence<CommonType<T1, T2>>
     numbers(T1 x_min, T2 x_max)
     {
-        typedef typename std::common_type<T1, T2>::type Number;
+        typedef CommonType<T1, T2> Number;
 
         return numbers_sequence<Number>(std::move(x_min), std::move(x_max));
     }
@@ -128,13 +128,13 @@ namespace ural
     @param x_max наибольшее значение
     @param step шаг
     @return <tt> numbers_sequence<T, D>(x_min, x_max, step) </tt>,
-    где @c T --- <tt> typename std::common_type<T1, T2>::type </tt>
+    где @c T --- <tt> CommonType<T1, T2> </tt>
     */
     template <class T1, class T2, class D>
-    numbers_sequence<typename std::common_type<T1, T2>::type, D>
+    numbers_sequence<CommonType<T1, T2>, D>
     numbers(T1 x_min, T2 x_max, D step)
     {
-        typedef typename std::common_type<T1, T2>::type Number;
+        typedef CommonType<T1, T2> Number;
         typedef numbers_sequence<Number, D> Seq;
 
         // @todo Проверить переполнения и сужения

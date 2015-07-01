@@ -1160,7 +1160,7 @@ namespace tags
         auto const m = ds.mean();
         auto const s = ds.standard_deviation();
 
-        typedef typename decltype(ds)::value_type Value;
+        typedef ValueType<decltype(ds)> Value;
 
         assert(s != 0);
 
@@ -1180,7 +1180,7 @@ namespace tags
     {
     public:
         /// @brief Тип элементов
-        typedef typename Vector::value_type element_type;
+        typedef ValueType<Vector> element_type;
 
         /// @brief Тип среднего
         typedef Vector mean_type;

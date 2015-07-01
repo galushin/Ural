@@ -56,17 +56,16 @@ namespace ural
         typedef typename Impl::reference reference;
 
         /// @brief Тип значения
-        typedef typename Impl::value_type value_type;
+        typedef ValueType<Impl> value_type;
 
         /// @brief Тип указателя
         typedef typename Impl::pointer pointer;
 
         /// @brief Тип расстояния
-        typedef typename Impl::distance_type distance_type;
+        typedef DifferenceType<Impl> distance_type;
 
         /// @brief Категория обхода
-        typedef typename std::common_type<typename Impl::traversal_tag,
-                                          forward_traversal_tag>::type
+        typedef CommonType<typename Impl::traversal_tag, forward_traversal_tag>
             traversal_tag;
 
         // Конструкторы

@@ -101,13 +101,13 @@ namespace ural
         typedef typename Sequence::reference reference;
 
         /// @brief Тип значения
-        typedef typename Sequence::value_type value_type;
+        typedef ValueType<Sequence> value_type;
 
         /// @brief Тип указателя
         typedef typename Sequence::pointer pointer;
 
         /// @brief Тип расстояния
-        typedef typename Sequence::distance_type difference_type;
+        typedef DifferenceType<Sequence> difference_type;
 
         // Конструктор
         /** @brief Конструктор по-умолчанию. Создаёт итератор конца
@@ -124,6 +124,12 @@ namespace ural
         sequence_iterator(Sequence s)
          : impl_(std::move(s))
         {}
+
+        sequence_iterator(sequence_iterator const &) = default;
+        sequence_iterator(sequence_iterator &&) = default;
+
+        sequence_iterator & operator=(sequence_iterator const &) = default;
+        sequence_iterator & operator=(sequence_iterator &&) = default;
 
         // Итератор ввода
         /** @brief Ссылка на текущий элемент

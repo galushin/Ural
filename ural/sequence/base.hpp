@@ -179,7 +179,7 @@ namespace ural
     */
     template <class Seq, class Base>
     Seq
-    operator+(sequence_base<Seq, Base> const & s, typename Seq::distance_type n)
+    operator+(sequence_base<Seq, Base> const & s, DifferenceType<Seq> n)
     {
         auto result = static_cast<Seq const &>(s);
         result += n;
@@ -188,7 +188,7 @@ namespace ural
 
     template <class Seq, class Base>
     Seq
-    operator+(typename Seq::distance_type n, sequence_base<Seq, Base> const & s)
+    operator+(DifferenceType<Seq> n, sequence_base<Seq, Base> const & s)
     {
         return std::move(s + n);
     }
@@ -213,10 +213,10 @@ namespace ural
     {
     private:
         template <class Sequence>
-        static typename Sequence::distance_type
+        static DifferenceType<Sequence>
         size_impl(Sequence const & s, single_pass_traversal_tag)
         {
-            typename Sequence::distance_type n{0};
+            DifferenceType<Sequence> n{0};
 
             for(auto in = s; !!in; ++ in)
             {
@@ -227,7 +227,7 @@ namespace ural
         }
 
         template <class Sequence>
-        static typename Sequence::distance_type
+        static DifferenceType<Sequence>
         size_impl(Sequence const & s, random_access_traversal_tag)
         {
             return s.size();
@@ -239,7 +239,7 @@ namespace ural
         @return Количество непройденных элементов последовательности
         */
         template <class Sequence>
-        typename Sequence::distance_type
+        DifferenceType<Sequence>
         operator()(Sequence const & s) const
         {
             return this->size_impl(s, ural::make_traversal_tag(s));
@@ -273,14 +273,14 @@ namespace ural
         @param n число шагов
         */
         template <class Sequence>
-        void operator()(Sequence & s, typename Sequence::distance_type n) const
+        void operator()(Sequence & s, DifferenceType<Sequence> n) const
         {
             return this->impl(s, std::move(n), ural::make_traversal_tag(s));
         }
 
     private:
         template <class Sequence>
-        static void impl(Sequence & s, typename Sequence::distance_type n,
+        static void impl(Sequence & s, DifferenceType<Sequence> n,
                          single_pass_traversal_tag)
         {
             for(; n > 0; -- n)
@@ -290,7 +290,7 @@ namespace ural
         }
 
         template <class Sequence>
-        static void impl(Sequence & s, typename Sequence::distance_type n,
+        static void impl(Sequence & s, DifferenceType<Sequence> n,
                          random_access_traversal_tag)
         {
             s += n;

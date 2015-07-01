@@ -38,7 +38,7 @@ namespace ural
     {
     public:
         /// @brief Тип значения
-        typedef typename Input::value_type value_type;
+        typedef ValueType<Input> value_type;
 
         /// @brief Тип ссылки
         typedef value_type const & reference;
@@ -50,7 +50,7 @@ namespace ural
         typedef typename Input::pointer pointer;
 
         /// @brief Тип расстояния
-        typedef typename Input::distance_type distance_type;
+        typedef DifferenceType<Input> distance_type;
 
         /** @brief Конструктор
         @param in исходная последовательность

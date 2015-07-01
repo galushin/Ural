@@ -50,7 +50,7 @@ namespace
 BOOST_AUTO_TEST_CASE_TEMPLATE(container_types_test, Container, Containers_types)
 {
     // Строка 1
-    typedef typename Container::value_type T;
+    typedef ::ural::ValueType<Container> T;
 
     // @todo "T is Erasable from X" из таблицы 96
 
@@ -70,13 +70,13 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_types_test, Container, Containers_types)
     // строка 4
     static_assert(std::is_convertible<typename Iterator_traits::iterator_category,
                                       std::forward_iterator_tag>::value, "");
-    static_assert(std::is_same<typename Iterator_traits::value_type, T>::value, "");
+    static_assert(std::is_same<::ural::ValueType<Iterator_traits>, T>::value, "");
     static_assert(std::is_convertible<Iterator, Const_iterator>::value, "");
 
     // строка 5
     static_assert(std::is_convertible<typename Const_iterator_traits::iterator_category,
                                       std::forward_iterator_tag>::value, "");
-    static_assert(std::is_same<typename Const_iterator_traits::value_type, T>::value, "");
+    static_assert(std::is_same<::ural::ValueType<Const_iterator_traits>, T>::value, "");
 
     // строка 6
     typedef typename Container::difference_type Difference;
@@ -450,8 +450,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_allocator_constructor,
     typedef typename Container::allocator_type Alloc;
 
     // Строка 1
-    static_assert(std::is_same<typename Container::allocator_type::value_type,
-                               typename Container::value_type>::value, "Allocator for wrong type!");
+    static_assert(std::is_same<::ural::ValueType<typename Container::allocator_type>,
+                               ::ural::ValueType<Container>>::value,
+                  "Allocator for wrong type!");
 
     // Строка 2
     static_assert(std::is_same<Alloc, decltype(Container().get_allocator())>::value, "");
@@ -538,14 +539,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_move_with_same_allocator,
 BOOST_AUTO_TEST_CASE_TEMPLATE(container_assign_n_value_worse_then_iters_regression,
                               Container, Sequence_containers)
 {
-    static_assert(std::is_signed<typename Container::value_type>::value, "");
+    static_assert(std::is_signed<::ural::ValueType<Container>>::value, "");
 
     Container x;
     x.assign(13, 42);
 
     Container z;
     z.assign(typename Container::size_type(13),
-             typename Container::value_type(42));
+             ::ural::ValueType<Container>(42));
 
     BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), x.begin(), x.end());
 }
@@ -564,7 +565,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_const_data_test, Container, Reserving_co
 {
     Container const cs = {1, 3, 5, 7, 9};
 
-    typedef typename Container::value_type Value_type;
+    typedef ::ural::ValueType<Container> Value_type;
     typedef decltype(cs.data()) Data_result;
 
     static_assert(std::is_same<Value_type const *, Data_result>::value, "");

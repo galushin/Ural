@@ -29,6 +29,7 @@
 #include <ural/memory.hpp>
 #include <ural/sequence/all.hpp>
 #include <ural/utility/tracers.hpp>
+#include <ural/concepts.hpp>
 
 #include <forward_list>
 #include <forward_list>
@@ -1639,17 +1640,20 @@ BOOST_AUTO_TEST_CASE(is_partitioned_test)
 
 BOOST_AUTO_TEST_CASE(partition_test)
 {
+    // Подготовка
     typedef std::forward_list<int> Container;
     Container const xs = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
     auto ys = xs;
 
-    typedef Container::value_type Element;
+    typedef ::ural::ValueType<Container> Element;
 
     auto const is_even = [](Element x) { return x % 2 == 0;};
 
+    // Выполнение операции
     auto r_ural = ural::partition(ys, is_even);
 
+    // Проверка
     BOOST_CHECK(r_ural.original() == ural::sequence(ys));
 
     BOOST_CHECK(ural::is_permutation(ys, xs));

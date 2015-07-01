@@ -70,7 +70,7 @@ namespace ural
         typedef typename std::iterator_traits<Iterator>::pointer pointer;
 
         /// @brief Тип значения
-        typedef typename std::iterator_traits<Iterator>::value_type value_type;
+        typedef ValueType<std::iterator_traits<Iterator>> value_type;
 
         /// @brief Тип расстояния
         typedef typename std::iterator_traits<Iterator>::difference_type

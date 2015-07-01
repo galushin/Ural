@@ -59,7 +59,7 @@ namespace ural
             iterator_category;
 
         /// @brief Тип значений
-        typedef typename std::iterator_traits<Iterator>::value_type value_type;
+        typedef ValueType<std::iterator_traits<Iterator>> value_type;
 
         /// @brief Тип разности
         typedef typename std::iterator_traits<Iterator>::difference_type

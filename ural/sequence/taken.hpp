@@ -49,10 +49,10 @@ namespace ural
         typedef typename Sequence::reference reference;
 
         /// @brief Тип значения
-        typedef typename Sequence::value_type value_type;
+        typedef ValueType<Sequence> value_type;
 
         /// @brief Тип расстояния
-        typedef typename Sequence::distance_type distance_type;
+        typedef DifferenceType<Sequence> distance_type;
 
         /// @brief Категория обхода
         typedef typename Sequence::traversal_tag traversal_tag;

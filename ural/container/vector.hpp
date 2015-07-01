@@ -70,7 +70,7 @@ namespace ural
     public:
         // Типы
         typedef Alloc allocator_type;
-        typedef typename Traits::value_type value_type;
+        typedef ValueType<Traits> value_type;
         typedef typename Traits::pointer pointer;
         typedef typename Traits::size_type size_type;
         typedef typename Traits::difference_type difference_type;

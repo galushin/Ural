@@ -59,8 +59,7 @@ namespace ural
             traversal_tag;
 
         /// @brief Тип расстояния
-        typedef typename std::common_type<typename Inputs::distance_type...>::type
-            distance_type;
+        typedef CommonType<DifferenceType<Inputs>...> distance_type;
 
         /// @brief Тип указателя
         typedef typename std::conditional<std::is_lvalue_reference<reference>::value,

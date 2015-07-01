@@ -38,7 +38,7 @@ namespace ural
     public:
         // Типы
         /// @brief Тип значения
-        typedef typename Impl_seq::value_type value_type;
+        typedef ValueType<Impl_seq> value_type;
 
         /// @brief Тип ссылки
         typedef typename Impl_seq::reference reference;
@@ -47,7 +47,7 @@ namespace ural
         typedef typename Impl_seq::pointer pointer;
 
         /// @brief Тип расстояния
-        typedef typename Impl_seq::distance_type distance_type;
+        typedef DifferenceType<Impl_seq> distance_type;
 
         /// @brief Категория обхода
         typedef typename Impl_seq::traversal_tag traversal_tag;

@@ -39,6 +39,8 @@
 #include <set>
 #include <map>
 
+using ::ural::ValueType;
+
 BOOST_AUTO_TEST_CASE(sequence_for_lvalue_container)
 {
     std::vector<int> const z{11, 11, 22, 33, 55};
@@ -425,7 +427,7 @@ BOOST_AUTO_TEST_CASE(cartesian_product_sequence_is_sorted_test)
     auto digits = ural::make_arithmetic_progression(0, 1) | ural::taken(10);
     auto s2 = ural::make_cartesian_product_sequence(digits, digits);
 
-    std::vector<decltype(s2)::value_type> r2;
+    std::vector<ValueType<decltype(s2)>> r2;
 
     ural::copy(s2, r2 | ural::back_inserter);
 
@@ -526,7 +528,7 @@ BOOST_AUTO_TEST_CASE(filtered_sequence_for_each)
 
     // Цикл вместо алгоритма используется специально, чтобы проверить, что
     // тип ссылки - неконстантная ссылка
-    for(decltype(xs)::value_type & x : s)
+    for(ValueType<decltype(xs)> & x : s)
     {
         r.push_back(x);
     }

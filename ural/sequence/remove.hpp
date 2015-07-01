@@ -59,18 +59,17 @@ namespace ural
         typedef typename Input::reference reference;
 
         /// @brief Тип значения
-        typedef typename Input::value_type value_type;
+        typedef ValueType<Input> value_type;
 
         /// @brief Категория обхода
-        typedef typename std::common_type<typename Input::traversal_tag,
-                                          forward_traversal_tag>::type
+        typedef CommonType<typename Input::traversal_tag, forward_traversal_tag>
             traversal_tag;
 
         /// @brief Тип указателя
         typedef typename Input::pointer pointer;
 
         /// @brief Тип расстояния
-        typedef typename Input::distance_type distance_type;
+        typedef DifferenceType<Input> distance_type;
 
         // Конструкторы
         /** @brief Конструктор
@@ -227,18 +226,17 @@ namespace ural
         typedef typename Input::reference reference;
 
         /// @brief Тип значения
-        typedef typename Input::value_type value_type;
+        typedef ValueType<Input> value_type;
 
         /// @brief Категория обхода
-        typedef typename std::common_type<typename Input::traversal_tag,
-                                          forward_traversal_tag>::type
+        typedef CommonType<typename Input::traversal_tag, forward_traversal_tag>
             traversal_tag;
 
         /// @brief Тип указателя
         typedef typename Input::pointer pointer;
 
         /// @brief Тип расстояния
-        typedef typename Input::distance_type distance_type;
+        typedef DifferenceType<Input> distance_type;
 
         // Конструкторы
         /** @brief Конструктор

@@ -379,7 +379,7 @@ namespace ural
 
     public:
         /// @brief Тип объектов, создаваемых данным распределителем
-        typedef typename std::allocator_traits<Base>::value_type value_type;
+        typedef ValueType<std::allocator_traits<Base>> value_type;
 
         /// @brief Тип для представления размера
         typedef typename std::allocator_traits<Base>::size_type size_type;

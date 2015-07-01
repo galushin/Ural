@@ -49,7 +49,7 @@ namespace ural
         typedef single_pass_traversal_tag traversal_tag;
 
         /// @brief Тип значения
-        typedef tuple<typename Inputs::value_type...> value_type;
+        typedef tuple<ValueType<Inputs>...> value_type;
 
         /** @brief Тип указателя
         У кортежей нет именованных функций-членов, поэтому предоставление
@@ -59,8 +59,7 @@ namespace ural
         typedef void pointer;
 
         /// @brief Тип расстояния
-        typedef typename std::common_type<typename Inputs::distance_type...>::type
-            distance_type;
+        typedef CommonType<DifferenceType<Inputs>...> distance_type;
 
         // Конструкторы
         /** @brief Конструктор

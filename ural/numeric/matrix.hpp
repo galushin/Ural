@@ -154,7 +154,7 @@ namespace ural
         typedef typename Matrix::size_type size_type;
 
         /// @brief Тип значений
-        typedef typename Matrix::value_type value_type;
+        typedef ValueType<Matrix> value_type;
 
         /// @brief Тип ссылки
         typedef typename Matrix::const_reference const_reference;
@@ -320,7 +320,7 @@ namespace ural
     {
         assert(eps > 0.0);
 
-        typedef typename Matrix::value_type Element;
+        typedef ValueType<Matrix> Element;
 
         for(size_t i = 0; i != S.size1(); ++ i)
         {

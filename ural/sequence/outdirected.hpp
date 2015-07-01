@@ -41,7 +41,7 @@ namespace ural
         decl_distance_type(void *);
 
         template <class U>
-        static typename U::distance_type
+        static DifferenceType<U>
         decl_distance_type(declare_type<Sequence> *);
 
     public:

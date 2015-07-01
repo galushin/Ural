@@ -40,8 +40,8 @@
 
 namespace ural
 {
-    template <class T, class U>
-    using CommonType = typename std::common_type<T, U>::type;
+    template <class... Types>
+    using CommonType = typename std::common_type<Types...>::type;
 
     /** @brief Класс-характеристика для определения типа элемента или
     указываемого объекта

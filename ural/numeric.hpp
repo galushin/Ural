@@ -243,8 +243,8 @@ namespace ural
         typedef forward_traversal_tag traversal_tag;
 
         /// @brief Тип расстояния
-        typedef typename std::common_type<typename RASequence1::distance_type,
-                                          typename RASequence2::distance_type>::type distance_type;
+        typedef CommonType<DifferenceType<RASequence1>,
+                           DifferenceType<RASequence2>> distance_type;
 
         /// @brief Тип значения
         typedef decltype(*std::declval<RASequence1>() * *std::declval<RASequence2>())
