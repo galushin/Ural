@@ -1316,7 +1316,8 @@ namespace details
 
             this->impl(seq.traversed_front(), ural::shrink_front(seq));
 
-            ural::advance(seq_old, seq.size());
+            // @todo оптимизация
+            ural::advance(seq_old, ural::size(seq));
             return seq_old;
         }
     };
@@ -1356,14 +1357,11 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Output>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<Forward, Output>));
 
-            auto const n = ural::size(in);
-            auto in_orig = ural::next(in.original(), n);
-
             auto in_1 = in.traversed_front();
             auto r1 = copy_fn{}(std::move(in), std::move(out));
             auto r2 = copy_fn{}(std::move(in_1), std::move(r1[ural::_2]));
 
-            return ural::tuple<Forward, Output>{std::move(in_orig),
+            return ural::tuple<Forward, Output>{std::move(r1[ural::_1]),
                                                 std::move(r2[ural::_2])};
         }
     };

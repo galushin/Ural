@@ -1479,6 +1479,24 @@ BOOST_AUTO_TEST_CASE(reverse_copy_test)
 }
 
 // 25.3.11 Вращение
+BOOST_AUTO_TEST_CASE(rotate_test_minimalistic)
+{
+    std::forward_list<int> const v{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+    for(auto i : ural::numbers(0, std::distance(v.begin(), v.end())))
+    {
+        auto v_std = v;
+        auto v_ural = v;
+
+        std::rotate(v_std.begin(), std::next(v_std.begin(), i), v_std.end());
+
+        ural::rotate(ural::next(ural::sequence(v_ural), i));
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
+                                      v_ural.begin(), v_ural.end());
+    }
+}
+
 BOOST_AUTO_TEST_CASE(rotate_test)
 {
     std::vector<int> const v{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -1490,10 +1508,12 @@ BOOST_AUTO_TEST_CASE(rotate_test)
 
         std::rotate(v_std.begin(), v_std.begin() + i, v_std.end());
 
-        auto s = ural::sequence(v_ural);
-        s += i;
+        auto r_ural = ural::rotate(ural::sequence(v_ural) + i);
 
-        auto r_ural = ural::rotate(s);
+        BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
+                                      v_ural.begin(), v_ural.end());
+
+        BOOST_CHECK(r_ural.original() == ural::sequence(v_ural));
 
         if(i == 0)
         {
@@ -1546,26 +1566,52 @@ BOOST_AUTO_TEST_CASE(rotate_copy_return_test)
 
     for(auto i : ural::indices_of(src))
     {
-        std::vector<int> d_std(src.size() + 5);
-        std::vector<int> d_ural(src.size() + 5);
+        // Подготовка
+        std::vector<int> d_std(src.size() + 5, -1);
+        std::vector<int> d_ural(src.size() + 5, -1);
 
+        // Выполнение операций
         std::rotate_copy(src.begin(), src.begin() + i, src.end(), d_std.begin());
 
-        auto s = ural::sequence(src);
-        s += i;
+        auto r_ural = ural::rotate_copy(ural::sequence(src) + i, d_ural);
 
-        auto r_ural = ural::rotate_copy(s, d_ural);
+        // Проверки
+        BOOST_CHECK(r_ural[ural::_1].original() == ural::sequence(src));
+        BOOST_CHECK(r_ural[ural::_1].traversed_front() == ural::sequence(src));
 
+        BOOST_CHECK(r_ural[ural::_2].original() == ural::sequence(d_ural));
         BOOST_CHECK_EQUAL(ural::to_signed(src.size()),
                           r_ural[ural::_2].traversed_front().size());
         BOOST_CHECK_EQUAL(ural::to_signed(d_ural.size() - src.size()),
                           r_ural[ural::_2].size());
 
-        BOOST_CHECK_EQUAL(s.size(), r_ural[ural::_1].traversed_front().size());
-        BOOST_CHECK_EQUAL(s.traversed_front().size(), r_ural[ural::_1].size());
-
         BOOST_CHECK_EQUAL_COLLECTIONS(d_std.begin(), d_std.end(),
                                       d_ural.begin(), d_ural.end());
+    }
+}
+
+BOOST_AUTO_TEST_CASE(rotate_copy_to_shorter)
+{
+    std::vector<int> const src{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+    for(auto i : ural::indices_of(src))
+    {
+        // Подготовка
+        std::vector<int> d_std;
+        std::vector<int> d_ural(src.size() / 2);
+
+        // Выполнение операций
+        std::rotate_copy(src.begin(), src.begin() + i, src.end(),
+                         std::back_inserter(d_std));
+
+        ural::rotate_copy(ural::sequence(src) + i, d_ural);
+
+        auto z = d_ural;
+        ural::copy(d_std, z);
+
+        // Проверки
+        BOOST_CHECK_EQUAL_COLLECTIONS(d_ural.begin(), d_ural.end(),
+                                      z.begin(), z.end());
     }
 }
 
@@ -1618,12 +1664,13 @@ BOOST_AUTO_TEST_CASE(random_shuffle_test)
 BOOST_AUTO_TEST_CASE(is_partitioned_test)
 {
     std::vector<int> v = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    ural_test::istringstream_helper<int> v_ural(v.begin(), v.end());
 
     auto is_even = [](int i){ return i % 2 == 0; };
 
     BOOST_CHECK_EQUAL(std::is_partitioned(v.begin(), v.end(), is_even),
                       ural::is_partitioned(v, is_even));
-    BOOST_CHECK_EQUAL(false, ural::is_partitioned(v, is_even));
+    BOOST_CHECK_EQUAL(false, ural::is_partitioned(v_ural, is_even));
 
     std::partition(v.begin(), v.end(), is_even);
 
