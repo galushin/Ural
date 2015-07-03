@@ -1478,6 +1478,35 @@ BOOST_AUTO_TEST_CASE(reverse_copy_test)
                                   r_ural.begin(), r_ural.end());
 }
 
+BOOST_AUTO_TEST_CASE(reverse_copy_test_to_longer)
+{
+    // Исходные данные
+    std::vector<int> const src = {1, 2, 3, 4, 5, 6};
+
+    // std
+    std::vector<int> r_std(src.size() + 5, -1);
+    auto const result_std = std::reverse_copy(src.begin(), src.end(), r_std.begin());
+
+    // ural
+    std::vector<int> r_ural(src.size() + 5, -1);
+    auto const result_ural = ural::reverse_copy(src, r_ural);
+
+    // Проверка
+    assert(r_ural.size() > src.size());
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
+                                  r_ural.begin(), r_ural.end());
+
+    BOOST_CHECK(result_ural[ural::_1].original() == ural::sequence(src));
+    BOOST_CHECK(result_ural[ural::_1].traversed_back() == ural::sequence(src));
+
+    BOOST_CHECK(result_ural[ural::_2].original() == ural::sequence(r_ural));
+    BOOST_CHECK(!result_ural[ural::_2].traversed_back());
+    BOOST_CHECK(result_ural[ural::_2].begin() ==
+                r_ural.begin() + (result_std - r_std.begin()));
+    BOOST_CHECK(result_ural[ural::_2].begin() ==
+                r_ural.begin() + src.size());
+}
+
 // 25.3.11 Вращение
 BOOST_AUTO_TEST_CASE(rotate_test_minimalistic)
 {
