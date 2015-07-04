@@ -1332,11 +1332,78 @@ BOOST_AUTO_TEST_CASE(remove_copy_if_test)
                         std::back_inserter(s_std), pred);
 
     // ural
+    std::istringstream src_ural(source);
     std::string s_ural;
-    ural::remove_copy_if(source, s_ural | ural::back_inserter, pred);
+    ural::remove_copy_if(src_ural, s_ural | ural::back_inserter, pred);
 
     // Проверка
     BOOST_CHECK_EQUAL(s_std, s_ural);
+}
+
+BOOST_AUTO_TEST_CASE(remove_copy_if_to_longer_test)
+{
+    // Подготовка
+    std::string const src = "Text\n with\tsome \t  whitespaces\n\n";
+    auto pred = [](char x){return std::isspace(x);};
+
+    // std
+    std::string s_std(src.size() + 1, 'Z');
+    auto const r_std = std::remove_copy_if(src.begin(), src.end(),
+                                           s_std.begin(), pred);
+
+    // ural
+    std::string s_ural(src.size() + 1, 'Z');
+    auto const r_ural = ural::remove_copy_if(src, s_ural, pred);
+
+    // Проверка
+    BOOST_CHECK_EQUAL(s_std, s_ural);
+
+    assert(src.size() < s_ural.size());
+
+    BOOST_CHECK(r_ural[ural::_1].original() == ural::sequence(src));
+    BOOST_CHECK(r_ural[ural::_1].traversed_front() == ural::sequence(src));
+    BOOST_CHECK(!r_ural[ural::_1]);
+    BOOST_CHECK(!r_ural[ural::_1].traversed_back());
+
+    BOOST_CHECK_EQUAL(r_ural[ural::_2].begin() - s_ural.begin(),
+                      r_std - s_std.begin());
+
+    BOOST_CHECK(r_ural[ural::_2].original() == ural::sequence(s_ural));
+    BOOST_CHECK(!!r_ural[ural::_2]);
+    BOOST_CHECK(!r_ural[ural::_2].traversed_back());
+}
+
+BOOST_AUTO_TEST_CASE(remove_copy_if_to_shorter_test)
+{
+    // Подготовка
+    std::string const src = "Text\n with\tsome \t  whitespaces\n\n";
+    auto pred = [](char x){return std::isspace(x);};
+
+    // std
+    std::string s_std;
+    std::remove_copy_if(src.begin(), src.end(),
+                        std::back_inserter(s_std), pred);
+
+    // ural
+    std::string s_ural(src.size() / 2, 'Z');
+    auto const r_ural = ural::remove_copy_if(src, s_ural, pred);
+
+    // Проверка
+    auto const n_removed = ural::count_if(r_ural[ural::_1].traversed_front(), pred);
+
+    assert(src.size() > s_ural.size());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(s_ural.begin(), s_ural.end(),
+                                  s_std.begin(),  s_std.begin() + s_ural.size());
+
+    BOOST_CHECK(r_ural[ural::_1].original() == ural::sequence(src));
+    BOOST_CHECK(!!r_ural[ural::_1]);
+    BOOST_CHECK(r_ural[ural::_1].begin() == src.begin() + s_ural.size() + n_removed);
+    BOOST_CHECK(!r_ural[ural::_1].traversed_back());
+
+    BOOST_CHECK(r_ural[ural::_2].original() == ural::sequence(s_ural));
+    BOOST_CHECK(!r_ural[ural::_2]);
+    BOOST_CHECK(!r_ural[ural::_2].traversed_back());
 }
 
 // 25.3.9 Удаление повторов
