@@ -1291,7 +1291,26 @@ BOOST_AUTO_TEST_CASE(remove_erase_test)
     BOOST_CHECK_EQUAL(s_std, s_ural);
 }
 
-BOOST_AUTO_TEST_CASE(inplace_remove_if_test)
+BOOST_AUTO_TEST_CASE(remove_if_test_minimalistic)
+{
+    // Подготовка
+    std::string const source = "Text\n with\tsome \t  whitespaces\n\n";
+
+    std::forward_list<char> s_std(source.begin(), source.end());
+    auto s_ural = s_std;
+
+    auto const pred = [](char x){return std::isspace(x);};
+
+    // Выполнение операций
+    std::remove_if(s_std.begin(), s_std.end(), pred);
+    ural::remove_if(s_ural, pred);
+
+    //Проверка
+    BOOST_CHECK_EQUAL_COLLECTIONS(s_ural.begin(), s_ural.end(),
+                                  s_std.begin(), s_std.end());
+}
+
+BOOST_AUTO_TEST_CASE(remove_if_test)
 {
     std::string s_std = "Text\n with\tsome \t  whitespaces\n\n";
     auto s_ural = s_std;
@@ -1301,6 +1320,10 @@ BOOST_AUTO_TEST_CASE(inplace_remove_if_test)
     s_std.erase(std::remove_if(s_std.begin(), s_std.end(), pred), s_std.end());
 
     auto s = ural::remove_if(s_ural, pred);
+
+    BOOST_CHECK(s.original() == ural::sequence(s_ural));
+    BOOST_CHECK(!s.traversed_back());
+
     ural::erase(s_ural, s);
 
     BOOST_CHECK_EQUAL(s_std, s_ural);
