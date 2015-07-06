@@ -1270,11 +1270,81 @@ BOOST_AUTO_TEST_CASE(remove_copy_test)
                      std::back_inserter(s_std), to_remove);
 
     // ural
+    ural_test::istringstream_helper<char> src_ural(source.begin(), source.end());
     std::string s_ural;
-    ural::remove_copy(source, s_ural | ural::back_inserter, to_remove);
+    ural::remove_copy(src_ural, s_ural | ural::back_inserter, to_remove);
 
     // Сравнение
     BOOST_CHECK_EQUAL(s_std, s_ural);
+}
+
+BOOST_AUTO_TEST_CASE(remove_copy_test_to_longer)
+{
+    // Подготовка
+    auto const source = std::string("Text with some   spaces");
+    auto const to_remove = ' ';
+
+    std::string s_std(source.size() + 7, 'Z');
+    auto s_ural = s_std;
+
+    // std
+    auto r_std = std::remove_copy(source.begin(), source.end(),
+                                  s_std.begin(), to_remove);
+
+    // ural
+    auto r_ural = ural::remove_copy(source, s_ural, to_remove);
+
+    // Сравнение
+    assert(source.size() < s_std.size());
+    assert(source.size() < s_ural.size());
+
+    BOOST_CHECK_EQUAL(s_std, s_ural);
+
+    BOOST_CHECK(r_ural[ural::_1].original() == ural::sequence(source));
+    BOOST_CHECK(r_ural[ural::_1].traversed_front() == ural::sequence(source));
+
+    BOOST_CHECK(r_ural[ural::_2].original() == ural::sequence(s_ural));
+    BOOST_CHECK(!r_ural[ural::_2].traversed_back());
+
+    BOOST_CHECK_EQUAL(r_ural[ural::_2].begin() - s_ural.begin(),
+                      r_std - s_std.begin());
+}
+
+BOOST_AUTO_TEST_CASE(remove_copy_test_to_shorter)
+{
+    // Подготовка
+    auto const source = std::string("Text with some   spaces");
+    auto const to_remove = ' ';
+
+    size_t const n = std::count(source.begin(), source.end(), to_remove);
+    BOOST_CHECK_LE(n, source.size());
+
+    // std
+    std::string s_std;
+    std::remove_copy(source.begin(), source.end(),
+                     std::back_inserter(s_std), to_remove);
+
+    // ural
+    std::string s_ural((source.size() - n)/2, 'Z');
+    auto r_ural = ural::remove_copy(source, s_ural, to_remove);
+
+    // Сравнение
+    auto const n_removed = ural::count(r_ural[ural::_1].traversed_front(), to_remove);
+
+    assert(source.size() > s_std.size());
+    assert(source.size() > s_ural.size());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(s_ural.begin(), s_ural.end(),
+                                  s_std.begin(),  s_std.begin() + s_ural.size());
+
+    BOOST_CHECK(r_ural[ural::_1].original() == ural::sequence(source));
+    BOOST_CHECK(!!r_ural[ural::_1]);
+    BOOST_CHECK(r_ural[ural::_1].begin() == source.begin() + s_ural.size() + n_removed);
+    BOOST_CHECK(!r_ural[ural::_1].traversed_back());
+
+    BOOST_CHECK(r_ural[ural::_2].original() == ural::sequence(s_ural));
+    BOOST_CHECK(!r_ural[ural::_2]);
+    BOOST_CHECK(!r_ural[ural::_2].traversed_back());
 }
 
 BOOST_AUTO_TEST_CASE(remove_erase_test)
