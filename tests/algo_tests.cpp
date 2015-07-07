@@ -1237,22 +1237,58 @@ BOOST_AUTO_TEST_CASE(generate_n_terse_test)
 }
 
 // 25.3.8 Удаление
+BOOST_AUTO_TEST_CASE(remove_test_minimalistic)
+{
+    // Подготовка
+    std::string const source = "Text with some   spaces";
+
+    std::forward_list<char> v_std(source.begin(), source.end());
+    auto v_ural = v_std;
+
+    auto const to_remove = ' ';
+
+    // Алгоритм
+    auto r_std = std::remove(v_std.begin(), v_std.end(), to_remove);
+
+    auto r_ural = ural::remove(v_ural, to_remove);
+
+    // Проверки
+    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
+                                  v_ural.begin(), v_ural.end());
+
+    BOOST_CHECK(r_ural.original() == ural::sequence(v_ural));
+    BOOST_CHECK(!r_ural.traversed_back());
+
+    BOOST_CHECK_EQUAL(ural::size(r_ural.traversed_front()),
+                      std::distance(v_std.begin(), r_std));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(r_ural.traversed_begin(), r_ural.begin(),
+                                  v_std.begin(), r_std);
+}
+
 BOOST_AUTO_TEST_CASE(remove_test)
 {
+    // Подготовка
     std::string s_std = "Text with some   spaces";
     auto s_ural = s_std;
 
     auto const to_remove = ' ';
 
+    auto const n = std::count(s_std.begin(), s_std.end(), to_remove);
+
+    // Алгоритм
     auto r_std = std::remove(s_std.begin(), s_std.end(), to_remove);
 
     auto r_ural = ural::remove(s_ural, to_remove);
 
+    // Проверки
     BOOST_CHECK_EQUAL(s_std, s_ural);
 
+    BOOST_CHECK(r_ural.original() == ural::sequence(s_ural));
+    BOOST_CHECK(!r_ural.traversed_back());
+
     BOOST_CHECK_EQUAL(r_ural.begin() - s_ural.begin(), r_std - s_std.begin());
-    BOOST_CHECK_EQUAL(r_ural.traversed_begin() - s_ural.begin(), 0);
-    BOOST_CHECK_EQUAL(ural::to_unsigned(r_ural.end() - s_ural.begin()), s_ural.size());
+    BOOST_CHECK_EQUAL(r_ural.size(), n);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(r_ural.traversed_begin(), r_ural.begin(),
                                   s_std.begin(), r_std);
