@@ -1236,6 +1236,58 @@ BOOST_AUTO_TEST_CASE(generate_n_terse_test)
                                   r_ural.begin(), r_ural.end());
 }
 
+BOOST_AUTO_TEST_CASE(generate_n_return_value_negative_count_test)
+{
+    // Подготовка
+    auto const n = int{-5};
+
+    std::vector<int> v_ural(n + 5, -1);
+    auto const v_ural_old = v_ural;
+
+    auto counter = int{0};
+    auto gen = [&]{ return counter++; };
+
+    // ural
+    auto r_ural = ural::generate_n(v_ural, n, gen);
+
+    // Проверка
+    assert(n < 0);
+
+    BOOST_CHECK(r_ural == ural::sequence(v_ural));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(v_ural.begin(), v_ural.end(),
+                                  v_ural_old.begin(), v_ural_old.end());
+}
+
+BOOST_AUTO_TEST_CASE(generate_n_return_value_test)
+{
+    // Подготовка
+    auto const n = int{5};
+
+    std::vector<int> v_std(n + 5, -1);
+    auto v_ural = v_std;
+
+    // std
+    auto counter = int{0};
+    auto gen = [&]{ return counter++; };
+    auto const r_std = std::generate_n(v_std.begin(), n, gen);
+
+    // ural
+    counter = 0;
+    auto const r_ural = ural::generate_n(v_ural, n, gen);
+
+    // Проверка
+    BOOST_CHECK(r_ural.original() == ural::sequence(v_ural));
+    BOOST_CHECK_EQUAL(r_ural.traversed_front().size(), n);
+    BOOST_CHECK(!r_ural.traversed_back());
+
+    BOOST_CHECK_EQUAL(v_ural.end() - r_ural.begin(),
+                      v_std.end() - r_std);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
+                                  v_ural.begin(), v_ural.end());
+}
+
 // 25.3.8 Удаление
 BOOST_AUTO_TEST_CASE(remove_test_minimalistic)
 {
