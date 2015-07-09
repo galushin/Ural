@@ -1211,8 +1211,53 @@ BOOST_AUTO_TEST_CASE(fill_n_test)
     BOOST_CHECK(r_ural.traversed_front().begin() == v_ural.begin());
 }
 
-// 25.3.7 Порождение
-// @todo тест generate
+// 25.3.7 Порождениеs
+BOOST_AUTO_TEST_CASE(generate_test)
+{
+    // Подготовка
+    auto const n = int{5};
+
+    std::forward_list<int> v_std(n, -1);
+    auto v_ural = v_std;
+
+    // std
+    auto counter = int{0};
+    auto gen = [&]{ return counter++; };
+    std::generate(v_std.begin(), v_std.end(), gen);
+
+    // ural
+    counter = 0;
+    ural::generate(v_ural, gen);
+
+    // Проверки
+    BOOST_CHECK_EQUAL_COLLECTIONS(v_ural.begin(), v_ural.end(),
+                                  v_std.begin(), v_std.end());
+}
+
+BOOST_AUTO_TEST_CASE(generate_test_return_value)
+{
+    // Подготовка
+    auto const n = int{5};
+
+    std::vector<int> v_std(n, -1);
+    auto v_ural = v_std;
+
+    // std
+    auto counter = int{0};
+    auto gen = [&]{ return counter++; };
+    std::generate(v_std.begin(), v_std.end(), gen);
+
+    // ural
+    counter = 0;
+    auto const r_ural = ural::generate(v_ural, gen);
+
+    // Проверки
+    BOOST_CHECK_EQUAL_COLLECTIONS(v_ural.begin(), v_ural.end(),
+                                  v_std.begin(), v_std.end());
+
+    BOOST_CHECK(r_ural.original() == ural::sequence(v_ural));
+    BOOST_CHECK(r_ural.traversed_front() == ural::sequence(v_ural));
+}
 
 BOOST_AUTO_TEST_CASE(generate_n_terse_test)
 {

@@ -971,7 +971,7 @@ BOOST_AUTO_TEST_CASE(fill_n_test_via_sequence_and_copy)
                                   v_ural.begin(), v_ural.end());
 }
 
-BOOST_AUTO_TEST_CASE(generate_test)
+BOOST_AUTO_TEST_CASE(generate_sequence_test)
 {
     std::vector<int> r_std(5);
     auto r_ural = r_std;
