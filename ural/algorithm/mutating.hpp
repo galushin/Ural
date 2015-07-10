@@ -132,6 +132,12 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<SequenceType<Input>,
                                                                SequenceType<Output>>));
 
+            if(n < 0)
+            {
+                return ural::make_tuple(::ural::sequence_fwd<Input>(in),
+                                        ::ural::sequence_fwd<Output>(out));
+            }
+
             auto in_n = ::ural::sequence_fwd<Input>(in) | ural::taken(n);
 
             auto result = ::ural::copy_fn{}(std::move(in_n),

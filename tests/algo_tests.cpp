@@ -1176,19 +1176,38 @@ BOOST_AUTO_TEST_CASE(replace_copy_if_test)
 // 25.3.6 Заполнение
 BOOST_AUTO_TEST_CASE(fill_test)
 {
-    std::vector<int> x_std = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    std::forward_list<int> x_std = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
     auto x_ural = x_std;
 
     auto const value = -1;
-    std::vector<int> const z(x_std.size(), value);
+    std::forward_list<int> const z(std::distance(x_std.begin(), x_std.end()),
+                                   value);
 
     std::fill(x_std.begin(), x_std.end(), value);
-    ural::fill(x_ural, value);
+    auto const r_ural = ural::fill(x_ural, value);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
                                   x_ural.begin(), x_ural.end());
     BOOST_CHECK_EQUAL_COLLECTIONS(x_ural.begin(), x_ural.end(),
                                   z.begin(), z.end());
+
+    BOOST_CHECK(r_ural.original() == ural::sequence(x_ural));
+    BOOST_CHECK(r_ural.traversed_front() == ural::sequence(x_ural));
+}
+
+BOOST_AUTO_TEST_CASE(fill_n_test_minimalistic)
+{
+    std::forward_list<int> v_std{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    auto v_ural = v_std;
+
+    auto const n = std::distance(v_std.begin(), v_std.end()) / 2;
+    auto const value = -1;
+
+    std::fill_n(v_std.begin(), n, value);
+    ural::fill_n(v_ural, n, value);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
+                                  v_ural.begin(), v_ural.end());
 }
 
 BOOST_AUTO_TEST_CASE(fill_n_test)
@@ -1196,7 +1215,7 @@ BOOST_AUTO_TEST_CASE(fill_n_test)
     std::vector<int> v_std{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     auto v_ural = v_std;
 
-    auto const n = v_std.size() / 2;
+    auto const n = std::distance(v_std.begin(), v_std.end()) / 2;
     auto const value = -1;
 
     auto const r_std = std::fill_n(v_std.begin(), n, value);
@@ -1207,8 +1226,25 @@ BOOST_AUTO_TEST_CASE(fill_n_test)
                                   v_ural.begin(), v_ural.end());
 
     BOOST_CHECK_EQUAL(r_ural.begin() - v_ural.begin(), r_std - v_std.begin());
+    BOOST_CHECK_EQUAL(r_ural.begin() - v_ural.begin(), n);
     BOOST_CHECK(r_ural.end() == v_ural.end());
     BOOST_CHECK(r_ural.traversed_front().begin() == v_ural.begin());
+}
+
+BOOST_AUTO_TEST_CASE(fill_n_test_negative_n)
+{
+    std::forward_list<int> v_std{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    auto v_ural = v_std;
+
+    auto const n = -5;
+    auto const value = -1;
+
+    auto const r_ural = ural::fill_n(v_ural, n, value);
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
+                                  v_ural.begin(), v_ural.end());
+
+    BOOST_CHECK(r_ural == ural::sequence(v_ural));
 }
 
 // 25.3.7 Порождениеs
