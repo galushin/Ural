@@ -59,7 +59,7 @@ namespace ural
         @post <tt> this->operation() == add </tt>
         */
         explicit adjacent_differences_sequence(Input in, BinaryOperation op)
-         : members_{std::move(in), std::move(op), {}, {}}
+         : members_(std::move(in), std::move(op), {}, {})
         {
             if(!!*this)
             {
@@ -95,11 +95,24 @@ namespace ural
             }
         }
 
-        Input const & base() const
+        //@{
+        /** @brief Исходная последовательность
+        @return Текущее состояние входной последовательности
+        */
+        Input const & base() const &
         {
             return members_[ural::_1];
         }
 
+        Input && base() &&
+        {
+            return ::ural::get(std::move(this->members_), ural::_1);
+        }
+        //@}
+
+        /** @brief Операция, используемая для вычисления разности
+        @return Операция, используемая для вычисления разности
+        */
         BinaryOperation const & operation() const
         {
             return members_[ural::_2];
