@@ -980,8 +980,7 @@ BOOST_AUTO_TEST_CASE(transform_test_return_value)
     BOOST_CHECK(!result[ural::_2]);
 }
 
-// @todo тесты возвращаемых значений transform
-BOOST_AUTO_TEST_CASE(transform_2_test_shorter_in1)
+BOOST_AUTO_TEST_CASE(transform_2_test_shorter_in1_minimal)
 {
     std::vector<int> const src1 = {1, 20, 30, 40};
     std::vector<int> const src2 = {10, 2, 30, 4, 5};
@@ -1006,6 +1005,42 @@ BOOST_AUTO_TEST_CASE(transform_2_test_shorter_in1)
                                   z_ural.begin(), z_ural.end());
 }
 
+BOOST_AUTO_TEST_CASE(transform_2_test_shorter_in1)
+{
+    std::vector<int> const src1 = {1, 20, 30, 40};
+    std::vector<int> const src2 = {10, 2, 30, 4, 5};
+
+    BOOST_CHECK_LE(src1.size(), src2.size());
+
+    std::vector<bool> z_std(src2.size() + src1.size() + 1, -1);
+    auto z_ural = z_std;
+
+    std::less_equal<int> constexpr f_std{};
+    ural::less_equal<> constexpr f_ural{};
+
+    // Выполнение алгоритмов
+    auto const r_std = std::transform(src1.begin(), src1.end(), src2.begin(),
+                                      z_std.begin(), f_std);
+
+    auto const r_ural = ural::transform(src1, src2, z_ural, f_ural);
+
+    // Проверки
+    BOOST_CHECK_EQUAL_COLLECTIONS(z_std.begin(), z_std.end(),
+                                  z_ural.begin(), z_ural.end());
+
+    BOOST_CHECK(r_ural[ural::_1].original() == ural::sequence(src1));
+    BOOST_CHECK(r_ural[ural::_1].traversed_front() == ural::sequence(src1));
+
+    BOOST_CHECK(r_ural[ural::_2].original() == ural::sequence(src2));
+    BOOST_CHECK(r_ural[ural::_2].begin() == src2.begin() + src1.size());
+    BOOST_CHECK(!r_ural[ural::_2].traversed_back());
+
+    BOOST_CHECK(r_ural[ural::_3].original() == ural::sequence(z_ural));
+    BOOST_CHECK(r_ural[ural::_3].begin()
+                == z_ural.begin() + (r_std - z_std.begin()));
+    BOOST_CHECK(!r_ural[ural::_3].traversed_back());
+}
+
 BOOST_AUTO_TEST_CASE(transform_2_test_shorter_in2)
 {
     std::vector<int> const src1 = {1, 20, 30, 40, 50};
@@ -1013,24 +1048,33 @@ BOOST_AUTO_TEST_CASE(transform_2_test_shorter_in2)
 
     BOOST_CHECK_GE(src1.size(), src2.size());
 
-    ural_test::istringstream_helper<int> x1(src1.begin(), src1.end());
-    ural_test::istringstream_helper<int> x2(src2.begin(), src2.end());
-
-    std::vector<bool> z_std;
-    std::vector<bool> z_ural;
+    std::vector<bool> z_std(src2.size() + src1.size() + 1, -1);
+    auto z_ural = z_std;
 
     std::less_equal<int> constexpr f_std{};
     ural::less_equal<> constexpr f_ural{};
 
     // std ограничивает по первой последовательности
-    std::transform(src1.begin(), std::next(src1.begin(), src2.size()),
-                   src2.begin(),
-                   std::back_inserter(z_std), f_std);
+    auto const r_std = std::transform(src1.begin(),
+                                      std::next(src1.begin(), src2.size()),
+                                      src2.begin(), z_std.begin(), f_std);
 
-    ural::transform(x1, x2, std::back_inserter(z_ural), f_ural);
+    auto const r_ural = ural::transform(src1, src2, z_ural, f_ural);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(z_std.begin(), z_std.end(),
                                   z_ural.begin(), z_ural.end());
+
+    BOOST_CHECK(r_ural[ural::_1].original() == ural::sequence(src1));
+    BOOST_CHECK(r_ural[ural::_1].begin() == src1.begin() + src2.size());
+    BOOST_CHECK(!r_ural[ural::_1].traversed_back());
+
+    BOOST_CHECK(r_ural[ural::_2].original() == ural::sequence(src2));
+    BOOST_CHECK(r_ural[ural::_2].traversed_front() == ural::sequence(src2));
+
+    BOOST_CHECK(r_ural[ural::_3].original() == ural::sequence(z_ural));
+    BOOST_CHECK(r_ural[ural::_3].begin()
+                == z_ural.begin() + (r_std - z_std.begin()));
+    BOOST_CHECK(!r_ural[ural::_3].traversed_back());
 }
 
 BOOST_AUTO_TEST_CASE(transform_2_test_shorter_out)
@@ -1039,9 +1083,6 @@ BOOST_AUTO_TEST_CASE(transform_2_test_shorter_out)
     std::vector<int> const src2 = {10, 2, 30, 4, 5};
 
     BOOST_CHECK_LE(src1.size(), src2.size());
-
-    ural_test::istringstream_helper<int> x1(src1.begin(), src1.end());
-    ural_test::istringstream_helper<int> x2(src2.begin(), src2.end());
 
     std::vector<int> z_std;
     std::vector<int> z_ural(std::min(src1.size(), src2.size()) - 1, -1);
@@ -1052,10 +1093,21 @@ BOOST_AUTO_TEST_CASE(transform_2_test_shorter_out)
     std::transform(src1.begin(), src1.end(), src2.begin(),
                    std::back_inserter(z_std), f_std);
 
-    ural::transform(x1, x2, z_ural, f_ural);
+    auto const r_ural = ural::transform(src1, src2, z_ural, f_ural);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(z_std.begin(), z_std.begin() + z_ural.size(),
                                   z_ural.begin(), z_ural.end());
+
+    BOOST_CHECK(r_ural[ural::_1].original() == ural::sequence(src1));
+    BOOST_CHECK(r_ural[ural::_1].begin() == src1.begin() + z_ural.size());
+    BOOST_CHECK(!r_ural[ural::_1].traversed_back());
+
+    BOOST_CHECK(r_ural[ural::_2].original() == ural::sequence(src2));
+    BOOST_CHECK(r_ural[ural::_2].begin() == src2.begin() + z_ural.size());
+    BOOST_CHECK(!r_ural[ural::_2].traversed_back());
+
+    BOOST_CHECK(r_ural[ural::_3].original() == ural::sequence(z_ural));
+    BOOST_CHECK(r_ural[ural::_3].traversed_front() == ural::sequence(z_ural));
 }
 
 // 25.3.5 Замена
