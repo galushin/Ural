@@ -25,9 +25,10 @@
 */
 
 #include <ural/defs.hpp>
-#include <utility>
-
+#include <ural/concepts.hpp>
 #include <ural/sequence/sequence_iterator.hpp>
+
+#include <utility>
 
 namespace ural
 {
@@ -178,7 +179,7 @@ namespace ural
     */
     template <class Seq, class Base>
     Seq
-    operator+(sequence_base<Seq, Base> const & s, typename Seq::distance_type n)
+    operator+(sequence_base<Seq, Base> const & s, DifferenceType<Seq> n)
     {
         auto result = static_cast<Seq const &>(s);
         result += n;
@@ -187,7 +188,7 @@ namespace ural
 
     template <class Seq, class Base>
     Seq
-    operator+(typename Seq::distance_type n, sequence_base<Seq, Base> const & s)
+    operator+(DifferenceType<Seq> n, sequence_base<Seq, Base> const & s)
     {
         return std::move(s + n);
     }
@@ -212,10 +213,10 @@ namespace ural
     {
     private:
         template <class Sequence>
-        static typename Sequence::distance_type
+        static DifferenceType<Sequence>
         size_impl(Sequence const & s, single_pass_traversal_tag)
         {
-            typename Sequence::distance_type n{0};
+            DifferenceType<Sequence> n{0};
 
             for(auto in = s; !!in; ++ in)
             {
@@ -226,7 +227,7 @@ namespace ural
         }
 
         template <class Sequence>
-        static typename Sequence::distance_type
+        static DifferenceType<Sequence>
         size_impl(Sequence const & s, random_access_traversal_tag)
         {
             return s.size();
@@ -238,7 +239,7 @@ namespace ural
         @return Количество непройденных элементов последовательности
         */
         template <class Sequence>
-        typename Sequence::distance_type
+        DifferenceType<Sequence>
         operator()(Sequence const & s) const
         {
             return this->size_impl(s, ural::make_traversal_tag(s));
@@ -272,14 +273,14 @@ namespace ural
         @param n число шагов
         */
         template <class Sequence>
-        void operator()(Sequence & s, typename Sequence::distance_type n) const
+        void operator()(Sequence & s, DifferenceType<Sequence> n) const
         {
             return this->impl(s, std::move(n), ural::make_traversal_tag(s));
         }
 
     private:
         template <class Sequence>
-        static void impl(Sequence & s, typename Sequence::distance_type n,
+        static void impl(Sequence & s, DifferenceType<Sequence> n,
                          single_pass_traversal_tag)
         {
             for(; n > 0; -- n)
@@ -289,26 +290,34 @@ namespace ural
         }
 
         template <class Sequence>
-        static void impl(Sequence & s, typename Sequence::distance_type n,
+        static void impl(Sequence & s, DifferenceType<Sequence> n,
                          random_access_traversal_tag)
         {
             s += n;
         }
     };
 
-    /** @brief Продвижение копии последовательнисти на заданное количество шагов
-    @param s последовательность
-    @param n количество шагов
-    @return Копия последовательность @c s продвинутая на @c n шагов c помощью
-    <tt> advance </tt>
-    @todo Преобразовать в функциональный объект
+    /** @brief Тип функционального объекта для операции продвижения копии
+    последовательности на заданное число шагов.
     */
-    template <class Sequence>
-    Sequence next(Sequence s, typename Sequence::distance_type n = 1)
+    class next_fn
     {
-        ::ural::advance_fn{}(s, n);
-        return s;
-    }
+    public:
+        /** @brief Продвижение копии последовательнисти на заданное количество
+        шагов
+        @param s последовательность
+        @param n количество шагов
+        @return Копия последовательность @c s продвинутая на @c n шагов c
+        помощью <tt> advance </tt>.
+        */
+        template <class Sequence>
+        Sequence
+        operator()(Sequence s, DifferenceType<Sequence> n = 1) const
+        {
+            ::ural::advance_fn{}(s, n);
+            return s;
+        }
+    };
 
     class exhaust_front_fn
     {
@@ -329,8 +338,13 @@ namespace ural
         */
         constexpr auto const advance = advance_fn{};
 
-        /** @brief Класс функционального объекта, вычисляющий размер
-        массивов/контейнеров и последовательностей
+        /** @brief Функциональный объект для операции продвижения копии
+        последовательности на заданное число шагов.
+        */
+        constexpr auto const next = next_fn{};
+
+        /** @brief Функциональный объект, вычисляющий размер массивов,
+        контейнеров и последовательностей.
         */
         constexpr auto const size = ural::size_fn{};
 

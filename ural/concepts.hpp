@@ -19,13 +19,10 @@
 
 /** @file ural/concepts.hpp
  @brief Классы для проверки концепций
- @todo избавиться от лямбда-функций в требованиях
 */
 
-#include <ural/sequence/make.hpp>
-
+#include <ural/functional/make_callable.hpp>
 #include <ural/type_traits.hpp>
-#include <ural/archetypes.hpp>
 #include <ural/defs.hpp>
 
 #include <boost/concept_check.hpp>
@@ -43,29 +40,70 @@
 
 namespace ural
 {
-    template <class T, class U>
-    using CommonType = typename std::common_type<T, U>::type;
+    template <class... Types>
+    using CommonType = typename std::common_type<Types...>::type;
 
-    /**
-    @todo Покрыть тестами: массивы известной и неизвестной длины,
-    типы c T::element_type
+    /** @brief Класс-характеристика для определения типа элемента или
+    указываемого объекта
+    @tparam T тип
     */
     template <class T, class = void>
     struct value_type
     {};
 
+    /** @brief Специализация для встроенных указателей
+    @tparam T тип указываемого объекта
+    */
     template <class T>
     struct value_type<T*, void>
      : std::enable_if<!std::is_void<T>::value,
                       typename std::remove_cv<T>::type>
     {};
 
+    /** @brief Специализация для встроенных массивов известной длины
+    @tparam T тип элемента
+    @tparam N количество элементов
+    */
+    template <class T, std::size_t N>
+    struct value_type<T[N]>
+     : declare_type<T>
+    {};
+
+    /** @brief Специализация для встроенных массивов неизвестной длины
+    @tparam T тип элемента
+    */
+    template <class T>
+    struct value_type<T[]>
+     : declare_type<T>
+    {};
+
+    /** @brief Специализация для классов, определяющих @c value_type
+    @tparam T тип
+    */
     template <class T>
     struct value_type<T, void_t<typename T::value_type>>
      : std::enable_if<!std::is_void<typename T::value_type>::value,
                       typename T::value_type>
     {};
 
+    /** @brief Специализация для классов, определяющих @c element_type
+    @tparam T тип
+    */
+    template <class T>
+    struct value_type<T, void_t<typename T::element_type>>
+     : std::enable_if<!std::is_void<typename T::element_type>::value,
+                      typename T::element_type>
+    {};
+
+    /** @brief Синоним для типа элементов составного объекта и указываемого
+    объекта (умных) указателей.
+    @details Для типов, имеющих typedef-объявление @c value_type или
+    @c element_type, результатом будет этот тип, если он не совпадает с @b void.
+    Для встроенных указателей результатом будет тип указываемого объекта, если
+    он не совпадает с @b void. Пользователи могут адаптироват свои классы,
+    специализируя класс-характеристику @c value_type.
+    @tparam T тип составного объекта или (умного) указателя
+    */
     template <class T>
     using ValueType = typename value_type<T>::type;
 
@@ -96,14 +134,6 @@ namespace ural
     template <class F, class... Ins>
     using IndirectCallableResultType
         = ResultType<FunctionType<F>, ValueType<Ins>...>;
-
-    template <class S>
-    struct sequence_type
-     : declare_type<decltype(sequence(std::declval<S>()))>
-    {};
-
-    template <class S>
-    using SequenceType = typename sequence_type<S>::type;
 
 /** @namespace concepts
  @brief Концепции --- коллекции требований к типам
@@ -379,172 +409,6 @@ namespace concepts
      , private concepts::Same<T, decltype(std::declval<T&>()++)>
     {};
 
-    /** @brief Концепция однопроходной последовательности
-    @tparam тип последовательности, для которого проверяется концепция
-    */
-    template <class Seq>
-    class SinglePassSequence
-    {
-    public:
-        /// @brief Примеры использования
-        BOOST_CONCEPT_USAGE(SinglePassSequence)
-        {
-            !seq;
-            ++ seq;
-            seq.pop_front();
-            // Постфиксный инкремент требует создания копий
-
-            value_consumer<ural::single_pass_traversal_tag>() = traversal_tag{};
-        }
-    private:
-        static Seq seq;
-        typedef typename Seq::traversal_tag traversal_tag;
-
-        typedef DifferenceType<Seq> difference_type;
-    };
-
-    template <class Seq>
-    struct InputSequence
-    {
-        // @todo Как в Range extensions
-    public:
-        BOOST_CONCEPT_USAGE(InputSequence)
-        {
-            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Seq>));
-            BOOST_CONCEPT_ASSERT((concepts::Readable<Seq>));
-        }
-    };
-
-    template <class Seq, class T>
-    struct OutputSequence
-    {
-    public:
-        BOOST_CONCEPT_USAGE(OutputSequence)
-        {
-            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Seq>));
-            BOOST_CONCEPT_ASSERT((concepts::Writable<Seq, T>));
-        }
-    };
-
-    /** @brief Концепция прямой последовательности
-    @tparam тип последовательности, для которого проверяется концепция
-    @todo Разделить на конечные и бесконечные, в конечные добавить exhaust_front
-    @todo Добавить функцию original
-    */
-    template <class Seq>
-    class ForwardSequence
-     : InputSequence<Seq>
-     , Incrementable<Seq>
-    {
-    public:
-        /// @brief Проверка неявных интерфейсов
-        BOOST_CONCEPT_USAGE(ForwardSequence)
-        {
-            BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<Seq>));
-
-            seq.shrink_front();
-            seq.traversed_front();
-
-            // @todo Проверить, что тип traversed_front совпадает с Seq или
-            // tf - прямая последовательность
-
-            static_assert(std::is_same<decltype(seq.front()), decltype(*seq)>::value, "");
-        }
-
-    private:
-        static Seq seq;
-    };
-
-    /** @brief Концепция двустороннней последовательности
-    @tparam тип последовательности, для которого проверяется концепция
-    */
-    template <class Seq>
-    class BidirectionalSequence
-     : ForwardSequence<Seq>
-    {
-    public:
-        /// @brief Проверка неявных интерфейсов
-        BOOST_CONCEPT_USAGE(BidirectionalSequence)
-        {
-            seq.pop_back();
-            value_consumer<reference>() = seq.back();
-            seq.shrink_back();
-            seq.traversed_back();
-
-            // @todo Проверить, что traversed_back либо BidirectionalSequence,
-            // либо совпадает с Seq
-
-            seq.exhaust_back();
-        }
-
-    private:
-        typedef typename Seq::reference reference;
-        static Seq seq;
-    };
-
-    /** @brief Концепция последовательности произвольного доступа
-    @tparam Seq тип последовательности, для которого проверяется концепция
-    */
-    template <class Seq>
-    class RandomAccessSequence
-     : ForwardSequence<Seq>
-    {
-    public:
-        /// @brief Проверка неявных интерфейсов
-        BOOST_CONCEPT_USAGE(RandomAccessSequence)
-        {
-            value_consumer<reference>() = seq[distance_type{0}];
-            value_consumer<Seq&>() = (seq += distance_type{0});
-            value_consumer<distance_type>() = seq.size();
-
-            seq.pop_back(distance_type{1});
-        }
-
-    private:
-        static Seq seq;
-        typedef typename Seq::distance_type distance_type;
-        typedef typename Seq::reference reference;
-    };
-
-    template <class Seq, class Out>
-    struct IndirectlyMovable
-    {
-        BOOST_CONCEPT_USAGE(IndirectlyMovable)
-        {
-            // @todo нужно ли это static_assert(concepts::Semiregular<Out>(), "");?
-            BOOST_CONCEPT_ASSERT((concepts::Readable<Seq>));
-            BOOST_CONCEPT_ASSERT((concepts::MoveWritable<Out, ReferenceType<Seq>>));
-        }
-    };
-
-    template <class Seq, class Out>
-    struct IndirectlyCopyable
-    {
-        BOOST_CONCEPT_USAGE(IndirectlyCopyable)
-        {
-            // @todo нужно ли это static_assert(concepts::Semiregular<Seq>(), "");?
-
-            BOOST_CONCEPT_ASSERT((concepts::Readable<Seq>));
-            // @todo нужно ли это BOOST_CONCEPT_ASSERT((concepts::IndirectlyMovable<Seq, Out>))?;
-            BOOST_CONCEPT_ASSERT((concepts::Writable<Out, ReferenceType<Seq>>));
-        }
-    };
-
-    template <class S1, class S2>
-    class IndirectlySwappable
-    {
-    public:
-        BOOST_CONCEPT_USAGE(IndirectlySwappable)
-        {
-            BOOST_CONCEPT_ASSERT((concepts::Readable<S1>));
-            BOOST_CONCEPT_ASSERT((concepts::Readable<S2>));
-            BOOST_CONCEPT_ASSERT((concepts::Swappable<ReferenceType<S1>,
-                                                      ReferenceType<S2>>));
-            BOOST_CONCEPT_ASSERT((concepts::Swappable<ReferenceType<S1>>));
-            BOOST_CONCEPT_ASSERT((concepts::Swappable<ReferenceType<S2>>));
-        }
-    };
-
     template <class F, class... Args>
     struct Function
      : concepts::Destructible<F>
@@ -639,93 +503,6 @@ namespace concepts
      : IndirectRelation<R, Seq1, Seq2>
     {};
 
-    template <class Seq>
-    struct Permutable
-     : concepts::ForwardSequence<Seq>
-     // @todo Уточнить второй шаблонный параметр
-     , concepts::IndirectlyMovable<Seq, Seq>
-    {
-    public:
-        BOOST_CONCEPT_USAGE(Permutable)
-        {
-            BOOST_CONCEPT_ASSERT((concepts::Semiregular<ValueType<Seq>>));
-        }
-    };
-
-    template <class I1, class I2, class O, class R = ural::less<>>
-    struct Mergeable
-    {
-    public:
-        BOOST_CONCEPT_USAGE(Mergeable)
-        {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<I1>));
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<I2>));
-            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<O>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<I1, O>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<I2, O>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectlyComparable<I1, I2, R>));
-
-            // @todo R должно быть строгим слабым упорядочением
-            // @todo Если R == less<>, то значения I1 и I2 должны быть TotallyOrdered
-        }
-    };
-
-    template <class S, class R = ::ural::less<>>
-    struct Sortable
-    {
-    public:
-        BOOST_CONCEPT_USAGE(Sortable)
-        {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<S>));
-            BOOST_CONCEPT_ASSERT((concepts::Permutable<S>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<R, S>));
-        }
-    };
-
-    template <class S>
-    struct Sequenced
-    {
-        // В Range extensions требуется, чтобы begin и end имели константную
-        // сложность. Нужно ли нам потребовать этого от sequence?
-        BOOST_CONCEPT_USAGE(Sequenced)
-        {
-            typedef decltype(sequence(std::declval<S>())) Seq;
-            static_assert(std::is_same<Seq, sequence_type>::value, "");
-        }
-    private:
-        typedef SequenceType<S> sequence_type;
-    };
-
-    template <class S>
-    struct SinglePassSequenced
-     : Sequenced<S>
-     , SinglePassSequence<SequenceType<S>>
-    {};
-
-    template <class S>
-    struct InputSequenced
-     : concepts::SinglePassSequenced<S>
-     , concepts::InputSequence<::ural::SequenceType<S>>
-    {};
-
-    template <class S>
-    struct ForwardSequenced
-     : concepts::InputSequenced<S>
-     , concepts::ForwardSequence<::ural::SequenceType<S>>
-    {};
-
-    template <class S>
-    struct BidirectionalSequenced
-     : concepts::ForwardSequenced<S>
-     , concepts::BidirectionalSequence<::ural::SequenceType<S>>
-    {};
-
-    template <class S>
-    struct RandomAccessSequenced
-     : concepts::BidirectionalSequenced<S>
-     , concepts::RandomAccessSequence<::ural::SequenceType<S>>
-    {};
-
     /** @brief Концепция вызываемого объекта
     @tparam F тип объекта, для которого проверяется концепция
     @tparam Signature сигнатура
@@ -757,7 +534,49 @@ namespace concepts
     private:
         static F f_;
     };
+}
+// namespace concepts
 
+namespace archetypes
+{
+    /// @brief Архетип генератора равномерно распределённых случайных чисел
+    class URNG_archetype
+    {
+    public:
+        /// @brief Тип результата
+        typedef size_t result_type;
+
+        /** @brief Оператор вызова функции
+        @return <tt> this->min() </tt>
+        */
+        result_type operator()() const
+        {
+            return this->min();
+        }
+
+        /** @brief Наименьшее возможное значение
+        @return Наименьшее возможное значение
+        */
+        constexpr static result_type min URAL_PREVENT_MACRO_SUBSTITUTION ()
+        {
+            return 0;
+        }
+
+        /** @brief Наибольшее возможное значение
+        @return Наибольшее возможное значение
+        */
+        constexpr static result_type max URAL_PREVENT_MACRO_SUBSTITUTION  ()
+        {
+            return 1;
+        }
+
+    private:
+    };
+}
+// namespace archetypes
+
+namespace concepts
+{
     /** @brief Концепция генератора равномерно распределённых случайных чисел
 
     Основан на Working draft standard n3485, пункт 26.5.1.3.
@@ -810,7 +629,7 @@ namespace concepts
             D d1(p0);
             d0.param(p0);
 
-            ural::archetypes::URNG_archetype g;
+            ::ural::archetypes::URNG_archetype g;
 
             value_consumer<T>() = d0(g);
             value_consumer<T>() = d0(g, p0);

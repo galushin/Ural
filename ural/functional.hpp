@@ -27,6 +27,8 @@
 #include <ural/functional/make_callable.hpp>
 #include <ural/functional/replace.hpp>
 
+#include <ural/concepts.hpp>
+
 #include <ural/tuple.hpp>
 
 namespace ural
@@ -488,6 +490,49 @@ namespace ural
             return old_value;
         }
     };
+
+    /** @brief Функциональный объект для фиксации первого аргумента функции
+    @tparam F тип функции
+    @tparam Arg тип первого аргумента
+    */
+    template <class F, class Arg>
+    class curried_function
+    {
+    public:
+        /** @brief Конструктор
+        @param f функция
+        @param arg значение для первого аргумента
+        */
+        template <class A>
+        curried_function(F f, A && arg)
+         : state_(std::move(f), std::forward<A>(arg))
+        {}
+
+        /** @brief Оператор вызова функции
+        @param args аргументы
+        */
+        template <class... Ts>
+        auto operator()(Ts &&... args) const
+        -> ResultType<F, Arg, Ts...>
+        {
+            return std::get<0>(state_)(std::get<1>(state_),
+                                       std::forward<Ts>(args)...);
+        }
+
+    private:
+        std::tuple<F, Arg> state_;
+    };
+
+    /** @brief Фиксация первого аргумента функции
+    @param f функция
+    @param arg значение для первого аргумента
+    */
+    template <class F, class Arg>
+    curried_function<F, Arg &&>
+    curry(F f, Arg && arg)
+    {
+        return curried_function<F, Arg &&>(std::move(f), std::forward<Arg>(arg));
+    }
 
     namespace
     {

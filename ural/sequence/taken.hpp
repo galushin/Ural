@@ -20,6 +20,7 @@
 /** @file ural/sequence/taken.hpp
  @brief Адаптер последовательности, ограничивающий базовую последовательность
  заданным числом элементов
+ @todo По умолчанию для Size использовать DifferenceType<Size>
 */
 
 #include <ural/sequence/make.hpp>
@@ -33,8 +34,12 @@ namespace ural
     @tparam Sequence тип последовательности
     @tparam Size тип количества элементов, которые должны быть взяты из базовой
     последовательности
+    @todo take_sequence не может быть двусторонней, уточнить traversal_tag
+    @todo Для последовательностей произвольного доступа можно оптимизировать:
+    узнать точный размер в конструкторе, а следовательно делать меньше проверок
+    в operator!, быстрее выполнять exhaust_front
     */
-    template <class Sequence, class Size>
+    template <class Sequence, class Size = DifferenceType<Sequence>>
     class take_sequence
      : public sequence_base<take_sequence<Sequence, Size>>
     {
@@ -44,10 +49,10 @@ namespace ural
         typedef typename Sequence::reference reference;
 
         /// @brief Тип значения
-        typedef typename Sequence::value_type value_type;
+        typedef ValueType<Sequence> value_type;
 
         /// @brief Тип расстояния
-        typedef typename Sequence::distance_type distance_type;
+        typedef DifferenceType<Sequence> distance_type;
 
         /// @brief Категория обхода
         typedef typename Sequence::traversal_tag traversal_tag;
@@ -74,7 +79,7 @@ namespace ural
         */
         bool operator!() const
         {
-            return this->count() == 0;
+            return this->count() == 0 || !this->base();
         }
 
         /** @brief Текущий элемент последовательности
@@ -109,7 +114,15 @@ namespace ural
                                  this->init_count() - this->count());
         }
 
-        /// @brief Отбрасывание пройденной части последовательности
+        void exhaust_front()
+        {
+            for(; !!*this; ++*this)
+            {}
+        }
+
+        /** @brief Отбрасывание пройденной части последовательности
+        @post <tt> !this->traversed_front() </tt>
+        */
         void shrink_front()
         {
             impl_[ural::_1].shrink_front();
@@ -136,6 +149,7 @@ namespace ural
 
         /** @brief Оставшееся количество элементов
         @return Оставшееся количество элементов
+        @todo переименовать в size?
         */
         Size const & count() const
         {

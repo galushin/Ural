@@ -89,6 +89,8 @@ namespace
                              ural::modulus<void, int>> Modulus_functions;
 }
 
+using ::ural::ValueType;
+
 BOOST_AUTO_TEST_CASE(memoize_function_test)
 {
     struct Tag;
@@ -853,7 +855,7 @@ BOOST_AUTO_TEST_CASE(min_element_accumulator_default_function_test)
 
     static_assert(std::is_same<ural::less<>, Accumulator::compare_type>::value,
                   "Incorrect compare type");
-    BOOST_CHECK_EQUAL(sizeof(Accumulator::value_type), sizeof(Accumulator));
+    BOOST_CHECK_EQUAL(sizeof(ValueType<Accumulator>), sizeof(Accumulator));
 
     BOOST_CHECK_EQUAL(42, acc.result());
 }

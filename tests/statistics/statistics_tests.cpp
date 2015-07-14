@@ -23,6 +23,8 @@
 #include <boost/mpl/list.hpp>
 #include <boost/test/unit_test.hpp>
 
+using ::ural::ValueType;
+
 namespace
 {
     typedef boost::mpl::list<double, ural::rational<int>> Real_types;
@@ -38,7 +40,7 @@ BOOST_AUTO_TEST_CASE(probability_default_param_type_test)
 {
     typedef ural::probability<> P;
 
-    static_assert(std::is_same<double, P::value_type>::value,
+    static_assert(std::is_same<double, ValueType<P>>::value,
                   "default is double");
 }
 
@@ -50,7 +52,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(probability_default_ctor_test, T, Real_types)
     static_assert(p == 0, "p must be 0");
     static_assert(0 == p, "p must be 0");
 
-    static_assert(sizeof(p) == sizeof(typename decltype(p)::value_type),
+    static_assert(sizeof(p) == sizeof(ValueType<decltype(p)>),
                   "Too big!");
 }
 

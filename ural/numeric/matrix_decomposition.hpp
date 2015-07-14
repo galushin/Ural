@@ -36,7 +36,7 @@ namespace ural
     struct make_triangular_matrix
     {
     private:
-        typedef typename M::value_type Value;
+        typedef ValueType<M> Value;
 
     public:
         /// @brief Тип-результат
@@ -182,7 +182,7 @@ namespace ural
     tuple<Matrix, Matrix>
     qr_eigenvectors(Matrix A, size_t max_iter, double)
     {
-        typedef typename Matrix::value_type Value;
+        typedef ValueType<Matrix> Value;
         auto const dim = A.size1();
 
         assert(A.size2() == dim);

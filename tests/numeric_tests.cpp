@@ -25,7 +25,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-// @todo тестировать с архетипами
+#include "defs.hpp"
 
 BOOST_AUTO_TEST_CASE(iota_test)
 {
@@ -80,22 +80,76 @@ BOOST_AUTO_TEST_CASE(partial_sums_sequence_test)
                                   x_ural.begin(), x_ural.end());
 }
 
-BOOST_AUTO_TEST_CASE(partial_sum_test)
+BOOST_AUTO_TEST_CASE(partial_sum_test_minimal)
 {
     // Подготовка
-    std::vector<int> const v = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
+    std::vector<int> const src_std = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
+    ural_test::istringstream_helper<int> src_ural(src_std.begin(), src_std.end());
 
     // std
     std::vector<int> x_std;
-    std::partial_sum(v.begin(), v.end(), std::back_inserter(x_std));
+    std::partial_sum(src_std.begin(), src_std.end(), std::back_inserter(x_std));
 
     // ural
     std::vector<int> x_ural;
-    ural::partial_sum(v, std::back_inserter(x_ural));
+    ural::partial_sum(src_ural, std::back_inserter(x_ural));
 
     // Проверка
     BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
                                   x_ural.begin(), x_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(partial_sum_test_to_longer)
+{
+    // Подготовка
+    std::vector<int> const src = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
+
+    std::vector<int> x_std(src.size() + 5, -1);
+    auto x_ural = x_std;
+
+    // Выполение алгоритмов
+    auto const r_std = std::partial_sum(src.begin(), src.end(), x_std.begin());
+    auto const r_ural = ural::partial_sum(src, x_ural);
+
+    // Проверка
+    assert(x_ural.size() > src.size());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+
+    BOOST_CHECK(r_ural[ural::_1].original() == ural::sequence(src));
+    BOOST_CHECK(r_ural[ural::_1].traversed_front() == ural::sequence(src));
+
+    BOOST_CHECK(r_ural[ural::_2].original() == ural::sequence(x_ural));
+    BOOST_CHECK_EQUAL(r_ural[ural::_2].size(), x_std.end() - r_std);
+    BOOST_CHECK(!r_ural[ural::_2].traversed_back());
+}
+
+BOOST_AUTO_TEST_CASE(partial_sum_test_to_shorter)
+{
+    // Подготовка
+    std::vector<int> const src = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
+
+    // Выполение алгоритмов
+    std::vector<int> x_std;
+    std::partial_sum(src.begin(), src.end(), std::back_inserter(x_std));
+
+    std::vector<int> x_ural(src.size() / 2, -1);
+    auto const r_ural = ural::partial_sum(src, x_ural);
+
+    // Проверка
+    assert(x_ural.size() < src.size());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_ural.begin(), x_ural.end(),
+                                  x_std.begin(), x_std.begin() + x_ural.size());
+
+    BOOST_CHECK(r_ural[ural::_1].original() == ural::sequence(src));
+    BOOST_CHECK(!r_ural[ural::_1].traversed_back());
+    BOOST_CHECK_EQUAL(r_ural[ural::_1].size(),
+                      ural::to_signed(src.size() - x_ural.size()));
+
+    BOOST_CHECK(r_ural[ural::_2].original() == ural::sequence(x_ural));
+    BOOST_CHECK(r_ural[ural::_2].traversed_front() == ural::sequence(x_ural));
 }
 
 BOOST_AUTO_TEST_CASE(adjacent_differences_sequence_test)
@@ -116,22 +170,77 @@ BOOST_AUTO_TEST_CASE(adjacent_differences_sequence_test)
                                   r_ural.begin(), r_ural.end());
 }
 
-BOOST_AUTO_TEST_CASE(adjacent_difference_test)
+BOOST_AUTO_TEST_CASE(adjacent_difference_test_minimal)
 {
     // Подготовка
-    std::vector<int> const xs = {1,2,3,5,9,11,12};
+    std::vector<int> const src_std = {1,2,3,5,9,11,12};
+    ural_test::istringstream_helper<int> src_ural(src_std.begin(), src_std.end());
 
     // std
     std::vector<int> r_std;
-    std::adjacent_difference(xs.begin(), xs.end(), std::back_inserter(r_std));
+    std::adjacent_difference(src_std.begin(), src_std.end(),
+                             std::back_inserter(r_std));
 
     // ural
     std::vector<int> r_ural;
-    ural::adjacent_difference(xs, std::back_inserter(r_ural));
+    ural::adjacent_difference(src_ural, std::back_inserter(r_ural));
 
     // Проверка
     BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
                                   r_ural.begin(), r_ural.end());
+}
+
+BOOST_AUTO_TEST_CASE(adjacent_difference_test_to_longer)
+{
+    // Подготовка
+    std::vector<int> const src = {1,2,3,5,9,11,12};
+
+    std::vector<int> x_std(src.size() + 5, -1);
+    auto x_ural = x_std;
+
+    // Выполение алгоритмов
+    auto const r_std = std::adjacent_difference(src.begin(), src.end(), x_std.begin());
+    auto const r_ural = ural::adjacent_difference(src, x_ural);
+
+    // Проверка
+    assert(x_ural.size() > src.size());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
+                                  x_ural.begin(), x_ural.end());
+
+    BOOST_CHECK(r_ural[ural::_1].original() == ural::sequence(src));
+    BOOST_CHECK(r_ural[ural::_1].traversed_front() == ural::sequence(src));
+
+    BOOST_CHECK(r_ural[ural::_2].original() == ural::sequence(x_ural));
+    BOOST_CHECK_EQUAL(r_ural[ural::_2].size(), x_std.end() - r_std);
+    BOOST_CHECK(!r_ural[ural::_2].traversed_back());
+}
+
+BOOST_AUTO_TEST_CASE(adjacent_differences_test_to_shorter)
+{
+    // Подготовка
+    std::vector<int> const src = {1,2,3,5,9,11,12};
+
+    // Выполение алгоритмов
+    std::vector<int> x_std;
+    std::adjacent_difference(src.begin(), src.end(), std::back_inserter(x_std));
+
+    std::vector<int> x_ural(src.size() / 2, -1);
+    auto const r_ural = ural::adjacent_difference(src, x_ural);
+
+    // Проверка
+    assert(x_ural.size() < src.size());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(x_ural.begin(), x_ural.end(),
+                                  x_std.begin(), x_std.begin() + x_ural.size());
+
+    BOOST_CHECK(r_ural[ural::_1].original() == ural::sequence(src));
+    BOOST_CHECK(!r_ural[ural::_1].traversed_back());
+    BOOST_CHECK_EQUAL(r_ural[ural::_1].size(),
+                      ural::to_signed(src.size() - x_ural.size()));
+
+    BOOST_CHECK(r_ural[ural::_2].original() == ural::sequence(x_ural));
+    BOOST_CHECK(r_ural[ural::_2].traversed_front() == ural::sequence(x_ural));
 }
 
 namespace

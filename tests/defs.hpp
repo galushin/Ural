@@ -42,8 +42,13 @@ namespace ural_test
 
         istringstream_helper() = default;
 
+        template <class Iterator>
+        istringstream_helper(Iterator first, Iterator last)
+         : is_(istringstream_helper::make(std::move(first), std::move(last)))
+        {}
+
         istringstream_helper(std::initializer_list<T> values)
-         : is_(istringstream_helper::make(values.begin(), values.end()))
+         : istringstream_helper(values.begin(), values.end())
         {}
 
     private:

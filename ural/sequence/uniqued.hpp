@@ -47,7 +47,7 @@ namespace ural
         typedef typename Input::reference reference;
 
         /// @brief Тип значения
-        typedef typename Input::value_type value_type;
+        typedef ValueType<Input> value_type;
 
         /// @brief Категория обхода
         typedef typename ural::common_tag<typename Input::traversal_tag,
@@ -57,7 +57,7 @@ namespace ural
         typedef typename Input::pointer pointer;
 
         /// @brief Тип расстояния
-        typedef typename Input::distance_type distance_type;
+        typedef DifferenceType<Input> distance_type;
 
         // Конструкторы
         /** @brief Конструктор

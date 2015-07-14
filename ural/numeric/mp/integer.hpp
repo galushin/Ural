@@ -138,7 +138,7 @@ namespace ural
         typedef digit<radix> value_type;
 
         // Конструкторы
-        explicit digit_arithmetics_result(typename value_type::value_type word)
+        explicit digit_arithmetics_result(ValueType<value_type> word)
          : value_{word % radix}
          , carry_{word / radix}
         {}
@@ -797,12 +797,12 @@ namespace ural
 
         if(radix <= 16)
         {
-            ural::write_delimeted(os, x.digits() | ural::reversed,
-                                  ural::no_delimeter{});
+            ural::write_separated(os, x.digits() | ural::reversed,
+                                  ural::no_delimiter{});
         }
         else
         {
-            ural::write_delimeted(os, x.digits() | ural::reversed, ':');
+            ural::write_separated(os, x.digits() | ural::reversed, ':');
         }
 
 

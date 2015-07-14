@@ -21,8 +21,6 @@
  @brief Последовательность частных сумм
 */
 
-#include <boost/compressed_pair.hpp>
-
 #include <ural/functional.hpp>
 #include <ural/optional.hpp>
 
@@ -41,7 +39,7 @@ namespace ural
             Base_class;
     public:
         /// @brief Тип значения
-        typedef typename Input::value_type value_type;
+        typedef ValueType<Input> value_type;
 
         /// @brief Тип ссылки
         typedef value_type const & reference;
@@ -53,7 +51,7 @@ namespace ural
         typedef value_type const & pointer;
 
         /// @brief Тип расстояния
-        typedef typename Input::distance_type distance_type;
+        typedef DifferenceType<Input> distance_type;
 
         /// @brief Тип операции, используемой для вычисления суммы
         typedef BinaryOperation operation_type;
@@ -85,7 +83,7 @@ namespace ural
         reference front() const
         {
             // @note Проверка, что последовательность не пуста - через стратегию
-            return *members_.second();
+            return *::ural::get(members_, ural::_2);
         }
 
         /** @brief Переход к следующему элементу
@@ -103,13 +101,20 @@ namespace ural
             }
         }
 
+        //@{
         /** @brief Исходная последовательность
         @return Текущее состояние входной последовательности
         */
-        Input const & base() const
+        Input const & base() const &
         {
-            return members_.first();
+            return ::ural::get(this->members_, ural::_1);
         }
+
+        Input && base() &&
+        {
+            return ::ural::get(std::move(this->members_), ural::_1);
+        }
+        //@}
 
         /** @brief Операция, используемая для вычисления суммы
         @return Операция, используемая для вычисления суммы
@@ -124,16 +129,16 @@ namespace ural
 
         Optional_value & current_value_ref()
         {
-            return members_.second();
+            return ::ural::get(members_, ural::_2);
         }
 
         Input & input_ref()
         {
-            return members_.first();
+            return ::ural::get(members_, ural::_1);
         }
 
     private:
-        boost::compressed_pair<Input, Optional_value> members_;
+        ural::tuple<Input, Optional_value> members_;
     };
 
     /** @brief Создание последовательности частных сумм

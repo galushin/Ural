@@ -42,14 +42,14 @@ namespace ural
     public:
         // Типы
         /// @brief Тип значения
-        typedef typename Sequence::value_type value_type;
+        typedef ValueType<Sequence> value_type;
 
         /// @brief Тип ссылки
         typedef typename moved_type<Base_reference>::type
             reference;
 
         /// @brief Тип расстояния
-        typedef typename Sequence::distance_type distance_type;
+        typedef DifferenceType<Sequence> distance_type;
 
         /// @brief Категория обхода
         typedef typename Sequence::traversal_tag traversal_tag;

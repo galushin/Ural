@@ -59,18 +59,17 @@ namespace ural
         typedef typename Input::reference reference;
 
         /// @brief Тип значения
-        typedef typename Input::value_type value_type;
+        typedef ValueType<Input> value_type;
 
         /// @brief Категория обхода
-        typedef typename std::common_type<typename Input::traversal_tag,
-                                          forward_traversal_tag>::type
+        typedef CommonType<typename Input::traversal_tag, forward_traversal_tag>
             traversal_tag;
 
         /// @brief Тип указателя
         typedef typename Input::pointer pointer;
 
         /// @brief Тип расстояния
-        typedef typename Input::distance_type distance_type;
+        typedef DifferenceType<Input> distance_type;
 
         // Конструкторы
         /** @brief Конструктор
@@ -113,14 +112,39 @@ namespace ural
             this->seek();
         }
 
+        // Прямая последовательность
+         /** @brief Пройденная часть последовательности
+        @return Пройденная часть последовательности
+        */
+        remove_if_sequence traversed_front() const
+        {
+            return remove_if_sequence(this->base().traversed_front(),
+                                      this->predicate());
+        }
+
+        /** @brief Отбрасывание пройденной части последовательности
+        @post <tt> !this->traversed_front() </tt>
+        */
+        void shrink_front()
+        {
+            return ural::get(members_, ural::_1).shrink_front();
+        }
+
         // Адаптор последовательности
+        //@{
         /** @brief Базовая последовательность
         @return Базовая последовательность
         */
-        Input const & base() const
+        Input const & base() const &
         {
             return ural::get(members_, ural::_1);
         }
+
+        Input && base() &&
+        {
+            return std::move(this->mutable_base());
+        }
+        //@}
 
         /** @brief Используемый предикат
         @return Используемый предикат
@@ -131,10 +155,14 @@ namespace ural
         }
 
     private:
+        Input & mutable_base()
+        {
+            return ural::get(members_, ural::_1);
+        }
         void seek()
         {
-            ural::get(members_, ural::_1)
-                =  find_if_not_fn{}(this->base(), this->predicate());
+            this->mutable_base() = find_if_not_fn{}(std::move(this->mutable_base()),
+                                                    this->predicate());
         }
 
     private:
@@ -198,18 +226,17 @@ namespace ural
         typedef typename Input::reference reference;
 
         /// @brief Тип значения
-        typedef typename Input::value_type value_type;
+        typedef ValueType<Input> value_type;
 
         /// @brief Категория обхода
-        typedef typename std::common_type<typename Input::traversal_tag,
-                                          forward_traversal_tag>::type
+        typedef CommonType<typename Input::traversal_tag, forward_traversal_tag>
             traversal_tag;
 
         /// @brief Тип указателя
         typedef typename Input::pointer pointer;
 
         /// @brief Тип расстояния
-        typedef typename Input::distance_type distance_type;
+        typedef DifferenceType<Input> distance_type;
 
         // Конструкторы
         /** @brief Конструктор
@@ -289,11 +316,13 @@ namespace ural
     */
     template <class Input, class T, class BinaryPredicate>
     auto make_remove_sequence(Input && in, T const & value, BinaryPredicate pred)
-    -> remove_sequence<decltype(::ural::sequence_fwd<Input>(in)), T,
+    -> remove_sequence<decltype(::ural::sequence_fwd<Input>(in)),
+                       typename reference_wrapper_to_reference<T>::type,
                        decltype(::ural::make_callable(std::move(pred)))>
     {
-        typedef remove_sequence<decltype(::ural::sequence_fwd<Input>(in)), T,
-                       decltype(make_callable(std::move(pred)))> Sequence;
+        typedef remove_sequence<decltype(::ural::sequence_fwd<Input>(in)),
+                                typename reference_wrapper_to_reference<T>::type,
+                                decltype(make_callable(std::move(pred)))> Sequence;
         return Sequence(::ural::sequence_fwd<Input>(in), value,
                         ::ural::make_callable(std::move(pred)));
     }

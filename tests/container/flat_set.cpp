@@ -15,6 +15,7 @@
 */
 
 #include <ural/container/flat_set.hpp>
+#include <ural/concepts.hpp>
 
 #include <boost/test/unit_test.hpp>
 
@@ -23,7 +24,7 @@ BOOST_AUTO_TEST_CASE(flat_set_default_template_parameters)
     typedef int T;
     typedef ural::flat_set<T> Set;
 
-    static_assert(std::is_same<Set::value_type, T>::value, "");
+    static_assert(std::is_same<::ural::ValueType<Set>, T>::value, "");
 
     static_assert(std::is_same<Set::key_compare, std::less<T>>::value, "");
     static_assert(std::is_same<Set::value_compare, Set::key_compare>::value, "");

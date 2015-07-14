@@ -51,10 +51,10 @@ namespace ural
         typedef typename BidirectionalSequence::reference reference;
 
         /// @brief Тип значения
-        typedef typename BidirectionalSequence::value_type value_type;
+        typedef ValueType<BidirectionalSequence> value_type;
 
         /// @brief Тип расстояния
-        typedef typename BidirectionalSequence::distance_type distance_type;
+        typedef DifferenceType<BidirectionalSequence> distance_type;
 
         /// @brief Категория обхода
         typedef typename BidirectionalSequence::traversal_tag traversal_tag;

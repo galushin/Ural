@@ -704,7 +704,7 @@ namespace ural
             result_type;
 
         /// @brief Тип элементов
-        typedef typename result_type::value_type element_type;
+        typedef ValueType<result_type> element_type;
 
         /// @brief Тип ковариационной матрицы
         typedef typename default_helper<Matrix, boost::numeric::ublas::matrix<element_type>>::type

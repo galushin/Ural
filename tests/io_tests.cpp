@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(by_line_test)
     BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(), x.begin(), x.end());
 }
 
-BOOST_AUTO_TEST_CASE(by_line_test_keep_delimeter)
+BOOST_AUTO_TEST_CASE(by_line_test_keep_delimiter)
 {
     std::vector<std::string> const z = {"Occupation\n", "Carpenter\n", "Blacksmith\n"};
 
@@ -76,13 +76,13 @@ BOOST_AUTO_TEST_CASE(by_line_test_keep_delimeter)
 
     std::istringstream is(os.str());
 
-    auto const x = ural::by_line(is, '\n', ural::keep_delimeter::yes)
+    auto const x = ural::by_line(is, '\n', ural::keep_delimiter::yes)
                    | ural::to_container<std::forward_list>{};
 
     BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(), x.begin(), x.end());
 }
 
-BOOST_AUTO_TEST_CASE(by_line_test_keep_delimeter_unexpected_eof)
+BOOST_AUTO_TEST_CASE(by_line_test_keep_delimiter_unexpected_eof)
 {
     std::vector<std::string> const z = {"Occupation\n", "Carpenter\n", "Blacksmith"};
 
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE(by_line_test_keep_delimeter_unexpected_eof)
 
     std::istringstream is(os.str());
 
-    auto const x = ural::by_line(is, '\n', ural::keep_delimeter::yes)
+    auto const x = ural::by_line(is, '\n', ural::keep_delimiter::yes)
                    | ural::to_container<std::forward_list>{};
 
     BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(), x.begin(), x.end());
@@ -172,15 +172,15 @@ BOOST_AUTO_TEST_CASE(table_io_test_temporary_stream)
     }
 }
 
-BOOST_AUTO_TEST_CASE(ostream_delimeted_test)
+BOOST_AUTO_TEST_CASE(ostream_delimited_test)
 {
     std::vector<int> const xs = {1, 2, 3, 4, 5};
 
     std::ostringstream os_1;
-    ural::write_delimeted(os_1, xs, ", ") << "\n";
+    ural::write_separated(os_1, xs, ", ") << "\n";
 
     std::ostringstream os_2;
-    os_2 << ural::delimeted(xs, ", ") << "\n";
+    os_2 << ural::separated(xs, ", ") << "\n";
 
     BOOST_CHECK_EQUAL(os_1.str(), os_2.str());
 }

@@ -470,7 +470,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_max_size, String, Strings_list)
 {
     String s;
 
-    std::allocator<typename String::value_type> a;
+    std::allocator<::ural::ValueType<String>> a;
 
     BOOST_CHECK_GE(s.max_size(), 0U);
     BOOST_CHECK_GE(a.max_size(), s.max_size());
@@ -1016,7 +1016,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_copy_from_0, String, Strings_list)
 {
     String const fs{"Stepanov"};
 
-    std::vector<typename String::value_type> s(5, 'x');
+    std::vector<::ural::ValueType<String>> s(5, 'x');
 
     auto const rlen = fs.copy(s.data(), s.size());
 
@@ -1037,7 +1037,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_copy, String, Strings_list)
 {
     String const fs{"Stepanov"};
 
-    std::vector<typename String::value_type> s(5, 'x');
+    std::vector<::ural::ValueType<String>> s(5, 'x');
 
     auto const pos = 0;
 
@@ -1056,7 +1056,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_copy_to_end, String, Strings_list)
 {
     String const fs{"Stepanov"};
 
-    std::vector<typename String::value_type> s(fs.size() * 2, 'x');
+    std::vector<::ural::ValueType<String>> s(fs.size() * 2, 'x');
 
     auto const pos = fs.size() - 1;
 

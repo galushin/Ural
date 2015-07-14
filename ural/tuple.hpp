@@ -53,8 +53,12 @@ namespace ural
         @brief Конструктор
         @param args аргументы
         */
-        constexpr tuple(Ts const & ... args)
+        constexpr tuple(typename std::remove_reference<Ts>::type const &... args)
          : Base(args...)
+        {}
+
+        constexpr tuple(typename std::remove_reference<Ts>::type &&... args)
+         : Base(std::move(args)...)
         {}
 
         template <class... Us>

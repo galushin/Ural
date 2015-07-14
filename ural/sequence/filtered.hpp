@@ -56,17 +56,16 @@ namespace ural
         typedef typename Impl::reference reference;
 
         /// @brief Тип значения
-        typedef typename Impl::value_type value_type;
+        typedef ValueType<Impl> value_type;
 
         /// @brief Тип указателя
         typedef typename Impl::pointer pointer;
 
         /// @brief Тип расстояния
-        typedef typename Impl::distance_type distance_type;
+        typedef DifferenceType<Impl> distance_type;
 
         /// @brief Категория обхода
-        typedef typename std::common_type<typename Impl::traversal_tag,
-                                          forward_traversal_tag>::type
+        typedef CommonType<typename Impl::traversal_tag, forward_traversal_tag>
             traversal_tag;
 
         // Конструкторы
@@ -103,6 +102,24 @@ namespace ural
             return impl_.pop_front();
         }
 
+        // Прямая последовательность
+        /** @brief Пройденная часть последовательности
+        @return Пройденная часть последовательности
+        */
+        filter_sequence traversed_front() const
+        {
+            return filter_sequence(impl_.traversed_front().base(),
+                                   this->predicate());
+        }
+
+        /** @brief Отбрасывание пройденной части последовательности
+        @post <tt> !this->traversed_front() </tt>
+        */
+        void shrink_front()
+        {
+            return this->impl_.shrink_front();
+        }
+
         // Адаптор последовательности
         /** @brief Предикат
         @return Используемый предикат
@@ -112,13 +129,20 @@ namespace ural
             return impl_.predicate().target();
         }
 
+        //@{
         /** @brief Базовая последовательность
         @return Базовая последовательность
         */
-        Sequence const & base() const
+        Sequence const & base() const &
         {
-            return impl_.base();
+            return this->impl_.base();
         }
+
+        Sequence && base() &&
+        {
+            return std::move(this->impl_).base();
+        }
+        //@}
 
     private:
         Impl impl_;

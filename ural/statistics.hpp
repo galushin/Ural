@@ -50,6 +50,7 @@
 #include <ural/numeric/numbers_sequence.hpp>
 #include <ural/math.hpp>
 #include <ural/algorithm.hpp>
+#include <ural/sequence/zip.hpp>
 #include <ural/sequence/transform.hpp>
 #include <ural/sequence/make.hpp>
 #include <ural/defs.hpp>
@@ -1087,12 +1088,14 @@ namespace tags
     */
     template <class Input, class Tags>
     auto describe(Input && in, Tags)
-    -> descriptives_facade<typename decltype(sequence(in))::value_type, Tags>
+    -> descriptives_facade<ValueType<SequenceType<Input>>, Tags>
     {
-        typedef typename decltype(sequence(in))::value_type Value;
+        // @todo Проект: выразить через версию с весами, последовательность
+        // весов - value_sequence, првоерить что компилятор устраняет лишние
+        // вызовы
+        typedef ValueType<SequenceType<Input>> Value;
         typedef descriptives_facade<Value, Tags> Result;
 
-        using ural::sequence;
         auto seq = ::ural::sequence_fwd<Input>(in);
 
         if(!seq)
@@ -1114,35 +1117,31 @@ namespace tags
     */
     template <class Input, class Tags, class Weights>
     auto describe(Input && in, Tags, Weights && ws)
-    -> descriptives_facade<typename decltype(ural::sequence_fwd<Input>(in))::value_type,
-                           Tags,
-                           typename decltype(ural::sequence_fwd<Weights>(ws))::value_type>
+    -> descriptives_facade<ValueType<SequenceType<Input>>, Tags,
+                           ValueType<SequenceType<Weights>>>
     {
-        // @todo как обрабатывать ситуацию разной длины последовательностей
-        // данных и весов
-        // @todo устранить дублирование
-        typedef typename decltype(ural::sequence_fwd<Input>(in))::value_type Value;
-        typedef typename decltype(ural::sequence_fwd<Weights>(ws))::value_type Weight_type;
+        typedef ValueType<SequenceType<Input>> Value;
+        typedef ValueType<SequenceType<Weights>> Weight_type;
         typedef descriptives_facade<Value, Tags, Weight_type> Result;
 
-        using ural::sequence;
-        auto in_seq = ural::sequence_fwd<Input>(in);
-        auto ws_seq = ural::sequence_fwd<Weights>(ws);
+        auto zip_seq = ural::make_zip_sequence(ural::sequence_fwd<Input>(in),
+                                               ural::sequence_fwd<Weights>(ws));
 
-        if(!in_seq || !ws_seq)
+        if(!zip_seq)
         {
             return Result{};
         }
 
-        // @todo заменить на алгоритм
-        Result r(*in_seq, *ws_seq);
-        ++ in_seq;
-        ++ ws_seq;
+        auto r = ural::apply(ural::constructor<Result>{}, *zip_seq);
+        ++ zip_seq;
 
-        for(; !!in_seq && !!ws_seq; ++ in_seq, (void) ++ ws_seq)
-        {
-            r(*in_seq, *ws_seq);
-        }
+        auto acc = [&r](auto const & z) { ::ural::apply(r, z); };
+        zip_seq = ::ural::for_each(std::move(zip_seq), acc)[ural::_1];
+
+        assert(!zip_seq.bases()[ural::_2]);
+
+        // @todo Ошибка ли, если последовательности имеют разную длину?
+        assert(!zip_seq.bases()[ural::_1]);
 
         return r;
     }
@@ -1161,7 +1160,7 @@ namespace tags
         auto const m = ds.mean();
         auto const s = ds.standard_deviation();
 
-        typedef typename decltype(ds)::value_type Value;
+        typedef ValueType<decltype(ds)> Value;
 
         assert(s != 0);
 
@@ -1181,7 +1180,7 @@ namespace tags
     {
     public:
         /// @brief Тип элементов
-        typedef typename Vector::value_type element_type;
+        typedef ValueType<Vector> element_type;
 
         /// @brief Тип среднего
         typedef Vector mean_type;

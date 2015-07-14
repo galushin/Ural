@@ -49,7 +49,7 @@ namespace ural
     */
     template <class OStream, class Sequence, class Delim>
     OStream &
-    write_delimeted(OStream & os, Sequence && seq, Delim const & delim)
+    write_separated(OStream & os, Sequence && seq, Delim const & delim)
     {
         auto s = ::ural::sequence_fwd<Sequence>(seq);
 
@@ -69,31 +69,31 @@ namespace ural
         return os;
     }
 
-    template <class Sequence, class Delimeter>
-    class delimeted_helper
+    template <class Sequence, class Separator>
+    class separated_helper
     {
     public:
-        delimeted_helper(Sequence seq, Delimeter delim)
+        separated_helper(Sequence seq, Separator delim)
          : sequence(std::move(seq))
-         , delimeter(std::move(delim))
+         , separator(std::move(delim))
         {}
 
         Sequence sequence;
-        Delimeter delimeter;
+        Separator separator;
     };
 
-    template <class OStream, class Seq, class Delim>
-    OStream & operator<<(OStream & os, delimeted_helper<Seq, Delim> && d)
+    template <class OStream, class Seq, class Separator>
+    OStream & operator<<(OStream & os, separated_helper<Seq, Separator> && d)
     {
-        return ural::write_delimeted(os, std::move(d.sequence),
-                                     std::move(d.delimeter));
+        return ural::write_separated(os, std::move(d.sequence),
+                                     std::move(d.separator));
     }
 
-    template <class Sequence, class Delimeter>
-    auto delimeted(Sequence && seq, Delimeter delim)
-    -> delimeted_helper<decltype(::ural::sequence_fwd<Sequence>(seq)), Delimeter>
+    template <class Sequence, class Separator>
+    auto separated(Sequence && seq, Separator separator)
+    -> separated_helper<decltype(::ural::sequence_fwd<Sequence>(seq)), Separator>
     {
-        return {::ural::sequence_fwd<Sequence>(seq), std::move(delim)};
+        return {::ural::sequence_fwd<Sequence>(seq), std::move(separator)};
     }
 
     /** @brief Вывод таблицы в поток
@@ -105,17 +105,17 @@ namespace ural
     {
         for(auto & row : table)
         {
-            ural::write_delimeted(os, row, "\t") << "\n";
+            ural::write_separated(os, row, "\t") << "\n";
         }
         return os;
     }
 
     template <class String>
     class basic_istringstream
-     : public std::basic_istringstream<typename String::value_type,
+     : public std::basic_istringstream<ValueType<String>,
                                        typename String::traits_type>
     {
-        typedef std::basic_istringstream<typename String::value_type,
+        typedef std::basic_istringstream<ValueType<String>,
                                          typename String::traits_type> Base;
 
     public:

@@ -48,10 +48,9 @@ namespace ural
     */
     template <class Sequence, template <class...> class Container, class... Args>
     auto operator|(Sequence && seq, to_container<Container, Args...>)
-    -> Container<typename decltype(::ural::sequence_fwd<Sequence>(seq))::value_type, Args...>
+    -> Container<ValueType<SequenceType<Sequence>>, Args...>
     {
-        typedef decltype(::ural::sequence_fwd<Sequence>(seq)) Seq;
-        typedef typename Seq::value_type Value;
+        typedef ValueType<SequenceType<Sequence>> Value;
 
         auto s = ural::sequence_fwd<Sequence>(seq);
 
@@ -85,12 +84,11 @@ namespace ural
     */
     template <class Sequence, template <class, class, class...> class Map, class... Args>
     auto operator|(Sequence && seq, to_map<Map, Args...>)
-    -> Map<typename std::tuple_element<0, typename decltype(ural::sequence_fwd<Sequence>(seq))::value_type>::type,
-           typename std::tuple_element<1, typename decltype(ural::sequence_fwd<Sequence>(seq))::value_type>::type,
+    -> Map<typename std::tuple_element<0, ValueType<SequenceType<Sequence>>>::type,
+           typename std::tuple_element<1, ValueType<SequenceType<Sequence>>>::type,
            Args...>
     {
-        typedef decltype(ural::sequence_fwd<Sequence>(seq)) Seq;
-        typedef typename Seq::value_type Value;
+        typedef ValueType<SequenceType<Sequence>> Value;
         typedef typename std::tuple_element<0, Value>::type Key;
         typedef typename std::tuple_element<1, Value>::type Mapped;
 

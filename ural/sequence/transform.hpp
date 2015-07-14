@@ -29,7 +29,6 @@
 #include <ural/sequence/base.hpp>
 
 #include <boost/iterator/transform_iterator.hpp>
-#include <boost/compressed_pair.hpp>
 
 namespace ural
 {
@@ -60,8 +59,7 @@ namespace ural
             traversal_tag;
 
         /// @brief Тип расстояния
-        typedef typename std::common_type<typename Inputs::distance_type...>::type
-            distance_type;
+        typedef CommonType<DifferenceType<Inputs>...> distance_type;
 
         /// @brief Тип указателя
         typedef typename std::conditional<std::is_lvalue_reference<reference>::value,
@@ -78,13 +76,20 @@ namespace ural
          : impl_(std::move(f), Bases_tuple{std::move(in)...})
         {}
 
+        //@{
         /** @brief Доступ к кортежу базовых последовательностей
         @return Константная ссылка на кортеж базовых последовательностей
         */
-        Bases_tuple const & bases() const
+        Bases_tuple const & bases() const &
         {
-            return impl_.second();
+            return impl_[ural::_2];
         }
+
+        Bases_tuple && bases() &&
+        {
+            return std::move(impl_[ural::_2]);
+        }
+        //@}
 
         // Однопроходная последовательность
         /** @brief Проверка исчерпания последовательностей
@@ -92,7 +97,7 @@ namespace ural
         */
         bool operator!() const
         {
-            return ural::tuples::any_of(impl_.second(), ural::logical_not<>{});
+            return ural::tuples::any_of(this->bases(), ural::logical_not<>{});
         }
 
         /** @brief Переход к следующему элементу в передней части
@@ -100,7 +105,7 @@ namespace ural
         */
         void pop_front()
         {
-            ural::tuples::for_each(impl_.second(), ural::pop_front);
+            ural::tuples::for_each(this->mutable_bases(), ural::pop_front);
         }
 
         /** @brief Передний элемент
@@ -112,7 +117,7 @@ namespace ural
             auto f = [this](Inputs const & ... args)->reference
                      { return this->deref(args...); };
 
-            return apply(f, impl_.second());
+            return ::ural::apply(f, this->bases());
         }
 
         // Прямая последовательность
@@ -126,7 +131,7 @@ namespace ural
         distance_type size() const
         {
             // @todo Обобщить, реализовать без псевдо-рекурсии
-            return this->size_impl(impl_.second()[ural::_1].size(), ural::_2);
+            return this->size_impl(this->bases()[ural::_1].size(), ural::_2);
         }
 
         // Адаптор последовательности
@@ -135,10 +140,15 @@ namespace ural
         */
         F const & function() const
         {
-            return impl_.first();
+            return impl_[ural::_1];
         }
 
     private:
+        Bases_tuple & mutable_bases()
+        {
+            return impl_[ural::_2];
+        }
+
         distance_type
         size_impl(distance_type result, placeholder<sizeof...(Inputs)>) const
         {
@@ -147,9 +157,9 @@ namespace ural
 
         template <size_t index>
         distance_type
-        size_impl(distance_type current, placeholder<index>) const
+        size_impl(distance_type current, placeholder<index> p) const
         {
-            return this->size_impl(std::min(current, impl_.second()[ural::_1].size()),
+            return this->size_impl(std::min(current, this->bases()[p].size()),
                                    placeholder<index+1>());
         }
 
@@ -159,7 +169,7 @@ namespace ural
         }
 
     private:
-        boost::compressed_pair<F, Bases_tuple> impl_;
+        ural::tuple<F, Bases_tuple> impl_;
     };
 
     /** @brief Итератор, задающий начало преобразующей последовательности
