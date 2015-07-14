@@ -258,7 +258,8 @@ namespace details
             auto in_moved = ::ural::sequence_fwd<Input>(in) | ural::moved;
             auto res = ural::copy_fn{}(std::move(in_moved),
                                        ::ural::sequence_fwd<Output>(out));
-            return ural::make_tuple(res[ural::_1].base(), res[ural::_2]);
+            return ural::make_tuple(std::move(res[ural::_1]).base(),
+                                    std::move(res[ural::_2]));
         }
     };
 

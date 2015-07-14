@@ -105,13 +105,20 @@ namespace ural
         }
 
         // Адаптор последовательности
+        //@{
         /** @brief Базовая последовательность
         @return Базовая последовательность
         */
-        Sequence const & base() const
+        Sequence const & base() const &
         {
             return this->base_;
         }
+
+        Sequence && base() &&
+        {
+            return std::move(this->base_);
+        }
+        //@}
 
     private:
         Sequence base_;

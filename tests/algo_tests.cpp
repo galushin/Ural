@@ -696,12 +696,10 @@ BOOST_AUTO_TEST_CASE(copy_backward_to_longer)
 
 // 25.3.2 Перемещение
 // move
-// @todo move Минимизация требований к последовательностям
-BOOST_AUTO_TEST_CASE(move_test)
+BOOST_AUTO_TEST_CASE(move_test_minimal)
 {
-    std::vector<std::string> src = {"Alpha", "Beta", "Gamma"};
-
-    auto const src_old = src;
+    std::vector<std::string> const src_old = {"Alpha", "Beta", "Gamma"};
+    ural_test::istringstream_helper<std::string> src(src_old.begin(), src_old.end());
 
     std::vector<std::string> xs;
 
@@ -709,11 +707,6 @@ BOOST_AUTO_TEST_CASE(move_test)
 
     BOOST_CHECK_EQUAL_COLLECTIONS(src_old.begin(), src_old.end(),
                                   xs.begin(), xs.end());
-
-    for(auto const & s : src)
-    {
-        BOOST_CHECK(ural::empty(s));
-    }
 }
 
 BOOST_AUTO_TEST_CASE(move_to_shorter_test)
