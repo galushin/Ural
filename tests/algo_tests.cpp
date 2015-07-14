@@ -107,15 +107,12 @@ BOOST_AUTO_TEST_CASE(for_each_test)
     auto const r_std = std::for_each(x_std.begin(), x_std.end(), +action);
     auto const r_ural = ural::for_each(x_ural, +action);
 
-    BOOST_CHECK(r_ural[ural::_1].traversed_front().begin() == x_ural.begin());
-    BOOST_CHECK(r_ural[ural::_1].traversed_front().end() == x_ural.end());
-    BOOST_CHECK(r_ural[ural::_1].begin() == x_ural.end());
-    BOOST_CHECK(r_ural[ural::_1].end() == x_ural.end());
+    BOOST_CHECK(r_ural[ural::_1].original() == ural::sequence(x_ural));
+    BOOST_CHECK(r_ural[ural::_1].traversed_front() == ural::sequence(x_ural));
 
     BOOST_CHECK_EQUAL(r_std, r_ural[ural::_2].target());
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
 BOOST_AUTO_TEST_CASE(for_each_input_sequence_test)
@@ -418,7 +415,7 @@ BOOST_AUTO_TEST_CASE(copy_test)
 
     ural::copy(xs, std::back_inserter(x1));
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(src.begin(), src.end(), x1.begin(), x1.end());
+    URAL_CHECK_EQUAL_RANGES(src, x1);
 }
 
 BOOST_AUTO_TEST_CASE(copy_to_shorter_test)
@@ -565,8 +562,7 @@ BOOST_AUTO_TEST_CASE(copy_if_test)
     std::vector<Type> r_ural;
     ural::copy_if(src_ural, r_ural | ural::back_inserter, pred);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
-                                  r_ural.begin(), r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
 }
 
 BOOST_AUTO_TEST_CASE(copy_if_test_to_longer_container)
@@ -588,8 +584,7 @@ BOOST_AUTO_TEST_CASE(copy_if_test_to_longer_container)
                       result_std - r_std.begin());
     BOOST_CHECK(result_ural[ural::_2].end() == r_ural.end());
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
-                                  r_ural.begin(), r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
 }
 
 BOOST_AUTO_TEST_CASE(copy_if_test_to_shorter_container)
@@ -610,8 +605,7 @@ BOOST_AUTO_TEST_CASE(copy_if_test_to_shorter_container)
     r_std.resize(r_ural.size());
 
     // Проверки
-    BOOST_CHECK_EQUAL_COLLECTIONS(r_ural.begin(), r_ural.end(),
-                                  r_std.begin(), r_std.end());
+    URAL_CHECK_EQUAL_RANGES(r_ural, r_std);
 
     BOOST_CHECK_EQUAL(::ural::count_if(result_ural[ural::_1].traversed_front(),
                                        pred),
@@ -632,8 +626,7 @@ BOOST_AUTO_TEST_CASE(copy_backward_test)
     auto src = ural::make_iterator_sequence(x_ural.begin(), x_ural.end() - 1);
     ural::copy_backward(src, x_ural);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
 BOOST_AUTO_TEST_CASE(copy_backward_to_shorter)
@@ -705,8 +698,7 @@ BOOST_AUTO_TEST_CASE(move_test_minimal)
 
     ural::move(src, xs | ural::back_inserter);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(src_old.begin(), src_old.end(),
-                                  xs.begin(), xs.end());
+    URAL_CHECK_EQUAL_RANGES(xs, src_old);
 }
 
 BOOST_AUTO_TEST_CASE(move_to_shorter_test)
@@ -790,8 +782,7 @@ BOOST_AUTO_TEST_CASE(move_backward_test)
     auto src = ural::make_iterator_sequence(x_ural.begin(), x_ural.end() - 1);
     ural::move_backward(src, x_ural);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
 BOOST_AUTO_TEST_CASE(move_backward_to_shorter_test)
@@ -938,8 +929,7 @@ BOOST_AUTO_TEST_CASE(transform_test)
     BOOST_CHECK(!result[ural::_1]);
     BOOST_CHECK(!!result[ural::_2]);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
 BOOST_AUTO_TEST_CASE(transform_test_return_value)
@@ -994,8 +984,7 @@ BOOST_AUTO_TEST_CASE(transform_2_test_shorter_in1_minimal)
 
     ural::transform(x1, x2, std::back_inserter(z_ural), f_ural);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(z_std.begin(), z_std.end(),
-                                  z_ural.begin(), z_ural.end());
+    URAL_CHECK_EQUAL_RANGES(z_std, z_ural);
 }
 
 BOOST_AUTO_TEST_CASE(transform_2_test_shorter_in1)
@@ -1018,8 +1007,7 @@ BOOST_AUTO_TEST_CASE(transform_2_test_shorter_in1)
     auto const r_ural = ural::transform(src1, src2, z_ural, f_ural);
 
     // Проверки
-    BOOST_CHECK_EQUAL_COLLECTIONS(z_std.begin(), z_std.end(),
-                                  z_ural.begin(), z_ural.end());
+    URAL_CHECK_EQUAL_RANGES(z_std, z_ural);
 
     BOOST_CHECK(r_ural[ural::_1].original() == ural::sequence(src1));
     BOOST_CHECK(r_ural[ural::_1].traversed_front() == ural::sequence(src1));
@@ -1054,8 +1042,7 @@ BOOST_AUTO_TEST_CASE(transform_2_test_shorter_in2)
 
     auto const r_ural = ural::transform(src1, src2, z_ural, f_ural);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(z_std.begin(), z_std.end(),
-                                  z_ural.begin(), z_ural.end());
+    URAL_CHECK_EQUAL_RANGES(z_std, z_ural);
 
     BOOST_CHECK(r_ural[ural::_1].original() == ural::sequence(src1));
     BOOST_CHECK(r_ural[ural::_1].begin() == src1.begin() + src2.size());
@@ -1124,8 +1111,7 @@ BOOST_AUTO_TEST_CASE(replace_test_different_types)
     BOOST_CHECK(r_ural.original() == ural::sequence(s_ural));
     BOOST_CHECK(r_ural.traversed_front() == ural::sequence(s_ural));
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(s_std.begin(), s_std.end(),
-                                  s_ural.begin(), s_ural.end());
+    URAL_CHECK_EQUAL_RANGES(s_std, s_ural);
 }
 
 BOOST_AUTO_TEST_CASE(replace_if_test)
@@ -1147,8 +1133,7 @@ BOOST_AUTO_TEST_CASE(replace_if_test)
     BOOST_CHECK(r_ural.original() == ural::sequence(x_ural));
     BOOST_CHECK(r_ural.traversed_front() == ural::sequence(x_ural));
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
 BOOST_AUTO_TEST_CASE(replace_copy_test_minimalistic)
@@ -1172,8 +1157,7 @@ BOOST_AUTO_TEST_CASE(replace_copy_test_minimalistic)
                        old_value, new_value);
 
     // Проверка
-    BOOST_CHECK_EQUAL_COLLECTIONS(s_std.begin(), s_std.end(),
-                                  s_ural.begin(), s_ural.end());
+    URAL_CHECK_EQUAL_RANGES(s_std, s_ural);
 }
 
 BOOST_AUTO_TEST_CASE(replace_copy_test_to_longer)
@@ -1196,8 +1180,7 @@ BOOST_AUTO_TEST_CASE(replace_copy_test_to_longer)
     // Проверка
     assert(s_ural.size() > source.size());
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(s_std.begin(), s_std.end(),
-                                  s_ural.begin(), s_ural.end());
+    URAL_CHECK_EQUAL_RANGES(s_std, s_ural);
 
     BOOST_CHECK(r_ural[ural::_1].original() == ural::sequence(source));
     BOOST_CHECK(r_ural[ural::_1].traversed_front() == ural::sequence(source));
@@ -1259,8 +1242,7 @@ BOOST_AUTO_TEST_CASE(replace_copy_with_pred_regression)
                        old_value, new_value, bin_pred);
 
     // Проверка
-    BOOST_CHECK_EQUAL_COLLECTIONS(s_std.begin(), s_std.end(),
-                                  s_ural.begin(), s_ural.end());
+    URAL_CHECK_EQUAL_RANGES(s_std, s_ural);
 }
 
 BOOST_AUTO_TEST_CASE(replace_copy_if_test_minimalistic)
@@ -1283,8 +1265,7 @@ BOOST_AUTO_TEST_CASE(replace_copy_if_test_minimalistic)
                           pred, new_value);
 
     // Проверка
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
 BOOST_AUTO_TEST_CASE(replace_copy_if_test_to_longer)
@@ -1306,8 +1287,7 @@ BOOST_AUTO_TEST_CASE(replace_copy_if_test_to_longer)
     // Проверка
     assert(s_ural.size() > source.size());
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(s_std.begin(), s_std.end(),
-                                  s_ural.begin(), s_ural.end());
+    URAL_CHECK_EQUAL_RANGES(s_std, s_ural);
 
     BOOST_CHECK(r_ural[ural::_1].original() == ural::sequence(source));
     BOOST_CHECK(r_ural[ural::_1].traversed_front() == ural::sequence(source));
@@ -1360,10 +1340,8 @@ BOOST_AUTO_TEST_CASE(fill_test)
     std::fill(x_std.begin(), x_std.end(), value);
     auto const r_ural = ural::fill(x_ural, value);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_ural.begin(), x_ural.end(),
-                                  z.begin(), z.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
+    URAL_CHECK_EQUAL_RANGES(x_ural, z);
 
     BOOST_CHECK(r_ural.original() == ural::sequence(x_ural));
     BOOST_CHECK(r_ural.traversed_front() == ural::sequence(x_ural));
@@ -1380,8 +1358,7 @@ BOOST_AUTO_TEST_CASE(fill_n_test_minimalistic)
     std::fill_n(v_std.begin(), n, value);
     ural::fill_n(v_ural, n, value);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
-                                  v_ural.begin(), v_ural.end());
+    URAL_CHECK_EQUAL_RANGES(v_ural, v_std);
 }
 
 BOOST_AUTO_TEST_CASE(fill_n_test)
@@ -1396,8 +1373,7 @@ BOOST_AUTO_TEST_CASE(fill_n_test)
 
     auto const r_ural = ural::fill_n(v_ural, n, value);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
-                                  v_ural.begin(), v_ural.end());
+    URAL_CHECK_EQUAL_RANGES(v_ural, v_std);
 
     BOOST_CHECK_EQUAL(r_ural.begin() - v_ural.begin(), r_std - v_std.begin());
     BOOST_CHECK_EQUAL(r_ural.begin() - v_ural.begin(), n);
@@ -1415,8 +1391,7 @@ BOOST_AUTO_TEST_CASE(fill_n_test_negative_n)
 
     auto const r_ural = ural::fill_n(v_ural, n, value);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
-                                  v_ural.begin(), v_ural.end());
+    URAL_CHECK_EQUAL_RANGES(v_ural, v_std);
 
     BOOST_CHECK(r_ural == ural::sequence(v_ural));
 }
@@ -1440,8 +1415,7 @@ BOOST_AUTO_TEST_CASE(generate_test)
     ural::generate(v_ural, gen);
 
     // Проверки
-    BOOST_CHECK_EQUAL_COLLECTIONS(v_ural.begin(), v_ural.end(),
-                                  v_std.begin(), v_std.end());
+    URAL_CHECK_EQUAL_RANGES(v_ural, v_std);
 }
 
 BOOST_AUTO_TEST_CASE(generate_test_return_value)
@@ -1462,8 +1436,7 @@ BOOST_AUTO_TEST_CASE(generate_test_return_value)
     auto const r_ural = ural::generate(v_ural, gen);
 
     // Проверки
-    BOOST_CHECK_EQUAL_COLLECTIONS(v_ural.begin(), v_ural.end(),
-                                  v_std.begin(), v_std.end());
+    URAL_CHECK_EQUAL_RANGES(v_std, v_ural);
 
     BOOST_CHECK(r_ural.original() == ural::sequence(v_ural));
     BOOST_CHECK(r_ural.traversed_front() == ural::sequence(v_ural));
@@ -1487,8 +1460,7 @@ BOOST_AUTO_TEST_CASE(generate_n_terse_test)
     ural::generate_n(r_ural | ural::back_inserter, n, gen);
 
     // Проверка
-    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
-                                  r_ural.begin(), r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
 }
 
 BOOST_AUTO_TEST_CASE(generate_n_return_value_negative_count_test)
@@ -1510,8 +1482,7 @@ BOOST_AUTO_TEST_CASE(generate_n_return_value_negative_count_test)
 
     BOOST_CHECK(r_ural == ural::sequence(v_ural));
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(v_ural.begin(), v_ural.end(),
-                                  v_ural_old.begin(), v_ural_old.end());
+    URAL_CHECK_EQUAL_RANGES(v_ural, v_ural_old);
 }
 
 BOOST_AUTO_TEST_CASE(generate_n_return_value_test)
@@ -1539,8 +1510,7 @@ BOOST_AUTO_TEST_CASE(generate_n_return_value_test)
     BOOST_CHECK_EQUAL(v_ural.end() - r_ural.begin(),
                       v_std.end() - r_std);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
-                                  v_ural.begin(), v_ural.end());
+    URAL_CHECK_EQUAL_RANGES(v_std, v_ural);
 }
 
 // 25.3.8 Удаление
@@ -1560,8 +1530,7 @@ BOOST_AUTO_TEST_CASE(remove_test_minimalistic)
     auto r_ural = ural::remove(v_ural, to_remove);
 
     // Проверки
-    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
-                                  v_ural.begin(), v_ural.end());
+    URAL_CHECK_EQUAL_RANGES(v_std, v_ural);
 
     BOOST_CHECK(r_ural.original() == ural::sequence(v_ural));
     BOOST_CHECK(!r_ural.traversed_back());
@@ -1719,8 +1688,7 @@ BOOST_AUTO_TEST_CASE(remove_if_test_minimalistic)
     ural::remove_if(s_ural, pred);
 
     //Проверка
-    BOOST_CHECK_EQUAL_COLLECTIONS(s_ural.begin(), s_ural.end(),
-                                  s_std.begin(), s_std.end());
+    URAL_CHECK_EQUAL_RANGES(s_ural, s_std);
 }
 
 BOOST_AUTO_TEST_CASE(remove_if_test)
@@ -1995,8 +1963,7 @@ BOOST_AUTO_TEST_CASE(reverse_forward_test)
 
         auto const result = ural::reverse(c_ural);
 
-        BOOST_CHECK_EQUAL_COLLECTIONS(c_std.begin(), c_std.end(),
-                                      c_ural.begin(), c_ural.end());
+        URAL_CHECK_EQUAL_RANGES(c_std, c_ural);
 
         BOOST_CHECK(result.traversed_begin() == c_ural.begin());
         BOOST_CHECK(result.begin() == c_ural.end());
@@ -2013,8 +1980,7 @@ BOOST_AUTO_TEST_CASE(reverse_test)
     std::reverse(x_std.begin(), x_std.end());
     auto const result = ural::reverse(x_ural);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 
     BOOST_CHECK(result.traversed_begin() == x_ural.begin());
     BOOST_CHECK(result.begin() == x_ural.end());
@@ -2032,8 +1998,7 @@ BOOST_AUTO_TEST_CASE(reversed_reverse_test)
     std::reverse(x_std.begin(), x_std.end());
     ural::reverse(x_ural | ural::reversed);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
 BOOST_AUTO_TEST_CASE(reverse_copy_test)
@@ -2050,8 +2015,7 @@ BOOST_AUTO_TEST_CASE(reverse_copy_test)
     ural::reverse_copy(src, r_ural | ural::back_inserter);
 
     // Проверка
-    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
-                                  r_ural.begin(), r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
 }
 
 BOOST_AUTO_TEST_CASE(reverse_copy_test_to_longer)
@@ -2069,8 +2033,7 @@ BOOST_AUTO_TEST_CASE(reverse_copy_test_to_longer)
 
     // Проверка
     assert(r_ural.size() > src.size());
-    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
-                                  r_ural.begin(), r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
 
     BOOST_CHECK(result_ural[ural::_1].original() == ural::sequence(src));
     BOOST_CHECK(result_ural[ural::_1].traversed_back() == ural::sequence(src));
@@ -2097,8 +2060,7 @@ BOOST_AUTO_TEST_CASE(rotate_test_minimalistic)
 
         ural::rotate(ural::next(ural::sequence(v_ural), i));
 
-        BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
-                                      v_ural.begin(), v_ural.end());
+        URAL_CHECK_EQUAL_RANGES(v_std, v_ural);
     }
 }
 
@@ -2115,8 +2077,7 @@ BOOST_AUTO_TEST_CASE(rotate_test)
 
         auto r_ural = ural::rotate(ural::sequence(v_ural) + i);
 
-        BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
-                                      v_ural.begin(), v_ural.end());
+        URAL_CHECK_EQUAL_RANGES(v_std, v_ural);
 
         BOOST_CHECK(r_ural.original() == ural::sequence(v_ural));
 
@@ -2134,12 +2095,11 @@ BOOST_AUTO_TEST_CASE(rotate_test)
                               ural::size(r_ural.traversed_front()));
         }
 
-        BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
-                                      v_ural.begin(), v_ural.end());
+        URAL_CHECK_EQUAL_RANGES(v_std, v_ural);
+
         ural::rotate(r_ural);
 
-        BOOST_CHECK_EQUAL_COLLECTIONS(v.begin(), v.end(),
-                                      v_ural.begin(), v_ural.end());
+        URAL_CHECK_EQUAL_RANGES(v, v_ural);
     }
 }
 
@@ -2160,8 +2120,7 @@ BOOST_AUTO_TEST_CASE(rotate_copy_test)
 
         ural::rotate_copy(s, r_ural | ural::front_inserter);
 
-        BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
-                                      r_ural.begin(), r_ural.end());
+        URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
     }
 }
 
@@ -2190,8 +2149,7 @@ BOOST_AUTO_TEST_CASE(rotate_copy_return_test)
         BOOST_CHECK_EQUAL(ural::to_signed(d_ural.size() - src.size()),
                           r_ural[ural::_2].size());
 
-        BOOST_CHECK_EQUAL_COLLECTIONS(d_std.begin(), d_std.end(),
-                                      d_ural.begin(), d_ural.end());
+        URAL_CHECK_EQUAL_RANGES(d_std, d_ural);
     }
 }
 
@@ -2215,8 +2173,7 @@ BOOST_AUTO_TEST_CASE(rotate_copy_to_shorter)
         ural::copy(d_std, z);
 
         // Проверки
-        BOOST_CHECK_EQUAL_COLLECTIONS(d_ural.begin(), d_ural.end(),
-                                      z.begin(), z.end());
+        URAL_CHECK_EQUAL_RANGES(d_ural, z);
     }
 }
 
@@ -2329,8 +2286,7 @@ BOOST_AUTO_TEST_CASE(stable_partition_test_empty)
     std::stable_partition(v_std.begin(), v_std.end(), pred);
     auto r_ural = ural::stable_partition(v_ural, pred);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
-                                  v_ural.begin(), v_ural.end());
+    URAL_CHECK_EQUAL_RANGES(v_std, v_ural);
 
     BOOST_CHECK(::ural::all_of(r_ural.traversed_front(), pred));
     BOOST_CHECK(std::all_of(r_ural.traversed_begin(), r_ural.begin(), pred));
@@ -2351,8 +2307,7 @@ BOOST_AUTO_TEST_CASE(stable_partition_test_1_2)
     std::stable_partition(v_std.begin(), v_std.end(), pred);
     auto r_ural = ural::stable_partition(v_ural, pred);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
-                                  v_ural.begin(), v_ural.end());
+    URAL_CHECK_EQUAL_RANGES(v_std, v_ural);
 
     BOOST_CHECK(::ural::all_of(r_ural.traversed_front(), pred));
     BOOST_CHECK(std::all_of(r_ural.traversed_begin(), r_ural.begin(), pred));
@@ -2373,8 +2328,7 @@ BOOST_AUTO_TEST_CASE(stable_partition_test_2_1)
     std::stable_partition(v_std.begin(), v_std.end(), pred);
     auto r_ural = ural::stable_partition(v_ural, pred);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
-                                  v_ural.begin(), v_ural.end());
+    URAL_CHECK_EQUAL_RANGES(v_std, v_ural);
 
     BOOST_CHECK(::ural::all_of(r_ural.traversed_front(), pred));
     BOOST_CHECK(std::all_of(r_ural.traversed_begin(), r_ural.begin(), pred));
@@ -2395,8 +2349,7 @@ BOOST_AUTO_TEST_CASE(stable_partition_test_3)
     std::stable_partition(v_std.begin(), v_std.end(), pred);
     auto r_ural = ural::stable_partition(v_ural, pred);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
-                                  v_ural.begin(), v_ural.end());
+    URAL_CHECK_EQUAL_RANGES(v_std, v_ural);
 
     BOOST_CHECK(::ural::all_of(r_ural.traversed_front(), pred));
     BOOST_CHECK(std::all_of(r_ural.traversed_begin(), r_ural.begin(), pred));
@@ -2417,8 +2370,7 @@ BOOST_AUTO_TEST_CASE(stable_partition_test_4)
     std::stable_partition(v_std.begin(), v_std.end(), pred);
     auto r_ural = ural::stable_partition(v_ural, pred);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
-                                  v_ural.begin(), v_ural.end());
+    URAL_CHECK_EQUAL_RANGES(v_std, v_ural);
 
     BOOST_CHECK(::ural::all_of(r_ural.traversed_front(), pred));
     BOOST_CHECK(std::all_of(r_ural.traversed_begin(), r_ural.begin(), pred));
@@ -2444,8 +2396,7 @@ BOOST_AUTO_TEST_CASE(stable_partition_test_9)
 
     BOOST_CHECK(ural::is_permutation(v_ural, src));
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
-                                  v_ural.begin(), v_ural.end());
+    URAL_CHECK_EQUAL_RANGES(v_std, v_ural);
 
     BOOST_CHECK(::ural::all_of(r_ural.traversed_front(), pred));
     BOOST_CHECK(std::all_of(r_ural.traversed_begin(), r_ural.begin(), pred));
@@ -2549,8 +2500,7 @@ BOOST_AUTO_TEST_CASE(sort_test)
     std::sort(x_std.begin(), x_std.end());
     auto const result = ural::sort(x_ural);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 
     BOOST_CHECK(!result);
     BOOST_CHECK(::ural::sequence(x_ural) == result.traversed_front());
@@ -2592,8 +2542,7 @@ BOOST_AUTO_TEST_CASE(stable_sort_test)
     std::stable_sort(x_std.begin(), x_std.end());
     auto const result = ural::stable_sort(x_ural);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 
     BOOST_CHECK(!result);
     BOOST_CHECK(::ural::sequence(x_ural) == result.traversed_front());
@@ -2646,8 +2595,7 @@ BOOST_AUTO_TEST_CASE(partial_sort_copy_test)
     BOOST_CHECK_EQUAL(r1_std.end() - pos_std, pos_ural.size());
     BOOST_CHECK_EQUAL(pos_std - r1_std.begin(), pos_ural.traversed_front().size());
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(r1_std.begin(), r1_std.end(),
-                                  r1_ural.begin(), r1_ural.end());
+    URAL_CHECK_EQUAL_RANGES(r1_std, r1_ural);
 }
 
 BOOST_AUTO_TEST_CASE(partial_sort_copy_test_custom_predicate_to_greater)
@@ -2666,8 +2614,7 @@ BOOST_AUTO_TEST_CASE(partial_sort_copy_test_custom_predicate_to_greater)
     BOOST_CHECK_EQUAL(r2_std.end() - pos_std, pos_ural.size());
     BOOST_CHECK_EQUAL(pos_std - r2_std.begin(), pos_ural.traversed_front().size());
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(r2_std.begin(), r2_std.end(),
-                                  r2_ural.begin(), r2_ural.end());
+    URAL_CHECK_EQUAL_RANGES(r2_std, r2_ural);
 }
 
 BOOST_AUTO_TEST_CASE(is_sorted_test)
@@ -2814,8 +2761,7 @@ BOOST_AUTO_TEST_CASE(merge_test)
     ural::merge(v1, v2, ural_merge | ural::back_inserter);
 
     // Проверка
-    BOOST_CHECK_EQUAL_COLLECTIONS(std_merge.begin(), std_merge.end(),
-                                  ural_merge.begin(), ural_merge.end());
+    URAL_CHECK_EQUAL_RANGES(std_merge, ural_merge);
 }
 
 BOOST_AUTO_TEST_CASE(merge_test_lesser_in_1)
@@ -2923,8 +2869,7 @@ BOOST_AUTO_TEST_CASE(merge_test_exhaust_out)
                std::back_inserter(std_merge));
 
     // Проверка
-    BOOST_CHECK_EQUAL_COLLECTIONS(ural_merge.begin(), ural_merge.end(),
-                                  std_merge.begin(), std_merge.end());
+    URAL_CHECK_EQUAL_RANGES(ural_merge, std_merge);
 }
 
 BOOST_AUTO_TEST_CASE(merge_test_minimalistic)
@@ -2949,8 +2894,7 @@ BOOST_AUTO_TEST_CASE(merge_test_minimalistic)
                 ural_merge | ural::back_inserter);
 
     // Проверка
-    BOOST_CHECK_EQUAL_COLLECTIONS(std_merge.begin(), std_merge.end(),
-                                  ural_merge.begin(), ural_merge.end());
+    URAL_CHECK_EQUAL_RANGES(std_merge, ural_merge);
 }
 
 BOOST_AUTO_TEST_CASE(inplace_merge_test_empty)
@@ -2966,8 +2910,7 @@ BOOST_AUTO_TEST_CASE(inplace_merge_test_empty)
     s += pos;
     auto result = ural::inplace_merge(s);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 
     BOOST_CHECK(result.begin() == x_ural.end());
     BOOST_CHECK(result.end()   == x_ural.end());
@@ -2988,8 +2931,7 @@ BOOST_AUTO_TEST_CASE(inplace_merge_test_1)
     s += pos;
     ural::inplace_merge(s);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
 BOOST_AUTO_TEST_CASE(inplace_merge_test_1_2)
@@ -3005,8 +2947,7 @@ BOOST_AUTO_TEST_CASE(inplace_merge_test_1_2)
     s += pos;
     ural::inplace_merge(s);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
 BOOST_AUTO_TEST_CASE(inplace_merge_test_2_1)
@@ -3022,8 +2963,7 @@ BOOST_AUTO_TEST_CASE(inplace_merge_test_2_1)
     s += pos;
     ural::inplace_merge(s);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
 BOOST_AUTO_TEST_CASE(inplace_merge_test_2_1_3)
@@ -3039,8 +2979,7 @@ BOOST_AUTO_TEST_CASE(inplace_merge_test_2_1_3)
     s += pos;
     ural::inplace_merge(s);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
 BOOST_AUTO_TEST_CASE(inplace_merge_test_4)
@@ -3056,8 +2995,7 @@ BOOST_AUTO_TEST_CASE(inplace_merge_test_4)
     s += pos;
     ural::inplace_merge(s);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
 BOOST_AUTO_TEST_CASE(inplace_merge_test_10)
@@ -3073,8 +3011,7 @@ BOOST_AUTO_TEST_CASE(inplace_merge_test_10)
     s += pos;
     auto result = ural::inplace_merge(s);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
     BOOST_CHECK(result.original() == ural::sequence(x_ural));
     BOOST_CHECK(!result);
     BOOST_CHECK(!result.traversed_back());
@@ -3149,8 +3086,7 @@ BOOST_AUTO_TEST_CASE(set_union_test)
                     ural::make_istream_sequence<int>(is2),
                     r_ural | ural::back_inserter);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
-                                  r_ural.begin(), r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(z, r_ural);
 }
 
 BOOST_AUTO_TEST_CASE(set_union_test_shorter_in_1)
@@ -3164,8 +3100,7 @@ BOOST_AUTO_TEST_CASE(set_union_test_shorter_in_1)
     std::vector<int> r_ural;
     auto result = ural::set_union(is1, is2, r_ural | ural::back_inserter);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
-                                  r_ural.begin(), r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(z, r_ural);
 
     BOOST_CHECK(!result[ural::_1]);
     BOOST_CHECK(!result[ural::_2]);
@@ -3183,8 +3118,7 @@ BOOST_AUTO_TEST_CASE(set_union_test_shorter_in_2)
     std::vector<int> r_ural;
     auto result = ural::set_union(is1, is2, r_ural | ural::back_inserter);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
-                                  r_ural.begin(), r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(z, r_ural);
 
     BOOST_CHECK(!result[ural::_1]);
     BOOST_CHECK(!result[ural::_2]);
@@ -3237,8 +3171,7 @@ BOOST_AUTO_TEST_CASE(set_intersection_test)
                            ural::make_istream_sequence<int>(is2),
                            r_ural | ural::back_inserter);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
-                                  r_ural.begin(), r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(z, r_ural);
 }
 
 BOOST_AUTO_TEST_CASE(set_intersection_test_shorter_in_1)
@@ -3253,8 +3186,7 @@ BOOST_AUTO_TEST_CASE(set_intersection_test_shorter_in_1)
     std::vector<int> r_ural;
     auto result = ural::set_intersection(is1, is2, r_ural | ural::back_inserter);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
-                                  r_ural.begin(), r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(z, r_ural);
 
     BOOST_CHECK(!result[ural::_1]);
 
@@ -3278,8 +3210,7 @@ BOOST_AUTO_TEST_CASE(set_intersection_test_shorter_in_2)
     std::vector<int> r_ural;
     auto result = ural::set_intersection(is1, is2, r_ural | ural::back_inserter);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
-                                  r_ural.begin(), r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(z, r_ural);
 
     BOOST_CHECK(!!result[ural::_1]);
     BOOST_CHECK(!result[ural::_2]);
@@ -3321,8 +3252,7 @@ BOOST_AUTO_TEST_CASE(set_intersection_test_shorter_out)
                           result[ural::_2].begin(),
                           std::back_inserter(r_std));
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(r_ural.begin(), r_ural.end(),
-                                  r_std.begin(), r_std.end());
+    URAL_CHECK_EQUAL_RANGES(r_ural, r_std);
 }
 
 BOOST_AUTO_TEST_CASE(set_difference_test)
@@ -3334,8 +3264,7 @@ BOOST_AUTO_TEST_CASE(set_difference_test)
     std::vector<int> r_ural;
     ural::set_difference(is1, is2, r_ural | ural::back_inserter);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
-                                  r_ural.begin(), r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(z, r_ural);
 }
 
 BOOST_AUTO_TEST_CASE(set_difference_test_unexhausted_2)
@@ -3347,8 +3276,7 @@ BOOST_AUTO_TEST_CASE(set_difference_test_unexhausted_2)
     std::vector<int> r_ural;
     ural::set_difference(is1, is2, r_ural | ural::back_inserter);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
-                                  r_ural.begin(), r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(z, r_ural);
 }
 
 BOOST_AUTO_TEST_CASE(set_difference_test_to_short)
@@ -3382,8 +3310,8 @@ BOOST_AUTO_TEST_CASE(set_difference_test_to_short)
                         result[ural::_2].traversed_begin(),
                         result[ural::_2].begin(),
                         r_std | ural::back_inserter);
-    BOOST_CHECK_EQUAL_COLLECTIONS(r_ural.begin(), r_ural.end(),
-                                  r_std.begin(), r_std.end());
+
+    URAL_CHECK_EQUAL_RANGES(r_ural, r_std);
 }
 
 BOOST_AUTO_TEST_CASE(set_symmetric_difference_test)
@@ -3398,8 +3326,7 @@ BOOST_AUTO_TEST_CASE(set_symmetric_difference_test)
     std::vector<int> r_ural;
     ural::set_symmetric_difference(x1, x2, r_ural | ural::back_inserter);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
-                                  r_ural.begin(), r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(z, r_ural);
 }
 
 BOOST_AUTO_TEST_CASE(set_symmetric_difference_regression)
@@ -3413,8 +3340,7 @@ BOOST_AUTO_TEST_CASE(set_symmetric_difference_regression)
     std::vector<int> r_ural;
     ural::set_symmetric_difference(x1, x2, r_ural | ural::back_inserter);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
-                                  r_ural.begin(), r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(z, r_ural);
 }
 
 BOOST_AUTO_TEST_CASE(set_symmetric_difference_from_istream)
@@ -3428,8 +3354,7 @@ BOOST_AUTO_TEST_CASE(set_symmetric_difference_from_istream)
     std::vector<int> r_ural;
     ural::set_symmetric_difference(x1, x2, r_ural | ural::back_inserter);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
-                                  r_ural.begin(), r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(z, r_ural);
 }
 
 BOOST_AUTO_TEST_CASE(set_symmetric_difference_to_short)
@@ -3465,8 +3390,7 @@ BOOST_AUTO_TEST_CASE(set_symmetric_difference_to_short)
                                   result[ural::_2].traversed_begin(),
                                   result[ural::_2].begin(),
                                   std::back_inserter(r_std));
-    BOOST_CHECK_EQUAL_COLLECTIONS(r_ural.begin(), r_ural.end(),
-                                  r_std.begin(), r_std.end());
+    URAL_CHECK_EQUAL_RANGES(r_ural, r_std);
 }
 
 BOOST_AUTO_TEST_CASE(regression_33_set_operations_first_base)
@@ -3855,7 +3779,7 @@ BOOST_AUTO_TEST_CASE(unqiue_fn_const_iterator_test)
 
     ural::erase(v1, ural::make_iterator_sequence(v1.cbegin() + n, v1.cend()));
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(v1.begin(), v1.end(), v2.begin(), v2.end());
+    URAL_CHECK_EQUAL_RANGES(v1, v2);
 }
 
 BOOST_AUTO_TEST_CASE(unique_erase_combination_test)
@@ -3874,8 +3798,7 @@ BOOST_AUTO_TEST_CASE(unique_erase_combination_test)
     ural::erase(v_ural, to_erase);
 
     // Сравнение результатов
-    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
-                                  v_ural.begin(), v_ural.end());
+    URAL_CHECK_EQUAL_RANGES(v_std, v_ural);
 }
 
 BOOST_AUTO_TEST_CASE(unique_erase_test)
@@ -3893,8 +3816,7 @@ BOOST_AUTO_TEST_CASE(unique_erase_test)
     ural::unique_erase(v_ural);
 
     // Сравнение результатов
-    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
-                                  v_ural.begin(), v_ural.end());
+    URAL_CHECK_EQUAL_RANGES(v_std, v_ural);
 }
 
 // find_first_not_of

@@ -19,6 +19,9 @@
 
 #define URAL_STATIC_ASSERT_EQUAL(E, G) static_assert( ((E) == (G)) , "");
 
+#define URAL_CHECK_EQUAL_RANGES(G, E) \
+    BOOST_CHECK_EQUAL_COLLECTIONS((G).begin(), (G).end(), (E).begin(), (E).end())
+
 #include <ural/algorithm.hpp>
 #include <ural/sequence/iostream.hpp>
 
