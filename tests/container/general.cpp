@@ -25,6 +25,8 @@
 #include <boost/mpl/front_inserter.hpp>
 #include <boost/test/unit_test.hpp>
 
+#include "../defs.hpp"
+
 // Общие требования к контейнерам (23.2)
 
 namespace
@@ -125,8 +127,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_copy_constructor, Container, Containers_
 
     BOOST_CHECK(u == x);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(),
-                                  u.begin(), u.end());
+    URAL_CHECK_EQUAL_RANGES(x, u);
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(container_move_constructor, Container, Containers_types)
@@ -143,8 +144,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_move_constructor, Container, Containers_
     BOOST_CHECK_EQUAL(old_begin, x1.cbegin());
     BOOST_CHECK_EQUAL(old_end, x1.cend());
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_old.cbegin(), x_old.cend(),
-                                  x1.begin(), x1.end());
+    URAL_CHECK_EQUAL_RANGES(ural::as_const(x_old), x1);
     BOOST_CHECK(x.empty());
 }
 
@@ -168,8 +168,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_move_assign,
     static_assert(std::is_same<Result_type, Container&>::value,
                   "must be reference to Container");
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), y_old.begin(), y_old.end());
-    BOOST_CHECK_EQUAL_COLLECTIONS(y.begin(), y.end(), x_old.begin(), x_old.end());
+    URAL_CHECK_EQUAL_RANGES(x, y_old);
+    URAL_CHECK_EQUAL_RANGES(y, x_old);
 
     BOOST_CHECK_EQUAL(x.begin(), y_begin_old);
     BOOST_CHECK_EQUAL(x.end(), y_end_old);
@@ -486,7 +486,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_copy_with_other_allocator,
     Alloc alloc(42);
     Container const u(t, alloc);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(t.begin(), t.end(), u.begin(), u.end());
+    URAL_CHECK_EQUAL_RANGES(t, u);
     BOOST_CHECK_EQUAL(alloc.id(), u.get_allocator().id());
     BOOST_CHECK(alloc == u.get_allocator());
 }
@@ -504,7 +504,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_move_constructor_table_99,
 
     Container const u(std::move(t));
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(t_old.begin(), t_old.end(), u.begin(), u.end());
+    URAL_CHECK_EQUAL_RANGES(t_old, u);
     BOOST_CHECK_EQUAL(t_old_data, u.data());
     BOOST_CHECK_EQUAL(t_old.get_allocator().id(), u.get_allocator().id());
     BOOST_CHECK(t_old.get_allocator() == u.get_allocator());
@@ -526,8 +526,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_move_with_same_allocator,
 
     BOOST_CHECK(t.empty());
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(t_old.begin(), t_old.end(),
-                                  u.begin(), u.end());
+    URAL_CHECK_EQUAL_RANGES(t_old, u);
 }
 
 // @todo Таблица 99 строки 6, 7, 8,9
@@ -548,7 +547,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_assign_n_value_worse_then_iters_regressi
     z.assign(typename Container::size_type(13),
              ::ural::ValueType<Container>(42));
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), x.begin(), x.end());
+    URAL_CHECK_EQUAL_RANGES(z, x);
 }
 // 23.2.4 Ассоциативные контейнеры
 // 23.2.5 Нуепорядоченные ассоциативные контейнеры
@@ -588,8 +587,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(shrink_to_fit_test, Container, Reserving_container
 
     cs.shrink_to_fit();
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(cs.begin(), cs.end(),
-                                  cs_old.begin(), cs_old.end());
+    URAL_CHECK_EQUAL_RANGES(cs, cs_old);
     BOOST_CHECK_EQUAL(cs.capacity(), cs.size());
 }
 

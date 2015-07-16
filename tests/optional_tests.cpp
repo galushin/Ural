@@ -20,6 +20,8 @@ https://github.com/akrzemi1/Optional/blob/master/test_optional.cpp
 #include <ural/algorithm.hpp>
 
 #include <boost/test/unit_test.hpp>
+#include "../tests/defs.hpp"
+
 #include <boost/concept/assert.hpp>
 
 #include <ostream>
@@ -1858,8 +1860,7 @@ BOOST_AUTO_TEST_CASE(optional_emplace_test)
     Type const z(5, 2);
 
     BOOST_CHECK(!!x);
-    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
-                                  x.value().begin(), x.value().end());
+    URAL_CHECK_EQUAL_RANGES(z, x.value());
 }
 
 /* Основано на github.com/akrzemi1/Optional/blob/master/test_type_traits.cpp

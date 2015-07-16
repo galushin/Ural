@@ -23,6 +23,8 @@
 
 #include <forward_list>
 
+#include "../defs.hpp"
+
 BOOST_AUTO_TEST_CASE(vector_default_template_param_types)
 {
     typedef int T;
@@ -58,8 +60,7 @@ BOOST_AUTO_TEST_CASE(vector_move_with_different_allocator)
 
     Vector const u(std::move(t), alloc);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(t_old.begin(), t_old.end(),
-                                  u.begin(), u.end());
+    URAL_CHECK_EQUAL_RANGES(t_old, u);
     BOOST_CHECK_EQUAL(alloc.id(), u.get_allocator().id());
 
     for(auto const & s : t)
@@ -103,8 +104,7 @@ BOOST_AUTO_TEST_CASE(vector_construct_from_input_iterators)
 
     // @todo Число перераспределений памяти должно быть логарифмическим
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(),
-                                  z.begin(), z.end());
+    URAL_CHECK_EQUAL_RANGES(x, z);
 }
 
 BOOST_AUTO_TEST_CASE(vector_construct_from_forward_iterators)
@@ -122,8 +122,7 @@ BOOST_AUTO_TEST_CASE(vector_construct_from_forward_iterators)
 
     BOOST_CHECK_EQUAL(Alloc::allocations_count(), 1U);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(),
-                                  z.begin(), z.end());
+    URAL_CHECK_EQUAL_RANGES(x, z);
 }
 
 BOOST_AUTO_TEST_CASE(vector_construct_from_init_list)
@@ -134,8 +133,7 @@ BOOST_AUTO_TEST_CASE(vector_construct_from_init_list)
     std::vector<T> const x_std = {1, 2, 3, 4, 5};
     Vector const x_ural = {1, 2, 3, 4, 5};
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_ural.begin(), x_ural.end(),
-                                  x_std.begin(), x_std.end());
+    URAL_CHECK_EQUAL_RANGES(x_ural, x_std);
 }
 
 BOOST_AUTO_TEST_CASE(vector_clear_test)
@@ -169,7 +167,7 @@ BOOST_AUTO_TEST_CASE(vector_assign_operator_init_list_shrink)
 
     x = {1, 3, 5, 7, 9};
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
+    URAL_CHECK_EQUAL_RANGES(x, z);
 }
 
 BOOST_AUTO_TEST_CASE(vector_assign_operator_init_list_grow)
@@ -184,7 +182,7 @@ BOOST_AUTO_TEST_CASE(vector_assign_operator_init_list_grow)
 
     x = {1, 3, 5, 7, 9};
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
+    URAL_CHECK_EQUAL_RANGES(x, z);
 }
 
 BOOST_AUTO_TEST_CASE(vector_assign_operator_init_list_exact)
@@ -199,7 +197,7 @@ BOOST_AUTO_TEST_CASE(vector_assign_operator_init_list_exact)
 
     x = {1, 3, 5, 7, 9};
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
+    URAL_CHECK_EQUAL_RANGES(x, z);
 }
 
 BOOST_AUTO_TEST_CASE(vector_assign_input_iterators)
@@ -220,8 +218,7 @@ BOOST_AUTO_TEST_CASE(vector_assign_input_iterators)
 
     x.assign(first, last);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(),
-                                  z.begin(), z.end());
+    URAL_CHECK_EQUAL_RANGES(x, z);
 }
 
 BOOST_AUTO_TEST_CASE(vector_assign_n_shrink)
@@ -238,7 +235,7 @@ BOOST_AUTO_TEST_CASE(vector_assign_n_shrink)
 
     auto const z = Vector(n1, v1);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
+    URAL_CHECK_EQUAL_RANGES(x, z);
 }
 
 BOOST_AUTO_TEST_CASE(vector_assign_n_grow)
@@ -255,7 +252,7 @@ BOOST_AUTO_TEST_CASE(vector_assign_n_grow)
 
     auto const z = Vector(n1, v1);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
+    URAL_CHECK_EQUAL_RANGES(x, z);
 }
 
 BOOST_AUTO_TEST_CASE(vector_assign_n_exact)
@@ -272,7 +269,7 @@ BOOST_AUTO_TEST_CASE(vector_assign_n_exact)
 
     auto const z = Vector(n1, v1);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
+    URAL_CHECK_EQUAL_RANGES(x, z);
 }
 
 BOOST_AUTO_TEST_CASE(vector_insert_n)
@@ -290,7 +287,7 @@ BOOST_AUTO_TEST_CASE(vector_insert_n)
 
     Vector const z = {1, 3, 42, 42, 5, 7};
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
+    URAL_CHECK_EQUAL_RANGES(x, z);
 }
 
 BOOST_AUTO_TEST_CASE(vector_front_test)
@@ -400,8 +397,7 @@ BOOST_AUTO_TEST_CASE(vector_pop_back_test)
     xs.pop_back();
 
     BOOST_CHECK_EQUAL(old_data, xs.data());
-    BOOST_CHECK_EQUAL_COLLECTIONS(src.begin(), src.end(),
-                                  xs.begin(), xs.end());
+    URAL_CHECK_EQUAL_RANGES(src, xs);
 }
 
 BOOST_AUTO_TEST_CASE(vector_insert_middle_range)
@@ -423,8 +419,7 @@ BOOST_AUTO_TEST_CASE(vector_insert_middle_range)
     BOOST_CHECK_EQUAL(r_std - v_std.begin(), ural::to_signed(pos));
     BOOST_CHECK_EQUAL(r_ural - v_ural.cbegin(), ural::to_signed(pos));
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.cbegin(), v_std.cend(),
-                                  v_ural.cbegin(), v_ural.cend());
+    URAL_CHECK_EQUAL_RANGES(ural::as_const(v_std), ural::as_const(v_ural));
 }
 
 BOOST_AUTO_TEST_CASE(vector_insert_middle)
@@ -444,8 +439,7 @@ BOOST_AUTO_TEST_CASE(vector_insert_middle)
     BOOST_CHECK_EQUAL(result - x.begin(), pos);
     BOOST_CHECK_EQUAL(*result, new_value);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(),
-                                  z.begin(), z.end());
+    URAL_CHECK_EQUAL_RANGES(x, z);
 }
 
 BOOST_AUTO_TEST_CASE(vector_insert_middle_with_move)
@@ -468,8 +462,7 @@ BOOST_AUTO_TEST_CASE(vector_insert_middle_with_move)
     BOOST_CHECK_EQUAL(*result, new_value);
     BOOST_CHECK_EQUAL(old_obj_data, result->data());
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(),
-                                  z.begin(), z.end());
+    URAL_CHECK_EQUAL_RANGES(x, z);
 }
 
 BOOST_AUTO_TEST_CASE(vector_insert_middle_init_list)
@@ -489,8 +482,7 @@ BOOST_AUTO_TEST_CASE(vector_insert_middle_init_list)
     BOOST_CHECK_EQUAL(r_std - v_std.begin(), ural::to_signed(pos));
     BOOST_CHECK_EQUAL(r_ural - v_ural.cbegin(), ural::to_signed(pos));
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.cbegin(), v_std.cend(),
-                                  v_ural.cbegin(), v_ural.cend());
+    URAL_CHECK_EQUAL_RANGES(ural::as_const(v_std), ural::as_const(v_ural));
 }
 
 BOOST_AUTO_TEST_CASE(vector_erase_one)
@@ -507,7 +499,7 @@ BOOST_AUTO_TEST_CASE(vector_erase_one)
     BOOST_CHECK_EQUAL(result - x.cbegin(), index);
 
     ural::vector<int> const z = {1, 2, 3, 4, 5};
-    BOOST_CHECK_EQUAL_COLLECTIONS(x.cbegin(), x.cend(), z.begin(), z.end());
+    URAL_CHECK_EQUAL_RANGES(ural::as_const(x), z);
 }
 
 // 23.3.6
@@ -548,7 +540,7 @@ BOOST_AUTO_TEST_CASE(vector_resize_grow)
 
     Vector const z(x.size(), s0);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
+    URAL_CHECK_EQUAL_RANGES(x, z);
 }
 
 BOOST_AUTO_TEST_CASE(vector_resize_shrink)
@@ -568,7 +560,7 @@ BOOST_AUTO_TEST_CASE(vector_resize_shrink)
 
     x.resize(new_size, s0);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
+    URAL_CHECK_EQUAL_RANGES(x, z);
 }
 
 BOOST_AUTO_TEST_CASE(vector_resize_same_size)
@@ -583,7 +575,7 @@ BOOST_AUTO_TEST_CASE(vector_resize_same_size)
 
     x.resize(x.size(), s0);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), x_old.begin(), x_old.end());
+    URAL_CHECK_EQUAL_RANGES(x, x_old);
 }
 
 BOOST_AUTO_TEST_CASE(vector_resize_grow_default)
@@ -601,7 +593,7 @@ BOOST_AUTO_TEST_CASE(vector_resize_grow_default)
 
     Vector const z(x.size(), s0);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
+    URAL_CHECK_EQUAL_RANGES(x, z);
 }
 
 BOOST_AUTO_TEST_CASE(vector_resize_shrink_default)
@@ -619,7 +611,7 @@ BOOST_AUTO_TEST_CASE(vector_resize_shrink_default)
 
     x.resize(new_size);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
+    URAL_CHECK_EQUAL_RANGES(x, z);
 }
 
 BOOST_AUTO_TEST_CASE(vector_resize_same_size_default)
@@ -632,7 +624,7 @@ BOOST_AUTO_TEST_CASE(vector_resize_same_size_default)
 
     x.resize(x.size());
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), x_old.begin(), x_old.end());
+    URAL_CHECK_EQUAL_RANGES(x, x_old);
 }
 
 // Качество реализации

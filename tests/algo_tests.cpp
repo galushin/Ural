@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE(for_each_test)
 BOOST_AUTO_TEST_CASE(for_each_input_sequence_test)
 {
     std::vector<int> const x{1, 2, 3, 4, 5};
-    ural_test::istringstream_helper<int> x_ural(x.begin(), x.end());
+    ural_test::istringstream_helper<int> x_ural(x);
 
     int sum = 0;
     auto acc = [&sum](auto x) { sum += x; };
@@ -409,7 +409,7 @@ BOOST_AUTO_TEST_CASE(search_n_test)
 BOOST_AUTO_TEST_CASE(copy_test)
 {
     std::vector<int> const src = {1, 2, 3, 4};
-    ural_test::istringstream_helper<int> xs(src.begin(), src.end());
+    ural_test::istringstream_helper<int> xs(src);
 
     std::vector<int> x1;
 
@@ -491,7 +491,7 @@ BOOST_AUTO_TEST_CASE(copy_to_ostream_test)
 BOOST_AUTO_TEST_CASE(copy_n_test)
 {
     std::string const str = "1234567890";
-    ural_test::istringstream_helper<char> src(str.begin(), str.end());
+    ural_test::istringstream_helper<char> src(str);
     std::string r_std;
     std::string r_ural;
 
@@ -552,7 +552,7 @@ BOOST_AUTO_TEST_CASE(copy_if_test)
 {
     typedef int Type;
     std::vector<Type> const src_std = {25, -15, 5, -5, 15};
-    ural_test::istringstream_helper<Type> src_ural(src_std.begin(), src_std.end());
+    ural_test::istringstream_helper<Type> src_ural(src_std);
 
     auto const pred = [](Type i){return !(i<0);};
 
@@ -692,7 +692,7 @@ BOOST_AUTO_TEST_CASE(copy_backward_to_longer)
 BOOST_AUTO_TEST_CASE(move_test_minimal)
 {
     std::vector<std::string> const src_old = {"Alpha", "Beta", "Gamma"};
-    ural_test::istringstream_helper<std::string> src(src_old.begin(), src_old.end());
+    ural_test::istringstream_helper<std::string> src(src_old);
 
     std::vector<std::string> xs;
 
@@ -970,8 +970,8 @@ BOOST_AUTO_TEST_CASE(transform_2_test_shorter_in1_minimal)
 
     BOOST_CHECK_LE(src1.size(), src2.size());
 
-    ural_test::istringstream_helper<int> x1(src1.begin(), src1.end());
-    ural_test::istringstream_helper<int> x2(src2.begin(), src2.end());
+    ural_test::istringstream_helper<int> x1(src1);
+    ural_test::istringstream_helper<int> x2(src2);
 
     std::vector<bool> z_std;
     std::vector<bool> z_ural;
@@ -1249,7 +1249,7 @@ BOOST_AUTO_TEST_CASE(replace_copy_if_test_minimalistic)
 {
     // Подготовка
     std::forward_list<int> const src_std{5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
-    ural_test::istringstream_helper<int> src_ural(src_std.begin(), src_std.end());
+    ural_test::istringstream_helper<int> src_ural(src_std);
 
     auto pred = [](int x) {return x < 5;};
     auto const new_value = 55;
@@ -1582,7 +1582,7 @@ BOOST_AUTO_TEST_CASE(remove_copy_test)
                      std::back_inserter(s_std), to_remove);
 
     // ural
-    ural_test::istringstream_helper<char> src_ural(source.begin(), source.end());
+    ural_test::istringstream_helper<char> src_ural(source);
     std::string s_ural;
     ural::remove_copy(src_ural, s_ural | ural::back_inserter, to_remove);
 
@@ -1879,7 +1879,7 @@ BOOST_AUTO_TEST_CASE(unique_copy_from_istream_to_ostream)
     ural::copy(v2, ural::make_ostream_sequence(z, ' '));
 
     // Сам алгоритм
-    ural_test::istringstream_helper<int> is(v1.begin(), v1.end());
+    ural_test::istringstream_helper<int> is(v1);
     std::ostringstream os;
 
     ural::unique_copy(is, ural::make_ostream_sequence(os, ' '));
@@ -2226,7 +2226,7 @@ BOOST_AUTO_TEST_CASE(random_shuffle_test)
 BOOST_AUTO_TEST_CASE(is_partitioned_test)
 {
     std::vector<int> v = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-    ural_test::istringstream_helper<int> v_ural(v.begin(), v.end());
+    ural_test::istringstream_helper<int> v_ural(v);
 
     auto is_even = [](int i){ return i % 2 == 0; };
 
@@ -2410,7 +2410,7 @@ BOOST_AUTO_TEST_CASE(partition_copy_test)
 {
     // Подготовка
     std::vector<int> xs = {1,2,3,4,5,6,7,8,9,10};
-    ural_test::istringstream_helper<int> src(xs.begin(), xs.end());
+    ural_test::istringstream_helper<int> src(xs);
     std::list<int> true_sink;
     std::forward_list<int> false_sink;
 

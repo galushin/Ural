@@ -45,9 +45,14 @@ namespace ural_test
 
         istringstream_helper() = default;
 
+        template <class Sequenced>
+        explicit istringstream_helper(Sequenced && seq)
+         : is_(istringstream_helper::make(ural::sequence_fwd<Sequenced>(seq)))
+        {}
+
         template <class Iterator>
         istringstream_helper(Iterator first, Iterator last)
-         : is_(istringstream_helper::make(std::move(first), std::move(last)))
+         : istringstream_helper(ural::make_iterator_sequence(std::move(first), std::move(last)))
         {}
 
         istringstream_helper(std::initializer_list<T> values)
@@ -55,12 +60,11 @@ namespace ural_test
         {}
 
     private:
-        template <class Iterator>
-        static std::string make(Iterator first, Iterator last)
+        template <class Sequence>
+        static std::string make(Sequence seq)
         {
             std::ostringstream os;
-            ::ural::copy(::ural::make_iterator_sequence(std::move(first), std::move(last)),
-                         ::ural::make_ostream_sequence(os, " "));
+            ::ural::copy(std::move(seq), ::ural::make_ostream_sequence(os, " "));
             return os.str();
         }
 

@@ -27,6 +27,8 @@
 #include <forward_list>
 #include <sstream>
 
+#include "defs.hpp"
+
 BOOST_AUTO_TEST_CASE(to_string_test)
 {
     for(auto n : ural::numbers(-100, 101))
@@ -64,7 +66,7 @@ BOOST_AUTO_TEST_CASE(by_line_test)
 
     auto const x = ural::by_line(is) | ural::to_container<std::vector>{};
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(), x.begin(), x.end());
+    URAL_CHECK_EQUAL_RANGES(z, x);
 }
 
 BOOST_AUTO_TEST_CASE(by_line_test_keep_delimiter)
@@ -79,7 +81,7 @@ BOOST_AUTO_TEST_CASE(by_line_test_keep_delimiter)
     auto const x = ural::by_line(is, '\n', ural::keep_delimiter::yes)
                    | ural::to_container<std::forward_list>{};
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(), x.begin(), x.end());
+    URAL_CHECK_EQUAL_RANGES(z, x);
 }
 
 BOOST_AUTO_TEST_CASE(by_line_test_keep_delimiter_unexpected_eof)
@@ -94,7 +96,7 @@ BOOST_AUTO_TEST_CASE(by_line_test_keep_delimiter_unexpected_eof)
     auto const x = ural::by_line(is, '\n', ural::keep_delimiter::yes)
                    | ural::to_container<std::forward_list>{};
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(), x.begin(), x.end());
+    URAL_CHECK_EQUAL_RANGES(z, x);
 }
 
 BOOST_AUTO_TEST_CASE(by_line_test_custom_separator)
@@ -109,7 +111,7 @@ BOOST_AUTO_TEST_CASE(by_line_test_custom_separator)
 
     auto const x = ural::by_line(is, separator) | ural::to_container<std::list>{};
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(), x.begin(), x.end());
+    URAL_CHECK_EQUAL_RANGES(z, x);
 }
 
 #include <ural/numeric/numbers_sequence.hpp>

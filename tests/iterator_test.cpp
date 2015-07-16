@@ -20,6 +20,8 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include "defs.hpp"
+
 BOOST_AUTO_TEST_CASE(move_iterator_default_ctor)
 {
     typedef std::istream_iterator<int> Iterator;
@@ -46,8 +48,7 @@ BOOST_AUTO_TEST_CASE(move_iterator_copy_backward)
 
     std::copy_backward(first, last, out);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(src1.begin(), src1.end(),
-                                  src2.begin(), src2.end());
+    URAL_CHECK_EQUAL_RANGES(src1, src2);
 }
 
 BOOST_AUTO_TEST_CASE(move_iterator_postfix_minus_minus)

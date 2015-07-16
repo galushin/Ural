@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(iota_test)
     std::iota(x1.begin(), x1.end(), init_value);
     auto const result = ural::iota(x2, init_value);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x1.begin(), x1.end(), x2.begin(), x2.end());
+    URAL_CHECK_EQUAL_RANGES(x1, x2);
     BOOST_CHECK_EQUAL(init_value + n, result);
 }
 
@@ -76,15 +76,14 @@ BOOST_AUTO_TEST_CASE(partial_sums_sequence_test)
     ural::copy(ural::partial_sums(v), std::back_inserter(x_ural));
 
     // Проверка
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
 BOOST_AUTO_TEST_CASE(partial_sum_test_minimal)
 {
     // Подготовка
     std::vector<int> const src_std = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
-    ural_test::istringstream_helper<int> src_ural(src_std.begin(), src_std.end());
+    ural_test::istringstream_helper<int> src_ural(src_std);
 
     // std
     std::vector<int> x_std;
@@ -95,8 +94,7 @@ BOOST_AUTO_TEST_CASE(partial_sum_test_minimal)
     ural::partial_sum(src_ural, std::back_inserter(x_ural));
 
     // Проверка
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
 BOOST_AUTO_TEST_CASE(partial_sum_test_to_longer)
@@ -114,8 +112,7 @@ BOOST_AUTO_TEST_CASE(partial_sum_test_to_longer)
     // Проверка
     assert(x_ural.size() > src.size());
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 
     BOOST_CHECK(r_ural[ural::_1].original() == ural::sequence(src));
     BOOST_CHECK(r_ural[ural::_1].traversed_front() == ural::sequence(src));
@@ -166,15 +163,14 @@ BOOST_AUTO_TEST_CASE(adjacent_differences_sequence_test)
     ural::copy(ural::adjacent_differences(xs), std::back_inserter(r_ural));
 
     // Проверка
-    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
-                                  r_ural.begin(), r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
 }
 
 BOOST_AUTO_TEST_CASE(adjacent_difference_test_minimal)
 {
     // Подготовка
     std::vector<int> const src_std = {1,2,3,5,9,11,12};
-    ural_test::istringstream_helper<int> src_ural(src_std.begin(), src_std.end());
+    ural_test::istringstream_helper<int> src_ural(src_std);
 
     // std
     std::vector<int> r_std;
@@ -186,8 +182,7 @@ BOOST_AUTO_TEST_CASE(adjacent_difference_test_minimal)
     ural::adjacent_difference(src_ural, std::back_inserter(r_ural));
 
     // Проверка
-    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
-                                  r_ural.begin(), r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
 }
 
 BOOST_AUTO_TEST_CASE(adjacent_difference_test_to_longer)
@@ -205,8 +200,7 @@ BOOST_AUTO_TEST_CASE(adjacent_difference_test_to_longer)
     // Проверка
     assert(x_ural.size() > src.size());
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 
     BOOST_CHECK(r_ural[ural::_1].original() == ural::sequence(src));
     BOOST_CHECK(r_ural[ural::_1].traversed_front() == ural::sequence(src));
@@ -274,8 +268,7 @@ BOOST_AUTO_TEST_CASE(partial_sums_sequence_test_no_default_ctor)
     std::vector<Integer> x_ural;
     ural::copy(ural::partial_sums(v), std::back_inserter(x_ural));
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
 BOOST_AUTO_TEST_CASE(adjacent_differences_sequence_test_no_default_ctor)
@@ -289,8 +282,7 @@ BOOST_AUTO_TEST_CASE(adjacent_differences_sequence_test_no_default_ctor)
      std::vector<Integer> r_ural;
      ural::copy(ural::adjacent_differences(xs), std::back_inserter(r_ural));
 
-     BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
-                                   r_ural.begin(), r_ural.end());
+     URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
 }
 
 #include <ural/numeric/polynom.hpp>

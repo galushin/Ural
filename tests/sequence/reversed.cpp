@@ -15,6 +15,7 @@
 */
 
 #include <boost/test/unit_test.hpp>
+#include "../defs.hpp"
 
 #include <ural/sequence/reversed.hpp>
 
@@ -101,8 +102,7 @@ BOOST_AUTO_TEST_CASE(reversed_pop_back_n_test)
 
     BOOST_CHECK(s == s_r.base());
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(s.begin(), s.end(),
-                                  s_r.base().begin(), s_r.base().end());
+    URAL_CHECK_EQUAL_RANGES(s, s_r.base());
 
     auto b   = s.traversed_front();
     auto b_r = s_r.traversed_back();
@@ -126,8 +126,7 @@ BOOST_AUTO_TEST_CASE(copy_reversed_to_reversed_vs_copy_backward)
 
     ural::copy(src | ural::reversed, x_ural | ural::reversed);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
 #include <ural/memory.hpp>

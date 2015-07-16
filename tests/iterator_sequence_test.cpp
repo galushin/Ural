@@ -15,6 +15,7 @@
 */
 
 #include <boost/test/unit_test.hpp>
+#include "../tests/defs.hpp"
 
 #include <forward_list>
 #include <list>
@@ -94,7 +95,7 @@ BOOST_AUTO_TEST_CASE(copy_sequence_test_via_details)
     BOOST_CHECK(ural::sequence(x1) != ural::sequence(xs));
     BOOST_CHECK(ural::sequence(xs) != ural::sequence(x1));
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x1.begin(), x1.end(), xs.begin(), xs.end());
+    URAL_CHECK_EQUAL_RANGES(x1, xs);
 }
 
 BOOST_AUTO_TEST_CASE(copy_sequence_test)
@@ -105,7 +106,7 @@ BOOST_AUTO_TEST_CASE(copy_sequence_test)
 
     auto const r = ural::copy(xs, x1);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x1.begin(), x1.end(), xs.begin(), xs.end());
+    URAL_CHECK_EQUAL_RANGES(x1, xs);
 
     BOOST_CHECK(!r[ural::_1]);
     BOOST_CHECK(!r[ural::_2]);
@@ -119,7 +120,7 @@ BOOST_AUTO_TEST_CASE(copy_to_back_inserter)
 
     ural::copy(xs, std::back_inserter(x1));
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(xs.begin(), xs.end(), x1.begin(), x1.end());
+    URAL_CHECK_EQUAL_RANGES(xs, x1);
 }
 
 BOOST_AUTO_TEST_CASE(c_array_to_sequence)

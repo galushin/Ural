@@ -17,12 +17,12 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "./tests/defs.hpp"
 
 #include <ural/numeric.hpp>
 #include <ural/math/common_factor.hpp>
 
 #include <boost/test/unit_test.hpp>
+#include "../tests/defs.hpp"
 
 #include <forward_list>
 
@@ -332,8 +332,7 @@ BOOST_AUTO_TEST_CASE(square_root_23_as_continued_fraction_back_inserter)
 
     ural::copy(ural::sqrt_as_continued_fraction(N), a | ural::back_inserter);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(a.begin(), a.end(),
-                                  a_expected.begin(), a_expected.end());
+    URAL_CHECK_EQUAL_RANGES(a, a_expected);
 }
 
 BOOST_AUTO_TEST_CASE(square_root_16_as_continued_fraction_back_inserter)
@@ -346,8 +345,7 @@ BOOST_AUTO_TEST_CASE(square_root_16_as_continued_fraction_back_inserter)
 
     ural::copy(ural::sqrt_as_continued_fraction(N), a | ural::back_inserter);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(a.begin(), a.end(),
-                                  a_expected.begin(), a_expected.end());
+    URAL_CHECK_EQUAL_RANGES(a, a_expected);
 }
 
 BOOST_AUTO_TEST_CASE(square_root_23_as_continued_fraction)
@@ -360,8 +358,7 @@ BOOST_AUTO_TEST_CASE(square_root_23_as_continued_fraction)
 
     ural::copy(ural::sqrt_as_continued_fraction(N), a);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(a.begin(), a.end(),
-                                  a_expected.begin(), a_expected.end());
+    URAL_CHECK_EQUAL_RANGES(a, a_expected);
 }
 
 #include <ural/math/primes.hpp>
@@ -519,5 +516,5 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(pascal_triangle_PE_203, Set, PE_203_Set_types)
         ++ seq;
     }
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(r.begin(), r.end(), z.begin(), z.end());
+    URAL_CHECK_EQUAL_RANGES(r, z);
 }

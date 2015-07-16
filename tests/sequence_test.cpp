@@ -15,9 +15,6 @@
 */
 
 #include <ural/math/rational.hpp>
-
-#include "defs.hpp"
-
 #include <ural/sequence/delimit.hpp>
 #include <ural/sequence/to.hpp>
 #include <ural/sequence/chunks.hpp>
@@ -27,12 +24,12 @@
 #include <ural/sequence/zip.hpp>
 #include <ural/sequence/map.hpp>
 #include <ural/sequence/progression.hpp>
-
 #include <ural/algorithm.hpp>
 #include <ural/container/flat_set.hpp>
 
 #include <boost/mpl/list.hpp>
 #include <boost/test/unit_test.hpp>
+#include "defs.hpp"
 
 #include <forward_list>
 #include <iterator>
@@ -62,9 +59,7 @@ BOOST_AUTO_TEST_CASE(sequence_for_rvalue_container)
 
     BOOST_CHECK_EQUAL(seq.cargo().data(), old_x_data);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(seq.cargo().begin(),
-                                  seq.cargo().end(),
-                                  z.begin(), z.end());
+    URAL_CHECK_EQUAL_RANGES(seq.cargo(), z);
 
     BOOST_CHECK(ural::equal(seq, z) == true);
 }
@@ -80,8 +75,7 @@ BOOST_AUTO_TEST_CASE(rvalue_container_sort_test)
     auto seq = ::ural::sequence(std::move(x2));
     ural::sort(seq);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x1.begin(), x1.end(),
-                                  seq.cargo().begin(), seq.cargo().end());
+    URAL_CHECK_EQUAL_RANGES(x1, seq.cargo());
 
     BOOST_CHECK(ural::equal(x1, seq));
 }
@@ -97,8 +91,7 @@ BOOST_AUTO_TEST_CASE(rvalue_container_reverse_test)
     auto seq = ::ural::sequence(std::move(x2));
     ural::reverse(seq);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x1.begin(), x1.end(),
-                                  seq.cargo().begin(), seq.cargo().end());
+    URAL_CHECK_EQUAL_RANGES(x1, seq.cargo());
 
     BOOST_CHECK(ural::equal(x1, seq));
 }
@@ -115,8 +108,7 @@ BOOST_AUTO_TEST_CASE(rvalue_container_partial_sort_test)
     auto seq = ::ural::sequence(std::move(x2));
     ural::partial_sort(seq, part);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x1.begin(), x1.end(),
-                                  seq.cargo().begin(), seq.cargo().end());
+    URAL_CHECK_EQUAL_RANGES(x1, seq.cargo());
 
     BOOST_CHECK(ural::equal(x1, seq));
 }
@@ -135,8 +127,7 @@ BOOST_AUTO_TEST_CASE(istream_sequence_test)
     ural::copy(ural::make_istream_sequence<double>(str2),
                r_ural | ural::back_inserter);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
-                                  r_ural.begin(), r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
 }
 
 BOOST_AUTO_TEST_CASE(istream_sequence_regression_1)
@@ -157,8 +148,7 @@ BOOST_AUTO_TEST_CASE(istream_sequence_regression_1)
         r_ural.push_back(*s);
     }
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
-                                  r_ural.begin(), r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
 }
 
 BOOST_AUTO_TEST_CASE(ostream_sequence_test)
@@ -367,8 +357,7 @@ BOOST_AUTO_TEST_CASE(geometric_progression_test)
                   | ural::taken(zs.size())
                   | ural::to_container<std::vector>{};
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(zs.begin(), zs.end(),
-                                  xs.begin(), xs.end());
+    URAL_CHECK_EQUAL_RANGES(zs, xs);
 }
 
 BOOST_AUTO_TEST_CASE(arithmetic_progression_concept_check)
@@ -466,8 +455,7 @@ BOOST_AUTO_TEST_CASE(sequence_for_each_test)
         x *= 2;
     }
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
 BOOST_AUTO_TEST_CASE(filtered_test)
@@ -488,8 +476,7 @@ BOOST_AUTO_TEST_CASE(filtered_test)
     auto const r_ural
         = xs | ural::filtered(pred) | ural::to_container<std::vector>{};
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
-                                  r_ural.begin(), r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
 }
 
 BOOST_AUTO_TEST_CASE(filtered_getters_test)
@@ -533,7 +520,7 @@ BOOST_AUTO_TEST_CASE(filtered_sequence_for_each)
         r.push_back(x);
     }
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(), r.begin(), r.end());
+    URAL_CHECK_EQUAL_RANGES(z, r);
 }
 
 BOOST_AUTO_TEST_CASE(filtered_sequence_is_permuation)
@@ -574,13 +561,8 @@ BOOST_AUTO_TEST_CASE(zip_sequence_bases_access)
     BOOST_CHECK(xy_zip.bases()[ural::_2].begin() == y.begin());
     BOOST_CHECK(xy_zip.bases()[ural::_2].end() == y.end());
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(xy_zip.bases()[ural::_1].begin(),
-                                  xy_zip.bases()[ural::_1].end(),
-                                  x.begin(), x.end());
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(xy_zip.bases()[ural::_2].begin(),
-                                  xy_zip.bases()[ural::_2].end(),
-                                  y.begin(), y.end());
+    URAL_CHECK_EQUAL_RANGES(xy_zip.bases()[ural::_1], x);
+    URAL_CHECK_EQUAL_RANGES(xy_zip.bases()[ural::_2], y);
 }
 
 BOOST_AUTO_TEST_CASE(zip_sequence_test)
@@ -649,8 +631,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(set_inserter_test, Set, Int_set_types)
     Set z_ural;
     ural::copy(xs, z_ural | ural::set_inserter);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
-                                  z_ural.begin(), z_ural.end());
+    URAL_CHECK_EQUAL_RANGES(z, z_ural);
 }
 
 #include <ural/numeric/numbers_sequence.hpp>
@@ -666,7 +647,7 @@ BOOST_AUTO_TEST_CASE(numbers_range_test)
         x.push_back(i);
     }
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(), x.begin(), x.end());
+    URAL_CHECK_EQUAL_RANGES(z, x);
 }
 
 BOOST_AUTO_TEST_CASE(numbers_size_test)
@@ -687,11 +668,10 @@ BOOST_AUTO_TEST_CASE(numbers_stride_range_test)
         x.push_back(i);
     }
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(), x.begin(), x.end());
+    URAL_CHECK_EQUAL_RANGES(z, x);
 }
 
 // @todo Интервал чисел с отрицательным шагом?
-
 
 // Итераторы последовательностей
 #include <ural/sequence/make.hpp>
@@ -752,8 +732,7 @@ BOOST_AUTO_TEST_CASE(moved_from_value_cpp_17_test)
 
     ural::copy(seq, x_ural | ural::back_inserter);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
 BOOST_AUTO_TEST_CASE(moved_test)
@@ -800,8 +779,7 @@ BOOST_AUTO_TEST_CASE(move_iterator_cpp_11_moving_from_return_by_value_regression
 
     auto x_ural = seq | ural::to_container<std::basic_string>{};
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
 BOOST_AUTO_TEST_CASE(moved_iterator_sequence_iterators)
@@ -876,8 +854,7 @@ BOOST_AUTO_TEST_CASE(transform_sequence_test)
         = ural::make_transform_sequence(f, s)
         | ural::to_container<std::basic_string>{};
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
 // @todo Аналогинчые тесты с одним из параметров, обёрнутых в cref
@@ -895,8 +872,7 @@ BOOST_AUTO_TEST_CASE(replace_sequence_test_cref)
     ural::copy(ural::make_replace_sequence(s_ural, std::cref(old_value),
                                            std::cref(new_value)), s_ural);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(s_std.begin(), s_std.end(),
-                                  s_ural.begin(), s_ural.end());
+    URAL_CHECK_EQUAL_RANGES(s_std, s_ural);
 }
 
 BOOST_AUTO_TEST_CASE(replace_sequence_test)
@@ -910,8 +886,7 @@ BOOST_AUTO_TEST_CASE(replace_sequence_test)
     std::replace(s_std.begin(), s_std.end(), old_value, new_value);
     ural::copy(ural::make_replace_sequence(s_ural, old_value, new_value), s_ural);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(s_std.begin(), s_std.end(),
-                                  s_ural.begin(), s_ural.end());
+    URAL_CHECK_EQUAL_RANGES(s_std, s_ural);
 }
 
 BOOST_AUTO_TEST_CASE(replace_sequence_if_test)
@@ -928,8 +903,7 @@ BOOST_AUTO_TEST_CASE(replace_sequence_if_test)
     ural::copy(ural::make_replace_if_sequence(s, pred, new_value),
                x_ural | ural::back_inserter);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
 BOOST_AUTO_TEST_CASE(replace_sequence_if_regression_pass_by_cref)
@@ -949,8 +923,7 @@ BOOST_AUTO_TEST_CASE(replace_sequence_if_regression_pass_by_cref)
                x_ural | ural::back_inserter);
 
     // Сравнение
-    BOOST_CHECK_EQUAL_COLLECTIONS(x_std.begin(), x_std.end(),
-                                  x_ural.begin(), x_ural.end());
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
 BOOST_AUTO_TEST_CASE(fill_n_test_via_sequence_and_copy)
@@ -967,8 +940,7 @@ BOOST_AUTO_TEST_CASE(fill_n_test_via_sequence_and_copy)
     BOOST_CHECK_EQUAL(ural::to_signed(n), r.base().traversed_front().size());
     BOOST_CHECK_EQUAL(ural::to_signed(v_std.size() - n), r.base().size());
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(v_std.begin(), v_std.end(),
-                                  v_ural.begin(), v_ural.end());
+    URAL_CHECK_EQUAL_RANGES(v_std, v_ural);
 }
 
 BOOST_AUTO_TEST_CASE(generate_sequence_test)
@@ -984,8 +956,7 @@ BOOST_AUTO_TEST_CASE(generate_sequence_test)
 
     ural::copy(ural::make_generator_sequence(gen), r_ural);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
-                                  r_ural.begin(), r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
 }
 
 BOOST_AUTO_TEST_CASE(generate_n_test)
@@ -1007,8 +978,7 @@ BOOST_AUTO_TEST_CASE(generate_n_test)
                r_ural | ural::back_inserter);
 
     // Проверка
-    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
-                                  r_ural.begin(), r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
 }
 
 BOOST_AUTO_TEST_CASE(remove_sequence_test_make_function)
@@ -1096,8 +1066,7 @@ BOOST_AUTO_TEST_CASE(unique_sequence_test)
     auto const r_ural
         = v2 | ural::uniqued | ural::to_container<std::forward_list>{};
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(), r_ural.begin(),
-                                  r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
 }
 
 BOOST_AUTO_TEST_CASE(unique_sequence_test_custom_predicate)
@@ -1190,8 +1159,7 @@ BOOST_AUTO_TEST_CASE(reversed_copy_test)
         = src | ural::reversed | ural::to_container<std::list>{};
 
     // Проверка
-    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
-                                  r_ural.begin(), r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
 }
 
 BOOST_AUTO_TEST_CASE(merged_test)
@@ -1210,8 +1178,7 @@ BOOST_AUTO_TEST_CASE(merged_test)
         = ural::merged(v1, v2) | ural::to_container<std::vector>{};
 
     // Проверка
-    BOOST_CHECK_EQUAL_COLLECTIONS(std_merge.begin(), std_merge.end(),
-                                  ural_merge.begin(), ural_merge.end());
+    URAL_CHECK_EQUAL_RANGES(std_merge, ural_merge);
 }
 
 BOOST_AUTO_TEST_CASE(set_union_sequence_test)
@@ -1227,8 +1194,7 @@ BOOST_AUTO_TEST_CASE(set_union_sequence_test)
         = ural::make_set_union_sequence(v1, v2)
         | ural::to_container<std::vector>{};
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(r_std.begin(), r_std.end(),
-                                  r_ural.begin(), r_ural.end());
+    URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
 }
 
 BOOST_AUTO_TEST_CASE(set_intersection_sequence_test)
@@ -1245,10 +1211,7 @@ BOOST_AUTO_TEST_CASE(set_intersection_sequence_test)
         = ural::make_set_intersection_sequence(v1, v2)
         | ural::to_container<std::vector>{};
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(std_intersection.begin(),
-                                  std_intersection.end(),
-                                  ural_intersection.begin(),
-                                  ural_intersection.end());
+    URAL_CHECK_EQUAL_RANGES(std_intersection, ural_intersection);
 }
 
 BOOST_AUTO_TEST_CASE(set_difference_sequence_test)
@@ -1263,8 +1226,7 @@ BOOST_AUTO_TEST_CASE(set_difference_sequence_test)
         = ural::make_set_difference_sequence(v1, v2)
         | ural::to_container<std::vector>{};
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(std_diff.begin(), std_diff.end(),
-                                  ural_diff.begin(), ural_diff.end());
+    URAL_CHECK_EQUAL_RANGES(std_diff, ural_diff);
 }
 
 BOOST_AUTO_TEST_CASE(set_symmetric_difference_sequence_test)
@@ -1280,8 +1242,7 @@ BOOST_AUTO_TEST_CASE(set_symmetric_difference_sequence_test)
         = ural::make_set_symmetric_difference_sequence(v1, v2)
         | ural::to_container<std::vector>{};
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(r_ural.begin(), r_ural.end(),
-                                  r_std.begin(), r_std.end());
+    URAL_CHECK_EQUAL_RANGES(r_ural, r_std);
 }
 
 BOOST_AUTO_TEST_CASE(to_container_additional_parameters)
@@ -1326,7 +1287,7 @@ BOOST_AUTO_TEST_CASE(iterator_sequence_for_istream_iterator_regression)
     std::vector<int> x;
     ural::copy(seq, x | ural::back_inserter);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(x.begin(), x.end(), z.begin(), z.end());
+    URAL_CHECK_EQUAL_RANGES(x, z);
 }
 
 BOOST_AUTO_TEST_CASE(take_sequence_more_than_size)
@@ -1337,8 +1298,7 @@ BOOST_AUTO_TEST_CASE(take_sequence_more_than_size)
 
     ural::copy(z | ural::taken(z.size() + 10),  result | ural::back_inserter);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(z.begin(), z.end(),
-                                  result.begin(), result.end());
+    URAL_CHECK_EQUAL_RANGES(z, result);
 }
 
 BOOST_AUTO_TEST_CASE(chunks_sequence_test)
@@ -1361,8 +1321,7 @@ BOOST_AUTO_TEST_CASE(chunks_sequence_test)
 
         BOOST_CHECK(!!ch);
         BOOST_CHECK(::ural::equal(r, *ch));
-        BOOST_CHECK_EQUAL_COLLECTIONS(r.begin(), r.end(),
-                                      a.begin(), a.end());
+        URAL_CHECK_EQUAL_RANGES(r, a);
 
         ++ ch;
     }
@@ -1373,7 +1332,7 @@ BOOST_AUTO_TEST_CASE(chunks_sequence_test)
 BOOST_AUTO_TEST_CASE(delimit_sequence_test)
 {
     std::vector<int> src2 = {3, 1, 4, 1, 5, 9, 2, 6, 5, 3};
-    ural_test::istringstream_helper<int> src1(src2.begin(), src2.end());
+    ural_test::istringstream_helper<int> src1(src2);
 
     auto const value = 5;
 
@@ -1385,14 +1344,13 @@ BOOST_AUTO_TEST_CASE(delimit_sequence_test)
 
     auto const expected = ural::find(src2, value).traversed_front();
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(result.begin(), result.end(),
-                                  expected.begin(), expected.end());
+    URAL_CHECK_EQUAL_RANGES(result, expected);
 }
 
 BOOST_AUTO_TEST_CASE(delimit_sequence_test_cref)
 {
     std::vector<int> src2 = {3, 1, 4, 1, 5, 9, 2, 6, 5, 3};
-    ural_test::istringstream_helper<int> src1(src2.begin(), src2.end());
+    ural_test::istringstream_helper<int> src1(src2);
 
     auto const value = 5;
 
@@ -1404,8 +1362,7 @@ BOOST_AUTO_TEST_CASE(delimit_sequence_test_cref)
 
     auto const expected = ural::find(src2, value).traversed_front();
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(result.begin(), result.end(),
-                                  expected.begin(), expected.end());
+    URAL_CHECK_EQUAL_RANGES(result, expected);
 }
 
 BOOST_AUTO_TEST_CASE(delimit_sequence_forward_test)

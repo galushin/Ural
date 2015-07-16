@@ -83,6 +83,8 @@ md5 contributions   llvm/lib/Support/MD5.cpp llvm/include/llvm/Support/MD5.h
 #include <ural/math.hpp>
 
 #include <boost/test/unit_test.hpp>
+#include "../tests/defs.hpp"
+
 #include <boost/math/distributions/chi_squared.hpp>
 
 #include <sstream>
@@ -175,7 +177,7 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_iterator_ctor_test)
         D d(p0.begin(), p0.end());
         auto p = d.probabilities();
         normalize_weights(p0);
-        BOOST_CHECK_EQUAL_COLLECTIONS(p0.begin(), p0.end(), p.begin(), p.end());
+        URAL_CHECK_EQUAL_RANGES(p0, p);
     }
 }
 
@@ -215,7 +217,7 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_ctor_param_test)
     std::vector<double> p = d.probabilities();
 
     normalize_weights(p0);
-    BOOST_CHECK_EQUAL_COLLECTIONS(p0.begin(), p0.end(), p.begin(), p.end());
+    URAL_CHECK_EQUAL_RANGES(p0, p);
 }
 
 BOOST_AUTO_TEST_CASE(discrete_distribution_func_ctor_test)

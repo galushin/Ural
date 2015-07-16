@@ -20,6 +20,7 @@
 
 #include <boost/mpl/list.hpp>
 #include <boost/test/unit_test.hpp>
+#include "../defs.hpp"
 
 BOOST_AUTO_TEST_CASE(math_discrete_distribution_default_ctor)
 {
@@ -46,8 +47,7 @@ BOOST_AUTO_TEST_CASE(math_discrete_distribution_default_ctor)
     auto const ps_0 = std::vector<double>{1.0};
     auto const ps   = d.probabilities();
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(ps.begin(), ps.end(),
-                                  ps_0.begin(), ps_0.end());
+    URAL_CHECK_EQUAL_RANGES(ps, ps_0);
 }
 
 BOOST_AUTO_TEST_CASE(math_discrete_distibution_from_empty_container)
@@ -77,8 +77,7 @@ BOOST_AUTO_TEST_CASE(math_discrete_distibution_from_empty_container)
     auto const ps_0 = std::vector<double>{1.0};
     auto const ps   = d.probabilities();
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(ps.begin(), ps.end(),
-                                  ps_0.begin(), ps_0.end());
+    URAL_CHECK_EQUAL_RANGES(ps, ps_0);
 }
 
 namespace
@@ -167,8 +166,7 @@ BOOST_AUTO_TEST_CASE(math_discrete_distibution_from_container_rational_weight)
                                           Weight(2, 10), Weight(1, 10)};
     auto const ps   = d.probabilities();
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(ps.begin(), ps.end(),
-                                  ps_0.begin(), ps_0.end());
+    URAL_CHECK_EQUAL_RANGES(ps, ps_0);
 }
 
 BOOST_AUTO_TEST_CASE(math_discrete_distibution_from_init_list)

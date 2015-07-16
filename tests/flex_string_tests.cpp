@@ -26,6 +26,8 @@
 #include <string>
 #include <sstream>
 
+#include "defs.hpp"
+
 // @todo убрать тесты, покрываемые обобщёнными тестами (container/general.cpp)
 
 namespace
@@ -211,7 +213,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_n_char, String, Strings_list)
     BOOST_CHECK_EQUAL(n, s0.size());
     BOOST_CHECK_GE(s.capacity(), s.size());
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(s0.begin(), s0.end(), s.begin(), s.end());
+    URAL_CHECK_EQUAL_RANGES(s0, s);
 
     for(auto i : ural::numbers(0, n))
     {
@@ -253,8 +255,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_iterators, String, Strings_list)
     BOOST_CHECK_EQUAL(src.size(), s.size());
     BOOST_CHECK_EQUAL(src.c_str(), s.c_str());
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(src.begin(), src.end(),
-                                  s.begin(), s.end());
+    URAL_CHECK_EQUAL_RANGES(src, s);
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_from_iterators_given_numbers, String, Strings_list)
@@ -338,8 +339,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_move_with_different_allocator,
 
     String const u(std::move(t), alloc);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(t_old.begin(), t_old.end(),
-                                  u.begin(), u.end());
+    URAL_CHECK_EQUAL_RANGES(t_old, u);
     BOOST_CHECK_EQUAL(alloc.id(), u.get_allocator().id());
 }
 
@@ -362,8 +362,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_move_with_same_allocator,
 
     BOOST_CHECK(t.empty());
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(t_old.begin(), t_old.end(),
-                                  u.begin(), u.end());
+    URAL_CHECK_EQUAL_RANGES(t_old, u);
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_operator_assign, String, Strings_list)
@@ -373,8 +372,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_operator_assign, String, Strings_list)
 
     s0 = s;
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(s.begin(), s.end(),
-                                  s0.begin(), s0.end());
+    URAL_CHECK_EQUAL_RANGES(s, s0);
     BOOST_CHECK_EQUAL(s, s0);
 }
 
@@ -417,7 +415,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_mutable_iterators, String, Strings_lis
 
     Iterator const res = std::copy(src.begin(), src.end(), s.begin());
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(src.begin(), src.end(), s.begin(), s.end());
+    URAL_CHECK_EQUAL_RANGES(src, s);
     BOOST_CHECK(res == s.end());
 }
 
@@ -428,8 +426,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_const_iterators, String, Strings_list)
     String const s(src.begin(), src.end());
 
     BOOST_CHECK_EQUAL(src, s);
-    BOOST_CHECK_EQUAL_COLLECTIONS(src.begin(), src.end(), s.begin(), s.end());
-    BOOST_CHECK_EQUAL_COLLECTIONS(src.begin(), src.end(), s.cbegin(), s.cend());
+    URAL_CHECK_EQUAL_RANGES(src, s);
+    URAL_CHECK_EQUAL_RANGES(src, ural::as_const(s));
 
     typedef typename String::const_iterator Iterator;
 
@@ -1026,8 +1024,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_copy_from_0, String, Strings_list)
 
     BOOST_CHECK_EQUAL(rlen, fs_sub.size());
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(fs_sub.cbegin(), fs_sub.cend(),
-                                  s.cbegin(), s.cend());
+    URAL_CHECK_EQUAL_RANGES(ural::as_const(fs_sub), ural::as_const(s));
 
     BOOST_CHECK_THROW(fs.copy(s.data(), s.size(), fs.size() + 1),
                       std::out_of_range);
@@ -1045,8 +1042,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(flex_string_copy, String, Strings_list)
 
     auto const fs_sub = fs.substr(pos, rlen);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(fs_sub.cbegin(), fs_sub.cend(),
-                                  s.cbegin(), s.cend());
+    URAL_CHECK_EQUAL_RANGES(ural::as_const(fs_sub), ural::as_const(s));
 
     BOOST_CHECK_THROW(fs.copy(s.data(), s.size(), fs.size() + 1),
                       std::out_of_range);
