@@ -30,6 +30,7 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 			<Add option="-std=gnu++14" />
+			<Add option="-DBOOST_NO_AUTO_PTR" />
 			<Add directory=".." />
 		</Compiler>
 		<Unit filename="../README.md" />

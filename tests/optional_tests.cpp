@@ -1477,7 +1477,7 @@ static_assert(gorn == tr2::nullopt, "WTF");
 static_assert(&gri == &*gori, "WTF");
 
 constexpr int gci = 1;
-constexpr tr2::optional<int const&> gorci = gci;
+constexpr tr2::optional<int const&> gorci(gci);
 constexpr tr2::optional<int const&> gorcn{};
 
 static_assert(gorcn <  gorci, "WTF");

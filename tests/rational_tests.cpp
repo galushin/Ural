@@ -512,7 +512,11 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_abs_test, T, all_signed_test_types )
     constexpr auto r8 = Rational( -4, 6 );
 
     static_assert( abs(r2) == r2, "" );
+    BOOST_CHECK_EQUAL(abs(r2), r2);
+
     static_assert( abs(r5) == r5, "" );
+    BOOST_CHECK_EQUAL(abs(r5), r5);
+
     static_assert( abs(r8) == Rational(2, 3), "");
 }
 
@@ -527,6 +531,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_unary_test, T, all_signed_test_types )
     constexpr auto r5 = Rational( 7, 2 );
 
     static_assert( +r5 == r5, "");
+
+    BOOST_CHECK_EQUAL(+r5, r5);
 
     static_assert( -r3 != r3, "" );
     static_assert( -(-r3) == r3, "" );

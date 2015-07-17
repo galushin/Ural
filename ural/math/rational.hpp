@@ -123,22 +123,21 @@ namespace ural
 
     friend constexpr rational operator-(rational && x)
     {
-        return rational(-std::move(std::get<0>(x.members_)),
-                        std::move(std::get<1>(x.members_)),
+        return rational(-std::move(x.numerator_ref()),
+                        std::move(x.denominator_ref()),
                         IntegerType(1), unsafe_tag{});
     }
     //@}
 
     private:
-        // @todo Сделать эти функции constexpr, но не const!
-        IntegerType & numerator_ref()
+        constexpr IntegerType & numerator_ref()
         {
-            return members_[ural::_1];
+            return this->num_;
         }
 
-        IntegerType & denominator_ref()
+        constexpr IntegerType & denominator_ref()
         {
-            return members_[ural::_2];
+            return this->denom_;
         }
 
         /** @brief Подготовка числителя рационального числа
@@ -195,7 +194,8 @@ namespace ural
         @post <tt> this->denominator() == denom </tt>
         */
         constexpr rational(IntegerType num, IntegerType denom, unsafe_reduced_tag)
-         : members_{std::move(num), std::move(denom)}
+         : num_(std::move(num))
+         , denom_(std::move(denom))
         {}
 
         /** @brief Конструктор на основе числителя и знаменателя
@@ -283,8 +283,8 @@ namespace ural
         */
         rational & operator=(IntegerType x)
         {
-            members_[ural::_1] = std::move(x);
-            members_[ural::_2] = IntegerType{1};
+            this->numerator_ref() = std::move(x);
+            this->denominator_ref() = IntegerType{1};
 
             return *this;
         }
@@ -380,7 +380,7 @@ namespace ural
         */
         constexpr IntegerType const & numerator() const
         {
-            return members_[ural::_1];
+            return this->num_;
         }
 
         /** @brief Знаменатель
@@ -388,7 +388,7 @@ namespace ural
         */
         constexpr IntegerType const & denominator() const
         {
-            return members_[ural::_2];
+            return this->denom_;
         }
 
         /** @brief Явное преобразование в @c bool
@@ -474,7 +474,8 @@ namespace ural
             return *this /= rational{x};
         }
     private:
-        ural::tuple<IntegerType, IntegerType> members_;
+        IntegerType num_;
+        IntegerType denom_;
     };
 
     /** @brief Проверка равенства нулю рационального числа

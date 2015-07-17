@@ -370,7 +370,8 @@ BOOST_AUTO_TEST_CASE(vector_push_back_rvalue)
     typedef ural::vector<T> Vector;
 
     Vector xs;
-    auto value = T("abc 42");
+    // @note строка должна быть достаточно большой, чтобы обойти SSO
+    auto value = T("abc 42 fourty two");
     auto const old_value = value;
     auto const value_old_data = value.data();
 
@@ -448,7 +449,8 @@ BOOST_AUTO_TEST_CASE(vector_insert_middle_with_move)
     typedef ural::vector<T> Vector;
 
     auto const pos = 2;
-    auto const new_value = T{"three"};
+    // @note строка должна быть достаточно длинной, чтобы обойти SSO
+    auto const new_value = T{"three hundreds fourty two"};
     auto obj = new_value;
 
     void const * old_obj_data = obj.data();

@@ -146,6 +146,26 @@ BOOST_AUTO_TEST_CASE(table_io_test)
     }
 }
 
+BOOST_AUTO_TEST_CASE(write_table_regression)
+{
+    typedef double Type;
+
+    std::vector<std::vector<Type>> const data_src =
+    {
+        {1, 1.5, 2},
+        {3, 4, 4.5},
+        {5.5, 6, 6.5},
+        {-1, 0, 1}
+    };
+
+    auto os = ural::write_table(std::ostringstream{}, data_src);
+    os << "\n";
+
+    std::string const z = "1\t1.5\t2\n3\t4\t4.5\n5.5\t6\t6.5\n-1\t0\t1\n\n";
+
+    BOOST_CHECK_EQUAL(os.str(), z);
+}
+
 BOOST_AUTO_TEST_CASE(table_io_test_temporary_stream)
 {
     typedef double Type;
@@ -158,7 +178,7 @@ BOOST_AUTO_TEST_CASE(table_io_test_temporary_stream)
         {-1, 0, 1}
     };
 
-    auto & os = ural::write_table(std::ostringstream{}, data_src);
+    auto os = ural::write_table(std::ostringstream{}, data_src);
 
     // текстовые редакторы иногда добавляют пустую строку в конец файла
     os << "\n";

@@ -101,13 +101,14 @@ namespace ural
     @tparam table таблица
     */
     template <class OStream, class Table>
-    OStream & write_table(OStream && os, Table const & table)
+    OStream write_table(OStream && os, Table const & table)
     {
         for(auto & row : table)
         {
             ural::write_separated(os, row, "\t") << "\n";
         }
-        return os;
+
+        return std::forward<OStream>(os);
     }
 
     template <class String>
