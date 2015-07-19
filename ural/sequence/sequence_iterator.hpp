@@ -84,10 +84,13 @@ namespace ural
                                sequence_iterator const & y)
         {
             assert(!y.impl_);
+            assert(!!x.impl_);
             return !x.impl_.value();
         }
 
-        typedef std::is_same<typename Sequence::traversal_tag, single_pass_traversal_tag>
+        typedef typename std::remove_reference<Sequence>::type Sequence_type;
+
+        typedef std::is_same<typename Sequence_type::traversal_tag, single_pass_traversal_tag>
             is_single_pass_t;
 
     public:
@@ -98,16 +101,16 @@ namespace ural
                                           std::forward_iterator_tag>::type iterator_category;
 
         /// @brief Тип ссылки
-        typedef typename Sequence::reference reference;
+        typedef typename Sequence_type::reference reference;
 
         /// @brief Тип значения
-        typedef ValueType<Sequence> value_type;
+        typedef ValueType<Sequence_type> value_type;
 
         /// @brief Тип указателя
-        typedef typename Sequence::pointer pointer;
+        typedef typename Sequence_type::pointer pointer;
 
         /// @brief Тип расстояния
-        typedef DifferenceType<Sequence> difference_type;
+        typedef DifferenceType<Sequence_type> difference_type;
 
         // Конструктор
         /** @brief Конструктор по-умолчанию. Создаёт итератор конца
@@ -153,6 +156,82 @@ namespace ural
 
     private:
         ural::optional<Sequence> impl_;
+    };
+
+    /** @brief Итератор на основе ссылки на последовательность
+    @note Не должен пережить последовательность, на основе которой создан
+    @tparam Sequence тип последовательности
+    */
+    template <class Sequence>
+    class sequence_iterator<Sequence&>
+    {
+        friend bool operator==(sequence_iterator const & x,
+                               sequence_iterator const & y)
+        {
+            assert(!y.impl_);
+            assert(!!x.impl_);
+            return !x.impl_.value();
+        }
+
+    public:
+        /// @brief Категория итератора
+        typedef std::input_iterator_tag iterator_category;
+
+        /// @brief Тип ссылки
+        typedef typename Sequence::reference reference;
+
+        /// @brief Тип значения
+        typedef ValueType<Sequence> value_type;
+
+        /// @brief Тип указателя
+        typedef typename Sequence::pointer pointer;
+
+        /// @brief Тип расстояния
+        typedef DifferenceType<Sequence> difference_type;
+
+        /** @brief Конструктор по-умолчанию. Создаёт итератор конца
+        последовательности
+        */
+        sequence_iterator()
+         : impl_(nullopt)
+        {}
+
+        /** @brief Создание начального итератора для последовательности
+        @param seq последовательность
+        @post <tt> *this </tt> Будет посещать те же элементы, что и @c seq
+        */
+        sequence_iterator(Sequence & seq)
+         : impl_(seq)
+        {}
+
+        sequence_iterator(sequence_iterator const &) = default;
+        sequence_iterator(sequence_iterator &&) = default;
+
+        sequence_iterator & operator=(sequence_iterator const &) = default;
+        sequence_iterator & operator=(sequence_iterator &&) = default;
+
+        // Итератор ввода
+        /** @brief Ссылка на текущий элемент
+        @return Ссылка на текущий элемент
+        */
+        reference operator*() const
+        {
+            assert(!!impl_);
+            return **impl_;
+        }
+
+        /** @brief Переход к следующему элементу
+        @return <tt> *this </tt>
+        */
+        sequence_iterator & operator++()
+        {
+            assert(!!impl_);
+            ++*impl_;
+            return *this;
+        }
+
+    private:
+        ural::optional<Sequence&> impl_;
     };
 }
 // namespace ural

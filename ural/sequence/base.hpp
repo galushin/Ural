@@ -138,6 +138,18 @@ namespace ural
         ~ sequence_base() = default;
     };
 
+    template <class Seq, class Base>
+    sequence_iterator<Seq &> begin(sequence_base<Seq, Base> & s)
+    {
+        return sequence_iterator<Seq &>(static_cast<Seq&>(s));
+    }
+
+    template <class Seq, class Base>
+    sequence_iterator<Seq &> end(sequence_base<Seq, Base> & s)
+    {
+        return sequence_iterator<Seq &>{};
+    }
+
     /** @brief Создание начального итератора для последовательности
     @param s последовательность
     @return <tt> sequence_iterator<Seq>{static_cast<Seq const&>(s)} </tt>
@@ -146,6 +158,12 @@ namespace ural
     sequence_iterator<Seq> begin(sequence_base<Seq, Base> const & s)
     {
         return sequence_iterator<Seq>{static_cast<Seq const&>(s)};
+    }
+
+    template <class Seq, class Base>
+    sequence_iterator<Seq> begin(sequence_base<Seq, Base> && s)
+    {
+        return sequence_iterator<Seq>{static_cast<Seq &&>(s)};
     }
 
     /** @brief Создание конечного итератора для последовательности

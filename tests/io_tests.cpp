@@ -69,6 +69,61 @@ BOOST_AUTO_TEST_CASE(by_line_test)
     URAL_CHECK_EQUAL_RANGES(z, x);
 }
 
+BOOST_AUTO_TEST_CASE(by_line_test_temporary)
+{
+    std::vector<std::string> const z = {"Occupation", "Carpenter", "Blacksmith"};
+
+    std::ostringstream os;
+    std::copy(z.begin(), z.end(), std::ostream_iterator<std::string>(os, "\n"));
+
+    std::vector<std::string> x;
+    ural::copy(ural::by_line(std::istringstream(os.str())),
+               x | ural::back_inserter);
+
+    URAL_CHECK_EQUAL_RANGES(z, x);
+}
+
+#include <ural/container/vector.hpp>
+
+BOOST_AUTO_TEST_CASE(by_line_temporary_to_container)
+{
+    std::vector<std::string> const z = {"Occupation", "Carpenter", "Blacksmith"};
+
+    std::ostringstream os;
+    std::copy(z.begin(), z.end(), std::ostream_iterator<std::string>(os, "\n"));
+
+    auto const x = ural::by_line(std::istringstream(os.str()))
+                 | ural::to_container<ural::vector>{};
+
+    URAL_CHECK_EQUAL_RANGES(z, x);
+}
+
+BOOST_AUTO_TEST_CASE(by_line_temporary_to_container_std_vector)
+{
+    std::vector<std::string> const z = {"Occupation", "Carpenter", "Blacksmith"};
+
+    std::ostringstream os;
+    std::copy(z.begin(), z.end(), std::ostream_iterator<std::string>(os, "\n"));
+
+    auto const x = ural::by_line(std::istringstream(os.str()))
+                 | ural::to_container<std::vector>{};
+
+    URAL_CHECK_EQUAL_RANGES(z, x);
+}
+
+BOOST_AUTO_TEST_CASE(by_line_temporary_to_container_std_forward_list)
+{
+    std::vector<std::string> const z = {"Occupation", "Carpenter", "Blacksmith"};
+
+    std::ostringstream os;
+    std::copy(z.begin(), z.end(), std::ostream_iterator<std::string>(os, "\n"));
+
+    auto const x = ural::by_line(std::istringstream(os.str()))
+                 | ural::to_container<std::forward_list>{};
+
+    URAL_CHECK_EQUAL_RANGES(z, x);
+}
+
 BOOST_AUTO_TEST_CASE(by_line_test_keep_delimiter)
 {
     std::vector<std::string> const z = {"Occupation\n", "Carpenter\n", "Blacksmith\n"};

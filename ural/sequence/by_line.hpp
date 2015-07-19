@@ -91,7 +91,7 @@ namespace ural
         */
         bool operator!() const
         {
-            return !is_.get();
+            return !this->stream();
         }
 
         /** @brief Текущий элемент
@@ -115,12 +115,22 @@ namespace ural
         void seek()
         {
             using std::getline;
-            getline(is_.get(), reader_, delim_);
+            getline(this->stream_ref(), reader_, delim_);
 
-            if(kd_ == keep_delimiter::yes && is_.get().eof() == false)
+            if(kd_ == keep_delimiter::yes && this->stream_ref().eof() == false)
             {
                 reader_.push_back(delim_);
             }
+        }
+
+        IStream & stream_ref()
+        {
+            return this->is_;
+        }
+
+        IStream const & stream() const
+        {
+            return this->is_;
         }
 
     private:

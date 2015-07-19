@@ -54,14 +54,8 @@ namespace ural
 
         auto s = ural::sequence_fwd<Sequence>(seq);
 
-        /* begin с большей вероятностью может найти применение данным,
-        перемещённым из последовательности.
-        Порядок объявления важен.
-        Порядок вычисления аргументов функции может повлиять на корректность,
-        поэтому построение итераторов вынесено в отдельные объявления
-        */
+        auto first = begin(s);
         auto last = end(s);
-        auto first = begin(std::move(s));
 
         return Container<Value, Args...>(std::move(first), std::move(last));
     }

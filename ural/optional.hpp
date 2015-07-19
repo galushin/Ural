@@ -711,7 +711,7 @@ namespace details
 
         constexpr T * get_pointer() const
         {
-            return ptr_;
+            return this->ptr_;
         }
         //@}
 
@@ -721,8 +721,14 @@ namespace details
         */
         constexpr T & value() const
         {
-            return *this ? **this:
-                            throw bad_optional_access{"optional::value"}, **this;
+            if(!!*this)
+            {
+                return **this;
+            }
+            else
+            {
+                throw bad_optional_access{"optional::value"};
+            }
         }
 
         /** @brief Доступ к текущему значению с "запасным" значением на случай,

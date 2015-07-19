@@ -483,7 +483,7 @@ namespace ural
         {
             static_assert(std::is_integral<InputIterator>::value == false, "");
 
-            this->insert(this->cend(), first, last);
+            this->insert(this->cend(), std::move(first), std::move(last));
         }
 
         /** @brief Конструктор копий
@@ -1042,8 +1042,7 @@ namespace ural
             policy_type::assert_can_insert_before(this->cbegin(), this->cend(),
                                                   position);
 
-            using ural::sequence;
-            auto s = sequence(seq);
+            auto s = ural::sequence_fwd<InputSequence>(seq);
 
             typedef typename decltype(s)::traversal_tag Category;
 
@@ -1077,7 +1076,8 @@ namespace ural
         insert(const_iterator position, InputIterator first, InputIterator last)
         {
             // @todo Проверка предусловия
-            return this->insert(position, ural::make_iterator_sequence(first, last));
+            return this->insert(position, ural::make_iterator_sequence(std::move(first),
+                                                                       std::move(last)));
         }
 
         /** @brief Вставка элементов списка инициализаторов перед указанной
@@ -1186,7 +1186,7 @@ namespace ural
 
             assert(index <= old_size);
 
-            ural::copy(seq, *this | ural::back_inserter);
+            ural::copy(std::move(seq), *this | ural::back_inserter);
 
             std::rotate(this->begin() + index, this->begin() + old_size, this->end());
 
