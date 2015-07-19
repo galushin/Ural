@@ -115,8 +115,14 @@ namespace ural
         {}
     };
 
-    template <class T>
-    constexpr const T odr_const{};
+    namespace
+    {
+        /** @brief Шаблон переменной для определения глобальных констант,
+        которые не нарушают "Правило одного определения" (ODR).
+        */
+        template <class T>
+        constexpr auto const && odr_const = T{};
+    }
 }
 // namespace ural
 

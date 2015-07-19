@@ -26,6 +26,7 @@
  @brief Обобщённые реализации численных операций
 */
 
+#include <ural/defs.hpp>
 #include <ural/math.hpp>
 #include <ural/functional.hpp>
 #include <ural/algorithm/core.hpp>
@@ -302,11 +303,11 @@ namespace ural
     namespace
     {
         // 26.7 Обобщённые численные операции
-        constexpr auto const accumulate = accumulate_fn{};
-        constexpr auto const inner_product = inner_product_fn{};
-        constexpr auto const partial_sum = partial_sum_fn{};
-        constexpr auto const adjacent_difference = adjacent_difference_fn{};
-        constexpr auto const iota = iota_fn{};
+        constexpr auto const & accumulate = odr_const<accumulate_fn>;
+        constexpr auto const & inner_product = odr_const<inner_product_fn>;
+        constexpr auto const & partial_sum = odr_const<partial_sum_fn>;
+        constexpr auto const & adjacent_difference = odr_const<adjacent_difference_fn>;
+        constexpr auto const & iota = odr_const<iota_fn>;
     }
 
     /** @brief Последовательность, реализующая операцию свёртки
