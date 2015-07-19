@@ -17,7 +17,10 @@ along with URAL.  If not, see <http://www.gnu.org/licenses/>.
 https://github.com/akrzemi1/Optional/blob/master/test_optional.cpp
 */
 
+#include <ural/optional.hpp>
+#include <ural/concepts.hpp>
 #include <ural/algorithm.hpp>
+#include <ural/utility/tracers.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include "../tests/defs.hpp"
@@ -32,11 +35,11 @@ https://github.com/akrzemi1/Optional/blob/master/test_optional.cpp
 #include <complex>
 #include <vector>
 #include <functional>
-
-#include <ural/optional.hpp>
-#include <ural/concepts.hpp>
+#include <unordered_set>
 
 /// @cond false
+namespace
+{
 enum  State
 {
     sDefaultConstructed,
@@ -1161,8 +1164,6 @@ BOOST_AUTO_TEST_CASE(optional_initialization)
     BOOST_CHECK(ov == s);
 }
 
-#include <unordered_set>
-
 BOOST_AUTO_TEST_CASE(optional_hashing)
 {
     using namespace tr2;
@@ -1455,36 +1456,46 @@ struct Previous_declarator
     }
 };
 
-constexpr tr2::optional<int> g0{};
-constexpr tr2::optional<int> g2{2};
-static_assert( g2, "not initialized!" );
-static_assert( *g2 == 2, "not 2!" );
-static_assert( g2 == tr2::optional<int>(2), "not 2!" );
-static_assert( g2 != g0, "eq!" );
+BOOST_AUTO_TEST_CASE(optional_init_test)
+{
+    constexpr tr2::optional<int> g0{};
+    constexpr tr2::optional<int> g2{2};
+    static_assert( g2, "not initialized!" );
+    static_assert( *g2 == 2, "not 2!" );
+    static_assert( g2 == tr2::optional<int>(2), "not 2!" );
+    static_assert( g2 != g0, "eq!" );
 
-constexpr tr2::optional<Combined> gc0{tr2::inplace};
-static_assert(gc0->n == 6, "WTF!");
+    constexpr tr2::optional<Combined> gc0{tr2::inplace};
+    static_assert(gc0->n == 6, "WTF!");
+
+    BOOST_CHECK(true);
+}
 
 // optional refs
-int gi = 0;
-constexpr tr2::optional<int&> gori = gi;
-constexpr tr2::optional<int&> gorn{};
-constexpr int& gri = *gori;
-static_assert(gori, "WTF");
-static_assert(!gorn, "WTF");
-static_assert(gori != tr2::nullopt, "WTF");
-static_assert(gorn == tr2::nullopt, "WTF");
-static_assert(&gri == &*gori, "WTF");
+BOOST_AUTO_TEST_CASE(optional_refs_tests)
+{
+    static int gi = 0;
+    constexpr tr2::optional<int&> gori{gi};
+    constexpr tr2::optional<int&> gorn{};
+    constexpr int& gri = *gori;
+    static_assert(gori, "WTF");
+    static_assert(!gorn, "WTF");
+    static_assert(gori != tr2::nullopt, "WTF");
+    static_assert(gorn == tr2::nullopt, "WTF");
+    static_assert(&gri == &*gori, "WTF");
 
-constexpr int gci = 1;
-constexpr tr2::optional<int const&> gorci(gci);
-constexpr tr2::optional<int const&> gorcn{};
+    static constexpr int gci = 1;
+    constexpr tr2::optional<int const&> gorci(gci);
+    constexpr tr2::optional<int const&> gorcn{};
 
-static_assert(gorcn <  gorci, "WTF");
-static_assert(gorcn <= gorci, "WTF");
-static_assert(gorci == gorci, "WTF");
-static_assert(*gorci == 1, "WTF");
-static_assert(gorci == gci, "WTF");
+    static_assert(gorcn <  gorci, "WTF");
+    static_assert(gorcn <= gorci, "WTF");
+    static_assert(gorci == gorci, "WTF");
+    static_assert(*gorci == 1, "WTF");
+    static_assert(gorci == gci, "WTF");
+
+    BOOST_CHECK(true);
+};
 
 namespace constexpr_optional_ref_and_arrow
 {
@@ -1495,8 +1506,6 @@ namespace constexpr_optional_ref_and_arrow
   static_assert(oc->m == 1, "WTF!");
   static_assert(oc->n == 2, "WTF!");
 }
-
-#include <ural/utility/tracers.hpp>
 
 BOOST_AUTO_TEST_CASE(optional_test)
 {
@@ -1910,3 +1919,4 @@ BOOST_AUTO_TEST_CASE(optional_type_traits_test)
 }
 // end constexpr tests
 /// @endcond
+}
