@@ -727,7 +727,7 @@ namespace ural
         @param pred предикат
         @post <tt> this->target() == pred </tt>
         */
-        explicit not_function(Predicate pred)
+        constexpr explicit not_function(Predicate pred)
          : Base(ural::logical_not<>{}, std::move(pred))
         {}
 

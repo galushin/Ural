@@ -54,12 +54,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(all_of_test, Source, Sources)
     Source is1{2, 4, 6, 8, 10};
     Source is2{2, 4, 6, 7, 10};
 
-    auto const is_even = [](typename Source::const_reference i)
-                         { return i % 2 == 0; };
-
-    BOOST_CHECK_EQUAL(ural::all_of(is0, is_even), true);
-    BOOST_CHECK_EQUAL(ural::all_of(is1, is_even), true);
-    BOOST_CHECK_EQUAL(ural::all_of(is2, is_even), false);
+    BOOST_CHECK_EQUAL(ural::all_of(is0, ural::is_even), true);
+    BOOST_CHECK_EQUAL(ural::all_of(is1, ural::is_even), true);
+    BOOST_CHECK_EQUAL(ural::all_of(is2, ural::is_even), false);
 }
 
 // 25.2.2
@@ -71,12 +68,9 @@ BOOST_AUTO_TEST_CASE(any_of_test)
     Source is1{2, 4, 6, 8, 10};
     Source is2{2, 4, 6, 7, 10};
 
-    auto const is_odd = [](typename Source::const_reference i)
-                         { return i % 2 == 1; };
-
-    BOOST_CHECK_EQUAL(ural::any_of(is0, is_odd), false);
-    BOOST_CHECK_EQUAL(ural::any_of(is1, is_odd), false);
-    BOOST_CHECK_EQUAL(ural::any_of(is2, is_odd), true);
+    BOOST_CHECK_EQUAL(ural::any_of(is0, ural::is_odd), false);
+    BOOST_CHECK_EQUAL(ural::any_of(is1, ural::is_odd), false);
+    BOOST_CHECK_EQUAL(ural::any_of(is2, ural::is_odd), true);
 }
 
 // 25.2.3
@@ -88,12 +82,9 @@ BOOST_AUTO_TEST_CASE(none_of_test)
     Source is1{2, 4, 6, 8, 10};
     Source is2{2, 4, 6, 7, 10};
 
-    auto const is_odd = [](typename Source::const_reference i)
-                         { return i % 2 == 1; };
-
-    BOOST_CHECK_EQUAL(ural::none_of(is0, is_odd), true);
-    BOOST_CHECK_EQUAL(ural::none_of(is1, is_odd), true);
-    BOOST_CHECK_EQUAL(ural::none_of(is2, is_odd), false);
+    BOOST_CHECK_EQUAL(ural::none_of(is0, ural::is_odd), true);
+    BOOST_CHECK_EQUAL(ural::none_of(is1, ural::is_odd), true);
+    BOOST_CHECK_EQUAL(ural::none_of(is2, ural::is_odd), false);
 }
 
 // 25.2.4
@@ -2228,23 +2219,21 @@ BOOST_AUTO_TEST_CASE(is_partitioned_test)
     std::vector<int> v = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
     ural_test::istringstream_helper<int> v_ural(v);
 
-    auto is_even = [](int i){ return i % 2 == 0; };
+    BOOST_CHECK_EQUAL(std::is_partitioned(v.begin(), v.end(), ural::is_even),
+                      ural::is_partitioned(v, ural::is_even));
+    BOOST_CHECK_EQUAL(false, ural::is_partitioned(v_ural, ural::is_even));
 
-    BOOST_CHECK_EQUAL(std::is_partitioned(v.begin(), v.end(), is_even),
-                      ural::is_partitioned(v, is_even));
-    BOOST_CHECK_EQUAL(false, ural::is_partitioned(v_ural, is_even));
+    std::partition(v.begin(), v.end(), ural::is_even);
 
-    std::partition(v.begin(), v.end(), is_even);
-
-    BOOST_CHECK_EQUAL(std::is_partitioned(v.begin(), v.end(), is_even),
-                      ural::is_partitioned(v, is_even));
-    BOOST_CHECK_EQUAL(true, ural::is_partitioned(v, is_even));
+    BOOST_CHECK_EQUAL(std::is_partitioned(v.begin(), v.end(), ural::is_even),
+                      ural::is_partitioned(v, ural::is_even));
+    BOOST_CHECK_EQUAL(true, ural::is_partitioned(v, ural::is_even));
 
     std::reverse(v.begin(), v.end());
 
-    BOOST_CHECK_EQUAL(std::is_partitioned(v.begin(), v.end(), is_even),
-                      ural::is_partitioned(v, is_even));
-    BOOST_CHECK_EQUAL(false, ural::is_partitioned(v, is_even));
+    BOOST_CHECK_EQUAL(std::is_partitioned(v.begin(), v.end(), ural::is_even),
+                      ural::is_partitioned(v, ural::is_even));
+    BOOST_CHECK_EQUAL(false, ural::is_partitioned(v, ural::is_even));
 }
 
 BOOST_AUTO_TEST_CASE(partition_test)
@@ -2257,22 +2246,21 @@ BOOST_AUTO_TEST_CASE(partition_test)
 
     typedef ::ural::ValueType<Container> Element;
 
-    auto const is_even = [](Element x) { return x % 2 == 0;};
-
     // Выполнение операции
-    auto r_ural = ural::partition(ys, is_even);
+    auto r_ural = ural::partition(ys, ural::is_even);
 
     // Проверка
     BOOST_CHECK(r_ural.original() == ural::sequence(ys));
 
     BOOST_CHECK(ural::is_permutation(ys, xs));
-    BOOST_CHECK(ural::is_partitioned(ys, is_even));
+    BOOST_CHECK(ural::is_partitioned(ys, ural::is_even));
 
-    BOOST_CHECK(::ural::all_of(r_ural.traversed_front(), is_even));
-    BOOST_CHECK(std::all_of(r_ural.traversed_begin(), r_ural.begin(), is_even));
+    BOOST_CHECK(::ural::all_of(r_ural.traversed_front(), ural::is_even));
+    BOOST_CHECK(std::all_of(r_ural.traversed_begin(), r_ural.begin(),
+                            ural::is_even));
 
-    BOOST_CHECK(::ural::none_of(ural::shrink_front(r_ural), is_even));
-    BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.end(), is_even));
+    BOOST_CHECK(::ural::none_of(ural::shrink_front(r_ural), ural::is_even));
+    BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.end(), ural::is_even));
 }
 
 BOOST_AUTO_TEST_CASE(stable_partition_test_empty)

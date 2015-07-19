@@ -18,6 +18,7 @@
 */
 
 
+#include <ural/math.hpp>
 #include <ural/numeric.hpp>
 #include <ural/math/common_factor.hpp>
 
@@ -517,4 +518,24 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(pascal_triangle_PE_203, Set, PE_203_Set_types)
     }
 
     URAL_CHECK_EQUAL_RANGES(r, z);
+}
+
+BOOST_AUTO_TEST_CASE(is_even_and_is_odd_test)
+{
+    static_assert(ural::is_even(0) == true, "");
+    static_assert(ural::is_odd(0) == false, "");
+
+    static_assert(ural::is_even(2) == true, "");
+    static_assert(ural::is_odd(2) == false, "");
+
+    static_assert(ural::is_even(3) == false, "");
+    static_assert(ural::is_odd(3) == true, "");
+
+    static_assert(ural::is_even(-2) == true, "");
+    static_assert(ural::is_odd(-2) == false, "");
+
+    static_assert(ural::is_even(-3) == false, "");
+    static_assert(ural::is_odd(-3) == true, "");
+
+    BOOST_CHECK(true);
 }

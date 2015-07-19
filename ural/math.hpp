@@ -21,6 +21,7 @@
  @brief Математические функции и типы данных
 */
 
+#include <ural/defs.hpp>
 #include <ural/math/common_factor.hpp>
 #include <ural/meta/hierarchy.hpp>
 #include <ural/meta/algo.hpp>
@@ -119,6 +120,18 @@ namespace ural
     };
 
     auto constexpr square = square_fn{};
+    namespace details
+    {
+        class is_even_fn
+        {
+        public:
+            template <class T>
+            constexpr auto operator()(T const & x) const
+            {
+                return x % T(2) == 0;
+            }
+        };
+    }
 
     /// @brief Тип функционального объекта для вычисления куба (третьей степени)
     class cube_fn
@@ -147,6 +160,12 @@ namespace ural
     };
 
     auto constexpr cube = cube_fn{};
+
+    namespace
+    {
+        constexpr auto const & is_even = ::ural::odr_const<details::is_even_fn>;
+        constexpr auto const & is_odd  = ::ural::odr_const<ural::not_function<details::is_even_fn>>;
+    }
 
     /** @brief Класс-характеристика единичного элемента относительно операции
     @tparam T тип элемента

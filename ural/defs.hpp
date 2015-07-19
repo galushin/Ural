@@ -114,6 +114,9 @@ namespace ural
         void operator=(T const &)
         {}
     };
+
+    template <class T>
+    constexpr const T odr_const{};
 }
 // namespace ural
 

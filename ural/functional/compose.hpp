@@ -22,6 +22,7 @@
  объектов
 */
 
+#include <ural/tuple.hpp>
 #include <ural/utility.hpp>
 #include <boost/compressed_pair.hpp>
 
@@ -57,24 +58,27 @@ namespace ural
             second_function_type;
 
     private:
-        typedef boost::compressed_pair<first_function_type, second_function_type>
-            Base;
+        typedef ural::tuple<first_function_type, second_function_type> Base;
 
     public:
+        constexpr compose_function()
+         : base_{}
+        {}
+
         /** @brief Конструктор
         @param f1 функциональный объект, вычисляющий окончательный результат
         @param f2 функциональный объект, применяемый к аргументам
         @post <tt> this->first_function() == f1 </tt>
         @post <tt> this->second_function() == f2 </tt>
         */
-        explicit compose_function(UnaryFunction f1, Function f2)
+        constexpr explicit compose_function(UnaryFunction f1, Function f2)
          : base_{std::move(f1), std::move(f2)}
         {}
 
         /** @brief Первый функциональный объект
         @return Первый функциональный объект
         */
-        first_function_type const & first_function() const
+        constexpr first_function_type const & first_function() const
         {
             return ::ural::get(base_, ural::_1);
         }
@@ -82,7 +86,7 @@ namespace ural
         /** @brief Второй функциональный объект
         @return Второй функциональный объект
         */
-        second_function_type const & second_function() const
+        constexpr second_function_type const & second_function() const
         {
             return ::ural::get(base_, ural::_2);
         }
