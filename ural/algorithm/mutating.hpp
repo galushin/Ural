@@ -17,7 +17,7 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/** @file ural/algorithm.hpp
+/** @file ural/algorithm/mutating.hpp
  @brief Алгоритмы, модифицирующие последовательность
 */
 

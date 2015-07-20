@@ -216,6 +216,7 @@ namespace ural
         {
             // @todo Как в Range extensions
         public:
+            /// @brief Использование
             BOOST_CONCEPT_USAGE(InputSequence)
             {
                 BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Seq>));
@@ -227,6 +228,7 @@ namespace ural
         struct OutputSequence
         {
         public:
+            /// @brief Использование
             BOOST_CONCEPT_USAGE(OutputSequence)
             {
                 BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Seq>));
@@ -320,6 +322,7 @@ namespace ural
         template <class Seq, class Out>
         struct IndirectlyMovable
         {
+            /// @brief Использование
             BOOST_CONCEPT_USAGE(IndirectlyMovable)
             {
                 // @todo нужно ли это static_assert(concepts::Semiregular<Out>(), "");?
@@ -331,6 +334,7 @@ namespace ural
         template <class Seq, class Out>
         struct IndirectlyCopyable
         {
+            /// @brief Использование
             BOOST_CONCEPT_USAGE(IndirectlyCopyable)
             {
                 // @todo нужно ли это static_assert(concepts::Semiregular<Seq>(), "");?
@@ -345,6 +349,7 @@ namespace ural
         class IndirectlySwappable
         {
         public:
+            /// @brief Использование
             BOOST_CONCEPT_USAGE(IndirectlySwappable)
             {
                 BOOST_CONCEPT_ASSERT((concepts::Readable<S1>));
@@ -363,6 +368,7 @@ namespace ural
          , concepts::IndirectlyMovable<Seq, Seq>
         {
         public:
+            /// @brief Использование
             BOOST_CONCEPT_USAGE(Permutable)
             {
                 BOOST_CONCEPT_ASSERT((concepts::Semiregular<ValueType<Seq>>));
@@ -373,6 +379,7 @@ namespace ural
         struct Mergeable
         {
         public:
+            /// @brief Использование
             BOOST_CONCEPT_USAGE(Mergeable)
             {
                 BOOST_CONCEPT_ASSERT((concepts::InputSequence<I1>));
@@ -391,6 +398,7 @@ namespace ural
         struct Sortable
         {
         public:
+            /// @brief Использование
             BOOST_CONCEPT_USAGE(Sortable)
             {
                 BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<S>));
@@ -404,6 +412,7 @@ namespace ural
         {
             // В Range extensions требуется, чтобы begin и end имели константную
             // сложность. Нужно ли нам потребовать этого от sequence?
+            /// @brief Использование
             BOOST_CONCEPT_USAGE(Sequenced)
             {
                 typedef decltype(sequence(std::declval<S>())) Seq;

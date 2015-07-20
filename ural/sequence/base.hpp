@@ -145,7 +145,7 @@ namespace ural
     }
 
     template <class Seq, class Base>
-    sequence_iterator<Seq &> end(sequence_base<Seq, Base> & s)
+    sequence_iterator<Seq &> end(sequence_base<Seq, Base> &)
     {
         return sequence_iterator<Seq &>{};
     }

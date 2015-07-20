@@ -150,6 +150,7 @@ namespace concepts
     struct Convertible
     {
     public:
+        /// @brief Использование
         BOOST_CONCEPT_USAGE(Convertible)
         {
             static_assert(std::is_convertible<T, U>::value, "");
@@ -160,6 +161,7 @@ namespace concepts
     struct Common
     {
     public:
+        /// @brief Использование
         BOOST_CONCEPT_USAGE(Common)
         {
             [](T t) -> CT { return std::forward<T>(t); };
@@ -193,6 +195,7 @@ namespace concepts
     struct Swappable
     {
     public:
+        /// @brief Использование
         BOOST_CONCEPT_USAGE(Swappable)
         {
             using std::swap;
@@ -227,6 +230,7 @@ namespace concepts
     class EqualityComparable
     {
     public:
+        /// @brief Использование
         BOOST_CONCEPT_USAGE(EqualityComparable)
         {
             BOOST_CONCEPT_ASSERT((concepts::Common<T, U>));
@@ -251,6 +255,7 @@ namespace concepts
     class EqualityComparable<T>
     {
     public:
+        /// @brief Использование
         BOOST_CONCEPT_USAGE(EqualityComparable)
         {
             ural::value_consumer<bool>() = (a == b);
@@ -279,6 +284,7 @@ namespace concepts
     struct TotallyOrdered
     {
     public:
+        /// @brief Использование
         BOOST_CONCEPT_USAGE(TotallyOrdered)
         {
             BOOST_CONCEPT_ASSERT((concepts::Common<T, U>));
@@ -309,6 +315,7 @@ namespace concepts
     struct TotallyOrdered<T>
     {
     public:
+        /// @brief Использование
         BOOST_CONCEPT_USAGE(TotallyOrdered)
         {
             BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<T>));
@@ -356,6 +363,7 @@ namespace concepts
     struct MoveWritable
     {
     public:
+        /// @brief Использование
         BOOST_CONCEPT_USAGE(MoveWritable)
         {
             [](Out out, T && v){ *out = std::move(v); };
@@ -396,6 +404,7 @@ namespace concepts
      , private Same<T &, decltype(++ std::declval<T&>())>
     {
     public:
+        /// @brief Примеры использования
         BOOST_CONCEPT_USAGE(WeakIncrementable)
         {
             // @todo как в Range Extensions?
@@ -415,6 +424,7 @@ namespace concepts
      , concepts::CopyConstructible<F>
     {
     public:
+        /// @brief Использование
         BOOST_CONCEPT_USAGE(Function)
         {
             static_assert(std::is_same<F *, decltype(&f)>::value, "");
@@ -455,6 +465,7 @@ namespace concepts
     struct Relation<R, T, U>
     {
     public:
+        /// @brief Использование
         BOOST_CONCEPT_USAGE(Relation)
         {
             BOOST_CONCEPT_ASSERT((concepts::Relation<R, T>));
@@ -491,6 +502,7 @@ namespace concepts
      : concepts::Relation<FunctionType<F>, ValueType<S1>, ValueType<S2>>
     {
     public:
+        /// @brief Использование
         BOOST_CONCEPT_USAGE(IndirectRelation)
         {
             BOOST_CONCEPT_ASSERT((concepts::Readable<S1>));

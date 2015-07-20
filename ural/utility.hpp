@@ -196,9 +196,18 @@ namespace ural
         with_old_value(with_old_value &&) = default;
         //@}
 
+        /** @brief Конструктор копий на основе совместимого типа
+        @param x копируемый объект
+        @post <tt> *this == x </tt>
+        */
         template <class U>
         with_old_value(with_old_value<U> const & x);
 
+        /** @brief Конструктор перемещения на основе совместимого типа
+        @param x копируемый объект
+        @post <tt> *this </tt> содержит значение, которые @c x имел до
+        выполнения операции.
+        */
         template <class U>
         with_old_value(with_old_value<U> && x)
          : value_(std::move(x).value())
@@ -206,14 +215,27 @@ namespace ural
         {}
 
         //@{
-        /// @brief Оператор присваивания копий
+        /** @brief Оператор присваивания
+        @return <tt> *this </tt>
+        */
         with_old_value & operator=(with_old_value const &) = default;
         with_old_value & operator=(with_old_value &&) = default;
         //@}
 
+        /** @brief Оператор копирующего присваивания совместимого типа
+        @param x присваиваемый объект
+        @post <tt> *this == x </tt>
+        @return <tt> *this </tt>
+        */
         template <class U>
         with_old_value & operator=(with_old_value<U> const & x);
 
+        /** @brief Оператор присваивания с перемещением совместимого типа
+        @param x присваиваемый объект
+        @post <tt> *this </tt> имеет значение, которые @c x имел до выполения
+        этой операции.
+        @return <tt> *this </tt>
+        */
         template <class U>
         with_old_value & operator=(with_old_value<U> && x)
         {
@@ -270,11 +292,6 @@ namespace ural
         //@}
 
         //@{
-        T && old_value() &&
-        {
-            return std::move(this->old_value_);
-        }
-
         /** @brief Исходное значение
         @return Значение <tt> this->value() </tt> сразу после конструктора или
         последнего вызова <tt> this->commit() </tt>.
@@ -282,6 +299,11 @@ namespace ural
         constexpr T const & old_value() const &
         {
             return old_value_;
+        }
+
+        T && old_value() &&
+        {
+            return std::move(this->old_value_);
         }
         //@}
 
@@ -562,8 +584,11 @@ namespace ural
         //@}
     };
 
-    /// @brief Функциональный объект для преобразования ссылок в константные
-    auto constexpr as_const = as_const_fn{};
+    namespace
+    {
+        /// @brief Функциональный объект для преобразования ссылок в константные
+        constexpr auto const & as_const = odr_const<as_const_fn>;
+    }
 }
 // namespace ural
 

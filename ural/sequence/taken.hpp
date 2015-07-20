@@ -114,6 +114,11 @@ namespace ural
                                  this->init_count() - this->count());
         }
 
+        /** @brief Исчерпание последовательности за константное время в прямом
+        порядке
+        @post <tt> !*this == true </tt>
+        @pre <tt> *this </tt> должна быть конечной
+        */
         void exhaust_front()
         {
             for(; !!*this; ++*this)

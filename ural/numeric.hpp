@@ -443,11 +443,17 @@ namespace ural
     {
     public:
         // Типы
+        /// @brief Тип значения
         typedef RealType value_type;
 
+        /// @brief Тип ссылки
         typedef value_type const & reference;
 
-        // Конструктор
+        /** @brief Конструктор
+        @param S число, из которого извлекается корень
+        @param x0 начальное приближение
+        @param eps желаемая точность
+        */
         sqrt_heron_sequence(RealType S, RealType x0, RealType eps)
          : s_(std::move(S))
          , x0_(std::move(x0))
@@ -463,16 +469,26 @@ namespace ural
         }
 
         // Однопроходная последовательность
+        /** @brief Проверка исчерпания последовательностей
+        @return @b true, если последовательность исчерпана, иначе --- @b false.
+        */
         bool operator!() const
         {
             return this->done_;
         }
 
+        /** @brief Текущий элемент последовательности
+        @pre <tt> !*this == false </tt>
+        @return Ссылка на текущий элемент последовательности
+        */
         reference front() const
         {
             return this->x0_;
         }
 
+        /** @brief Переход к следующему элементу
+        @pre <tt> !*this == false </tt>
+        */
         void pop_front()
         {
             using std::abs;

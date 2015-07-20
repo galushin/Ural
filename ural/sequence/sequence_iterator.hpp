@@ -204,11 +204,17 @@ namespace ural
          : impl_(seq)
         {}
 
+        //@{
+        /// @brief Конструктор копий
         sequence_iterator(sequence_iterator const &) = default;
         sequence_iterator(sequence_iterator &&) = default;
+        //@}
 
+        //@{
+        /// @brief Оператор присваивания
         sequence_iterator & operator=(sequence_iterator const &) = default;
         sequence_iterator & operator=(sequence_iterator &&) = default;
+        //@}
 
         // Итератор ввода
         /** @brief Ссылка на текущий элемент

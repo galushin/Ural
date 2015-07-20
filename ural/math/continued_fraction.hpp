@@ -131,16 +131,26 @@ namespace ural
         }
 
         // Однопроходная последовательность
+        /** @brief Проверка исчерпания последовательностей
+        @return @b true, если последовательность исчерпана, иначе --- @b false.
+        */
         bool operator!() const
         {
             return (denom_ == IntType(0));
         }
 
+        /** @brief Текущий элемент последовательности
+        @pre <tt> !*this == false </tt>
+        @return Ссылка на текущий элемент последовательности
+        */
         reference front() const
         {
             return a_new_;
         }
 
+        /** @brief Переход к следующему элементу
+        @pre <tt> !*this == false </tt>
+        */
         void pop_front()
         {
             if(ural::square(a_0_) == N_ || (denom_ == 1 && x_ == a_0_))

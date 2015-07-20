@@ -73,12 +73,21 @@ namespace ural
     class separated_helper
     {
     public:
+        /** @brief Конструктор
+        @param seq последовательность
+        @param delim разделитель
+        @post <tt> this->sequence == seq </tt>
+        @post <tt> this->separator == delim </tt>
+        */
         separated_helper(Sequence seq, Separator delim)
          : sequence(std::move(seq))
          , separator(std::move(delim))
         {}
 
+        /// @brief Последовательность
         Sequence sequence;
+
+        /// @brief Разделитель
         Separator separator;
     };
 
@@ -257,11 +266,14 @@ namespace details
         }
     };
 
-    /// @brief Функциональный объект преобразования в <tt> std::string </tt>
-    auto constexpr to_string = to_string_function<char>{};
+    namespace
+    {
+        /// @brief Функциональный объект преобразования в <tt> std::string </tt>
+        constexpr auto & to_string = odr_const<to_string_function<char>>;
 
-    /// @brief Функциональный объект преобразования в <tt> std::wstring </tt>s
-    auto constexpr to_wstring = to_string_function<wchar_t>{};
+        /// @brief Функциональный объект преобразования в <tt> std::wstring </tt>s
+        constexpr auto & to_wstring = odr_const<to_string_function<wchar_t>>;
+    }
 }
 // namespace ural
 

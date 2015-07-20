@@ -333,8 +333,11 @@ namespace ural
                                             helper.predicate);
     }
 
-    /// @brief Функциональный объект, создающий @c unique_sequence
-    constexpr auto uniqued = uniqued_helper{};
+    namespace
+    {
+        /// @brief Функциональный объект, создающий @c unique_sequence
+        constexpr auto & uniqued = odr_const<uniqued_helper>;
+    }
 }
 // namespace ural
 

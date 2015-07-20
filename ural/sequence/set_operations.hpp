@@ -332,19 +332,29 @@ namespace ural
             return static_cast<Compare const &>(*this);
         }
 
+        //@{
+        /** @brief Первая базовая последовательность
+        @return Ссылка на первую базовую последовательность
+        */
         Input1 const & first_base() const &;
 
         Input1 && first_base() &&
         {
             return std::move(this->in1_);
         }
+        //@}
 
+        //@{
+        /** @brief Вторая базовая последовательность
+        @return Ссылка на вторую базовую последовательность
+        */
         Input2 const & second_base() const &;
 
         Input2 && second_base() &&
         {
             return std::move(this->in2_);
         }
+        //@}
 
     private:
         void seek()
@@ -485,19 +495,29 @@ namespace ural
             return static_cast<Compare const &>(*this);
         }
 
+        //@{
+        /** @brief Первая базовая последовательность
+        @return Ссылка на первую базовую последовательность
+        */
         Input1 const & first_base() const &;
 
         Input1 && first_base() &&
         {
             return std::move(this->in1_);
         }
+        //@}
 
+        //@{
+        /** @brief Вторая базовая последовательность
+        @return Ссылка на вторую базовую последовательность
+        */
         Input2 const & second_base() const &;
 
         Input2 && second_base() &&
         {
             return std::move(this->in2_);
         }
+        //@}
 
     private:
         void seek()
@@ -663,19 +683,29 @@ namespace ural
             return static_cast<Compare const &>(*this);
         }
 
+        //@{
+        /** @brief Первая базовая последовательность
+        @return Ссылка на первую базовую последовательность
+        */
         Input1 const & first_base() const &;
 
         Input1 && first_base() &&
         {
             return std::move(this->in1_);
         }
+        //@}
 
+        //@{
+        /** @brief Вторая базовая последовательность
+        @return Ссылка на вторую базовую последовательность
+        */
         Input2 const & second_base() const &;
 
         Input2 && second_base() &&
         {
             return std::move(this->in2_);
         }
+        //@}
 
     private:
         void seek()
@@ -859,19 +889,29 @@ namespace ural
             return static_cast<Compare const &>(*this);
         }
 
+        //@{
+        /** @brief Первая базовая последовательность
+        @return Ссылка на первую базовую последовательность
+        */
         Input1 const & first_base() const &;
 
         Input1 && first_base() &&
         {
             return std::move(this->in1_);
         }
+        //@}
 
+        //@{
+        /** @brief Вторая базовая последовательность
+        @return Ссылка на вторую базовую последовательность
+        */
         Input2 const & second_base() const &;
 
         Input2 && second_base() &&
         {
             return std::move(this->in2_);
         }
+        //@}
 
     private:
         void seek()
