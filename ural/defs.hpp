@@ -115,13 +115,22 @@ namespace ural
         {}
     };
 
+    template <class T>
+    struct odr_const_holder
+    {
+        static constexpr T value = T{};
+    };
+
+    template <class T>
+    constexpr T odr_const_holder<T>::value;
+
     namespace
     {
         /** @brief Шаблон переменной для определения глобальных констант,
         которые не нарушают "Правило одного определения" (ODR).
         */
         template <class T>
-        constexpr auto const && odr_const = T{};
+        constexpr auto const & odr_const = odr_const_holder<T>::value;
     }
 }
 // namespace ural

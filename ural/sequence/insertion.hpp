@@ -103,11 +103,6 @@ namespace ural
         }
     };
 
-    /** @brief Функциональный объект, создающий итератор вставки в конец
-    контейнера
-    */
-    constexpr auto back_inserter = back_inserter_helper{};
-
     /** @brief Создание @c std::back_insert_iterator конвейерным синтаксисом
     @param c контейнера
     @return <tt> std::back_insert_iterator<Container>(c) </tt>
@@ -136,11 +131,6 @@ namespace ural
             return std::front_inserter(c);
         }
     };
-
-    /** @brief Функциональный объект, создающий итератор вставки в начало
-    контейнера
-    */
-    constexpr auto front_inserter = front_inserter_helper{};
 
     /** @brief Создание @c std::front_insert_iterator конвейерным синтаксисом
     @param c контейнера
@@ -247,10 +237,23 @@ namespace ural
         return ural::set_inserter_helper{}(c);
     }
 
-    /** @brief Функциональный объект, создающий последовательность вставки
-    во множество
-    */
-    constexpr auto set_inserter = set_inserter_helper{};
+    namespace
+    {
+        /** @brief Функциональный объект, создающий итератор вставки в конец
+        контейнера
+        */
+        constexpr auto const & back_inserter = odr_const<back_inserter_helper>;
+
+        /** @brief Функциональный объект, создающий итератор вставки в начало
+        контейнера
+        */
+        constexpr auto const & front_inserter = odr_const<front_inserter_helper>;
+
+        /** @brief Функциональный объект, создающий последовательность вставки
+        во множество
+        */
+        constexpr auto const & set_inserter = odr_const<set_inserter_helper>;
+    }
 }
 // namespace ural
 

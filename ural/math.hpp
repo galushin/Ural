@@ -96,6 +96,8 @@ namespace ural
     class square_fn
     {
     public:
+        square_fn() = default;
+
         /** @brief Функция вычисления квадрата
         @param x аргумент
         @return <tt> x * x</tt>
@@ -119,19 +121,22 @@ namespace ural
         }
     };
 
-    auto constexpr square = square_fn{};
-    namespace details
+    /** @brief Класс функционального объекта для определения, является ли число
+    чётным.
+    */
+    class is_even_fn
     {
-        class is_even_fn
+    public:
+        /** @brief Оператор вычисления значения функции
+        @param x целое число
+        @return <tt> x % Integer(2) == 0 </tt>
+        */
+        template <class Integer>
+        constexpr auto operator()(Integer const & x) const
         {
-        public:
-            template <class T>
-            constexpr auto operator()(T const & x) const
-            {
-                return x % T(2) == 0;
-            }
-        };
-    }
+            return x % Integer(2) == 0;
+        }
+    };
 
     /// @brief Тип функционального объекта для вычисления куба (третьей степени)
     class cube_fn
@@ -158,14 +163,6 @@ namespace ural
             return op(ural::square_fn{}(x, op), x);
         }
     };
-
-    auto constexpr cube = cube_fn{};
-
-    namespace
-    {
-        constexpr auto const & is_even = ::ural::odr_const<details::is_even_fn>;
-        constexpr auto const & is_odd  = ::ural::odr_const<ural::not_function<details::is_even_fn>>;
-    }
 
     /** @brief Класс-характеристика единичного элемента относительно операции
     @tparam T тип элемента
@@ -275,7 +272,7 @@ namespace ural
         {
             return (n == 1)
                     ? x
-                    : adjust(ural::square(this->compute(x, n / 2, op), op), x, n % 2 != 0, op);
+                    : adjust(ural::square_fn{}(this->compute(x, n / 2, op), op), x, n % 2 != 0, op);
         }
 
         template <class T, class AssocBinOp>
@@ -289,8 +286,6 @@ namespace ural
             return (n > 0) ? n : throw std::logic_error{"zero power"};
         }
     };
-
-    auto constexpr natural_power = natural_power_f{};
 
     // Абсолютное значение
     namespace details
@@ -402,6 +397,16 @@ namespace ural
     {
         assert(x >= 0);
         return typename std::make_unsigned<T>::type(std::move(x));
+    }
+
+    namespace
+    {
+        constexpr auto & is_even = odr_const<is_even_fn>;
+        constexpr auto & is_odd  = odr_const<ural::not_function<is_even_fn>>;
+
+        constexpr auto & square = odr_const<square_fn>;
+        constexpr auto & cube = odr_const<cube_fn>;
+        constexpr auto & natural_power = odr_const<natural_power_f>;
     }
 }
 // namespace ural

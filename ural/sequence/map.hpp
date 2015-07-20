@@ -34,14 +34,6 @@ namespace ural
     template <size_t Index>
     struct map_sequence_helper{};
 
-    /** @brief Объект-тэг для создания последовательности ключей ассоциативного
-    контейнера */
-    auto constexpr map_keys = map_sequence_helper<0>{};
-
-    /** @brief Объект-тэг для создания последовательности отоброжаемых значений
-    ассоциативного контейнера */
-    auto constexpr map_values = map_sequence_helper<1>{};
-
     /** @brief Создание последовательностей ключей или отображаемых значений
     отображений ассоциативного контейнера
     @tparam Index индекс последовательности: 0 --- ключи, 1 --- отображаемые
@@ -54,6 +46,17 @@ namespace ural
     -> decltype(make_transform_sequence(tuple_get<Index>{}, std::forward<Sequence>(seq)))
     {
         return make_transform_sequence(tuple_get<Index>{}, std::forward<Sequence>(seq));
+    }
+
+    namespace
+    {
+        /** @brief Объект-тэг для создания последовательности ключей ассоциативного
+        контейнера */
+        constexpr auto & map_keys = odr_const<map_sequence_helper<0>>;
+
+        /** @brief Объект-тэг для создания последовательности отоброжаемых значений
+        ассоциативного контейнера */
+        constexpr auto & map_values = odr_const<map_sequence_helper<1>>;
     }
 }
 // namespace ural
