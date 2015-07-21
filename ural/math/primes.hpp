@@ -38,8 +38,8 @@
 
 namespace ural
 {
-    /** @brief Функциональный объект, для проверки того, что число является
-    простым
+    /** @brief Тип функционального объекта, для проверки того, что число
+    является простым.
 
     Заметим, что эту функцию не следует использовать во всех случаях. Если
     нужно проверять простоту большого количества чисел, то может оказаться более
@@ -93,8 +93,6 @@ namespace ural
         }
     };
 
-    auto constexpr is_prime = is_prime_f{};
-
     /** @brief Проверяет, что @c x является взаимно простым с элементами
     @c ds
     @param x число
@@ -131,8 +129,6 @@ namespace ural
         }
     };
 
-    auto constexpr is_not_divisible_by_all_sorted = is_not_divisible_by_all_sorted_f{};
-
     /** @brief Функциональный объект, проверяющий, что число является
     взаимно-простым со всеми числами последовательности
     */
@@ -155,7 +151,27 @@ namespace ural
         }
     };
 
-    auto constexpr is_coprime_with_all = is_coprime_with_all_f{};
+    inline namespace
+    {
+        /** @brief Функциональный объект, для проверки того, что число является
+        простым.
+        */
+        constexpr auto const & is_prime = odr_const<is_prime_f>;
+
+        /** @brief Функциональный объект, для проверки того, что число не
+        делится ни на одно из набора упорядоченных по возрастанию чисел.
+        */
+        constexpr auto const & is_not_divisible_by_all_sorted =
+            odr_const<is_not_divisible_by_all_sorted_f>;
+
+        /** @brief Функциональный объект, для проверки того, что число является
+        взаимно простым со всеми числами из упорядоченной по возрастанию
+        последовательности.
+        */
+        constexpr auto const & is_coprime_with_all =
+            odr_const<is_coprime_with_all_f>;
+    }
+
 
     /** @brief Построение списка первых простых чисел
     @tparam IntType тип, используемый для представления целых чисел

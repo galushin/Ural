@@ -139,14 +139,32 @@ namespace tags
     struct range_tag    : declare_depend_on<>{};
 
     // Тэги-объекты
-    constexpr auto count = tags_list<count_tag>{};
-    constexpr auto weigth_sum = tags_list<weigth_sum_tag>{};
-    constexpr auto mean = tags_list<mean_tag>{};
-    constexpr auto variance = tags_list<variance_tag>{};
-    constexpr auto std_dev = tags_list<standard_deviation_tag>{};
-    constexpr auto min = tags_list<min_tag>{};
-    constexpr auto max = tags_list<max_tag>{};
-    constexpr auto range = tags_list<range_tag>{};
+    inline namespace
+    {
+        /// @brief Тэг описательной статистики "Количество элементов"
+        constexpr auto const & count = odr_const<tags_list<count_tag>>;
+
+        /// @brief Тэг описательной статистики "Сумма весов"
+        constexpr auto const & weigth_sum = odr_const<tags_list<weigth_sum_tag>>;
+
+        /// @brief Тэг описательной статистики "Среднее"
+        constexpr auto const & mean = odr_const<tags_list<mean_tag>>;
+
+        /// @brief Тэг описательной статистики "Дисперсия"
+        constexpr auto const & variance = odr_const<tags_list<variance_tag>>;
+
+        /// @brief Тэг описательной статистики "Среднеквадратическое отклонение"
+        constexpr auto const & std_dev = odr_const<tags_list<standard_deviation_tag>>;
+
+        /// @brief Тэг описательной статистики "Наименьшене значение"
+        constexpr auto const & min = odr_const<tags_list<min_tag>>;
+
+        /// @brief Тэг описательной статистики "Наибольшее значение"
+        constexpr auto const & max = odr_const<tags_list<max_tag>>;
+
+        /// @brief Тэг описательной статистики "Размах"
+        constexpr auto const & range = odr_const<tags_list<range_tag>>;
+    }
 
     /** @brief Расширение списка тэгов: добавление тэгов, от которых зависят
     исходные.

@@ -404,7 +404,7 @@ namespace ural
         constexpr auto & is_even = odr_const<is_even_fn>;
         constexpr auto & is_odd  = odr_const<ural::not_function<is_even_fn>>;
 
-        constexpr auto & square = odr_const<square_fn>;
+        constexpr auto & square = odr_const_holder<square_fn>::value;
         constexpr auto & cube = odr_const<cube_fn>;
         constexpr auto & natural_power = odr_const<natural_power_f>;
     }

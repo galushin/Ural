@@ -117,7 +117,15 @@ namespace ural
         }
     };
 
-    auto constexpr to_unique_ptr = to_unqiue_ptr_function{};
+    inline namespace
+    {
+        /** @brief Функциональный объект для создания копии заданного объекта
+        в динамической памяти, управляемой с помощью <tt> std::unique_ptr </tt>
+        @todo Перегрузки с произвольным числом аргументов
+        */
+        constexpr auto const & to_unique_ptr
+            = odr_const_holder<to_unqiue_ptr_function>::value;
+    }
 
     /** @brief Создание копии в динамической памяти
     @param x копируемое значение

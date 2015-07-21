@@ -246,7 +246,10 @@ namespace ural
         return make_reverse_sequence(std::forward<BidirectionalSequence>(seq));
     }
 
-    constexpr auto reversed = reversed_helper{};
+    inline namespace
+    {
+        constexpr auto const & reversed = odr_const<reversed_helper>;
+    }
 
     /** @brief Создание обратной последовательности на основе
     <tt> std::reverse_iterator </tt>

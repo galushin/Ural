@@ -431,7 +431,12 @@ namespace ural
         }
     };
 
-    auto constexpr const discrete_convolution = discrete_convolution_function{};
+    inline namespace
+    {
+        /// @brief Функциональный объект для вычисления дискретной свёртки
+        constexpr auto const & discrete_convolution =
+            odr_const<discrete_convolution_function>;
+    }
 
     /** @brief Последовательность для вычисления приближённого значения
     квадратого корня по итерационному методу Герона. Смотри, например

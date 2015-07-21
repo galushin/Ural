@@ -199,11 +199,11 @@ namespace ural
 
     namespace
     {
-        constexpr auto const make_delimit_sequence
-            = ::ural::details::make_delimit_sequence_fn{};
+        constexpr auto const & make_delimit_sequence
+            = odr_const<details::make_delimit_sequence_fn>;
 
-        constexpr auto const delimited =
-            ::ural::pipeable_maker<::ural::details::make_delimit_sequence_fn>{};
+        constexpr auto const & delimited =
+            odr_const<pipeable_maker<details::make_delimit_sequence_fn>>;
     }
 }
 // namespace ural

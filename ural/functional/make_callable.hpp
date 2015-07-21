@@ -392,7 +392,15 @@ namespace ural
             return f;
         }
     };
-    auto constexpr make_callable = make_callable_fn{};
+
+    inline namespace
+    {
+        /** @brief Функциоанльный объект, преобразующий указатели на
+        функции-члены и переменные-члены в функциональные объекты, а остальные
+        типы оставляющий без изменения.
+        */
+        constexpr auto const & make_callable = odr_const<make_callable_fn>;
+    }
 
     template <class T>
     using FunctionType = decltype(::ural::make_callable_fn{}(std::declval<T>()));

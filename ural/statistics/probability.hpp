@@ -21,6 +21,8 @@
  @brief Класс для представления вероятностей
 */
 
+#include <ural/defs.hpp>
+
 #include <stdexcept>
 #include <istream>
 #include <ostream>
@@ -147,7 +149,12 @@ namespace ural
             return probability<RealType>{std::move(p)};
         }
     };
-    auto constexpr make_probability = make_probability_fn{};
+
+    inline namespace
+    {
+        /// @brief Функциональный объект создания вероятности на основе значения
+        constexpr auto const & make_probability = odr_const<make_probability_fn>;
+    }
 
     /** @brief Оператор равно
     @param x левый операнд

@@ -88,7 +88,7 @@ namespace ural
     template<class... Ts>
     using index_sequence_for = make_index_sequence<sizeof...(Ts)>;
 
-    struct
+    class apply_fn
     {
     private:
         template <typename F, typename Tuple, size_t... I>
@@ -113,8 +113,15 @@ namespace ural
             using Indices = make_index_sequence<std::tuple_size<decay_t<Tuple>>::value>;
             return impl(std::forward<F>(f), std::forward<Tuple>(t), Indices{});
         }
+    };
+
+    inline namespace
+    {
+        /** @brief Функциональный объект для вызова функции с элементами кортежа
+        в качестве аргументов.
+        */
+        constexpr auto const & apply = odr_const<apply_fn>;
     }
-    constexpr apply {};
 
     /** @brief Обобщённая реализация присваивания "Скопировать и обменять"
     @param x объект, которому должно быть присвоено значение

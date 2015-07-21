@@ -204,7 +204,10 @@ namespace ural
         return make_move_sequence(std::forward<Sequence>(seq));
     }
 
-    auto constexpr moved = moved_helper{};
+    inline namespace
+    {
+        constexpr auto const & moved = odr_const<moved_helper>;
+    }
 }
 // namespace ural
 

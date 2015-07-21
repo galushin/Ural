@@ -123,7 +123,11 @@ namespace ural
     }
 
     struct outdirected_helper {};
-    auto constexpr outdirected = outdirected_helper{};
+
+    inline namespace
+    {
+        constexpr auto const & outdirected = odr_const<outdirected_helper>;
+    }
 
     /** @brief Создание @c outdirected_sequence в "конвейерном" стиле
     @param seq базовая последовательность

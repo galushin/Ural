@@ -28,6 +28,21 @@
 
 namespace ural
 {
+    template <class T>
+    struct odr_const_holder
+    {
+        static constexpr T value = T{};
+    };
+
+    template <class T>
+    constexpr T odr_const_holder<T>::value;
+
+    /** @brief Шаблон переменной для определения глобальных констант,
+    которые не нарушают "Правило одного определения" (ODR).
+    */
+    template <class T>
+    constexpr auto const & odr_const = T{};
+
     /** Пустой базовый класс. Используется, когда формально требуется указать
     базовый класс, но никакой базовый класс на самом деле не нужен.
     @brief Пустой базовый класс.
@@ -81,7 +96,14 @@ namespace ural
     */
     class in_place_t{};
 
-    constexpr in_place_t inplace{};
+    inline namespace
+    {
+        /** @brief Константа-тэг, обозначающая, что остальные аргументы должны
+        использоваться как аргументы конструктора для создания некоторого
+        объекта.
+        */
+        constexpr auto const & inplace = odr_const_holder<in_place_t>::value;
+    }
 
     /** Если @c T совпадает с @c use_default, то результат @c --- Default,
     иначе --- @c T.
@@ -114,24 +136,6 @@ namespace ural
         void operator=(T const &)
         {}
     };
-
-    template <class T>
-    struct odr_const_holder
-    {
-        static constexpr T value = T{};
-    };
-
-    template <class T>
-    constexpr T odr_const_holder<T>::value;
-
-    namespace
-    {
-        /** @brief Шаблон переменной для определения глобальных констант,
-        которые не нарушают "Правило одного определения" (ODR).
-        */
-        template <class T>
-        constexpr auto const & odr_const = odr_const_holder<T>::value;
-    }
 }
 // namespace ural
 
