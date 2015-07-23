@@ -247,9 +247,9 @@ namespace ural
         }
 
     private:
-        typedef div_type<decltype(radix)> div_type;
+        typedef div_type<decltype(radix)> Div_type;
 
-        div_type state_;
+        Div_type state_;
     };
 
     // @todo устранить дублирование
