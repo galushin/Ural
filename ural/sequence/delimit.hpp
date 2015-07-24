@@ -162,6 +162,11 @@ namespace ural
             return this->seq_.shrink_front();
         }
 
+        /** @brief Полная последовательность (включая пройденные части)
+        @return Полная последовательность
+        */
+        delimit_sequence original() const;
+
     private:
         Sequence seq_;
         Value value_;

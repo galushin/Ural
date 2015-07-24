@@ -119,6 +119,7 @@ namespace ural
         }
 
         // Прямая последовательность
+        //@{
         /** @breif Передняя пройденная часть последовательности
         @return Передняя пройденная часть последовательности
         */
@@ -128,12 +129,18 @@ namespace ural
         }
 
         cargo_sequence traversed_front() &&;
+        //@}
 
         /// @brief Отбросить переднюю пройденную часть последовательности
         void shrink_front()
         {
             return this->members_[ural::_1].shrink_front();
         }
+
+        /** @brief Полная последовательность (включая пройденные части)
+        @return Полная последовательность
+        */
+        cargo_sequence original() const;
 
         /** @brief Исчерпание последовательности за константное время
         @post <tt> !*this == true </tt>

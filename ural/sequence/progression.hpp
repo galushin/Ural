@@ -136,6 +136,11 @@ namespace ural
             first_.commit();
         }
 
+        /** @brief Полная последовательность (включая пройденные части)
+        @return Полная последовательность
+        */
+        arithmetic_progression original() const;
+
     private:
         static auto constexpr is_forward
             = std::is_convertible<traversal_tag, forward_traversal_tag>::value;

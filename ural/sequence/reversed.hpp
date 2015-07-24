@@ -120,6 +120,11 @@ namespace ural
             return this->base_.exhaust_back();
         }
 
+        /** @brief Полная последовательность (включая пройденные части)
+        @return Полная последовательность
+        */
+        reverse_sequence original() const;
+
         // Двусторонняя последовательность
         /** @brief Задний элемент последовательности
         @pre <tt> !*this == false </tt>

@@ -110,9 +110,18 @@ namespace ural
         }
 
         // Прямая последовательность
+        /// @brief Отбросить переднюю пройденную часть последовательности
         void shrink_front();
 
-        chunks_sequence traversed_front();
+        /** @breif Передняя пройденная часть последовательности
+        @return Передняя пройденная часть последовательности
+        */
+        chunks_sequence traversed_front() const;
+
+        /** @brief Полная последовательность (включая пройденные части)
+        @return Полная последовательность
+        */
+        chunks_sequence original() const;
 
     private:
         Sequence seq_;

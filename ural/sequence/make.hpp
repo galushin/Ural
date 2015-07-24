@@ -239,7 +239,6 @@ namespace ural
         /** @brief Концепция прямой последовательности
         @tparam тип последовательности, для которого проверяется концепция
         @todo Разделить на конечные и бесконечные, в конечные добавить exhaust_front
-        @todo Добавить функцию original
         */
         template <class Seq>
         class ForwardSequence
@@ -256,6 +255,8 @@ namespace ural
 
                 seq.shrink_front();
                 seq.traversed_front();
+
+                ural::value_consumer<Seq>() = seq.original();
 
                 // @todo Проверить, что тип traversed_front совпадает с Seq или
                 // tf - прямая последовательность

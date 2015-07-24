@@ -120,6 +120,11 @@ namespace ural
             return this->impl_.shrink_front();
         }
 
+        /** @brief Полная последовательность (включая пройденные части)
+        @return Полная последовательность
+        */
+        filter_sequence original() const;
+
         // Адаптор последовательности
         /** @brief Предикат
         @return Используемый предикат

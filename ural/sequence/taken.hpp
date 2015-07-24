@@ -125,6 +125,11 @@ namespace ural
             {}
         }
 
+        /** @brief Полная последовательность (включая пройденные части)
+        @return Полная последовательность
+        */
+        take_sequence original() const;
+
         /** @brief Отбрасывание пройденной части последовательности
         @post <tt> !this->traversed_front() </tt>
         */
