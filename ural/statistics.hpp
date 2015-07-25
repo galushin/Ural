@@ -139,7 +139,7 @@ namespace tags
     struct range_tag    : declare_depend_on<>{};
 
     // Тэги-объекты
-    inline namespace
+    namespace
     {
         /// @brief Тэг описательной статистики "Количество элементов"
         constexpr auto const & count = odr_const<tags_list<count_tag>>;

@@ -67,7 +67,7 @@ namespace ural
         }
     };
 
-    inline namespace
+    namespace
     {
         // 25.2 Немодифицирующие
         // 25.2.1-3 Кванторы

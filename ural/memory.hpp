@@ -117,7 +117,7 @@ namespace ural
         }
     };
 
-    inline namespace
+    namespace
     {
         /** @brief Функциональный объект для создания копии заданного объекта
         в динамической памяти, управляемой с помощью <tt> std::unique_ptr </tt>

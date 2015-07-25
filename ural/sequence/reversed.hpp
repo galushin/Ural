@@ -251,7 +251,7 @@ namespace ural
         return make_reverse_sequence(std::forward<BidirectionalSequence>(seq));
     }
 
-    inline namespace
+    namespace
     {
         constexpr auto const & reversed = odr_const<reversed_helper>;
     }

@@ -150,7 +150,7 @@ namespace ural
         }
     };
 
-    inline namespace
+    namespace
     {
         /// @brief Функциональный объект создания вероятности на основе значения
         constexpr auto const & make_probability = odr_const<make_probability_fn>;

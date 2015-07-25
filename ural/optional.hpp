@@ -34,7 +34,7 @@ namespace ural
 {
     class nullopt_t{};
 
-    inline namespace
+    namespace
     {
         /// @brief Константа-тэг, обозначающая отсутствующее значение
         constexpr auto const & nullopt = odr_const_holder<nullopt_t>::value;

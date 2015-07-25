@@ -151,7 +151,7 @@ namespace ural
         }
     };
 
-    inline namespace
+    namespace
     {
         /** @brief Функциональный объект, для проверки того, что число является
         простым.

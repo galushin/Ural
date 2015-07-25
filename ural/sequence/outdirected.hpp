@@ -124,7 +124,7 @@ namespace ural
 
     struct outdirected_helper {};
 
-    inline namespace
+    namespace
     {
         constexpr auto const & outdirected = odr_const<outdirected_helper>;
     }

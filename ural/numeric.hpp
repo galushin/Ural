@@ -431,7 +431,7 @@ namespace ural
         }
     };
 
-    inline namespace
+    namespace
     {
         /// @brief Функциональный объект для вычисления дискретной свёртки
         constexpr auto const & discrete_convolution =

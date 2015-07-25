@@ -107,7 +107,7 @@ namespace ural
         }
     };
 
-    inline namespace
+    namespace
     {
         constexpr auto const erase = erase_fn{};
 
