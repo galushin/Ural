@@ -161,6 +161,7 @@
 		<Unit filename="../ural/sequence/reversed.hpp" />
 		<Unit filename="../ural/sequence/sequence_iterator.hpp" />
 		<Unit filename="../ural/sequence/set_operations.hpp" />
+		<Unit filename="../ural/sequence/simo.hpp" />
 		<Unit filename="../ural/sequence/sink.hpp" />
 		<Unit filename="../ural/sequence/taken.hpp" />
 		<Unit filename="../ural/sequence/to.hpp" />

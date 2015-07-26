@@ -198,7 +198,7 @@ namespace ural
             BOOST_CONCEPT_USAGE(SinglePassSequence)
             {
                 !seq;
-                ++ seq;
+                ural::value_consumer<Seq&>() = ++ seq;
                 seq.pop_front();
                 // Постфиксный инкремент требует создания копий
 
@@ -252,6 +252,8 @@ namespace ural
                 value_consumer<ural::forward_traversal_tag>() = traversal_tag{};
 
                 BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<Seq>));
+
+                ural::value_consumer<Seq>() = seq++;
 
                 seq.shrink_front();
                 seq.traversed_front();

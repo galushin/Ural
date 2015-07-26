@@ -24,6 +24,7 @@
 #include <ural/sequence/zip.hpp>
 #include <ural/sequence/map.hpp>
 #include <ural/sequence/progression.hpp>
+#include <ural/sequence/simo.hpp>
 #include <ural/algorithm.hpp>
 #include <ural/container/flat_set.hpp>
 
@@ -1436,4 +1437,22 @@ BOOST_AUTO_TEST_CASE(delimit_sequence_shrink_front_test)
 
     BOOST_CHECK(ds1.base() == ds2.base());
     BOOST_CHECK(ds1 == ds2);
+}
+
+BOOST_AUTO_TEST_CASE(multy_output_sequence_test)
+{
+    std::vector<int> const src = {3, 1, 4, 1, 5, 9, 2, 6, 5, 3};
+
+    std::vector<int> v1;
+    std::vector<int> v2;
+
+    auto out = ural::simo_sequence(v1 | ural::back_inserter,
+                                   v2 | ural::back_inserter);
+
+    BOOST_CONCEPT_ASSERT((ural::concepts::OutputSequence<decltype(out), int>));
+
+    ural::copy(src, out);
+
+    URAL_CHECK_EQUAL_RANGES(v1, src);
+    URAL_CHECK_EQUAL_RANGES(v2, src);
 }
