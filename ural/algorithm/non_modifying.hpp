@@ -272,18 +272,18 @@ namespace ural
         @return Последовательность @c r, полученная из
         <tt> ::ural::sequence_fwd<Forward>(s) </tt> продвижением до тех пор,
         пока первый непройденный и следующий за ним элементым данной
-        последовательности не станут эквивалентными в смысле @c pred.
+        последовательности не станут эквивалентными в смысле @c bin_pred.
         */
         template <class Forward, class BinaryPredicate = ::ural::equal_to<>>
         auto operator()(Forward && s,
-                        BinaryPredicate pred = BinaryPredicate()) const
+                        BinaryPredicate bin_pred = BinaryPredicate()) const
         -> decltype(::ural::sequence_fwd<Forward>(s))
         {
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate, SequenceType<Forward>>));
 
             return this->impl(::ural::sequence_fwd<Forward>(s),
-                              ::ural::make_callable(std::move(pred)));
+                              ::ural::make_callable(std::move(bin_pred)));
         }
     private:
         template <class Forward, class BinaryPredicate>
@@ -378,10 +378,11 @@ namespace ural
         }
 
     public:
-        /** @brief Подсчитывает количество элементов последовательности, равных
-        заданному значению.
+        /** @brief Подсчитывает количество элементов последовательности,
+        эквивалентных заданному значению.
         @param in входная последовтельность
         @param value значение
+        @param pred бинарный предикат, определяющий эквивалентность элементов
         @return Количество элементов @c x последовательности @c in, таких, что
         <tt> pred(x, value) == true </tt>.
         */
@@ -476,7 +477,7 @@ namespace ural
         template <class Input1, class Input2,
                   class BinaryPredicate = ::ural::equal_to<>>
         bool operator()(Input1 && in1, Input2 && in2,
-                        BinaryPredicate pred = BinaryPredicate()) const
+                        BinaryPredicate bin_pred = BinaryPredicate()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input1>));
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input2>));
@@ -486,7 +487,7 @@ namespace ural
 
             return this->impl(::ural::sequence_fwd<Input1>(in1),
                               ::ural::sequence_fwd<Input2>(in2),
-                              ::ural::make_callable(std::move(pred)));
+                              ::ural::make_callable(std::move(bin_pred)));
         }
     private:
         template <class Input1, class Input2, class BinaryPredicate>

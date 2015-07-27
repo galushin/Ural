@@ -107,7 +107,8 @@ namespace ural
 
     /** @brief Вывод таблицы в поток
     @param os поток вывода
-    @tparam table таблица
+    @param table таблица
+    @return <tt> std::forward<OStream>(os) </tt>
     */
     template <class OStream, class Table>
     OStream write_table(OStream && os, Table const & table)

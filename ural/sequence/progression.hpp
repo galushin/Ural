@@ -73,6 +73,7 @@ namespace ural
         /** @brief Конструктор
         @param first Первый элемент
         @param step Шаг
+        @param op Операция, используемая для получения новых элементов
         @post <tt> **this == first </tt>
         @post <tt> this->step() == step </tt>
         @post <tt> this->function() == op </tt>

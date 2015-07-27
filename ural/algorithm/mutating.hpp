@@ -1254,7 +1254,6 @@ namespace details
         */
         template <class ForwardSequence>
         auto operator()(ForwardSequence && seq) const
-        -> decltype(::ural::sequence_fwd<ForwardSequence>(seq))
         {
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<ForwardSequence>));
             BOOST_CONCEPT_ASSERT((concepts::Permutable<SequenceType<ForwardSequence>>));
@@ -1262,10 +1261,13 @@ namespace details
             return this->impl(::ural::sequence_fwd<ForwardSequence>(seq));
         }
 
+        /** @brief Вращение последовательности, полученной конкатенацией @c in1
+        и @c in2 вокруг точки соединения.
+        @param in1 первая входная последовательность
+        @param in2 вторая входная последовательность
+        */
         template <class Forward1, class Forward2>
         auto operator()(Forward1 && in1, Forward2 && in2) const
-        -> ural::tuple<decltype(::ural::sequence_fwd<Forward1>(in1)),
-                       decltype(::ural::sequence_fwd<Forward2>(in2))>
         {
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward1>));
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward2>));

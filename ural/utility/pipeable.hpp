@@ -38,6 +38,13 @@ namespace ural
     template <class Factory, class... Args>
     struct pipeable
     {
+    public:
+        /** @brief Оператор создания адаптора
+        @param seq исходная последовательность
+        @param pipe объект, содержащий аргументы для создания адаптора
+        @return <tt> ::ural::apply(f, std::move(pipe.args)) </tt>, где
+        @c f --- <tt> ::ural::curry(Factory{}, std::forward<Sequence>(seq))</tt>
+        */
         template <class Sequence>
         friend auto operator|(Sequence && seq, pipeable<Factory, Args...> pipe)
         -> decltype(Factory{}(std::forward<Sequence>(seq), std::declval<Args>()...))
@@ -47,6 +54,8 @@ namespace ural
         }
 
         static_assert(std::is_empty<Factory>::value, "Factory must be empty");
+
+        /// @brief Кортеж аргументов для создания адаптора
         std::tuple<Args...> args;
     };
 

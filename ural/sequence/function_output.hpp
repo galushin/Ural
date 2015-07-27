@@ -117,7 +117,7 @@ namespace ural
         //@}
 
         /** @brief Передача значения функциональному объекту
-        @param args аргумент
+        @param arg аргумент
         @return *this
         */
         template <class Arg>

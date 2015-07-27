@@ -846,7 +846,7 @@ namespace ural
     /** @brief Преобразование рационального числа в вещественное
     @tparam RealType тип вещественного числа
     @param r преобразуемое число
-    @param требуемая точность
+    @param eps требуемая точность
     @return такое вещественное число @c x, что <tt> abs(x - r) < eps </tt>
     */
     template <class RealType, class Rational>

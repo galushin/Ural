@@ -146,7 +146,7 @@ namespace ural
     }
 
     /** @brief Преобразование потока вывода в последовательность символов
-    @param is поток ввода
+    @param os поток вывода
     @return <tt> ::ural::make_ostream_sequence(os) </tt>
     */
     template <class Char, class Traits>
