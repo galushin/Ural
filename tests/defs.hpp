@@ -32,11 +32,13 @@ namespace ural_test
     template <class T>
     class istringstream_helper
     {
-        friend
-        ::ural::istream_sequence<::ural::use_default, T>
-        sequence(istringstream_helper & x)
+        typedef std::istringstream IStream;
+        typedef ::ural::istream_sequence<IStream, T> Sequence;
+
+        friend Sequence
+        sequence(istringstream_helper const & x)
         {
-            return ::ural::istream_sequence<::ural::use_default, T>(x.is_);
+            return Sequence(IStream(x.src_));
         }
 
     public:
@@ -47,7 +49,7 @@ namespace ural_test
 
         template <class Sequenced>
         explicit istringstream_helper(Sequenced && seq)
-         : is_(istringstream_helper::make(ural::sequence_fwd<Sequenced>(seq)))
+         : src_(istringstream_helper::make(ural::sequence_fwd<Sequenced>(seq)))
         {}
 
         template <class Iterator>
@@ -69,7 +71,7 @@ namespace ural_test
         }
 
     private:
-        std::istringstream is_;
+        std::string src_;
     };
 }
 

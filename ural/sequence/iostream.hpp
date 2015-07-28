@@ -39,11 +39,13 @@ namespace ural
     class istream_sequence
      : public sequence_base<istream_sequence<IStream, T>>
     {
+        typedef typename default_helper<IStream, std::istream &>::type
+            Base_type;
+
     public:
         // Типы
         /// @brief Тип потока ввода
-        typedef typename default_helper<IStream, std::istream>::type
-            istream_type;
+        typedef typename std::remove_reference<Base_type>::type istream_type;
 
         /// @brief Тип значения
         typedef typename default_helper<T, char>::type value_type;
@@ -64,8 +66,8 @@ namespace ural
         /** @brief Конструктор
         @param is ссылка на поток ввода
         */
-        explicit istream_sequence(istream_type & is)
-         : is_(is)
+        explicit istream_sequence(Base_type is)
+         : is_(static_cast<Base_type &&>(is))
          , value_()
         {
             this->init();
@@ -75,8 +77,8 @@ namespace ural
         @param is ссылка на поток ввода
         @param init_value начальное значение
         */
-        explicit istream_sequence(istream_type & is, T init_value)
-         : is_(is)
+        explicit istream_sequence(Base_type is, T init_value)
+         : is_(static_cast<Base_type &&>(is))
          , value_(std::move(init_value))
         {
             this->init();
@@ -94,7 +96,7 @@ namespace ural
         */
         bool operator!() const
         {
-            return !is_.get();
+            return !this->get_istream();
         }
 
         /** @brief Текущий элемент
@@ -111,20 +113,35 @@ namespace ural
         */
         void pop_front()
         {
-            assert(is_.get());
-            is_.get() >> value_;
+            assert(this->get_istream());
+
+            this->mutable_istream() >> value_;
         }
 
     private:
+        istream_type const & get_istream() const
+        {
+            return is_;
+        }
+
+        istream_type & mutable_istream()
+        {
+            return is_;
+        }
+
         void init()
         {
-            assert(is_.get());
+            assert(this->get_istream());
 
-            is_.get() >> value_;
+            this->mutable_istream() >> value_;
         }
 
     private:
-        std::reference_wrapper<istream_type> is_;
+        typedef typename std::conditional<std::is_reference<Base_type>::value,
+                                          std::reference_wrapper<istream_type>,
+                                          istream_type>::type Holder;
+
+        Holder is_;
         T value_;
     };
 
@@ -135,7 +152,7 @@ namespace ural
     */
     template <class T, class IStream>
     istream_sequence<IStream, T>
-    make_istream_sequence(IStream & is)
+    make_istream_sequence(IStream && is)
     {
         return istream_sequence<IStream, T>(is);
     }

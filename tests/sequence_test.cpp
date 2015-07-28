@@ -294,7 +294,7 @@ BOOST_AUTO_TEST_CASE(istream_sequence_no_default_ctor_test)
 
     std::istringstream is("42");
 
-    ural::istream_sequence<std::istream, std::reference_wrapper<int>>
+    ural::istream_sequence<std::istream &, std::reference_wrapper<int>>
         seq(is, std::ref(var));
 
     typedef decltype(seq) Sequence;
@@ -1332,8 +1332,8 @@ BOOST_AUTO_TEST_CASE(chunks_sequence_test)
 
 BOOST_AUTO_TEST_CASE(delimit_sequence_test)
 {
-    std::vector<int> src2 = {3, 1, 4, 1, 5, 9, 2, 6, 5, 3};
-    ural_test::istringstream_helper<int> src1(src2);
+    std::vector<int> const src2 = {3, 1, 4, 1, 5, 9, 2, 6, 5, 3};
+    ural_test::istringstream_helper<int> const src1(src2);
 
     auto const value = 5;
 
@@ -1350,8 +1350,8 @@ BOOST_AUTO_TEST_CASE(delimit_sequence_test)
 
 BOOST_AUTO_TEST_CASE(delimit_sequence_test_cref)
 {
-    std::vector<int> src2 = {3, 1, 4, 1, 5, 9, 2, 6, 5, 3};
-    ural_test::istringstream_helper<int> src1(src2);
+    std::vector<int> const src2 = {3, 1, 4, 1, 5, 9, 2, 6, 5, 3};
+    ural_test::istringstream_helper<int> const src1(src2);
 
     auto const value = 5;
 

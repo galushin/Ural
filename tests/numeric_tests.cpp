@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE(partial_sum_test_minimal)
 {
     // Подготовка
     std::vector<int> const src_std = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
-    ural_test::istringstream_helper<int> src_ural(src_std);
+    ural_test::istringstream_helper<int> const src_ural(src_std);
 
     // std
     std::vector<int> x_std;
@@ -170,7 +170,7 @@ BOOST_AUTO_TEST_CASE(adjacent_difference_test_minimal)
 {
     // Подготовка
     std::vector<int> const src_std = {1,2,3,5,9,11,12};
-    ural_test::istringstream_helper<int> src_ural(src_std);
+    ural_test::istringstream_helper<int> const src_ural(src_std);
 
     // std
     std::vector<int> r_std;
