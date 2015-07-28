@@ -50,7 +50,7 @@ namespace ural
         -> decltype(Factory{}(std::forward<Sequence>(seq), std::declval<Args>()...))
         {
             auto f = ::ural::curry(Factory{}, std::forward<Sequence>(seq));
-            return ::ural::apply(f, std::move(pipe.args));
+            return ::ural::apply(std::move(f), std::move(pipe.args));
         }
 
         static_assert(std::is_empty<Factory>::value, "Factory must be empty");
@@ -68,7 +68,20 @@ namespace ural
     class pipeable_maker
     {
         static_assert(std::is_empty<Factory>::value, "Factory must be empty");
+
     public:
+        /** @brief Оператор создания адаптора
+        @param seq исходная последовательность
+        @return <tt> ::ural::apply(f, std::move(pipe.args)) </tt>, где
+        @c f --- <tt> ::ural::curry(Factory{}, std::forward<Sequence>(seq))</tt>
+        */
+        template <class Sequence>
+        friend auto operator|(Sequence && seq, pipeable_maker<Factory>)
+        -> decltype(Factory{}(std::forward<Sequence>(seq)))
+        {
+            return Factory{}(std::forward<Sequence>(seq));
+        }
+
         /** @brief Оператор вызова функции
         @param args список аргументов
         */

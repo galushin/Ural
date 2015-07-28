@@ -22,6 +22,7 @@
  rvalue-ссылки
 */
 
+#include <ural/utility/pipeable.hpp>
 #include <ural/iterator/move.hpp>
 #include <ural/sequence/make.hpp>
 #include <ural/sequence/iterator_sequence.hpp>
@@ -120,42 +121,58 @@ namespace ural
         }
         //@}
 
+        // Итераторы
+        /** @brief Итератор задающий начало последовательности
+        @param x последовательность
+        @return <tt> std::make_move_iterator(begin(x.base())) </tt>
+        */
+        friend auto begin(move_sequence const & x)
+        -> ural::move_iterator<decltype(begin(x.base()))>
+        {
+            return ural::make_move_iterator(begin(x.base()));
+        }
+
+        /** @brief Итератор задающий конец последовательности
+        @param x последовательность
+        @return <tt> std::make_move_iterator(end(x.base())) </tt>
+        */
+        friend auto end(move_sequence<Sequence> const & x)
+        -> ural::move_iterator<decltype(begin(x.base()))>
+        {
+            return ural::make_move_iterator(end(x.base()));
+        }
+
     private:
         Sequence base_;
     };
 
-    /** @brief Итератор задающий начало последовательности
-    @param x последовательность
-    @return <tt> std::make_move_iterator(begin(x.base())) </tt>
+    /** @brief Тип функционального объекта для создания @c move_sequence в
+    функциональном стиле.
     */
-    template <class Sequence>
-    auto begin(move_sequence<Sequence> const & x)
-    -> ural::move_iterator<decltype(begin(x.base()))>
+    class make_move_sequence_fn
     {
-        return ural::make_move_iterator(begin(x.base()));
-    }
+    public:
+        /** @brief Создание последовательности rvalue-ссылок базовой
+        последовательности.
+        @param seq последовательность
+        */
+        template <class Sequence>
+        auto operator()(Sequence && seq) const
+        {
+            typedef move_sequence<decltype(::ural::sequence_fwd<Sequence>(seq))> Result;
+            return Result(::ural::sequence_fwd<Sequence>(seq));
+        }
+    };
 
-    /** @brief Итератор задающий конец последовательности
-    @param x последовательность
-    @return <tt> std::make_move_iterator(end(x.base())) </tt>
-    */
-    template <class Sequence>
-    auto end(move_sequence<Sequence> const & x)
-    -> ural::move_iterator<decltype(begin(x.base()))>
+    namespace
     {
-        return ural::make_move_iterator(end(x.base()));
-    }
+        /// @brief Функциональный объект для создания @c move_sequence в
+        constexpr auto const & make_move_sequence
+            = odr_const<make_move_sequence_fn>;
 
-    /** @brief Создание последовательности rvalue-ссылок базовой
-    последовательности.
-    @param seq последовательность
-    */
-    template <class Sequence>
-    auto make_move_sequence(Sequence && seq)
-    -> move_sequence<decltype(::ural::sequence_fwd<Sequence>(seq))>
-    {
-        typedef move_sequence<decltype(::ural::sequence_fwd<Sequence>(seq))> Result;
-        return Result(::ural::sequence_fwd<Sequence>(seq));
+        /// @brief Объект для создания @c move_sequence в конвейерном стиле.
+        constexpr auto const & moved
+            = odr_const<pipeable_maker<make_move_sequence_fn>>;
     }
 
     /** @brief Создание последовательности на основе
@@ -186,27 +203,6 @@ namespace ural
     {
         return make_move_sequence(make_iterator_sequence(first.base(),
                                                          last.base()));
-    }
-
-    /** @brief Вспомогательный класс для создания последовательностей
-    rvalue-ссылок в конвеерной нотации
-    */
-    struct moved_helper{};
-
-    /** @brief Создание последовательностей rvalue-ссылок в конвеерной нотации
-    @param seq последовательность
-    @return <tt> make_move_sequence(std::forward<Sequence>(seq)) </tt>
-    */
-    template <class Sequence>
-    auto operator|(Sequence && seq, moved_helper)
-    -> decltype(make_move_sequence(std::forward<Sequence>(seq)))
-    {
-        return make_move_sequence(std::forward<Sequence>(seq));
-    }
-
-    namespace
-    {
-        constexpr auto const & moved = odr_const<moved_helper>;
     }
 }
 // namespace ural

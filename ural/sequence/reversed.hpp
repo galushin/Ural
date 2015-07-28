@@ -35,16 +35,6 @@ namespace ural
     class reverse_sequence
      : public sequence_base<reverse_sequence<BidirectionalSequence>>
     {
-
-    /** @brief Создание обратной последовательности
-    @param seq последовательность
-    @return <tt> seq.base() </tt>
-    */
-    friend BidirectionalSequence make_reverse_sequence(reverse_sequence seq)
-    {
-        return std::move(seq.base_);
-    }
-
     public:
         // Типы
         /// @brief Тип ссылки
@@ -231,29 +221,41 @@ namespace ural
     bool operator==(reverse_sequence<Sequence> const & x,
                     reverse_sequence<Sequence> const & y);
 
-    struct reversed_helper{};
-
-    /** @brief Создание обратной последовательности
-    @param seq исходная последовательность
-    */
-    template <class BidirectionalSequence>
-    auto make_reverse_sequence(BidirectionalSequence && seq)
-    -> reverse_sequence<decltype(::ural::sequence_fwd<BidirectionalSequence>(seq))>
+    /// @brief Тип функционального объекта для создания @c reverse_sequence
+    class make_reverse_sequence_fn
     {
-        typedef reverse_sequence<decltype(::ural::sequence_fwd<BidirectionalSequence>(seq))> Seq;
-        return Seq(::ural::sequence_fwd<BidirectionalSequence>(seq));
-    }
+    public:
+        /** @brief Создание обратной последовательности к обратной
+        последовательности
+        @param seq обратная последовательность
+        @return <tt> seq.base() </tt>
+        */
+        template <class BidirectionalSequence>
+        auto operator()(reverse_sequence<BidirectionalSequence> seq) const
+        {
+            return std::move(seq.base());
+        }
 
-    template <class BidirectionalSequence>
-    auto operator|(BidirectionalSequence && seq, reversed_helper)
-    -> decltype(make_reverse_sequence(std::forward<BidirectionalSequence>(seq)))
-    {
-        return make_reverse_sequence(std::forward<BidirectionalSequence>(seq));
-    }
+        /** @brief Создание обратной последовательности
+        @param seq исходная последовательность
+        */
+        template <class BidirectionalSequence>
+        auto operator()(BidirectionalSequence && seq) const
+        {
+            typedef reverse_sequence<SequenceType<BidirectionalSequence>> Seq;
+            return Seq(::ural::sequence_fwd<BidirectionalSequence>(seq));
+        }
+    };
 
     namespace
     {
-        constexpr auto const & reversed = odr_const<reversed_helper>;
+        /// @brief Функциональный объект для создания @c reverse_sequence
+        constexpr auto const & make_reverse_sequence
+            = odr_const<make_reverse_sequence_fn>;
+
+        /// @brief Объект для создания @c reverse_sequence
+        constexpr auto const & reversed
+            = odr_const<pipeable_maker<make_reverse_sequence_fn>>;
     }
 
     /** @brief Создание обратной последовательности на основе
@@ -265,10 +267,8 @@ namespace ural
     template <class Iterator>
     auto make_iterator_sequence(std::reverse_iterator<Iterator> first,
                                 std::reverse_iterator<Iterator> last)
-    -> reverse_sequence<decltype(make_iterator_sequence(last.base(), first.base()))>
     {
-        return make_reverse_sequence(make_iterator_sequence(last.base(),
-                                                            first.base()));
+        return make_iterator_sequence(last.base(), first.base()) | reversed;
     }
 }
 // namespace ural

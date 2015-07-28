@@ -508,16 +508,24 @@ namespace ural
          : state_(std::move(f), std::forward<A>(arg))
         {}
 
+        //@{
         /** @brief Оператор вызова функции
         @param args аргументы
         */
         template <class... Ts>
-        auto operator()(Ts &&... args) const
-        -> ResultType<F, Arg, Ts...>
+        decltype(auto) operator()(Ts &&... args) const &
         {
             return std::get<0>(state_)(std::get<1>(state_),
                                        std::forward<Ts>(args)...);
         }
+
+        template <class... Ts>
+        decltype(auto) operator()(Ts &&... args) &&
+        {
+            return std::get<0>(std::move(state_))(std::get<1>(std::move(state_)),
+                                                  std::forward<Ts>(args)...);
+        }
+        //@}
 
     private:
         std::tuple<F, Arg> state_;

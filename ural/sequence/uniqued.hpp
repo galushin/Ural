@@ -21,6 +21,7 @@
  @brief Последовательность неповторяющихся соседних элементов
 */
 
+#include <ural/utility/pipeable.hpp>
 #include <ural/algorithm/core.hpp>
 #include <ural/sequence/base.hpp>
 
@@ -250,93 +251,49 @@ namespace ural
         BinaryPredicate eq_;
     };
 
-    /** @brief Функция создания @c unique_sequence
-    @param in входная последовательность
-    @param pred бинарный предикат
+    /** @brief Тип Функционального объекта для создания @c unique_sequence в
+    функциональном стиле.
     */
-    template <class Forward, class BinaryPredicate>
-    auto make_unique_sequence(Forward && in, BinaryPredicate pred)
-    -> unique_sequence<decltype(::ural::sequence_fwd<Forward>(in)),
-                        decltype(make_callable(std::move(pred)))>
-    {
-        typedef unique_sequence<decltype(::ural::sequence_fwd<Forward>(in)),
-                                decltype(make_callable(std::move(pred)))> Seq;
-        return Seq(::ural::sequence_fwd<Forward>(in),
-                   make_callable(std::move(pred)));
-    }
-
-    /** @brief Функция создания @c unique_sequence
-    @param in входная последовательность
-    @return <tt> unique_sequence<Seq>(sequence_fwd<Forward>(in)) </tt>, где
-    @c Seq -- <tt> unique_sequence<decltype(sequence_fwd<Forward>(in))> </tt>
-    */
-    template <class Forward>
-    auto make_unique_sequence(Forward && in)
-    -> unique_sequence<decltype(::ural::sequence_fwd<Forward>(in))>
-    {
-        typedef unique_sequence<decltype(::ural::sequence_fwd<Forward>(in))>
-            Result;
-
-         return Result(::ural::sequence_fwd<Forward>(in));
-    }
-
-    /** @brief Тип вспомогательного объека для создания @c unique_sequence
-    с заданным предикатом в конвейерном стиле
-    @tparam Predicate унарный предикат
-    */
-    template <class Predicate>
-    class uniqued_helper_custom
+    class make_unique_sequence_fn
     {
     public:
-        /// @brief Используемый предикат
-        Predicate predicate;
-    };
-
-    /** @brief Тип вспомогательного объекта для создания @c unique_sequence
-    в конвейрном стиле
-    */
-    struct uniqued_helper
-    {
-    public:
-        /** @brief Создание вспомогательного объекта, хранящего предикат
-        @param pred предикат
+        /** @brief Функция создания @c unique_sequence
+        @param in входная последовательность
+        @return <tt> unique_sequence<Seq>(sequence_fwd<Forward>(in)) </tt>, где
+        @c Seq -- <tt> unique_sequence<decltype(sequence_fwd<Forward>(in))> </tt>
         */
-        template <class Predicate>
-        auto operator()(Predicate pred) const
-        -> uniqued_helper_custom<decltype(make_callable(std::move(pred)))>
+        template <class Forward>
+        auto operator()(Forward && in) const
         {
-            return {std::move(pred)};
+            typedef unique_sequence<decltype(::ural::sequence_fwd<Forward>(in))>
+                Result;
+
+             return Result(::ural::sequence_fwd<Forward>(in));
+        }
+
+        /** @brief Функция создания @c unique_sequence
+        @param in входная последовательность
+        @param pred бинарный предикат
+        */
+        template <class Forward, class BinaryPredicate>
+        auto operator()(Forward && in, BinaryPredicate pred) const
+        {
+            typedef unique_sequence<decltype(::ural::sequence_fwd<Forward>(in)),
+                                    decltype(make_callable(std::move(pred)))> Seq;
+            return Seq(::ural::sequence_fwd<Forward>(in),
+                       make_callable(std::move(pred)));
         }
     };
 
-    /** @brief Создание @c unique_sequence в конвейерном стиле
-    @param in входная последовательность
-    @return <tt> make_unique_sequence(std::forward<Forward>(in)) </tt>
-    */
-    template <class Forward>
-    auto operator|(Forward && in, uniqued_helper)
-    -> unique_sequence<decltype(::ural::sequence_fwd<Forward>(in))>
-    {
-        return ::ural::make_unique_sequence(std::forward<Forward>(in));
-    }
-
-    /** @brief Создание @c unique_sequence в конвейерном стиле
-    @param in входная последовательность
-    @param helper объект, хранящий бинарный предикат
-    @return <tt> make_unique_sequence(std::forward<Forward>(in), helper.predicate) </tt>
-    */
-    template <class Forward, class Predicate>
-    auto operator|(Forward && in, uniqued_helper_custom<Predicate> helper)
-    -> unique_sequence<decltype(::ural::sequence_fwd<Forward>(in)), Predicate>
-    {
-        return ::ural::make_unique_sequence(std::forward<Forward>(in),
-                                            helper.predicate);
-    }
-
     namespace
     {
-        /// @brief Функциональный объект, создающий @c unique_sequence
-        constexpr auto & uniqued = odr_const<uniqued_helper>;
+        /// @brief Функциональный объект для создания @c unique_sequence в
+        constexpr auto & make_unique_sequence
+            = odr_const<make_unique_sequence_fn>;
+
+        /// @brief Объект для создающия @c unique_sequence в конвейрном силе.
+        constexpr auto & uniqued
+            = odr_const<pipeable_maker<make_unique_sequence_fn>>;
     }
 }
 // namespace ural

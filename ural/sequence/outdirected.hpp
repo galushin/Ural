@@ -108,36 +108,33 @@ namespace ural
         Sequence base_;
     };
 
-    /** Функция создания @c outdirected_sequence. Данная функция не преобразует
-    свой аргумент в последовательность, прежде чем применять адаптор. Это
-    связано с тем, что основное предназначение этой функции --- преобразовывать
-    типы с оператором ++ в последовательности.
-    @brief Функция создания @c outdirected_sequence
-    @return <tt> outdirected_sequence<Sequence>{std::move(x)} </tt>
-    */
-    template <class Sequence>
-    outdirected_sequence<Sequence>
-    make_outdirected_sequence(Sequence x)
+    /// @brief Тип функционального объекта для создания @c outdirected_sequence
+    class make_outdirected_sequence_fn
     {
-        return outdirected_sequence<Sequence>{std::move(x)};
-    }
-
-    struct outdirected_helper {};
+    public:
+        /** Функция создания @c outdirected_sequence. Данная функция не
+        преобразует свой аргумент в последовательность, прежде чем применять
+        адаптор. Это связано с тем, что основное предназначение этой функции ---
+        преобразовывать типы с оператором ++ в последовательности.
+        @brief Функция создания @c outdirected_sequence
+        @return <tt> outdirected_sequence<Sequence>{std::move(x)} </tt>
+        */
+        template <class Sequence>
+        auto operator()(Sequence x) const
+        {
+            return outdirected_sequence<Sequence>{std::move(x)};
+        }
+    };
 
     namespace
     {
-        constexpr auto const & outdirected = odr_const<outdirected_helper>;
-    }
+        /// @brief Функциональный объект для создания @c outdirected_sequence
+        constexpr auto const & make_outdirected_sequence
+            = odr_const<make_outdirected_sequence_fn>;
 
-    /** @brief Создание @c outdirected_sequence в "конвейерном" стиле
-    @param seq базовая последовательность
-    @return <tt> make_outdirected_sequence(std::move(seq)) </tt>
-    */
-    template <class Sequence>
-    outdirected_sequence<Sequence>
-    operator|(Sequence seq, outdirected_helper)
-    {
-        return make_outdirected_sequence(std::move(seq));
+        /// Объект для создания @c outdirected_sequence в конвейерном стиле.
+        constexpr auto const & outdirected
+            = odr_const<pipeable_maker<make_outdirected_sequence_fn>>;
     }
 }
 // namespace ural

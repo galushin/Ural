@@ -153,63 +153,39 @@ namespace ural
         Impl impl_;
     };
 
-    /** @brief Функция создания @c filter_sequence
-    @param seq исходная последовательность
-    @param pred унарный предикат
-    @return <tt> Seq(::ural::sequence_fwd<Sequence>(seq), make_callable(std::move(pred))) </tt>,
-    где @c Seq --- это экземпляр @c filter_sequence с подходящими шаблонными
-    параметрами
-    */
-    template <class Sequence, class Predicate>
-    auto make_filter_sequence(Sequence && seq, Predicate pred)
-    -> filter_sequence<decltype(::ural::sequence_fwd<Sequence>(seq)),
-                       decltype(::ural::make_callable(std::move(pred)))>
+    /// @brief Тип функционального объекта для создания @c filter_sequence
+    class make_filter_sequence_fn
     {
-        typedef decltype(::ural::sequence_fwd<Sequence>(seq)) Seq;
-        typedef decltype(::ural::make_callable(std::move(pred))) Pred;
-        typedef filter_sequence<Seq, Pred> Result;
+    public:
+        /** @brief Функция создания @c filter_sequence
+        @param seq исходная последовательность
+        @param pred унарный предикат
+        @return <tt> Seq(::ural::sequence_fwd<Sequence>(seq), make_callable(std::move(pred))) </tt>,
+        где @c Seq --- это экземпляр @c filter_sequence с подходящими шаблонными
+        параметрами
+        */
+        template <class Sequence, class Predicate>
+        auto operator()(Sequence && seq, Predicate pred) const
+        {
+            typedef filter_sequence<SequenceType<Sequence>,
+                                    FunctionType<Predicate>> Result;
 
-        return Result(::ural::sequence_fwd<Sequence>(seq),
-                      ::ural::make_callable(std::move(pred)));
-    }
-
-    /** @brief Тип вспомогательного объекта, предназначенного для создания
-    @c filter_sequence в конвейерном стиле
-    @tparam Predicate тип унарного предиката
-    */
-    template <class Predicate>
-    struct filtered_helper
-    {
-        /// @brief Тип унарного предиката
-        Predicate predicate;
+            return Result(::ural::sequence_fwd<Sequence>(seq),
+                          ::ural::make_callable(std::move(pred)));
+        }
     };
 
-    /** @brief Создание @c filter_sequence в конвейерном стиле
-    @param seq последовательность
-    @param helper объект, содержащий информацию об используемом предикате
-    @return <tt> make_filter_sequence(std::forward<Sequence>(seq),
-                                      std::move(helper.predicate)) </tt>
-    */
-    template <class Sequence, class Predicate>
-    auto operator|(Sequence && seq, filtered_helper<Predicate> helper)
-    -> decltype(make_filter_sequence(std::forward<Sequence>(seq),
-                                     helper.predicate))
+    namespace
     {
-        return make_filter_sequence(std::forward<Sequence>(seq),
-                                    std::move(helper.predicate));
-    }
+        /// @brief Функциональный объект для создания @c filter_sequence
+        constexpr auto const & make_filter_sequence
+            = odr_const<make_filter_sequence_fn>;
 
-    /** @brief Создание вспомогательного объекта, предназначенного для создания
-    @c filter_sequence в конвейерном стиле
-    @param pred унарный предикат
-    @return {make_callable(std::move(pred))}
-    */
-    template <class Predicate>
-    auto filtered(Predicate pred)
-    -> filtered_helper<decltype(make_callable(std::move(pred)))>
-    {
-        typedef filtered_helper<decltype(make_callable(std::move(pred)))> Helper;
-        return Helper{make_callable(std::move(pred))};
+        /** @brief Функциональный объект для создания @c filter_sequence
+        в конвейерном стиле
+        */
+        constexpr auto const & filtered
+            = odr_const<pipeable_maker<make_filter_sequence_fn>>;
     }
 }
 // namespace ural
