@@ -53,7 +53,7 @@ namespace ural
         элементу последовательности
         */
         template <class Output, class Incrementable>
-        Incrementable
+        SequenceType<Output>
         operator()(Output && seq, Incrementable init_value) const
         {
             BOOST_CONCEPT_ASSERT((concepts::SinglePassSequenced<Output>));
@@ -68,19 +68,19 @@ namespace ural
 
     private:
         template <class Output, class Incrementable>
-        Incrementable
-        impl(Output seq, Incrementable init_value) const
+        Output impl(Output seq, Incrementable init_value) const
         {
             BOOST_CONCEPT_ASSERT((concepts::OutputSequence<Output, Incrementable>));
             BOOST_CONCEPT_ASSERT((concepts::Semiregular<Incrementable>));
             BOOST_CONCEPT_ASSERT((concepts::WeakIncrementable<Incrementable>));
 
+            // @todo заменить на алгоритм (нужна неограниченная последовательность)
             for(; !!seq; ++ seq, (void) ++ init_value)
             {
                 *seq = init_value;
             }
 
-            return init_value;
+            return std::move(seq);
         }
     };
 

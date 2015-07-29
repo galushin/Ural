@@ -38,7 +38,9 @@ BOOST_AUTO_TEST_CASE(iota_test)
     auto const result = ural::iota(x2, init_value);
 
     URAL_CHECK_EQUAL_RANGES(x1, x2);
-    BOOST_CHECK_EQUAL(init_value + n, result);
+
+    BOOST_CHECK(result.original() == ural::sequence(x2));
+    BOOST_CHECK(result.traversed_front() == ural::sequence(x2));
 }
 
 BOOST_AUTO_TEST_CASE(accumulate_test)
