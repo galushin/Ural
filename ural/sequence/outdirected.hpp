@@ -96,13 +96,17 @@ namespace ural
         }
 
         // Адаптор последовательности
+        //@{
         /** @brief Базовая последовательность
         @return Константная ссылка на базовую последовательность
         */
-        reference base() const
+        reference base() const &
         {
             return this->base_;
         }
+
+        Sequence && base() &&;
+        //@}
 
     private:
         Sequence base_;

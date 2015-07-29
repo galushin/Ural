@@ -82,14 +82,6 @@ namespace ural
             return members_[ural::_2];
         }
 
-        /** @brief Доступ к базовой последовательности
-        @return Константная ссылка на базовую последовательность
-        */
-        Sequence const & base() const
-        {
-            return members_[ural::_1];
-        }
-
         // Однопроходная последовательность
         /** @brief Проверка исчерпания последовательности
         @return @b true, если в последовательности больше нет элементов,
@@ -119,7 +111,6 @@ namespace ural
         }
 
         // Прямая последовательность
-        //@{
         /** @breif Передняя пройденная часть последовательности
         @return Передняя пройденная часть последовательности
         */
@@ -127,9 +118,6 @@ namespace ural
         {
             return this->members_[ural::_1].traversed_front();
         }
-
-        cargo_sequence traversed_front() &&;
-        //@}
 
         /// @brief Отбросить переднюю пройденную часть последовательности
         void shrink_front()
@@ -223,6 +211,14 @@ namespace ural
         void pop_back(distance_type n);
 
     private:
+        /** @brief Доступ к базовой последовательности
+        @return Константная ссылка на базовую последовательность
+        */
+        Sequence const & base() const
+        {
+            return members_[ural::_1];
+        }
+
         tuple<Sequence, T> members_;
     };
 }

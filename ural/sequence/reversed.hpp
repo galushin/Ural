@@ -188,13 +188,20 @@ namespace ural
         }
 
         // Адаптор последовательности
+        //@{
         /** @brief Базовая последовательность
         @return Базовая последовательность
         */
-        BidirectionalSequence const & base() const
+        BidirectionalSequence const & base() const &
         {
             return this->base_;
         }
+
+        BidirectionalSequence && base() &&
+        {
+            return std::move(this->base_);
+        }
+        //@}
 
     private:
         BidirectionalSequence base_;

@@ -61,14 +61,18 @@ namespace ural
          : impl_{make_tuple_function{}, std::move(ins)...}
         {}
 
+        //@{
         /** @brief Кортеж базовых последовательностей
         @return Константная ссылка на кортеж базовых последовательностей
         */
         tuple<Inputs...> const &
-        bases() const
+        bases() const &
         {
             return this->impl_.bases();
         }
+
+        tuple<Inputs...> && bases() &&;
+        //@}
 
         // Однопроходная последовательность
         /** @brief Проверка исчерпания последовательности

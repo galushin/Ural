@@ -65,13 +65,18 @@ namespace ural
         {}
 
         // Адаптор
+        //@{
         /** @brief Базовая последовательность
         @return Константная ссылка на базовую последовательность
         */
-        Sequence const & base() const
+        Sequence const & base() const &
         {
             return this->seq_;
         }
+
+
+        Sequence && base() &&;
+        //@}
 
         /** @brief Размер подпоследовательностей
         @return Размер подпоследовательностей

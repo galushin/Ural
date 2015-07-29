@@ -463,6 +463,7 @@ BOOST_AUTO_TEST_CASE(filtered_test)
 {
     typedef int Type;
     std::vector<Type> const xs = {25, -15, 5, -5, 15};
+
     auto const pred = [](Type i){return !(i<0);};
 
     typedef decltype(ural::sequence(xs)) Sequence;
@@ -476,6 +477,25 @@ BOOST_AUTO_TEST_CASE(filtered_test)
 
     auto const r_ural
         = xs | ural::filtered(pred) | ural::to_container<std::vector>{};
+
+    URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
+}
+
+BOOST_AUTO_TEST_CASE(filtered_test_input)
+{
+    typedef int Type;
+    std::vector<Type> const src_std = {25, -15, 5, -5, 15};
+    ural_test::istringstream_helper<Type> const src_ural(src_std.begin(), src_std.end());
+
+    auto const pred = +[](Type i){return !(i<0);};
+
+    std::vector<Type> r_std;
+    std::copy_if(src_std.begin(), src_std.end(), std::back_inserter(r_std), pred);
+
+    auto seq = std::move(src_ural) | ural::filtered(pred);
+
+    std::vector<Type> r_ural;
+    ural::copy(std::move(seq), r_ural | ural::back_inserter)[ural::_1];
 
     URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
 }
@@ -1359,7 +1379,8 @@ BOOST_AUTO_TEST_CASE(delimit_sequence_test_cref)
     BOOST_CONCEPT_ASSERT((ural::concepts::InputSequence<decltype(seq)>));
 
     std::vector<int> result;
-    ural::copy(std::move(seq), result | ural::back_inserter);
+
+    ural::copy(std::move(seq), result | ural::back_inserter)[ural::_1];
 
     auto const expected = ural::find(src2, value).traversed_front();
 

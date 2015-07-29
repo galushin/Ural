@@ -91,13 +91,17 @@ namespace ural
         {}
 
         // Адаптор
+        //@{
         /** @brief Базовая последовательность
         @return Константная ссылка на базовую последовательность
         */
-        Sequence const & base() const
+        Sequence const & base() const &
         {
             return this->seq_;
         }
+
+        Sequence && base() &&;
+        //@}
 
         /** @brief Значение, на котором нужно остановиться
         @return Константная ссылка на значение, на котором нужно остановиться
