@@ -148,6 +148,33 @@ namespace ural
             return for_each_fn::impl(::ural::sequence_fwd<Input>(in),
                                      ::ural::make_callable(std::move(f)));
         }
+
+        /** @brief Применяет функциональный объект к соответствующим элементам
+        двух последовательностей
+        @param in1, in2 входные последовательности
+        @param f бинарная функция
+        @return кортеж, содержащий непройденные части входных
+        последовательностей и функциональный объект
+        */
+        template <class Input1, class Input2, class BinaryFunction>
+        auto operator()(Input1 && in1, Input2 && in2, BinaryFunction f) const
+        {
+            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input2>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<BinaryFunction, SequenceType<Input1>, SequenceType<Input2>>));
+
+            auto s1 = ::ural::sequence_fwd<Input1>(in1);
+            auto s2 = ::ural::sequence_fwd<Input2>(in2);
+            auto action = ::ural::make_callable(std::move(f));
+
+            // @todo заменить на цикл (через zip?)
+            for(; !!s1 && !!s2; ++ s1, (void) ++ s2)
+            {
+                action(*s1, *s2);
+            }
+
+            return ural::make_tuple(std::move(s1), std::move(s2), std::move(action));
+        }
     };
 
     /** @ingroup NonModifyingSequenceOperations

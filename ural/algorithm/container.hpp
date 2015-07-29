@@ -38,11 +38,11 @@ namespace ural
         @return Аналог <tt> c.erase(seq.begin(), seq.end()) </tt>
         */
         template <class Container, class Iterator, class Policy>
-        auto operator()(Container & c,
+        Container & operator()(Container & c,
                         iterator_sequence<Iterator, Policy> seq) const
-        -> typename Container::iterator
         {
-            return c.erase(seq.begin(), seq.end());
+            c.erase(seq.begin(), seq.end());
+            return c;
         }
     };
 
@@ -109,12 +109,13 @@ namespace ural
 
     namespace
     {
-        constexpr auto const erase = erase_fn{};
+        constexpr auto const & erase = odr_const<erase_fn>;
 
-        constexpr auto const remove_erase = remove_erase_fn{};
-        constexpr auto const remove_if_erase = remove_if_erase_fn{};
+        constexpr auto const & remove_erase = odr_const<remove_erase_fn>;
+        constexpr auto const & remove_if_erase = odr_const<remove_if_erase_fn>;
+        constexpr auto const & remove_erase_if = remove_if_erase;
 
-        constexpr auto const unique_erase = unique_erase_fn{};
+        constexpr auto const unique_erase = odr_const<unique_erase_fn>;
     }
 }
 // namespace ural

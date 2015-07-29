@@ -1659,9 +1659,10 @@ BOOST_AUTO_TEST_CASE(remove_erase_test)
 
     s_std.erase(std::remove(s_std.begin(), s_std.end(), to_remove), s_std.end());
 
-    ural::remove_erase(s_ural, to_remove);
+    auto & ref_ural = ural::remove_erase(s_ural, to_remove);
 
     BOOST_CHECK_EQUAL(s_std, s_ural);
+    BOOST_CHECK_EQUAL(&ref_ural, &s_ural);
 }
 
 BOOST_AUTO_TEST_CASE(remove_if_test_minimalistic)
@@ -1696,9 +1697,10 @@ BOOST_AUTO_TEST_CASE(remove_if_test)
     BOOST_CHECK(s.original() == ural::sequence(s_ural));
     BOOST_CHECK(!s.traversed_back());
 
-    ural::erase(s_ural, s);
+    auto & ref_ural = ural::erase(s_ural, s);
 
     BOOST_CHECK_EQUAL(s_std, s_ural);
+    BOOST_CHECK_EQUAL(&ref_ural, &s_ural);
 }
 
 BOOST_AUTO_TEST_CASE(remove_if_erase_test)
@@ -1710,9 +1712,26 @@ BOOST_AUTO_TEST_CASE(remove_if_erase_test)
 
     s_std.erase(std::remove_if(s_std.begin(), s_std.end(), pred), s_std.end());
 
-    ural::remove_if_erase(s_ural, pred);
+    auto & ref_ural = ural::remove_if_erase(s_ural, pred);
 
     BOOST_CHECK_EQUAL(s_std, s_ural);
+    BOOST_CHECK_EQUAL(&ref_ural, &s_ural);
+}
+
+// для согласования с boost.range
+BOOST_AUTO_TEST_CASE(remove_erase_if_test)
+{
+    std::string s_std = "Text\n with\tsome \t  whitespaces\n\n";
+    auto s_ural = s_std;
+
+    auto const pred = [](char x){return std::isspace(x);};
+
+    s_std.erase(std::remove_if(s_std.begin(), s_std.end(), pred), s_std.end());
+
+    auto & ref_ural = ural::remove_erase_if(s_ural, pred);
+
+    BOOST_CHECK_EQUAL(s_std, s_ural);
+    BOOST_CHECK_EQUAL(&ref_ural, &s_ural);
 }
 
 BOOST_AUTO_TEST_CASE(remove_copy_if_test)

@@ -1142,26 +1142,26 @@ namespace tags
         typedef ValueType<SequenceType<Weights>> Weight_type;
         typedef descriptives_facade<Value, Tags, Weight_type> Result;
 
-        auto zip_seq = ural::make_zip_sequence(ural::sequence_fwd<Input>(in),
-                                               ural::sequence_fwd<Weights>(ws));
+        auto s_in = ural::sequence_fwd<Input>(in);
+        auto s_ws = ural::sequence_fwd<Weights>(ws);
 
-        if(!zip_seq)
+        if(!s_in || !s_ws)
         {
             return Result{};
         }
 
-        auto r = ural::apply(ural::constructor<Result>{}, *zip_seq);
-        ++ zip_seq;
+        auto r = Result(*s_in, *s_ws);
+        ++ s_in;
+        ++ s_ws;
 
-        auto acc = [&r](auto const & z) { ::ural::apply(r, z); };
-        zip_seq = ::ural::for_each(std::move(zip_seq), acc)[ural::_1];
+        auto result
+            = ::ural::for_each(std::move(s_in), std::move(s_ws), std::move(r));
 
-        assert(!zip_seq.bases()[ural::_2]);
-
+        assert(!result[ural::_1]);
+        assert(!result[ural::_2]);
         // @todo Ошибка ли, если последовательности имеют разную длину?
-        assert(!zip_seq.bases()[ural::_1]);
 
-        return r;
+        return std::move(result)[ural::_3];
     }
 
     /** @brief Стандартизация выборки
