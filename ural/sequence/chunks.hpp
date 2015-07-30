@@ -74,8 +74,10 @@ namespace ural
             return this->seq_;
         }
 
-
-        Sequence && base() &&;
+        Sequence && base() &&
+        {
+            return std::move(this->seq_);
+        }
         //@}
 
         /** @brief Размер подпоследовательностей

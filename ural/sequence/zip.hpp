@@ -71,7 +71,10 @@ namespace ural
             return this->impl_.bases();
         }
 
-        tuple<Inputs...> && bases() &&;
+        tuple<Inputs...> && bases() &&
+        {
+            return std::move(this->impl_).bases();
+        }
         //@}
 
         // Однопроходная последовательность

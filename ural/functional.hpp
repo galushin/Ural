@@ -494,10 +494,16 @@ namespace ural
     /** @brief Функциональный объект для фиксации первого аргумента функции
     @tparam F тип функции
     @tparam Arg тип первого аргумента
+    @todo доступ к функции
     */
     template <class F, class Arg>
     class curried_function
     {
+        typedef typename std::remove_reference<Arg>::type Arg_value;
+
+        typedef typename std::conditional<std::is_reference<Arg>::value,
+                                          std::reference_wrapper<Arg_value>,
+                                          Arg>::type Holder;
     public:
         /** @brief Конструктор
         @param f функция
@@ -509,26 +515,50 @@ namespace ural
         {}
 
         //@{
+        /** @brief Функция
+        @return Ссылка на функцию
+        */
+        F const & function() const &;
+
+        F && function() &&
+        {
+            return std::move(this->state_)[ural::_1];
+        }
+        //@}
+
+        //@{
+        /** @brief Аргумент
+        @return Ссылка на закреплённый аргумент
+        */
+        Arg const & argument() const &;
+
+        Arg && argument() &&
+        {
+            return std::move(this->state_)[ural::_2];
+        }
+        //@}
+
+        //@{
         /** @brief Оператор вызова функции
         @param args аргументы
         */
         template <class... Ts>
         decltype(auto) operator()(Ts &&... args) const &
         {
-            return std::get<0>(state_)(std::get<1>(state_),
-                                       std::forward<Ts>(args)...);
+            return this->function()(this->argument(),
+                                    std::forward<Ts>(args)...);
         }
 
         template <class... Ts>
         decltype(auto) operator()(Ts &&... args) &&
         {
-            return std::get<0>(std::move(state_))(std::get<1>(std::move(state_)),
-                                                  std::forward<Ts>(args)...);
+            return std::move(*this).function()(std::move(*this).argument(),
+                                               std::forward<Ts>(args)...);
         }
         //@}
 
     private:
-        std::tuple<F, Arg> state_;
+        ural::tuple<F, Holder> state_;
     };
 
     /** @brief Фиксация первого аргумента функции
@@ -536,10 +566,10 @@ namespace ural
     @param arg значение для первого аргумента
     */
     template <class F, class Arg>
-    curried_function<F, Arg &&>
+    curried_function<F, Arg>
     curry(F f, Arg && arg)
     {
-        return curried_function<F, Arg &&>(std::move(f), std::forward<Arg>(arg));
+        return curried_function<F, Arg>(std::move(f), std::forward<Arg>(arg));
     }
 
     namespace

@@ -115,3 +115,15 @@ BOOST_AUTO_TEST_CASE(apply_function_to_tuple)
 
     BOOST_CHECK_EQUAL("42 4.2 abs", r);
 }
+
+BOOST_AUTO_TEST_CASE(tuple_constexpr_get)
+{
+    constexpr auto const v1 = 42;
+    constexpr auto const v2 = 4.2;
+    constexpr auto const ts = ural::make_tuple(42, 4.2);
+
+    static_assert(std::get<0>(ts) == v1, "");
+    static_assert(std::get<1>(ts) == v2, "");
+
+    BOOST_CHECK(true);
+}

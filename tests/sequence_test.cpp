@@ -1477,3 +1477,50 @@ BOOST_AUTO_TEST_CASE(multy_output_sequence_test)
     URAL_CHECK_EQUAL_RANGES(v1, src);
     URAL_CHECK_EQUAL_RANGES(v2, src);
 }
+
+BOOST_AUTO_TEST_CASE(outdirected_rvalue_base)
+{
+    std::string const source("AlexStepanov");
+    std::istringstream is(source);
+
+    auto s1 = ural::sequence(is);
+    auto so = std::move(s1) | ural::outdirected;
+    auto s2 = std::move(so).base();
+
+    std::string str;
+    ural::copy(std::move(s2), str | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL(source, str);
+}
+
+BOOST_AUTO_TEST_CASE(delimited_rvalue_base)
+{
+    std::string const source("AlexanderStepanov");
+    std::istringstream is(source);
+
+    const char d = 'a';
+
+    auto s1 = ural::sequence(is);
+    auto so = std::move(s1) | ural::delimited(d);
+    auto s2 = std::move(so).base();
+
+    std::string str;
+    ural::copy(std::move(s2), str | ural::back_inserter);
+
+    URAL_CHECK_EQUAL_RANGES(str, source);
+}
+
+BOOST_AUTO_TEST_CASE(chunks_rvalue_base)
+{
+    std::string const source("AlexanderStepanov");
+    std::istringstream is(source);
+
+    auto s1 = ural::sequence(is);
+    auto so = ural::make_chunks_sequence(std::move(s1), 5);
+    auto s2 = std::move(so).base();
+
+    std::string str;
+    ural::copy(std::move(s2), str | ural::back_inserter);
+
+    URAL_CHECK_EQUAL_RANGES(str, source);
+}

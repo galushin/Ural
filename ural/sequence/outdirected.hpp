@@ -105,7 +105,10 @@ namespace ural
             return this->base_;
         }
 
-        Sequence && base() &&;
+        Sequence && base() &&
+        {
+            return std::move(this->base_);
+        }
         //@}
 
     private:

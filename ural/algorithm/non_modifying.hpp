@@ -27,6 +27,7 @@
  изменяющие порядок элементов существующих последовательностей.
 */
 
+#include <ural/sequence/zip.hpp>
 #include <ural/sequence/function_output.hpp>
 #include <ural/sequence/make.hpp>
 #include <ural/algorithm/core.hpp>
@@ -158,22 +159,23 @@ namespace ural
         */
         template <class Input1, class Input2, class BinaryFunction>
         auto operator()(Input1 && in1, Input2 && in2, BinaryFunction f) const
+        -> tuple<decltype(::ural::sequence_fwd<Input1>(in1)),
+                 decltype(::ural::sequence_fwd<Input2>(in2)),
+                 decltype(::ural::make_callable(std::move(f)))>
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input1>));
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<BinaryFunction, SequenceType<Input1>, SequenceType<Input2>>));
 
-            auto s1 = ::ural::sequence_fwd<Input1>(in1);
-            auto s2 = ::ural::sequence_fwd<Input2>(in2);
-            auto action = ::ural::make_callable(std::move(f));
+            auto in_zip = ural::make_zip_sequence(::ural::sequence_fwd<Input1>(in1),
+                                                  ::ural::sequence_fwd<Input2>(in2));
 
-            // @todo заменить на цикл (через zip?)
-            for(; !!s1 && !!s2; ++ s1, (void) ++ s2)
-            {
-                action(*s1, *s2);
-            }
+            auto action = ural::curry(ural::apply, std::move(f));
+            auto result = (*this)(std::move(in_zip), std::move(action));
 
-            return ural::make_tuple(std::move(s1), std::move(s2), std::move(action));
+            return ural::make_tuple(std::move(result)[ural::_1].bases()[ural::_1],
+                                    std::move(result)[ural::_1].bases()[ural::_2],
+                                    std::move(result)[ural::_2].argument());
         }
     };
 
