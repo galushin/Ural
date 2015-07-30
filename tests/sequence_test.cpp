@@ -1524,3 +1524,25 @@ BOOST_AUTO_TEST_CASE(chunks_rvalue_base)
 
     URAL_CHECK_EQUAL_RANGES(str, source);
 }
+
+BOOST_AUTO_TEST_CASE(sequence_temporary_istream)
+{
+    // @todo добавить пробелы
+    std::string const source("AlexStepanov");
+
+    auto seq = ural::sequence(std::istringstream(source));
+
+    std::string str;
+    ural::copy(std::move(seq), str | ural::back_inserter);
+
+    BOOST_CHECK_EQUAL(source, str);
+}
+
+BOOST_AUTO_TEST_CASE(sequence_temporary_ostream)
+{
+    std::string const source("Alex Stepanov");
+
+    auto r = ural::copy(source, ural::sequence(std::ostringstream()))[ural::_2];
+
+    BOOST_CHECK_EQUAL(r.stream().str(), source);
+}

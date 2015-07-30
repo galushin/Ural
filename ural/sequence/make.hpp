@@ -134,27 +134,64 @@ namespace ural
     }
     //@}
 
+    /// @cond false
+    namespace details
+    {
+        template <class T,
+                  class Char = typename T::char_type,
+                  class Traits = typename T::traits_type>
+        struct is_derived_from_basic_istream
+         : std::is_base_of<std::basic_istream<Char, Traits>, T>
+        {};
+
+        template <class T,
+                  class Char = typename T::char_type,
+                  class Traits = typename T::traits_type>
+        struct is_derived_from_basic_ostream
+         : std::is_base_of<std::basic_ostream<Char, Traits>, T>
+        {};
+    }
+    /// @endcond
+
+    //@{
     /** @brief Преобразование потока ввода в последовательность символов
     @param is поток ввода
     @return <tt> ::ural::make_istream_sequence<Char>(is) </tt>
     */
     template <class Char, class Traits>
     auto sequence(std::basic_istream<Char, Traits> & is)
-    -> decltype(::ural::make_istream_sequence<Char>(is))
     {
         return ::ural::make_istream_sequence<Char>(is);
     }
 
+    template <class IStream>
+    auto sequence(IStream && is)
+    -> typename std::enable_if<details::is_derived_from_basic_istream<IStream>::value,
+                               decltype(::ural::make_istream_sequence<typename IStream::char_type>(is))>::type
+    {
+        return ::ural::make_istream_sequence<typename IStream::char_type>(is);
+    }
+    //@}
+
+    //@{
     /** @brief Преобразование потока вывода в последовательность символов
     @param os поток вывода
     @return <tt> ::ural::make_ostream_sequence(os) </tt>
     */
     template <class Char, class Traits>
     auto sequence(std::basic_ostream<Char, Traits> & os)
-    -> decltype(::ural::make_ostream_sequence(os))
     {
         return ::ural::make_ostream_sequence(os);
     }
+
+    template <class OStream>
+    auto sequence(OStream && os)
+    -> typename std::enable_if<details::is_derived_from_basic_ostream<OStream>::value,
+                               decltype(::ural::make_ostream_sequence(std::move(os)))>::type
+    {
+        return ::ural::make_ostream_sequence(std::move(os));
+    }
+    //@}
 
     //@{
     /** @brief Функция, комбинирующая @c sequence и <tt> std::forward </tt>

@@ -182,21 +182,21 @@ namespace ural
     */
     template <class OStream = use_default,
               class T  = use_default,
-              class delimiter = use_default>
+              class Delimiter = use_default>
     class ostream_sequence
-     : public sequence_base<ostream_sequence<OStream, T, delimiter>>
+     : public sequence_base<ostream_sequence<OStream, T, Delimiter>>
     {
+        typedef typename default_helper<OStream, std::ostream>::type Base_type;
     public:
         // Типы
         /// @brief Категория обхода
         typedef single_pass_traversal_tag traversal_tag;
 
         /// @brief Тип потока вывода
-        typedef typename default_helper<OStream, std::ostream>::type
-            ostream_type;
+        typedef typename std::remove_reference<Base_type>::type ostream_type;
 
         /// @brief Тип разделителя
-        typedef typename default_delimiter_helper<ostream_type, delimiter>::type
+        typedef typename default_delimiter_helper<ostream_type, Delimiter>::type
             delimiter_type;
 
         /// @brief Категория итератора
@@ -218,17 +218,30 @@ namespace ural
         /** @brief Конструктор
         @param os поток вывода
         */
-        explicit ostream_sequence(ostream_type & os)
-         : data_{os}
+        explicit ostream_sequence(Base_type os)
+         : data_(static_cast<Base_type &&>(os))
         {}
 
         /** @brief Конструктор
         @param os поток вывода
         @param delim разделитель
         */
-        explicit ostream_sequence(ostream_type & os, delimiter_type delim)
-         : data_{os, std::move(delim)}
+        explicit ostream_sequence(Base_type os, delimiter_type delim)
+         : data_(static_cast<Base_type &&>(os), std::move(delim))
         {}
+
+        /** @brief Константная ссылка на используемый поток вывода
+        @return Константная ссылка на используемый поток вывода
+        */
+        ostream_type const & stream() const
+        {
+            return this->data_[ural::_1];
+        }
+
+        delimiter_type const & delimiter() const
+        {
+            return this->data_[ural::_2];
+        }
 
         // Однопроходная последовательность
         /** @brief Провекра исчерпания последовательности
@@ -245,7 +258,7 @@ namespace ural
         ошибка, так как общее определение оператора * для последовательностей
         использует тип ссылки
         */
-        ostream_sequence const & operator*() const
+        ostream_sequence & operator*()
         {
             return *this;
         }
@@ -258,16 +271,16 @@ namespace ural
         /** @brief Оператор присваивания
         @param x записываемый объект
         */
-        void operator=(T const & x) const
+        void operator=(T const & x)
         {
-            data_.first().get() << x << data_.second();
+            this->mutable_ostream() << x << this->delimiter();
         }
 
         template <class U>
         typename std::enable_if<!std::is_same<T, U>::value && std::is_same<T, use_default>::value>::type
-        operator=(U const & x) const
+        operator=(U const & x)
         {
-            data_.first().get() << x << data_.second();
+            this->mutable_ostream() << x << this->delimiter();
         }
         //@}
 
@@ -278,7 +291,15 @@ namespace ural
         void operator=(use_default) const = delete;
 
     private:
-        boost::compressed_pair<std::reference_wrapper<ostream_type>, delimiter> data_;
+        ostream_type & mutable_ostream()
+        {
+            return data_[ural::_1];
+        }
+
+        typedef typename std::conditional<std::is_reference<Base_type>::value,
+                                          std::reference_wrapper<ostream_type>,
+                                          ostream_type>::type Holder;
+        ural::tuple<Holder, delimiter_type> data_;
     };
 
     /** @brief Тип используемый, когда формально требуется вывести объектв в
@@ -301,52 +322,29 @@ namespace ural
     указанием типа записываемых объектов c разделителем
     @tparam T тип записываемых элементов
     @param os поток вывода
-    @param delim разделитель
+    @param delim разделитель, если не указать этот параметр, то вывод будет
+    производится без разделителя
     @return <tt> ostream_sequence<OStream, T, delimiter>(os, std::move(delim)) </tt>
     */
-    template <class T, class OStream, class delimiter>
-    ostream_sequence<OStream, T, delimiter>
-    make_ostream_sequence(OStream & os, delimiter delim)
+    template <class T, class OStream, class delimiter = no_delimiter>
+    auto make_ostream_sequence(OStream && os, delimiter delim = delimiter{})
     {
-        return ostream_sequence<OStream, T, delimiter>(os, std::move(delim));
+        typedef ostream_sequence<OStream, T, delimiter> Product;
+        return Product(std::forward<OStream>(os), std::move(delim));
     }
 
     /** @brief Создание последовательности на основе потока вывода без явного
     указания типа записываемых объектов с разделителем
     @param os поток вывода
-    @param delim разделитель
+    @param delim разделитель, если не указать этот параметр, то вывод будет
+    производится без разделителя
     @return <tt> ostream_sequence<OStream, use_default, delimiter>(os, std::move(delim)) </tt>
     */
-    template <class OStream, class delimiter>
-    ostream_sequence<OStream, use_default, delimiter>
-    make_ostream_sequence(OStream & os, delimiter delim)
+    template <class OStream, class delimiter = no_delimiter>
+    auto make_ostream_sequence(OStream && os, delimiter delim = delimiter{})
     {
-        return ostream_sequence<OStream, use_default, delimiter>(os, std::move(delim));
-    }
-
-    /** @brief Создание последовательности на основе потока вывода с явным
-    указанием типа записываемых объектов и без разделителя
-    @tparam T тип записываемых элементов
-    @param os поток вывода
-    @return <tt> ostream_sequence<OStream, T, no_delimiter>(os) </tt>
-    */
-    template <class T, class OStream>
-    ostream_sequence<OStream, T, no_delimiter>
-    make_ostream_sequence(OStream & os)
-    {
-        return ostream_sequence<OStream, T, no_delimiter>(os);
-    }
-
-    /** @brief Создание последовательности на основе потока вывода без явного
-    указания типа записываемых объектов и без разделителя
-    @param os поток вывода
-    @return <tt> ostream_sequence<OStream, use_default, no_delimiter>(os) </tt>
-    */
-    template <class OStream>
-    ostream_sequence<OStream, use_default, no_delimiter>
-    make_ostream_sequence(OStream & os)
-    {
-        return ostream_sequence<OStream, use_default, no_delimiter>(os);
+        typedef ostream_sequence<OStream, use_default, delimiter> Product;
+        return Product(std::forward<OStream>(os), std::move(delim));
     }
 }
 // namespace ural
