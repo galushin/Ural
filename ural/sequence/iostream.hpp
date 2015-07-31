@@ -25,9 +25,49 @@
 
 namespace ural
 {
+    /** @brief Тип функционального объекта чтения из потока ввода с помощью
+    функции-члена get
+    */
+    struct istream_get_reader
+    {
+    public:
+        /** @brief Чтение из потока
+        @param is поток ввода
+        @param var переменная, в которую считывается значение
+        */
+        template <class IStream, class T>
+        void operator()(IStream & is, T & var) const
+        {
+            assert(is);
+
+            var = is.get();
+        }
+    };
+
+    /** @brief Тип функционального объекта чтения из потока ввода с помощью
+    оператора >>
+    */
+    struct istream_extractor_reader
+    {
+    public:
+        /** @brief Чтение из потока
+        @param is поток ввода
+        @param var переменная, в которую считывается значение
+        */
+        template <class IStream, class T>
+        void operator()(IStream & is, T & var) const
+        {
+            assert(is);
+
+            is >> var;
+        }
+    };
+
     /** @brief Последовательность, записывающая элементы в поток вывода
     @tparam IStream тип потока ввода
     @tparam T тип элементов последовательности
+    @tparam Reader функция чтения, по умолчанию используется
+    @c istream_exctractor_reader, использующий оператор >>.
     @todo Возможность задавать разделитель
 
     К сожалению, поддерживать типы без конструктора без параметров, в общем
@@ -35,12 +75,19 @@ namespace ural
     инициализации из потока ввода. Лучшее, что мы можем сделать --- это
     предоставить возможность задавать начальное значение.
     */
-    template <class IStream = use_default, class T = use_default>
+    template <class IStream = use_default,
+              class T = use_default,
+              class Reader = use_default>
     class istream_sequence
-     : public sequence_base<istream_sequence<IStream, T>>
+     : public sequence_base<istream_sequence<IStream, T, Reader>>
     {
         typedef typename default_helper<IStream, std::istream &>::type
             Base_type;
+
+        typedef typename default_helper<Reader, istream_extractor_reader>::type
+            Reader_type;
+
+        static_assert(std::is_empty<Reader_type>::value, "or we must store it!");
 
     public:
         // Типы
@@ -70,7 +117,7 @@ namespace ural
          : is_(static_cast<Base_type &&>(is))
          , value_()
         {
-            this->init();
+            this->read();
         }
 
         /** @brief Конструктор (для типов без конструктора без аргументов)
@@ -81,7 +128,7 @@ namespace ural
          : is_(static_cast<Base_type &&>(is))
          , value_(std::move(init_value))
         {
-            this->init();
+            this->read();
         }
 
         istream_sequence(istream_sequence const & ) = delete;
@@ -113,9 +160,7 @@ namespace ural
         */
         void pop_front()
         {
-            assert(this->get_istream());
-
-            this->mutable_istream() >> value_;
+            return this->read();
         }
 
     private:
@@ -129,11 +174,9 @@ namespace ural
             return is_;
         }
 
-        void init()
+        void read()
         {
-            assert(this->get_istream());
-
-            this->mutable_istream() >> value_;
+            Reader_type{}(this->mutable_istream(), this->value_);
         }
 
     private:

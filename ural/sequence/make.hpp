@@ -156,20 +156,22 @@ namespace ural
     //@{
     /** @brief Преобразование потока ввода в последовательность символов
     @param is поток ввода
-    @return <tt> ::ural::make_istream_sequence<Char>(is) </tt>
     */
     template <class Char, class Traits>
     auto sequence(std::basic_istream<Char, Traits> & is)
     {
-        return ::ural::make_istream_sequence<Char>(is);
+        using Product = ural::istream_sequence<std::basic_istream<Char, Traits> &,
+                                               Char, istream_get_reader>;
+        return Product(is);
     }
 
     template <class IStream>
     auto sequence(IStream && is)
     -> typename std::enable_if<details::is_derived_from_basic_istream<IStream>::value,
-                               decltype(::ural::make_istream_sequence<typename IStream::char_type>(is))>::type
+                               ural::istream_sequence<IStream, typename IStream::char_type, istream_get_reader>>::type
     {
-        return ::ural::make_istream_sequence<typename IStream::char_type>(is);
+        using Product = ural::istream_sequence<IStream, typename IStream::char_type, istream_get_reader>;
+        return Product(std::forward<IStream>(is));
     }
     //@}
 

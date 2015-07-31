@@ -906,7 +906,7 @@ BOOST_AUTO_TEST_CASE(swap_ranges_test_shorter_2)
 // 25.3.4 Преобразование
 BOOST_AUTO_TEST_CASE(transform_test)
 {
-    std::string str("hello");
+    std::string str("hello, world");
     std::istringstream is(str);
 
     auto f = std::ptr_fun<int, int>(std::toupper);

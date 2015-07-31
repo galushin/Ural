@@ -1489,10 +1489,9 @@ BOOST_AUTO_TEST_CASE(chunks_rvalue_base)
     URAL_CHECK_EQUAL_RANGES(str, source);
 }
 
-BOOST_AUTO_TEST_CASE(sequence_temporary_istream)
+BOOST_AUTO_TEST_CASE(sequence_temporary_istream_with_spaces)
 {
-    // @todo добавить пробелы
-    std::string const source("AlexStepanov");
+    std::string const source("Alex Stepanov invented STL\n");
 
     auto seq = ural::sequence(std::istringstream(source));
 
