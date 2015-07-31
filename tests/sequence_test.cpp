@@ -715,25 +715,6 @@ BOOST_AUTO_TEST_CASE(iterator_sequence_iterators)
     BOOST_CHECK(s2.end() == v2.end());
 }
 
-BOOST_AUTO_TEST_CASE(reversed_iterator_sequence_iterators)
-{
-    typedef std::vector<int> Container;
-    Container v1 = {0, 2, 4, 6};
-    auto const v2 = v1;
-
-    auto const rs1 = ural::sequence(v1) | ural::reversed;
-    auto const rs2 = ural::sequence(v2) | ural::reversed;
-
-    static_assert(std::is_same<decltype(begin(rs1)), Container::reverse_iterator>::value, "");
-    static_assert(std::is_same<decltype(begin(rs2)), Container::const_reverse_iterator>::value, "");
-
-    BOOST_CHECK(begin(rs1) == v1.rbegin());
-    BOOST_CHECK(end(rs1) == v1.rend());
-
-    BOOST_CHECK(begin(rs2) == v2.rbegin());
-    BOOST_CHECK(end(rs2) == v2.rend());
-}
-
 BOOST_AUTO_TEST_CASE(moved_from_value_cpp_17_test)
 {
     std::string const s("hello");
@@ -1164,23 +1145,6 @@ BOOST_AUTO_TEST_CASE(unique_sequence_move_only)
         BOOST_CHECK(!!r_ural[i]);
         BOOST_CHECK_EQUAL(*v1[i], *r_ural[i]);
     }
-}
-
-BOOST_AUTO_TEST_CASE(reversed_copy_test)
-{
-    // Исходные данные
-    std::list<int> const src = {1, 2, 3, 4, 5, 6};
-
-    // std
-    std::list<int> r_std;
-    std::reverse_copy(src.begin(), src.end(), std::back_inserter(r_std));
-
-    // ural
-    auto const r_ural
-        = src | ural::reversed | ural::to_container<std::list>{};
-
-    // Проверка
-    URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
 }
 
 BOOST_AUTO_TEST_CASE(merged_test)
