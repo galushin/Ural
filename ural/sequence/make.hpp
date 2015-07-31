@@ -71,7 +71,7 @@ namespace ural
     /** @brief Создание последовательности на основе итератора вставки в конец
     контейнера
     @param i итератор-вставка
-    @return <tt> output_iterator_sequence<decltype(i)>(std::move(i)) </tt>
+    @return <tt> weak_output_iterator_sequence<Iterator, Diff>(std::move(i)) </tt>
     */
     template <class Container>
     weak_output_iterator_sequence<std::back_insert_iterator<Container>,
@@ -79,14 +79,14 @@ namespace ural
     sequence(std::back_insert_iterator<Container> i)
     {
         typedef std::back_insert_iterator<Container> Iterator;
-        typedef typename Container::difference_type Diff;
+        typedef DifferenceType<Container> Diff;
         return weak_output_iterator_sequence<Iterator, Diff>(std::move(i));
     }
 
     /** @brief Создание последовательности на основе итератора вставки в начало
     контейнера
     @param i итератор-вставка
-    @return <tt> output_iterator_sequence<decltype(i)>(std::move(i)) </tt>
+    @return <tt> weak_output_iterator_sequence<Iterator, Diff>(std::move(i)) </tt>
     */
     template <class Container>
     weak_output_iterator_sequence<std::front_insert_iterator<Container>,
@@ -94,8 +94,22 @@ namespace ural
     sequence(std::front_insert_iterator<Container> i)
     {
         typedef std::front_insert_iterator<Container> Iterator;
-        typedef typename Container::difference_type Diff;
+        typedef DifferenceType<Container> Diff;
         return weak_output_iterator_sequence<Iterator, Diff>(std::move(i));
+    }
+
+    /** @brief Создание последовательности на основе итератора вставки в
+    заданную точку контейнера
+    @param i итератор-вставка
+    @return <tt> weak_output_iterator_sequence<decltype(i), Diff>(std::move(i)) </tt>,
+    где @c Diff --- <tt> DifferenceType<Container> </tt>
+    */
+    template <class Container>
+    auto sequence(std::insert_iterator<Container> i)
+    {
+        typedef std::insert_iterator<Container> Iterator;
+        typedef DifferenceType<Container> Diff;
+        return weak_output_iterator_sequence<decltype(i), Diff>(std::move(i));
     }
 
     //@{

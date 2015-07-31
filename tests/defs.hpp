@@ -22,7 +22,7 @@
 #define URAL_CHECK_EQUAL_RANGES(G, E) \
     BOOST_CHECK_EQUAL_COLLECTIONS((G).begin(), (G).end(), (E).begin(), (E).end())
 
-#include <ural/algorithm.hpp>
+#include <ural/algorithm/core.hpp>
 #include <ural/sequence/iostream.hpp>
 
 #include <string>
@@ -66,7 +66,7 @@ namespace ural_test
         static std::string make(Sequence seq)
         {
             std::ostringstream os;
-            ::ural::copy(std::move(seq), ::ural::make_ostream_sequence(os, " "));
+            ::ural::copy_fn{}(std::move(seq), ::ural::make_ostream_sequence(os, " "));
             return os.str();
         }
 

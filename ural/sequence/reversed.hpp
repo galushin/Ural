@@ -22,6 +22,7 @@
  в обратном порядке.
 */
 
+#include <ural/utility/pipeable.hpp>
 #include <ural/sequence/make.hpp>
 #include <ural/sequence/base.hpp>
 

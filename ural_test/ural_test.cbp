@@ -53,6 +53,7 @@
 		<Unit filename="../notes.txt" />
 		<Unit filename="../roadmap.txt" />
 		<Unit filename="../tests/algo_tests.cpp" />
+		<Unit filename="../tests/algorithm/container_algo.cpp" />
 		<Unit filename="../tests/any_test.cpp" />
 		<Unit filename="../tests/concepts_checks.cpp" />
 		<Unit filename="../tests/container/flat_set.cpp" />
