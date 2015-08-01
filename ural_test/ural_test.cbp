@@ -65,7 +65,6 @@
 		<Unit filename="../tests/flex_string_tests.cpp" />
 		<Unit filename="../tests/functional_test.cpp" />
 		<Unit filename="../tests/io_tests.cpp" />
-		<Unit filename="../tests/iterator_sequence_test.cpp" />
 		<Unit filename="../tests/iterator_test.cpp" />
 		<Unit filename="../tests/math_tests.cpp" />
 		<Unit filename="../tests/memory_test.cpp" />
@@ -76,6 +75,7 @@
 		<Unit filename="../tests/rational_tests.cpp" />
 		<Unit filename="../tests/rnd.cpp" />
 		<Unit filename="../tests/rnd.hpp" />
+		<Unit filename="../tests/sequence/iterator_sequence_test.cpp" />
 		<Unit filename="../tests/sequence/reversed.cpp" />
 		<Unit filename="../tests/sequence_test.cpp" />
 		<Unit filename="../tests/statistics/distributions_discrete.cpp" />
