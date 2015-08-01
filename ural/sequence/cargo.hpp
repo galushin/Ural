@@ -33,17 +33,28 @@ namespace ural
     */
     template <class Sequence, class T>
     class cargo_sequence
-     : public sequence_base<cargo_sequence<Sequence, T>>
     {
-    /** @brief Оператор "равно"
-    @param x левый операнд
-    @param y правый операнд
-    @return <tt> x.base() == y.base() </tt>
-    */
-    friend bool operator==(cargo_sequence const & x, cargo_sequence const & y)
-    {
-        return x.base() == y.base();
-    }
+        /** @brief Оператор "равно"
+        @param x левый операнд
+        @param y правый операнд
+        @return <tt> x.base() == y.base() </tt>
+        */
+        friend bool
+        operator==(cargo_sequence const & x, cargo_sequence const & y)
+        {
+            return x.base() == y.base();
+        }
+
+        friend
+        Sequence const & sequence(cargo_sequence const & s)
+        {
+            return s.base();
+        }
+
+        friend cargo_sequence sequence(cargo_sequence && s)
+        {
+            return std::move(s);
+        }
 
     public:
         // Типы
@@ -72,6 +83,12 @@ namespace ural
         cargo_sequence(Sequence seq, T x)
          : members_(std::move(seq), std::move(x))
         {}
+
+        cargo_sequence(cargo_sequence const &) = delete;
+        cargo_sequence(cargo_sequence &&) = default;
+
+        cargo_sequence & operator=(cargo_sequence const &) = delete;
+        cargo_sequence & operator=(cargo_sequence &&) = default;
 
         // Свойства
         /** @brief Доступ к дополнительному объекту

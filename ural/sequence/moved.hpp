@@ -156,11 +156,11 @@ namespace ural
         последовательности.
         @param seq последовательность
         */
-        template <class Sequence>
-        auto operator()(Sequence && seq) const
+        template <class Sequenced>
+        auto operator()(Sequenced && seq) const
         {
-            typedef move_sequence<decltype(::ural::sequence_fwd<Sequence>(seq))> Result;
-            return Result(::ural::sequence_fwd<Sequence>(seq));
+            typedef move_sequence<SequenceType<Sequenced>> Result;
+            return Result(::ural::sequence_fwd<Sequenced>(seq));
         }
     };
 

@@ -151,11 +151,10 @@ namespace ural
     @param ins базовые последовательности
     */
     template <class... Inputs>
-    auto make_cartesian_product_sequence(Inputs && ... ins)
-    -> cartesian_product_sequence<decltype(::ural::sequence_fwd<Inputs>(ins))...>
+    cartesian_product_sequence<SequenceType<Inputs>...>
+    make_cartesian_product_sequence(Inputs && ... ins)
     {
-        typedef cartesian_product_sequence<decltype(::ural::sequence_fwd<Inputs>(ins))...>
-            Result;
+        typedef cartesian_product_sequence<SequenceType<Inputs>...> Result;
         return Result(::ural::sequence_fwd<Inputs>(ins)...);
     }
 }

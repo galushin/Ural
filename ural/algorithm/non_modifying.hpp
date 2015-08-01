@@ -139,9 +139,8 @@ namespace ural
         ко всем элементам последовательности.
         */
         template <class Input, class UnaryFunction>
-        auto operator()(Input && in, UnaryFunction f) const
-        -> tuple<decltype(::ural::sequence_fwd<Input>(in)),
-                 decltype(::ural::make_callable(std::move(f)))>
+        tuple<SequenceType<Input>, FunctionType<UnaryFunction>>
+        operator()(Input && in, UnaryFunction f) const
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<UnaryFunction, SequenceType<Input>>));
@@ -158,10 +157,8 @@ namespace ural
         последовательностей и функциональный объект
         */
         template <class Input1, class Input2, class BinaryFunction>
-        auto operator()(Input1 && in1, Input2 && in2, BinaryFunction f) const
-        -> tuple<decltype(::ural::sequence_fwd<Input1>(in1)),
-                 decltype(::ural::sequence_fwd<Input2>(in2)),
-                 decltype(::ural::make_callable(std::move(f)))>
+        tuple<SequenceType<Input1>, SequenceType<Input2>, FunctionType<BinaryFunction>>
+        operator()(Input1 && in1, Input2 && in2, BinaryFunction f) const
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input1>));
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input2>));
@@ -197,9 +194,9 @@ namespace ural
         */
         template <class Input, class Forward,
                   class BinaryPredicate = ::ural::equal_to<>>
-        auto operator()(Input && in, Forward && s,
-                        BinaryPredicate bin_pred = BinaryPredicate()) const
-        -> decltype(::ural::sequence_fwd<Input>(in))
+        SequenceType<Input>
+        operator()(Input && in, Forward && s,
+                   BinaryPredicate bin_pred = BinaryPredicate()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward>));
@@ -250,9 +247,9 @@ namespace ural
         */
         template <class Input, class Forward,
                   class BinaryPredicate = ::ural::equal_to<>>
-        auto operator()(Input && in, Forward && s,
-                        BinaryPredicate bin_pred = BinaryPredicate()) const
-        -> decltype(::ural::sequence_fwd<Input>(in))
+        SequenceType<Input>
+        operator()(Input && in, Forward && s,
+                   BinaryPredicate bin_pred = BinaryPredicate()) const
         {
             return this->impl(::ural::sequence_fwd<Input>(in),
                               ::ural::sequence_fwd<Forward>(s),
@@ -304,9 +301,9 @@ namespace ural
         последовательности не станут эквивалентными в смысле @c bin_pred.
         */
         template <class Forward, class BinaryPredicate = ::ural::equal_to<>>
-        auto operator()(Forward && s,
-                        BinaryPredicate bin_pred = BinaryPredicate()) const
-        -> decltype(::ural::sequence_fwd<Forward>(s))
+        SequenceType<Forward>
+        operator()(Forward && s,
+                   BinaryPredicate bin_pred = BinaryPredicate()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate, SequenceType<Forward>>));
@@ -451,10 +448,9 @@ namespace ural
         */
         template <class Input1, class Input2,
                   class BinaryPredicate = ::ural::equal_to<>>
-        auto operator()(Input1 && in1, Input2 && in2,
-                        BinaryPredicate bin_pred = BinaryPredicate()) const
-        -> tuple<decltype(::ural::sequence_fwd<Input1>(in1)),
-                 decltype(::ural::sequence_fwd<Input2>(in2))>
+        tuple<SequenceType<Input1>, SequenceType<Input2>>
+        operator()(Input1 && in1, Input2 && in2,
+                   BinaryPredicate bin_pred = BinaryPredicate()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input1>));
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input2>));
@@ -620,9 +616,9 @@ namespace ural
         */
         template <class Forward1, class Forward2,
                   class BinaryPredicate = ::ural::equal_to<>>
-        auto operator()(Forward1 && in, Forward2 && s,
-                        BinaryPredicate bin_pred = BinaryPredicate()) const
-        -> decltype(::ural::sequence_fwd<Forward1>(in))
+        SequenceType<Forward1>
+        operator()(Forward1 && in, Forward2 && s,
+                   BinaryPredicate bin_pred = BinaryPredicate()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward1>));
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward2>));
@@ -686,11 +682,11 @@ namespace ural
         */
         template <class Forward, class T,
                   class BinaryPredicate = ::ural::equal_to<>>
-        auto operator()(Forward && in,
-                        DifferenceType<SequenceType<Forward>> count,
-                        T const & value,
-                        BinaryPredicate bin_pred = BinaryPredicate()) const
-        -> decltype(::ural::sequence_fwd<Forward>(in))
+        SequenceType<Forward>
+        operator()(Forward && in,
+                   DifferenceType<SequenceType<Forward>> count,
+                   T const & value,
+                   BinaryPredicate bin_pred = BinaryPredicate()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectlyComparable<SequenceType<Forward>,
@@ -769,9 +765,9 @@ namespace ural
         */
         template <class Forward1, class Forward2,
                   class BinaryPredicate = ::ural::equal_to<>>
-        auto operator()(Forward1 && in, Forward2 && s,
-                        BinaryPredicate bin_pred = BinaryPredicate()) const
-        -> decltype(::ural::sequence_fwd<Forward1>(in))
+        SequenceType<Forward1>
+        operator()(Forward1 && in, Forward2 && s,
+                   BinaryPredicate bin_pred = BinaryPredicate()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward1>));
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward2>));

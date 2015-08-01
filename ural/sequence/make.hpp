@@ -39,7 +39,7 @@ namespace ural
     */
     template <class Container>
     auto sequence(Container && c)
-    -> typename std::enable_if<std::is_reference<Container>::value,
+    -> typename std::enable_if<std::is_lvalue_reference<Container>::value,
                                ::ural::iterator_sequence<decltype(c.begin())>>::type
     {
         return iterator_sequence<decltype(c.begin())>(c.begin(), c.end());
@@ -47,9 +47,8 @@ namespace ural
 
     template <class Container>
     auto sequence(Container && c)
-    -> typename std::enable_if<!std::is_reference<Container>::value,
-                               ::ural::cargo_sequence<::ural::iterator_sequence<decltype(c.begin())>,
-                                                      Container>>::type
+    -> typename std::enable_if<!std::is_lvalue_reference<Container>::value,
+                               cargo_sequence<iterator_sequence<decltype(c.begin())>, Container>>::type
     {
         typedef ::ural::cargo_sequence<::ural::iterator_sequence<decltype(c.begin())>, Container>
             Result;
@@ -232,7 +231,7 @@ namespace ural
 
     template <class S>
     struct sequence_type
-     : declare_type<decltype(sequence(std::declval<S>()))>
+     : declare_type<typename std::decay<decltype(sequence(std::declval<S>()))>::type>
     {};
 
     template <class S>
@@ -471,7 +470,7 @@ namespace ural
             /// @brief Использование
             BOOST_CONCEPT_USAGE(Sequenced)
             {
-                typedef decltype(sequence(std::declval<S>())) Seq;
+                typedef typename std::decay<decltype(sequence(std::declval<S>()))>::type Seq;
                 static_assert(std::is_same<Seq, sequence_type>::value, "");
             }
         private:

@@ -86,9 +86,9 @@ namespace ural
     class sequence_base
      : public Base
     {
-        friend Seq sequence(Seq s)
+        friend Seq sequence(Seq seq)
         {
-            return s;
+            return seq;
         }
 
         friend Seq & operator++(Seq & s)

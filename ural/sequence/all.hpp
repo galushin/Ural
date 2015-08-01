@@ -42,7 +42,6 @@
 
 #include <ural/sequence/base.hpp>
 #include <ural/sequence/by_line.hpp>
-#include <ural/sequence/cargo.hpp>
 #include <ural/sequence/cartesian_product.hpp>
 #include <ural/sequence/chunks.hpp>
 #include <ural/sequence/constant.hpp>

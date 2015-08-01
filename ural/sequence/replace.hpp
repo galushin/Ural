@@ -27,12 +27,19 @@
 
 namespace ural
 {
-    template <class Sequence, class T1, class T2, class BinaryPredicate>
+    /** @brief Создание последовательности, в которой элементы, эквивалентные
+    заданному значению, заменены на другое значение.
+    @param seq исходная последовательность
+    @param old_value заменяемое значение
+    @param new_value новое значение
+    @param bin_pred бинарный предикат, если не указать его, будет использоваться
+    оператор ==
+    */
+    template <class Sequence, class T1, class T2,
+              class BinaryPredicate = equal_to<>>
     auto make_replace_sequence(Sequence && seq,
                                T1 const & old_value, T2 const & new_value,
-                               BinaryPredicate bin_pred)
-    -> decltype(::ural::make_transform_sequence(::ural::make_replace_function(old_value, new_value, std::move(bin_pred)),
-                                                std::forward<Sequence>(seq)))
+                               BinaryPredicate bin_pred = BinaryPredicate())
     {
         auto f = ::ural::make_replace_function(old_value, new_value,
                                                std::move(bin_pred));
@@ -41,18 +48,14 @@ namespace ural
 
     }
 
-    template <class Sequence, class T1, class T2>
-    auto make_replace_sequence(Sequence && seq, T1 const & old_value, T2 const & new_value)
-    -> decltype(::ural::make_replace_sequence(std::forward<Sequence>(seq), old_value, new_value, equal_to<>{}))
-    {
-        return ::ural::make_replace_sequence(std::forward<Sequence>(seq),
-                                             old_value, new_value, equal_to<>{});
-    }
-
+    /** @brief Создание последовательности, в которой элементы, удовлетворяющие
+    заданному предикату, заменены на другое значение.
+    @param seq исходная последовательность
+    @param pred предикат, определяющий, какие нужно заменить.
+    @param new_value новое значение
+    */
     template <class Sequence, class Predicate, class T>
     auto make_replace_if_sequence(Sequence && seq, Predicate pred, T new_value)
-    -> decltype(::ural::make_transform_sequence(make_replace_if_function(std::move(pred), std::move(new_value)),
-                                                std::forward<Sequence>(seq)))
     {
         auto f = ::ural::make_replace_if_function(std::move(pred),
                                                   std::move(new_value));

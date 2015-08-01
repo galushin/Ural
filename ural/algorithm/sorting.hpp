@@ -92,8 +92,8 @@ namespace ural
         @c cmp и <tt> cmp(r.traversed_front().back(), r.front()) == false </tt>.
         */
         template <class Forward, class Compare = ::ural::less<>>
-        auto operator()(Forward && in, Compare cmp = Compare()) const
-        -> decltype(::ural::sequence_fwd<Forward>(in))
+        SequenceType<Forward>
+        operator()(Forward && in, Compare cmp = Compare()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, SequenceType<Forward>>));
@@ -158,8 +158,8 @@ namespace ural
         является наибольшим префиксом @c seq, который является бинарной кучей.
         */
         template <class RASequenced, class Compare = ural::less<>>
-        auto operator()(RASequenced && seq, Compare cmp = Compare()) const
-        -> decltype(::ural::sequence_fwd<RASequenced>(seq))
+        SequenceType<RASequenced>
+        operator()(RASequenced && seq, Compare cmp = Compare()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequenced<RASequenced>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, SequenceType<RASequenced>>));
@@ -358,8 +358,8 @@ namespace ural
         исчерпания.
         */
         template <class RASequenced, class Compare = ural::less<>>
-        auto operator()(RASequenced && seq, Compare cmp = Compare()) const
-        -> decltype(::ural::sequence_fwd<RASequenced>(seq))
+        SequenceType<RASequenced>
+        operator()(RASequenced && seq, Compare cmp = Compare()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequenced<RASequenced>));
             BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<RASequenced>, Compare>));
@@ -405,8 +405,8 @@ namespace ural
         путём продвижения до исчерпания.
         */
         template <class RASequenced, class Compare = ural::less<>>
-        auto operator()(RASequenced && seq, Compare cmp = Compare()) const
-        -> decltype(::ural::sequence_fwd<RASequenced>(seq))
+        SequenceType<RASequenced>
+        operator()(RASequenced && seq, Compare cmp = Compare()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequenced<RASequenced>));
             BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<RASequenced>, Compare>));
@@ -451,8 +451,8 @@ namespace ural
         исчерпания.
         */
         template <class RASequenced, class Compare = ural::less<>>
-        auto operator()(RASequenced && seq, Compare cmp = Compare()) const
-        -> decltype(::ural::sequence_fwd<RASequenced>(seq))
+        SequenceType<RASequenced>
+        operator()(RASequenced && seq, Compare cmp = Compare()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequenced<RASequenced>));
             BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<RASequenced>, Compare>));
@@ -488,8 +488,8 @@ namespace ural
     {
     public:
         template <class RASequence, class Compare = ::ural::less<>>
-        auto operator()(RASequence && s, Compare cmp = Compare()) const
-        -> decltype(::ural::sequence_fwd<RASequence>(s))
+        SequenceType<RASequence>
+        operator()(RASequence && s, Compare cmp = Compare()) const
         {
             // @todo Подумать, что можно возвращать из impl
             auto seq = ::ural::sequence_fwd<RASequence>(s);
@@ -549,8 +549,8 @@ namespace ural
         исчерпания.
         */
         template <class RASequenced, class Compare>
-        auto operator()(RASequenced && s, Compare cmp) const
-        -> decltype(::ural::sequence_fwd<RASequenced>(s))
+        SequenceType<RASequenced>
+        operator()(RASequenced && s, Compare cmp) const
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequenced<RASequenced>));
             BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<RASequenced>, Compare>));
@@ -605,8 +605,8 @@ namespace ural
         исчерпания.
         */
         template <class RASequenced, class Compare = ::ural::less<>>
-        auto operator()(RASequenced && s, Compare cmp = Compare()) const
-        -> decltype(::ural::sequence_fwd<RASequenced>(s))
+        SequenceType<RASequenced>
+        operator()(RASequenced && s, Compare cmp = Compare()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequenced<RASequenced>));
             BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<RASequenced>, Compare>));
@@ -640,8 +640,8 @@ namespace ural
         исчерпания.
         */
         template <class RASequenced, class Compare = ::ural::less<>>
-        auto operator()(RASequenced && s, Compare cmp = Compare()) const
-        -> decltype(::ural::sequence_fwd<RASequenced>(s))
+        SequenceType<RASequenced>
+        operator()(RASequenced && s, Compare cmp = Compare()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequenced<RASequenced>));
             BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<RASequenced>, Compare>));
@@ -676,10 +676,10 @@ namespace ural
         исчерпания.
         */
         template <class RASequenced, class Compare = ::ural::less<>>
-        auto operator()(RASequenced && s,
-                        DifferenceType<SequenceType<RASequenced>> part,
-                        Compare cmp = Compare()) const
-        -> decltype(::ural::sequence_fwd<RASequenced>(s))
+        SequenceType<RASequenced>
+        operator()(RASequenced && s,
+                   DifferenceType<SequenceType<RASequenced>> part,
+                   Compare cmp = Compare()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequenced<RASequenced>));
             BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<RASequenced>, Compare>));
@@ -729,19 +729,19 @@ namespace ural
         @param cmp функция сравнения, по умолчанию используется
         <tt> less<> </tt>, то есть оператор "меньше".
         */
-        template <class Input, class RASequence, class Compare = ::ural::less<>>
-        auto operator()(Input && in, RASequence && out,
-                        Compare cmp = Compare()) const
-        -> decltype(::ural::sequence_fwd<RASequence>(out))
+        template <class Input, class RASequenced, class Compare = ::ural::less<>>
+        SequenceType<RASequenced>
+        operator()(Input && in, RASequenced && out,
+                   Compare cmp = Compare()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequenced<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequenced<RASequenced>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<SequenceType<Input>,
-                                                               SequenceType<RASequence>>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<RASequence>, Compare>));
+                                                               SequenceType<RASequenced>>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<RASequenced>, Compare>));
 
             return this->impl(::ural::sequence_fwd<Input>(in),
-                              ::ural::sequence_fwd<RASequence>(out),
+                              ::ural::sequence_fwd<RASequenced>(out),
                               ::ural::make_callable(std::move(cmp)));
         }
 
@@ -802,8 +802,8 @@ namespace ural
         @todo перегрузка, получающая номер элемента
         */
         template <class RASequenced, class Compare = ::ural::less<>>
-        auto operator()(RASequenced && s, Compare cmp = Compare()) const
-        -> decltype(::ural::sequence_fwd<RASequenced>(s))
+        SequenceType<RASequenced>
+        operator()(RASequenced && s, Compare cmp = Compare()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequenced<RASequenced>));
             BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<RASequenced>, Compare>));
@@ -842,9 +842,8 @@ namespace ural
         которой удовлетворяют условию <tt> cmp(x, value) </tt>.
         */
         template <class Forward, class T, class Compare = ::ural::less<>>
-        auto operator()(Forward && in, T const & value,
-                        Compare cmp = Compare()) const
-        -> decltype(::ural::sequence_fwd<Forward>(in))
+        SequenceType<Forward>
+        operator()(Forward && in, T const & value, Compare cmp = Compare()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, T const *,
@@ -885,9 +884,9 @@ namespace ural
         которой удовлетворяют условию <tt> !cmp(value, x) </tt>.
         */
         template <class Forward, class T, class Compare = ::ural::less<>>
-        auto operator()(Forward && in, T const & value,
-                        Compare cmp = Compare()) const
-        -> decltype(::ural::sequence_fwd<Forward>(in))
+        SequenceType<Forward>
+        operator()(Forward && in,
+                   T const & value, Compare cmp = Compare()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, T const *,
@@ -929,9 +928,9 @@ namespace ural
         эквивалентны @c value в смысле отношения @c cmp.
         */
         template <class Forward, class T, class Compare = ::ural::less<>>
-        auto operator()(Forward && in, T const & value,
-                        Compare cmp = Compare()) const
-        -> decltype(::ural::sequence_fwd<Forward>(in))
+        SequenceType<Forward>
+        operator()(Forward && in,
+                   T const & value, Compare cmp = Compare()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, T const *,
@@ -1024,11 +1023,9 @@ namespace ural
         */
         template <class Input1, class Input2, class Output,
                   class Compare = ::ural::less<>>
-        auto operator()(Input1 && in1, Input2 && in2, Output && out,
-                        Compare cmp = Compare()) const
-        -> tuple<decltype(::ural::sequence_fwd<Input1>(in1)),
-                 decltype(::ural::sequence_fwd<Input2>(in2)),
-                 decltype(::ural::sequence_fwd<Output>(out))>
+        tuple<SequenceType<Input1>, SequenceType<Input2>, SequenceType<Output>>
+        operator()(Input1 && in1, Input2 && in2, Output && out,
+                   Compare cmp = Compare()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input1>));
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input2>));
@@ -1067,8 +1064,8 @@ namespace ural
         исчерпания.
         */
         template <class Bidirectional, class Compare = ::ural::less<>>
-        auto operator()(Bidirectional && s, Compare cmp = Compare()) const
-        -> decltype(::ural::sequence_fwd<Bidirectional>(s))
+        SequenceType<Bidirectional>
+        operator()(Bidirectional && s, Compare cmp = Compare()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequenced<Bidirectional>));
             BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<Bidirectional>, Compare>));
@@ -1224,11 +1221,9 @@ namespace ural
         */
         template <class Input1, class Input2, class Output,
                   class Compare = ::ural::less<>>
-        auto operator()(Input1 && in1, Input2 && in2, Output && out,
+        tuple<SequenceType<Input1>, SequenceType<Input2>, SequenceType<Output>>
+        operator()(Input1 && in1, Input2 && in2, Output && out,
                         Compare cmp = Compare()) const
-        -> tuple<decltype(::ural::sequence_fwd<Input1>(in1)),
-                 decltype(::ural::sequence_fwd<Input2>(in2)),
-                 decltype(::ural::sequence_fwd<Output>(out))>
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input1>));
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input2>));
@@ -1268,11 +1263,9 @@ namespace ural
         */
         template <class Input1, class Input2, class Output,
                   class Compare = ::ural::less<>>
-        auto operator()(Input1 && in1, Input2 && in2, Output && out,
-                        Compare cmp = Compare()) const
-        -> tuple<decltype(::ural::sequence_fwd<Input1>(in1)),
-                 decltype(::ural::sequence_fwd<Input2>(in2)),
-                 decltype(::ural::sequence_fwd<Output>(out))>
+        tuple<SequenceType<Input1>, SequenceType<Input2>, SequenceType<Output>>
+        operator()(Input1 && in1, Input2 && in2, Output && out,
+                   Compare cmp = Compare()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input1>));
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input2>));
@@ -1312,11 +1305,9 @@ namespace ural
         */
         template <class Input1, class Input2, class Output,
                   class Compare = ::ural::less<>>
-        auto operator()(Input1 && in1, Input2 && in2, Output && out,
+        tuple<SequenceType<Input1>, SequenceType<Input2>, SequenceType<Output>>
+        operator()(Input1 && in1, Input2 && in2, Output && out,
                         Compare cmp = Compare()) const
-        -> tuple<decltype(::ural::sequence_fwd<Input1>(in1)),
-                 decltype(::ural::sequence_fwd<Input2>(in2)),
-                 decltype(::ural::sequence_fwd<Output>(out))>
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input1>));
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input2>));
@@ -1357,11 +1348,9 @@ namespace ural
         */
         template <class Input1, class Input2, class Output,
                   class Compare = ::ural::less<>>
-        auto operator()(Input1 && in1, Input2 && in2, Output && out,
-                        Compare cmp = Compare()) const
-        -> tuple<decltype(::ural::sequence_fwd<Input1>(in1)),
-                 decltype(::ural::sequence_fwd<Input2>(in2)),
-                 decltype(::ural::sequence_fwd<Output>(out))>
+        tuple<SequenceType<Input1>, SequenceType<Input2>, SequenceType<Output>>
+        operator()(Input1 && in1, Input2 && in2, Output && out,
+                   Compare cmp = Compare()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input1>));
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input2>));
@@ -1689,8 +1678,8 @@ namespace ural
         эквивалентных <tt> r.front() </tt>.
         */
         template <class Forward, class Compare = ::ural::less<>>
-        auto operator()(Forward && in, Compare cmp = Compare()) const
-        -> decltype(::ural::sequence_fwd<Forward>(in))
+        SequenceType<Forward>
+        operator()(Forward && in, Compare cmp = Compare()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare,
@@ -1734,8 +1723,8 @@ namespace ural
         эквивалентных <tt> r.front() </tt>.
         */
         template <class Forward, class Compare = ::ural::less<>>
-        auto operator()(Forward && in, Compare cmp = Compare()) const
-        -> decltype(::ural::sequence_fwd<Forward>(in))
+        SequenceType<Forward>
+        operator()(Forward && in, Compare cmp = Compare()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare,
@@ -1764,9 +1753,8 @@ namespace ural
         --- с <tt> max_element(std::forward<Forward>(in), cmp) </tt>
         */
         template <class Forward, class Compare = ::ural::less<>>
-        auto operator()(Forward && in, Compare cmp = Compare()) const
-        -> ural::tuple<decltype(::ural::sequence_fwd<Forward>(in)),
-                       decltype(::ural::sequence_fwd<Forward>(in))>
+        tuple<SequenceType<Forward>, SequenceType<Forward>>
+        operator()(Forward && in, Compare cmp = Compare()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare,

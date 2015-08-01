@@ -205,12 +205,12 @@ namespace ural
     @param seq входная последовательность
     @param helper объект, хранящий количество элементов
     */
-    template <class Sequence, class Size>
-    auto operator|(Sequence && seq, taken_helper<Size> helper)
-    -> take_sequence<decltype(::ural::sequence_fwd<Sequence>(seq)), Size>
+    template <class Sequenced, class Size>
+    take_sequence<SequenceType<Sequenced>, Size>
+    operator|(Sequenced && seq, taken_helper<Size> helper)
     {
-        typedef take_sequence<decltype(::ural::sequence_fwd<Sequence>(seq)), Size> Result;
-        return Result(::ural::sequence_fwd<Sequence>(seq), helper.count);
+        typedef take_sequence<SequenceType<Sequenced>, Size> Result;
+        return Result(::ural::sequence_fwd<Sequenced>(seq), helper.count);
     }
 
     /** @brief Функция создания @c take_helper
