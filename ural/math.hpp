@@ -132,7 +132,7 @@ namespace ural
         @return <tt> x % Integer(2) == 0 </tt>
         */
         template <class Integer>
-        constexpr auto operator()(Integer const & x) const
+        constexpr bool operator()(Integer const & x) const
         {
             return x % Integer(2) == 0;
         }

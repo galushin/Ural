@@ -64,6 +64,7 @@ namespace ural
         @param f указатель на функцию
         @post <tt> this->target() == f </tt>
         */
+        constexpr
         function_ptr_wrapper(target_type f)
          : target_{f}
         {}

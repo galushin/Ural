@@ -38,6 +38,9 @@ namespace ural
     class replace_if_function
     {
     public:
+        /// @brief Тип предиката
+        using predicate_type = FunctionType<Predicate>;
+
         /// @brief Тип возвращаемого значения
         typedef T const & result_type;
 
@@ -47,8 +50,9 @@ namespace ural
         @post <tt> this->predicate() == pred </tt>
         @post <tt> this->new_value() == new_value </tt>
         */
+        constexpr
         replace_if_function(Predicate pred, T new_value)
-         : members_{std::move(pred), new_value}
+         : members_(std::move(new_value), std::move(pred))
         {}
 
         /** @brief Оператор вычисления значения
@@ -56,6 +60,7 @@ namespace ural
         @return Если @c x не удовлетворяет предикату, то
         <tt> this->new_value() </tt> иначе --- @c x.
         */
+        constexpr
         result_type operator()(T const & x) const
         {
             if(this->predicate()(x))
@@ -71,9 +76,10 @@ namespace ural
         /** @brief Используемый предикат
         @return Используемый предикат
         */
+        constexpr
         Predicate const & predicate() const
         {
-            return members_.first();
+            return this->members_[ural::_2];
         }
 
         /** @brief Значение, которое будет возвращено, если аргумент
@@ -81,26 +87,15 @@ namespace ural
         @return Значение, которое будет возвращено, если аргумент
         удовлетворяет условию
         */
-        result_type new_value() const
+        constexpr
+        T const & new_value() const
         {
-            return members_.second();
+            return this->members_[ural::_1];
         }
 
     private:
-        boost::compressed_pair<Predicate, T> members_;
+        ural::tuple<T, predicate_type> members_;
     };
-
-    /**
-    По умолчанию сохраняются значения, а не ссылки. Чтобы избежать копирования,
-    следует обернуть объекты в вызовы std::cref()
-    */
-    template <class Predicate, class T>
-    replace_if_function<Predicate, typename reference_wrapper_to_reference<T>::type>
-    make_replace_if_function(Predicate pred, T const & new_value)
-    {
-        typedef typename reference_wrapper_to_reference<T>::type T_unwrapped;
-        return replace_if_function<Predicate, T_unwrapped>(std::move(pred), new_value);
-    }
 
     /** @brief Функциональный объект, заменяющий заданное значение на новое
     @tparam T_old тип старого значения
@@ -118,7 +113,7 @@ namespace ural
 
     public:
         /// @brief Тип предиката
-        typedef decltype(make_callable(std::declval<BinaryPredicate>())) predicate_type;
+        using predicate_type = FunctionType<BinaryPredicate>;
 
         /// @brief Тип возвращаемого значения
         typedef T const & result_type;
@@ -130,7 +125,8 @@ namespace ural
         @post <tt> this->old_value() == old_value </tt>
         @post <tt> this->new_value() == new_value </tt>
         */
-        constexpr explicit replace_function(T_old old_value, T new_value)
+        constexpr
+        explicit replace_function(T_old old_value, T new_value)
          : members_{std::move(old_value), std::move(new_value),
                     predicate_type{}}
         {}
@@ -143,8 +139,9 @@ namespace ural
         @post <tt> this->old_value() == old_value </tt>
         @post <tt> this->new_value() == new_value </tt>
         */
-        constexpr explicit replace_function(T_old old_value, T new_value,
-                                            BinaryPredicate pred)
+        constexpr
+        explicit replace_function(T_old old_value, T new_value,
+                                  BinaryPredicate pred)
          : members_{std::move(old_value), std::move(new_value),
                     make_callable(std::move(pred))}
         {}
@@ -153,7 +150,8 @@ namespace ural
         /** @brief Заменяемое значение
         @return Заменяемое значение
         */
-        constexpr T_old const & old_value() const
+        constexpr
+        T_old const & old_value() const
         {
             return members_[ural::_1];
         }
@@ -161,7 +159,8 @@ namespace ural
         /** @brief Новое значение
         @return Новое значение
         */
-        constexpr T const & new_value() const
+        constexpr
+        T const & new_value() const
         {
             return members_[ural::_2];
         }
@@ -169,7 +168,8 @@ namespace ural
         /** @brief Используемый функциональный объект
         @return Используемый функциональный объект
         */
-        constexpr predicate_type const & predicate() const
+        constexpr
+        predicate_type const & predicate() const
         {
             return members_[ural::_3];
         }
@@ -179,7 +179,8 @@ namespace ural
         @return Если <tt> this->predicate()(x, this->old_value()) </tt>, то ---
         <tt> this->new_value() </tt>, иначе --- @c x
         */
-        constexpr result_type operator()(T const & x) const
+        constexpr
+        result_type operator()(T const & x) const
         {
             return (this->predicate()(x, this->old_value()))
                    ? this->new_value() : x;
@@ -189,51 +190,68 @@ namespace ural
         ural::tuple<T_old, T, predicate_type> members_;
     };
 
-    /** @brief Функция создания @c replace_function с нестандартным предикатом,
-    задающим равенство.
-
-    Создаёт функциональный объект, который заменяет значения @c x,
-    удовлетворяющие условию <tt> pred(x, old_value) </tt> на @c new_value,
-    а остальные оставляет без изменений.
-
-    @param old_value значение, подлежащее замене
-    @param new_value значение, на которое заменяются значения, удовлетворяющие
-    условию.
-    @param pred предикат
-    По умолчанию сохраняются значения, а не ссылки. Чтобы избежать копирования,
-    следует обернуть объекты в вызовы std::cref()
-    */
-    template <class T1, class T2, class BinaryPredicate>
-    constexpr replace_function<typename reference_wrapper_to_reference<T1>::type,
-                               typename reference_wrapper_to_reference<T2>::type,
-                               BinaryPredicate>
-    make_replace_function(T1 old_value, T2 new_value, BinaryPredicate pred)
+    class make_replace_if_function_fn
     {
-        typedef typename reference_wrapper_to_reference<T1>::type T1_unwrapped;
-        typedef typename reference_wrapper_to_reference<T2>::type T2_unwrapped;
-        typedef replace_function<T1_unwrapped, T2_unwrapped, BinaryPredicate> Function;
+    public:
+        /**
+        @param pred предикат, определяющий, какие значения нужно заменить
+        @param new_value новое значение
 
-        return Function(std::move(old_value), std::move(new_value),
-                        std::move(pred));
-    }
+        По умолчанию сохраняются значения, а не ссылки. Чтобы избежать
+        копирования, следует обернуть объекты в вызовы std::cref()
+        */
+        template <class Predicate, class T>
+        constexpr
+        replace_if_function<Predicate, typename reference_wrapper_to_reference<T>::type>
+        operator()(Predicate pred, T new_value) const
+        {
+            typedef typename reference_wrapper_to_reference<T>::type T_unwrapped;
+            return replace_if_function<Predicate, T_unwrapped>(std::move(pred),
+                                                               std::move(new_value));
+        }
+    };
 
-    /**
-    По умолчанию сохраняются значения, а не ссылки. Чтобы избежать копирования,
-    следует обернуть объекты в вызовы std::cref()
-    @param old_value заменяемое значение
-    @param new_value новое значение
-    @return <tt> replace_function<T>(std::move(old_value), std::move(new_value))  </tt>
-    */
-    template <class T1, class T2>
-    constexpr replace_function<typename reference_wrapper_to_reference<T1>::type,
-                               typename reference_wrapper_to_reference<T2>::type,
-                               ural::equal_to<>>
-    make_replace_function(T1 old_value, T2 new_value)
+    class make_replace_function_fn
     {
-        typedef typename reference_wrapper_to_reference<T1>::type T1_unwrapped;
-        typedef typename reference_wrapper_to_reference<T2>::type T2_unwrapped;
-        typedef replace_function<T1_unwrapped, T2_unwrapped> Function;
-        return Function(std::move(old_value), std::move(new_value));
+    public:
+        /** @brief Функция создания @c replace_function с нестандартным предикатом,
+        задающим равенство.
+
+        Создаёт функциональный объект, который заменяет значения @c x,
+        удовлетворяющие условию <tt> pred(x, old_value) </tt> на @c new_value,
+        а остальные оставляет без изменений.
+
+        @param old_value значение, подлежащее замене
+        @param new_value значение, на которое заменяются значения, удовлетворяющие
+        условию.
+        @param pred предикат
+        По умолчанию сохраняются значения, а не ссылки. Чтобы избежать копирования,
+        следует обернуть объекты в вызовы std::cref()
+        */
+        template <class T1, class T2, class BinaryPredicate = equal_to<>>
+        constexpr
+        replace_function<typename reference_wrapper_to_reference<T1>::type,
+                         typename reference_wrapper_to_reference<T2>::type,
+                         BinaryPredicate>
+        operator()(T1 old_value, T2 new_value,
+                   BinaryPredicate pred = BinaryPredicate{}) const
+        {
+            typedef typename reference_wrapper_to_reference<T1>::type T1_unwrapped;
+            typedef typename reference_wrapper_to_reference<T2>::type T2_unwrapped;
+            typedef replace_function<T1_unwrapped, T2_unwrapped, BinaryPredicate> Function;
+
+            return Function(std::move(old_value), std::move(new_value),
+                            std::move(pred));
+        }
+    };
+
+    namespace
+    {
+        constexpr auto const & make_replace_function
+            = odr_const<make_replace_function_fn>;
+
+        constexpr auto const & make_replace_if_function
+            = odr_const<make_replace_if_function_fn>;
     }
 }
 // namespace ural

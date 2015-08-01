@@ -168,6 +168,32 @@ BOOST_AUTO_TEST_CASE(function_tracer_test)
     BOOST_CHECK_EQUAL(0U, Function::calls());
 }
 
+BOOST_AUTO_TEST_CASE(replace_if_function_test)
+{
+    typedef int Type;
+
+    constexpr auto const pred = ural::is_even_fn{};
+    constexpr auto const new_value = Type(-7);
+
+    constexpr auto const f = ural::make_replace_if_function(pred, new_value);
+
+    static_assert(pred == f.predicate(), "");
+    static_assert(new_value == f.new_value(), "");
+
+    constexpr auto const v1 = Type(2);
+    constexpr auto const v2 = Type(3);
+
+    static_assert(v1 != new_value, "");
+    static_assert(pred(v1) == true, "");
+    static_assert(f(v1) == new_value, "");
+
+    static_assert(v2 != new_value, "");
+    static_assert(pred(v2) == false, "");
+    static_assert(f(v2) == v2, "");
+
+    BOOST_CHECK(true);
+}
+
 BOOST_AUTO_TEST_CASE(replace_function_test)
 {
     auto const old_value = ::ural::rational<int>(-1);
