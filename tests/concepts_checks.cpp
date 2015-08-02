@@ -16,9 +16,15 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <ural/archetypes.hpp>
+#include "defs.hpp"
 
+#include <ural/math.hpp>
+#include <ural/archetypes.hpp>
 #include <ural/algorithm.hpp>
+
+#include <forward_list>
+#include <list>
+#include <vector>
 
 BOOST_AUTO_TEST_CASE(archetype_check)
 {
@@ -92,6 +98,65 @@ BOOST_AUTO_TEST_CASE(value_type_for_c_arrays)
     static_assert(std::is_same<T, ural::ValueType<ArrayN>>::value, "");
     static_assert(std::is_same<T, ural::ValueType<Array>>::value, "");
     static_assert(std::is_same<T, ural::ValueType<Pointer>>::value, "");
+
+    BOOST_CHECK(true);
+}
+
+BOOST_AUTO_TEST_CASE(removed_if_concept_checks)
+{
+    ural_test::istringstream_helper<int> const c_in;
+    std::forward_list<int> const c_fwd;
+    std::list<int> const c_bidir;
+    // не может быть произвольного доступа, так как заренее не известно,
+    // сколько элементов придётся выкинуть
+
+    auto const pred = ural::is_even;
+
+    auto s_in = c_in | removed_if(pred);
+    auto s_fwd = c_fwd | removed_if(pred);
+    auto s_bidir = c_bidir | removed_if(pred);
+
+    using namespace ural::concepts;
+
+    BOOST_CONCEPT_ASSERT((SinglePassSequence<decltype(s_in)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_in)>));
+
+    BOOST_CONCEPT_ASSERT((ForwardSequence<decltype(s_fwd)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_fwd)>));
+
+    BOOST_CONCEPT_ASSERT((BidirectionalSequence<decltype(s_bidir)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_bidir)>));
+
+    BOOST_CHECK(true);
+}
+
+BOOST_AUTO_TEST_CASE(transformed_concept_checks)
+{
+    ural_test::istringstream_helper<int> const c_in;
+    std::forward_list<int> const c_fwd;
+    std::list<int> const c_bidir;
+    std::vector<int> c_ra;
+
+    ural::negate<> const f;
+
+    auto s_in = c_in | transformed(f);
+    auto s_fwd = c_fwd | transformed(f);
+    auto s_bidir = c_bidir | transformed(f);
+    auto s_ra = c_ra | transformed(f);
+
+    using namespace ural::concepts;
+
+    BOOST_CONCEPT_ASSERT((SinglePassSequence<decltype(s_in)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_in)>));
+
+    BOOST_CONCEPT_ASSERT((ForwardSequence<decltype(s_fwd)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_fwd)>));
+
+    BOOST_CONCEPT_ASSERT((BidirectionalSequence<decltype(s_bidir)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_bidir)>));
+
+    BOOST_CONCEPT_ASSERT((RandomAccessSequence<decltype(s_ra)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_ra)>));
 
     BOOST_CHECK(true);
 }

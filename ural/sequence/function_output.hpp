@@ -81,7 +81,7 @@ namespace ural
         */
         UnaryFunction const & function() const
         {
-            return *this;
+            return this->payload();
         }
 
         // Однопроходная последовательность
@@ -130,7 +130,7 @@ namespace ural
     private:
         UnaryFunction & function_ref()
         {
-            return static_cast<UnaryFunction &>(*this);
+            return this->payload();
         }
     };
 

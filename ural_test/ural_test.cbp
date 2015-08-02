@@ -137,6 +137,7 @@
 		<Unit filename="../ural/placeholders.hpp" />
 		<Unit filename="../ural/random.hpp" />
 		<Unit filename="../ural/random/c_rand_engine.hpp" />
+		<Unit filename="../ural/sequence/adaptor.hpp" />
 		<Unit filename="../ural/sequence/all.hpp" />
 		<Unit filename="../ural/sequence/base.hpp" />
 		<Unit filename="../ural/sequence/by_line.hpp" />

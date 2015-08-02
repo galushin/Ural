@@ -23,7 +23,6 @@
 */
 
 #include <ural/tuple.hpp>
-#include <ural/sequence/transform.hpp>
 
 namespace ural
 {
@@ -34,23 +33,30 @@ namespace ural
     class zip_sequence
      : public sequence_base<zip_sequence<Inputs...>>
     {
-        typedef transform_sequence<make_tuple_function, Inputs...> Impl_seq;
+        typedef tuple<Inputs...> Bases_tuple;
+
     public:
+        friend bool operator==(zip_sequence const & x, zip_sequence const & y)
+        {
+            return x.bases() == y.bases();
+        }
+
         // Типы
         /// @brief Тип значения
-        typedef ValueType<Impl_seq> value_type;
+        using value_type = tuple<ValueType<Inputs>...>;
 
         /// @brief Тип ссылки
-        typedef typename Impl_seq::reference reference;
+        using reference = tuple<ReferenceType<Inputs>...>;
 
         /// @brief Тип указателя
-        typedef typename Impl_seq::pointer pointer;
+        using pointer = void;
 
         /// @brief Тип расстояния
-        typedef DifferenceType<Impl_seq> distance_type;
+        using distance_type = CommonType<DifferenceType<Inputs>...>;
 
         /// @brief Категория обхода
-        typedef typename Impl_seq::traversal_tag traversal_tag;
+        using traversal_tag
+            = typename common_tag<typename Inputs::traversal_tag...>::type;
 
         // Конструкторы
         /** @brief Конструктор
@@ -58,7 +64,7 @@ namespace ural
         @post <tt> this->bases() == make_callable(ins...) </tt>
         */
         zip_sequence(Inputs... ins)
-         : impl_{make_tuple_function{}, std::move(ins)...}
+         : bases_{std::move(ins)...}
         {}
 
         //@{
@@ -68,12 +74,12 @@ namespace ural
         tuple<Inputs...> const &
         bases() const &
         {
-            return this->impl_.bases();
+            return this->bases_;
         }
 
         tuple<Inputs...> && bases() &&
         {
-            return std::move(this->impl_).bases();
+            return std::move(this->bases_);
         }
         //@}
 
@@ -83,7 +89,7 @@ namespace ural
         */
         bool operator!() const
         {
-            return !impl_;
+            return ural::tuples::any_of(this->bases(), ural::logical_not<>{});
         }
 
         /** @brief Текущий элемент
@@ -92,7 +98,10 @@ namespace ural
         */
         reference front() const
         {
-            return impl_.front();
+            auto f = [this](Inputs const & ... args)->reference
+                     { return this->deref(args...); };
+
+            return ::ural::apply(f, this->bases());
         }
 
         /** @brief Переход к следующему элементу
@@ -100,11 +109,49 @@ namespace ural
         */
         void pop_front()
         {
-            impl_.pop_front();
+            ural::tuples::for_each(this->mutable_bases(), ural::pop_front);
+        }
+
+        void shrink_front();
+
+        // Последовательность произвольного доступа
+        /** @brief Количество элементов последовательности
+        @return Минимальный из размеров базовых последовательностей
+        */
+        distance_type size() const
+        {
+            // @todo Обобщить, реализовать без псевдо-рекурсии
+            return this->size_impl(this->bases()[ural::_1].size(), ural::_2);
         }
 
     private:
-        Impl_seq impl_;
+        Bases_tuple & mutable_bases()
+        {
+            return this->bases_;
+        }
+
+        reference deref(Inputs const & ... ins) const
+        {
+            return reference{(*ins)...};
+        }
+
+        distance_type
+        size_impl(distance_type result, placeholder<sizeof...(Inputs)>) const
+        {
+            return result;
+        }
+
+        template <size_t index>
+        distance_type
+        size_impl(distance_type current, placeholder<index> p) const
+        {
+            return this->size_impl(std::min(current, this->bases()[p].size()),
+                                   placeholder<index+1>());
+        }
+
+
+    private:
+        Bases_tuple bases_;
     };
 
     /** @brief Создание последовательности соответствующих элементов кортежей

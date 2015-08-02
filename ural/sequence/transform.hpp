@@ -21,6 +21,9 @@
  @brief Последовательность с преобразованием
 */
 
+#include <ural/sequence/adaptor.hpp>
+#include <ural/sequence/zip.hpp>
+
 #include <ural/meta/list.hpp>
 #include <ural/meta/hierarchy.hpp>
 
@@ -39,33 +42,32 @@ namespace ural
     */
     template <class F, class... Inputs>
     class transform_sequence
-     : public sequence_base<transform_sequence<F, Inputs...>>
+     : public sequence_adaptor<transform_sequence<F, Inputs...>,
+                               zip_sequence<Inputs...>, F>
     {
-    private:
-        template <class T>
-        static T make_value(T);
-
-        typedef tuple<Inputs...> Bases_tuple;
+        using Base = sequence_adaptor<transform_sequence<F, Inputs...>,
+                                      zip_sequence<Inputs...>, F>;
 
     public:
+        // Типы
         /// @brief Тип ссылки
         typedef decltype(std::declval<F>()(*std::declval<Inputs>()...)) reference;
 
         /// @brief Тип значения
-        typedef decltype(make_value(std::declval<reference>())) value_type;
-
-        /// @brief Категория обхода
-        typedef typename common_tag<typename Inputs::traversal_tag...>::type
-            traversal_tag;
+        using value_type = typename std::decay<reference>::type;
 
         /// @brief Тип расстояния
-        typedef CommonType<DifferenceType<Inputs>...> distance_type;
+        using typename Base::distance_type;
 
         /// @brief Тип указателя
         typedef typename std::conditional<std::is_lvalue_reference<reference>::value,
                                           typename std::remove_reference<reference>::type *,
                                           void> pointer;
 
+        /// @brief Кортеж входных последовательностей
+        using bases_tuple = tuple<Inputs...>;
+
+        // Конструктор
         /** @brief Конструктор
         @param f функциональный объект, задающий преобразование
         @param in входная последовательность
@@ -73,66 +75,46 @@ namespace ural
         @post <tt> this->function() == f </tt>
         */
         explicit transform_sequence(F f, Inputs... in)
-         : impl_(std::move(f), Bases_tuple{std::move(in)...})
+         : Base(make_zip_sequence(std::move(in)...), std::move(f))
         {}
 
         //@{
         /** @brief Доступ к кортежу базовых последовательностей
         @return Константная ссылка на кортеж базовых последовательностей
         */
-        Bases_tuple const & bases() const &
+        bases_tuple const & bases() const &
         {
-            return impl_[ural::_2];
+            return this->base().bases();
         }
 
-        Bases_tuple && bases() &&
+        bases_tuple && bases() &&
         {
-            return std::move(impl_[ural::_2]);
+            return std::move(*this).base().bases();
         }
         //@}
 
         // Однопроходная последовательность
-        /** @brief Проверка исчерпания последовательностей
-        @return @b true, если последовательность исчерпана, иначе --- @b false.
-        */
-        bool operator!() const
-        {
-            return ural::tuples::any_of(this->bases(), ural::logical_not<>{});
-        }
-
-        /** @brief Переход к следующему элементу в передней части
-        @pre <tt> !*this == true </tt>
-        */
-        void pop_front()
-        {
-            ural::tuples::for_each(this->mutable_bases(), ural::pop_front);
-        }
-
         /** @brief Передний элемент
         @return Ссылка на первый элемент последовательности
         @pre <tt> !*this == true </tt>
         */
         reference front() const
         {
-            auto f = [this](Inputs const & ... args)->reference
-                     { return this->deref(args...); };
-
-            return ::ural::apply(f, this->bases());
+            return ::ural::apply(this->function(), this->base().front());
         }
 
         // Прямая последовательность
+        transform_sequence original() const;
+
+        transform_sequence traversed_front() const;
 
         // Двусторонняя последовательность
+        reference back() const;
+
+        transform_sequence traversed_back() const;
 
         // Последовательность произвольного доступа
-        /** @brief Количество элементов последовательности
-        @return Минимальный из размеров базовых последовательностей
-        */
-        distance_type size() const
-        {
-            // @todo Обобщить, реализовать без псевдо-рекурсии
-            return this->size_impl(this->bases()[ural::_1].size(), ural::_2);
-        }
+        reference operator[](distance_type n) const;
 
         // Адаптор последовательности
         /** @brief Функциональный объект, задающий преобразование
@@ -140,36 +122,8 @@ namespace ural
         */
         F const & function() const
         {
-            return impl_[ural::_1];
+            return Base::payload();
         }
-
-    private:
-        Bases_tuple & mutable_bases()
-        {
-            return impl_[ural::_2];
-        }
-
-        distance_type
-        size_impl(distance_type result, placeholder<sizeof...(Inputs)>) const
-        {
-            return result;
-        }
-
-        template <size_t index>
-        distance_type
-        size_impl(distance_type current, placeholder<index> p) const
-        {
-            return this->size_impl(std::min(current, this->bases()[p].size()),
-                                   placeholder<index+1>());
-        }
-
-        reference deref(Inputs const & ... ins) const
-        {
-            return this->function()((*ins)...);
-        }
-
-    private:
-        ural::tuple<F, Bases_tuple> impl_;
     };
 
     /** @brief Итератор, задающий начало преобразующей последовательности

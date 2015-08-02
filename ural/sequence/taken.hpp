@@ -23,6 +23,7 @@
  @todo По умолчанию для Size использовать DifferenceType<Size>
 */
 
+#include <ural/sequence/adaptor.hpp>
 #include <ural/sequence/make.hpp>
 #include <ural/sequence/base.hpp>
 #include <ural/utility.hpp>
@@ -41,24 +42,13 @@ namespace ural
     */
     template <class Sequence, class Size = DifferenceType<Sequence>>
     class take_sequence
-     : public sequence_base<take_sequence<Sequence, Size>>
+     : public sequence_adaptor<take_sequence<Sequence, Size>, Sequence>
     {
+        using Base = sequence_adaptor<take_sequence<Sequence, Size>, Sequence>;
     public:
         // Типы
-        /// @brief Тип ссылки
-        typedef typename Sequence::reference reference;
-
-        /// @brief Тип значения
-        typedef ValueType<Sequence> value_type;
-
-        /// @brief Тип расстояния
-        typedef DifferenceType<Sequence> distance_type;
-
         /// @brief Категория обхода
-        typedef typename Sequence::traversal_tag traversal_tag;
-
-        /// @brief Тип указателя
-        typedef typename Sequence::pointer pointer;
+        using typename Base::traversal_tag;
 
         // Создание, копирование
         /** @brief Конструктор
@@ -70,7 +60,8 @@ namespace ural
         @todo Добавить проверку, что @c count - конечное число
         */
         explicit take_sequence(Sequence seq, Size count)
-         : impl_(std::move(seq), Count_type{std::move(count)})
+         : Base(std::move(seq))
+         , count_(std::move(count))
         {}
 
         // Однопроходная последовательность
@@ -82,26 +73,15 @@ namespace ural
             return this->count() == 0 || !this->base();
         }
 
-        /** @brief Текущий элемент последовательности
-        @pre <tt> !*this == false </tt>
-        @return Ссылка на текущий элемент последовательности
-        */
-        reference front() const
-        {
-            assert(!!this->base());
-            return *this->base();
-        }
-
         /** @brief Переход к следующему элементу
         @pre <tt> !*this == false </tt>
         */
         void pop_front()
         {
-            assert(this->count() > 0);
-            assert(!!this->base());
+            Base::pop_front();
 
-            ++ impl_[ural::_1];
-            -- ural::get(impl_[ural::_2]);
+            assert(this->count() > 0);
+            -- ural::get(count_);
         }
 
         // Прямая последовательность
@@ -135,41 +115,24 @@ namespace ural
         */
         void shrink_front()
         {
-            impl_[ural::_1].shrink_front();
-            impl_[ural::_2].commit();
+            Base::shrink_front();
+            count_.commit();
         }
 
         // Последовательность производного доступа
-
         // Адаптор последовательности
-        //@{
-        /** @brief Базовая последовательность
-        @return Базовая последовательность
-        */
-        Sequence const & base() const &
-        {
-            return impl_[ural::_1];
-        }
-
-        Sequence && base() &&
-        {
-            return std::move(impl_[ural::_1]);
-        }
-        //@}
-
         /** @brief Оставшееся количество элементов
         @return Оставшееся количество элементов
-        @todo переименовать в size?
         */
         Size const & count() const
         {
-            return ural::get(impl_[ural::_2]);
+            return ural::get(count_);
         }
 
     private:
         Size const & init_count() const
         {
-            return impl_[ural::_2].old_value();
+            return count_.old_value();
         }
 
     private:
@@ -179,7 +142,7 @@ namespace ural
         typedef typename std::conditional<is_forward, with_old_value<Size>, Size>::type
             Count_type;
 
-        ural::tuple<Sequence, Count_type> impl_;
+        Count_type count_;
     };
 
     /** @brief Оператор "равно"

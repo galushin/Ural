@@ -146,7 +146,7 @@ namespace ural
         */
         Compare const & function() const
         {
-            return static_cast<Compare const &>(*this);
+            return this->payload();
         }
 
         //@{
@@ -329,7 +329,7 @@ namespace ural
         */
         Compare const & function() const
         {
-            return static_cast<Compare const &>(*this);
+            return this->payload();
         }
 
         //@{
@@ -492,7 +492,7 @@ namespace ural
         */
         Compare const & function() const
         {
-            return static_cast<Compare const &>(*this);
+            return this->payload();
         }
 
         //@{
@@ -680,7 +680,7 @@ namespace ural
         */
         Compare const & function() const
         {
-            return static_cast<Compare const &>(*this);
+            return this->payload();
         }
 
         //@{
@@ -886,7 +886,7 @@ namespace ural
         */
         Compare const & function() const
         {
-            return static_cast<Compare const &>(*this);
+            return this->payload();
         }
 
         //@{

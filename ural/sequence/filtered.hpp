@@ -33,41 +33,16 @@ namespace ural
     удовлетворяющих заданному предикату.
     @tparam Sequence входная последовательность
     @tparam Predicate унарный предикат
-    @todo Можно ли описать только отличия от @c remove_if_sequence?
     */
     template <class Sequence, class Predicate>
     class filter_sequence
-     : public sequence_base<filter_sequence<Sequence, Predicate>>
+     : public sequence_adaptor<filter_sequence<Sequence, Predicate>,
+                               remove_if_sequence<Sequence, not_function<Predicate>>>
     {
-        friend bool operator==(filter_sequence const & x,
-                               filter_sequence const & y)
-        {
-            return x.impl_ == y.impl_;
-        }
-
-        typedef ural::not_function<Predicate> NegatedPredicate;
-
-        typedef ural::remove_if_sequence<Sequence, NegatedPredicate>
-            Impl;
+        using Base = sequence_adaptor<filter_sequence<Sequence, Predicate>,
+                                      remove_if_sequence<Sequence, not_function<Predicate>>>;
 
     public:
-        // Типы
-        /// @brief Тип ссылки
-        typedef typename Impl::reference reference;
-
-        /// @brief Тип значения
-        typedef ValueType<Impl> value_type;
-
-        /// @brief Тип указателя
-        typedef typename Impl::pointer pointer;
-
-        /// @brief Тип расстояния
-        typedef DifferenceType<Impl> distance_type;
-
-        /// @brief Категория обхода
-        typedef CommonType<typename Impl::traversal_tag, forward_traversal_tag>
-            traversal_tag;
-
         // Конструкторы
         /** @brief Конструктор
         @param seq базовая последовательность
@@ -76,48 +51,18 @@ namespace ural
         @post <tt> this->predicate() == pred </tt>
         */
         explicit filter_sequence(Sequence seq, Predicate pred)
-         : impl_{std::move(seq), ural::not_fn(std::move(pred))}
+         : Base{ural::make_remove_if_sequence(std::move(seq),
+                                              ural::not_fn(std::move(pred)))}
         {}
 
         // Однопроходная последовательность
-        /** @brief Проверка того, что последовательность исчерпана
-        @return @b true, если последовательность исчерпана, иначе --- @b false
-        */
-        bool operator!() const
-        {
-            return !impl_;
-        }
-
-        /** @brief Первый элемент последовательности
-        @return Первый элемент последовательности
-        */
-        reference front() const
-        {
-            return impl_.front();
-        }
-
-        /// @brief Переход к следующему элементу
-        void pop_front()
-        {
-            return impl_.pop_front();
-        }
-
-        // Прямая последовательность
         /** @brief Пройденная часть последовательности
         @return Пройденная часть последовательности
         */
         filter_sequence traversed_front() const
         {
-            return filter_sequence(impl_.traversed_front().base(),
+            return filter_sequence(Base::base().traversed_front().base(),
                                    this->predicate());
-        }
-
-        /** @brief Отбрасывание пройденной части последовательности
-        @post <tt> !this->traversed_front() </tt>
-        */
-        void shrink_front()
-        {
-            return this->impl_.shrink_front();
         }
 
         /** @brief Полная последовательность (включая пройденные части)
@@ -131,26 +76,19 @@ namespace ural
         */
         Predicate const & predicate() const
         {
-            return impl_.predicate().target();
+            return Base::base().predicate().target();
         }
 
         //@{
         /** @brief Базовая последовательность
         @return Базовая последовательность
         */
-        Sequence const & base() const &
-        {
-            return this->impl_.base();
-        }
+        Sequence const & base() const &;
 
         Sequence && base() &&
         {
-            return std::move(this->impl_).base();
+            return static_cast<Base&&>(*this).base().base();
         }
-        //@}
-
-    private:
-        Impl impl_;
     };
 
     /// @brief Тип функционального объекта для создания @c filter_sequence

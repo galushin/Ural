@@ -22,6 +22,7 @@
  rvalue-ссылки
 */
 
+#include <ural/sequence/adaptor.hpp>
 #include <ural/utility/pipeable.hpp>
 #include <ural/iterator/move.hpp>
 #include <ural/sequence/make.hpp>
@@ -36,27 +37,17 @@ namespace ural
     */
     template <class Sequence>
     class move_sequence
-     : public sequence_base<move_sequence<Sequence>>
+     : public sequence_adaptor<move_sequence<Sequence>, Sequence>
     {
+        typedef sequence_adaptor<move_sequence<Sequence>, Sequence> Adaptor;
+
         typedef typename Sequence::reference Base_reference;
 
     public:
         // Типы
-        /// @brief Тип значения
-        typedef ValueType<Sequence> value_type;
-
         /// @brief Тип ссылки
         typedef typename moved_type<Base_reference>::type
             reference;
-
-        /// @brief Тип расстояния
-        typedef DifferenceType<Sequence> distance_type;
-
-        /// @brief Категория обхода
-        typedef typename Sequence::traversal_tag traversal_tag;
-
-        /// @brief Тип указателя
-        typedef typename Sequence::pointer pointer;
 
         // Конструирование, копирование, присваивание
         /** @brief Конструктор
@@ -64,18 +55,10 @@ namespace ural
         @post <tt> this->base() == seq </tt>
         */
         explicit move_sequence(Sequence seq)
-         : base_{std::move(seq)}
+         : Adaptor{std::move(seq)}
         {}
 
         // Однопроходная последовательность
-        /** @brief Проверка исчерпания последовательностей
-        @return <tt> !this->base() </tt>
-        */
-        bool operator!() const
-        {
-            return !this->base();
-        }
-
         /** @brief Текущий передний элемент
         @return <tt> std::move(this->base().front()) </tt>
         */
@@ -84,42 +67,11 @@ namespace ural
             return std::move(this->base().front());
         }
 
-        /// @brief Отбрасывает передний элемент
-        void pop_front()
-        {
-            ++ base_;
-        }
-
         // Двусторонняя последовательность
         /** @brief Текущий задний элемент
         @return <tt> std::move(this->base().back()) </tt>
         */
-        reference back() const
-        {
-            return std::move(this->base().back());
-        }
-
-        /// @brief Отбрасывает задний элемент
-        void pop_back()
-        {
-            this->base_.pop_back();
-        }
-
-        // Адаптор последовательности
-        //@{
-        /** @brief Базовая последовательность
-        @return Базовая последовательность
-        */
-        Sequence const & base() const &
-        {
-            return this->base_;
-        }
-
-        Sequence && base() &&
-        {
-            return std::move(this->base_);
-        }
-        //@}
+        reference back() const;
 
         // Итераторы
         /** @brief Итератор задающий начало последовательности
@@ -141,9 +93,6 @@ namespace ural
         {
             return ural::make_move_iterator(end(x.base()));
         }
-
-    private:
-        Sequence base_;
     };
 
     /** @brief Тип функционального объекта для создания @c move_sequence в

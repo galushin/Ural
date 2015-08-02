@@ -81,16 +81,26 @@ namespace ural
 
     /** @brief Базовый класс для последовательностей (CRTP)
     @tparam Seq тип последовательности-наследника
+    @tparam Payload класс, от которого будет закрыто наследовать данный класс.
+    Может использоваться для оптимизации пустых базовых классов.
     */
-    template <class Seq, class Base = ural::empty_type>
+    template <class Seq, class Payload = ural::empty_type>
     class sequence_base
-     : public Base
+     : private Payload
     {
+        /** @brief Преобразование в последовательность
+        @param seq исходная последовательность
+        @return seq
+        */
         friend Seq sequence(Seq seq)
         {
             return seq;
         }
 
+        /** @brief Переход к следующему элементу
+        @pre <tt> !x == false </tt>
+        @return @c x
+        */
         friend Seq & operator++(Seq & s)
         {
             s.pop_front();
@@ -112,7 +122,7 @@ namespace ural
         */
         template <class... Args>
         sequence_base(Args && ... args)
-         : Base(std::forward<Args>(args)...)
+         : Payload(std::forward<Args>(args)...)
         {}
 
         /// @brief Конструктор без аргументов
@@ -136,6 +146,18 @@ namespace ural
 
         /// @brief Деструктор
         ~ sequence_base() = default;
+
+        //@{
+        Payload & payload()
+        {
+            return *this;
+        }
+
+        Payload const & payload() const
+        {
+            return *this;
+        }
+        //@}
     };
 
     template <class Seq, class Base>
@@ -144,11 +166,22 @@ namespace ural
         return sequence_iterator<Seq &>(static_cast<Seq&>(s));
     }
 
+    //@{
+    /** @brief Создание конечного итератора для последовательности
+    @return <tt> sequence_iterator<Seq>{} </tt>
+    */
+    template <class Seq, class Base>
+    sequence_iterator<Seq> end(sequence_base<Seq, Base> const &)
+    {
+        return sequence_iterator<Seq>{};
+    }
+
     template <class Seq, class Base>
     sequence_iterator<Seq &> end(sequence_base<Seq, Base> &)
     {
         return sequence_iterator<Seq &>{};
     }
+    //@}
 
     /** @brief Создание начального итератора для последовательности
     @param s последовательность
@@ -164,15 +197,6 @@ namespace ural
     sequence_iterator<Seq> begin(sequence_base<Seq, Base> && s)
     {
         return sequence_iterator<Seq>{static_cast<Seq &&>(s)};
-    }
-
-    /** @brief Создание конечного итератора для последовательности
-    @return <tt> sequence_iterator<Seq>{} </tt>
-    */
-    template <class Seq, class Base>
-    sequence_iterator<Seq> end(sequence_base<Seq, Base> const &)
-    {
-        return sequence_iterator<Seq>{};
     }
 
     /** @brief Ссылка на текущий элемент последовательности
@@ -354,19 +378,19 @@ namespace ural
         /** @brief Функциональный объект для продвижения последовательности на
         заданное число шагов
         */
-        constexpr auto const advance = advance_fn{};
+        constexpr auto const & advance = odr_const<advance_fn>;
 
         /** @brief Функциональный объект для операции продвижения копии
         последовательности на заданное число шагов.
         */
-        constexpr auto const next = next_fn{};
+        constexpr auto const & next = odr_const<next_fn>;
 
         /** @brief Функциональный объект, вычисляющий размер массивов,
         контейнеров и последовательностей.
         */
-        constexpr auto const size = ural::size_fn{};
+        constexpr auto const & size = odr_const<size_fn>;
 
-        constexpr auto const exhaust_front = ::ural::exhaust_front_fn{};
+        constexpr auto const & exhaust_front = odr_const<exhaust_front_fn>;
 
         // @todo Добавить exhaust_back, в том числе в концепцию
     }

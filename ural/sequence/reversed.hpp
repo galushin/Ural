@@ -22,6 +22,7 @@
  в обратном порядке.
 */
 
+#include <ural/sequence/adaptor.hpp>
 #include <ural/utility/pipeable.hpp>
 #include <ural/sequence/make.hpp>
 #include <ural/sequence/base.hpp>
@@ -34,24 +35,18 @@ namespace ural
     */
     template <class BidirectionalSequence>
     class reverse_sequence
-     : public sequence_base<reverse_sequence<BidirectionalSequence>>
+     : public sequence_adaptor<reverse_sequence<BidirectionalSequence>,
+                               BidirectionalSequence>
     {
+        using Base = sequence_adaptor<reverse_sequence<BidirectionalSequence>,
+                                      BidirectionalSequence>;
     public:
         // Типы
         /// @brief Тип ссылки
-        typedef typename BidirectionalSequence::reference reference;
-
-        /// @brief Тип значения
-        typedef ValueType<BidirectionalSequence> value_type;
+        using typename Base::reference;
 
         /// @brief Тип расстояния
-        typedef DifferenceType<BidirectionalSequence> distance_type;
-
-        /// @brief Категория обхода
-        typedef typename BidirectionalSequence::traversal_tag traversal_tag;
-
-        /// @brief Тип указателя
-        typedef typename BidirectionalSequence::pointer pointer;
+        using typename Base::distance_type;
 
         // Конструкторы
         /** @brief Конструктор
@@ -59,31 +54,23 @@ namespace ural
         @post <tt> this->base() == seq </tt>
         */
         explicit reverse_sequence(BidirectionalSequence seq)
-         : base_(std::move(seq))
+         : Base(std::move(seq))
         {}
 
         // Однопроходная последовательность
-        /** @brief Проверка исчерпания последовательностей
-        @return @b true, если последовательность исчерпана, иначе --- @b false.
-        */
-        bool operator!() const
-        {
-            return !this->base();
-        }
-
         /** @brief Текущий элемент последовательности
         @pre <tt> !*this == false </tt>
         @return <tt> this->base().back() </tt>
         */
         reference front() const
         {
-            return base_.back();
+            return this->base().back();
         }
 
         /// @brief Отбрасывает переднюю пройденную часть последовательности
         void pop_front()
         {
-            return base_.pop_back();
+            return this->mutable_base().pop_back();
         }
 
         // Прямая многопроходная последовательность
@@ -98,7 +85,7 @@ namespace ural
         /// @brief Отбрасывание передней пройденной части последовательности
         void shrink_front()
         {
-            return base_.shrink_back();
+            return this->mutable_base().shrink_back();
         }
 
         /** @brief Исчерпание последовательности за константное время в прямом
@@ -108,7 +95,7 @@ namespace ural
         */
         void exhaust_front()
         {
-            return this->base_.exhaust_back();
+            return this->mutable_base().exhaust_back();
         }
 
         /** @brief Полная последовательность (включая пройденные части)
@@ -123,27 +110,27 @@ namespace ural
         */
         reference back() const
         {
-            return base_.front();
+            return this->base().front();
         }
 
         /// @brief Отбрасывание задней пройденной части последовательности
         void pop_back()
         {
-            return base_.pop_front();
+            return this->mutable_base().pop_front();
         }
 
         /** @brief Пройденная задняя часть последовательности
         @return Пройденная задняя часть последовательности
         */
-        reverse_sequence traversed_back()
+        reverse_sequence traversed_back() const
         {
-            return reverse_sequence(base_.traversed_front());
+            return reverse_sequence(this->base().traversed_front());
         }
 
         /// @brief Отбрасывает пройденную заднюю часть последовательности
         void shrink_back()
         {
-            return base_.shrink_front();
+            return this->mutable_base().shrink_front();
         }
 
         /** @brief Исчерпание последовательности в обратном порядке за
@@ -159,53 +146,30 @@ namespace ural
         */
         reference operator[](distance_type n) const
         {
-            return base_[this->size() - n - 1];
-        }
-
-        /** @brief Количество элементов
-        @return Количество непройденных элементов
-        */
-        distance_type size() const
-        {
-            return base_.size();
+            return this->base()[this->size() - n - 1];
         }
 
         /** @brief Продвижение на заданное число элементов в передней части
+        последовательности
         @param n число элементов, которые будут пропущены
+        @pre <tt> 0 <= n && n <= this->size() </tt>
         @return <tt> *this </tt>
         */
         reverse_sequence & operator+=(distance_type n)
         {
-            base_.pop_back(n);
+            this->mutable_base().pop_back(n);
             return *this;
         }
 
-        /**
+        /** @brief Продвижение на заданное число элементов в задней части
+        последовательности
+        @param n число элементов, которые будут пропущены
         @pre <tt> 0 <= n && n <= this->size() </tt>
         */
         void pop_back(distance_type n)
         {
-            base_ += n;
+            this->mutable_base() += n;
         }
-
-        // Адаптор последовательности
-        //@{
-        /** @brief Базовая последовательность
-        @return Базовая последовательность
-        */
-        BidirectionalSequence const & base() const &
-        {
-            return this->base_;
-        }
-
-        BidirectionalSequence && base() &&
-        {
-            return std::move(this->base_);
-        }
-        //@}
-
-    private:
-        BidirectionalSequence base_;
 
         friend auto begin(reverse_sequence const & x)
         -> std::reverse_iterator<decltype(begin(x.base()))>
@@ -219,15 +183,6 @@ namespace ural
             return std::reverse_iterator<decltype(begin(x.base()))>{begin(x.base())};
         }
     };
-
-    /** @brief Оператор "равно"
-    @param x левый операнд
-    @param y правый операнд
-    @return <tt> x.base() == y.base() </tt>
-    */
-    template <class Sequence>
-    bool operator==(reverse_sequence<Sequence> const & x,
-                    reverse_sequence<Sequence> const & y);
 
     /// @brief Тип функционального объекта для создания @c reverse_sequence
     class make_reverse_sequence_fn

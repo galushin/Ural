@@ -106,7 +106,7 @@ namespace ural
         */
         function_type const & function() const
         {
-            return *this;
+            return this->payload();
         }
     };
 
