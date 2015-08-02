@@ -66,6 +66,37 @@ namespace ural
         }
     };
 
+    /** @ingroup NonModifyingSequenceOperations
+    @brief Класс функционального объекта, который применяет заданный
+    функциональный объект к последовательности кортежей, рассматривая каждый
+    элемент кортежа как отдельный аргумент функции.
+    */
+    class fused_for_each_fn
+    {
+    public:
+        /** @brief Применяет функциональный объект к последовательности
+        кортежей, рассматривая каждый элемент кортежа как отдельный аргумент
+        функции.
+        @param in входная последовательность
+        @param f функциональный объект
+        @return Кортеж, первый компонент которого получается продвижением
+        <tt> ::ural::sequence_fwd<Input>(in) </tt> до исчерпания, а второй
+        --- <tt> ::ural::make_callable(std::move(f)) </tt> после его применения
+        ко всем элементам последовательности.
+        */
+        template <class Input, class Function>
+        tuple<SequenceType<Input>, FunctionType<Function>>
+        operator()(Input && in, Function f) const
+        {
+            auto f_app = curry(apply, make_callable(std::move(f)));
+
+            auto result = for_each_fn{}(std::forward<Input>(in), f_app);
+
+            return make_tuple(std::move(result)[ural::_1],
+                              std::move(result)[ural::_2].argument());
+        }
+    };
+
     namespace
     {
         // 25.2 Немодифицирующие
@@ -235,6 +266,9 @@ namespace ural
         // 25.4.9 Порождение перестановка
         constexpr auto const & next_permutation = odr_const<next_permutation_fn>;
         constexpr auto const & prev_permutation = odr_const<prev_permutation_fn>;
+
+        // Расширения
+        constexpr auto const & fused_for_each = odr_const<fused_for_each_fn>;
     }
 }
 // namespace ural

@@ -62,7 +62,7 @@ namespace ural
         {}
 
         template <class... Us>
-        constexpr explicit tuple(Us &&... args)
+        tuple(Us &&... args)
          : Base(std::forward<Us>(args)...)
         {}
         //@}

@@ -3849,3 +3849,32 @@ BOOST_AUTO_TEST_CASE(find_first_not_of_test)
 
     BOOST_CHECK(!ural::find(t, v[n1]));
 }
+
+// @todo тест с однопроходной последовательностью
+BOOST_AUTO_TEST_CASE(fused_for_each_test)
+{
+    using Tuple = ural::tuple<std::string, char>;
+    std::vector<Tuple> xs
+        = { {"Wate", 'r'}, {"Eart", 'h'}, {"Fir", 'e'}, {"Ai", 'r'}};
+
+    std::vector<std::string> z;
+    for(auto const & p : xs)
+    {
+        z.push_back(p[ural::_1]);
+        z.back().push_back(p[ural::_2]);
+    }
+
+    auto result = ural::fused_for_each(xs, &std::string::push_back);
+
+    BOOST_CHECK(result[ural::_1].original() == ural::sequence(xs));
+    BOOST_CHECK(result[ural::_1].traversed_front() == ural::sequence(xs));
+
+    BOOST_CHECK(result[ural::_2].target() == &std::string::push_back);
+
+    BOOST_CHECK_EQUAL(z.size(), xs.size());
+
+    for(auto i : ural::indices_of(z))
+    {
+        BOOST_CHECK_EQUAL(z[i], xs[i][ural::_1]);
+    }
+}

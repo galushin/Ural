@@ -561,29 +561,36 @@ namespace ural
         ural::tuple<F, Holder> state_;
     };
 
-    /** @brief Фиксация первого аргумента функции
-    @param f функция
-    @param arg значение для первого аргумента
-    */
-    template <class F, class Arg>
-    curried_function<F, Arg>
-    curry(F f, Arg && arg)
+    struct curry_fn
     {
-        return curried_function<F, Arg>(std::move(f), std::forward<Arg>(arg));
-    }
+        /** @brief Фиксация первого аргумента функции
+        @param f функция
+        @param arg значение для первого аргумента
+        @todo преобразовать в функциональный объект
+        */
+        template <class F, class Arg>
+        curried_function<FunctionType<F>, Arg>
+        operator()(F f, Arg && arg) const
+        {
+            using Fun = curried_function<FunctionType<F>, Arg>;
+            return Fun(make_callable(std::move(f)), std::forward<Arg>(arg));
+        }
+    };
 
     namespace
     {
+        constexpr auto const & curry = odr_const<curry_fn>;
+
         // Обобщённые операции
-        constexpr auto const modify_return_old = modify_return_old_fn{};
+        constexpr auto const & modify_return_old = odr_const<modify_return_old_fn>;
 
         // Управление передачей параметров
-        constexpr auto const ref = ref_fn{};
-        constexpr auto const cref = cref_fn{};
+        constexpr auto const & ref = odr_const<ref_fn>;
+        constexpr auto const & cref = odr_const<cref_fn>;
 
         // Операции контейнеров
-        constexpr auto const empty = empty_fn{};
-        constexpr auto const pop_front = pop_front_fn{};
+        constexpr auto const & empty = odr_const<empty_fn>;
+        constexpr auto const & pop_front = odr_const<pop_front_fn>;
     }
 }
 // namespace ural
