@@ -101,10 +101,26 @@ namespace ural
         */
         void pop_front()
         {
-            return seq_.pop_front();
+            return this->mutable_base().pop_front();
         }
 
         // Прямая последовательность
+        /** @brief Полная последовательность (вместе с пройденными частями)
+        @return Исходная последовательность
+        */
+        T original() const
+        {
+            return this->derived().rebind_base(this->base().original());
+        }
+
+        /** @brief Пройденная передняя часть последовательность
+        @return Пройденная передняя часть последовательность
+        */
+        T traversed_front() const
+        {
+            return this->derived().rebind_base(this->base().traversed_front());
+        }
+
         /** @brief Отбрасывание пройденной части последовательности
         @post <tt> !this->traversed_front() </tt>
         */
@@ -117,10 +133,24 @@ namespace ural
         /** @brief Задний элемент последовательности
         @pre <tt> !*this == false </tt>
         */
-        reference back() const;
+        reference back() const
+        {
+            return this->base().back();
+        }
+
+        /** @brief Пройденная задняя часть последовательность
+        @return Пройденная задняя часть последовательность
+        */
+        T traversed_back() const
+        {
+            return this->derived().rebind_base(this->base().traversed_back());
+        }
 
         /// @brief Отбрасывание задней пройденной части последовательности
-        void pop_back();
+        void pop_back()
+        {
+            return this->mutable_base().pop_back();
+        }
 
         /// @brief Отбрасывает пройденную заднюю часть последовательности
         void shrink_back();
@@ -137,7 +167,17 @@ namespace ural
         */
         distance_type size() const
         {
-            return this->seq_.size();
+            return this->base().size();
+        }
+
+        /** @brief Индексированный доступ
+        @param n индекс
+        @pre <tt> 0 < this->size() && this->size() < n </tt>
+        @return <tt> this->base()[n] </tt>
+        */
+        reference operator[](distance_type n) const
+        {
+            return this->base()[n];
         }
 
         /** @brief Продвижение на заданное число элементов в передней части
@@ -153,7 +193,10 @@ namespace ural
         @param n число элементов, которые будут пропущены
         @pre <tt> 0 <= n && n <= this->size() </tt>
         */
-        void pop_back(distance_type n);
+        void pop_back(distance_type n)
+        {
+            return this->mutable_base().pop_back(n);
+        }
 
     protected:
         /** @brief Конструктор
@@ -181,6 +224,19 @@ namespace ural
         {
             return this->seq_;
         }
+
+        Payload & payload()
+        {
+            return Base::payload();
+        }
+
+    private:
+        T const & derived() const
+        {
+            return static_cast<T const &>(*this);
+        }
+
+        T & derived();
 
     private:
         Sequence seq_;

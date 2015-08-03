@@ -98,10 +98,7 @@ namespace ural
         */
         reference front() const
         {
-            auto f = [this](Inputs const & ... args)->reference
-                     { return this->deref(args...); };
-
-            return ::ural::apply(f, this->bases());
+            return this->transform_bases<reference>(ural::front);
         }
 
         /** @brief Переход к следующему элементу
@@ -112,7 +109,34 @@ namespace ural
             ural::tuples::for_each(this->mutable_bases(), ural::pop_front);
         }
 
+        // Прямая последовательность
+        zip_sequence original() const
+        {
+            return this->transform_bases<zip_sequence>(ural::original);
+        }
+
+        zip_sequence traversed_front() const
+        {
+            return this->transform_bases<zip_sequence>(ural::traversed_front);
+        }
+
         void shrink_front();
+
+        // Двусторонняя последовательность
+        reference back() const
+        {
+            return this->transform_bases<reference>(ural::back);
+        }
+
+        void pop_back()
+        {
+            ural::tuples::for_each(this->mutable_bases(), ural::pop_back);
+        }
+
+        zip_sequence traversed_back() const
+        {
+            return this->transform_bases<zip_sequence>(ural::traversed_back);
+        }
 
         // Последовательность произвольного доступа
         /** @brief Количество элементов последовательности
@@ -124,15 +148,36 @@ namespace ural
             return this->size_impl(this->bases()[ural::_1].size(), ural::_2);
         }
 
+        reference operator[](distance_type n) const
+        {
+            auto f = std::bind(ural::subscript, ural::_1, n);
+            return this->transform_bases<reference>(std::move(f));
+        }
+
+        void pop_back(distance_type n)
+        {
+            ural::tuples::for_each(this->mutable_bases(),
+                                   std::bind(ural::pop_back, ural::_1, n));
+        }
+
     private:
         Bases_tuple & mutable_bases()
         {
             return this->bases_;
         }
 
-        reference deref(Inputs const & ... ins) const
+        template <class R, class F, size_t... I>
+        R transform_bases_impl(F f, index_sequence<I...>) const
         {
-            return reference{(*ins)...};
+            return R{f(std::get<I>(this->bases()))...};
+        }
+
+        template <class R, class F>
+        R transform_bases(F f) const
+        {
+            using Indices = index_sequence_for<Inputs...>;
+
+            return this->transform_bases_impl<R>(std::move(f), Indices{});
         }
 
         distance_type
@@ -158,12 +203,11 @@ namespace ural
     @param ins базовые последовательности
     */
     template <class... Inputs>
-    auto make_zip_sequence(Inputs && ... ins)
-    -> zip_sequence<decltype(::ural::sequence_fwd<Inputs>(ins))...>
+    zip_sequence<SequenceType<Inputs>...>
+    make_zip_sequence(Inputs && ... ins)
     {
-        typedef zip_sequence<decltype(::ural::sequence_fwd<Inputs>(ins))...>
-            Result;
-        return Result(::ural::sequence_fwd<Inputs>(ins)...);
+        typedef zip_sequence<SequenceType<Inputs>...> Seq;
+        return Seq(::ural::sequence_fwd<Inputs>(ins)...);
     }
 }
 // namespace ural

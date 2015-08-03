@@ -93,6 +93,21 @@ namespace ural
         }
         //@}
 
+        //@{
+        /** @brief Функциональный объект, задающий преобразование
+        @return Функциональный объект, задающий преобразование
+        */
+        F const & function() const &
+        {
+            return Base::payload();
+        }
+
+        F && function() &&
+        {
+            return std::move(Base::payload());
+        }
+        //@}
+
         // Однопроходная последовательность
         /** @brief Передний элемент
         @return Ссылка на первый элемент последовательности
@@ -100,30 +115,42 @@ namespace ural
         */
         reference front() const
         {
-            return ::ural::apply(this->function(), this->base().front());
+            return ::ural::apply(this->function(), Base::front());
         }
 
         // Прямая последовательность
-        transform_sequence original() const;
-
-        transform_sequence traversed_front() const;
-
         // Двусторонняя последовательность
-        reference back() const;
-
-        transform_sequence traversed_back() const;
+        /** @brief Последний элемент
+        @return Ссылка на последний элемент последовательности
+        @pre <tt> !*this == true </tt>
+        */
+        reference back() const
+        {
+            return ::ural::apply(this->function(), Base::back());
+        }
 
         // Последовательность произвольного доступа
-        reference operator[](distance_type n) const;
-
-        // Адаптор последовательности
-        /** @brief Функциональный объект, задающий преобразование
-        @return Функциональный объект, задающий преобразование
+        /** @brief Индексированный доступ
+        @param n индекс
+        @pre <tt> 0 <= n && n < this->size() </tt>
         */
-        F const & function() const
+        reference operator[](distance_type n) const
         {
-            return Base::payload();
+            return ::ural::apply(this->function(),
+                                 Base::operator[](std::move(n)));
         }
+
+    private:
+        friend Base;
+
+        transform_sequence rebind_base(zip_sequence<Inputs...> new_base) const
+        {
+            return transform_sequence(std::move(new_base), this->function());
+        }
+
+        explicit transform_sequence(zip_sequence<Inputs...> base, F f)
+         : Base(std::move(base), std::move(f))
+        {}
     };
 
     /** @brief Итератор, задающий начало преобразующей последовательности
@@ -148,54 +175,41 @@ namespace ural
         return {end(s.bases()[ural::_1]), s.function()};
     }
 
-    /** @brief Функция создания @c make_transform_sequence
-    @param f функциональный объект, способный принимать <tt> sizeof...(in) </tt>
-    аргументов
-    @param in список входных последовательностей
-    */
-    template <class Function, class... Inputs>
-    auto make_transform_sequence(Function f, Inputs && ... in)
-    -> transform_sequence<decltype(ural::make_callable(std::move(f))),
-                          decltype(::ural::sequence_fwd<Inputs>(in))...>
+    /// @brief Тип Функционального объекта для создания @c transform_sequence
+    struct make_transform_sequence_fn
     {
-        typedef transform_sequence<decltype(ural::make_callable(std::move(f))),
-                          decltype(::ural::sequence_fwd<Inputs>(in))...> Result;
-        return Result(ural::make_callable(std::move(f)),
-                      ::ural::sequence_fwd<Inputs>(in)...);
-    }
+    public:
+        /** @brief Функция создания @c make_transform_sequence
+        @param f функциональный объект, способный принимать <tt> sizeof...(in) </tt>
+        аргументов
+        @param in список входных последовательностей
+        @return <tt> { ::ural::make_callable(std::move(f)), ::ural::sequence_fwd<Inputs>(in)...</tt> }
+        */
+        template <class Function, class... Inputs>
+        transform_sequence<FunctionType<Function>, SequenceType<Inputs>...>
+        operator()(Function f, Inputs && ... in) const
+        {
+            using Seq = transform_sequence<FunctionType<Function>,
+                                           SequenceType<Inputs>...>;
 
-    /** @brief Вспомогательный объект для создания @c transform_sequence
-    конвейерным синтаксисом
-    @tparam Function тип функционального объекта
-    */
-    template <class Function>
-    struct transformed_helper
-    {
-        /// @brief Функциональный объект
-        Function f;
+            return Seq(::ural::make_callable(std::move(f)),
+                       ::ural::sequence_fwd<Inputs>(in)...);
+        }
     };
 
-    /** @brief Cоздания @c make_transform_sequence конвейерным синтаксисом
-    @param in входная последовательность
-    @param helper объект, хранящий функциональный объект
-    @return <tt> make_transform_sequence(helper.f, std::forward<Sequence>(in)) </tt>
-    */
-    template <class Sequence, class Function>
-    auto operator|(Sequence && in, transformed_helper<Function> helper)
-    -> decltype(make_transform_sequence(helper.f, std::forward<Sequence>(in)))
+    namespace
     {
-        return make_transform_sequence(helper.f, std::forward<Sequence>(in));
-    }
+        /** @brief Функциональный объект для создания @c transform_sequence
+        в функциональном стиле.
+        */
+        constexpr auto const & make_transform_sequence
+            = odr_const<make_transform_sequence_fn>;
 
-    /** @brief Создание элемента "конвейера", создающего @c transformed_sequence
-    @param f функциональный объект
-    @return <tt> {ural::make_callable(std::move(f))} </tt>
-    */
-    template <class Function>
-    auto transformed(Function f)
-    -> transformed_helper<decltype(ural::make_callable(std::move(f)))>
-    {
-        return {ural::make_callable(std::move(f))};
+        /** @brief Функциональный объект для создания @c transform_sequence
+        в конвейерном стиле.
+        */
+        constexpr auto const & transformed
+            = odr_const<pipeable_maker<binary_reverse_args_function<make_transform_sequence_fn>>>;
     }
 }
 // namespace ural

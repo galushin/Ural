@@ -132,17 +132,20 @@ BOOST_AUTO_TEST_CASE(removed_if_concept_checks)
 
 BOOST_AUTO_TEST_CASE(transformed_concept_checks)
 {
-    ural_test::istringstream_helper<int> const c_in;
-    std::forward_list<int> const c_fwd;
-    std::list<int> const c_bidir;
-    std::vector<int> c_ra;
+    typedef int Type;
 
-    ural::negate<> const f;
+    ural_test::istringstream_helper<Type> const c_in;
+    std::forward_list<Type> const c_fwd;
+    std::list<Type> const c_bidir;
+    std::vector<Type> const c_ra;
 
-    auto s_in = c_in | transformed(f);
-    auto s_fwd = c_fwd | transformed(f);
-    auto s_bidir = c_bidir | transformed(f);
-    auto s_ra = c_ra | transformed(f);
+    auto f = ural::negate<>{};
+
+    // выходной transformed быть не может - не проверяем
+    auto s_in = c_in | ural::transformed(f);
+    auto s_fwd = c_fwd | ural::transformed(f);
+    auto s_bidir = c_bidir | ural::transformed(f);
+    auto s_ra = c_ra | ural::transformed(f);
 
     using namespace ural::concepts;
 
@@ -156,6 +159,38 @@ BOOST_AUTO_TEST_CASE(transformed_concept_checks)
     BOOST_CONCEPT_ASSERT((Readable<decltype(s_bidir)>));
 
     BOOST_CONCEPT_ASSERT((RandomAccessSequence<decltype(s_ra)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_ra)>));
+
+    BOOST_CHECK(true);
+}
+
+BOOST_AUTO_TEST_CASE(transformed_to_lvalue_concept_checks)
+{
+    typedef std::pair<int, std::string> Type;
+
+    std::forward_list<Type> c_fwd;
+    std::list<Type> c_bidir;
+    std::vector<Type> c_ra;
+
+    auto f = ural::make_callable(&Type::first);
+
+    // входной и выходной transformed, возвращающий lvalue быть не может - не проверяем
+    auto s_fwd = c_fwd | ural::transformed(f);
+    auto s_bidir = c_bidir | ural::transformed(f);
+    auto s_ra = c_ra | ural::transformed(f);
+
+    using namespace ural::concepts;
+
+    BOOST_CONCEPT_ASSERT((ForwardSequence<decltype(s_fwd)>));
+    BOOST_CONCEPT_ASSERT((OutputSequence<decltype(s_fwd), int>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_fwd)>));
+
+    BOOST_CONCEPT_ASSERT((BidirectionalSequence<decltype(s_bidir)>));
+    BOOST_CONCEPT_ASSERT((OutputSequence<decltype(s_bidir), int>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_bidir)>));
+
+    BOOST_CONCEPT_ASSERT((RandomAccessSequence<decltype(s_ra)>));
+    BOOST_CONCEPT_ASSERT((OutputSequence<decltype(s_ra), int>));
     BOOST_CONCEPT_ASSERT((Readable<decltype(s_ra)>));
 
     BOOST_CHECK(true);

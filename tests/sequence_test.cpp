@@ -859,6 +859,41 @@ BOOST_AUTO_TEST_CASE(transform_sequence_test)
     URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
+BOOST_AUTO_TEST_CASE(transform_reverse_sequence_test)
+{
+    // начальные условия
+    std::string const source("hello, world!");
+    std::list<char> x_std;
+
+    auto const f = static_cast<int(*)(int)>(std::toupper);
+
+    // Выполнение операций
+    std::transform(source.begin(), source.end(), std::front_inserter(x_std), f);
+
+    auto seq = source | ural::transformed(f) | ural::reversed;
+
+    std::list<char> x_ural;
+    auto result = ural::copy(seq, x_ural | ural::back_inserter);
+
+    // Проверки
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
+
+    BOOST_CHECK(result[ural::_1].base().original()
+                == (source | ural::transformed(f)));
+
+    BOOST_CHECK(result[ural::_1].base().traversed_front()
+                == (source | ural::transformed(f)).traversed_front());
+
+    BOOST_CHECK(result[ural::_1].base().traversed_back()
+                == (source | ural::transformed(f)));
+
+    BOOST_CHECK(!ural::is_heap(seq));
+
+    auto f1 = std::move(result)[ural::_1].base().function();
+
+    BOOST_CHECK_EQUAL(f1.target(), f);
+}
+
 // @todo Аналогинчые тесты с одним из параметров, обёрнутых в cref
 BOOST_AUTO_TEST_CASE(replace_sequence_test_cref)
 {

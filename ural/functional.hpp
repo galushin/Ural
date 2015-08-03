@@ -343,6 +343,13 @@ namespace ural
 
     public:
         /** @brief Конструктор
+        @post <tt> this->function() == BinaryFunction{} </tt>
+        */
+        constexpr binary_reverse_args_function()
+         : Base()
+        {}
+
+        /** @brief Конструктор
         @param f функциональный объект
         @post <tt> this->function() == f </tt>
         */
@@ -415,9 +422,7 @@ namespace ural
     };
 
     // Функциональные объекты для операций контейнеров
-    /** @brief Функциональный объект, соответствующий функции-члену
-    @c pop_front
-    */
+    /// @brief Функциональный объект, соответствующий функции-члену @c pop_front
     class pop_front_fn
     {
     public:
@@ -431,9 +436,67 @@ namespace ural
         }
     };
 
-    /** @brief Тип функционального объекта для функции @c empty и аналогичной
-    функциональности
-    */
+    /// @brief Функциональный объект, соответствующий функции-члену @c front
+    struct front_fn
+    {
+    public:
+        /** @brief Оператор вызова функции
+        @param x аргумент
+        @return <tt> std::forward<T>(x).front() </tt>
+        */
+        template <class T>
+        decltype(auto) operator()(T && x) const
+        {
+            return std::forward<T>(x).front();
+        }
+    };
+
+    /// @brief Функциональный объект, соответствующий функции-члену @c pop_back
+    class pop_back_fn
+    {
+    public:
+        /** @brief Оператор применения <tt> x.pop_back() </tt>
+        @param x аргумент
+        */
+        template <class T>
+        void operator()(T & x) const
+        {
+            x.pop_back();
+        }
+
+        template <class T>
+        void operator()(T & x, DifferenceType<T> n) const
+        {
+            x.pop_back(n);
+        }
+    };
+
+    /// @brief Функциональный объект, соответствующий функции-члену @c back
+    struct back_fn
+    {
+    public:
+        /** @brief Оператор вызова функции
+        @param x аргумент
+        @return <tt> std::forward<T>(x).back() </tt>
+        */
+        template <class T>
+        decltype(auto) operator()(T && x) const
+        {
+            return std::forward<T>(x).back();
+        }
+    };
+
+    struct subscript_fn
+    {
+    public:
+        template <class T>
+        decltype(auto) operator()(T const & x, DifferenceType<T> n) const
+        {
+            return x[n];
+        }
+    };
+
+    /// @brief Тип функционального объекта для функции @c empty
     class empty_fn
     {
     private:
@@ -468,6 +531,51 @@ namespace ural
         bool operator()(Container const & x) const
         {
             return this->empty_impl(x, nullptr);
+        }
+    };
+
+    /// @brief Функциональный объект для функции-члена original
+    class original_fn
+    {
+    public:
+        /** @brief Оператор вызова функции
+        @param x аргумент
+        @return <tt> x.original() </tt>
+        */
+        template <class T>
+        auto operator()(T const & x) const
+        {
+            return x.original();
+        }
+    };
+
+    /// @brief Функциональный объект для функции-члена traversed_front
+    class traversed_front_fn
+    {
+    public:
+        /** @brief Оператор вызова функции
+        @param x аргумент
+        @return <tt> x.traversed_front() </tt>
+        */
+        template <class T>
+        auto operator()(T const & x) const
+        {
+            return x.traversed_front();
+        }
+    };
+
+    /// @brief Функциональный объект для функции-члена traversed_back
+    class traversed_back_fn
+    {
+    public:
+        /** @brief Оператор вызова функции
+        @param x аргумент
+        @return <tt> x.traversed_back() </tt>
+        */
+        template <class T>
+        auto operator()(T const & x) const
+        {
+            return x.traversed_back();
         }
     };
 
@@ -590,7 +698,19 @@ namespace ural
 
         // Операции контейнеров
         constexpr auto const & empty = odr_const<empty_fn>;
+
         constexpr auto const & pop_front = odr_const<pop_front_fn>;
+        constexpr auto const & front = odr_const<front_fn>;
+
+        constexpr auto const & pop_back = odr_const<pop_back_fn>;
+        constexpr auto const & back = odr_const<back_fn>;
+
+        constexpr auto const & subscript = odr_const<subscript_fn>;
+
+        // Операции последовательностей
+        constexpr auto const & original = odr_const<original_fn>;
+        constexpr auto const & traversed_front = odr_const<traversed_front_fn>;
+        constexpr auto const & traversed_back = odr_const<traversed_back_fn>;
     }
 }
 // namespace ural
