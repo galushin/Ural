@@ -656,6 +656,87 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(set_inserter_test, Set, Int_set_types)
 }
 
 #include <ural/numeric/numbers_sequence.hpp>
+BOOST_AUTO_TEST_CASE(numbers_sanity_test)
+{
+    auto const from = 2;
+    auto const to = 7;
+
+    // Инициализация
+    auto const ns0 = ::ural::numbers(from, to);
+    auto ns = ns0;
+    auto const n1 = ns.size();
+
+    BOOST_CONCEPT_ASSERT((ural::concepts::BidirectionalSequence<decltype(ns)>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(ns)>));
+
+    BOOST_CHECK_EQUAL(*ns, from);
+    BOOST_CHECK_GT(n1, 0);
+    BOOST_CHECK(ns == ns.original());
+
+    // Продвижение
+    ++ ns;
+    auto const n2 = ns.size();
+
+    BOOST_CHECK_EQUAL(*ns, from+1);
+    BOOST_CHECK_LT(n2, n1);
+
+    BOOST_CHECK(ns.original() == ns0);
+
+    // Отбрасывание пройденной передней части
+    BOOST_CHECK(ns != ns.original());
+
+    ns.shrink_front();
+
+    BOOST_CHECK(!ns.traversed_front());
+    BOOST_CHECK(!ns.traversed_back());
+    BOOST_CHECK_EQUAL(ns.size(), n2);
+    BOOST_CHECK(ns == ns.original());
+
+    // Двусторонняя последовательность
+    ns.pop_back();
+    auto const n3 = ns.size();
+
+    BOOST_CHECK_LT(n3, n2);
+
+    BOOST_CHECK(ns != ns.original());
+
+    ns.shrink_back();
+
+    BOOST_CHECK(!ns.traversed_front());
+    BOOST_CHECK(!ns.traversed_back());
+    BOOST_CHECK_EQUAL(ns.size(), n3);
+    BOOST_CHECK(ns == ns.original());
+
+    // Произвольный доступ
+    BOOST_CHECK(!ural::is_heap(ns));
+    BOOST_CHECK(ural::is_heap(ns | ural::reversed));
+
+    auto const v = ns | ural::to_container<std::vector>{};
+    BOOST_CHECK(std::is_heap(v.rbegin(), v.rend()));
+}
+
+BOOST_AUTO_TEST_CASE(numbers_exhaust_test)
+{
+    auto const from = 2;
+    auto const to = 7;
+
+    // Передняя часть
+    auto const ns0 = ::ural::numbers(from, to);
+    auto ns1 = ns0;
+    ns1.exhaust_front();
+
+    BOOST_CHECK(ns0 == ns1.traversed_front());
+    BOOST_CHECK(!ns1.traversed_back());
+    BOOST_CHECK(!ns1);
+
+    // Задняя часть
+    auto ns2 = ns0;
+    ns2.exhaust_back();
+
+    BOOST_CHECK(ns0 == ns2.traversed_back());
+    BOOST_CHECK(!ns2.traversed_front());
+    BOOST_CHECK(!ns2);
+}
 
 BOOST_AUTO_TEST_CASE(numbers_range_test)
 {
@@ -671,11 +752,63 @@ BOOST_AUTO_TEST_CASE(numbers_range_test)
     URAL_CHECK_EQUAL_RANGES(z, x);
 }
 
+BOOST_AUTO_TEST_CASE(numbers_step_sanity_test)
+{
+    auto const from = 2;
+    auto const to = 8;
+    auto const step = 3;
+
+    auto ns = ::ural::numbers(from, to, step);
+    auto const n1 = ns.size();
+
+    BOOST_CHECK_EQUAL(*ns, from);
+    BOOST_CHECK_GE(n1, 0);
+
+    ++ ns;
+    auto const n2 = ns.size();
+
+    BOOST_CHECK_EQUAL(*ns, from + step);
+    BOOST_CHECK_LE(n2, n1);
+
+    BOOST_CHECK(true);
+}
+
+BOOST_AUTO_TEST_CASE(numbers_size_exact_test)
+{
+    auto const ns = ::ural::numbers(2, 8, 3);
+
+    auto const v = ns | ural::to_container<std::vector>{};
+
+    BOOST_CHECK_EQUAL(ns.size(), ural::to_signed(v.size()));
+}
+
 BOOST_AUTO_TEST_CASE(numbers_size_test)
 {
     auto const ns = ::ural::numbers(2, 7, 3);
 
-    BOOST_CHECK_EQUAL(ns.size(), (7-2)/3);
+    auto const v = ns | ural::to_container<std::vector>{};
+
+    BOOST_CHECK_EQUAL(ns.size(), ural::to_signed(v.size()));
+}
+
+BOOST_AUTO_TEST_CASE(numbers_copy_test)
+{
+    auto const ns = ::ural::numbers(2, 7, 3);
+
+    std::vector<int> v;
+    auto result = ural::copy(ns, v | ural::back_inserter);
+
+    BOOST_CHECK(result[ural::_1].traversed_front() == ns);
+}
+
+BOOST_AUTO_TEST_CASE(numbers_copy_backward_test)
+{
+    auto const ns = ::ural::numbers(2, 7, 3);
+
+    std::vector<int> v(ns.size());
+    auto result = ural::copy_backward(ns, v);
+
+    BOOST_CHECK(result[ural::_1].traversed_back() == ns);
 }
 
 BOOST_AUTO_TEST_CASE(numbers_stride_range_test)
@@ -692,7 +825,19 @@ BOOST_AUTO_TEST_CASE(numbers_stride_range_test)
     URAL_CHECK_EQUAL_RANGES(z, x);
 }
 
-// @todo Интервал чисел с отрицательным шагом?
+BOOST_AUTO_TEST_CASE(numbers_negative_stride_range_test)
+{
+    std::vector<int> const z = {7, 5, 3, 1};
+
+    std::vector<int> x;
+
+    for(auto i : ural::numbers(7, 0, -2))
+    {
+        x.push_back(i);
+    }
+
+    URAL_CHECK_EQUAL_RANGES(x, z);
+}
 
 // Итераторы последовательностей
 #include <ural/sequence/make.hpp>

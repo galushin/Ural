@@ -5,36 +5,88 @@
  @brief Прогрессии
 */
 
+#include <ural/sequence/base.hpp>
+#include <ural/defs.hpp>
+
 namespace ural
 {
+    /// @brief Тип-тэг, обозначающий (абстрактную единицу)
+    struct unit_t
+    {};
+
+    /** @brief Эквивалентно <tt> ++ x </tt>
+    @param x число
+    @return <tt> x </tt>
+    */
+    template <class Number>
+    Number & operator+=(Number & x, unit_t)
+    {
+        return ++ x;
+    }
+
+    //@{
+    /** @brief Оператор умножения числа на @c unit_t
+    @param x число
+    @return <tt> x </tt>
+    */
+    template <class Number>
+    Number const & operator*(Number const & x, unit_t)
+    {
+        return x;
+    }
+
+    template <class Number>
+    Number const & operator*(unit_t, Number const & x)
+    {
+        return x;
+    }
+    //@}
+
+    /** @brief Оператор деление числа для @c unit_t
+    @param x число
+    @return <tt> x </tt>
+    */
+    template <class Number>
+    Number const & operator/(Number const & x, unit_t)
+    {
+        return x;
+    }
+
     /** @brief Арифметическая прогрессия
     @tparam Additive тип значений
     @tparam Plus операция, используемая в качестве сложения
+    @tparam Traversal категория обхода
+
+    @todo настройка типа шага
 
     @todo Последовательность произвольного доступа. Здесь есть две проблемы:
     1. Необходимо по операции сложения построить операцию умножения
     2. Тип возвращаемого значения оператора [] и front не совпадает
     */
     template <class Additive, class Plus = use_default,
-              class Traversal = random_access_traversal_tag>
+              class Traversal = use_default>
     class arithmetic_progression
-     : public sequence_base<arithmetic_progression<Additive, Plus, Traversal>>
-     , private default_helper<Plus, plus<>>::type
+     : public sequence_base<arithmetic_progression<Additive, Plus, Traversal>,
+                            typename default_helper<Plus, plus<>>::type>
     {
-        typedef sequence_base<arithmetic_progression<Additive, Plus, Traversal>>
-            Base;
-
-    friend bool operator==(arithmetic_progression const & x,
-                           arithmetic_progression const & y)
-        {
-            return x.first_ == y.first_ && x.step_ == y.step_
-                   && x.function() == y.function();
-        }
+        using Base =
+            sequence_base<arithmetic_progression<Additive, Plus, Traversal>,
+                          typename default_helper<Plus, plus<>>::type>;
 
         static_assert(!std::is_same<Traversal, bidirectional_traversal_tag>::value,
                       "Infinite sequence can't be bidirectional");
 
     public:
+        /** @brief Оператор "равно"
+        @param x, y операнды
+        */
+        friend bool operator==(arithmetic_progression const & x,
+                               arithmetic_progression const & y)
+        {
+            return x.first_ == y.first_ && x.step_ == y.step_
+                   && x.function() == y.function();
+        }
+
         // Типы
         /// @brief Тип значения
         typedef Additive value_type;
@@ -43,12 +95,13 @@ namespace ural
         typedef value_type const & reference;
 
         /// @brief Тип расстояния
-        typedef size_t distance_type;
+        using distance_type = std::ptrdiff_t;
 
         /** @note Проблема в том, что при произвольном доступе возвращается
         вычисленное значение, а не ссылка.
         */
-        typedef Traversal traversal_tag;
+        using traversal_tag
+            = typename default_helper<Traversal, random_access_traversal_tag>::type;
 
         /// @brief Тип указателя
         typedef value_type const * pointer;
@@ -65,7 +118,7 @@ namespace ural
         @post <tt> this->step() == step </tt>
         */
         arithmetic_progression(Additive first, Additive step)
-         : operation_type{}
+         : Base()
          , first_{std::move(first)}
          , step_{std::move(step)}
         {}
@@ -79,7 +132,7 @@ namespace ural
         @post <tt> this->function() == op </tt>
         */
         arithmetic_progression(Additive first, Additive step, operation_type op)
-         : operation_type(std::move(op))
+         : Base(std::move(op))
          , first_(std::move(first))
          , step_(std::move(step))
         {}
@@ -90,7 +143,7 @@ namespace ural
         */
         operation_type const & function() const
         {
-            return static_cast<operation_type const &>(*this);
+            return Base::payload();
         }
 
         // Однопроходна последовательность
@@ -141,6 +194,8 @@ namespace ural
         @return Полная последовательность
         */
         arithmetic_progression original() const;
+
+        // Последовательность произвольного доступа (бесконечная)
 
     private:
         static auto constexpr is_forward
