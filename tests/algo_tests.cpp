@@ -2278,7 +2278,7 @@ BOOST_AUTO_TEST_CASE(partition_test)
     BOOST_CHECK(std::all_of(r_ural.traversed_begin(), r_ural.begin(),
                             ural::is_even));
 
-    BOOST_CHECK(::ural::none_of(ural::shrink_front(r_ural), ural::is_even));
+    BOOST_CHECK(::ural::none_of(r_ural, ural::is_even));
     BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.end(), ural::is_even));
 }
 
@@ -2298,7 +2298,7 @@ BOOST_AUTO_TEST_CASE(stable_partition_test_empty)
     BOOST_CHECK(::ural::all_of(r_ural.traversed_front(), pred));
     BOOST_CHECK(std::all_of(r_ural.traversed_begin(), r_ural.begin(), pred));
 
-    BOOST_CHECK(::ural::none_of(ural::shrink_front(r_ural), pred));
+    BOOST_CHECK(::ural::none_of(r_ural, pred));
     BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.end(), pred));
     BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.traversed_end(), pred));
 }
@@ -2319,7 +2319,7 @@ BOOST_AUTO_TEST_CASE(stable_partition_test_1_2)
     BOOST_CHECK(::ural::all_of(r_ural.traversed_front(), pred));
     BOOST_CHECK(std::all_of(r_ural.traversed_begin(), r_ural.begin(), pred));
 
-    BOOST_CHECK(::ural::none_of(ural::shrink_front(r_ural), pred));
+    BOOST_CHECK(::ural::none_of(r_ural, pred));
     BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.end(), pred));
     BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.traversed_end(), pred));
 }
@@ -2340,7 +2340,7 @@ BOOST_AUTO_TEST_CASE(stable_partition_test_2_1)
     BOOST_CHECK(::ural::all_of(r_ural.traversed_front(), pred));
     BOOST_CHECK(std::all_of(r_ural.traversed_begin(), r_ural.begin(), pred));
 
-    BOOST_CHECK(::ural::none_of(ural::shrink_front(r_ural), pred));
+    BOOST_CHECK(::ural::none_of(r_ural, pred));
     BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.end(), pred));
     BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.traversed_end(), pred));
 }
@@ -2361,7 +2361,7 @@ BOOST_AUTO_TEST_CASE(stable_partition_test_3)
     BOOST_CHECK(::ural::all_of(r_ural.traversed_front(), pred));
     BOOST_CHECK(std::all_of(r_ural.traversed_begin(), r_ural.begin(), pred));
 
-    BOOST_CHECK(::ural::none_of(ural::shrink_front(r_ural), pred));
+    BOOST_CHECK(::ural::none_of(r_ural, pred));
     BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.end(), pred));
     BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.traversed_end(), pred));
 }
@@ -2382,7 +2382,7 @@ BOOST_AUTO_TEST_CASE(stable_partition_test_4)
     BOOST_CHECK(::ural::all_of(r_ural.traversed_front(), pred));
     BOOST_CHECK(std::all_of(r_ural.traversed_begin(), r_ural.begin(), pred));
 
-    BOOST_CHECK(::ural::none_of(ural::shrink_front(r_ural), pred));
+    BOOST_CHECK(::ural::none_of(r_ural, pred));
     BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.end(), pred));
     BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.traversed_end(), pred));
 }
@@ -2408,7 +2408,7 @@ BOOST_AUTO_TEST_CASE(stable_partition_test_9)
     BOOST_CHECK(::ural::all_of(r_ural.traversed_front(), pred));
     BOOST_CHECK(std::all_of(r_ural.traversed_begin(), r_ural.begin(), pred));
 
-    BOOST_CHECK(::ural::none_of(ural::shrink_front(r_ural), pred));
+    BOOST_CHECK(::ural::none_of(r_ural, pred));
     BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.end(), pred));
     BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.traversed_end(), pred));
 }

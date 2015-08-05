@@ -1689,3 +1689,64 @@ BOOST_AUTO_TEST_CASE(sequence_temporary_ostream)
 
     BOOST_CHECK_EQUAL(r.stream().str(), source);
 }
+
+BOOST_AUTO_TEST_CASE(zip_sequence_sort)
+{
+    std::vector<std::string> names = { "one", "two", "three", "four", "five"};
+    auto const old_names = names;
+
+    std::vector<int> values = {1, 2, 3, 4, 5};
+    auto const old_values= values;
+
+    auto names_1 = old_names;
+    std::sort(names_1.begin(), names_1.end());
+
+    // Сортируем сначала по имени
+    ural::sort(ural::combine(names, values));
+
+    BOOST_CHECK(names != old_names);
+    BOOST_CHECK(values != old_values);
+
+    BOOST_CHECK(ural::is_sorted(ural::combine(names, values)));
+
+    BOOST_CHECK(ural::is_permutation(names, old_names));
+    BOOST_CHECK(ural::is_permutation(values, old_values));
+    BOOST_CHECK(ural::is_permutation(ural::combine(names, values),
+                                     ural::combine(old_names, old_values)));
+    BOOST_CHECK(ural::is_permutation(ural::combine(names, values) | ural::reversed,
+                                     ural::combine(old_names, old_values)));
+
+    URAL_CHECK_EQUAL_RANGES(names, names_1);
+
+    // Сортируем сначала по числу
+    ural::sort(ural::combine(values, names));
+
+    URAL_CHECK_EQUAL_RANGES(names, old_names);
+    URAL_CHECK_EQUAL_RANGES(values, old_values);
+}
+
+BOOST_AUTO_TEST_CASE(zip_sequence_exhaust_test)
+{
+    std::vector<std::string> names = { "one", "two", "three", "four", "five"};
+    std::vector<int> values = {1, 2, 3, 4, 5};
+
+    auto const z0 = ural::make_zip_sequence(names, values);
+
+    auto z_front = z0;
+    z_front.exhaust_front();
+
+    BOOST_CHECK(!z_front);
+    BOOST_CHECK(!z_front.traversed_back());
+    BOOST_CHECK(z_front.original() == z0);
+    BOOST_CHECK(z_front.traversed_front() == z0);
+
+    auto z_back = z0;
+    z_back.exhaust_back();
+
+    BOOST_CHECK(!z_back);
+    BOOST_CHECK(!z_back.traversed_front());
+    BOOST_CHECK(z_back.original() == z0);
+    BOOST_CHECK(z_back.traversed_back() == z0);
+
+
+}

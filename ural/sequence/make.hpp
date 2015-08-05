@@ -229,11 +229,18 @@ namespace ural
     }
     //@}
 
+    /** @brief Класс-характеристика для определения типа последовательности
+    @tparam S тип, на основе которого создаётся последовательность
+    */
     template <class S>
     struct sequence_type
      : declare_type<typename std::decay<decltype(sequence(std::declval<S>()))>::type>
     {};
 
+    /** @brief Синоним для типа последовательности, определяемого
+    классом-характеристикой @c sequence_type
+    @tparam S тип, на основе которого создаётся последовательность
+    */
     template <class S>
     using SequenceType = typename sequence_type<S>::type;
 
@@ -290,7 +297,6 @@ namespace ural
 
         /** @brief Концепция прямой последовательности
         @tparam тип последовательности, для которого проверяется концепция
-        @todo Разделить на конечные и бесконечные, в конечные добавить exhaust_front
         */
         template <class Seq>
         class ForwardSequence
@@ -323,12 +329,30 @@ namespace ural
             static Seq seq;
         };
 
+        template <class Seq>
+        class FiniteForwardSequence
+         : ForwardSequence<Seq>
+        {
+        public:
+            /// @brief Проверка неявных интерфейсов
+            BOOST_CONCEPT_USAGE(FiniteForwardSequence)
+            {
+                static_assert(&FiniteForwardSequence::reguire != 0, "");
+            }
+
+        private:
+            void reguire(Seq seq)
+            {
+                seq.exhaust_front();
+            }
+        };
+
         /** @brief Концепция двустороннней последовательности
         @tparam тип последовательности, для которого проверяется концепция
         */
         template <class Seq>
         class BidirectionalSequence
-         : ForwardSequence<Seq>
+         : FiniteForwardSequence<Seq>
         {
         public:
             /// @brief Проверка неявных интерфейсов

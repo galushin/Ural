@@ -129,6 +129,12 @@ namespace ural
             return this->mutable_base().shrink_front();
         }
 
+        /** @brief Исчерпание последовательности в прямом порядке за константное
+        время.
+        @post <tt> !*this == true </tt>
+        */
+        void exhaust_front();
+
         // Двусторонняя последовательность
         /** @brief Задний элемент последовательности
         @pre <tt> !*this == false </tt>
@@ -146,7 +152,7 @@ namespace ural
             return this->derived().rebind_base(this->base().traversed_back());
         }
 
-        /// @brief Отбрасывание задней пройденной части последовательности
+        /// @brief Пропуск последнего элемента последовательности
         void pop_back()
         {
             return this->mutable_base().pop_back();

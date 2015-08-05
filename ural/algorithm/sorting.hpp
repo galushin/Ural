@@ -287,7 +287,7 @@ namespace ural
                     return;
                 }
 
-                ::ural::details::do_swap(seq[largest], seq[first]);
+                ::ural::indirect_swap(seq, largest, seq, first);
 
                 first = largest;
             }
@@ -381,7 +381,7 @@ namespace ural
 
             if(N > 1)
             {
-                ::ural::details::do_swap(seq[0], seq[N-1]);
+                ::ural::indirect_swap(seq, 0, seq, N-1);
                 heap_sink_fn{}(seq, 0*N, N-1, cmp);
             }
 
@@ -525,7 +525,7 @@ namespace ural
             {
                 if(cmp(*s, *s1))
                 {
-                    ::ural::details::do_swap(*s, *s1);
+                    ::ural::indirect_swap(s, s1);
                     auto const n = s1.size();
                     heap_sink_fn{}(s1, 0*n, n, cmp);
                 }
@@ -578,7 +578,7 @@ namespace ural
             {
                 if(cmp(s[j], s[j-1]))
                 {
-                    ::ural::details::do_swap(s[j], s[j-1]);
+                    ural::indirect_swap(s, j, s, j-1);
                 }
                 else
                 {
@@ -707,7 +707,7 @@ namespace ural
             {
                 if(cmp(*i, *s_old))
                 {
-                    ::ural::details::do_swap(*s_old, *i);
+                    ::ural::indirect_swap(s_old, i);
                     heap_sink_fn{}(s.traversed_front(), 0*part, part, cmp);
                 }
             }
@@ -1085,7 +1085,7 @@ namespace ural
             BOOST_CONCEPT_ASSERT((concepts::Sortable<BidirectionalSequence, Compare>));
 
             auto s1 = s.traversed_front();
-            auto s2 = ural::shrink_front(s);
+            auto s2 = ural::shrink_front_copy(s);
 
             auto n1 = ural::size(s1);
             auto n2 = ural::size(s2);
@@ -1102,7 +1102,7 @@ namespace ural
             {
                 if(cmp(*s2, *s1))
                 {
-                    ::ural::details::do_swap(*s1, *s2);
+                    ::ural::indirect_swap(s1, s2);
                 }
                 return;
             }
@@ -1134,7 +1134,7 @@ namespace ural
             ural::advance(s_new, n11 + n21);
 
             auto s1_new = s_new.traversed_front();
-            auto s2_new = ural::shrink_front(s_new);
+            auto s2_new = ural::shrink_front_copy(s_new);
 
             ural::advance(s1_new, n11);
             ural::advance(s2_new, n12);
@@ -1941,7 +1941,7 @@ namespace ural
                 for(; cmp(*r2, *r1); ++r2)
                 {}
 
-                ::ural::details::do_swap(*r1, *r2);
+                ::ural::indirect_swap(r1, r2);
                 ural::reverse_fn{}(r1.traversed_front().base());
 
                 return true;

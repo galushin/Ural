@@ -36,6 +36,10 @@ namespace ural
         typedef tuple<Inputs...> Bases_tuple;
 
     public:
+        /** @brief Оператор "равно"
+        @param x, y операнды
+        @return <tt> x.bases() == y.bases() </tt>
+        */
         friend bool operator==(zip_sequence const & x, zip_sequence const & y)
         {
             return x.bases() == y.bases();
@@ -106,36 +110,79 @@ namespace ural
         */
         void pop_front()
         {
-            ural::tuples::for_each(this->mutable_bases(), ural::pop_front);
+            return this->for_each_base(ural::pop_front);
         }
 
         // Прямая последовательность
+        /** @brief Полная последовательность (вместе с пройденными частями)
+        @return Исходная последовательность
+        */
         zip_sequence original() const
         {
             return this->transform_bases<zip_sequence>(ural::original);
         }
 
+        /** @brief Пройденная передняя часть последовательность
+        @return Пройденная передняя часть последовательность
+        */
         zip_sequence traversed_front() const
         {
             return this->transform_bases<zip_sequence>(ural::traversed_front);
         }
 
-        void shrink_front();
+        /** @brief Отбрасывание пройденной части последовательности
+        @post <tt> !this->traversed_front() </tt>
+        */
+        void shrink_front()
+        {
+            return this->for_each_base(ural::shrink_front);
+        }
+
+        /** @brief Исчерпание последовательности в прямом порядке за константное
+        время.
+        @post <tt> !*this == true </tt>
+        */
+        void exhaust_front()
+        {
+            return this->for_each_base(ural::exhaust_front);
+        }
 
         // Двусторонняя последовательность
+        /** @brief Задний элемент последовательности
+        @pre <tt> !*this == false </tt>
+        */
         reference back() const
         {
             return this->transform_bases<reference>(ural::back);
         }
 
+        /// @brief Пропуск последнего элемента последовательности
         void pop_back()
         {
-            ural::tuples::for_each(this->mutable_bases(), ural::pop_back);
+            return this->for_each_base(ural::pop_back);
         }
 
+        /** @brief Пройденная задняя часть последовательность
+        @return Пройденная задняя часть последовательность
+        */
         zip_sequence traversed_back() const
         {
             return this->transform_bases<zip_sequence>(ural::traversed_back);
+        }
+
+        /// @brief Отбрасывает пройденную заднюю часть последовательности
+        void shrink_back()
+        {
+            return this->for_each_base(ural::shrink_back);
+        }
+
+        /** @brief Исчерпание последовательности в обратном порядке за
+        константное время
+        @post <tt> !*this == true </tt>
+        */
+        void exhaust_back()
+        {
+            return this->for_each_base(ural::exhaust_back);
         }
 
         // Последовательность произвольного доступа
@@ -148,16 +195,38 @@ namespace ural
             return this->size_impl(this->bases()[ural::_1].size(), ural::_2);
         }
 
+        /** @brief Индексированный доступ
+        @param n индекс
+        @pre <tt> 0 < this->size() && this->size() < n </tt>
+        @return <tt> this->base()[n] </tt>
+        */
         reference operator[](distance_type n) const
         {
             auto f = std::bind(ural::subscript, ural::_1, n);
             return this->transform_bases<reference>(std::move(f));
         }
 
+        /** @brief Продвижение на заданное число элементов в передней части
+        последовательности
+        @param n число элементов, которые будут пропущены
+        @pre <tt> 0 <= n && n <= this->size() </tt>
+        @return <tt> *this </tt>
+        */
+        zip_sequence & operator+=(distance_type n)
+        {
+            auto op = std::bind(ural::plus_assign<>{}, ural::_1, n);
+            this->for_each_base(std::move(op));
+            return *this;
+        }
+
+        /** @brief Продвижение на заданное число элементов в задней части
+        последовательности
+        @param n число элементов, которые будут пропущены
+        @pre <tt> 0 <= n && n <= this->size() </tt>
+        */
         void pop_back(distance_type n)
         {
-            ural::tuples::for_each(this->mutable_bases(),
-                                   std::bind(ural::pop_back, ural::_1, n));
+            this->for_each_base(std::bind(ural::pop_back, ural::_1, n));
         }
 
     private:
@@ -166,10 +235,10 @@ namespace ural
             return this->bases_;
         }
 
-        template <class R, class F, size_t... I>
-        R transform_bases_impl(F f, index_sequence<I...>) const
+        template <class R, class F, class Reduce, size_t... I>
+        R transform_bases_impl(F f, Reduce reducer, index_sequence<I...>) const
         {
-            return R{f(std::get<I>(this->bases()))...};
+            return reducer(f(std::get<I>(this->bases()))...);
         }
 
         template <class R, class F>
@@ -177,7 +246,9 @@ namespace ural
         {
             using Indices = index_sequence_for<Inputs...>;
 
-            return this->transform_bases_impl<R>(std::move(f), Indices{});
+            return this->transform_bases_impl<R>(std::move(f),
+                                                 ural::constructor<R>{},
+                                                 Indices{});
         }
 
         distance_type
@@ -194,20 +265,72 @@ namespace ural
                                    placeholder<index+1>());
         }
 
+        template <class Index1, class Index2>
+        friend
+        void indirect_swap_adl_hook(zip_sequence const & x, Index1 ix,
+                                    zip_sequence const & y, Index2 iy)
+        {
+            //using Indices = index_sequence_for<Inputs...>;
+            // @todo реализовать без псевдо-рекурсии
+            return zip_sequence::indirect_swap_impl(x, ix, y, iy, ural::_1);
+        }
+
+        template <class Index1, class Index2>
+        static
+        void indirect_swap_impl(zip_sequence const &, Index1,
+                                zip_sequence const &, Index2,
+                                placeholder<sizeof...(Inputs)>)
+        {
+            return;
+        }
+
+        template <class Index1, class Index2, size_t I>
+        static
+        void indirect_swap_impl(zip_sequence const & x, Index1 ix,
+                                zip_sequence const & y, Index2 iy,
+                                placeholder<I>)
+        {
+            ural::indirect_swap(std::get<I>(x.bases()), ix,
+                                std::get<I>(y.bases()), iy);
+            return zip_sequence::indirect_swap_impl(x, ix, y, iy,
+                                                    placeholder<I+1>{});
+        }
+
+        template <class Action>
+        void for_each_base(Action action)
+        {
+            ural::tuples::for_each(this->mutable_bases(), std::move(action));
+        }
 
     private:
         Bases_tuple bases_;
     };
 
-    /** @brief Создание последовательности соответствующих элементов кортежей
-    @param ins базовые последовательности
-    */
-    template <class... Inputs>
-    zip_sequence<SequenceType<Inputs>...>
-    make_zip_sequence(Inputs && ... ins)
+    /// @brief Тип функционального объекта для создания @c zip_sequence
+    struct make_zip_sequence_fn
     {
-        typedef zip_sequence<SequenceType<Inputs>...> Seq;
-        return Seq(::ural::sequence_fwd<Inputs>(ins)...);
+    public:
+        /** @brief Создание последовательности соответствующих элементов кортежей
+        @param ins базовые последовательности
+        */
+        template <class... Inputs>
+        zip_sequence<SequenceType<Inputs>...>
+        operator()(Inputs && ... ins) const
+        {
+            typedef zip_sequence<SequenceType<Inputs>...> Seq;
+            return Seq(::ural::sequence_fwd<Inputs>(ins)...);
+        }
+    };
+
+    namespace
+    {
+        //@{
+        /// @brief Функциональный объект для создания @c zip_sequence
+        constexpr auto const & make_zip_sequence
+            = odr_const<make_zip_sequence_fn>;
+
+        constexpr auto const & combine = make_zip_sequence;
+        //@}
     }
 }
 // namespace ural

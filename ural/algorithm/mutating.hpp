@@ -41,32 +41,9 @@
 
 namespace ural
 {
-    // @todo нужно либо удалить, либо реализовать
-    template <class T1, class T2>
-    void swap(T1 & x, T2 & y);
-
 /// @cond false
 namespace details
 {
-    class swap_fn
-    {
-    public:
-        /** @brief Оператор применения функции.
-        @details Производит неквалифицированный вызов функции @c swap. При этом
-        включает перегрузки этой функции из пространства имён @c std, @c ural,
-        @c boost
-        */
-        template <class T>
-        void operator()(T & x, T & y) const
-        {
-            using ::std::swap;
-            using ::ural::swap;
-            using ::boost::swap;
-            return swap(x, y);
-        }
-    };
-    auto constexpr do_swap = swap_fn{};
-
     // Бинарные кучи
     template <class Size>
     Size heap_parent(Size pos)
@@ -95,7 +72,7 @@ namespace details
 
             if(cmp(seq[parent], seq[index]))
             {
-                ::ural::details::do_swap(seq[parent], seq[index]);
+                ::ural::indirect_swap(seq, parent, seq, index);
             }
 
             index = parent;
@@ -372,7 +349,7 @@ namespace details
 
             for(; !!in1 && !!in2; ++ in1, (void) ++ in2)
             {
-                ::ural::details::do_swap(*in1, *in2);
+                ::ural::indirect_swap(in1, in2);
             }
             return ural::tuple<Forward1, Forward2>{in1, in2};
         }
@@ -915,7 +892,7 @@ namespace details
         {
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<ForwardSequenced>));
             BOOST_CONCEPT_ASSERT((concepts::Permutable<SequenceType<ForwardSequenced>>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate,
+            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<BinaryPredicate,
                                                              SequenceType<ForwardSequenced>,
                                                              T const *>));
 
@@ -931,7 +908,7 @@ namespace details
         {
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
             BOOST_CONCEPT_ASSERT((concepts::Permutable<ForwardSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate, ForwardSequence, T const *>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<BinaryPredicate, ForwardSequence, T const *>));
 
             auto pred_1 = std::bind(std::move(pred), ural::_1, std::cref(value));
             return remove_if_fn{}(in, std::move(pred_1));
@@ -1166,7 +1143,8 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequence<decltype(seq)>));
             BOOST_CONCEPT_ASSERT((concepts::Permutable<decltype(seq)>));
 
-            auto result = ::ural::exhaust_front(seq);
+            auto result = seq;
+            result.exhaust_front();
 
             for(; !!seq; ++seq)
             {
@@ -1179,7 +1157,7 @@ namespace details
                 }
                 else
                 {
-                   ::ural::details::do_swap(*seq, seq.back());
+                   ::ural::indirect_swap(seq, front, seq, back);
                 }
                 seq = seq_next;
             }
@@ -1288,12 +1266,12 @@ namespace details
             {
                 assert(!r[ural::_1]);
                 return this->impl(r[ural::_2].traversed_front(),
-                                  ::ural::shrink_front(r[ural::_2]));
+                                  ::ural::shrink_front_copy(r[ural::_2]));
             }
             else
             {
                 assert(!r[ural::_2]);
-                return this->impl(::ural::shrink_front(r[ural::_1]), in2);
+                return this->impl(::ural::shrink_front_copy(r[ural::_1]), in2);
             }
         }
 
@@ -1305,7 +1283,7 @@ namespace details
 
             auto seq_old = seq.original();
 
-            this->impl(seq.traversed_front(), ural::shrink_front(seq));
+            this->impl(seq.traversed_front(), ural::shrink_front_copy(seq));
 
             // @todo оптимизация
             ural::advance(seq_old, ural::size(seq));
@@ -1399,7 +1377,7 @@ namespace details
                 std::uniform_int_distribution<decltype(s.size())>
                     d(0, s.size() - 1);
                 auto index = d(g);
-                ::ural::details::do_swap(s[index], s.front());
+                ::ural::indirect_swap(s, index, s, front);
             }
 
             return s;
@@ -1494,7 +1472,7 @@ namespace details
             {
                 if(pred(*in))
                 {
-                    ::ural::details::do_swap(*sink, *in);
+                    ::ural::indirect_swap(sink, in);
                     ++ sink;
                 }
             }
@@ -1553,7 +1531,7 @@ namespace details
             assert(!pred(*in));
             assert(!in.traversed_front());
 
-            auto const s_orig = ural::shrink_front(in);
+            auto const s_orig = ural::shrink_front_copy(in);
 
             if(n == 1)
             {
@@ -1567,16 +1545,16 @@ namespace details
             auto r_left = this->impl_inplace(s.traversed_front(), pred);
 
             // Разделяем вторую половину
-            auto s_right = find_if_not_fn{}(ural::shrink_front(s), pred);
+            auto s_right = find_if_not_fn{}(ural::shrink_front_copy(s), pred);
 
             if(!!s_right)
             {
-                auto r_right = this->impl_inplace(ural::shrink_front(s_right), pred);
+                auto r_right = this->impl_inplace(ural::shrink_front_copy(s_right), pred);
                 ural::advance(s_right, ural::size(r_right.traversed_front()));
             }
 
             // Поворачиваем
-            auto r = ::ural::rotate_fn{}(ural::shrink_front(r_left),
+            auto r = ::ural::rotate_fn{}(ural::shrink_front_copy(r_left),
                                          s_right.traversed_front());
 
             // Возвращаем результат
@@ -1603,7 +1581,7 @@ namespace details
             }
 
             // Разделяем на месте
-            auto s = ural::shrink_front(std::move(in));
+            auto s = ural::shrink_front_copy(std::move(in));
             auto r = this->impl_inplace(std::move(s), pred);
             auto const nt = ural::size(r.traversed_front());
             return ural::next(in, nt);

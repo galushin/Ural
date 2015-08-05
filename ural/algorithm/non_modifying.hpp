@@ -396,7 +396,7 @@ namespace ural
         impl(Input in, T const & value, BinaryPredicate pred)
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate, Input, T const *>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<BinaryPredicate, Input, T const *>));
 
             return count_if_fn{}(std::move(in),
                                  std::bind(std::move(pred), ural::_1,
@@ -419,7 +419,7 @@ namespace ural
         -> DifferenceType<SequenceType<Input>>
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate,
+            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<BinaryPredicate,
                                                              SequenceType<Input>,
                                                              T const *>));
 

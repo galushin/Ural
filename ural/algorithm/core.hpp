@@ -131,7 +131,7 @@ namespace ural
         impl(Input in, T const & value, BinaryPredicate bin_pred)
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate, Input, T const *>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<BinaryPredicate, Input, T const *>));
 
             auto pred = std::bind(std::move(bin_pred), ural::_1, std::cref(value));
 
@@ -156,7 +156,7 @@ namespace ural
                    BinaryPredicate pred = BinaryPredicate()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate, SequenceType<Input>, T const *>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<BinaryPredicate, SequenceType<Input>, T const *>));
 
             return this->impl(::ural::sequence_fwd<Input>(in), value,
                               ::ural::make_callable(std::move(pred)));

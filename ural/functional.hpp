@@ -534,51 +534,6 @@ namespace ural
         }
     };
 
-    /// @brief Функциональный объект для функции-члена original
-    class original_fn
-    {
-    public:
-        /** @brief Оператор вызова функции
-        @param x аргумент
-        @return <tt> x.original() </tt>
-        */
-        template <class T>
-        auto operator()(T const & x) const
-        {
-            return x.original();
-        }
-    };
-
-    /// @brief Функциональный объект для функции-члена traversed_front
-    class traversed_front_fn
-    {
-    public:
-        /** @brief Оператор вызова функции
-        @param x аргумент
-        @return <tt> x.traversed_front() </tt>
-        */
-        template <class T>
-        auto operator()(T const & x) const
-        {
-            return x.traversed_front();
-        }
-    };
-
-    /// @brief Функциональный объект для функции-члена traversed_back
-    class traversed_back_fn
-    {
-    public:
-        /** @brief Оператор вызова функции
-        @param x аргумент
-        @return <tt> x.traversed_back() </tt>
-        */
-        template <class T>
-        auto operator()(T const & x) const
-        {
-            return x.traversed_back();
-        }
-    };
-
     /** @brief Обобщённая реализация операций вида "изменить и вернуть
     копию оригинала в состоянии до изменения"
     */
@@ -706,11 +661,6 @@ namespace ural
         constexpr auto const & back = odr_const<back_fn>;
 
         constexpr auto const & subscript = odr_const<subscript_fn>;
-
-        // Операции последовательностей
-        constexpr auto const & original = odr_const<original_fn>;
-        constexpr auto const & traversed_front = odr_const<traversed_front_fn>;
-        constexpr auto const & traversed_back = odr_const<traversed_back_fn>;
     }
 }
 // namespace ural
