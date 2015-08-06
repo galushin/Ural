@@ -40,9 +40,20 @@ namespace ural
     */
     template <class Input, class BinaryPredicate = ural::equal_to<> >
     class unique_sequence
-     : public sequence_base<unique_sequence<Input, BinaryPredicate>>
+     : public sequence_base<unique_sequence<Input, BinaryPredicate>,
+                            BinaryPredicate>
     {
+        using Base = sequence_base<unique_sequence<Input, BinaryPredicate>,
+                                   BinaryPredicate>;
     public:
+        // Оператор "равно"
+        friend bool operator==(unique_sequence const & x,
+                               unique_sequence const & y)
+        {
+            return x.current_ == y.current_
+                    && x.next_ == y.next_ && x.predicate() == y.predicate();
+        }
+
         // Типы
         /// @brief Тип ссылки
         typedef typename Input::reference reference;
@@ -68,9 +79,7 @@ namespace ural
         */
         explicit unique_sequence(Input in)
          : unique_sequence(std::move(in), traversal_tag{})
-        {
-            this->seek();
-        }
+        {}
 
         /** @brief Конструктор
         @param in входная последовательность
@@ -80,16 +89,14 @@ namespace ural
         */
         explicit unique_sequence(Input in, BinaryPredicate pred)
          : unique_sequence(std::move(in), std::move(pred), traversal_tag{})
-        {
-            this->seek();
-        }
+        {}
 
         // Адаптор последовательности
         //@{
         /** @brief Базовая последовательность
         @return Ссылка на базовую последовательность
         @note <tt> this->base().front() </tt> и <tt> this->front() </tt>
-        ссылаются на разные элементы в случае однопроходной последовательности
+        ссылаются на разные элементы в случае однопроходной последовательности.
         */
         Input const & base() const &
         {
@@ -107,7 +114,7 @@ namespace ural
         */
         BinaryPredicate const & predicate() const
         {
-            return this->eq_;
+            return this->payload();
         }
 
         // Однопроходная последовательность
@@ -138,51 +145,90 @@ namespace ural
             return this->pop_front_impl(traversal_tag{});
         }
 
+        // Прямая последовательность
+        /** @brief Полная последовательность (вместе с пройденными частями)
+        @return Исходная последовательность
+        */
+        unique_sequence original() const
+        {
+            return unique_sequence(current_.original(), this->predicate());
+        }
+
+        /** @brief Пройденная передняя часть последовательность
+        @return Пройденная передняя часть последовательность
+        */
+        unique_sequence traversed_front() const
+        {
+            return unique_sequence(current_.traversed_front(), this->predicate());
+        }
+
+        /** @brief Отбрасывание пройденной части последовательности
+        @post <tt> !this->traversed_front() </tt>
+        */
+        void shrink_front()
+        {
+            current_.shrink_front();
+        }
+
+        /** @brief Исчерпание последовательности в прямом порядке за константное
+        время.
+        @post <tt> !*this == true </tt>
+        */
+        void exhaust_front()
+        {
+            current_.exhaust_front();
+            next_ = current_;
+        }
+
     private:
         // Конструкторы
         unique_sequence(Input in, single_pass_traversal_tag)
-         : current_()
+         : Base()
+         , current_()
          , next_(std::move(in))
-         , eq_()
         {
             if(!!next_)
             {
                 current_ = *next_;
                 ++ next_;
+                this->seek();
             }
         }
 
         unique_sequence(Input in, forward_traversal_tag)
-         : current_(std::move(in))
+         : Base()
+         , current_(std::move(in))
          , next_(current_)
-         , eq_()
         {
             if(!!next_)
             {
                 ++ next_;
+                this->seek();
             }
         }
 
         unique_sequence(Input in, BinaryPredicate pred, single_pass_traversal_tag)
-         : current_()
+         : Base(std::move(pred))
+         , current_()
          , next_(std::move(in))
-         , eq_(std::move(pred))
         {
             if(!!next_)
             {
                 current_ = *next_;
                 ++ next_;
+                this->seek();
             }
         }
 
         unique_sequence(Input in, BinaryPredicate pred, forward_traversal_tag)
-         : current_(std::move(in))
+         : Base(std::move(pred))
+         , current_(std::move(in))
          , next_(current_)
-         , eq_(std::move(pred))
         {
             if(!!next_)
             {
                 ++ next_;
+                this->seek();
             }
         }
 
@@ -210,6 +256,8 @@ namespace ural
         // Поиск следующего
         void seek()
         {
+            assert(!!current_);
+
             next_ = find_fn{}(std::move(next_), *current_, not_fn(this->predicate()));
         }
 
@@ -240,38 +288,24 @@ namespace ural
         }
 
     private:
-        typedef std::is_same<traversal_tag, single_pass_traversal_tag>
-            Is_singple_pass;
         typedef optional<value_type> optional_value;
-        typedef typename std::conditional<Is_singple_pass::value, optional_value, Input>::type
+        typedef std::is_same<traversal_tag, single_pass_traversal_tag>
+            Is_single_pass;
+        typedef typename std::conditional<Is_single_pass::value, optional_value, Input>::type
             Holder;
 
         Holder current_;
         Input next_;
-        BinaryPredicate eq_;
     };
 
-    /** @brief Тип Функционального объекта для создания @c unique_sequence в
-    функциональном стиле.
+    /** @brief Тип функционального объекта для создания @c unique_sequence
+    с заданным условием эквивалентности элементов.
     */
-    class make_unique_sequence_fn
+    struct make_adjacent_filtered_sequence_fn
     {
     public:
-        /** @brief Функция создания @c unique_sequence
-        @param in входная последовательность
-        @return <tt> unique_sequence<Seq>(sequence_fwd<Forward>(in)) </tt>, где
-        @c Seq -- <tt> unique_sequence<decltype(sequence_fwd<Forward>(in))> </tt>
-        */
-        template <class Forward>
-        auto operator()(Forward && in) const
-        {
-            typedef unique_sequence<decltype(::ural::sequence_fwd<Forward>(in))>
-                Result;
-
-             return Result(::ural::sequence_fwd<Forward>(in));
-        }
-
-        /** @brief Функция создания @c unique_sequence
+        /** @brief Функция создания @c unique_sequence с заданным условием
+        эквивалентности элементов
         @param in входная последовательность
         @param pred бинарный предикат
         */
@@ -285,6 +319,24 @@ namespace ural
         }
     };
 
+    /// @brief Тип Функционального объекта для создания @c unique_sequence.
+    class make_unique_sequence_fn
+    {
+    public:
+        /** @brief Функция создания @c unique_sequence
+        @param in входная последовательность
+        @return <tt> unique_sequence<Seq>(sequence_fwd<Forward>(in)) </tt>, где
+        @c Seq -- <tt> unique_sequence<decltype(sequence_fwd<Forward>(in))> </tt>
+        */
+        template <class Forward>
+        auto operator()(Forward && in) const
+        {
+            auto f = make_adjacent_filtered_sequence_fn{};
+
+            return f(::ural::sequence_fwd<Forward>(in), ural::equal_to<>{});
+        }
+    };
+
     namespace
     {
         /// @brief Функциональный объект для создания @c unique_sequence в
@@ -293,7 +345,13 @@ namespace ural
 
         /// @brief Объект для создающия @c unique_sequence в конвейрном силе.
         constexpr auto & uniqued
-            = odr_const<pipeable_maker<make_unique_sequence_fn>>;
+            = odr_const<pipeable<make_unique_sequence_fn>>;
+
+        /** @brief Объект для создающия @c unique_sequence с заданным условием
+        эквивалентности элементов в конвейрном стиле.
+        */
+        constexpr auto & adjacent_filtered
+            = odr_const<pipeable_maker<make_adjacent_filtered_sequence_fn>>;
     }
 }
 // namespace ural

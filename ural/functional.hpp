@@ -229,6 +229,9 @@ namespace ural
     class constructor
     {
     public:
+        /// @brief Тип возвращаемого значения
+        typedef T result_type;
+
         /** @brief Оператор вызова функции
         @param args список аргументов конструктора
         @return <tt> T(std::forward<Args>(args)...) </tt>

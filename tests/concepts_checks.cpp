@@ -195,3 +195,63 @@ BOOST_AUTO_TEST_CASE(transformed_to_lvalue_concept_checks)
 
     BOOST_CHECK(true);
 }
+
+BOOST_AUTO_TEST_CASE(uniqued_concept_checks)
+{
+    typedef int Type;
+
+    ural_test::istringstream_helper<Type> const c_in;
+    std::forward_list<Type> const c_fwd;
+    std::list<Type> const c_bidir;
+    std::vector<Type> const c_ra;
+
+    auto s_in = c_in | ural::uniqued;
+    auto s_fwd = c_fwd | ural::uniqued;
+    auto s_bidir = c_bidir | ural::uniqued;
+    auto s_ra = c_ra | ural::uniqued;
+
+    using namespace ural::concepts;
+
+    BOOST_CONCEPT_ASSERT((SinglePassSequence<decltype(s_in)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_in)>));
+
+    BOOST_CONCEPT_ASSERT((FiniteForwardSequence<decltype(s_fwd)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_fwd)>));
+
+    BOOST_CONCEPT_ASSERT((FiniteForwardSequence<decltype(s_bidir)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_bidir)>));
+
+    BOOST_CONCEPT_ASSERT((FiniteForwardSequence<decltype(s_ra)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_ra)>));
+
+    BOOST_CHECK(true);
+}
+
+BOOST_AUTO_TEST_CASE(writable_uniqued_concept_checks)
+{
+    typedef int Type;
+
+    std::forward_list<Type> c_fwd;
+    std::list<Type> c_bidir;
+    std::vector<Type> c_ra;
+
+    auto s_fwd = c_fwd | ural::uniqued;
+    auto s_bidir = c_bidir | ural::uniqued;
+    auto s_ra = c_ra | ural::uniqued;
+
+    using namespace ural::concepts;
+
+    BOOST_CONCEPT_ASSERT((FiniteForwardSequence<decltype(s_fwd)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_fwd)>));
+    BOOST_CONCEPT_ASSERT((Writable<decltype(s_fwd), Type>));
+
+    BOOST_CONCEPT_ASSERT((FiniteForwardSequence<decltype(s_bidir)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_bidir)>));
+    BOOST_CONCEPT_ASSERT((Writable<decltype(s_bidir), Type>));
+
+    BOOST_CONCEPT_ASSERT((FiniteForwardSequence<decltype(s_ra)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_ra)>));
+    BOOST_CONCEPT_ASSERT((Writable<decltype(s_ra), Type>));
+
+    BOOST_CHECK(true);
+}

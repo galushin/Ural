@@ -26,6 +26,7 @@
 #include <ural/concepts.hpp>
 #include <ural/utility.hpp>
 
+#include <functional>
 #include <utility>
 #include <tuple>
 
@@ -33,11 +34,12 @@ namespace ural
 {
     /** @brief Элемент "конвейера"
     @param Factory тип функции создания
-    @param Args список аргументов функции
     */
-    template <class Factory, class... Args>
-    struct pipeable
+    template <class Factory>
+    class pipeable
+     : private FunctionType<Factory>
     {
+        using Base = FunctionType<Factory>;
     public:
         /** @brief Оператор создания адаптора
         @param seq исходная последовательность
@@ -46,17 +48,23 @@ namespace ural
         @c f --- <tt> ::ural::curry(Factory{}, std::forward<Sequence>(seq))</tt>
         */
         template <class Sequence>
-        friend auto operator|(Sequence && seq, pipeable<Factory, Args...> pipe)
-        -> decltype(Factory{}(std::forward<Sequence>(seq), std::declval<Args>()...))
+        friend auto operator|(Sequence && seq, pipeable<Factory> pipe)
+        -> decltype(std::declval<Factory>()(std::forward<Sequence>(seq)))
         {
-            auto f = ::ural::curry(Factory{}, std::forward<Sequence>(seq));
-            return ::ural::apply(std::move(f), std::move(pipe.args));
+            return pipe.function()(std::forward<Sequence>(seq));
         }
 
-        static_assert(std::is_empty<Factory>::value, "Factory must be empty");
+        constexpr explicit pipeable() = default;
 
-        /// @brief Кортеж аргументов для создания адаптора
-        std::tuple<Args...> args;
+        constexpr explicit pipeable(Factory f)
+         : Base(std::move(f))
+        {}
+
+    private:
+        FunctionType<Factory> const & function() const
+        {
+            return *this;
+        }
     };
 
     /** @brief Вспомогательный класс для создания функциональных объектов,
@@ -67,29 +75,45 @@ namespace ural
     template <class Factory>
     class pipeable_maker
     {
-        static_assert(std::is_empty<Factory>::value, "Factory must be empty");
+        static_assert(std::is_empty<Factory>::value, "must be empty!");
 
-    public:
-        /** @brief Оператор создания адаптора
-        @param seq исходная последовательность
-        @return <tt> ::ural::apply(f, std::move(pipe.args)) </tt>, где
-        @c f --- <tt> ::ural::curry(Factory{}, std::forward<Sequence>(seq))</tt>
-        */
-        template <class Sequence>
-        friend auto operator|(Sequence && seq, pipeable_maker<Factory>)
-        -> decltype(Factory{}(std::forward<Sequence>(seq)))
+        template <class... Args>
+        struct pipeable_binder
         {
-            return Factory{}(std::forward<Sequence>(seq));
+        public:
+            explicit pipeable_binder(Args && ... args)
+             : args_(std::forward_as_tuple(std::forward<Args>(args)...))
+            {}
+
+            template <class Sequence>
+            auto operator()(Sequence && seq) const
+            {
+                auto f = ural::curry(Factory{}, std::forward<Sequence>(seq));
+                return ural::apply(std::move(f), args_);
+            }
+
+        private:
+            std::tuple<Args &&...> args_;
+        };
+
+        template <class... Args>
+        static
+        pipeable_binder<Args...>
+        pipeable_bind(Args &&... args)
+        {
+            return pipeable_binder<Args...>(std::forward<Args>(args)...);
         }
 
+    public:
         /** @brief Оператор вызова функции
         @param args список аргументов
         */
         template <class... Args>
-        pipeable<Factory, Args&&...>
-        operator()(Args &&... args) const
+        auto operator()(Args &&... args) const
         {
-            return {std::forward_as_tuple(std::forward<Args>(args)...)};
+            // todo обезопасить за счёт запрета копирования возвращаемого значения
+            auto f = this->pipeable_bind(std::forward<Args>(args)...);
+            return pipeable<decltype(f)>(std::move(f));
         }
     };
 }

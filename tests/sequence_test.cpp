@@ -1260,8 +1260,9 @@ BOOST_AUTO_TEST_CASE(unique_sequence_test_custom_predicate)
     std::string s_std;
     std::unique_copy(src.begin(), src.end(), std::back_inserter(s_std), pred);
 
-    auto const s_ural
-        = src | ural::uniqued(pred) | ural::to_container<std::basic_string>{};
+    auto const s_ural = src
+                      | ural::adjacent_filtered(pred)
+                      | ural::to_container<std::basic_string>{};
 
     BOOST_CHECK_EQUAL(s_std, s_ural);
 }
@@ -1315,7 +1316,8 @@ BOOST_AUTO_TEST_CASE(unique_sequence_move_only)
     auto const last = std::unique(v1.begin(), v1.end(), eq);
 
     auto const r_ural
-        = v2 | ural::uniqued(eq) | ural::moved | ural::to_container<std::vector>{};
+        = v2 | ural::adjacent_filtered(eq) | ural::moved
+        | ural::to_container<std::vector>{};
 
     BOOST_CHECK_EQUAL(last - v1.begin(), r_ural.end() - r_ural.begin());
 
@@ -1688,6 +1690,31 @@ BOOST_AUTO_TEST_CASE(sequence_temporary_ostream)
     auto r = ural::copy(source, ural::sequence(std::ostringstream()))[ural::_2];
 
     BOOST_CHECK_EQUAL(r.stream().str(), source);
+}
+
+BOOST_AUTO_TEST_CASE(unique_sequence_forward_test)
+{
+    typedef std::string Type;
+
+    std::forward_list<Type> const names = { "one", "two", "three", "four", "five"};
+
+    std::vector<Type> v_names;
+    std::unique_copy(names.begin(), names.end(), v_names | ural::back_inserter);
+    std::sort(v_names.begin(), v_names.end());
+
+    auto const us0 = names | ural::uniqued;
+    auto us = us0;
+
+    BOOST_CHECK(ural::is_permutation(us, v_names));
+
+    us.exhaust_front();
+
+    BOOST_CHECK(ural::is_permutation(us.traversed_front(), v_names));
+
+    BOOST_CHECK(!us);
+    BOOST_CHECK(us.original() == us0);
+    BOOST_CHECK(us.traversed_front() == us0);
+    BOOST_CHECK(ural::equal(us.traversed_front(), us0));
 }
 
 BOOST_AUTO_TEST_CASE(zip_sequence_sort)

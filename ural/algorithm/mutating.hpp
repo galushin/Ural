@@ -1024,7 +1024,7 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::Permutable<ForwardSequence>));
 
             // @todo Оптимизация
-            auto us = ural::make_unique_sequence(std::move(seq), std::move(pred));
+            auto us = std::move(seq) | ural::adjacent_filtered(std::move(pred));
 
             auto result = copy_fn{}(us | ural::moved, seq);
 
@@ -1055,8 +1055,8 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate,
                                                              SequenceType<Input>>));
 
-            auto u_in = ::ural::make_unique_sequence(std::forward<Input>(in),
-                                                     std::move(bin_pred));
+            auto u_in = std::forward<Input>(in)
+                      | ural::adjacent_filtered(std::move(bin_pred));
             auto r = ::ural::copy_fn{}(std::move(u_in),
                                        std::forward<Output>(out));
             return ::ural::make_tuple(std::move(r[ural::_1]).base(),

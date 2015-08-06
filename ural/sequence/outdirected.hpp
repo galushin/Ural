@@ -141,7 +141,7 @@ namespace ural
 
         /// Объект для создания @c outdirected_sequence в конвейерном стиле.
         constexpr auto const & outdirected
-            = odr_const<pipeable_maker<make_outdirected_sequence_fn>>;
+            = odr_const<pipeable<make_outdirected_sequence_fn>>;
     }
 }
 // namespace ural

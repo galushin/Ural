@@ -2206,8 +2206,6 @@ BOOST_AUTO_TEST_CASE(shuffle_test)
     BOOST_CHECK(std::is_permutation(v.begin(), v.end(), v_old.begin()));
 
     BOOST_CHECK(ural::is_permutation(v, v_old));
-
-    // @todo тест того, что перестановки случайные
 }
 
 BOOST_AUTO_TEST_CASE(random_shuffle_test)
@@ -2228,8 +2226,6 @@ BOOST_AUTO_TEST_CASE(random_shuffle_test)
     BOOST_CHECK(std::is_permutation(v.begin(), v.end(), v_old.begin()));
 
     BOOST_CHECK(ural::is_permutation(v, v_old));
-
-    // @todo тест того, что перестановки случайные
 }
 
 // 25.3.13 Разделение
