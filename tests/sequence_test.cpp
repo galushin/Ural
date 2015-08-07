@@ -1424,6 +1424,19 @@ BOOST_AUTO_TEST_CASE(to_container_additional_parameters)
     BOOST_CHECK(true);
 }
 
+BOOST_AUTO_TEST_CASE(as_container_test)
+{
+    auto const seq = ural::numbers(1, 10);
+
+    std::set<int> const v1 = seq | ural::as_container;
+
+    using std::begin;
+    using std::end;
+    std::set<int> const v2(begin(seq), end(seq));
+
+    URAL_CHECK_EQUAL_RANGES(v1, v2);
+}
+
 BOOST_AUTO_TEST_CASE(to_map_additional_parameters)
 {
     typedef ural::greater<> Compare;
