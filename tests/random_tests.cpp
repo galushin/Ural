@@ -372,13 +372,16 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_equality)
 BOOST_AUTO_TEST_CASE(discrete_distribution_io_test)
 {
     typedef ural::discrete_distribution<> D;
-    double p0[] = {.3, .1, .6};
-    D d1(p0, p0+3);
+    std::vector<double> const p0 = {.3, .1, .6};
+    D d1(p0.begin(), p0.end());
     std::ostringstream os;
     os << d1;
     std::istringstream is(os.str());
     D d2;
     is >> d2;
+
+    auto const p2 = d2.probabilities();
+    URAL_CHECK_EQUAL_RANGES(p2, p0);
     BOOST_CHECK(d1 == d2);
 }
 

@@ -446,14 +446,10 @@ namespace ural
         std::vector<double> ps;
         ps.reserve(n);
 
-        for(; n > 0; -- n)
-        {
-            double reader;
-            is >> reader;
-            ps.push_back(reader);
-        }
+        ural::copy(ural::make_istream_sequence<double>(is) | ural::taken(n),
+                   ps | ural::back_inserter);
 
-        if(!is.fail())
+        if(ps.size() == static_cast<size_t>(n))
         {
             d = discrete_distribution<IntType>(ps.begin(), ps.end());
         }

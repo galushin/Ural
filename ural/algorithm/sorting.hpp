@@ -63,22 +63,16 @@ namespace ural
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, Forward>));
 
-            if(!in)
+            auto cmp_2_1 = ural::make_binary_reverse_args(std::move(cmp));
+
+            in = ural::adjacent_find_fn{}(std::move(in), std::move(cmp_2_1));
+
+            if(!!in)
             {
-                return in;
+                ++ in;
             }
 
-            auto in_next = ural::next(in);
-
-            for(; !!in_next; ++in_next, (void) ++ in)
-            {
-                if(cmp(*in_next, *in))
-                {
-                    break;
-                }
-            }
-
-            return in_next;
+            return in;
         }
 
     public:
