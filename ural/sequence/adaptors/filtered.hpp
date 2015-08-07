@@ -22,7 +22,7 @@
  заданному предикату.
 */
 
-#include <ural/sequence/remove.hpp>
+#include <ural/sequence/adaptors/remove.hpp>
 #include <ural/algorithm/core.hpp>
 
 #include <boost/compressed_pair.hpp>

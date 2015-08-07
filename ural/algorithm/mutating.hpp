@@ -27,16 +27,15 @@
  элементов существующих последовательностей.
 */
 
+#include <ural/sequence/adaptors/partition.hpp>
+#include <ural/sequence/adaptors/uniqued.hpp>
+#include <ural/sequence/adaptors/replace.hpp>
+#include <ural/sequence/adaptors/transform.hpp>
+#include <ural/sequence/adaptors/moved.hpp>
+#include <ural/sequence/adaptors/reversed.hpp>
+#include <ural/sequence/adaptors/filtered.hpp>
+#include <ural/sequence/adaptors/taken.hpp>
 #include <ural/sequence/generator.hpp>
-#include <ural/sequence/partition.hpp>
-#include <ural/sequence/uniqued.hpp>
-#include <ural/sequence/replace.hpp>
-#include <ural/sequence/transform.hpp>
-#include <ural/sequence/moved.hpp>
-#include <ural/sequence/reversed.hpp>
-#include <ural/sequence/filtered.hpp>
-#include <ural/sequence/taken.hpp>
-
 #include <ural/algorithm/core.hpp>
 
 namespace ural

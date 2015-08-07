@@ -22,7 +22,7 @@
 */
 
 #include <ural/sequence/adaptor.hpp>
-#include <ural/sequence/zip.hpp>
+#include <ural/sequence/adaptors/zip.hpp>
 
 #include <ural/meta/list.hpp>
 #include <ural/meta/hierarchy.hpp>

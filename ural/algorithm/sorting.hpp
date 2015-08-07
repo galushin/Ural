@@ -43,8 +43,8 @@
 */
 
 #include <ural/algorithm/non_modifying.hpp>
-#include <ural/sequence/outdirected.hpp>
-#include <ural/sequence/set_operations.hpp>
+#include <ural/sequence/adaptors/outdirected.hpp>
+#include <ural/sequence/adaptors/set_operations.hpp>
 
 namespace ural
 {

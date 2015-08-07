@@ -22,7 +22,7 @@
  определённым условиям, заменены заданным значением.
 */
 
-#include <ural/sequence/transform.hpp>
+#include <ural/sequence/adaptors/transform.hpp>
 #include <ural/functional/replace.hpp>
 
 namespace ural

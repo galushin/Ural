@@ -23,7 +23,7 @@
  @todo Реализовать функции прямой последовательности
 */
 
-#include <ural/sequence/taken.hpp>
+#include <ural/sequence/adaptors/taken.hpp>
 #include <ural/sequence/make.hpp>
 #include <ural/concepts.hpp>
 

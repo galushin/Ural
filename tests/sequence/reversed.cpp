@@ -17,7 +17,8 @@
 #include <boost/test/unit_test.hpp>
 #include "../defs.hpp"
 
-#include <ural/sequence/reversed.hpp>
+#include <ural/sequence/adaptors/reversed.hpp>
+#include <ural/sequence/all.hpp>
 
 #include <ural/abi.hpp>
 
@@ -84,10 +85,6 @@ BOOST_AUTO_TEST_CASE(reversed_exhaust_test)
     BOOST_CHECK(s2.traversed_back() == xs_reversed);
 }
 
-#include <ural/sequence/progression.hpp>
-#include <ural/sequence/taken.hpp>
-#include <ural/sequence/to.hpp>
-
 BOOST_AUTO_TEST_CASE(reversed_pop_back_n_test)
 {
     auto const xs = ural::make_arithmetic_progression(0, 1)
@@ -139,7 +136,6 @@ BOOST_AUTO_TEST_CASE(copy_reversed_to_reversed_vs_copy_backward)
 }
 
 #include <ural/memory.hpp>
-#include <ural/sequence/moved.hpp>
 
 BOOST_AUTO_TEST_CASE(moved_backward_test_unique_ptr)
 {

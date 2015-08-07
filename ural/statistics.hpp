@@ -50,8 +50,8 @@
 #include <ural/numeric/numbers_sequence.hpp>
 #include <ural/math.hpp>
 #include <ural/algorithm.hpp>
-#include <ural/sequence/zip.hpp>
-#include <ural/sequence/transform.hpp>
+#include <ural/sequence/adaptors/zip.hpp>
+#include <ural/sequence/adaptors/transform.hpp>
 #include <ural/sequence/make.hpp>
 #include <ural/defs.hpp>
 

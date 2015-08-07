@@ -21,7 +21,7 @@
  @brief Адапторы последовательностей для ассоциативных контейнеров
 */
 
-#include <ural/sequence/transform.hpp>
+#include <ural/sequence/adaptors/transform.hpp>
 #include <ural/utility.hpp>
 #include <utility>
 
