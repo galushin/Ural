@@ -98,11 +98,6 @@ namespace ural
             return this->mutable_base().exhaust_back();
         }
 
-        /** @brief Полная последовательность (включая пройденные части)
-        @return Полная последовательность
-        */
-        reverse_sequence original() const;
-
         // Двусторонняя последовательность
         /** @brief Задний элемент последовательности
         @pre <tt> !*this == false </tt>
@@ -137,7 +132,10 @@ namespace ural
         константное время
         @post <tt> !*this == true </tt>
         */
-        void exhaust_back();
+        void exhaust_back()
+        {
+            return this->mutable_base().exhaust_front();
+        }
 
         // Последовательность произвольного доступа
         /** @brief Индексированный доступ

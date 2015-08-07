@@ -59,20 +59,29 @@ BOOST_AUTO_TEST_CASE(reversed_iterators_to_sequence_test)
                                   result.rbegin(), result.rend());
 }
 
-BOOST_AUTO_TEST_CASE(reversed_seq_concept_check)
+BOOST_AUTO_TEST_CASE(reversed_exhaust_test)
 {
-    std::list<int> bi_c;
-    std::vector<int> ra_c;
+    std::vector<int> const xs = {1, 2, 3, 4, 5};
 
-    using ural::sequence;
+    auto const xs_reversed = xs | ural::reversed;
 
-    typedef decltype(sequence(bi_c) | ural::reversed) Bi;
-    typedef decltype(sequence(ra_c) | ural::reversed) Ra;
+    BOOST_CHECK(ural::is_permutation(xs, xs_reversed));
 
-    BOOST_CONCEPT_ASSERT((ural::concepts::BidirectionalSequence<Bi>));
+    auto s1 = xs_reversed;
+    s1.exhaust_front();
 
-    BOOST_CONCEPT_ASSERT((ural::concepts::BidirectionalSequence<Ra>));
-    BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<Ra>));
+    BOOST_CHECK(!s1);
+    BOOST_CHECK(!s1.traversed_back());
+    BOOST_CHECK(s1.original() == xs_reversed);
+    BOOST_CHECK(s1.traversed_front() == xs_reversed);
+
+    auto s2 = xs_reversed;
+    s2.exhaust_back();
+
+    BOOST_CHECK(!s2);
+    BOOST_CHECK(!s2.traversed_front());
+    BOOST_CHECK(s2.original() == xs_reversed);
+    BOOST_CHECK(s2.traversed_back() == xs_reversed);
 }
 
 #include <ural/sequence/progression.hpp>

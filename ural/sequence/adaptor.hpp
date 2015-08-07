@@ -236,6 +236,11 @@ namespace ural
             return Base::payload();
         }
 
+        T rebind_base(Sequence const & s) const
+        {
+            return T(s);
+        }
+
     private:
         T const & derived() const
         {

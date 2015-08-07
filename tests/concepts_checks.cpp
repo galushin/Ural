@@ -130,6 +130,50 @@ BOOST_AUTO_TEST_CASE(removed_if_concept_checks)
     BOOST_CHECK(true);
 }
 
+BOOST_AUTO_TEST_CASE(reversed_concept_checks)
+{
+    typedef int Type;
+
+    std::list<Type> const c_bidir;
+    std::vector<Type> const c_ra;
+
+    auto s_bidir = c_bidir | ural::reversed;
+    auto s_ra = c_ra | ural::reversed;
+
+    using namespace ural::concepts;
+
+    BOOST_CONCEPT_ASSERT((BidirectionalSequence<decltype(s_bidir)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_bidir)>));
+
+    BOOST_CONCEPT_ASSERT((RandomAccessSequence<decltype(s_ra)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_ra)>));
+
+    BOOST_CHECK(true);
+}
+
+BOOST_AUTO_TEST_CASE(reversed_writable_concept_checks)
+{
+    typedef std::pair<int, std::string> Type;
+
+    std::list<Type> c_bidir;
+    std::vector<Type> c_ra;
+
+    auto s_bidir = c_bidir | ural::reversed;
+    auto s_ra = c_ra | ural::reversed;
+
+    using namespace ural::concepts;
+
+    BOOST_CONCEPT_ASSERT((BidirectionalSequence<decltype(s_bidir)>));
+    BOOST_CONCEPT_ASSERT((OutputSequence<decltype(s_bidir), Type>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_bidir)>));
+
+    BOOST_CONCEPT_ASSERT((RandomAccessSequence<decltype(s_ra)>));
+    BOOST_CONCEPT_ASSERT((OutputSequence<decltype(s_ra), Type>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_ra)>));
+
+    BOOST_CHECK(true);
+}
+
 BOOST_AUTO_TEST_CASE(transformed_concept_checks)
 {
     typedef int Type;
