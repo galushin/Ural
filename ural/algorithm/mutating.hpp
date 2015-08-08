@@ -630,7 +630,7 @@ namespace details
                                                        std::cref(new_value));
             auto r = ural::copy_fn{}(std::move(in_r), std::move(out));
 
-            return ural::make_tuple(std::move(r[ural::_1]).bases()[ural::_1],
+            return ural::make_tuple(std::move(r[ural::_1]).base(),
                                     std::move(r[ural::_2]));
         }
     };

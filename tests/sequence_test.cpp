@@ -1041,9 +1041,13 @@ BOOST_AUTO_TEST_CASE(replace_sequence_test_cref)
 
     BOOST_CHECK_EQUAL(old_value.denominator(), 1);
 
+    // std
     std::replace(s_std.begin(), s_std.end(), old_value.numerator(), new_value);
-    ural::copy(ural::make_replace_sequence(s_ural, std::cref(old_value),
-                                           std::cref(new_value)), s_ural);
+
+    // ural
+    auto seq = ural::make_replace_sequence(s_ural, std::cref(old_value),
+                                           std::cref(new_value));
+    ural::copy(seq, s_ural);
 
     URAL_CHECK_EQUAL_RANGES(s_std, s_ural);
 }
@@ -1062,6 +1066,31 @@ BOOST_AUTO_TEST_CASE(replace_sequence_test)
     URAL_CHECK_EQUAL_RANGES(s_std, s_ural);
 }
 
+BOOST_AUTO_TEST_CASE(replace_sequence_custom_predicate)
+{
+    std::vector<int> s_std = {5, 7, 4, 2, 8, 6, 1, -8, 0, 3};
+    std::vector<int> s_ural = s_std;
+
+    auto const old_value = -8;
+    auto const new_value = 88;
+
+    auto abs_eq = ural::equal_by(ural::abs());
+
+    // std
+    auto pred_std = [=](int const & x) { return abs_eq(x, old_value);};
+    std::replace_if(s_std.begin(), s_std.end(), pred_std, new_value);
+
+    // ural
+    auto seq = s_ural | ural::replaced(old_value, new_value, abs_eq);
+    ural::copy(seq, s_ural);
+
+    URAL_CHECK_EQUAL_RANGES(s_std, s_ural);
+
+    BOOST_CHECK(seq.predicate() == abs_eq);
+    BOOST_CHECK_EQUAL(seq.old_value(), old_value);
+    BOOST_CHECK_EQUAL(seq.new_value(), new_value);
+}
+
 BOOST_AUTO_TEST_CASE(replace_sequence_if_test)
 {
     std::array<int, 10> const s{5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
@@ -1069,14 +1098,21 @@ BOOST_AUTO_TEST_CASE(replace_sequence_if_test)
     auto x_std = s;
     std::vector<int> x_ural;
 
-    auto pred = [](int x) {return x < 5;};
+    auto pred = +[](int x) {return x < 5;};
     auto const new_value = 55;
 
+    // std
     std::replace_if(x_std.begin(), x_std.end(), pred, new_value);
-    ural::copy(ural::make_replace_if_sequence(s, pred, new_value),
-               x_ural | ural::back_inserter);
+
+    // ural
+    auto seq = s | ural::replaced_if(pred, new_value);
+    ural::copy(seq, x_ural | ural::back_inserter);
+
+    BOOST_CHECK(seq == seq);
 
     URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
+    BOOST_CHECK_EQUAL(seq.new_value(), new_value);
+    BOOST_CHECK_EQUAL(seq.predicate(), pred);
 }
 
 BOOST_AUTO_TEST_CASE(replace_sequence_if_regression_pass_by_cref)
@@ -1778,6 +1814,4 @@ BOOST_AUTO_TEST_CASE(zip_sequence_exhaust_test)
     BOOST_CHECK(!z_back.traversed_front());
     BOOST_CHECK(z_back.original() == z0);
     BOOST_CHECK(z_back.traversed_back() == z0);
-
-
 }

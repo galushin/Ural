@@ -82,9 +82,17 @@ namespace ural
         /** @brief Указатель на функцию
         @return Заданный указатель на функцию-член
         */
-        target_type target() const
+        target_type const & target() const
         {
             return this->target_;
+        }
+
+        /** @brief Неявное преобразование в указатель на функцию-член
+        @return Заданный указатель на функцию-член
+        */
+        operator target_type const &() const
+        {
+            return this->target();
         }
 
     private:

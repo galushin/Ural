@@ -168,6 +168,17 @@ BOOST_AUTO_TEST_CASE(function_tracer_test)
     BOOST_CHECK_EQUAL(0U, Function::calls());
 }
 
+BOOST_AUTO_TEST_CASE(replace_if_function_different_pred_inequality_test)
+{
+    auto p1 = +[](int const & x) { return ural::is_even(x); };
+    auto p2 = +[](int const & x) { return ural::is_odd(x); };
+
+    auto const f1 = ural::make_replace_if_function(p1, 0);
+    auto const f2 = ural::make_replace_if_function(p2, 0);
+
+    BOOST_CHECK(f1 != f2);
+}
+
 BOOST_AUTO_TEST_CASE(replace_if_function_test)
 {
     typedef int Type;
@@ -176,6 +187,9 @@ BOOST_AUTO_TEST_CASE(replace_if_function_test)
     constexpr auto const new_value = Type(-7);
 
     constexpr auto const f = ural::make_replace_if_function(pred, new_value);
+    constexpr auto const f1 = ural::make_replace_if_function(pred, new_value + 1);
+
+    BOOST_CHECK(f1 != f);
 
     static_assert(pred == f.predicate(), "");
     static_assert(new_value == f.new_value(), "");

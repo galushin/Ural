@@ -38,6 +38,17 @@ namespace ural
     class replace_if_function
     {
     public:
+        /** @brief Оператор "равно"
+        @param x, y операнды
+        @return <tt> x.new_value() == y.new_value() && x.predicate() == y.predicate() </tt>
+        */
+        friend constexpr bool
+        operator==(replace_if_function const & x, replace_if_function const & y)
+        {
+            return x.members_ == y.members_;
+        }
+
+        // Типы
         /// @brief Тип предиката
         using predicate_type = FunctionType<Predicate>;
 
@@ -105,13 +116,17 @@ namespace ural
     template <class T_old, class T, class BinaryPredicate = ural::equal_to<> >
     class replace_function
     {
-    friend constexpr bool
-    operator==(replace_function const & x, replace_function const & y)
-    {
-        return x.members_ == y.members_;
-    }
-
     public:
+        /** @brief Оператор "равно"
+        @param x, y операнды
+        @return <tt> x.old_value() == y.old_value() && x.new_value() == y.new_value()
+        && x.predicate() == y.predicate() </tt>
+        */
+        friend constexpr bool
+        operator==(replace_function const & x, replace_function const & y)
+        {
+            return x.members_ == y.members_;
+        }
         /// @brief Тип предиката
         using predicate_type = FunctionType<BinaryPredicate>;
 
@@ -165,8 +180,8 @@ namespace ural
             return members_[ural::_2];
         }
 
-        /** @brief Используемый функциональный объект
-        @return Используемый функциональный объект
+        /** @brief Используемое условие
+        @return Используемое условие
         */
         constexpr
         predicate_type const & predicate() const
@@ -190,6 +205,7 @@ namespace ural
         ural::tuple<T_old, T, predicate_type> members_;
     };
 
+    /// @brief Тип функционального объекта для создания @c replace_if_function
     class make_replace_if_function_fn
     {
     public:
@@ -211,6 +227,7 @@ namespace ural
         }
     };
 
+    /// @brief Тип функционального объекта для создания @c replace_function
     class make_replace_function_fn
     {
     public:
@@ -247,9 +264,11 @@ namespace ural
 
     namespace
     {
+        /// @brief Функциональный объект для создания @c replace_function
         constexpr auto const & make_replace_function
             = odr_const<make_replace_function_fn>;
 
+        /// @brief Функциональный объект для создания @c replace_if_function
         constexpr auto const & make_replace_if_function
             = odr_const<make_replace_if_function_fn>;
     }
