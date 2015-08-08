@@ -18,12 +18,14 @@
 
 #include "defs.hpp"
 
+#include <ural/sequence/all.hpp>
 #include <ural/math.hpp>
 #include <ural/archetypes.hpp>
 #include <ural/algorithm.hpp>
 
 #include <forward_list>
 #include <list>
+#include <map>
 #include <vector>
 
 BOOST_AUTO_TEST_CASE(archetype_check)
@@ -100,6 +102,37 @@ BOOST_AUTO_TEST_CASE(value_type_for_c_arrays)
     static_assert(std::is_same<T, ural::ValueType<Pointer>>::value, "");
 
     BOOST_CHECK(true);
+}
+
+BOOST_AUTO_TEST_CASE(map_keys_sequence_readable)
+{
+    using Key = int;
+    using Mapped = std::string;
+
+    using Pair = std::pair<Key const, Mapped>;
+
+    ural::generator_sequence<std::function<Pair()>> in{};
+    std::forward_list<Pair> const fwd{};
+    std::map<Key, Mapped> const bidir{};
+    std::vector<Pair> const ra{};
+
+    auto in_key = std::move(in) | ural::map_keys;
+    auto fwd_key = fwd | ural::map_keys;
+    auto bidir_key = bidir | ural::map_keys;
+    auto ra_key = ra | ural::map_keys;
+
+    using namespace ural::concepts;
+
+    BOOST_CONCEPT_ASSERT((InputSequence<decltype(in_key)>));
+
+    BOOST_CONCEPT_ASSERT((FiniteForwardSequence<decltype(fwd_key)>));
+    BOOST_CONCEPT_ASSERT((ReadableSequence<decltype(fwd_key)>));
+
+    BOOST_CONCEPT_ASSERT((BidirectionalSequence<decltype(bidir_key)>));
+    BOOST_CONCEPT_ASSERT((ReadableSequence<decltype(bidir_key)>));
+
+    BOOST_CONCEPT_ASSERT((RandomAccessSequence<decltype(ra_key)>));
+    BOOST_CONCEPT_ASSERT((ReadableSequence<decltype(ra_key)>));
 }
 
 BOOST_AUTO_TEST_CASE(removed_if_concept_checks)

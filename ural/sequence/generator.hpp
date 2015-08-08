@@ -33,7 +33,7 @@ namespace ural
     template <class Generator,
               class D = use_default>
     class generator_sequence
-     : public sequence_base<generator_sequence<Generator>,
+     : public sequence_base<generator_sequence<Generator, D>,
                             decltype(make_callable(std::declval<Generator>()))>
     {
     public:
@@ -66,7 +66,14 @@ namespace ural
 
         // Конструктор
         /** @brief Конструктор
-        @param gen функция без аргументо
+        @post <tt> this->function() == Generator{} </tt>
+        */
+        explicit generator_sequence()
+         : Base_class()
+        {}
+
+        /** @brief Конструктор
+        @param gen функция без аргументов
         @post <tt> this->function() == gen </tt>
         */
         explicit generator_sequence(Generator gen)
@@ -101,13 +108,17 @@ namespace ural
         {}
 
         // Свойства
+        //@{
         /** @brief Используемый функциональный объект
         @return Используемый функциональный объект
         */
-        function_type const & function() const
+        function_type const & function() const &
         {
             return this->payload();
         }
+
+        function_type && function() &&;
+        //@}
     };
 
     /** @brief Создание последоательности на основе генератора

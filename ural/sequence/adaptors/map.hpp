@@ -27,37 +27,84 @@
 
 namespace ural
 {
-    /** @brief Тип-тэг для создания последовательностей ключей и отображаемых
-    значений ассоциативного контейнера
+    /** @brief Адаптор последовательности
+    @tparam Sequence базовая последовательность, элементы которой являются
+    кортеже-подобными.
+    @tparam Index индекс элемента значений базовой последовательности
+    */
+    template <class Sequence, size_t Index>
+    class elemenents_sequence
+     : public sequence_adaptor<elemenents_sequence<Sequence, Index>,
+                               transform_sequence<tuple_get<Index>, Sequence>>
+    {
+        using Base = sequence_adaptor<elemenents_sequence<Sequence, Index>,
+                               transform_sequence<tuple_get<Index>, Sequence>>;
+    public:
+        /** @brief Конструктор
+        @param seq базовая последовательность
+        @post <tt> this->base() == seq </tt>
+        */
+        explicit elemenents_sequence(Sequence seq)
+         : Base(ural::make_transform_sequence(tuple_get<Index>{}, std::move(seq)))
+        {}
+
+        //@{
+        /** @brief Базовая последовательность
+        @return Базовая последовательность
+        */
+        Sequence const & base() const &
+        {
+            return Base::base().bases()[ural::_1];
+        }
+
+        Sequence && base() &&
+        {
+            return static_cast<Base &&>(*this).base().bases()[ural::_1];
+        }
+        //@}
+
+    private:
+        friend Base;
+
+        using Impl_sequence = transform_sequence<tuple_get<Index>, Sequence>;
+
+        elemenents_sequence rebind_base(Impl_sequence seq) const
+        {
+            return elemenents_sequence(std::move(seq).bases()[ural::_1]);
+        }
+    };
+    /** @brief Тип функционального объекта для создания последовательностей
+    ключей и отображаемых значений ассоциативного контейнера.
     @tparam Index индекс последовательности: 0 --- ключи, 1 --- отображаемые
     значения
     */
     template <size_t Index>
-    struct map_sequence_helper{};
-
-    /** @brief Создание последовательностей ключей или отображаемых значений
-    отображений ассоциативного контейнера
-    @tparam Index индекс последовательности: 0 --- ключи, 1 --- отображаемые
-    значения
-
-    @param seq (под)последовательность элементов ассоциативного контейнера
-    */
-    template <class Sequence, size_t Index>
-    auto operator|(Sequence && seq, map_sequence_helper<Index>)
-    -> decltype(make_transform_sequence(tuple_get<Index>{}, std::forward<Sequence>(seq)))
+    struct elements_sequence_fn
     {
-        return make_transform_sequence(tuple_get<Index>{}, std::forward<Sequence>(seq));
-    }
+        /** @brief Создание последовательностей ключей или отображаемых значений
+        отображений ассоциативного контейнера.
+        @param seq (под)последовательность элементов ассоциативного контейнера
+        */
+        template <class Sequenced>
+        auto operator()(Sequenced && seq) const
+        {
+            using Result = elemenents_sequence<SequenceType<Sequenced>, Index>;
+
+            return Result(::ural::sequence_fwd<Sequenced>(seq));
+        }
+    };
 
     namespace
     {
         /** @brief Объект-тэг для создания последовательности ключей ассоциативного
         контейнера */
-        constexpr auto & map_keys = odr_const<map_sequence_helper<0>>;
+        constexpr auto const & map_keys
+            = odr_const<pipeable<elements_sequence_fn<0>>>;
 
         /** @brief Объект-тэг для создания последовательности отоброжаемых значений
         ассоциативного контейнера */
-        constexpr auto & map_values = odr_const<map_sequence_helper<1>>;
+        constexpr auto const & map_values
+            = odr_const<pipeable<elements_sequence_fn<1>>>;
     }
 }
 // namespace ural

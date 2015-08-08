@@ -616,8 +616,19 @@ BOOST_AUTO_TEST_CASE(map_keys_and_values_test)
     std::map<int, char> const xy
         = ural::make_zip_sequence(x, y) | ural::to_map<std::map>{};
 
-    BOOST_CHECK(ural::equal(xy | ural::map_keys, x));
-    BOOST_CHECK(ural::equal(xy | ural::map_values, y));
+    auto sx = xy | ural::map_keys;
+    auto sy = xy | ural::map_values;
+
+    using Base_sequence = ural::SequenceType<decltype(xy) const &>;
+
+    Base_sequence const sx_base = sx.base();
+    Base_sequence const sy_base = sy.base();
+
+    BOOST_CHECK(sx_base == ural::sequence(xy));
+    BOOST_CHECK(sy_base == ural::sequence(xy));
+
+    BOOST_CHECK(ural::equal(sx, x));
+    BOOST_CHECK(ural::equal(sy, y));
 }
 
 BOOST_AUTO_TEST_CASE(set_inserter_container_access)
