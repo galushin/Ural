@@ -40,32 +40,91 @@ namespace ural
      : private FunctionType<Factory>
     {
         using Base = FunctionType<Factory>;
-    public:
-        /** @brief Оператор создания адаптора
-        @param seq исходная последовательность
-        @param pipe объект, содержащий аргументы для создания адаптора
-        @return <tt> ::ural::apply(f, std::move(pipe.args)) </tt>, где
-        @c f --- <tt> ::ural::curry(Factory{}, std::forward<Sequence>(seq))</tt>
-        */
-        template <class Sequence>
-        friend auto operator|(Sequence && seq, pipeable<Factory> pipe)
-        -> decltype(std::declval<Factory>()(std::forward<Sequence>(seq)))
-        {
-            return pipe.function()(std::forward<Sequence>(seq));
-        }
 
+    public:
+        /** @brief Конструктор без аргументов
+        @post <tt> this->function() == FunctionType<Factory>{} </tt>
+        */
         constexpr explicit pipeable() = default;
 
+        /** @brief Конструктор
+        @param f функция
+        @post <tt> this->function() == f </tt>
+        */
         constexpr explicit pipeable(Factory f)
          : Base(std::move(f))
         {}
 
-    private:
-        FunctionType<Factory> const & function() const
+        //@{
+        /** @brief Используемый функциональный объект
+        @return Константная ссылка на используемый функциональный объект
+        */
+        FunctionType<Factory> const & function() const &
         {
             return *this;
         }
+
+        FunctionType<Factory> && function() &&
+        {
+            return static_cast<FunctionType<Factory> &&>(*this);
+        }
+        //@}
     };
+
+    namespace details
+    {
+        template <class T>
+        struct is_pipeable_impl
+        {
+        private:
+            template <class U>
+            static std::true_type test(pipeable<U>);
+
+            static std::false_type test(...);
+
+        public:
+            using type = decltype(is_pipeable_impl::test(std::declval<T>()));
+        };
+    }
+    // namespace details
+
+    /** @brief Класс-характеристика для проверки того, что тип является
+    результатом инстанцирования шаблона @c pipeable
+    @tparam T тип, для которого выполняется проверка
+    */
+    template <class T>
+    struct is_pipeable
+     : public ::ural::details::is_pipeable_impl<T>::type
+    {};
+
+    /** @brief Оператор создания адаптора
+    @param seq исходная последовательность
+    @param pipe объект, содержащий аргументы для создания адаптора
+    @return <tt> ::ural::apply(f, std::move(pipe.args)) </tt>, где
+    @c f --- <tt> ::ural::curry(Factory{}, std::forward<Sequence>(seq))</tt>
+    */
+    template <class Sequence, class Factory,
+              class = typename std::enable_if<!is_pipeable<Sequence>::value>::type>
+    auto operator|(Sequence && seq, pipeable<Factory> pipe)
+    -> decltype(std::declval<Factory>()(std::forward<Sequence>(seq)))
+    {
+        return pipe.function()(std::forward<Sequence>(seq));
+    }
+
+    /** @brief Композиция функций создания адапторов в конвейерном стиле
+    @param p1, p2 объекты, предназначенные для создания адапторов в конвейерном
+    стиле
+    @return Объект @c p такой, что <tt> seq | p </tt> эквивалентно
+    <tt> seq | p1 | p2 </tt>.
+    */
+    template <class F1, class F2>
+    pipeable<compose_function<F2, F1>>
+    operator|(pipeable<F1> p1, pipeable<F2> p2)
+    {
+        using F = compose_function<F2, F1>;
+        return pipeable<F>(F(std::move(p2).function(),
+                             std::move(p1).function()));
+    }
 
     /** @brief Вспомогательный класс для создания функциональных объектов,
     результаты которых можно использовать как этапы "конвейерного" создания
@@ -93,7 +152,7 @@ namespace ural
             }
 
         private:
-            std::tuple<Args &&...> args_;
+            std::tuple<Args...> args_;
         };
 
         template <class... Args>
@@ -111,7 +170,6 @@ namespace ural
         template <class... Args>
         auto operator()(Args &&... args) const
         {
-            // todo обезопасить за счёт запрета копирования возвращаемого значения
             auto f = this->pipeable_bind(std::forward<Args>(args)...);
             return pipeable<decltype(f)>(std::move(f));
         }

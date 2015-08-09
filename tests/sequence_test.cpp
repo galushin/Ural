@@ -1826,3 +1826,26 @@ BOOST_AUTO_TEST_CASE(zip_sequence_exhaust_test)
     BOOST_CHECK(z_back.original() == z0);
     BOOST_CHECK(z_back.traversed_back() == z0);
 }
+
+// композиция pipeable
+BOOST_AUTO_TEST_CASE(pipeable_combine)
+{
+    std::vector<int> const xs = {3, 1, 4, 1, 5};
+
+    auto seq1 = xs | ural::reversed | ural::replaced(1, 0);
+    auto pipe =      ural::reversed | ural::replaced(1, 0);
+    auto seq2 = xs | pipe;
+
+    BOOST_CHECK(seq1 == seq2);
+}
+
+BOOST_AUTO_TEST_CASE(pipeable_combine_3)
+{
+    std::vector<int> const xs = {3, 1, 4, 1, 5};
+
+    auto seq1 = xs | ural::reversed | ural:: replaced(1, 0) | ural::uniqued;
+    auto pipe =      ural::reversed | ural:: replaced(1, 0) | ural::uniqued;
+    auto seq2 = xs | pipe;
+
+    BOOST_CHECK(seq1 == seq2);
+}

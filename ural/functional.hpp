@@ -22,6 +22,7 @@
 */
 
 #include <ural/functional/adjoin.hpp>
+#include <ural/functional/compose.hpp>
 #include <ural/functional/compare_by.hpp>
 #include <ural/functional/cpp_operators.hpp>
 #include <ural/functional/make_callable.hpp>
