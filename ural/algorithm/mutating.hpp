@@ -1065,7 +1065,6 @@ namespace details
 
     /** @ingroup MutatingSequenceOperations
     @brief Тип функционального объекта обращения последовательности
-    @todo Отдельный алгоритм для последовательностей с произвольным доступом
     */
     class reverse_fn
     {

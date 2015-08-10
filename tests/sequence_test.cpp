@@ -14,6 +14,7 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <ural/numeric/numbers_sequence.hpp>
 #include <ural/math/rational.hpp>
 #include <ural/sequence/all.hpp>
 #include <ural/algorithm.hpp>
@@ -325,7 +326,7 @@ BOOST_AUTO_TEST_CASE(arithmetic_progression_size_test)
 
 BOOST_AUTO_TEST_CASE(cartesian_product_sequence_test)
 {
-    auto digits = ural::make_arithmetic_progression(0, 1) | ural::taken(10);
+    auto digits = ural::numbers(0, 10);
     auto s2 = ural::make_cartesian_product_sequence(digits, digits);
 
     std::set<int> r2;
@@ -405,7 +406,7 @@ BOOST_AUTO_TEST_CASE(arithmetic_progression_equality_test)
 
 BOOST_AUTO_TEST_CASE(cartesian_product_sequence_is_sorted_test)
 {
-    auto digits = ural::make_arithmetic_progression(0, 1) | ural::taken(10);
+    auto digits = ural::numbers(0, 10);
     auto s2 = ural::make_cartesian_product_sequence(digits, digits);
 
     std::vector<ValueType<decltype(s2)>> r2;
@@ -657,7 +658,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(set_inserter_test, Set, Int_set_types)
     URAL_CHECK_EQUAL_RANGES(z, z_ural);
 }
 
-#include <ural/numeric/numbers_sequence.hpp>
 BOOST_AUTO_TEST_CASE(numbers_sanity_test)
 {
     auto const from = 2;
@@ -810,6 +810,9 @@ BOOST_AUTO_TEST_CASE(numbers_copy_backward_test)
     std::vector<int> v(ns.size());
     auto result = ural::copy_backward(ns, v);
 
+    BOOST_CHECK(!result[ural::_1]);
+    BOOST_CHECK(!result[ural::_1].traversed_front());
+    BOOST_CHECK(result[ural::_1].original() == ns);
     BOOST_CHECK(result[ural::_1].traversed_back() == ns);
 }
 

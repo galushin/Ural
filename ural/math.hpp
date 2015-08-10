@@ -138,6 +138,12 @@ namespace ural
         }
     };
 
+    namespace
+    {
+        constexpr auto const & is_even = odr_const<is_even_fn>;
+        constexpr auto const & is_odd  = odr_const<not_function<is_even_fn>>;
+    }
+
     /// @brief Тип функционального объекта для вычисления куба (третьей степени)
     class cube_fn
     {
@@ -216,7 +222,7 @@ namespace ural
     /** @brief Тип бинарного функционального объекта для вычисления
     неотрицательных степеней
     */
-    class natural_power_f
+    class natural_power_fn
     {
     public:
         /** @brief Возведение числа в натуральную степень
@@ -284,6 +290,57 @@ namespace ural
         static constexpr size_t enforce_positive(size_t n)
         {
             return (n > 0) ? n : throw std::logic_error{"zero power"};
+        }
+    };
+
+    /** @brief Тип функционального объекта для вычисления произведения
+    одного числа на неотрицательную целочисленную степень другого числа
+    */
+    struct power_accumulate_semigroup_fn
+    {
+    public:
+        template <class A, class N>
+        constexpr
+        A operator()(A a, A x, N n, ural::plus<>) const
+        {
+            return a + (x * n);
+        }
+
+        /** @brief Оператор вычисления значения функции
+        @param a множитель
+        @param x число, возводимое в степень
+        @param n показатель степени
+        @param op операция возведения в степень
+        @pre <tt> n >= 0 </tt>
+        @return Если <tt> n == 0 </tt>, возвращает @c а,
+        иначе --- <tt> a*natural_power(x, n, op) </tt>
+        */
+        template <class A, class N, class Op>
+        constexpr
+        A operator()(A a, A x, N n, Op op) const
+        {
+            assert(n >= 0);
+
+            if(n == N(0))
+            {
+                return a;
+            }
+
+            for(;;)
+            {
+                if(is_odd(n))
+                {
+                    a = op(a, x);
+
+                    if(n == N(1))
+                    {
+                        return a;
+                    }
+                }
+
+                n = n / N(2);
+                x = op(x, x);
+            }
         }
     };
 
@@ -401,12 +458,12 @@ namespace ural
 
     namespace
     {
-        constexpr auto & is_even = odr_const<is_even_fn>;
-        constexpr auto & is_odd  = odr_const<ural::not_function<is_even_fn>>;
+        constexpr auto const & square = odr_const_holder<square_fn>::value;
+        constexpr auto const & cube = odr_const<cube_fn>;
 
-        constexpr auto & square = odr_const_holder<square_fn>::value;
-        constexpr auto & cube = odr_const<cube_fn>;
-        constexpr auto & natural_power = odr_const<natural_power_f>;
+        constexpr auto const & natural_power = odr_const<natural_power_fn>;
+        constexpr auto const & power_accumulate_semigroup
+            = odr_const<power_accumulate_semigroup_fn>;
     }
 }
 // namespace ural

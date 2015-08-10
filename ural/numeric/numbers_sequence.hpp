@@ -21,8 +21,9 @@
  @brief Последовательность чисел
 */
 
+#include <ural/sequence/adaptors/taken_exactly.hpp>
 #include <ural/sequence/progression.hpp>
-#include <ural/sequence/base.hpp>
+#include <ural/sequence/adaptor.hpp>
 #include <ural/tuple.hpp>
 
 namespace ural
@@ -31,29 +32,24 @@ namespace ural
     значением
     @tparam Number тип числа
     @tparam D тип приращения
-    @todo устранить дублирование с arithmetic_progression - сделать адаптором
-    от taken_exactly_sequence<arithmetic_progression>
     */
-    template <class Number, class Step = use_default>
+    template <class Number, class Step = use_default,
+              class Traversal = use_default>
     class numbers_sequence
-     : public sequence_base<numbers_sequence<Number, Step>>
+     : public sequence_adaptor<numbers_sequence<Number, Step, Traversal>,
+                               taken_exactly_sequence<arithmetic_progression<Number, use_default, Traversal, Step>, std::ptrdiff_t>>
     {
-        typedef typename default_helper<Step, Number>::type step_type;
+        using Progression = arithmetic_progression<Number, use_default, Traversal, Step>;
+        using Taken = taken_exactly_sequence<Progression, std::ptrdiff_t>;
+        using Inherited = sequence_adaptor<numbers_sequence, Taken>;
+
     public:
-        /// @brief Тип значения
-        typedef Number value_type;
-
-        /// @brief Тип ссылки
-        typedef value_type reference;
-
-        /// @brief Тип указателя
-        typedef value_type const * pointer;
+        // Типы
+        /// @brief Тип размера шага
+        using step_type = typename Progression::step_type;
 
         /// @brief Тип расстояния
         typedef std::ptrdiff_t distance_type;
-
-        /// @brief Категория обхода
-        typedef random_access_traversal_tag traversal_tag;
 
         // Создание, уничтожение, копирование, равенство
         /** @brief Конструктор
@@ -62,11 +58,8 @@ namespace ural
         @post <tt> this->front() == x_min </tt>
         */
         numbers_sequence(Number x_min, distance_type n)
-         : members_(Front(std::move(x_min)), Size(std::move(n)),
-                    distance_type{1})
-        {
-            assert(n > 0);
-        }
+         : numbers_sequence(std::move(x_min), std::move(n), step_type(1))
+        {}
 
         /** @brief Конструктор
         @param x_min наименьшее значение
@@ -75,216 +68,27 @@ namespace ural
         @post <tt> this->front() == x_min </tt>
         */
         numbers_sequence(Number x_min, distance_type n, step_type step)
-         : members_(Front(std::move(x_min)), Size(std::move(n)),
-                    std::move(step))
+         : Inherited(Taken(Progression(std::move(x_min), std::move(step)), std::move(n)))
         {}
-
-        /** @brief Оператор "равно"
-        @param x, y операнды
-        @return <tt> x.front() == y.front() && x.size() == y.size() && x.step() == y.step() </tt>
-        */
-        friend bool operator==(numbers_sequence const & x,
-                               numbers_sequence const & y)
-        {
-            return x.members_ == y.members_;
-        }
-
-        // Однопроходная последовательность
-        /** @brief Проверка исчерпания последовательности
-        @return @b true, если последовательность исчерпана, иначе -- @b false
-        */
-        bool operator!() const
-        {
-            return this->size() == distance_type(0);
-        }
-
-        /** @brief Текущий элемент
-        @return Ссылка на текущий элемент
-        */
-        reference front() const
-        {
-            return members_[ural::_1].value();
-        }
-
-        /// @brief Переход к следующему элементу
-        void pop_front()
-        {
-            assert(!!*this);
-
-            -- this->mutable_count();
-            this->mutable_front() += this->step();
-        }
-
-        // Прямая последовательность
-        /** @brief Полная последовательность (вместе с пройденными частями)
-        @return Исходная последовательность
-        */
-        numbers_sequence original() const
-        {
-            return numbers_sequence(members_[ural::_1].old_value(),
-                                    members_[ural::_2].old_value(),
-                                    this->step());
-        }
-
-        /** @brief Пройденная передняя часть последовательность
-        @return Пройденная передняя часть последовательность
-        */
-        numbers_sequence traversed_front() const
-        {
-            return numbers_sequence(members_[ural::_1].old_value(),
-                                    this->traversed_front_size(),
-                                    this->step());
-        }
-
-        /** @brief Отбрасывание пройденной части последовательности
-        @post <tt> !this->traversed_front() </tt>
-        */
-        void shrink_front()
-        {
-            this->reset_old_size(this->original_size() - this->traversed_front_size());
-            this->members_[ural::_1].commit();
-        }
-
-        void exhaust_front()
-        {
-            *this += this->size();
-        }
-
-        // Двусторонняя последовательность
-        /** @brief Задний элемент последовательности
-        @pre <tt> !*this == false </tt>
-        */
-        reference back() const
-        {
-            assert(!!*this);
-            return (*this)[this->size() - 1];
-        }
-
-        /// @brief Пропуск последнего элемента последовательности
-        void pop_back()
-        {
-            assert(!!*this);
-            -- this->mutable_count();
-        }
-
-        /** @brief Пройденная задняя часть последовательность
-        @return Пройденная задняя часть последовательность
-        */
-        numbers_sequence traversed_back() const
-        {
-            auto n_back = this->traversed_back_size();
-
-            auto first = this->front() + this->size() * this->step();
-
-            return numbers_sequence(std::move(first), std::move(n_back),
-                                    this->step());
-        }
-
-        /// @brief Отбрасывает пройденную заднюю часть последовательности
-        void shrink_back()
-        {
-            this->reset_old_size(this->original_size() - this->traversed_back_size());
-        }
-
-        /** @brief Исчерпание последовательности в обратном порядке за
-        константное время
-        @post <tt> !*this == true </tt>
-        */
-        void exhaust_back()
-        {
-            this->pop_back(this->size());
-        }
-
-        // Последовательность произвольного доступа
-        /** @brief Количество элементов
-        @return Количество непройденных элементов
-        */
-        constexpr distance_type size() const
-        {
-            return this->members_[ural::_2].value();
-        }
-
-        /** @brief Индексированный доступ
-        @param n индекс
-        @pre <tt> 0 < this->size() && this->size() < n </tt>
-        @return <tt> this->base()[n] </tt>
-        */
-        reference operator[](distance_type index) const
-        {
-            assert(0 <= index && index < this->size());
-            return this->front() + index * this->step();
-        }
-
-        /** @brief Продвижение на заданное число элементов в передней части
-        последовательности
-        @param n число элементов, которые будут пропущены
-        @pre <tt> 0 <= n && n <= this->size() </tt>
-        @return <tt> *this </tt>
-        */
-        numbers_sequence & operator+=(distance_type n)
-        {
-            assert(0 <= n && n <= this->size());
-
-            this->mutable_count() -= n;
-            this->mutable_front() += (this->step() * n);
-            return *this;
-        }
-
-        /** @brief Продвижение на заданное число элементов в задней части
-        последовательности
-        @param n число элементов, которые будут пропущены
-        @pre <tt> 0 <= n && n <= this->size() </tt>
-        */
-        void pop_back(distance_type n)
-        {
-            assert(0 <= n && n <= this->size());
-            this->mutable_count() -= n;
-        }
-
-    private:
-        void reset_old_size(distance_type new_old_size)
-        {
-            auto cur_size = this->size();
-
-            this->members_[ural::_2] = new_old_size;
-            this->members_[ural::_2].commit();
-            this->members_[ural::_2] = cur_size;
-        }
-
-        distance_type original_size() const
-        {
-            return members_[ural::_2].old_value();
-        }
-
-        distance_type traversed_front_size() const
-        {
-            return (this->front() - members_[ural::_1].old_value()) / this->step();
-        }
-
-        distance_type traversed_back_size() const
-        {
-             return this->original_size() - this->size() - this->traversed_front_size();
-        }
-
-        Number & mutable_front()
-        {
-            return this->members_[ural::_1].value();
-        }
-
-        distance_type & mutable_count()
-        {
-            return this->members_[ural::_2].value();
-        }
 
         step_type const & step() const
         {
-            return this->members_[ural::_3];
+            return Inherited::base().base().step();
         }
 
-        using Front = ural::with_old_value<Number>;
-        using Size  = ural::with_old_value<distance_type>;
+        // Прямая последовательность
+        // @todo Реализовать за счёт адаптора
+        numbers_sequence traversed_front() const
+        {
+            return numbers_sequence(this->base().base().traversed_front());
+        }
 
-        tuple<Front, Size, step_type> members_;
+    private:
+        friend Inherited;
+
+        explicit numbers_sequence(Taken x)
+         : Inherited(std::move(x))
+        {}
     };
 
     /// @brief Тип Функционального объекта для создания @c numbers_sequence

@@ -18,9 +18,8 @@
 */
 
 /** @file ural/sequence/taken.hpp
- @brief Адаптер последовательности, ограничивающий базовую последовательность
- заданным числом элементов
- @todo По умолчанию для Size использовать DifferenceType<Size>
+ @brief Адаптер последовательности, извлекающий из базовой последовательности
+ не более заданного числа элементов.
 */
 
 #include <ural/sequence/adaptor.hpp>
@@ -35,10 +34,11 @@ namespace ural
     @tparam Sequence тип последовательности
     @tparam Size тип количества элементов, которые должны быть взяты из базовой
     последовательности
-    @todo take_sequence не может быть двусторонней, уточнить traversal_tag
+    @todo take_sequence может быть двусторонней только если исходная
+    последовательность имеет произвольный доступ, уточнить traversal_tag.
     @todo Для последовательностей произвольного доступа можно оптимизировать:
     узнать точный размер в конструкторе, а следовательно делать меньше проверок
-    в operator!, быстрее выполнять exhaust_front
+    в operator!, быстрее выполнять exhaust_front.
     */
     template <class Sequence, class Size = DifferenceType<Sequence>>
     class take_sequence
@@ -84,15 +84,10 @@ namespace ural
             -- ural::get(count_);
         }
 
-        // Прямая последовательность
         /** @brief Пройденная часть последовательности
         @return Пройденная часть последовательности
         */
-        take_sequence traversed_front() const
-        {
-            return take_sequence(this->base().traversed_front(),
-                                 this->init_count() - this->count());
-        }
+        take_sequence traversed_front() const;
 
         /** @brief Исчерпание последовательности за константное время в прямом
         порядке
@@ -154,36 +149,29 @@ namespace ural
     bool operator==(take_sequence<Sequence, Size> const & x,
                     take_sequence<Sequence, Size> const & y);
 
-    /** @brief Тип вспомогательного объекта для создания @c take_sequence
-    @tparam Size тип для представления размера
-    */
-    template <class Size>
-    struct taken_helper
+    /// @brief Тип Функционального объекта для создания @c take_sequence
+    // @todo Оптимизация для последовательностей произвольного доступа
+    // @todo Оптимизация для последовательностей известного размера
+    struct make_take_sequence_fn
     {
-        /// @brief Количество элементов, которым необходимо ограничиться
-        Size count;
+    public:
+        /** @brief Создание @c take_sequence
+        @param seq входная последовательность
+        @param helper объект, хранящий количество элементов
+        */
+        template <class Sequenced, class Size>
+        auto operator()(Sequenced && seq, Size n) const
+        {
+            using Result = take_sequence<SequenceType<Sequenced>, Size>;
+            return Result(::ural::sequence_fwd<Sequenced>(seq), std::move(n));
+        }
     };
 
-    /** @brief Создание @c take_sequence в конвейерном стиле
-    @param seq входная последовательность
-    @param helper объект, хранящий количество элементов
-    */
-    template <class Sequenced, class Size>
-    take_sequence<SequenceType<Sequenced>, Size>
-    operator|(Sequenced && seq, taken_helper<Size> helper)
+    namespace
     {
-        typedef take_sequence<SequenceType<Sequenced>, Size> Result;
-        return Result(::ural::sequence_fwd<Sequenced>(seq), helper.count);
-    }
-
-    /** @brief Функция создания @c take_helper
-    @param n количество элементов
-    @return <tt> taken_helper<Size>{n} </tt>
-    */
-    template <class Size>
-    taken_helper<Size> taken(Size n)
-    {
-        return {n};
+        /// @brief Функциональный объект для создания @c take_sequence
+        constexpr auto const & taken
+            = odr_const<pipeable_maker<make_take_sequence_fn>>;
     }
 }
 // namespace ural

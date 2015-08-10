@@ -151,6 +151,7 @@
 		<Unit filename="../ural/sequence/adaptors/set_operations.hpp" />
 		<Unit filename="../ural/sequence/adaptors/simo.hpp" />
 		<Unit filename="../ural/sequence/adaptors/taken.hpp" />
+		<Unit filename="../ural/sequence/adaptors/taken_exactly.hpp" />
 		<Unit filename="../ural/sequence/adaptors/transform.hpp" />
 		<Unit filename="../ural/sequence/adaptors/uniqued.hpp" />
 		<Unit filename="../ural/sequence/adaptors/zip.hpp" />

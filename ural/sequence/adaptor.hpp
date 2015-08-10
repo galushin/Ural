@@ -133,7 +133,10 @@ namespace ural
         время.
         @post <tt> !*this == true </tt>
         */
-        void exhaust_front();
+        void exhaust_front()
+        {
+            return this->mutable_base().exhaust_front();
+        }
 
         // Двусторонняя последовательность
         /** @brief Задний элемент последовательности
@@ -159,13 +162,19 @@ namespace ural
         }
 
         /// @brief Отбрасывает пройденную заднюю часть последовательности
-        void shrink_back();
+        void shrink_back()
+        {
+            return this->mutable_base().shrink_back();
+        }
 
         /** @brief Исчерпание последовательности в обратном порядке за
         константное время
         @post <tt> !*this == true </tt>
         */
-        void exhaust_back();
+        void exhaust_back()
+        {
+            return this->mutable_base().exhaust_back();
+        }
 
         // Последовательность произвольного доступа
         /** @brief Количество элементов
@@ -192,7 +201,11 @@ namespace ural
         @pre <tt> 0 <= n && n <= this->size() </tt>
         @return <tt> *this </tt>
         */
-        T & operator+=(distance_type n);
+        T & operator+=(distance_type n)
+        {
+            this->mutable_base() += n;
+            return static_cast<T&>(*this);
+        }
 
         /** @brief Продвижение на заданное число элементов в задней части
         последовательности

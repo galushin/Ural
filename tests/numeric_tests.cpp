@@ -689,8 +689,8 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_PE_56)
     auto max_digit_sum
         = ural::make_min_element_accumulator(integer{0}, ural::greater<>{});
 
-    for(auto a : ural::make_arithmetic_progression(1, 1) | ural::taken(a_max))
-    for(auto b : ural::make_arithmetic_progression(1, 1) | ural::taken(b_max))
+    for(auto a : ural::make_arithmetic_progression(1, 1) | ural::taken_exactly(a_max))
+    for(auto b : ural::make_arithmetic_progression(1, 1) | ural::taken_exactly(b_max))
     {
         auto const r = ural::natural_power(integer{a}, b);
         auto const new_value = digit_sum(r);

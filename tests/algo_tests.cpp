@@ -1974,9 +1974,10 @@ BOOST_AUTO_TEST_CASE(reverse_forward_test)
 
         URAL_CHECK_EQUAL_RANGES(c_std, c_ural);
 
-        BOOST_CHECK(result.traversed_begin() == c_ural.begin());
-        BOOST_CHECK(result.begin() == c_ural.end());
-        BOOST_CHECK(result.end() == c_ural.end());
+        BOOST_CHECK(result.original() == ural::sequence(c_ural));
+        BOOST_CHECK(result.traversed_front() == ural::sequence(c_ural));
+        BOOST_CHECK(!result);
+        BOOST_CHECK(!result.traversed_back());
     }
 }
 BOOST_AUTO_TEST_CASE(reverse_test)
@@ -1991,10 +1992,10 @@ BOOST_AUTO_TEST_CASE(reverse_test)
 
     URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 
-    BOOST_CHECK(result.traversed_begin() == x_ural.begin());
-    BOOST_CHECK(result.begin() == x_ural.end());
-    BOOST_CHECK(result.end() == x_ural.end());
-    BOOST_CHECK(result.traversed_end() == x_ural.end());
+    BOOST_CHECK(result.original() == ural::sequence(x_ural));
+    BOOST_CHECK(result.traversed_front() == ural::sequence(x_ural));
+    BOOST_CHECK(!result);
+    BOOST_CHECK(!result.traversed_back());
 }
 
 BOOST_AUTO_TEST_CASE(reversed_reverse_test)
