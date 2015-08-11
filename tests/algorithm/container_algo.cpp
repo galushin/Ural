@@ -14,13 +14,16 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <ural/algorithm.hpp>
+
 #include "../defs.hpp"
 #include <boost/test/unit_test.hpp>
 
-#include <ural/algorithm.hpp>
+#include <ural/container/vector.hpp>
 
 #include <forward_list>
 #include <list>
+#include <vector>
 
 BOOST_AUTO_TEST_CASE(push_front_range_test)
 {
@@ -73,4 +76,56 @@ BOOST_AUTO_TEST_CASE(insert_range_test)
 
     URAL_CHECK_EQUAL_RANGES(out_1, out_2);
     BOOST_CHECK_EQUAL(&out_2_ref, &out_2);
+}
+
+// Комбинирование вызовов модифицирующих алгоритмов с erase
+BOOST_AUTO_TEST_CASE(unqiue_fn_const_iterator_test)
+{
+    ural::vector<int> v1 = {1, 2, 3, 4, 5, 6};
+    auto v2 = v1;
+
+    auto const n = v1.size() / 2;
+
+    v2.erase(v2.cbegin() + n, v2.cend());
+
+    ural::erase(v1, ural::make_iterator_sequence(v1.cbegin() + n, v1.cend()));
+
+    URAL_CHECK_EQUAL_RANGES(v1, v2);
+}
+
+BOOST_AUTO_TEST_CASE(unique_erase_combination_test)
+{
+    std::vector<int> v_std{1,2,3,1,2,3,3,4,5,4,5,6,7};
+    std::sort(v_std.begin(), v_std.end());
+
+    auto v_ural = v_std;
+
+    // std
+    auto const last = std::unique(v_std.begin(), v_std.end());
+    v_std.erase(last, v_std.end());
+
+    // ural
+    auto const to_erase = ural::unique(v_ural);
+    ural::erase(v_ural, to_erase);
+
+    // Сравнение результатов
+    URAL_CHECK_EQUAL_RANGES(v_std, v_ural);
+}
+
+BOOST_AUTO_TEST_CASE(unique_erase_test)
+{
+    std::vector<int> v_std{1,2,3,1,2,3,3,4,5,4,5,6,7};
+    std::sort(v_std.begin(), v_std.end());
+
+    auto v_ural = v_std;
+
+    // std
+    auto const last = std::unique(v_std.begin(), v_std.end());
+    v_std.erase(last, v_std.end());
+
+    // ural
+    ural::unique_erase(v_ural);
+
+    // Сравнение результатов
+    URAL_CHECK_EQUAL_RANGES(v_std, v_ural);
 }
