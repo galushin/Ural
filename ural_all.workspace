@@ -3,5 +3,6 @@
 	<Workspace title="Workspace">
 		<Project filename="benchmarks/abstraction_penalty/abstraction_penalty.cbp" />
 		<Project filename="ural_test/ural_test.cbp" />
+		<Project filename="benchmarks/stochastic_tests/stochastic_tests.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>

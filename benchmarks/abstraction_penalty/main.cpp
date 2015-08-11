@@ -396,9 +396,9 @@ typedef reverse_iterator<rDP, Double> rrDP;
 rrDP rrDPb(rDPe);
 rrDP rrDPe(rDPb);
 
-int main(int argv, char** argc)
+int main(int argc, const char** argc)
 {
-    if (argv > 1) iterations = atoi(argc[1]);
+    if (argc > 1) iterations = atoi(argv[1]);
     fill(dpb, dpe, double(init_value));
     fill(Dpb, Dpe, Double(init_value));
     test0(dpb, dpe);
