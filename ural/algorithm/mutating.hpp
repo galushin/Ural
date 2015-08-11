@@ -27,6 +27,7 @@
  элементов существующих последовательностей.
 */
 
+#include <ural/sequence/adaptors/outdirected.hpp>
 #include <ural/sequence/adaptors/partition.hpp>
 #include <ural/sequence/adaptors/uniqued.hpp>
 #include <ural/sequence/adaptors/replace.hpp>
@@ -36,6 +37,7 @@
 #include <ural/sequence/adaptors/filtered.hpp>
 #include <ural/sequence/adaptors/taken.hpp>
 #include <ural/sequence/generator.hpp>
+#include <ural/algorithm/non_modifying.hpp>
 #include <ural/algorithm/core.hpp>
 
 namespace ural
@@ -346,11 +348,11 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectlySwappable<Forward1, Forward2>));
 
-            for(; !!in1 && !!in2; ++ in1, (void) ++ in2)
-            {
-                ::ural::indirect_swap(in1, in2);
-            }
-            return ural::tuple<Forward1, Forward2>{in1, in2};
+            auto result = for_each_fn{}(in1 | outdirected, in2 | outdirected,
+                                        indirect_swap);
+
+            return make_tuple(std::move(result)[ural::_1].base(),
+                              std::move(result)[ural::_2].base());
         }
     };
 
@@ -465,6 +467,146 @@ namespace details
     };
 
     /** @ingroup MutatingSequenceOperations
+    @brief Класс функционального объекта заполнения последовательности
+    результатами вызова заднной функции без параметров
+    */
+    class generate_fn
+    {
+    public:
+        /** @brief Заполнение последовательности результатами вызова заднной
+        функции без параметров
+        @param seq последовательность
+        @param gen генератор, то есть функция без параметров
+        @return Последовательность, полученная из @c seq продвижением до
+        исчерпания.
+        */
+        template <class Output, class Generator>
+        SequenceType<Output>
+        operator()(Output && seq, Generator gen) const
+        {
+            BOOST_CONCEPT_ASSERT((concepts::Function<Generator>));
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequenced<Output>));
+            BOOST_CONCEPT_ASSERT((concepts::OutputSequence<SequenceType<Output>,
+                                                           ResultType<Generator>>));
+
+            return this->impl(::ural::sequence_fwd<Output>(seq),
+                              ::ural::make_callable(std::move(gen)));
+        }
+
+    private:
+        template <class Output, class Generator>
+        static Output
+        impl(Output seq, Generator gen)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::Function<Generator>));
+            BOOST_CONCEPT_ASSERT((concepts::OutputSequence<Output, ResultType<Generator>>));
+
+            auto r = copy_fn{}(::ural::make_generator_sequence(std::move(gen)),
+                               std::move(seq));
+            return r[ural::_2];
+        }
+    };
+
+    /** @ingroup MutatingSequenceOperations
+    @brief Класс функционального объекта для присваивания заданному количеству
+    элементов последовательности результатами вызова заднной функции без
+    параметров.
+    */
+    class generate_n_fn
+    {
+    public:
+        /** @brief Присваивает заданному количеству элементов последовательности
+        результаты вызова <tt> gen() </tt>.
+        @param gen фунцкия, которая может быть вызвана без аргументов
+        @param n количество
+        @param out выходная последовательность
+        @return Непройденная часть @c out
+        @todo Что делать, если посещено менее @c n элементов?
+        */
+        template <class Generator, class Output>
+        SequenceType<Output>
+        operator()(Output && out, DifferenceType<SequenceType<Output>> n,
+                   Generator gen) const
+        {
+            BOOST_CONCEPT_ASSERT((concepts::Function<Generator>));
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequenced<Output>));
+            BOOST_CONCEPT_ASSERT((concepts::OutputSequence<SequenceType<Output>,
+                                                           ResultType<Generator>>));
+
+            auto in = ural::make_generator_sequence(::ural::make_callable(gen));
+            return ::ural::copy_n_fn{}(::std::move(in), std::move(n),
+                                       ::ural::sequence_fwd<Output>(out))[ural::_2];
+        }
+    };
+
+    /** @ingroup MutatingSequenceOperations
+    @brief Класс функционального объекта заполнения последовательности
+    заданными значениями
+    */
+    class fill_fn
+    {
+    public:
+        /** @brief Присваивает всем элементам последовательности заданное
+        значение
+        @param seq последовательность
+        @param value значение
+        @return Последовательность, полученная из @c seq продвижением до
+        исчерпания.
+        */
+        template <class Output, class T>
+        SequenceType<Output>
+        operator()(Output && seq, T const & value) const
+        {
+            BOOST_CONCEPT_ASSERT((concepts::Semiregular<T>));
+            BOOST_CONCEPT_ASSERT((concepts::Sequenced<Output>));
+            BOOST_CONCEPT_ASSERT((concepts::OutputSequence<SequenceType<Output>, T>));
+
+            return this->impl(::ural::sequence_fwd<Output>(seq), value);
+        }
+
+    private:
+        template <class Output, class T>
+        static Output
+        impl(Output seq, T const & value)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::Semiregular<T>));
+            BOOST_CONCEPT_ASSERT((concepts::OutputSequence<Output, T>));
+
+            return generate_fn{}(std::move(seq),
+                                 ural::value_function<T const &>(value));
+        }
+    };
+
+    /** @ingroup MutatingSequenceOperations
+    @brief Класс функционального объекта для присваивания заданному количеству
+    элементов последовательности заданного значения.
+    */
+    class fill_n_fn
+    {
+    public:
+        /** @brief Присваивает заданному количеству элементов последовательности
+        значение @c value
+        @param out выходная последовательность
+        @param n количество элементов
+        @param value значение, которое должно быть присвоено элементам
+        @return Непройденная часть @c out
+        */
+        template <class Output, class T>
+        SequenceType<Output>
+        operator()(Output && out, DifferenceType<SequenceType<Output>> n,
+                   T const & value) const
+        {
+            BOOST_CONCEPT_ASSERT((concepts::Semiregular<T>));
+            BOOST_CONCEPT_ASSERT((concepts::Sequenced<Output>));
+            BOOST_CONCEPT_ASSERT((concepts::OutputSequence<SequenceType<Output>, T>));
+
+            auto gen = ::ural::value_function<T const &>(value);
+            return ::ural::generate_n_fn{}(std::forward<Output>(out),
+                                           std::move(n), std::move(gen));
+        }
+    };
+
+    /** @ingroup MutatingSequenceOperations
     @brief Тип функционального объекта для замены элементов последовательности,
     которые удовлетворяют заданному предикату, на новое значение
     */
@@ -505,15 +647,8 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<Predicate, ForwardSequence>));
             BOOST_CONCEPT_ASSERT((concepts::Writable<ForwardSequence, T>));
 
-            for(; !!seq; ++ seq)
-            {
-                if(pred(*seq))
-                {
-                    *seq = new_value;
-                }
-            }
-
-            return seq;
+            return fill_fn{}(std::move(seq) | filtered(std::move(pred)),
+                             new_value).base();
         }
     };
 
@@ -677,146 +812,6 @@ namespace details
             return ural::replace_copy_if_fn{}(std::forward<Input>(in),
                                               std::forward<Output>(out),
                                               std::move(pred), new_value);
-        }
-    };
-
-    /** @ingroup MutatingSequenceOperations
-    @brief Класс функционального объекта заполнения последовательности
-    результатами вызова заднной функции без параметров
-    */
-    class generate_fn
-    {
-    public:
-        /** @brief Заполнение последовательности результатами вызова заднной
-        функции без параметров
-        @param seq последовательность
-        @param gen генератор, то есть функция без параметров
-        @return Последовательность, полученная из @c seq продвижением до
-        исчерпания.
-        */
-        template <class Output, class Generator>
-        SequenceType<Output>
-        operator()(Output && seq, Generator gen) const
-        {
-            BOOST_CONCEPT_ASSERT((concepts::Function<Generator>));
-            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequenced<Output>));
-            BOOST_CONCEPT_ASSERT((concepts::OutputSequence<SequenceType<Output>,
-                                                           ResultType<Generator>>));
-
-            return this->impl(::ural::sequence_fwd<Output>(seq),
-                              ::ural::make_callable(std::move(gen)));
-        }
-
-    private:
-        template <class Output, class Generator>
-        static Output
-        impl(Output seq, Generator gen)
-        {
-            BOOST_CONCEPT_ASSERT((concepts::Function<Generator>));
-            BOOST_CONCEPT_ASSERT((concepts::OutputSequence<Output, ResultType<Generator>>));
-
-            auto r = copy_fn{}(::ural::make_generator_sequence(std::move(gen)),
-                               std::move(seq));
-            return r[ural::_2];
-        }
-    };
-
-    /** @ingroup MutatingSequenceOperations
-    @brief Класс функционального объекта для присваивания заданному количеству
-    элементов последовательности результатами вызова заднной функции без
-    параметров.
-    */
-    class generate_n_fn
-    {
-    public:
-        /** @brief Присваивает заданному количеству элементов последовательности
-        результаты вызова <tt> gen() </tt>.
-        @param gen фунцкия, которая может быть вызвана без аргументов
-        @param n количество
-        @param out выходная последовательность
-        @return Непройденная часть @c out
-        @todo Что делать, если посещено менее @c n элементов?
-        */
-        template <class Generator, class Output>
-        SequenceType<Output>
-        operator()(Output && out, DifferenceType<SequenceType<Output>> n,
-                   Generator gen) const
-        {
-            BOOST_CONCEPT_ASSERT((concepts::Function<Generator>));
-            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequenced<Output>));
-            BOOST_CONCEPT_ASSERT((concepts::OutputSequence<SequenceType<Output>,
-                                                           ResultType<Generator>>));
-
-            auto in = ural::make_generator_sequence(::ural::make_callable(gen));
-            return ::ural::copy_n_fn{}(::std::move(in), std::move(n),
-                                       ::ural::sequence_fwd<Output>(out))[ural::_2];
-        }
-    };
-
-    /** @ingroup MutatingSequenceOperations
-    @brief Класс функционального объекта заполнения последовательности
-    заданными значениями
-    */
-    class fill_fn
-    {
-    public:
-        /** @brief Присваивает всем элементам последовательности заданное
-        значение
-        @param seq последовательность
-        @param value значение
-        @return Последовательность, полученная из @c seq продвижением до
-        исчерпания.
-        */
-        template <class Output, class T>
-        SequenceType<Output>
-        operator()(Output && seq, T const & value) const
-        {
-            BOOST_CONCEPT_ASSERT((concepts::Semiregular<T>));
-            BOOST_CONCEPT_ASSERT((concepts::Sequenced<Output>));
-            BOOST_CONCEPT_ASSERT((concepts::OutputSequence<SequenceType<Output>, T>));
-
-            return this->impl(::ural::sequence_fwd<Output>(seq), value);
-        }
-
-    private:
-        template <class Output, class T>
-        static Output
-        impl(Output seq, T const & value)
-        {
-            BOOST_CONCEPT_ASSERT((concepts::Semiregular<T>));
-            BOOST_CONCEPT_ASSERT((concepts::OutputSequence<Output, T>));
-
-            return generate_fn{}(std::move(seq),
-                                 ural::value_function<T const &>(value));
-        }
-    };
-
-    /** @ingroup MutatingSequenceOperations
-    @brief Класс функционального объекта для присваивания заданному количеству
-    элементов последовательности заданного значения.
-    */
-    class fill_n_fn
-    {
-    public:
-        /** @brief Присваивает заданному количеству элементов последовательности
-        значение @c value
-        @param out выходная последовательность
-        @param n количество элементов
-        @param value значение, которое должно быть присвоено элементам
-        @return Непройденная часть @c out
-        */
-        template <class Output, class T>
-        SequenceType<Output>
-        operator()(Output && out, DifferenceType<SequenceType<Output>> n,
-                   T const & value) const
-        {
-            BOOST_CONCEPT_ASSERT((concepts::Semiregular<T>));
-            BOOST_CONCEPT_ASSERT((concepts::Sequenced<Output>));
-            BOOST_CONCEPT_ASSERT((concepts::OutputSequence<SequenceType<Output>, T>));
-
-            auto gen = ::ural::value_function<T const &>(value);
-            return ::ural::generate_n_fn{}(std::forward<Output>(out),
-                                           std::move(n), std::move(gen));
         }
     };
 

@@ -22,6 +22,9 @@
  последовательность
 */
 
+#include <ural/sequence/base.hpp>
+#include <ural/utility/pipeable.hpp>
+
 namespace ural
 {
     /** @brief Адаптор последовательности, возвращающий в качестве значения
