@@ -258,6 +258,11 @@ namespace ural
     template <class R, class T, class... Args>
     class mem_fn_wrapper
     {
+    friend bool operator==(mem_fn_wrapper const & x, mem_fn_wrapper const & y)
+    {
+        return x.target() == y.target();
+    }
+
     public:
         typedef typename declare_mem_fn_ptr_type<R, T, Args...>::type
             target_type;

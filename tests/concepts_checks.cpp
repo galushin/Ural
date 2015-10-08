@@ -209,14 +209,14 @@ BOOST_AUTO_TEST_CASE(reversed_writable_concept_checks)
 
 BOOST_AUTO_TEST_CASE(transformed_concept_checks)
 {
-    typedef int Type;
+    typedef std::string Type;
 
     ural_test::istringstream_helper<Type> const c_in;
     std::forward_list<Type> const c_fwd;
     std::list<Type> const c_bidir;
     std::vector<Type> const c_ra;
 
-    auto f = ural::negate<>{};
+    auto f = &std::string::size;
 
     // выходной transformed быть не может - не проверяем
     auto s_in = c_in | ural::transformed(f);
