@@ -54,6 +54,7 @@
 #include <ural/sequence/adaptors/transform.hpp>
 #include <ural/sequence/adaptors/uniqued.hpp>
 #include <ural/sequence/adaptors/taken.hpp>
+#include <ural/sequence/adaptors/taken_while.hpp>
 #include <ural/sequence/adaptors/zip.hpp>
 #include <ural/sequence/adaptors/simo.hpp>
 

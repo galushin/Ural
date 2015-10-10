@@ -79,6 +79,7 @@
 		<Unit filename="../tests/rnd.hpp" />
 		<Unit filename="../tests/sequence/iterator_sequence_test.cpp" />
 		<Unit filename="../tests/sequence/reversed.cpp" />
+		<Unit filename="../tests/sequence/taken_while.cpp" />
 		<Unit filename="../tests/sequence_test.cpp" />
 		<Unit filename="../tests/statistics/distributions_discrete.cpp" />
 		<Unit filename="../tests/statistics/statistics_tests.cpp" />
@@ -154,6 +155,7 @@
 		<Unit filename="../ural/sequence/adaptors/simo.hpp" />
 		<Unit filename="../ural/sequence/adaptors/taken.hpp" />
 		<Unit filename="../ural/sequence/adaptors/taken_exactly.hpp" />
+		<Unit filename="../ural/sequence/adaptors/taken_while.hpp" />
 		<Unit filename="../ural/sequence/adaptors/transform.hpp" />
 		<Unit filename="../ural/sequence/adaptors/uniqued.hpp" />
 		<Unit filename="../ural/sequence/adaptors/zip.hpp" />
