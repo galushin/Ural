@@ -153,80 +153,94 @@ namespace ural
 namespace
 {
     /// @brief Функциональный объект для создания кортежей из пачки аргументов
-    constexpr auto const make_tuple = make_tuple_function{};
+    constexpr auto const && make_tuple = odr_const<make_tuple_function>;
 }
 
 namespace tuples
 {
-namespace details
-{
-    template <class Tuple, class UnaryPredicate, size_t Index>
-    bool any_of(Tuple const &, UnaryPredicate,
-                placeholder<Index>, placeholder<Index>)
-    {
-        return false;
-    }
-
-    template <class Tuple, class UnaryPredicate, size_t First, size_t Last>
-    bool any_of(Tuple const & x, UnaryPredicate pred,
-                placeholder<First>,
-                placeholder<Last> last)
-    {
-        return pred(std::get<First>(x))
-             || ::ural::tuples::details::any_of(x, std::move(pred),
-                                                placeholder<First+1>{}, last);
-    }
-
-    template <class Tuple, class F, size_t Last>
-    F for_each(Tuple &&, F f, placeholder<Last>, placeholder<Last>)
-    {
-        return std::move(f);
-    }
-
-    template <class Tuple, class F, size_t First, size_t Last>
-    F for_each(Tuple && t, F f, placeholder<First>, placeholder<Last> last)
-    {
-        f(std::get<First>(std::forward<Tuple>(t)));
-        return ::ural::tuples::details::for_each(std::forward<Tuple>(t),
-                                                 std::move(f),
-                                                 ural::placeholder<First+1>{},
-                                                 last);
-    }
-}
-// namespace details
-
-    /** @brief Применение функционального объекта к каждому из элементов
-    котрежа
-    @param t кортеж
-    @param f функциональный объект
-    @return Копия @c f, применённая ко всем элементам @c t
+    /** @brief Тип функционального объекта для применения функции к каждому
+    элементу кортежа
     */
-    template <class Tuple, class F>
-    F for_each(Tuple && t, F f)
+    struct for_each_fn
     {
-        typedef typename std::remove_reference<Tuple>::type Unref;
-        typedef typename std::remove_cv<Unref>::type Raw_tuple;
+    public:
+        /** @brief Применение функционального объекта к каждому из элементов
+        котрежа
+        @param t кортеж
+        @param f функциональный объект
+        @return Копия @c f, применённая ко всем элементам @c t
+        */
+        template <class Tuple, class F>
+        F operator()(Tuple && t, F && f) const
+        {
+            using Raw_tuple = typename std::decay<Tuple>::type;
+            constexpr auto const N = std::tuple_size<Raw_tuple>::value;
+            return this->impl(std::forward<Tuple>(t), std::forward<F>(f),
+                              ural::make_index_sequence<N>{});
+        }
 
-        constexpr auto N = std::tuple_size<Raw_tuple>::value;
+    private:
+        template <class Tuple, class F, std::size_t... Indices>
+        static F impl(Tuple && t, F && f, ural::index_sequence<Indices...>)
+        {
+            (void)std::initializer_list<int>
+            {
+                (std::forward<F>(f)(std::get<Indices>(std::forward<Tuple>(t))), 0)...
+            };
 
-        return ::ural::tuples::details::for_each(std::forward<Tuple>(t),
-                                                 std::move(f),
-                                                 ural::placeholder<0>{},
-                                                 ural::placeholder<N>{});
-    }
+            return f;
+        }
+    };
 
-    /** @brief Проверка того, что все элементы кортежа удовлетворяют предикату
-    @param x кортеж
-    @param pred предикат
-    @return @b true, если все элементы кортежа @c x удовлетворяют предикату
-    @c pred, иначе --- @b false.
+    /** @brief Тип функционального объекта, проверящего, что все элементы
+    кортежа удовлетворяют заданному предикату.
     */
-    template <class Tuple, class UnaryPredicate>
-    typename std::enable_if<(std::tuple_size<Tuple>::value > 0), bool>::type
-    any_of(Tuple const & x, UnaryPredicate pred)
+    class any_of_fn
     {
-        return ural::tuples::details::any_of(x, pred, placeholder<0>{},
-                                             placeholder<std::tuple_size<Tuple>::value>{});
+    public:
+        /** @brief Проверка того, что все элементы кортежа удовлетворяют предикату
+        @param x кортеж
+        @param pred предикат
+        @return @b true, если все элементы кортежа @c x удовлетворяют предикату
+        @c pred, иначе --- @b false.
+        */
+        template <class Tuple, class UnaryPredicate>
+        typename std::enable_if<(std::tuple_size<Tuple>::value > 0), bool>::type
+        operator()(Tuple const & x, UnaryPredicate pred) const
+        {
+            return this->impl(x, pred, placeholder<0>{},
+                              placeholder<std::tuple_size<Tuple>::value>{});
+        }
+
+    private:
+        template <class Tuple, class UnaryPredicate, std::size_t First>
+        bool impl(Tuple const &, UnaryPredicate,
+                  placeholder<First>, placeholder<First>) const
+        {
+            return false;
+        }
+
+        template <class Tuple, class UnaryPredicate, size_t First, size_t Last>
+        bool impl(Tuple const & x, UnaryPredicate pred,
+                  placeholder<First>, placeholder<Last> stop) const
+        {
+            return pred(std::get<First>(x))
+                   || this->impl(x, std::move(pred),
+                                 placeholder<First+1>{}, stop);
+        }
+    };
+
+    namespace
+    {
+        /** @brief Функциональный объект, применяющий функцию к каждому элементу
+        кортежа
+        */
+        constexpr auto const && for_each = ural::odr_const<for_each_fn>;
+
+        /** @brief Функциональный объект, проверящий, что все элементы кортежа
+        удовлетворяют заданному предикату.
+        */
+        constexpr auto const && any_of = ural::odr_const<any_of_fn>;
     }
 }
 // namespace tuples
