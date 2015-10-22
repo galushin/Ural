@@ -561,7 +561,6 @@ namespace ural
     /** @brief Функциональный объект для фиксации первого аргумента функции
     @tparam F тип функции
     @tparam Arg тип первого аргумента
-    @todo доступ к функции
     */
     template <class F, class Arg>
     class curried_function
@@ -628,12 +627,16 @@ namespace ural
         ural::tuple<F, Holder> state_;
     };
 
+    /** @brief Тип адаптора функционального объекта, фиксирующего первый
+    аргумент заданного функционального объекта.
+    */
     struct curry_fn
     {
         /** @brief Фиксация первого аргумента функции
         @param f функция
         @param arg значение для первого аргумента
-        @todo преобразовать в функциональный объект
+        @return <tt> Fun(make_callable(std::move(f)), std::forward<Arg>(arg)) </tt>,
+        где @c Fun -- <tt> curried_function<FunctionType<F>, Arg> <tt>
         */
         template <class F, class Arg>
         curried_function<FunctionType<F>, Arg>
@@ -646,6 +649,9 @@ namespace ural
 
     namespace
     {
+        /** @brief Функциональный объект, фиксирующий первый аргумент заданного
+        функционального объекта
+        */
         constexpr auto const & curry = odr_const<curry_fn>;
 
         // Обобщённые операции
