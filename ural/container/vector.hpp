@@ -26,7 +26,7 @@
 #include <ural/memory.hpp>
 #include <ural/sequence/iterator_sequence.hpp>
 #include <ural/container/policy.hpp>
-#include <ural/sequence/taken.hpp>
+#include <ural/sequence/adaptors/taken.hpp>
 #include <ural/algorithm.hpp>
 #include <ural/defs.hpp>
 

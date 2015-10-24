@@ -15,7 +15,7 @@
 */
 
 #include <boost/test/unit_test.hpp>
-#include "../tests/defs.hpp"
+#include "../defs.hpp"
 
 #include <forward_list>
 #include <list>

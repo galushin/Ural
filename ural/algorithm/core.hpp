@@ -64,9 +64,8 @@ namespace ural
         последовательностей (одна из них будет пустой).
         */
         template <class Input, class Output>
-        auto operator()(Input && in, Output && out) const
-        -> decltype(::ural::copy_fn::copy_impl(::ural::sequence_fwd<Input>(in),
-                                               ::ural::sequence_fwd<Output>(out)))
+        tuple<SequenceType<Input>, SequenceType<Output>>
+        operator()(Input && in, Output && out) const
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
             BOOST_CONCEPT_ASSERT((concepts::SinglePassSequenced<Output>));
@@ -110,8 +109,8 @@ namespace ural
         пока не выполнится условие <tt> pred(r.front()) != false </tt>.
         */
         template <class Input, class Predicate>
-        auto operator()(Input && in, Predicate pred) const
-        -> decltype(::ural::sequence_fwd<Input>(in))
+        SequenceType<Input>
+        operator()(Input && in, Predicate pred) const
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<Predicate, SequenceType<Input>>));
@@ -132,7 +131,7 @@ namespace ural
         impl(Input in, T const & value, BinaryPredicate bin_pred)
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate, Input, T const *>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<BinaryPredicate, Input, T const *>));
 
             auto pred = std::bind(std::move(bin_pred), ural::_1, std::cref(value));
 
@@ -152,12 +151,12 @@ namespace ural
         */
         template <class Input, class T,
                   class BinaryPredicate = ural::equal_to<>>
-        auto operator()(Input && in, T const & value,
-                        BinaryPredicate pred = BinaryPredicate()) const
-        -> decltype(::ural::sequence_fwd<Input>(in))
+        SequenceType<Input>
+        operator()(Input && in, T const & value,
+                   BinaryPredicate pred = BinaryPredicate()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate, SequenceType<Input>, T const *>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<BinaryPredicate, SequenceType<Input>, T const *>));
 
             return this->impl(::ural::sequence_fwd<Input>(in), value,
                               ::ural::make_callable(std::move(pred)));
@@ -188,8 +187,8 @@ namespace ural
         не выполнится условие <tt> pred(r.front()) == false </tt>.
         */
         template <class Input, class Predicate>
-        auto operator()(Input && in, Predicate pred) const
-        -> decltype(::ural::sequence_fwd<Input>(in))
+        SequenceType<Input>
+        operator()(Input && in, Predicate pred) const
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<Predicate, SequenceType<Input>>));

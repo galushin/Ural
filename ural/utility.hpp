@@ -104,6 +104,7 @@ namespace ural
         @param f функциональный объект
         @param t кортеж аргументов
         @return <tt> f(get<0>(t), ..., get<n-1>(t)) </tt>
+        @todo принимать указатели на функции-члены и переменные-члены
         */
         template <typename F, typename Tuple>
         constexpr auto operator()(F&& f, Tuple&& t) const
@@ -115,7 +116,7 @@ namespace ural
         }
     };
 
-    inline namespace
+    namespace
     {
         /** @brief Функциональный объект для вызова функции с элементами кортежа
         в качестве аргументов.

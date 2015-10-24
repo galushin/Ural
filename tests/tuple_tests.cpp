@@ -16,6 +16,7 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <ural/functional.hpp>
 #include <ural/tuple.hpp>
 #include <ural/utility.hpp>
 
@@ -115,3 +116,32 @@ BOOST_AUTO_TEST_CASE(apply_function_to_tuple)
 
     BOOST_CHECK_EQUAL("42 4.2 abs", r);
 }
+
+BOOST_AUTO_TEST_CASE(tuple_constexpr_get)
+{
+    constexpr auto const v1 = 42;
+    constexpr auto const v2 = 4.2;
+    constexpr auto const ts = ural::make_tuple(v1, v2);
+
+    static_assert(std::get<0>(ts) == v1, "");
+    static_assert(std::get<1>(ts) == v2, "");
+
+    BOOST_CHECK(true);
+}
+
+#ifdef __GNUC__
+#if __GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__ >= 50101
+BOOST_AUTO_TEST_CASE(tuple_constexpr_get_regeression_first_empty_type)
+{
+    constexpr auto const v0 = ural::equal_to<>{};
+    constexpr auto const v1 = 42;
+    constexpr auto const v2 = 4.2;
+    constexpr auto const ts = ural::make_tuple(v0, v1, v2);
+
+    static_assert(std::get<1>(ts) == v1, "");
+    static_assert(std::get<2>(ts) == v2, "");
+
+    BOOST_CHECK(true);
+}
+#endif // >= 50101
+#endif // ifdef __GNUC__

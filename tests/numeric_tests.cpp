@@ -38,7 +38,9 @@ BOOST_AUTO_TEST_CASE(iota_test)
     auto const result = ural::iota(x2, init_value);
 
     URAL_CHECK_EQUAL_RANGES(x1, x2);
-    BOOST_CHECK_EQUAL(init_value + n, result);
+
+    BOOST_CHECK(result.original() == ural::sequence(x2));
+    BOOST_CHECK(result.traversed_front() == ural::sequence(x2));
 }
 
 BOOST_AUTO_TEST_CASE(accumulate_test)
@@ -83,7 +85,7 @@ BOOST_AUTO_TEST_CASE(partial_sum_test_minimal)
 {
     // Подготовка
     std::vector<int> const src_std = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
-    ural_test::istringstream_helper<int> src_ural(src_std);
+    ural_test::istringstream_helper<int> const src_ural(src_std);
 
     // std
     std::vector<int> x_std;
@@ -170,7 +172,7 @@ BOOST_AUTO_TEST_CASE(adjacent_difference_test_minimal)
 {
     // Подготовка
     std::vector<int> const src_std = {1,2,3,5,9,11,12};
-    ural_test::istringstream_helper<int> src_ural(src_std);
+    ural_test::istringstream_helper<int> const src_ural(src_std);
 
     // std
     std::vector<int> r_std;
@@ -687,8 +689,8 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_PE_56)
     auto max_digit_sum
         = ural::make_min_element_accumulator(integer{0}, ural::greater<>{});
 
-    for(auto a : ural::make_arithmetic_progression(1, 1) | ural::taken(a_max))
-    for(auto b : ural::make_arithmetic_progression(1, 1) | ural::taken(b_max))
+    for(auto a : ural::make_arithmetic_progression(1, 1) | ural::taken_exactly(a_max))
+    for(auto b : ural::make_arithmetic_progression(1, 1) | ural::taken_exactly(b_max))
     {
         auto const r = ural::natural_power(integer{a}, b);
         auto const new_value = digit_sum(r);

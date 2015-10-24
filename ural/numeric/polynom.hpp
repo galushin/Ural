@@ -23,7 +23,7 @@
  @todo Вся арифметика многочленов: разделить, вычислить остаток от деления
 */
 
-#include <ural/sequence/transform.hpp>
+#include <ural/sequence/adaptors/transform.hpp>
 #include <ural/container/vector.hpp>
 #include <ural/sequence/sink.hpp>
 

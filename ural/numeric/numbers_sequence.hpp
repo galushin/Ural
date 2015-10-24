@@ -21,8 +21,10 @@
  @brief Последовательность чисел
 */
 
+#include <ural/sequence/adaptors/taken_exactly.hpp>
+#include <ural/sequence/progression.hpp>
+#include <ural/sequence/adaptor.hpp>
 #include <ural/tuple.hpp>
-#include <ural/sequence/base.hpp>
 
 namespace ural
 {
@@ -30,39 +32,33 @@ namespace ural
     значением
     @tparam Number тип числа
     @tparam D тип приращения
-    @todo Возможность задавать разные типы наибольшего и наименьшего значений?
-    @todo Возможность задавать категорию обхода
     */
-    template <class Number, class D = use_default>
+    template <class Number, class Step = use_default,
+              class Traversal = use_default>
     class numbers_sequence
-     : public sequence_base<numbers_sequence<Number, D>>
+     : public sequence_adaptor<numbers_sequence<Number, Step, Traversal>,
+                               taken_exactly_sequence<arithmetic_progression<Number, use_default, Traversal, Step>, std::ptrdiff_t>>
     {
+        using Progression = arithmetic_progression<Number, use_default, Traversal, Step>;
+        using Taken = taken_exactly_sequence<Progression, std::ptrdiff_t>;
+        using Inherited = sequence_adaptor<numbers_sequence, Taken>;
+
     public:
-        /// @brief Тип значения
-        typedef Number value_type;
-
-        /// @brief Тип ссылки
-        typedef value_type const & reference;
-
-        /// @brief Тип указателя
-        typedef value_type const & pointer;
+        // Типы
+        /// @brief Тип размера шага
+        using step_type = typename Progression::step_type;
 
         /// @brief Тип расстояния
-        typedef typename default_helper<D, Number>::type distance_type;
+        typedef std::ptrdiff_t distance_type;
 
-        /** @brief Категория обхода
-        @todo Усилить категорию обхода?
-        */
-        typedef single_pass_traversal_tag traversal_tag;
-
-        // Создание, уничтожение, копирование
+        // Создание, уничтожение, копирование, равенство
         /** @brief Конструктор
         @param x_min наименьшее значение
-        @param x_max наибольшее значение
+        @param n число шагов
         @post <tt> this->front() == x_min </tt>
         */
-        numbers_sequence(Number x_min, Number x_max)
-         : data_(std::move(x_min), std::move(x_max), distance_type{1})
+        numbers_sequence(Number x_min, distance_type n)
+         : numbers_sequence(std::move(x_min), std::move(n), step_type(1))
         {}
 
         /** @brief Конструктор
@@ -71,85 +67,104 @@ namespace ural
         @param step шаг
         @post <tt> this->front() == x_min </tt>
         */
-        numbers_sequence(Number x_min, Number x_max, distance_type step)
-         : data_{std::move(x_min), std::move(x_max), std::move(step)}
+        numbers_sequence(Number x_min, distance_type n, step_type step)
+         : Inherited(Taken(Progression(std::move(x_min), std::move(step)), std::move(n)))
         {}
 
-        // Однопроходная последовательность
-        /** @brief Проверка исчерпания последовательности
-        @return @b true, если последовательность исчерпана, иначе -- @b false
-        */
-        bool operator!() const
+        step_type const & step() const
         {
-            return data_[ural::_1] >= data_[ural::_2];
+            return Inherited::base().base().step();
         }
 
-        /** @brief Текущий элемент
-        @return Ссылка на текущий элемент
-        */
-        reference front() const
+        // Прямая последовательность
+        // @todo Реализовать за счёт адаптора
+        numbers_sequence traversed_front() const
         {
-            return data_[ural::_1];
-        }
-
-        /// @brief Переход к следующему элементу
-        void pop_front()
-        {
-            data_[ural::_1] += data_[ural::_3];
-        }
-
-        // Последовательность известной длины
-        constexpr distance_type size() const
-        {
-            return (data_[ural::_2] - data_[ural::_1]) / data_[ural::_3];
+            return numbers_sequence(this->base().base().traversed_front());
         }
 
     private:
-        ural::tuple<Number, Number, distance_type> data_;
+        friend Inherited;
+
+        explicit numbers_sequence(Taken x)
+         : Inherited(std::move(x))
+        {}
     };
 
-    /** @brief Создание последовательности чисел
-    @param x_min наименьшее значение
-    @param x_max наибольшее значение
-    @return <tt> numbers_sequence<T>(std::move(x_min), std::move(x_max)) </tt>,
-    где @c T --- <tt> CommonType<T1, T2> </tt>
-    */
-    template <class T1, class T2>
-    numbers_sequence<CommonType<T1, T2>>
-    numbers(T1 x_min, T2 x_max)
+    /// @brief Тип Функционального объекта для создания @c numbers_sequence
+    struct numbers_fn
     {
-        typedef CommonType<T1, T2> Number;
-
-        return numbers_sequence<Number>(std::move(x_min), std::move(x_max));
-    }
-
-    /** @brief Создание последовательности чисел
-    @param x_min наименьшее значение
-    @param x_max наибольшее значение
-    @param step шаг
-    @return <tt> numbers_sequence<T, D>(x_min, x_max, step) </tt>,
-    где @c T --- <tt> CommonType<T1, T2> </tt>
-    */
-    template <class T1, class T2, class D>
-    numbers_sequence<CommonType<T1, T2>, D>
-    numbers(T1 x_min, T2 x_max, D step)
-    {
-        typedef CommonType<T1, T2> Number;
-        typedef numbers_sequence<Number, D> Seq;
-
         // @todo Проверить переполнения и сужения
-        return Seq(std::move(x_min), std::move(x_max), std::move(step));
-    }
+    public:
+        /** @brief Создание последовательности чисел
+        @param x_min наименьшее значение
+        @param x_max наибольшее значение
+        */
+        template <class T1, class T2>
+        numbers_sequence<CommonType<T1, T2>, unit_t>
+        operator()(T1 x_min, T2 x_max) const
+        {
+            using T = CommonType<T1, T2>;
+            assert(T(x_min) <= T(x_max));
 
-    /** @brief Создание последовательности индексов массива
-    @param v массив
-    @return <tt> ural::numbers(0, v.size()) </tt>
+            typedef numbers_sequence<T, unit_t> Seq;
+            return Seq(std::move(x_min), std::move(x_max) - x_min, unit_t{});
+        }
+
+        /** @brief Создание последовательности чисел
+        @param from, to границы интервала <tt> [from, to) </tt>
+        @param step шаг
+        @pre <tt> step != 0 </tt>
+        @pre <tt> (step > 0) ? (first <= last) : (last <= first) </tt>
+        */
+        template <class T1, class T2, class D>
+        numbers_sequence<CommonType<T1, T2>, D>
+        operator()(T1 first, T2 last, D step) const
+        {
+            using T = CommonType<T1, T2>;
+
+            assert(step != 0);
+            assert((step > 0) ? (T(first) <= T(last)) : (T(last) <= T(first)));
+
+            auto from = (step >= 0) ? first : last;
+            auto to   = (step >= 0) ? last  : first;
+            auto abs_step = (step >= 0) ? step : - step;
+
+            auto n = (to - from) / abs_step + ((to - from) % abs_step != 0);
+
+            assert(n >= 0);
+
+            using Sequence = numbers_sequence<CommonType<T1, T2>, D>;
+            return Sequence(std::move(first), std::move(n), std::move(step));
+        }
+    };
+
+    /** @brief Тип функционального объекта для создания последовательности
+    индексов контейнера.
     */
-    template <class Vector>
-    auto indices_of(Vector const & v)
-    -> decltype(ural::numbers(0, v.size()))
+    struct indices_of_fn
     {
-        return ural::numbers(0, v.size());
+    public:
+        /** @brief Создание последовательности индексов массива
+        @param v массив
+        @return <tt> ural::isequence(0, v.size()) </tt>
+        */
+        template <class Vector>
+        auto operator()(Vector const & v) const
+        {
+            return ural::numbers_fn{}(0, v.size());
+        }
+    };
+
+    namespace
+    {
+        /// @brief Функциональный объект для создания @c numbers_sequence
+        constexpr auto const & numbers = odr_const<numbers_fn>;
+
+        /** @brief Функциональный объект для создания последовательности
+        индексов контейнера
+        */
+        constexpr auto const & indices_of = odr_const<indices_of_fn>;
     }
 }
 // namespace ural

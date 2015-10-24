@@ -22,6 +22,7 @@
  последовательности, удовлетворяющие некоторому условию
 */
 
+#include <ural/sequence/adaptor.hpp>
 #include <ural/algorithm/core.hpp>
 
 namespace ural
@@ -46,30 +47,15 @@ namespace ural
     */
     template <class Input, class Predicate>
     class remove_if_sequence
-     : public sequence_base<remove_if_sequence<Input, Predicate>>
+     : public sequence_adaptor<remove_if_sequence<Input, Predicate>, Input, Predicate>
     {
-    friend bool operator==(remove_if_sequence const & x,
-                           remove_if_sequence const & y)
-    {
-        return x.members_ == y.members_;
-    }
+        using Base = sequence_adaptor<remove_if_sequence<Input, Predicate>, Input, Predicate>;
+
     public:
         // Типы
-        /// @brief Тип ссылки
-        typedef typename Input::reference reference;
-
-        /// @brief Тип значения
-        typedef ValueType<Input> value_type;
-
         /// @brief Категория обхода
         typedef CommonType<typename Input::traversal_tag, forward_traversal_tag>
             traversal_tag;
-
-        /// @brief Тип указателя
-        typedef typename Input::pointer pointer;
-
-        /// @brief Тип расстояния
-        typedef DifferenceType<Input> distance_type;
 
         // Конструкторы
         /** @brief Конструктор
@@ -79,36 +65,18 @@ namespace ural
         @post <tt> this->predicate() == pred </tt>
         */
         remove_if_sequence(Input input, Predicate pred)
-         : members_{std::move(input), std::move(pred)}
+         : Base{std::move(input), std::move(pred)}
         {
             this->seek();
         }
 
         // Однопроходная последовательность
-        /** @brief Проверка исчерпания последовательностей
-        @return @b true, если последовательность исчерпана, иначе --- @b false.
-        */
-        bool operator!() const
-        {
-            return !this->base();
-        }
-
-        /** @brief Текущий элемент последовательности
-        @pre <tt> !*this == false </tt>
-        @return Ссылка на текущий элемент последовательности
-        */
-        reference front() const
-        {
-            return this->base().front();
-        }
-
         /** @brief Переход к следующему элементу
         @pre <tt> !*this == false </tt>
         */
         void pop_front()
         {
-            ::ural::get(members_, ::ural::_1).pop_front();
-
+            Base::pop_front();
             this->seek();
         }
 
@@ -122,51 +90,26 @@ namespace ural
                                       this->predicate());
         }
 
-        /** @brief Отбрасывание пройденной части последовательности
-        @post <tt> !this->traversed_front() </tt>
-        */
-        void shrink_front()
-        {
-            return ural::get(members_, ural::_1).shrink_front();
-        }
+        remove_if_sequence original() const;
 
-        // Адаптор последовательности
-        //@{
-        /** @brief Базовая последовательность
-        @return Базовая последовательность
-        */
-        Input const & base() const &
-        {
-            return ural::get(members_, ural::_1);
-        }
+        // Двусторонняя последовательность
+        remove_if_sequence traversed_back() const;
 
-        Input && base() &&
-        {
-            return std::move(this->mutable_base());
-        }
-        //@}
-
+        // Адаптор
         /** @brief Используемый предикат
         @return Используемый предикат
         */
         Predicate const & predicate() const
         {
-            return ural::get(members_, ural::_2);
+            return Base::payload();
         }
 
     private:
-        Input & mutable_base()
-        {
-            return ural::get(members_, ural::_1);
-        }
         void seek()
         {
             this->mutable_base() = find_if_not_fn{}(std::move(this->mutable_base()),
                                                     this->predicate());
         }
-
-    private:
-        tuple<Input, Predicate> members_;
     };
 
     /** @brief Функция создания @c remove_if_sequence
@@ -176,12 +119,10 @@ namespace ural
     @return <tt> remove_if_sequence(sequence_fwd<Input>(in), make_callable(pred)) </tt>
     */
     template <class Input, class Predicate>
-    auto make_remove_if_sequence(Input && in, Predicate pred)
-    -> remove_if_sequence<decltype(::ural::sequence_fwd<Input>(in)),
-                          decltype(make_callable(std::move(pred)))>
+    remove_if_sequence<SequenceType<Input>, FunctionType<Predicate>>
+    make_remove_if_sequence(Input && in, Predicate pred)
     {
-        typedef remove_if_sequence<decltype(::ural::sequence_fwd<Input>(in)),
-                                   decltype(make_callable(std::move(pred)))> Sequence;
+        using Sequence = remove_if_sequence<SequenceType<Input>, FunctionType<Predicate>>;
         return Sequence(::ural::sequence_fwd<Input>(in), make_callable(std::move(pred)));
     }
 
@@ -218,62 +159,39 @@ namespace ural
     */
     template <class Input, class T, class BinaryPredicate>
     class remove_sequence
-     : public sequence_base<remove_sequence<Input, T, BinaryPredicate>>
+     : public sequence_adaptor<remove_sequence<Input, T, BinaryPredicate>, Input, BinaryPredicate>
     {
+        using Base = sequence_adaptor<remove_sequence<Input, T, BinaryPredicate>, Input, BinaryPredicate>;
+
     public:
         // Типы
-        /// @brief Тип ссылки
-        typedef typename Input::reference reference;
-
-        /// @brief Тип значения
-        typedef ValueType<Input> value_type;
-
         /// @brief Категория обхода
         typedef CommonType<typename Input::traversal_tag, forward_traversal_tag>
             traversal_tag;
-
-        /// @brief Тип указателя
-        typedef typename Input::pointer pointer;
-
-        /// @brief Тип расстояния
-        typedef DifferenceType<Input> distance_type;
 
         // Конструкторы
         /** @brief Конструктор
         @param in базовая последовательность
         @param value пропускаемое значение
         @param pred бинарный предикат
+        @post <tt> this->base() == in </tt>
+        @post <tt> this->removed_value() </tt>
+        @post <tt> this->predicate() == pred </tt>
         */
         explicit remove_sequence(Input in, T const & value, BinaryPredicate pred)
-         : members_{std::move(in), value, std::move(pred)}
+         : Base{std::move(in), std::move(pred)}
+         , old_value_(value)
         {
             this->seek();
         }
 
         // Однопроходная последовательность
-        /** @brief Проверка исчерпания последовательностей
-        @return @b true, если последовательность исчерпана, иначе --- @b false.
-        */
-        bool operator!() const
-        {
-            return !members_[ural::_1];
-        }
-
-        /** @brief Текущий элемент последовательности
-        @pre <tt> !*this == false </tt>
-        @return Ссылка на текущий элемент последовательности
-        */
-        reference front() const
-        {
-            return members_[ural::_1].front();
-        }
-
         /** @brief Переход к следующему элементу
         @pre <tt> !*this == false </tt>
         */
         void pop_front()
         {
-            ++ members_[ural::_1];
+            Base::pop_front();
             this->seek();
         }
 
@@ -283,7 +201,7 @@ namespace ural
         */
         T const & removed_value() const
         {
-            return members_[ural::_2];
+            return this->old_value_;
         }
 
         /** @brief Используемый предикат
@@ -291,20 +209,19 @@ namespace ural
         */
         BinaryPredicate const & predicate() const
         {
-            return members_[ural::_3];
+            return this->payload();
         }
 
     private:
         void seek()
         {
-            members_[ural::_1]
-                = find_fn{}(std::move(members_[ural::_1]),
-                            this->removed_value(),
-                            ural::not_fn(this->predicate()));
+            this->mutable_base() = find_fn{}(this->mutable_base(),
+                                             this->removed_value(),
+                                             ural::not_fn(this->predicate()));
         }
 
     private:
-        ural::tuple<Input, T, BinaryPredicate> members_;
+        T old_value_;
     };
 
     /** @brief Функция создания @c remove_sequence

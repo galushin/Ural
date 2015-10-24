@@ -25,10 +25,10 @@
 
 #include <ural/format/stream_traits.hpp>
 #include <ural/algorithm.hpp>
+#include <ural/sequence/adaptors/transform.hpp>
 #include <ural/sequence/to.hpp>
 #include <ural/sequence/iostream.hpp>
 #include <ural/sequence/insertion.hpp>
-#include <ural/sequence/transform.hpp>
 #include <ural/sequence/by_line.hpp>
 
 #include <cassert>
@@ -107,7 +107,8 @@ namespace ural
 
     /** @brief Вывод таблицы в поток
     @param os поток вывода
-    @tparam table таблица
+    @param table таблица
+    @return <tt> std::forward<OStream>(os) </tt>
     */
     template <class OStream, class Table>
     OStream write_table(OStream && os, Table const & table)

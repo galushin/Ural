@@ -121,7 +121,7 @@ namespace ural
         */
         operation_type const & operation() const
         {
-            return *this;
+            return this->payload();
         }
 
     private:

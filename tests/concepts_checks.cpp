@@ -16,9 +16,17 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <ural/archetypes.hpp>
+#include "defs.hpp"
 
+#include <ural/sequence/all.hpp>
+#include <ural/math.hpp>
+#include <ural/archetypes.hpp>
 #include <ural/algorithm.hpp>
+
+#include <forward_list>
+#include <list>
+#include <map>
+#include <vector>
 
 BOOST_AUTO_TEST_CASE(archetype_check)
 {
@@ -92,6 +100,235 @@ BOOST_AUTO_TEST_CASE(value_type_for_c_arrays)
     static_assert(std::is_same<T, ural::ValueType<ArrayN>>::value, "");
     static_assert(std::is_same<T, ural::ValueType<Array>>::value, "");
     static_assert(std::is_same<T, ural::ValueType<Pointer>>::value, "");
+
+    BOOST_CHECK(true);
+}
+
+BOOST_AUTO_TEST_CASE(map_keys_sequence_readable)
+{
+    using Key = int;
+    using Mapped = std::string;
+
+    using Pair = std::pair<Key const, Mapped>;
+
+    ural::generator_sequence<std::function<Pair()>> in{};
+    std::forward_list<Pair> const fwd{};
+    std::map<Key, Mapped> const bidir{};
+    std::vector<Pair> const ra{};
+
+    auto in_key = std::move(in) | ural::map_keys;
+    auto fwd_key = fwd | ural::map_keys;
+    auto bidir_key = bidir | ural::map_keys;
+    auto ra_key = ra | ural::map_keys;
+
+    using namespace ural::concepts;
+
+    BOOST_CONCEPT_ASSERT((InputSequence<decltype(in_key)>));
+
+    BOOST_CONCEPT_ASSERT((FiniteForwardSequence<decltype(fwd_key)>));
+    BOOST_CONCEPT_ASSERT((ReadableSequence<decltype(fwd_key)>));
+
+    BOOST_CONCEPT_ASSERT((BidirectionalSequence<decltype(bidir_key)>));
+    BOOST_CONCEPT_ASSERT((ReadableSequence<decltype(bidir_key)>));
+
+    BOOST_CONCEPT_ASSERT((RandomAccessSequence<decltype(ra_key)>));
+    BOOST_CONCEPT_ASSERT((ReadableSequence<decltype(ra_key)>));
+}
+
+BOOST_AUTO_TEST_CASE(removed_if_concept_checks)
+{
+    ural_test::istringstream_helper<int> const c_in;
+    std::forward_list<int> const c_fwd;
+    std::list<int> const c_bidir;
+    // не может быть произвольного доступа, так как заренее не известно,
+    // сколько элементов придётся выкинуть
+
+    auto const pred = ural::is_even;
+
+    auto s_in = c_in | removed_if(pred);
+    auto s_fwd = c_fwd | removed_if(pred);
+    auto s_bidir = c_bidir | removed_if(pred);
+
+    using namespace ural::concepts;
+
+    BOOST_CONCEPT_ASSERT((SinglePassSequence<decltype(s_in)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_in)>));
+
+    BOOST_CONCEPT_ASSERT((ForwardSequence<decltype(s_fwd)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_fwd)>));
+
+    BOOST_CONCEPT_ASSERT((BidirectionalSequence<decltype(s_bidir)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_bidir)>));
+
+    BOOST_CHECK(true);
+}
+
+BOOST_AUTO_TEST_CASE(reversed_concept_checks)
+{
+    typedef int Type;
+
+    std::list<Type> const c_bidir;
+    std::vector<Type> const c_ra;
+
+    auto s_bidir = c_bidir | ural::reversed;
+    auto s_ra = c_ra | ural::reversed;
+
+    using namespace ural::concepts;
+
+    BOOST_CONCEPT_ASSERT((BidirectionalSequence<decltype(s_bidir)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_bidir)>));
+
+    BOOST_CONCEPT_ASSERT((RandomAccessSequence<decltype(s_ra)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_ra)>));
+
+    BOOST_CHECK(true);
+}
+
+BOOST_AUTO_TEST_CASE(reversed_writable_concept_checks)
+{
+    typedef std::pair<int, std::string> Type;
+
+    std::list<Type> c_bidir;
+    std::vector<Type> c_ra;
+
+    auto s_bidir = c_bidir | ural::reversed;
+    auto s_ra = c_ra | ural::reversed;
+
+    using namespace ural::concepts;
+
+    BOOST_CONCEPT_ASSERT((BidirectionalSequence<decltype(s_bidir)>));
+    BOOST_CONCEPT_ASSERT((OutputSequence<decltype(s_bidir), Type>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_bidir)>));
+
+    BOOST_CONCEPT_ASSERT((RandomAccessSequence<decltype(s_ra)>));
+    BOOST_CONCEPT_ASSERT((OutputSequence<decltype(s_ra), Type>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_ra)>));
+
+    BOOST_CHECK(true);
+}
+
+BOOST_AUTO_TEST_CASE(transformed_concept_checks)
+{
+    typedef std::string Type;
+
+    ural_test::istringstream_helper<Type> const c_in;
+    std::forward_list<Type> const c_fwd;
+    std::list<Type> const c_bidir;
+    std::vector<Type> const c_ra;
+
+    auto f = &std::string::size;
+
+    // выходной transformed быть не может - не проверяем
+    auto s_in = c_in | ural::transformed(f);
+    auto s_fwd = c_fwd | ural::transformed(f);
+    auto s_bidir = c_bidir | ural::transformed(f);
+    auto s_ra = c_ra | ural::transformed(f);
+
+    using namespace ural::concepts;
+
+    BOOST_CONCEPT_ASSERT((SinglePassSequence<decltype(s_in)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_in)>));
+
+    BOOST_CONCEPT_ASSERT((ForwardSequence<decltype(s_fwd)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_fwd)>));
+
+    BOOST_CONCEPT_ASSERT((BidirectionalSequence<decltype(s_bidir)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_bidir)>));
+
+    BOOST_CONCEPT_ASSERT((RandomAccessSequence<decltype(s_ra)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_ra)>));
+
+    BOOST_CHECK(true);
+}
+
+BOOST_AUTO_TEST_CASE(transformed_to_lvalue_concept_checks)
+{
+    typedef std::pair<int, std::string> Type;
+
+    std::forward_list<Type> c_fwd;
+    std::list<Type> c_bidir;
+    std::vector<Type> c_ra;
+
+    auto f = ural::make_callable(&Type::first);
+
+    // входной и выходной transformed, возвращающий lvalue быть не может - не проверяем
+    auto s_fwd = c_fwd | ural::transformed(f);
+    auto s_bidir = c_bidir | ural::transformed(f);
+    auto s_ra = c_ra | ural::transformed(f);
+
+    using namespace ural::concepts;
+
+    BOOST_CONCEPT_ASSERT((ForwardSequence<decltype(s_fwd)>));
+    BOOST_CONCEPT_ASSERT((OutputSequence<decltype(s_fwd), int>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_fwd)>));
+
+    BOOST_CONCEPT_ASSERT((BidirectionalSequence<decltype(s_bidir)>));
+    BOOST_CONCEPT_ASSERT((OutputSequence<decltype(s_bidir), int>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_bidir)>));
+
+    BOOST_CONCEPT_ASSERT((RandomAccessSequence<decltype(s_ra)>));
+    BOOST_CONCEPT_ASSERT((OutputSequence<decltype(s_ra), int>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_ra)>));
+
+    BOOST_CHECK(true);
+}
+
+BOOST_AUTO_TEST_CASE(uniqued_concept_checks)
+{
+    typedef int Type;
+
+    ural_test::istringstream_helper<Type> const c_in;
+    std::forward_list<Type> const c_fwd;
+    std::list<Type> const c_bidir;
+    std::vector<Type> const c_ra;
+
+    auto s_in = c_in | ural::uniqued;
+    auto s_fwd = c_fwd | ural::uniqued;
+    auto s_bidir = c_bidir | ural::uniqued;
+    auto s_ra = c_ra | ural::uniqued;
+
+    using namespace ural::concepts;
+
+    BOOST_CONCEPT_ASSERT((SinglePassSequence<decltype(s_in)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_in)>));
+
+    BOOST_CONCEPT_ASSERT((FiniteForwardSequence<decltype(s_fwd)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_fwd)>));
+
+    BOOST_CONCEPT_ASSERT((FiniteForwardSequence<decltype(s_bidir)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_bidir)>));
+
+    BOOST_CONCEPT_ASSERT((FiniteForwardSequence<decltype(s_ra)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_ra)>));
+
+    BOOST_CHECK(true);
+}
+
+BOOST_AUTO_TEST_CASE(writable_uniqued_concept_checks)
+{
+    typedef int Type;
+
+    std::forward_list<Type> c_fwd;
+    std::list<Type> c_bidir;
+    std::vector<Type> c_ra;
+
+    auto s_fwd = c_fwd | ural::uniqued;
+    auto s_bidir = c_bidir | ural::uniqued;
+    auto s_ra = c_ra | ural::uniqued;
+
+    using namespace ural::concepts;
+
+    BOOST_CONCEPT_ASSERT((FiniteForwardSequence<decltype(s_fwd)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_fwd)>));
+    BOOST_CONCEPT_ASSERT((Writable<decltype(s_fwd), Type>));
+
+    BOOST_CONCEPT_ASSERT((FiniteForwardSequence<decltype(s_bidir)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_bidir)>));
+    BOOST_CONCEPT_ASSERT((Writable<decltype(s_bidir), Type>));
+
+    BOOST_CONCEPT_ASSERT((FiniteForwardSequence<decltype(s_ra)>));
+    BOOST_CONCEPT_ASSERT((Readable<decltype(s_ra)>));
+    BOOST_CONCEPT_ASSERT((Writable<decltype(s_ra), Type>));
 
     BOOST_CHECK(true);
 }

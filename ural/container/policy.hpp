@@ -126,7 +126,7 @@ namespace ural
         container_checking_throw_policy() = default;
     public:
         /** @brief Проверка допустимости индекса
-        @param seq последовательность
+        @param c проверяемый контейнер или последовательность
         @param index проверяемый индекс
         @throw out_of_range, если <tt> index >= seq.size() </tt>
         */
@@ -154,7 +154,7 @@ namespace ural
 
         /** @brief Проверяет, что последовательность @c seq не пуста, в
         противном случае возбуждает исключение типа <tt> logic_error </tt>.
-        @param seq проверяемая последовательность
+        @param c проверяемый контейнер или последовательность
         @throw std::logic_error, если <tt> c.empty() == true </tt>
         */
         template <class Container>
@@ -209,7 +209,7 @@ namespace ural
         container_checking_assert_policy() = default;
     public:
         /** @brief Проверка допустимости индекса
-        @param seq последовательность
+        @param c контейнер или последовательность
         @param index проверяемый индекс
         */
         template <class Container>
@@ -221,7 +221,7 @@ namespace ural
         }
 
         /** @brief Проверяет, что последовательность @c seq не пуста.
-        @param seq проверяемая последовательность
+        @param c контейнер или последовательность
         */
         template <class Container>
         static void
@@ -263,7 +263,7 @@ namespace ural
         ~container_no_checks_policy() = default;
     public:
         /** @brief Проверка допустимости индекса
-        @param seq последовательность
+        @param c проверяемый контейнер или последовательность
         @param index проверяемый индекс
         */
         template <class Container>
@@ -272,7 +272,7 @@ namespace ural
                     typename Container::difference_type index);
 
         /** @brief Проверяет, что последовательность @c seq не пуста.
-        @param seq проверяемая последовательность
+        @param c проверяемый контейнер или последовательность
         */
         template <class Container>
         static void

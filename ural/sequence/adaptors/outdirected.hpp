@@ -22,6 +22,9 @@
  последовательность
 */
 
+#include <ural/sequence/base.hpp>
+#include <ural/utility/pipeable.hpp>
+
 namespace ural
 {
     /** @brief Адаптор последовательности, возвращающий в качестве значения
@@ -96,48 +99,52 @@ namespace ural
         }
 
         // Адаптор последовательности
+        //@{
         /** @brief Базовая последовательность
         @return Константная ссылка на базовую последовательность
         */
-        reference base() const
+        reference base() const &
         {
             return this->base_;
         }
+
+        Sequence && base() &&
+        {
+            return std::move(this->base_);
+        }
+        //@}
 
     private:
         Sequence base_;
     };
 
-    /** Функция создания @c outdirected_sequence. Данная функция не преобразует
-    свой аргумент в последовательность, прежде чем применять адаптор. Это
-    связано с тем, что основное предназначение этой функции --- преобразовывать
-    типы с оператором ++ в последовательности.
-    @brief Функция создания @c outdirected_sequence
-    @return <tt> outdirected_sequence<Sequence>{std::move(x)} </tt>
-    */
-    template <class Sequence>
-    outdirected_sequence<Sequence>
-    make_outdirected_sequence(Sequence x)
+    /// @brief Тип функционального объекта для создания @c outdirected_sequence
+    class make_outdirected_sequence_fn
     {
-        return outdirected_sequence<Sequence>{std::move(x)};
-    }
+    public:
+        /** Функция создания @c outdirected_sequence. Данная функция не
+        преобразует свой аргумент в последовательность, прежде чем применять
+        адаптор. Это связано с тем, что основное предназначение этой функции ---
+        преобразовывать типы с оператором ++ в последовательности.
+        @brief Функция создания @c outdirected_sequence
+        @return <tt> outdirected_sequence<Sequence>{std::move(x)} </tt>
+        */
+        template <class Sequence>
+        auto operator()(Sequence x) const
+        {
+            return outdirected_sequence<Sequence>{std::move(x)};
+        }
+    };
 
-    struct outdirected_helper {};
-
-    inline namespace
+    namespace
     {
-        constexpr auto const & outdirected = odr_const<outdirected_helper>;
-    }
+        /// @brief Функциональный объект для создания @c outdirected_sequence
+        constexpr auto const & make_outdirected_sequence
+            = odr_const<make_outdirected_sequence_fn>;
 
-    /** @brief Создание @c outdirected_sequence в "конвейерном" стиле
-    @param seq базовая последовательность
-    @return <tt> make_outdirected_sequence(std::move(seq)) </tt>
-    */
-    template <class Sequence>
-    outdirected_sequence<Sequence>
-    operator|(Sequence seq, outdirected_helper)
-    {
-        return make_outdirected_sequence(std::move(seq));
+        /// Объект для создания @c outdirected_sequence в конвейерном стиле.
+        constexpr auto const & outdirected
+            = odr_const<pipeable<make_outdirected_sequence_fn>>;
     }
 }
 // namespace ural

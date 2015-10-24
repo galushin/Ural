@@ -659,7 +659,7 @@ namespace ural
 
         /** @brief Оператор присваивания c-строки
         @param s строка
-        @return <tt> *this <tt>
+        @return <tt> *this </tt>
         @post <tt> *this == s </tt>
         */
         flex_string & operator=(value_type const * s)
@@ -1525,7 +1525,7 @@ namespace ural
         @return <tt> *this </tt>
 
         Определяет эффектинвую длину заменяемой подстроки как
-        <tt> xlen = std::min(n1, this->size() - pos1) <tt>
+        <tt> xlen = std::min(n1, this->size() - pos1) </tt>
         и заменяет данную строку на строку длинной
         <tt> this->size() - xlen + n2 </tt>, первые @c pos1 элементов которой
         являются копиями исходных символов данной строки, следующие @c n2
@@ -1550,9 +1550,10 @@ namespace ural
             return *this;
         }
 
-        /** @brief Замена подстроки элементами массива символов
+        /** @brief Замена подстроки элементами C-строки
         @param pos1 индекс первого символа, который должен быть заменён
         @param n1 длина подстроки, которая должна быть заменена
+        @param s указатель на начало C-строки
         @return <tt> *this </tt>
         */
         flex_string &
@@ -1561,9 +1562,11 @@ namespace ural
             return this->replace(pos1, n1, s, traits_type::length(s));
         }
 
-        /** @brief Замена подстроки элементами массива символов
+        /** @brief Замена подстроки заданным количеством одинаковых символов
         @param pos1 индекс первого символа, который должен быть заменён
         @param n1 длина подстроки, которая должна быть заменена
+        @param n2 количество символов, на которые должна быть заменена подстрока
+        @param c заменяющий символ
         @return <tt> *this </tt>
         */
         flex_string & replace(size_type pos1, size_type n1,

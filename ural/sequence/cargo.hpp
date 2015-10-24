@@ -33,17 +33,28 @@ namespace ural
     */
     template <class Sequence, class T>
     class cargo_sequence
-     : public sequence_base<cargo_sequence<Sequence, T>>
     {
-    /** @brief Оператор "равно"
-    @param x левый операнд
-    @param y правый операнд
-    @return <tt> x.base() == y.base() </tt>
-    */
-    friend bool operator==(cargo_sequence const & x, cargo_sequence const & y)
-    {
-        return x.base() == y.base();
-    }
+        /** @brief Оператор "равно"
+        @param x левый операнд
+        @param y правый операнд
+        @return <tt> x.base() == y.base() </tt>
+        */
+        friend bool
+        operator==(cargo_sequence const & x, cargo_sequence const & y)
+        {
+            return x.base() == y.base();
+        }
+
+        friend
+        Sequence const & sequence(cargo_sequence const & s)
+        {
+            return s.base();
+        }
+
+        friend cargo_sequence sequence(cargo_sequence && s)
+        {
+            return std::move(s);
+        }
 
     public:
         // Типы
@@ -73,6 +84,12 @@ namespace ural
          : members_(std::move(seq), std::move(x))
         {}
 
+        cargo_sequence(cargo_sequence const &) = delete;
+        cargo_sequence(cargo_sequence &&) = default;
+
+        cargo_sequence & operator=(cargo_sequence const &) = delete;
+        cargo_sequence & operator=(cargo_sequence &&) = default;
+
         // Свойства
         /** @brief Доступ к дополнительному объекту
         @return Константная ссылка на дополнительный объект
@@ -80,14 +97,6 @@ namespace ural
         T const & cargo() const
         {
             return members_[ural::_2];
-        }
-
-        /** @brief Доступ к базовой последовательности
-        @return Константная ссылка на базовую последовательность
-        */
-        Sequence const & base() const
-        {
-            return members_[ural::_1];
         }
 
         // Однопроходная последовательность
@@ -127,13 +136,16 @@ namespace ural
             return this->members_[ural::_1].traversed_front();
         }
 
-        cargo_sequence traversed_front() &&;
-
         /// @brief Отбросить переднюю пройденную часть последовательности
         void shrink_front()
         {
             return this->members_[ural::_1].shrink_front();
         }
+
+        /** @brief Полная последовательность (включая пройденные части)
+        @return Полная последовательность
+        */
+        cargo_sequence original() const;
 
         /** @brief Исчерпание последовательности за константное время
         @post <tt> !*this == true </tt>
@@ -216,6 +228,14 @@ namespace ural
         void pop_back(distance_type n);
 
     private:
+        /** @brief Доступ к базовой последовательности
+        @return Константная ссылка на базовую последовательность
+        */
+        Sequence const & base() const
+        {
+            return members_[ural::_1];
+        }
+
         tuple<Sequence, T> members_;
     };
 }

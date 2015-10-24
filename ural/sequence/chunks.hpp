@@ -23,7 +23,7 @@
  @todo Реализовать функции прямой последовательности
 */
 
-#include <ural/sequence/taken.hpp>
+#include <ural/sequence/adaptors/taken.hpp>
 #include <ural/sequence/make.hpp>
 #include <ural/concepts.hpp>
 
@@ -65,13 +65,20 @@ namespace ural
         {}
 
         // Адаптор
+        //@{
         /** @brief Базовая последовательность
         @return Константная ссылка на базовую последовательность
         */
-        Sequence const & base() const
+        Sequence const & base() const &
         {
             return this->seq_;
         }
+
+        Sequence && base() &&
+        {
+            return std::move(this->seq_);
+        }
+        //@}
 
         /** @brief Размер подпоследовательностей
         @return Размер подпоследовательностей
@@ -110,9 +117,18 @@ namespace ural
         }
 
         // Прямая последовательность
+        /// @brief Отбросить переднюю пройденную часть последовательности
         void shrink_front();
 
-        chunks_sequence traversed_front();
+        /** @breif Передняя пройденная часть последовательности
+        @return Передняя пройденная часть последовательности
+        */
+        chunks_sequence traversed_front() const;
+
+        /** @brief Полная последовательность (включая пройденные части)
+        @return Полная последовательность
+        */
+        chunks_sequence original() const;
 
     private:
         Sequence seq_;

@@ -27,38 +27,47 @@
 
 namespace ural
 {
-    /** @brief Вспомогательный тип для преобразования последовательностей
-    в контейнер
-    @tparam Container шаблон контейнера
+    /** @brief Тип функционального объекта для преобразования последовательности
+    в контейнер.
+    @tparam Container шаблон типа контейнера
     @tparam Args дополнительные аругменты, например: тип функции сравнения,
     распределителя памяти и т.д.
     */
     template <template <class...> class Container, class... Args>
-    struct to_container
-    {};
+    struct to_container_fn
+    {
+    public:
+        /** @brief Создание контейнера по последовательности
+        @param seq последовательность
+        @return <tt> Container<Value>(begin(s), end(s)) </tt>, где @c s есть
+        <tt> ::ural::sequence_fwd<Sequence>(seq) </tt>, а @c Value --- тип
+        значений последовательности @c s.
+        */
+        template <class Sequence>
+        Container<ValueType<SequenceType<Sequence>>, Args...>
+        operator()(Sequence && seq) const
+        {
+            typedef ValueType<SequenceType<Sequence>> Value;
 
-    /** @brief Создание контейнера по последовательности
-    @tparam Container шаблон контейнера
+            auto s = ural::sequence_fwd<Sequence>(seq);
+
+            using ::std::begin;
+            using ::std::end;
+            auto first = begin(s);
+            auto last = end(s);
+
+            return Container<Value, Args...>(std::move(first), std::move(last));
+        }
+    };
+
+    /** @brief Вспомогательный тип для преобразования последовательностей
+    в контейнер в конвейерном стиле.
+    @tparam Container шаблон типа контейнера
     @tparam Args дополнительные аругменты, например: тип функции сравнения,
     распределителя памяти и т.д.
-    @param seq последовательность
-    @return <tt> Container<Value>(begin(s), end(s)) </tt>, где @c s есть
-    <tt> ::ural::sequence_fwd<Sequence>(seq) </tt>, а @c Value --- тип
-    значений последовательности @c s.
     */
-    template <class Sequence, template <class...> class Container, class... Args>
-    auto operator|(Sequence && seq, to_container<Container, Args...>)
-    -> Container<ValueType<SequenceType<Sequence>>, Args...>
-    {
-        typedef ValueType<SequenceType<Sequence>> Value;
-
-        auto s = ural::sequence_fwd<Sequence>(seq);
-
-        auto first = begin(s);
-        auto last = end(s);
-
-        return Container<Value, Args...>(std::move(first), std::move(last));
-    }
+    template <template <class...> class Container, class... Args>
+    using to_container = pipeable<to_container_fn<Container, Args...>>;
 
     /** @brief Вспомогательный тип для преобразования последовательностей
     в ассоцитивный контейнер
@@ -67,35 +76,92 @@ namespace ural
     распределителя памяти и т.д.
     */
     template <template <class, class, class...> class Map, class... Args>
-    struct to_map
-    {};
+    struct to_map_fn
+    {
+    public:
+        /** @brief Создание ассоциативного контейнера из последовательности
+        @param seq последовательность
+        */
+        template <class Sequence>
+        Map<typename std::tuple_element<0, ValueType<SequenceType<Sequence>>>::type,
+            typename std::tuple_element<1, ValueType<SequenceType<Sequence>>>::type,
+            Args...>
+        operator()(Sequence && seq) const
+        {
+            typedef ValueType<SequenceType<Sequence>> Value;
+            typedef typename std::tuple_element<0, Value>::type Key;
+            typedef typename std::tuple_element<1, Value>::type Mapped;
 
-    /** @brief Создание ассоциативного контейнера из последовательности
-    @param seq последовательность
+            Map<Key, Mapped, Args...> result;
+
+            for(auto && x : ::ural::sequence_fwd<Sequence>(seq))
+            {
+                result.emplace_hint(result.end(),
+                                    get(std::forward<decltype(x)>(x), ural::_1),
+                                    get(std::forward<decltype(x)>(x), ural::_2));
+            }
+
+            return result;
+        }
+    };
+
+    /** @brief Вспомогательный тип для преобразования последовательностей
+    в ассоцитивный контейнер в конвейерном стиле
     @tparam Map шаблон типа ассоциативного контейнера
     @tparam Args дополнительные аругменты, например: тип функции сравнения,
     распределителя памяти и т.д.
     */
-    template <class Sequence, template <class, class, class...> class Map, class... Args>
-    auto operator|(Sequence && seq, to_map<Map, Args...>)
-    -> Map<typename std::tuple_element<0, ValueType<SequenceType<Sequence>>>::type,
-           typename std::tuple_element<1, ValueType<SequenceType<Sequence>>>::type,
-           Args...>
+    template <template <class, class, class...> class Map, class... Args>
+    using to_map = pipeable<to_map_fn<Map, Args...>>;
+
+    /** @brief Функциональный объект для преобразования последовательности в
+    контейнер с полным указанием типа контейнера:
+    <tt> vector<int> v = seq | as_container </tt>
+    */
+    struct as_container_fn
     {
-        typedef ValueType<SequenceType<Sequence>> Value;
-        typedef typename std::tuple_element<0, Value>::type Key;
-        typedef typename std::tuple_element<1, Value>::type Mapped;
-
-        Map<Key, Mapped, Args...> result;
-
-        for(auto && x : ::ural::sequence_fwd<Sequence>(seq))
+        template <class Sequence>
+        class convertible_to_any_container
         {
-            result.emplace_hint(result.end(),
-                                get(std::forward<decltype(x)>(x), ural::_1),
-                                get(std::forward<decltype(x)>(x), ural::_2));
-        }
+        public:
+            explicit convertible_to_any_container(Sequence && seq)
+             : seq_(std::forward<Sequence>(seq))
+            {}
 
-        return result;
+            template <class Container>
+            operator Container() const
+            {
+                using ::std::begin;
+                using ::std::end;
+                return Container(begin(seq_), end(seq_));
+            }
+
+        private:
+            Sequence seq_;
+        };
+
+    public:
+        /** @brief Оператор вызова функции
+        @param seq последовательность
+        @return Объект, определяющий оператор преобразования в любой
+        @c STL-подобный контейнер.
+        */
+        template <class Sequence>
+        convertible_to_any_container<Sequence>
+        operator()(Sequence && seq) const
+        {
+            using Result = convertible_to_any_container<Sequence>;
+            return Result(std::forward<Sequence>(seq));
+        }
+    };
+
+    namespace
+    {
+        /** @brief Объект для преобразования последовательности в контейнер
+        в конвейерном стиле
+        */
+        constexpr auto const & as_container
+            = odr_const<pipeable<as_container_fn>>;
     }
 }
 // namespace ural

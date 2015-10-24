@@ -81,16 +81,26 @@ namespace ural
 
     /** @brief Базовый класс для последовательностей (CRTP)
     @tparam Seq тип последовательности-наследника
+    @tparam Payload класс, от которого будет закрыто наследовать данный класс.
+    Может использоваться для оптимизации пустых базовых классов.
     */
-    template <class Seq, class Base = ural::empty_type>
+    template <class Seq, class Payload = ural::empty_type>
     class sequence_base
-     : public Base
+     : private Payload
     {
-        friend Seq sequence(Seq s)
+        /** @brief Преобразование в последовательность
+        @param seq исходная последовательность
+        @return seq
+        */
+        friend Seq sequence(Seq seq)
         {
-            return s;
+            return seq;
         }
 
+        /** @brief Переход к следующему элементу
+        @pre <tt> !x == false </tt>
+        @return @c x
+        */
         friend Seq & operator++(Seq & s)
         {
             s.pop_front();
@@ -112,7 +122,7 @@ namespace ural
         */
         template <class... Args>
         sequence_base(Args && ... args)
-         : Base(std::forward<Args>(args)...)
+         : Payload(std::forward<Args>(args)...)
         {}
 
         /// @brief Конструктор без аргументов
@@ -136,20 +146,21 @@ namespace ural
 
         /// @brief Деструктор
         ~ sequence_base() = default;
+
+        //@{
+        Payload & payload()
+        {
+            return *this;
+        }
+
+        Payload const & payload() const
+        {
+            return *this;
+        }
+        //@}
     };
 
-    template <class Seq, class Base>
-    sequence_iterator<Seq &> begin(sequence_base<Seq, Base> & s)
-    {
-        return sequence_iterator<Seq &>(static_cast<Seq&>(s));
-    }
-
-    template <class Seq, class Base>
-    sequence_iterator<Seq &> end(sequence_base<Seq, Base> &)
-    {
-        return sequence_iterator<Seq &>{};
-    }
-
+    //@{
     /** @brief Создание начального итератора для последовательности
     @param s последовательность
     @return <tt> sequence_iterator<Seq>{static_cast<Seq const&>(s)} </tt>
@@ -166,6 +177,14 @@ namespace ural
         return sequence_iterator<Seq>{static_cast<Seq &&>(s)};
     }
 
+    template <class Seq, class Base>
+    sequence_iterator<Seq &> begin(sequence_base<Seq, Base> & s)
+    {
+        return sequence_iterator<Seq &>(static_cast<Seq&>(s));
+    }
+    //@}
+
+    //@{
     /** @brief Создание конечного итератора для последовательности
     @return <tt> sequence_iterator<Seq>{} </tt>
     */
@@ -174,6 +193,13 @@ namespace ural
     {
         return sequence_iterator<Seq>{};
     }
+
+    template <class Seq, class Base>
+    sequence_iterator<Seq &> end(sequence_base<Seq, Base> &)
+    {
+        return sequence_iterator<Seq &>{};
+    }
+    //@}
 
     /** @brief Ссылка на текущий элемент последовательности
     @param s последовательность
@@ -211,18 +237,6 @@ namespace ural
         return std::move(s + n);
     }
     //@}
-
-    /** @brief Отбрасывание начальной пройденной части копии последовательности
-    @param s последовательность
-    @return Копия последовательности @c s, у которой отброшена передняя
-    пройденная часть
-    */
-    template <class Sequence>
-    Sequence shrink_front(Sequence s)
-    {
-        s.shrink_front();
-        return s;
-    }
 
     /** @brief Класс функционального объекта, вычисляющий размер
     массивов/контейнеров и последовательностей
@@ -337,38 +351,238 @@ namespace ural
         }
     };
 
+    /// @brief Тип Функционального объекта для функции-члена @c original
+    class original_fn
+    {
+    public:
+        /** @brief Оператор вызова функции
+        @param x аргумент
+        @return <tt> x.original() </tt>
+        */
+        template <class T>
+        auto operator()(T const & x) const
+        {
+            return x.original();
+        }
+    };
+
+    /// @brief Тип функционального объекта для функции-члена @c traversed_front
+    class traversed_front_fn
+    {
+    public:
+        /** @brief Оператор вызова функции
+        @param x аргумент
+        @return <tt> x.traversed_front() </tt>
+        */
+        template <class T>
+        auto operator()(T const & x) const
+        {
+            return x.traversed_front();
+        }
+    };
+
+    /// @brief Тип Функционального объекта для функции-члена @c traversed_back
+    class traversed_back_fn
+    {
+    public:
+        /** @brief Оператор вызова функции
+        @param x аргумент
+        @return <tt> x.traversed_back() </tt>
+        */
+        template <class T>
+        auto operator()(T const & x) const
+        {
+            return x.traversed_back();
+        }
+    };
+
+    /** @brief Тип функционального объекта для исчерпания последовательности
+    в прямом направлении.
+    */
     class exhaust_front_fn
     {
     public:
+        /** @brief Вызывает <tt> s.exhaust_front() </tt>
+        @param s последовательность
+        */
+        template <class Sequence>
+        void operator()(Sequence & s) const
+        {
+            s.exhaust_front();
+        }
+    };
+
+    /** @brief Тип функционального объекта для исчерпания последовательности
+    в обратном направлении.
+    */
+    class exhaust_back_fn
+    {
+    public:
+        /** @brief Вызывает <tt> s.exhaust_back() </tt>
+        @param s последовательность
+        */
+        template <class Sequence>
+        void operator()(Sequence & s) const
+        {
+            s.exhaust_back();
+        }
+    };
+
+    /** @brief Тип функционального объекта для отбрасывания передней пройденной
+    части последовательности.
+    */
+    class shrink_front_fn
+    {
+    public:
+        /** @brief Вызывает <tt> s.shrink_front() </tt>
+        @param s последовательность
+        */
+        template <class Sequence>
+        void operator()(Sequence & s)
+        {
+            s.shrink_front();
+        }
+    };
+
+    /** @brief Тип функционального объекта для отбрасывания задней пройденной
+    части последовательности.
+    */
+    class shrink_back_fn
+    {
+    public:
+        /** @brief Вызывает <tt> s.shrink_back() </tt>
+        @param s последовательность
+        */
+        template <class Sequence>
+        void operator()(Sequence & s)
+        {
+            s.shrink_back();
+        }
+    };
+
+    /** @brief Тип функционального объекта для создания последовательности,
+    отличающейся от исходной только тем, что передняя пройденная часть
+    отсутствует.
+    */
+    struct shrink_front_copy_fn
+    {
+        /** @brief Создании последовательности, отличающейся от исходной только
+        тем, что передняя пройденная часть отсутствует.
+        @param s последовательность
+        @return Копию @c s, к которой применена операция @c shrink_front
+        */
         template <class Sequence>
         Sequence operator()(Sequence s) const
         {
-            // @todo Добавить в концепцию
-            s.exhaust_front();
+            s.shrink_front();
             return s;
         }
     };
 
+    /// @cond false
+    namespace details
+    {
+        struct at_fn
+        {
+        public:
+            template <class Sequence, class F>
+            auto operator()(Sequence const & s, F f) const
+            -> decltype(f(s))
+            {
+                return f(s);
+            }
+
+            template <class Sequence>
+            ReferenceType<Sequence>
+            operator()(Sequence const & s, DifferenceType<Sequence> i) const
+            {
+                return s[i];
+            }
+        };
+
+        template <class Sequence, class Index1, class Index2>
+        void indirect_swap_adl_hook(Sequence const & x, Index1 ix,
+                                    Sequence const & y, Index2 iy)
+        {
+            using std::swap;
+            swap(at_fn{}(x, ix), at_fn{}(y, iy));
+        }
+
+        struct indirect_swap_fn
+        {
+        public:
+            template <class Sequence>
+            void operator()(Sequence const & x, Sequence const & y) const
+            {
+                return (*this)(x, front, y, front);
+            }
+
+            template <class Sequence, class Index1, class Index2>
+            void operator()(Sequence const & x, Index1 ix,
+                            Sequence const & y, Index2 iy) const
+            {
+                using ::ural::details::indirect_swap_adl_hook;
+                return indirect_swap_adl_hook(x, ix, y, iy);
+            }
+        };
+    }
+    /// @endcond
+
     namespace
     {
+        /** @brief Функциональный объект для обмена элементов
+        последовательностей
+        */
+        constexpr auto const & indirect_swap
+            = odr_const<ural::details::indirect_swap_fn>;
+
         /** @brief Функциональный объект для продвижения последовательности на
         заданное число шагов
         */
-        constexpr auto const advance = advance_fn{};
+        constexpr auto const & advance = odr_const<advance_fn>;
 
         /** @brief Функциональный объект для операции продвижения копии
         последовательности на заданное число шагов.
         */
-        constexpr auto const next = next_fn{};
+        constexpr auto const & next = odr_const<next_fn>;
 
         /** @brief Функциональный объект, вычисляющий размер массивов,
         контейнеров и последовательностей.
         */
-        constexpr auto const size = ural::size_fn{};
+        constexpr auto const & size = odr_const<size_fn>;
 
-        constexpr auto const exhaust_front = ::ural::exhaust_front_fn{};
+        /// @brief Функциональный объект для функции-члена @c original
+        constexpr auto const & original = odr_const<original_fn>;
 
-        // @todo Добавить exhaust_back, в том числе в концепцию
+        /// @brief Функциональный объект для функции-члена @c traversed_front
+        constexpr auto const & traversed_front = odr_const<traversed_front_fn>;
+
+        /// @brief Функциональный объект для функции-члена @c traversed_back
+        constexpr auto const & traversed_back = odr_const<traversed_back_fn>;
+
+        /// @brief Функциональный объект для функции-члена @c shrink_front
+        constexpr auto const & shrink_front = odr_const<shrink_front_fn>;
+
+        /// @brief Функциональный объект для функции-члена @c shrink_back
+        constexpr auto const & shrink_back = odr_const<shrink_back_fn>;
+
+        /** @brief Функциональный объект для создания последовательности,
+        отличающейся от исходной только тем, что передняя пройденная часть
+        отсутствует.
+        */
+        constexpr auto const & shrink_front_copy = odr_const<shrink_front_copy_fn>;
+
+        /** @brief  Функциональный объект для исчерпания последовательности
+        в прямом порядке
+        */
+        constexpr auto const & exhaust_front = odr_const<exhaust_front_fn>;
+
+        /** @brief  Функциональный объект для исчерпания последовательности
+        в обратном порядке
+        */
+        constexpr auto const & exhaust_back = odr_const<exhaust_back_fn>;
+
+        // @todo сгруппировать с front...
     }
 }
 // namespace ural

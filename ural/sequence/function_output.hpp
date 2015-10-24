@@ -81,7 +81,7 @@ namespace ural
         */
         UnaryFunction const & function() const
         {
-            return *this;
+            return this->payload();
         }
 
         // Однопроходная последовательность
@@ -117,7 +117,7 @@ namespace ural
         //@}
 
         /** @brief Передача значения функциональному объекту
-        @param args аргумент
+        @param arg аргумент
         @return *this
         */
         template <class Arg>
@@ -130,7 +130,7 @@ namespace ural
     private:
         UnaryFunction & function_ref()
         {
-            return static_cast<UnaryFunction &>(*this);
+            return this->payload();
         }
     };
 

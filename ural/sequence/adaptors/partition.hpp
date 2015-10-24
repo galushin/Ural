@@ -115,6 +115,11 @@ namespace ural
         {
             return data_.first()[ural::_1];
         }
+
+        Output1 && true_sequence() &&
+        {
+            return std::move(data_.first())[ural::_1];
+        }
         //@}
 
         //@{
@@ -126,6 +131,11 @@ namespace ural
         Output2 const & false_sequence() const &
         {
             return data_.first()[ural::_2];
+        }
+
+        Output2 && false_sequence() &&
+        {
+            return std::move(data_.first())[ural::_2];
         }
         //@}
 

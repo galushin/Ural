@@ -18,11 +18,11 @@
 */
 
 /** @file ural/sequence/taken.hpp
- @brief Адаптер последовательности, ограничивающий базовую последовательность
- заданным числом элементов
- @todo По умолчанию для Size использовать DifferenceType<Size>
+ @brief Адаптер последовательности, извлекающий из базовой последовательности
+ не более заданного числа элементов.
 */
 
+#include <ural/sequence/adaptor.hpp>
 #include <ural/sequence/make.hpp>
 #include <ural/sequence/base.hpp>
 #include <ural/utility.hpp>
@@ -34,31 +34,21 @@ namespace ural
     @tparam Sequence тип последовательности
     @tparam Size тип количества элементов, которые должны быть взяты из базовой
     последовательности
-    @todo take_sequence не может быть двусторонней, уточнить traversal_tag
+    @todo take_sequence может быть двусторонней только если исходная
+    последовательность имеет произвольный доступ, уточнить traversal_tag.
     @todo Для последовательностей произвольного доступа можно оптимизировать:
     узнать точный размер в конструкторе, а следовательно делать меньше проверок
-    в operator!, быстрее выполнять exhaust_front
+    в operator!, быстрее выполнять exhaust_front.
     */
     template <class Sequence, class Size = DifferenceType<Sequence>>
     class take_sequence
-     : public sequence_base<take_sequence<Sequence, Size>>
+     : public sequence_adaptor<take_sequence<Sequence, Size>, Sequence>
     {
+        using Base = sequence_adaptor<take_sequence<Sequence, Size>, Sequence>;
     public:
         // Типы
-        /// @brief Тип ссылки
-        typedef typename Sequence::reference reference;
-
-        /// @brief Тип значения
-        typedef ValueType<Sequence> value_type;
-
-        /// @brief Тип расстояния
-        typedef DifferenceType<Sequence> distance_type;
-
         /// @brief Категория обхода
-        typedef typename Sequence::traversal_tag traversal_tag;
-
-        /// @brief Тип указателя
-        typedef typename Sequence::pointer pointer;
+        using typename Base::traversal_tag;
 
         // Создание, копирование
         /** @brief Конструктор
@@ -70,7 +60,8 @@ namespace ural
         @todo Добавить проверку, что @c count - конечное число
         */
         explicit take_sequence(Sequence seq, Size count)
-         : impl_(std::move(seq), Count_type{std::move(count)})
+         : Base(std::move(seq))
+         , count_(std::move(count))
         {}
 
         // Однопроходная последовательность
@@ -82,37 +73,21 @@ namespace ural
             return this->count() == 0 || !this->base();
         }
 
-        /** @brief Текущий элемент последовательности
-        @pre <tt> !*this == false </tt>
-        @return Ссылка на текущий элемент последовательности
-        */
-        reference front() const
-        {
-            assert(!!this->base());
-            return *this->base();
-        }
-
         /** @brief Переход к следующему элементу
         @pre <tt> !*this == false </tt>
         */
         void pop_front()
         {
-            assert(this->count() > 0);
-            assert(!!this->base());
+            Base::pop_front();
 
-            ++ impl_[ural::_1];
-            -- ural::get(impl_[ural::_2]);
+            assert(this->count() > 0);
+            -- ural::get(count_);
         }
 
-        // Прямая последовательность
         /** @brief Пройденная часть последовательности
         @return Пройденная часть последовательности
         */
-        take_sequence traversed_front() const
-        {
-            return take_sequence(this->base().traversed_front(),
-                                 this->init_count() - this->count());
-        }
+        take_sequence traversed_front() const;
 
         /** @brief Исчерпание последовательности за константное время в прямом
         порядке
@@ -125,46 +100,34 @@ namespace ural
             {}
         }
 
+        /** @brief Полная последовательность (включая пройденные части)
+        @return Полная последовательность
+        */
+        take_sequence original() const;
+
         /** @brief Отбрасывание пройденной части последовательности
         @post <tt> !this->traversed_front() </tt>
         */
         void shrink_front()
         {
-            impl_[ural::_1].shrink_front();
-            impl_[ural::_2].commit();
+            Base::shrink_front();
+            count_.commit();
         }
 
         // Последовательность производного доступа
-
         // Адаптор последовательности
-        //@{
-        /** @brief Базовая последовательность
-        @return Базовая последовательность
-        */
-        Sequence const & base() const &
-        {
-            return impl_[ural::_1];
-        }
-
-        Sequence && base() &&
-        {
-            return std::move(impl_[ural::_1]);
-        }
-        //@}
-
         /** @brief Оставшееся количество элементов
         @return Оставшееся количество элементов
-        @todo переименовать в size?
         */
         Size const & count() const
         {
-            return ural::get(impl_[ural::_2]);
+            return ural::get(count_);
         }
 
     private:
         Size const & init_count() const
         {
-            return impl_[ural::_2].old_value();
+            return count_.old_value();
         }
 
     private:
@@ -174,7 +137,7 @@ namespace ural
         typedef typename std::conditional<is_forward, with_old_value<Size>, Size>::type
             Count_type;
 
-        ural::tuple<Sequence, Count_type> impl_;
+        Count_type count_;
     };
 
     /** @brief Оператор "равно"
@@ -186,36 +149,29 @@ namespace ural
     bool operator==(take_sequence<Sequence, Size> const & x,
                     take_sequence<Sequence, Size> const & y);
 
-    /** @brief Тип вспомогательного объекта для создания @c take_sequence
-    @tparam Size тип для представления размера
-    */
-    template <class Size>
-    struct taken_helper
+    /// @brief Тип Функционального объекта для создания @c take_sequence
+    // @todo Оптимизация для последовательностей произвольного доступа
+    // @todo Оптимизация для последовательностей известного размера
+    struct make_take_sequence_fn
     {
-        /// @brief Количество элементов, которым необходимо ограничиться
-        Size count;
+    public:
+        /** @brief Создание @c take_sequence
+        @param seq входная последовательность
+        @param helper объект, хранящий количество элементов
+        */
+        template <class Sequenced, class Size>
+        auto operator()(Sequenced && seq, Size n) const
+        {
+            using Result = take_sequence<SequenceType<Sequenced>, Size>;
+            return Result(::ural::sequence_fwd<Sequenced>(seq), std::move(n));
+        }
     };
 
-    /** @brief Создание @c take_sequence в конвейерном стиле
-    @param seq входная последовательность
-    @param helper объект, хранящий количество элементов
-    */
-    template <class Sequence, class Size>
-    auto operator|(Sequence && seq, taken_helper<Size> helper)
-    -> take_sequence<decltype(::ural::sequence_fwd<Sequence>(seq)), Size>
+    namespace
     {
-        typedef take_sequence<decltype(::ural::sequence_fwd<Sequence>(seq)), Size> Result;
-        return Result(::ural::sequence_fwd<Sequence>(seq), helper.count);
-    }
-
-    /** @brief Функция создания @c take_helper
-    @param n количество элементов
-    @return <tt> taken_helper<Size>{n} </tt>
-    */
-    template <class Size>
-    taken_helper<Size> taken(Size n)
-    {
-        return {n};
+        /// @brief Функциональный объект для создания @c take_sequence
+        constexpr auto const & taken
+            = odr_const<pipeable_maker<make_take_sequence_fn>>;
     }
 }
 // namespace ural

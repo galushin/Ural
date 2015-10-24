@@ -22,6 +22,7 @@
  последовательности до первого элемента, эквивалентного заданному значению.
 */
 
+#include <ural/sequence/adaptor.hpp>
 #include <ural/utility/pipeable.hpp>
 #include <ural/sequence/make.hpp>
 #include <ural/sequence/base.hpp>
@@ -35,45 +36,37 @@ namespace ural
     @tparam BinaryPredicate бинарный предикат
     @todo Возможность не пропускать элемент, равный заданному значению
     @todo выразить через более общий (until_sequence)
-    @todo Ввести шаблон адаптора последовательности и выразить через него
     @todo Использовать для последовательности на основе C-строк
     */
     template <class Sequence,
               class Value = ValueType<Sequence>,
               class BinaryPredicate = ::ural::equal_to<>>
     class delimit_sequence
-     : public sequence_base<delimit_sequence<Sequence, Value, BinaryPredicate>>
+     : public sequence_adaptor<delimit_sequence<Sequence, Value, BinaryPredicate>,
+                               Sequence, BinaryPredicate>
     {
-    /** @brief Оператор "равно"
-    @param x левый операнд
-    @param y правый операнд
-    @return <tt> x.base() == y.base() && x.relation() == y.relation()
-                 && x.delimiter() == y.delimiter() </tt>
-    */
-    friend bool operator==(delimit_sequence const & x, delimit_sequence const & y)
-    {
-        return x.base() == y.base()
-               && x.relation() == y.relation()
-               && x.delimiter() == y.delimiter();
-    }
+
+        using Base = sequence_adaptor<delimit_sequence<Sequence, Value, BinaryPredicate>,
+                                      Sequence, BinaryPredicate>;
 
     public:
+        /** @brief Оператор "равно"
+        @param x левый операнд
+        @param y правый операнд
+        @return <tt> x.base() == y.base() && x.relation() == y.relation()
+                     && x.delimiter() == y.delimiter() </tt>
+        */
+        friend bool operator==(delimit_sequence const & x, delimit_sequence const & y)
+        {
+            return x.base() == y.base()
+                   && x.relation() == y.relation()
+                   && x.delimiter() == y.delimiter();
+        }
+
         // Типы
-        /// @brief Тип значения
-        using value_type = ValueType<Sequence>;
-
-        /// @brief Тип ссылки
-        using reference = ReferenceType<Sequence>;
-
-        /// @brief Тип расстояния
-        using distance_type = DifferenceType<Sequence>;
-
         /// @brief Категория обхода
         using traversal_tag = CommonType<forward_traversal_tag,
                                          typename Sequence::traversal_tag>;
-
-        /// @brief Тип указателя
-        using pointer = typename Sequence::pointer;
 
         // Создание, копирование, присваивание
         /** @brief Конструктор
@@ -85,20 +78,11 @@ namespace ural
         @post <tt> this->relation() == bin_pred </tt>
         */
         delimit_sequence(Sequence seq, Value value, BinaryPredicate bin_pred)
-         : seq_(std::move(seq))
+         : Base(std::move(seq), std::move(bin_pred))
          , value_(std::move(value))
-         , eq_(std::move(bin_pred))
         {}
 
         // Адаптор
-        /** @brief Базовая последовательность
-        @return Константная ссылка на базовую последовательность
-        */
-        Sequence const & base() const
-        {
-            return this->seq_;
-        }
-
         /** @brief Значение, на котором нужно остановиться
         @return Константная ссылка на значение, на котором нужно остановиться
         */
@@ -114,7 +98,7 @@ namespace ural
         */
         FunctionType<BinaryPredicate> const & relation() const
         {
-            return this->eq_;
+            return Base::payload();
         }
 
         // Однопроходная последовательность
@@ -123,26 +107,7 @@ namespace ural
         */
         bool operator!() const
         {
-            return !seq_ || this->relation()(*seq_, this->delimiter());
-        }
-
-        /** @brief Текущий элемент последовательности
-        @pre <tt> !*this == false </tt>
-        @return Ссылка на текущий элемент последовательности
-        */
-        reference front() const
-        {
-            assert(!!*this);
-            return this->base().front();
-        }
-
-        /** @brief Переход к следующему элементу
-        @pre <tt> !*this == false </tt>
-        */
-        void pop_front()
-        {
-            assert(!!*this);
-            return seq_.pop_front();
+            return !this->base() || this->relation()(*this->base(), this->delimiter());
         }
 
         // Прямая последовательность
@@ -154,18 +119,13 @@ namespace ural
             return this->base().traversed_front();
         }
 
-        /** @brief Отбрасывание пройденной части последовательности
-        @post <tt> !this->traversed_front() </tt>
+        /** @brief Полная последовательность (включая пройденные части)
+        @return Полная последовательность
         */
-        void shrink_front()
-        {
-            return this->seq_.shrink_front();
-        }
+        delimit_sequence original() const;
 
     private:
-        Sequence seq_;
         Value value_;
-        FunctionType<BinaryPredicate> eq_;
     };
 
     namespace details
@@ -184,14 +144,16 @@ namespace ural
             */
             template <class Sequenced, class Value,
                       class BinaryPredicate = ural::equal_to<>>
-            delimit_sequence<SequenceType<Sequenced>, Value, BinaryPredicate>
+            delimit_sequence<SequenceType<Sequenced>, Value,
+                             FunctionType<BinaryPredicate>>
             operator()(Sequenced && in, Value value,
                        BinaryPredicate bin_pred = BinaryPredicate()) const
             {
-                using Seq = delimit_sequence<SequenceType<Sequenced>, Value, BinaryPredicate>;
+                using Seq = delimit_sequence<SequenceType<Sequenced>, Value,
+                                             FunctionType<BinaryPredicate>>;
                 return Seq(::ural::sequence_fwd<Sequenced>(in),
                            std::move(value),
-                           std::move(bin_pred));
+                           make_callable(std::move(bin_pred)));
             }
         };
     }

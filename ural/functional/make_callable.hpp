@@ -64,6 +64,7 @@ namespace ural
         @param f указатель на функцию
         @post <tt> this->target() == f </tt>
         */
+        constexpr
         function_ptr_wrapper(target_type f)
          : target_{f}
         {}
@@ -81,9 +82,17 @@ namespace ural
         /** @brief Указатель на функцию
         @return Заданный указатель на функцию-член
         */
-        target_type target() const
+        target_type const & target() const
         {
             return this->target_;
+        }
+
+        /** @brief Неявное преобразование в указатель на функцию-член
+        @return Заданный указатель на функцию-член
+        */
+        operator target_type const &() const
+        {
+            return this->target();
         }
 
     private:
@@ -249,6 +258,11 @@ namespace ural
     template <class R, class T, class... Args>
     class mem_fn_wrapper
     {
+    friend bool operator==(mem_fn_wrapper const & x, mem_fn_wrapper const & y)
+    {
+        return x.target() == y.target();
+    }
+
     public:
         typedef typename declare_mem_fn_ptr_type<R, T, Args...>::type
             target_type;
@@ -393,7 +407,7 @@ namespace ural
         }
     };
 
-    inline namespace
+    namespace
     {
         /** @brief Функциоанльный объект, преобразующий указатели на
         функции-члены и переменные-члены в функциональные объекты, а остальные

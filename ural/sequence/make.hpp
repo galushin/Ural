@@ -39,7 +39,7 @@ namespace ural
     */
     template <class Container>
     auto sequence(Container && c)
-    -> typename std::enable_if<std::is_reference<Container>::value,
+    -> typename std::enable_if<std::is_lvalue_reference<Container>::value,
                                ::ural::iterator_sequence<decltype(c.begin())>>::type
     {
         return iterator_sequence<decltype(c.begin())>(c.begin(), c.end());
@@ -47,9 +47,8 @@ namespace ural
 
     template <class Container>
     auto sequence(Container && c)
-    -> typename std::enable_if<!std::is_reference<Container>::value,
-                               ::ural::cargo_sequence<::ural::iterator_sequence<decltype(c.begin())>,
-                                                      Container>>::type
+    -> typename std::enable_if<!std::is_lvalue_reference<Container>::value,
+                               cargo_sequence<iterator_sequence<decltype(c.begin())>, Container>>::type
     {
         typedef ::ural::cargo_sequence<::ural::iterator_sequence<decltype(c.begin())>, Container>
             Result;
@@ -71,7 +70,7 @@ namespace ural
     /** @brief Создание последовательности на основе итератора вставки в конец
     контейнера
     @param i итератор-вставка
-    @return <tt> output_iterator_sequence<decltype(i)>(std::move(i)) </tt>
+    @return <tt> weak_output_iterator_sequence<Iterator, Diff>(std::move(i)) </tt>
     */
     template <class Container>
     weak_output_iterator_sequence<std::back_insert_iterator<Container>,
@@ -79,14 +78,14 @@ namespace ural
     sequence(std::back_insert_iterator<Container> i)
     {
         typedef std::back_insert_iterator<Container> Iterator;
-        typedef typename Container::difference_type Diff;
+        typedef DifferenceType<Container> Diff;
         return weak_output_iterator_sequence<Iterator, Diff>(std::move(i));
     }
 
     /** @brief Создание последовательности на основе итератора вставки в начало
     контейнера
     @param i итератор-вставка
-    @return <tt> output_iterator_sequence<decltype(i)>(std::move(i)) </tt>
+    @return <tt> weak_output_iterator_sequence<Iterator, Diff>(std::move(i)) </tt>
     */
     template <class Container>
     weak_output_iterator_sequence<std::front_insert_iterator<Container>,
@@ -94,8 +93,22 @@ namespace ural
     sequence(std::front_insert_iterator<Container> i)
     {
         typedef std::front_insert_iterator<Container> Iterator;
-        typedef typename Container::difference_type Diff;
+        typedef DifferenceType<Container> Diff;
         return weak_output_iterator_sequence<Iterator, Diff>(std::move(i));
+    }
+
+    /** @brief Создание последовательности на основе итератора вставки в
+    заданную точку контейнера
+    @param i итератор-вставка
+    @return <tt> weak_output_iterator_sequence<decltype(i), Diff>(std::move(i)) </tt>,
+    где @c Diff --- <tt> DifferenceType<Container> </tt>
+    */
+    template <class Container>
+    auto sequence(std::insert_iterator<Container> i)
+    {
+        typedef std::insert_iterator<Container> Iterator;
+        typedef DifferenceType<Container> Diff;
+        return weak_output_iterator_sequence<decltype(i), Diff>(std::move(i));
     }
 
     //@{
@@ -134,27 +147,66 @@ namespace ural
     }
     //@}
 
+    /// @cond false
+    namespace details
+    {
+        template <class T,
+                  class Char = typename T::char_type,
+                  class Traits = typename T::traits_type>
+        struct is_derived_from_basic_istream
+         : std::is_base_of<std::basic_istream<Char, Traits>, T>
+        {};
+
+        template <class T,
+                  class Char = typename T::char_type,
+                  class Traits = typename T::traits_type>
+        struct is_derived_from_basic_ostream
+         : std::is_base_of<std::basic_ostream<Char, Traits>, T>
+        {};
+    }
+    /// @endcond
+
+    //@{
     /** @brief Преобразование потока ввода в последовательность символов
     @param is поток ввода
-    @return <tt> ::ural::make_istream_sequence<Char>(is) </tt>
     */
     template <class Char, class Traits>
     auto sequence(std::basic_istream<Char, Traits> & is)
-    -> decltype(::ural::make_istream_sequence<Char>(is))
     {
-        return ::ural::make_istream_sequence<Char>(is);
+        using Product = ural::istream_sequence<std::basic_istream<Char, Traits> &,
+                                               Char, istream_get_reader>;
+        return Product(is);
     }
 
+    template <class IStream>
+    auto sequence(IStream && is)
+    -> typename std::enable_if<details::is_derived_from_basic_istream<IStream>::value,
+                               ural::istream_sequence<IStream, typename IStream::char_type, istream_get_reader>>::type
+    {
+        using Product = ural::istream_sequence<IStream, typename IStream::char_type, istream_get_reader>;
+        return Product(std::forward<IStream>(is));
+    }
+    //@}
+
+    //@{
     /** @brief Преобразование потока вывода в последовательность символов
-    @param is поток ввода
+    @param os поток вывода
     @return <tt> ::ural::make_ostream_sequence(os) </tt>
     */
     template <class Char, class Traits>
     auto sequence(std::basic_ostream<Char, Traits> & os)
-    -> decltype(::ural::make_ostream_sequence(os))
     {
         return ::ural::make_ostream_sequence(os);
     }
+
+    template <class OStream>
+    auto sequence(OStream && os)
+    -> typename std::enable_if<details::is_derived_from_basic_ostream<OStream>::value,
+                               decltype(::ural::make_ostream_sequence(std::move(os)))>::type
+    {
+        return ::ural::make_ostream_sequence(std::move(os));
+    }
+    //@}
 
     //@{
     /** @brief Функция, комбинирующая @c sequence и <tt> std::forward </tt>
@@ -177,11 +229,18 @@ namespace ural
     }
     //@}
 
+    /** @brief Класс-характеристика для определения типа последовательности
+    @tparam S тип, на основе которого создаётся последовательность
+    */
     template <class S>
     struct sequence_type
-     : declare_type<decltype(sequence(std::declval<S>()))>
+     : declare_type<typename std::decay<decltype(sequence(std::declval<S>()))>::type>
     {};
 
+    /** @brief Синоним для типа последовательности, определяемого
+    классом-характеристикой @c sequence_type
+    @tparam S тип, на основе которого создаётся последовательность
+    */
     template <class S>
     using SequenceType = typename sequence_type<S>::type;
 
@@ -198,7 +257,7 @@ namespace ural
             BOOST_CONCEPT_USAGE(SinglePassSequence)
             {
                 !seq;
-                ++ seq;
+                ural::value_consumer<Seq&>() = ++ seq;
                 seq.pop_front();
                 // Постфиксный инкремент требует создания копий
 
@@ -238,8 +297,6 @@ namespace ural
 
         /** @brief Концепция прямой последовательности
         @tparam тип последовательности, для которого проверяется концепция
-        @todo Разделить на конечные и бесконечные, в конечные добавить exhaust_front
-        @todo Добавить функцию original
         */
         template <class Seq>
         class ForwardSequence
@@ -254,8 +311,12 @@ namespace ural
 
                 BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<Seq>));
 
+                ural::value_consumer<Seq>() = seq++;
+
                 seq.shrink_front();
                 seq.traversed_front();
+
+                ural::value_consumer<Seq>() = seq.original();
 
                 // @todo Проверить, что тип traversed_front совпадает с Seq или
                 // tf - прямая последовательность
@@ -268,12 +329,30 @@ namespace ural
             static Seq seq;
         };
 
+        template <class Seq>
+        class FiniteForwardSequence
+         : ForwardSequence<Seq>
+        {
+        public:
+            /// @brief Проверка неявных интерфейсов
+            BOOST_CONCEPT_USAGE(FiniteForwardSequence)
+            {
+                static_assert(&FiniteForwardSequence::reguire != 0, "");
+            }
+
+        private:
+            void reguire(Seq seq)
+            {
+                seq.exhaust_front();
+            }
+        };
+
         /** @brief Концепция двустороннней последовательности
         @tparam тип последовательности, для которого проверяется концепция
         */
         template <class Seq>
         class BidirectionalSequence
-         : ForwardSequence<Seq>
+         : FiniteForwardSequence<Seq>
         {
         public:
             /// @brief Проверка неявных интерфейсов
@@ -415,7 +494,7 @@ namespace ural
             /// @brief Использование
             BOOST_CONCEPT_USAGE(Sequenced)
             {
-                typedef decltype(sequence(std::declval<S>())) Seq;
+                typedef typename std::decay<decltype(sequence(std::declval<S>()))>::type Seq;
                 static_assert(std::is_same<Seq, sequence_type>::value, "");
             }
         private:

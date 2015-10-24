@@ -38,11 +38,11 @@ namespace ural
         @return Аналог <tt> c.erase(seq.begin(), seq.end()) </tt>
         */
         template <class Container, class Iterator, class Policy>
-        auto operator()(Container & c,
+        Container & operator()(Container & c,
                         iterator_sequence<Iterator, Policy> seq) const
-        -> typename Container::iterator
         {
-            return c.erase(seq.begin(), seq.end());
+            c.erase(seq.begin(), seq.end());
+            return c;
         }
     };
 
@@ -107,14 +107,86 @@ namespace ural
         }
     };
 
-    inline namespace
+    /** @brief Тип функционального объекта для вставки последовательности
+    элементов последовательности в начало контейнера
+    */
+    class push_front_fn
     {
-        constexpr auto const erase = erase_fn{};
+    public:
+        /** @brief Вставка последовательности значений в начало контейнера
+        @param to контейнер, в который будут вставлены элементы
+        @param from последовательность, элементы которой должны быть добавлены
+        в контейнер.
+        @return <tt> *this </tt>
+        */
+        template <class Container, class InputSequenced>
+        Container & operator()(Container & to, InputSequenced && from) const
+        {
+            ural::copy_fn{}(std::forward<InputSequenced>(from),
+                            to | ural::front_inserter);
+            return to;
+        }
+    };
 
-        constexpr auto const remove_erase = remove_erase_fn{};
-        constexpr auto const remove_if_erase = remove_if_erase_fn{};
+    /** @brief Тип функционального объекта для вставки последовательности
+    элементов последовательности в конец контейнера
+    */
+    class push_back_fn
+    {
+    public:
+        /** @brief Вставка последовательности значений в конец контейнера
+        @param to контейнер, в который будут вставлены элементы
+        @param from последовательность, элементы которой должны быть добавлены
+        в контейнер.
+        @return <tt> *this </tt>
+        */
+        template <class Container, class InputSequenced>
+        Container & operator()(Container & to, InputSequenced && from) const
+        {
+            ural::copy_fn{}(std::forward<InputSequenced>(from),
+                            to | ural::back_inserter);
+            return to;
+        }
+    };
 
-        constexpr auto const unique_erase = unique_erase_fn{};
+    /** @brief Тип функционального объекта для вставки последовательности
+    элементов в заданную точку контейнера
+    */
+    class insert_fn
+    {
+    public:
+        /** @brief Вставка последовательности значений в заданную точку
+        контейнера
+        @param to контейнер, в который будут вставлены элементы
+        @param pos точка, перед которой должны быть вставлены элементы
+        @param from последовательность, элементы которой должны быть добавлены
+        в контейнер.
+        @return <tt> *this </tt>
+        */
+        template <class Container, class Iterator, class InputSequenced>
+        Container & operator()(Container & to,
+                               Iterator pos,
+                               InputSequenced && from) const
+        {
+            ural::copy_fn{}(std::forward<InputSequenced>(from),
+                            std::inserter(to, pos));
+            return to;
+        }
+    };
+
+    namespace
+    {
+        constexpr auto const & erase = odr_const<erase_fn>;
+
+        constexpr auto const & remove_erase = odr_const<remove_erase_fn>;
+        constexpr auto const & remove_if_erase = odr_const<remove_if_erase_fn>;
+        constexpr auto const & remove_erase_if = remove_if_erase;
+
+        constexpr auto const & unique_erase = odr_const<unique_erase_fn>;
+
+        constexpr auto const & insert = odr_const<insert_fn>;
+        constexpr auto const & push_front = odr_const<push_front_fn>;
+        constexpr auto const & push_back = odr_const<push_back_fn>;
     }
 }
 // namespace ural

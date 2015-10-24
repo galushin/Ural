@@ -23,7 +23,7 @@
 */
 
 #include <ural/algorithm.hpp>
-#include <ural/sequence/reversed.hpp>
+#include <ural/sequence/adaptors/reversed.hpp>
 
 #include <boost/io/ios_state.hpp>
 

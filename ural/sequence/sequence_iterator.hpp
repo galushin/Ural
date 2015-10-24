@@ -128,11 +128,19 @@ namespace ural
          : impl_(std::move(s))
         {}
 
+        /// @brief Конструктор копий
         sequence_iterator(sequence_iterator const &) = default;
+
+        /// @brief Конструктор перемещения
         sequence_iterator(sequence_iterator &&) = default;
 
+        //@{
+        /** @brief Оператор присваивания
+        @return *this
+        */
         sequence_iterator & operator=(sequence_iterator const &) = default;
         sequence_iterator & operator=(sequence_iterator &&) = default;
+        //@}
 
         // Итератор ввода
         /** @brief Ссылка на текущий элемент

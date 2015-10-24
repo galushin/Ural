@@ -22,6 +22,7 @@
 */
 
 #include <ural/functional/adjoin.hpp>
+#include <ural/functional/compose.hpp>
 #include <ural/functional/compare_by.hpp>
 #include <ural/functional/cpp_operators.hpp>
 #include <ural/functional/make_callable.hpp>
@@ -229,6 +230,9 @@ namespace ural
     class constructor
     {
     public:
+        /// @brief Тип возвращаемого значения
+        typedef T result_type;
+
         /** @brief Оператор вызова функции
         @param args список аргументов конструктора
         @return <tt> T(std::forward<Args>(args)...) </tt>
@@ -343,6 +347,13 @@ namespace ural
 
     public:
         /** @brief Конструктор
+        @post <tt> this->function() == BinaryFunction{} </tt>
+        */
+        constexpr binary_reverse_args_function()
+         : Base()
+        {}
+
+        /** @brief Конструктор
         @param f функциональный объект
         @post <tt> this->function() == f </tt>
         */
@@ -415,9 +426,7 @@ namespace ural
     };
 
     // Функциональные объекты для операций контейнеров
-    /** @brief Функциональный объект, соответствующий функции-члену
-    @c pop_front
-    */
+    /// @brief Функциональный объект, соответствующий функции-члену @c pop_front
     class pop_front_fn
     {
     public:
@@ -431,9 +440,67 @@ namespace ural
         }
     };
 
-    /** @brief Тип функционального объекта для функции @c empty и аналогичной
-    функциональности
-    */
+    /// @brief Функциональный объект, соответствующий функции-члену @c front
+    struct front_fn
+    {
+    public:
+        /** @brief Оператор вызова функции
+        @param x аргумент
+        @return <tt> std::forward<T>(x).front() </tt>
+        */
+        template <class T>
+        decltype(auto) operator()(T && x) const
+        {
+            return std::forward<T>(x).front();
+        }
+    };
+
+    /// @brief Функциональный объект, соответствующий функции-члену @c pop_back
+    class pop_back_fn
+    {
+    public:
+        /** @brief Оператор применения <tt> x.pop_back() </tt>
+        @param x аргумент
+        */
+        template <class T>
+        void operator()(T & x) const
+        {
+            x.pop_back();
+        }
+
+        template <class T>
+        void operator()(T & x, DifferenceType<T> n) const
+        {
+            x.pop_back(n);
+        }
+    };
+
+    /// @brief Функциональный объект, соответствующий функции-члену @c back
+    struct back_fn
+    {
+    public:
+        /** @brief Оператор вызова функции
+        @param x аргумент
+        @return <tt> std::forward<T>(x).back() </tt>
+        */
+        template <class T>
+        decltype(auto) operator()(T && x) const
+        {
+            return std::forward<T>(x).back();
+        }
+    };
+
+    struct subscript_fn
+    {
+    public:
+        template <class T>
+        decltype(auto) operator()(T const & x, DifferenceType<T> n) const
+        {
+            return x[n];
+        }
+    };
+
+    /// @brief Тип функционального объекта для функции @c empty
     class empty_fn
     {
     private:
@@ -498,6 +565,11 @@ namespace ural
     template <class F, class Arg>
     class curried_function
     {
+        typedef typename std::remove_reference<Arg>::type Arg_value;
+
+        typedef typename std::conditional<std::is_reference<Arg>::value,
+                                          std::reference_wrapper<Arg_value>,
+                                          Arg>::type Holder;
     public:
         /** @brief Конструктор
         @param f функция
@@ -508,44 +580,97 @@ namespace ural
          : state_(std::move(f), std::forward<A>(arg))
         {}
 
+        //@{
+        /** @brief Функция
+        @return Ссылка на функцию
+        */
+        F const & function() const &;
+
+        F && function() &&
+        {
+            return std::move(this->state_)[ural::_1];
+        }
+        //@}
+
+        //@{
+        /** @brief Аргумент
+        @return Ссылка на закреплённый аргумент
+        */
+        Arg const & argument() const &;
+
+        Arg && argument() &&
+        {
+            return std::move(this->state_)[ural::_2];
+        }
+        //@}
+
+        //@{
         /** @brief Оператор вызова функции
         @param args аргументы
         */
         template <class... Ts>
-        auto operator()(Ts &&... args) const
-        -> ResultType<F, Arg, Ts...>
+        decltype(auto) operator()(Ts &&... args) const &
         {
-            return std::get<0>(state_)(std::get<1>(state_),
-                                       std::forward<Ts>(args)...);
+            return this->function()(this->argument(),
+                                    std::forward<Ts>(args)...);
         }
 
+        template <class... Ts>
+        decltype(auto) operator()(Ts &&... args) &&
+        {
+            return std::move(*this).function()(std::move(*this).argument(),
+                                               std::forward<Ts>(args)...);
+        }
+        //@}
+
     private:
-        std::tuple<F, Arg> state_;
+        ural::tuple<F, Holder> state_;
     };
 
-    /** @brief Фиксация первого аргумента функции
-    @param f функция
-    @param arg значение для первого аргумента
+    /** @brief Тип адаптора функционального объекта, фиксирующего первый
+    аргумент заданного функционального объекта.
     */
-    template <class F, class Arg>
-    curried_function<F, Arg &&>
-    curry(F f, Arg && arg)
+    struct curry_fn
     {
-        return curried_function<F, Arg &&>(std::move(f), std::forward<Arg>(arg));
-    }
+        /** @brief Фиксация первого аргумента функции
+        @param f функция
+        @param arg значение для первого аргумента
+        @return <tt> Fun(make_callable(std::move(f)), std::forward<Arg>(arg)) </tt>,
+        где @c Fun -- <tt> curried_function<FunctionType<F>, Arg> <tt>
+        */
+        template <class F, class Arg>
+        curried_function<FunctionType<F>, Arg>
+        operator()(F f, Arg && arg) const
+        {
+            using Fun = curried_function<FunctionType<F>, Arg>;
+            return Fun(make_callable(std::move(f)), std::forward<Arg>(arg));
+        }
+    };
 
     namespace
     {
+        /** @brief Функциональный объект, фиксирующий первый аргумент заданного
+        функционального объекта
+        */
+        constexpr auto const & curry = odr_const<curry_fn>;
+
         // Обобщённые операции
-        constexpr auto const modify_return_old = modify_return_old_fn{};
+        constexpr auto const & modify_return_old = odr_const<modify_return_old_fn>;
 
         // Управление передачей параметров
-        constexpr auto const ref = ref_fn{};
-        constexpr auto const cref = cref_fn{};
+        constexpr auto const & ref = odr_const<ref_fn>;
+        constexpr auto const & cref = odr_const<cref_fn>;
 
         // Операции контейнеров
-        constexpr auto const empty = empty_fn{};
-        constexpr auto const pop_front = pop_front_fn{};
+        constexpr auto const & empty = odr_const<empty_fn>;
+
+        constexpr auto const & pop_front = odr_const<pop_front_fn>;
+        constexpr auto const & front = odr_const<front_fn>;
+
+        constexpr auto const & pop_back = odr_const<pop_back_fn>;
+        constexpr auto const & back = odr_const<back_fn>;
+
+        constexpr auto const & subscript = odr_const<subscript_fn>;
     }
 }
 // namespace ural
