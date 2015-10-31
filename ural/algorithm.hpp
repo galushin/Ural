@@ -97,6 +97,178 @@ namespace ural
         }
     };
 
+    /** @brief Тип функционального объекта, проверяющего сбалансированность
+    открывающихся и закрывающихся скобок в последовательности.
+    */
+    class balanced_parens_fn
+    {
+    public:
+        /** @brief Проверка того, что скобки в последовательности сбалансированы
+        @param input входная последовательность
+        @param left_par открывающаяся скобка
+        @param right_par закрывающаяся скобка
+        @return @b true, если скобки в последовательности сбалансированы,
+        иначе --- @b false
+        */
+        template <class InputSequenced, class T>
+        bool
+        operator()(InputSequenced && input,
+                   T const & left_par, T const & right_par) const
+        {
+            using D = DifferenceType<SequenceType<InputSequenced>>;
+            return (*this)(std::forward<InputSequenced>(input),
+                           left_par, right_par,
+                           std::numeric_limits<D>::max());
+        }
+
+        /** @brief Проверка того, что скобки в последовательности
+        сбалансированы, причём вложенность скобок не превышает заданную.
+        @param input входная последовательность
+        @param left_par открывающаяся скобка
+        @param right_par закрывающаяся скобка
+        @param max_nesting_level наибольшая допустимая глубина вложения
+        скобок
+        @return @b true, если скобки в последовательности сбалансированы, а
+        их максимальная вложенность не превышает @c max_nesting_level, иначе ---
+        @b false
+        */
+        template <class InputSequenced, class T>
+        bool
+        operator()(InputSequenced && input,
+                   T const & left_par, T const & right_par,
+                   DifferenceType<SequenceType<InputSequenced>> max_nesting_level) const
+        {
+            return this->impl(ural::sequence_fwd<InputSequenced>(input),
+                              left_par, right_par, max_nesting_level);
+        }
+    private:
+        template <class InputSequence, class T>
+        static bool impl(InputSequence in,
+                         T const & left_par, T const & right_par,
+                         DifferenceType<InputSequence> const max_nesting_level)
+        {
+            using namespace ural::concepts;
+
+            BOOST_CONCEPT_ASSERT((SinglePassSequence<InputSequence>));
+            BOOST_CONCEPT_ASSERT((ReadableSequence<InputSequence>));
+            BOOST_CONCEPT_ASSERT((IndirectPredicate<ural::equal_to<>,
+                                                    InputSequence,
+                                                    T const *>));
+
+            auto const zero = DifferenceType<InputSequence>{0};
+
+            auto opened = zero;
+
+            for(; !!in; ++ in)
+            {
+                if(*in == left_par)
+                {
+                    if(opened > max_nesting_level)
+                    {
+                        return false;
+                    }
+
+                    ++ opened;
+                }
+                else if(*in == right_par)
+                {
+                    if(opened == zero)
+                    {
+                        return false;
+                    }
+
+                    -- opened;
+                }
+            }
+
+            return opened == zero;
+        }
+    };
+
+    /** @brief Тип функционального объекта, определяющего наименьший элемент
+    последовательности и количество его вхождений.
+    */
+    class min_count_fn
+    {
+    public:
+        /** @brief Определение наименьшего значения и количества его вхождений
+        в последовательности.
+        @param in входная последовательность
+        @param cmp фукнция сравнения
+        @return Возвращает кортеж, первый элемент которого равен наименьшему
+        значению в последовательности, а второй --- количество вхождений данного
+        значения в последовательности.
+        */
+        template <class InputSequenced, class Compare = ural::less<>>
+        tuple<ValueType<SequenceType<InputSequenced>>,
+              DifferenceType<SequenceType<InputSequenced>>>
+        operator()(InputSequenced && in, Compare cmp = Compare{}) const
+        {
+            return this->impl(ural::sequence_fwd<InputSequenced>(in),
+                              ural::make_callable(std::move(cmp)));
+        }
+
+    private:
+        template <class InputSequence, class Compare>
+        tuple<ValueType<InputSequence>, DifferenceType<InputSequence>>
+        impl(InputSequence in, Compare cmp = Compare{}) const
+        {
+            const auto unit = DifferenceType<InputSequence>(1);
+            assert(!!in);
+
+            tuple<ValueType<InputSequence>, DifferenceType<InputSequence>>
+                result{*in, unit};
+            ++ in;
+
+            for(; !!in; ++ in)
+            {
+                if(cmp(*in, result[ural::_1]))
+                {
+                    result[ural::_1] = *in;
+                    result[ural::_2] = unit;
+                }
+                else if(!cmp(result[ural::_1], *in))
+                {
+                    ++ result[ural::_2];
+                }
+            }
+
+            return result;
+        }
+    };
+
+    /** @brief Тип функционального объекта, пропускающий начало одной
+    последовательности, если она совпадает с другой последовательностью.
+    */
+    class skip_over_fn
+    {
+    public:
+        /** @brief Если <tt> stars_with(seq, prefix, bin_pred) </tt>, то
+        продвигает @c seq на <tt> size(prefix) </tt> элементов.
+        @param seq последовательность, которую предстоит продвинуть.
+        @param prefix последовательность, которую нужно пропустить.
+        @return То же, что <tt> stars_with(seq, prefix, bin_pred) </tt>.
+        */
+        template <class ForwardSequence, class InputSequenced,
+                  class BinaryPredicate = equal_to<>>
+        bool operator()(ForwardSequence & seq, InputSequenced && prefix,
+                        BinaryPredicate bin_pred = BinaryPredicate{}) const
+        {
+            auto res = ural::mismatch_fn{}(seq, std::forward<InputSequenced>(prefix),
+                                           std::move(bin_pred));
+
+            if(!res[ural::_2])
+            {
+                seq = res[ural::_1];
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    };
+
     namespace
     {
         // 25.2 Немодифицирующие
@@ -269,6 +441,21 @@ namespace ural
 
         // Расширения
         constexpr auto const & fused_for_each = odr_const<fused_for_each_fn>;
+
+        /** @brief Функциональный объект, проверяющий сбалансированность
+        открывающихся и закрывающихся скобок в последовательности.
+        */
+        constexpr auto const & balanced_parens = odr_const<balanced_parens_fn>;
+
+        /** @brief Функциональный объект, определяющий наименьший элемент
+        последовательности и количество его вхождений.
+        */
+        constexpr auto const & min_count = odr_const<min_count_fn>;
+
+        /** @brief Функциональный объект, пропускающий начало одной
+        последовательности, если она совпадает с другой последовательностью.
+        */
+        constexpr auto const & skip_over = odr_const<skip_over_fn>;
     }
 }
 // namespace ural

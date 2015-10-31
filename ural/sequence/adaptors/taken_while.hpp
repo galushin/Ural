@@ -52,10 +52,12 @@ namespace ural
     }
 
     public:
+        // Типы
         /// @brief Категория обхода
         using traversal_tag
             = CommonType<typename Sequence::traversal_tag, forward_traversal_tag>;
 
+        // Создание, копирование, уничтожение, свойства
         /** @brief Конструктор
         @param seq базовая последовательность
         @param pred предикат
@@ -67,20 +69,21 @@ namespace ural
          , pred_(std::move(pred))
         {}
 
-        /** @brief Проверка исчерпания
-        @return <tt> !this->base() || !this->predicate()(*this->base()) </tt>
-        */
-        bool operator!() const
-        {
-            return !this->base() || !this->predicate()(*this->base());
-        }
-
         /** @brief Используемый предикат
         @return Используемый предикат
         */
         Predicate const & predicate() const
         {
             return this->pred_;
+        }
+
+        // Однопроходная последовательность
+        /** @brief Проверка исчерпания
+        @return <tt> !this->base() || !this->predicate()(*this->base()) </tt>
+        */
+        bool operator!() const
+        {
+            return !this->base() || !this->predicate()(*this->base());
         }
 
     private:

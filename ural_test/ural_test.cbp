@@ -53,6 +53,7 @@
 		<Unit filename="../notes.txt" />
 		<Unit filename="../roadmap.txt" />
 		<Unit filename="../tests/algorithm/container_algo.cpp" />
+		<Unit filename="../tests/algorithm/d_algo_test.cpp" />
 		<Unit filename="../tests/algorithm/mutating.cpp" />
 		<Unit filename="../tests/algorithm/non_modifying.cpp" />
 		<Unit filename="../tests/algorithm/sorting.cpp" />
