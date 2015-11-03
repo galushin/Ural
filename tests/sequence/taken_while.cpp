@@ -14,49 +14,7 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <ural/sequence/base.hpp>
-
-// @todo fibonacci_sequence в ural, возможно обобщив
-namespace
-{
-    template <class Integer>
-    class fibonacci_sequence
-     : public ural::sequence_base<fibonacci_sequence<Integer>>
-    {
-    public:
-        using traversal_tag = ural::single_pass_traversal_tag;
-        using value_type = Integer;
-        using reference = value_type const &;
-        using pointer = value_type const *;
-        using distance_type = Integer;
-
-        fibonacci_sequence()
-         : prev_(0)
-         , cur_(1)
-        {}
-
-        bool operator!() const
-        {
-            return false;
-        }
-
-        reference front() const
-        {
-            return this->cur_;
-        }
-
-        void pop_front()
-        {
-            auto new_value = prev_ + cur_;
-            prev_ = std::move(cur_);
-            cur_ = std::move(new_value);
-        }
-
-    private:
-        Integer prev_;
-        Integer cur_;
-    };
-}
+#include <ural/math/fibonacci.hpp>
 
 #include <ural/sequence/all.hpp>
 #include <ural/algorithm.hpp>
@@ -75,7 +33,7 @@ BOOST_AUTO_TEST_CASE(PE_002_fibonacci_via_pipes)
 {
     using Integer = long long;
     auto const n = Integer{4'000'000};
-    auto seq = fibonacci_sequence<Integer>()
+    auto seq = ural::fibonacci_sequence<Integer>()
              | ural::filtered(ural::is_even)
              | ural::taken_while([n](Integer const & x) { return x < n; });
 
