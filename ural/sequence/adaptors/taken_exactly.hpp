@@ -57,7 +57,7 @@ namespace ural
 
         // Типы
         /// @brief Категория обхода
-        using traversal_tag = typename Sequence::traversal_tag;
+        using typename Inherited::traversal_tag;
 
         /// @brief Тип расстояния
         using distance_type = Distance;
@@ -251,9 +251,17 @@ namespace ural
         distance_type traversed_back_size_;
     };
 
+    /**
+    @brief Тип функционального объекта для создания @c taken_exactly_sequence
+    */
     struct make_taken_exactly_sequence_fn
     {
     public:
+        //@{
+        /** @brief Создание @c taken_exactly_sequence
+        @param seq входная последовательность
+        @param n количество элементов, которое нужно взять
+        */
         template <class Sequenced, class Distance>
         taken_exactly_sequence<SequenceType<Sequenced>, Distance>
         operator()(Sequenced && seq, Distance n) const
@@ -261,13 +269,30 @@ namespace ural
             using Result = taken_exactly_sequence<SequenceType<Sequenced>, Distance>;
             return Result(::ural::sequence_fwd<Sequenced>(seq), std::move(n));
         }
+
+        template <class Sequence, class D1, class D2>
+        taken_exactly_sequence<Sequence, CommonType<D1, D2>>
+        operator()(taken_exactly_sequence<Sequence, D1> seq, D2 n) const
+        {
+            using Size = CommonType<D1, D2>;
+            using Result = taken_exactly_sequence<Sequence, Size>;
+
+            auto n_new = std::min(Size(seq.size()), Size(std::move(n)));
+
+            return Result(std::move(seq).base(), std::move(n_new));
+        }
+        //@}
     };
 
     namespace
     {
+        /// @brief Функциональный объект для создания @c taken_exactly_sequence
         constexpr auto const & make_taken_exactly_sequence
             = odr_const<make_taken_exactly_sequence_fn>;
 
+        /** @brief Функциональный объект для создания @c taken_exactly_sequence
+        в конвейерном стиле.
+        */
         constexpr auto const & taken_exactly
             = odr_const<pipeable_maker<make_taken_exactly_sequence_fn>>;
     }
