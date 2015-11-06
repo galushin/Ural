@@ -101,7 +101,6 @@ namespace ural
 
     /** @brief Тип функционального объекта для создания копии заданного объекта
     в динамической памяти, управляемой с помощью <tt> std::unique_ptr </tt>
-    @todo Перегрузки с произвольным числом аргументов
     */
     class to_unqiue_ptr_function
     {
@@ -117,24 +116,36 @@ namespace ural
         }
     };
 
+    /** @brief Тип функциоанального объекта для создание копии в динамической
+    памяти, обёрнутой @c unique_ptr.
+    */
+    struct make_copy_new_fn
+    {
+    public:
+        /** @brief Создание копии в динамической памяти
+        @param x копируемое значение
+        @return <tt> ural::make_unique<T>(std::move(x)) </tt>
+        */
+        template <class T>
+        std::unique_ptr<T>
+        operator()(T x) const
+        {
+            return ural::make_unique<T>(std::move(x));
+        }
+    };
+
     namespace
     {
         /** @brief Функциональный объект для создания копии заданного объекта
         в динамической памяти, управляемой с помощью <tt> std::unique_ptr </tt>
-        @todo Перегрузки с произвольным числом аргументов
         */
         constexpr auto const & to_unique_ptr
             = odr_const_holder<to_unqiue_ptr_function>::value;
-    }
 
-    /** @brief Создание копии в динамической памяти
-    @param x копируемое значение
-    @return <tt> ural::make_unique<T>(std::move(x)) </tt>
-    */
-    template <class T>
-    std::unique_ptr<T> make_copy_new(T x)
-    {
-        return ural::make_unique<T>(std::move(x));
+        /** @brief Функциоанальный объект для создание копии в динамической
+        памяти, обёрнутой @c unique_ptr.
+        */
+        constexpr auto const & make_copy_new = odr_const<make_copy_new_fn>;
     }
 
     // Умный указатель с глубоким копированием
