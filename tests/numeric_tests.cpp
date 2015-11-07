@@ -14,6 +14,7 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <ural/math/primes.hpp>
 #include <ural/format.hpp>
 #include <ural/numeric/matrix.hpp>
 #include <ural/algorithm.hpp>
@@ -1149,4 +1150,42 @@ BOOST_AUTO_TEST_CASE(square_root_iterative_less_then_1_test)
 
         BOOST_CHECK_CLOSE_FRACTION(std::sqrt(S), x_0, eps);
     }
+}
+
+BOOST_AUTO_TEST_CASE(PE_131_adjacent_differences_pipe)
+{
+    using Integer = long long;
+    auto const n_max = 1'000'000;
+
+    auto const primes = ural::make_primes_below(n_max);
+
+    using namespace ural;
+
+    auto dcs = make_arithmetic_progression(1, 1)
+             | transformed(cube)
+             | adjacent_differenced
+             | taken_while([n_max](Integer const & x) { return x < n_max; });
+
+    auto result = ural::make_set_intersection_sequence(primes, dcs);
+
+    BOOST_CHECK_EQUAL(ural::size(result), 173);
+}
+
+BOOST_AUTO_TEST_CASE(PE_131_adjacent_differences_pipe_explicit_operation)
+{
+    auto const n_max = 1'000'000;
+    using Integer = long long;
+
+    auto const primes = ural::make_primes_below(n_max);
+
+    using namespace ural;
+
+    auto dcs = make_arithmetic_progression(Integer{1}, Integer{1})
+             | transformed(cube)
+             | adjacent_differenced_with(ural::minus<Integer>{})
+             | taken_while([n_max](Integer const & x) { return x < n_max; });
+
+    auto result = ural::make_set_intersection_sequence(primes, dcs);
+
+    BOOST_CHECK_EQUAL(ural::size(result), 173);
 }

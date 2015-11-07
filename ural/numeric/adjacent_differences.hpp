@@ -124,32 +124,60 @@ namespace ural
         ural::tuple<Input, BinaryOperation, Optional_value, Optional_value> members_;
     };
 
-    /** @brief Создание последовательности разностей соседних элементов
-    @param in исходная последовательность
-    @param sub операция, определяющая разность
+    /** @brief Тип функционального объекта для создания последовательности
+    разностей соседних элементов исходной последовательности
     */
-    template <class Input, class BinaryOperation>
-    auto adjacent_differences(Input && in, BinaryOperation sub)
-    -> adjacent_differences_sequence<decltype(::ural::sequence_fwd<Input>(in)),
-                                     decltype(make_callable(std::move(sub)))>
+    class adjacent_differences_fn
     {
-        typedef adjacent_differences_sequence<decltype(::ural::sequence_fwd<Input>(in)),
-                                              decltype(make_callable(std::move(sub)))> Result;
-        return Result(::ural::sequence_fwd<Input>(in),
-                      make_callable(std::move(sub)));
-    }
+    public:
+        /** @brief Создание последовательности разностей соседних элементов
+        @param in исходная последовательность
+        @return <tt> adjacent_differences(std::forward<Input>(in), ural::minus<>{});
+                </tt>
+        */
+        template <class Input>
+        auto operator()(Input && in) const
+        -> adjacent_differences_sequence<decltype(::ural::sequence_fwd<Input>(in)),
+                                         ural::minus<>>
+        {
+            return (*this)(std::forward<Input>(in), ural::minus<>{});
+        }
 
-    /** @brief Создание последовательности разностей соседних элементов
-    @param in исходная последовательность
-    @return <tt> adjacent_differences(std::forward<Input>(in), ural::minus<>{});
-            </tt>
-    */
-    template <class Input>
-    auto adjacent_differences(Input && in)
-    -> adjacent_differences_sequence<decltype(::ural::sequence_fwd<Input>(in)),
-                                     ural::minus<>>
+        /** @brief Создание последовательности разностей соседних элементов
+        @param in исходная последовательность
+        @param sub операция, определяющая разность
+        */
+        template <class Input, class BinaryOperation>
+        auto operator()(Input && in, BinaryOperation sub) const
+        -> adjacent_differences_sequence<decltype(::ural::sequence_fwd<Input>(in)),
+                                         decltype(make_callable(std::move(sub)))>
+        {
+            typedef adjacent_differences_sequence<decltype(::ural::sequence_fwd<Input>(in)),
+                                                  decltype(make_callable(std::move(sub)))> Result;
+            return Result(::ural::sequence_fwd<Input>(in),
+                          make_callable(std::move(sub)));
+        }
+    };
+
+    namespace
     {
-        return adjacent_differences(std::forward<Input>(in), ural::minus<>{});
+        /** @brief Функциональный объект для создания последовательности
+        разностей соседних элементов исходной последовательности
+        */
+        constexpr auto const && adjacent_differences = odr_const<adjacent_differences_fn>;
+
+        /** @brief Объект для создания @c adjacent_differences_sequences
+        в конвейерном стиле.
+        */
+        constexpr auto const && adjacent_differenced
+            = odr_const<pipeable<adjacent_differences_fn>>;
+
+        /** @brief Объект для создания @c adjacent_differences_sequences
+        с заданной операцией, используемой для вычисления разностей, в
+        конвейерном стиле.
+        */
+        constexpr auto const && adjacent_differenced_with
+            = odr_const<pipeable_maker<adjacent_differences_fn>>;
     }
 }
 // namespace ural
