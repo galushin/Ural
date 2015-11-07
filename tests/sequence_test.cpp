@@ -562,6 +562,68 @@ BOOST_AUTO_TEST_CASE(copy_n_analog_test)
     BOOST_CHECK_EQUAL(r_std, r_ural);
 }
 
+BOOST_AUTO_TEST_CASE(taken_taken_test_shorter)
+{
+    std::vector<int> const src = {1, 2, 3, 4, 5};
+
+    auto const n1 = 4;
+    auto const n2 = 3;
+
+    auto s_composite = src | ural::taken(n1) | ural::taken(n2);
+    auto s_direct = src | ural::taken(std::min(n1, n2));
+
+    static_assert(std::is_same<decltype(s_composite), decltype(s_direct)>::value, "");
+
+    BOOST_CHECK(s_direct == s_composite);
+}
+
+BOOST_AUTO_TEST_CASE(taken_taken_test_longer)
+{
+    std::vector<int> const src = {1, 2, 3, 4, 5};
+
+    auto const n1 = 3;
+    auto const n2 = 4;
+
+    auto s_composite = src | ural::taken(n1) | ural::taken(n2);
+    auto s_direct = src | ural::taken(std::min(n1, n2));
+
+    static_assert(std::is_same<decltype(s_composite), decltype(s_direct)>::value, "");
+
+    BOOST_CHECK(s_direct == s_composite);
+}
+
+BOOST_AUTO_TEST_CASE(taken_exactly_taken_exactly_test_shorter)
+{
+    std::vector<int> const src = {1, 2, 3, 4, 5};
+
+    auto const n1 = 4;
+    auto const n2 = 3;
+
+    auto s_composite = src | ural::taken_exactly(n1) | ural::taken_exactly(n2);
+    auto s_direct = src | ural::taken_exactly(std::min(n1, n2));
+
+    static_assert(std::is_same<decltype(s_composite), decltype(s_direct)>::value, "");
+
+    BOOST_CHECK(s_direct == s_composite);
+}
+
+BOOST_AUTO_TEST_CASE(taken_exactly_taken_exactly_test_longer)
+{
+    std::vector<int> const src = {1, 2, 3, 4, 5};
+
+    auto const n1 = 3;
+    auto const n2 = 4;
+
+    auto s_composite = src | ural::taken_exactly(n1) | ural::taken_exactly(n2);
+    auto s_direct = src | ural::taken_exactly(std::min(n1, n2));
+
+    static_assert(std::is_same<decltype(s_composite), decltype(s_direct)>::value, "");
+
+    BOOST_CHECK(s_direct == s_composite);
+}
+
+// @todo различные комбинации taken taken_exactly, большей и меньшей длины
+
 BOOST_AUTO_TEST_CASE(zip_sequence_bases_access)
 {
     std::vector<int> const x = {1, 2, 3, 4, 5};

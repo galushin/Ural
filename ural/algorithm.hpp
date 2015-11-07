@@ -269,6 +269,31 @@ namespace ural
         }
     };
 
+    /** @brief Тип функционального объекта, определяющий наибольший общий
+    префикс двух последовательностей.
+    */
+    class common_prefix_fn
+    {
+    public:
+        /** @brief Поиск общего префикса @c s1 и @c s2
+        @param s1 первая последовательность (должна быть прямой)
+        @param s2 вторая последовательность
+        @param bin_pred бинарный предикат, задающий функцию сравнения
+        @return Часть @c s1, которая является префиксом для @c s2.
+        */
+        template <class ForwardSequenced, class InputSequenced,
+                  class BinaryPredicate = ural::equal_to<>>
+        SequenceType<ForwardSequenced>
+        operator()(ForwardSequenced && s1, InputSequenced && s2,
+                   BinaryPredicate bin_pred = BinaryPredicate{}) const
+        {
+            auto r = ural::mismatch_fn{}(std::forward<ForwardSequenced>(s1),
+                                         std::forward<InputSequenced>(s2),
+                                         std::move(bin_pred));
+            return std::move(r)[ural::_1].traversed_front();
+        }
+    };
+
     namespace
     {
         // 25.2 Немодифицирующие
@@ -456,6 +481,11 @@ namespace ural
         последовательности, если она совпадает с другой последовательностью.
         */
         constexpr auto const & skip_over = odr_const<skip_over_fn>;
+
+        /** @brief Функциональный объект, определяющий наибольший общий префикс
+        двух последовательностей.
+        */
+        constexpr auto const & common_prefix = odr_const<common_prefix_fn>;
     }
 }
 // namespace ural

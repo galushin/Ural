@@ -147,7 +147,10 @@ namespace ural
     */
     template <class Sequence, class Size>
     bool operator==(take_sequence<Sequence, Size> const & x,
-                    take_sequence<Sequence, Size> const & y);
+                    take_sequence<Sequence, Size> const & y)
+    {
+        return x.base() == y.base() && x.count() == y.count();
+    }
 
     /// @brief Тип Функционального объекта для создания @c take_sequence
     // @todo Оптимизация для последовательностей произвольного доступа
@@ -155,16 +158,31 @@ namespace ural
     struct make_take_sequence_fn
     {
     public:
+        //@{
         /** @brief Создание @c take_sequence
         @param seq входная последовательность
-        @param helper объект, хранящий количество элементов
+        @param n количество элементов, которое нужно взять
         */
         template <class Sequenced, class Size>
-        auto operator()(Sequenced && seq, Size n) const
+        take_sequence<SequenceType<Sequenced>, Size>
+        operator()(Sequenced && seq, Size n) const
         {
             using Result = take_sequence<SequenceType<Sequenced>, Size>;
             return Result(::ural::sequence_fwd<Sequenced>(seq), std::move(n));
         }
+
+        template <class Sequence, class Size1, class Size2>
+        take_sequence<Sequence, CommonType<Size1, Size2>>
+        operator()(take_sequence<Sequence, Size1> seq, Size2 n) const
+        {
+            using Size = CommonType<Size1, Size2>;
+            using Result = take_sequence<Sequence, Size>;
+
+            auto n_new = std::min(Size(seq.count()), Size(std::move(n)));
+
+            return Result(std::move(seq).base(), std::move(n_new));
+        }
+        //@}
     };
 
     namespace
