@@ -118,6 +118,7 @@
 		<Unit filename="../ural/math.hpp" />
 		<Unit filename="../ural/math/common_factor.hpp" />
 		<Unit filename="../ural/math/continued_fraction.hpp" />
+		<Unit filename="../ural/math/fibonacci.hpp" />
 		<Unit filename="../ural/math/primes.hpp" />
 		<Unit filename="../ural/math/rational.hpp" />
 		<Unit filename="../ural/memory.hpp" />

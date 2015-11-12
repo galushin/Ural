@@ -80,3 +80,10 @@ BOOST_AUTO_TEST_CASE(skip_over_test)
     BOOST_CHECK( ural::skip_over(s1, hell));
     URAL_CHECK_EQUAL_RANGES(s1, o_world);
 }
+
+BOOST_AUTO_TEST_CASE(common_prefix_test)
+{
+    // Тест взят с dlang.org/phobos/std_algorithm_searching.html#commonPrefix
+    auto const z = std::string("hello, ");
+    URAL_CHECK_EQUAL_RANGES(ural::common_prefix("hello, world", "hello, there"), z);
+}
