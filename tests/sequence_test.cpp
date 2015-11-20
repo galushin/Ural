@@ -29,6 +29,19 @@
 #include <set>
 #include <map>
 
+BOOST_AUTO_TEST_CASE(assumed_infinite_test_empty_becomes_not)
+{
+    std::vector<int> ev;
+
+    auto s = ural::sequence(ev);
+    auto is = s | ural::assumed_infinite;
+
+    BOOST_CHECK(!s);
+    BOOST_CHECK(!!is);
+
+    BOOST_CHECK(is.base() == s);
+}
+
 using ::ural::ValueType;
 
 BOOST_AUTO_TEST_CASE(sequence_for_lvalue_container)

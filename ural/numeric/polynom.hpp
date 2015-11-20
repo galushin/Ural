@@ -24,6 +24,7 @@
 */
 
 #include <ural/sequence/adaptors/transform.hpp>
+#include <ural/sequence/adaptors/assumed_infinite.hpp>
 #include <ural/container/vector.hpp>
 #include <ural/sequence/sink.hpp>
 
@@ -267,7 +268,6 @@ namespace ural
         */
         polynomial & operator+=(polynomial const & p)
         {
-            // @todo Заменить на алгоритмы ural
             auto const old_size = cs_.size();
 
             if(p.degree() > this->degree())
@@ -278,10 +278,10 @@ namespace ural
 
             assert(cs_.size() >= old_size);
 
-            auto const n = std::min(old_size, p.cs_.size());
+            auto const n = ural::min(old_size, p.cs_.size());
 
-            std::transform(cs_.begin(), cs_.begin() + n, p.cs_.begin(),
-                           sink_sequence<>{},
+            ural::for_each(cs_ | ural::taken_exactly(n),
+                           p.cs_ | ural::assumed_infinite,
                            ural::plus_assign<>{});
 
             this->drop_leading_zeros();
@@ -295,7 +295,6 @@ namespace ural
         */
         polynomial & operator-=(polynomial const & p)
         {
-            // @todo Заменить на алгоритмы ural
             // @todo Устранить дублирование с +=
             auto const old_size = cs_.size();
 
@@ -311,10 +310,10 @@ namespace ural
 
             assert(cs_.size() >= old_size);
 
-            auto const n = std::min(old_size, p.cs_.size());
+            auto const n = ural::min(old_size, p.cs_.size());
 
-            std::transform(cs_.begin(), cs_.begin() + n, p.cs_.begin(),
-                           sink_sequence<>{},
+            ural::for_each(cs_ | ural::taken_exactly(n),
+                           p.cs_ | ural::assumed_infinite,
                            ural::minus_assign<>{});
 
             this->drop_leading_zeros();

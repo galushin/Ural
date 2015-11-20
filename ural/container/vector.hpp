@@ -21,6 +21,7 @@
  @brief Аналог <tt> std::vector </tt>
 */
 
+#include <ural/sequence/adaptors/assumed_infinite.hpp>
 #include <ural/sequence/constant.hpp>
 #include <ural/container/container_facade.hpp>
 #include <ural/memory.hpp>
@@ -1142,8 +1143,7 @@ namespace ural
 
             // first < last, значит sink < source, значит
             // out исчерпается позже, чем in
-            // @todo out => out | unchecked
-            out = ural::move_if_noexcept(in, out)[ural::_2];
+            out = ural::move_if_noexcept(in, out | assumed_infinite)[ural::_2].base();
 
             // 3. Удаляем последние элементы
             data_.pop_back(out.size());
