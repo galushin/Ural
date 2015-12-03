@@ -20,9 +20,9 @@
 /** @file ural/sequence/chunks.hpp
  @brief Представление последовательности в виде последовательности
  последовательностей одинаковой длины (кроме, возможно, последней).
- @todo Реализовать функции прямой последовательности
 */
 
+#include <ural/sequence/adaptor.hpp>
 #include <ural/sequence/adaptors/taken.hpp>
 #include <ural/sequence/make.hpp>
 #include <ural/concepts.hpp>
@@ -31,13 +31,16 @@ namespace ural
 {
     /** @brief Адаптор последовательности, разделяющий её на
     подпоследовательности одинаковой длины (кроме, возможно, последней).
-    @tparam Sequence базовая последовательность
-    @todo Добавить требование, что Sequence должна быть хотя бы прямой
+    @tparam Sequence базовая последовательность, должна быть как минимум
+    прямой, чтобы функция @c front была регулярной.
     */
     template <class Sequence>
     class chunks_sequence
-     : public sequence_base<chunks_sequence<Sequence>>
+     : public sequence_adaptor<chunks_sequence<Sequence>, Sequence>
     {
+        using Inherited = sequence_adaptor<chunks_sequence<Sequence>, Sequence>;
+
+        BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Sequence>));
     public:
         // Типы
         /// @brief Тип значения
@@ -47,7 +50,7 @@ namespace ural
         typedef value_type reference;
 
         /// @brief Категория обхода
-        typedef forward_traversal_tag traversal_tag;
+        typedef typename value_type::traversal_tag traversal_tag;
 
         /// @brief Тип расстояния
         using distance_type = DifferenceType<Sequence>;
@@ -60,26 +63,11 @@ namespace ural
         @post <tt> this->chunk_size() == n </tt>
         */
         chunks_sequence(Sequence seq, distance_type n)
-         : seq_(std::move(seq))
+         : Inherited(std::move(seq))
          , n_(n)
         {}
 
         // Адаптор
-        //@{
-        /** @brief Базовая последовательность
-        @return Константная ссылка на базовую последовательность
-        */
-        Sequence const & base() const &
-        {
-            return this->seq_;
-        }
-
-        Sequence && base() &&
-        {
-            return std::move(this->seq_);
-        }
-        //@}
-
         /** @brief Размер подпоследовательностей
         @return Размер подпоследовательностей
         */
@@ -89,21 +77,13 @@ namespace ural
         }
 
         // Однопроходная последовательность
-        /** @brief Проверка исчерпания последовательностей
-        @return @b true, если последовательность исчерпана, иначе --- @b false.
-        */
-        bool operator!() const
-        {
-            return !this->base();
-        }
-
         /** @brief Текущий элемент последовательности
         @pre <tt> !*this == false </tt>
         @return Ссылка на текущий элемент последовательности
         */
         reference front() const
         {
-            return seq_ | ural::taken(this->chunk_size());
+            return this->base() | ural::taken(this->chunk_size());
         }
 
         /** @brief Переход к следующему элементу
@@ -113,46 +93,109 @@ namespace ural
         {
             auto s = this->front();
             s.exhaust_front();
-            seq_ = std::move(s).base();
+            this->mutable_base() = std::move(s).base();
         }
 
-        // Прямая последовательность
-        /// @brief Отбросить переднюю пройденную часть последовательности
-        void shrink_front();
-
-        /** @breif Передняя пройденная часть последовательности
-        @return Передняя пройденная часть последовательности
+        // Последовательность произвольного доступа
+        /** @brief Размер
+        @return Количество элементов
         */
-        chunks_sequence traversed_front() const;
+        distance_type size() const
+        {
+            return this->base().size() / this->chunk_size()
+                    + (this->base().size() % this->chunk_size() != 0);
+        }
 
-        /** @brief Полная последовательность (включая пройденные части)
-        @return Полная последовательность
+        /** @brief Оператор доступа к элементам по индексу
+        @param index номер элемента
+        @pre <tt> 0 <= index && index < this->size() </tt>
+        @return Ссылка на подпоследовательность с номером @c index
         */
-        chunks_sequence original() const;
+        reference operator[](distance_type index) const
+        {
+            assert(0 <= index && index < this->size());
+
+            return (this->base() + index * this->chunk_size())
+                   | ural::taken(this->chunk_size());
+        }
+
+        /** @brief Продвижение на заданное число элементов
+        @param n количество элементов, которые нужно пропустить
+        @pre <tt> 0 <= n && n <= this->size() </tt>
+        @return <tt> *this </tt>
+        */
+        chunks_sequence & operator+=(distance_type n)
+        {
+            assert(0 <= n && n <= this->size());
+
+            if(n == this->size())
+            {
+                this->exhaust_front();
+            }
+            else
+            {
+                this->mutable_base() += n * this->chunk_size();
+            }
+
+            return *this;
+        }
 
     private:
-        Sequence seq_;
+        friend Inherited;
+
+        chunks_sequence rebind_base(Sequence s) const &
+        {
+            return chunks_sequence(std::move(s), this->chunk_size());
+        }
+
+    private:
         distance_type n_;
     };
 
-    /** @brief Функция создания @c chunk_sequence
-    @param seq базовая последовательность
-    @param n количество элементов в подпоследовательности
-    @return <tt> chunks_sequence<>(sequence_fwd<Sequenced>(seq), n) </tt>
+    /** @brief Оператор "равно"
+    @param x, y аргументы
+    @return @b true, если базовые последовательности и размеры
+    подпоследовательностей равны, иначе --- @b false.
     */
-    template <class Sequenced>
-    auto make_chunks_sequence(Sequenced && seq,
-                              DifferenceType<SequenceType<Sequenced>> n)
-    -> chunks_sequence<SequenceType<Sequenced>>
-    {
-        assert(n > 0);
-        typedef chunks_sequence<SequenceType<Sequenced>> Result;
-        return Result(::ural::sequence_fwd<Sequenced>(seq), std::move(n));
-    }
-
     template <class Sequence>
     bool operator==(chunks_sequence<Sequence> const & x,
-                    chunks_sequence<Sequence> const & y);
+                    chunks_sequence<Sequence> const & y)
+    {
+        return x.base() == y.base() && x.chunk_size() == y.chunk_size();
+    }
+
+    /// @brief Тип функционального объекта создания @c chunk_sequence
+    struct make_chunks_sequence_fn
+    {
+    public:
+        /** @brief Создание @c chunk_sequence
+        @param seq базовая последовательность
+        @param n количество элементов в подпоследовательности
+        @pre n > 0
+        @return <tt> chunks_sequence<>(sequence_fwd<Sequenced>(seq), n) </tt>
+        */
+        template <class Sequenced>
+        chunks_sequence<SequenceType<Sequenced>>
+        operator()(Sequenced && seq,
+                   DifferenceType<SequenceType<Sequenced>> n) const
+        {
+            assert(n > 0);
+
+            typedef chunks_sequence<SequenceType<Sequenced>> Result;
+            return Result(::ural::sequence_fwd<Sequenced>(seq), std::move(n));
+        }
+    };
+
+    namespace
+    {
+        /// @brief Функциональный объект создания @c chunk_sequence
+        auto const & make_chunks_sequence = odr_const<make_chunks_sequence_fn>;
+
+        /** @brief Функциональный объект для создания @c chunk_sequence в
+        конвейерном стиле
+        */
+        auto const & chunked = odr_const<pipeable_maker<make_chunks_sequence_fn>>;
+    }
 }
 // namespace ural
 

@@ -1625,6 +1625,67 @@ BOOST_AUTO_TEST_CASE(chunks_sequence_test)
     BOOST_CHECK(!ch);
 }
 
+BOOST_AUTO_TEST_CASE(chunks_sequence_equality_test)
+{
+    std::vector<int> const src0;
+    std::vector<int> const src1 = {1, 2, 3};
+
+    auto const n1 = 3;
+    auto const n2 = n1 + 1;
+
+    auto const s01 = src0 | ural::chunked(n1);
+    auto const s11 = src1 | ural::chunked(n1);
+    auto const s12 = src1 | ural::chunked(n2);
+
+    BOOST_CHECK(s01 == s01);
+    BOOST_CHECK(s11 == s11);
+    BOOST_CHECK(s12 == s12);
+
+    BOOST_CHECK(s01 != s11);
+    BOOST_CHECK(s01 != s12);
+    BOOST_CHECK(s11 != s12);
+}
+
+BOOST_AUTO_TEST_CASE(chunks_sequence_original_test)
+{
+    auto const seq = ural::numbers(1, 22);
+
+    auto cs = seq | ural::chunked(3);
+
+    auto const n = ural::size(cs);
+
+    auto cs_2 = ural::next(cs, n / 2);
+
+    BOOST_CHECK(!!cs_2.traversed_front());
+    BOOST_CHECK(cs_2 != cs);
+    BOOST_CHECK(cs_2.original() == cs);
+
+    cs.exhaust_front();
+
+    BOOST_CHECK(cs.traversed_front() == cs_2.original());
+}
+
+BOOST_AUTO_TEST_CASE(chunks_sequence_random_access)
+{
+    auto const xs = ural::numbers(1, 23) | ural::to_container<std::vector>{};
+    auto seq = xs | ural::chunked(3);
+
+    BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(seq)>));
+
+    BOOST_CHECK(seq[0] == seq.front());
+    BOOST_CHECK(ural::equal(seq[0], ural::numbers(1, 4)));
+    BOOST_CHECK(ural::equal(seq[1], ural::numbers(4, 7)));
+
+    BOOST_CHECK_EQUAL(static_cast<size_t>(seq.size()), xs.size() / seq.chunk_size() + 1);
+    BOOST_CHECK_EQUAL(static_cast<size_t>((xs | ural::chunked(2)).size()),
+                      xs.size() / 2);
+
+    auto s2 = seq + 2;
+
+    BOOST_CHECK(s2.front() == seq[2]);
+    BOOST_CHECK(s2.original() == seq.original());
+}
+
 BOOST_AUTO_TEST_CASE(delimit_sequence_test)
 {
     std::vector<int> const src2 = {3, 1, 4, 1, 5, 9, 2, 6, 5, 3};
@@ -1788,9 +1849,9 @@ BOOST_AUTO_TEST_CASE(delimited_rvalue_base)
 BOOST_AUTO_TEST_CASE(chunks_rvalue_base)
 {
     std::string const source("AlexanderStepanov");
-    std::istringstream is(source);
+    std::string const source_2(source);
 
-    auto s1 = ural::sequence(is);
+    auto s1 = ural::sequence(source_2);
     auto so = ural::make_chunks_sequence(std::move(s1), 5);
     auto s2 = std::move(so).base();
 

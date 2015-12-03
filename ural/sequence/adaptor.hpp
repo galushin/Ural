@@ -249,9 +249,9 @@ namespace ural
             return Base::payload();
         }
 
-        T rebind_base(Sequence const & s) const
+        T rebind_base(Sequence s) const
         {
-            return T(s);
+            return T(std::move(s));
         }
 
     private:
