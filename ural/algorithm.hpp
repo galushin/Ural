@@ -396,7 +396,6 @@ namespace ural
         constexpr auto const & partition = odr_const<partition_fn>;
         constexpr auto const & stable_partition = odr_const<stable_partition_fn>;
         constexpr auto const & partition_copy = odr_const<partition_copy_fn>;
-        // @todo partition_move
         constexpr auto const & partition_point = odr_const<partition_point_fn>;
 
         // 25.4 Сортировка и связанные с ним операции
@@ -430,7 +429,6 @@ namespace ural
 
         // 25.4.4 Слияние
         constexpr auto const & merge = odr_const<merge_fn>;
-        // @todo merge_move
         constexpr auto const & inplace_merge = odr_const<inplace_merge_fn>;
 
         // 25.4.5 Операции с сортированными множествами

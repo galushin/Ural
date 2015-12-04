@@ -293,6 +293,7 @@ namespace ural
         прогрессию
         @param first Первый элемент
         @param step Шаг
+        @return <tt> {std::move(first), std::move(step)} </tt>
         */
         template <class Additive>
         arithmetic_progression<Additive>
@@ -303,11 +304,35 @@ namespace ural
 
     };
 
+    /** @brief Тип функционального объекта для создания геометрической
+    прогрессии
+    */
+    struct make_geometric_progression_fn
+    {
+    public:
+        /** @brief Создание последовательности, представляющей геометрическую
+        прогрессию
+        @param first Первый элемент
+        @param step Шаг
+        @return <tt> {std::move(first), std::move(step)} </tt>
+        */
+        template <class Multiplicative, class Step>
+        arithmetic_progression<Multiplicative, ural::multiplies<>, use_default, Step>
+        operator()(Multiplicative first, Step step) const
+        {
+            return {std::move(first), std::move(step)};
+        }
+    };
+
     namespace
     {
         /// @brief Функциональный объект для создания @c arithmetic_progression
         constexpr auto const & make_arithmetic_progression
             = odr_const<make_arithmetic_progression_fn>;
+
+        /// @brief Функциональный объект для создания геометрической прогрессии
+        constexpr auto const & make_geometric_progression
+            = odr_const<make_geometric_progression_fn>;
     }
 }
 // namespace ural

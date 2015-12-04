@@ -93,7 +93,7 @@ public:
 
 inline std::istream& operator>>(std::istream& is, MyInt& i) { is >> i.val; return is; }
 inline std::ostream& operator<<(std::ostream& os, const MyInt& i) { os << i.val; return os; }
-inline MyInt abs(MyInt rhs) { if (rhs < MyInt()) rhs = -rhs; return rhs; }
+inline constexpr MyInt abs(MyInt rhs) { return (rhs < MyInt()) ? - rhs : rhs; }
 
 // This is an "unsigned" wrapper, that throws on overflow.  It can be used to
 // test rational<> when an operation goes out of bounds.

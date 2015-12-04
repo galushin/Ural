@@ -23,6 +23,8 @@
  счёт шаблонов выражений.
 */
 
+#include <ural/sequence/adaptors/taken_while.hpp>
+#include <ural/sequence/progression.hpp>
 #include <ural/tuple.hpp>
 #include <ural/math/common_factor.hpp>
 #include <ural/defs.hpp>
@@ -128,6 +130,17 @@ namespace ural
                         IntegerType(1), unsafe_tag{});
     }
     //@}
+
+    /** @brief Модуль
+    @param x число, модуль которого вычисляется
+    @return <tt> rational<T>(abs(x.numerator()), x.denominator()) </tt>
+    */
+    friend constexpr rational abs(rational x)
+    {
+        return rational(ural::abs_constexpr(std::move(x.num_)),
+                        std::move(x.denom_),
+                        unsafe_reduced_tag{});
+    }
 
     private:
         constexpr IntegerType & numerator_ref()
@@ -473,6 +486,7 @@ namespace ural
         {
             return *this /= rational{x};
         }
+
     private:
         IntegerType num_;
         IntegerType denom_;
@@ -486,17 +500,6 @@ namespace ural
     constexpr bool operator!(rational<T> const & x)
     {
         return !x.numerator();
-    }
-
-    /** @brief Модуль
-    @param x число, модуль которого вычисляется
-    @return <tt> rational<T>(abs(x.numerator()), x.denominator()) </tt>
-    */
-    template <class T>
-    constexpr rational<T> abs(rational<T> x)
-    {
-        // @todo Оптимизация - модуль вместо условной конструкции?
-        return x.numerator() < T{0} ? -std::move(x) : std::move(x);
     }
 
 
@@ -821,19 +824,24 @@ namespace ural
         return static_cast<To>(x.numerator()) / static_cast<To>(x.denominator());
     }
 
+    /** @brief Преобразование рационального числа в вещественное
+    @tparam RealType тип вещественного числа
+    @param r преобразуемое число
+    @param eps требуемая точность
+    @param Q множитель, используемый для преобразования
+    @return такое вещественное число @c x, что <tt> abs(x - r) < eps </tt>
+    */
     template <class RealType, class Rational>
     RealType rational_to_real(Rational r, RealType const & eps,
                               typename Rational::int_type Q)
     {
-        // @todo Выделить вычисление целой части
         auto result = RealType{0};
 
-        // @todo заменить на геометрическую прогрессию
-        // с условием останова в виде предиката
-        // for(auto q : ural::geometric_progression(1.0, 1.0 / Q) | take_while(_1 >= eps))???
-        for(auto q = RealType{1.0}; q >= eps; q /= Q)
+        for(auto q : ural::make_geometric_progression(1.0, 1.0 / Q)
+                   | ural::taken_while([=](RealType const & x) { return x >= eps; }))
         {
-            auto const n = r.numerator() / r.denominator();
+            auto const n = rational_cast<typename Rational::int_type>(r);
+
             result += n * q;
 
             r -= n;
