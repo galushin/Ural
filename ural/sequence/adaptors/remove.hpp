@@ -44,6 +44,7 @@ namespace ural
     @todo Рассмотреть целесообразность реализации возможностей двунаправленной
     последовательности. Возможно, здесь нужно поступить следующим образом:
     сделать определение положения первого и последнего элемента ленивыми.
+    @todo Использование возможностей адаптора
     */
     template <class Input, class Predicate>
     class remove_if_sequence
@@ -81,13 +82,14 @@ namespace ural
         }
 
         // Прямая последовательность
-         /** @brief Пройденная часть последовательности
+        /** @brief Пройденная часть последовательности
         @return Пройденная часть последовательности
         */
-        remove_if_sequence traversed_front() const
+        remove_if_sequence<TraversedFrontType<Input>, Predicate>
+        traversed_front() const
         {
-            return remove_if_sequence(this->base().traversed_front(),
-                                      this->predicate());
+            using Result = remove_if_sequence<TraversedFrontType<Input>, Predicate>;
+            return Result(this->base().traversed_front(), this->predicate());
         }
 
         remove_if_sequence original() const;

@@ -185,6 +185,9 @@ namespace ural
     class plus<void, void>
     {
     public:
+        /// @brief Этот функциональный объект прозрачный
+        using is_transparent = std::true_type;
+
         /** @brief Оператор вычисления значения
         @param x левый операнд
         @param y правый операнд
@@ -246,6 +249,9 @@ namespace ural
     class multiplies<void, void>
     {
     public:
+        /// @brief Этот функциональный объект прозрачный
+        using is_transparent = std::true_type;
+
         /** @brief Оператор вычисления значения
         @param x левый операнд
         @param y правый операнд

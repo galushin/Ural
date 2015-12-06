@@ -121,18 +121,18 @@ namespace ural
         @param args список аргументов для конструктора базового класса
         */
         template <class... Args>
-        sequence_base(Args && ... args)
+        constexpr sequence_base(Args && ... args)
          : Payload(std::forward<Args>(args)...)
         {}
 
         /// @brief Конструктор без аргументов
-        sequence_base() = default;
+        constexpr sequence_base() = default;
 
         //@{
         /// @brief Конструкторы копирования и перемещения
-        sequence_base(sequence_base &) = default;
-        sequence_base(sequence_base const &) = default;
-        sequence_base(sequence_base &&) = default;
+        constexpr sequence_base(sequence_base &) = default;
+        constexpr sequence_base(sequence_base const &) = default;
+        constexpr sequence_base(sequence_base &&) = default;
         //@}
 
         //@{
@@ -148,12 +148,12 @@ namespace ural
         ~ sequence_base() = default;
 
         //@{
-        Payload & payload()
+        constexpr Payload & payload()
         {
             return *this;
         }
 
-        Payload const & payload() const
+        constexpr Payload const & payload() const
         {
             return *this;
         }
@@ -208,7 +208,7 @@ namespace ural
     @todo Реализовать через SFINAE и is_sequence, использовать decltype?
     */
     template <class Seq, class Base>
-    typename Seq::reference
+    constexpr typename Seq::reference
     operator*(sequence_base<Seq, Base> const & s)
     {
         return static_cast<Seq const&>(s).front();

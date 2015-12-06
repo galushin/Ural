@@ -59,10 +59,12 @@ namespace ural
         /** @brief Пройденная часть последовательности
         @return Пройденная часть последовательности
         */
-        filter_sequence traversed_front() const
+        filter_sequence<TraversedFrontType<Sequence>, Predicate>
+        traversed_front() const
         {
-            return filter_sequence(Base::base().traversed_front().base(),
-                                   this->predicate());
+            using Result = filter_sequence<TraversedFrontType<Sequence>, Predicate>;
+            return Result(Base::base().traversed_front().base(),
+                          this->predicate());
         }
 
         /** @brief Полная последовательность (включая пройденные части)

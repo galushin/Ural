@@ -244,6 +244,33 @@ namespace ural
     template <class S>
     using SequenceType = typename sequence_type<S>::type;
 
+    /** @brief Класс характеристика для определения типа передней пройденной
+    части последовательности
+    @tparam S тип
+    */
+    template <class S>
+    struct traversed_front_type
+    {
+    private:
+        template <class U>
+        static decltype(std::declval<U>().traversed_front())
+        declare(declare_type<decltype(std::declval<U>().traversed_front())> *);
+
+        template <class U>
+        static void declare (...);
+
+    public:
+        using type = decltype(declare<S>(nullptr));
+    };
+
+    /** @brief Тип синонима для типа передней пройденной части
+    последовательности, определяемой классом-характеристикой
+    @c traversed_front_type
+    @tparam S тип
+    */
+    template <class S>
+    using TraversedFrontType = typename traversed_front_type<S>::type;
+
     namespace concepts
     {
         /** @brief Концепция однопроходной последовательности
@@ -319,7 +346,9 @@ namespace ural
                 ural::value_consumer<Seq>() = seq.original();
 
                 // @todo Проверить, что тип traversed_front совпадает с Seq или
-                // tf - прямая последовательность
+                // tf - прямая последовательность, а также совместимость
+                // типов ссылки, значения, указателя и разности для
+                // самой последовательности и её передней пройденной части
 
                 static_assert(std::is_same<decltype(seq.front()), decltype(*seq)>::value, "");
             }

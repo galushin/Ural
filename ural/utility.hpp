@@ -367,7 +367,7 @@ namespace ural
     @return <tt> std::forward<T>(x) </tt>
     */
     template <class T>
-    T && get(T && x)
+    constexpr T && get(T && x)
     {
         return std::forward<T>(x);
     }
@@ -378,13 +378,13 @@ namespace ural
     @return <tt> x.value() </tt>
     */
     template <class T>
-    T & get(with_old_value<T> & x)
+    constexpr T & get(with_old_value<T> & x)
     {
         return x.value();
     }
 
     template <class T>
-    T const & get(with_old_value<T> const & x)
+    constexpr T const & get(with_old_value<T> const & x)
     {
         return x.value();
     }

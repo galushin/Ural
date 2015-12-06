@@ -539,3 +539,134 @@ BOOST_AUTO_TEST_CASE(is_even_and_is_odd_test)
 
     BOOST_CHECK(true);
 }
+
+// Последовательность чисел Фибоначчи
+#include <ural/math/fibonacci.hpp>
+
+BOOST_AUTO_TEST_CASE(fibonacci_sequence_custom_init_values)
+{
+    constexpr auto const x1 = 2;
+    constexpr auto const x2 = 3;
+
+    using FS = decltype(ural::make_fibonacci_sequence(x1, x2));
+
+    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<FS>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<FS>));
+
+    constexpr auto const seq = ural::make_fibonacci_sequence(x1, x2);
+
+    static_assert(*seq == x1, "");
+
+    BOOST_CHECK_EQUAL(*seq, x1);
+    BOOST_CHECK_EQUAL(*ural::next(seq), x2);
+    BOOST_CHECK_EQUAL(*ural::next(seq, 2), x1 + x2);
+}
+
+BOOST_AUTO_TEST_CASE(fibonacci_sequence_custom_init_values_and_operations)
+{
+    constexpr auto const x1 = 2;
+    constexpr auto const x2 = 3;
+    constexpr auto const op = ural::multiplies<decltype(x1)>{};
+
+    constexpr auto const seq = ural::make_fibonacci_sequence(x1, x2, op);
+
+    static_assert(sizeof(seq) == 2 * sizeof(x1), "");
+
+    BOOST_CHECK(op == seq.operation());
+
+    static_assert(op == seq.operation(), "");
+
+    static_assert(seq.front() == x1, "");
+    static_assert(*seq == x1, "");
+
+    BOOST_CHECK_EQUAL(*seq, x1);
+    BOOST_CHECK_EQUAL(*ural::next(seq), x2);
+    BOOST_CHECK_EQUAL(*ural::next(seq, 2), x1 * x2);
+}
+
+BOOST_AUTO_TEST_CASE(fibonacci_sequence_explicit_single_pass)
+{
+    using Integer = int;
+
+    using FS = ural::fibonacci_sequence<Integer, ural::use_default,
+                                        ural::single_pass_traversal_tag>;
+
+    using Value = typename FS::value_type;
+
+    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<FS>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<FS>));
+}
+
+BOOST_AUTO_TEST_CASE(fibonacci_sequence_explicit_forward)
+{
+    using Integer = int;
+
+    using FS = ural::fibonacci_sequence<Integer, ural::use_default,
+                                        ural::forward_traversal_tag>;
+
+    using Value = typename FS::value_type;
+    static_assert(std::is_same<Value, Integer>::value, "");
+
+    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<FS>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<FS>));
+}
+
+
+BOOST_AUTO_TEST_CASE(fibonacci_sequence_with_operation_single_pass_traversal)
+{
+    using Integer = int;
+
+    using Operation = Integer(*)(Integer, Integer);
+
+    using FS = ural::fibonacci_sequence<Integer, Operation>;
+
+    using Value = typename FS::value_type;
+    static_assert(std::is_same<Value, Integer>::value, "");
+
+    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<FS>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<FS>));
+}
+
+BOOST_AUTO_TEST_CASE(fibonacci_sequence_forward_traversal)
+{
+    using Integer = int;
+
+    using Operation = Integer(*)(Integer, Integer);
+
+    using FS = ural::fibonacci_sequence<Integer, Operation, ural::forward_traversal_tag>;
+
+    using Value = typename FS::value_type;
+    static_assert(std::is_same<Value, Integer>::value, "");
+
+    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<FS>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<FS>));
+
+    auto const op1 = +[](Integer x, Integer y) { return x + y; };
+    auto const op2 = +[](Integer x, Integer y) { return x * y; };
+
+    FS s1(1, 1, op1);
+    FS s2(1, 2, op1);
+    FS s3(1, 1, op2);
+
+    BOOST_CHECK(s1 == s1);
+    BOOST_CHECK(s1 != s2);
+    BOOST_CHECK(s1 != s3);
+
+    BOOST_CHECK(s2 == s2);
+    BOOST_CHECK(s2 != s3);
+
+    BOOST_CHECK(s3 == s3);
+}
+
+BOOST_AUTO_TEST_CASE(fibonacci_sequence_shrink_front)
+{
+    auto seq = ural::fibonacci_sequence<int, ural::use_default,
+                                        ural::forward_traversal_tag>{};
+
+    ural::advance(seq, 3);
+
+    BOOST_CHECK(seq != seq.original());
+
+    seq.shrink_front();
+    BOOST_CHECK(seq == seq.original());
+}

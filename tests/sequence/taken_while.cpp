@@ -40,7 +40,32 @@ BOOST_AUTO_TEST_CASE(PE_002_fibonacci_via_pipes)
     BOOST_CHECK_EQUAL(ural::accumulate(std::move(seq), Integer{0}), 4'613'732);
 }
 
-// @todo тест прямой последовательности taken_while
+BOOST_AUTO_TEST_CASE(PE_002_fibonacci_via_pipes_traversed_front)
+{
+    using Integer = long long;
+    auto const n = Integer{4'000'000};
+    auto const pred = [n](Integer const & x) { return x >= n; };
+
+    auto s1 = ural::fibonacci_sequence<Integer, ural::use_default, ural::forward_traversal_tag>()
+            | ural::filtered(ural::is_even);
+
+    auto seq = ural::find_if(std::move(s1), pred).traversed_front();
+
+    BOOST_CHECK_EQUAL(ural::accumulate(std::move(seq), Integer{0}), 4'613'732);
+}
+
+BOOST_AUTO_TEST_CASE(PE_002_fibonacci_via_pipes_forward)
+{
+    using Integer = long long;
+    auto const n = Integer{4'000'000};
+
+    auto seq = ural::fibonacci_sequence<Integer, ural::use_default, ural::forward_traversal_tag>()
+             | ural::filtered(ural::is_even)
+             | ural::taken_while([n](Integer const & x) { return x < n; });
+
+    BOOST_CHECK_EQUAL(ural::accumulate(std::move(seq), Integer{0}), 4'613'732);
+}
+
 BOOST_AUTO_TEST_CASE(taken_while_forward)
 {
     std::vector<int> const xs = {2, 6, 4, 1, 8, 7};
