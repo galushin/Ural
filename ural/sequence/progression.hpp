@@ -96,11 +96,10 @@ namespace ural
               class Step = use_default>
     class arithmetic_progression
      : public sequence_base<arithmetic_progression<Additive, Plus, Traversal, Step>,
-                            typename default_helper<Plus, plus<>>::type>
+                            DefaultedType<Plus, plus<>>>
     {
         using Base =
-            sequence_base<arithmetic_progression<Additive, Plus, Traversal, Step>,
-                          typename default_helper<Plus, plus<>>::type>;
+            sequence_base<arithmetic_progression, DefaultedType<Plus, plus<>>>;
 
         static_assert(!std::is_same<Traversal, bidirectional_traversal_tag>::value,
                       "Infinite sequence can't be bidirectional");
@@ -108,6 +107,7 @@ namespace ural
     public:
         /** @brief Оператор "равно"
         @param x, y операнды
+        @return @b true, если последовательности равны, иначе --- @b false.
         */
         friend bool operator==(arithmetic_progression const & x,
                                arithmetic_progression const & y)
@@ -118,7 +118,7 @@ namespace ural
 
         // Типы
         /// @brief Тип размера шага
-        using step_type = typename default_helper<Step, Additive>::type;
+        using step_type = DefaultedType<Step, Additive>;
 
         /// @brief Тип значения
         typedef Additive value_type;
@@ -132,14 +132,13 @@ namespace ural
         /** @note Проблема в том, что при произвольном доступе возвращается
         вычисленное значение, а не ссылка.
         */
-        using traversal_tag
-            = typename default_helper<Traversal, random_access_traversal_tag>::type;
+        using traversal_tag = DefaultedType<Traversal, random_access_traversal_tag>;
 
         /// @brief Тип указателя
         typedef value_type const * pointer;
 
         /// @brief Тип операции
-        typedef typename default_helper<Plus, plus<>>::type operation_type;
+        using operation_type = DefaultedType<Plus, plus<>>;
 
         // Конструкторы
         /** @brief Конструктор
@@ -197,12 +196,12 @@ namespace ural
         }
 
         /** @brief Доступ к текущему (переднему) элементу последовательности
-        @return Ссылка на передний элемент последовательности
+        @return Передний элемент последовательности
         @pre <tt> bool(*this) != false </tt>
         */
         reference front() const
         {
-            return this->first_.value();
+            return ural::get(this->first_);
         }
 
         /** @brief Переход к следующему элементу последовательности
@@ -212,7 +211,7 @@ namespace ural
         void pop_front()
         {
             this->first_ = this->function()(std::move(ural::get(this->first_)),
-                                           this->step_);
+                                            this->step_);
         }
 
         // Прямая последовательность
@@ -242,6 +241,11 @@ namespace ural
         }
 
         // Последовательность произвольного доступа (бесконечная)
+        /** @brief Оператор доступа по индексу
+        @param n номер элемента
+        @pre <tt> n > 0 </tt>
+        @return @c n-ый элемент
+        */
         reference operator[](distance_type n) const
         {
             assert(0 <= n);
@@ -251,6 +255,10 @@ namespace ural
                                                     n, this->function());
         }
 
+        /** @brief Продвижение на заданное число шагов
+        @param n число элементов, которые нужно пропустить
+        @return <tt> *this </tt>
+        */
         arithmetic_progression & operator+=(distance_type n)
         {
             first_.value() += n * step_;
