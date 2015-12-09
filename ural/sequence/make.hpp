@@ -390,10 +390,9 @@ namespace ural
                 seq.pop_back();
                 value_consumer<reference>() = seq.back();
                 seq.shrink_back();
-                seq.traversed_back();
 
-                // @todo Проверить, что traversed_back либо BidirectionalSequence,
-                // либо совпадает с Seq
+                value_consumer<Seq>() = seq.traversed_front();
+                value_consumer<Seq>() = seq.traversed_back();
 
                 seq.exhaust_back();
             }

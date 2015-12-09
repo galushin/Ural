@@ -71,23 +71,21 @@ namespace ural
          : Inherited(Taken(Progression(std::move(x_min), std::move(step)), std::move(n)))
         {}
 
+        /** @brief Размер шага
+        @return Величина шага между последовательными значениями
+        */
         step_type const & step() const
         {
             return Inherited::base().base().step();
         }
 
-        // Прямая последовательность
-        // @todo Реализовать за счёт адаптора
-        numbers_sequence traversed_front() const
-        {
-            return numbers_sequence(this->base().base().traversed_front());
-        }
+        // Прямая последовательность - за счёт адаптора
 
     private:
         friend Inherited;
 
-        explicit numbers_sequence(Taken x)
-         : Inherited(std::move(x))
+        explicit numbers_sequence(Taken s)
+         : Inherited(std::move(s))
         {}
     };
 
