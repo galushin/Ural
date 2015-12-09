@@ -432,6 +432,20 @@ BOOST_AUTO_TEST_CASE(arithmetic_progression_single_pass_test_check)
     BOOST_CHECK_EQUAL(seq.front(), 1+2);
 }
 
+BOOST_AUTO_TEST_CASE(geometric_progression_plus_assign_regression)
+{
+    auto const b0 = 3;
+    auto const q  = 2;
+
+    auto const gp = ural::make_geometric_progression(b0, q);
+
+    auto const index = 5;
+
+    auto gp1 = gp;
+    gp1 += index;
+
+    BOOST_CHECK_EQUAL(*gp1, b0 * ural::natural_power(q, index));
+}
 
 BOOST_AUTO_TEST_CASE(cartesian_product_sequence_is_sorted_test)
 {

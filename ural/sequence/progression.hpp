@@ -258,10 +258,11 @@ namespace ural
         /** @brief Продвижение на заданное число шагов
         @param n число элементов, которые нужно пропустить
         @return <tt> *this </tt>
+        @pre <tt> n > 0 </tt>
         */
         arithmetic_progression & operator+=(distance_type n)
         {
-            first_.value() += n * step_;
+            first_ = (*this)[n];
             return *this;
         }
 
