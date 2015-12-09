@@ -85,10 +85,6 @@ namespace ural
     @tparam Plus операция, используемая в качестве сложения
     @tparam Traversal категория обхода
     @tparam Step тип шага
-
-    @todo Последовательность произвольного доступа. Здесь есть две проблемы:
-    1. Необходимо по операции сложения построить операцию умножения
-    2. Тип возвращаемого значения оператора [] и front не совпадает
     */
     template <class Additive,
               class Plus = use_default,
@@ -267,13 +263,8 @@ namespace ural
         }
 
     private:
-        static auto constexpr is_forward
-            = std::is_convertible<traversal_tag, forward_traversal_tag>::value;
-
-        typedef typename std::conditional<is_forward,
-                                          with_old_value<value_type>,
-                                          value_type>::type
-            First_type;
+        using First_type
+            = wrap_with_old_value_if_forward_t<traversal_tag, value_type>;
 
         First_type first_;
         step_type step_;

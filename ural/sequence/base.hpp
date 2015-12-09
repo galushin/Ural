@@ -79,6 +79,47 @@ namespace ural
         return typename S::traversal_tag{};
     }
 
+    /** @brief Класс-характеристика, оборачивающая @c T в @c with_old_value,
+    если @c Traversal --- forward_traversal_tag или более сильная категория
+    обхода
+    @tparam Traversal желаемая категория обхода
+    @tparam T тип
+    */
+    template <class Traversal, class T>
+    struct wrap_with_old_value_if_forward
+     : std::conditional<std::is_convertible<Traversal, forward_traversal_tag>::value,
+                        with_old_value<T>, T>
+    {};
+
+    /** @brief Синоним для <tt> wrap_with_old_value_if_forward<Traversal, T>::type </tt>
+    @tparam Traversal желаемая категория обхода
+    @tparam T тип
+    */
+    template <class Traversal, class T>
+    using wrap_with_old_value_if_forward_t
+        = typename wrap_with_old_value_if_forward<Traversal, T>::type;
+
+    /** @brief Класс-характеристика, оборачивающая @c T в @c with_old_value,
+    если @c Traversal --- bidirectional_traversal_tag или более сильная
+    категория обхода
+    @tparam Traversal желаемая категория обхода
+    @tparam T тип
+    */
+    template <class Traversal, class T>
+    struct wrap_with_old_value_if_bidirectional
+     : std::conditional<std::is_convertible<Traversal, bidirectional_traversal_tag>::value
+                        || std::is_convertible<Traversal, random_access_traversal_tag>::value
+                        , with_old_value<T>, T>
+    {};
+
+    /** @brief Синоним для <tt> wrap_with_old_value_if_bidirectional<Traversal, T>::type </tt>
+    @tparam Traversal желаемая категория обхода
+    @tparam T тип
+    */
+    template <class Traversal, class T>
+    using wrap_with_old_value_if_bidirectional_t
+        = typename wrap_with_old_value_if_bidirectional<Traversal, T>::type;
+
     /** @brief Базовый класс для последовательностей (CRTP)
     @tparam Seq тип последовательности-наследника
     @tparam Payload класс, от которого будет закрыто наследовать данный класс.

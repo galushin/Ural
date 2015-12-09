@@ -131,11 +131,7 @@ namespace ural
         }
 
     private:
-        static auto constexpr is_forward
-            = std::is_convertible<traversal_tag, forward_traversal_tag>::value;
-
-        typedef typename std::conditional<is_forward, with_old_value<Size>, Size>::type
-            Count_type;
+        using Count_type = wrap_with_old_value_if_forward_t<traversal_tag, Size>;
 
         Count_type count_;
     };

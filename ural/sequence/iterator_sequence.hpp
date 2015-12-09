@@ -352,17 +352,8 @@ namespace ural
             return members_[ural::_2].old_value();
         }
 
-        static auto constexpr is_forward
-            = std::is_convertible<traversal_tag, forward_traversal_tag>::value;
-
-        static auto constexpr is_bidirectional
-            = std::is_convertible<traversal_tag, bidirectional_traversal_tag>::value
-            || std::is_convertible<traversal_tag, random_access_traversal_tag>::value;
-
-        typedef typename std::conditional<is_forward, with_old_value<iterator>, iterator>::type
-            Front_type;
-        typedef typename std::conditional<is_bidirectional, with_old_value<sentinel>, sentinel>::type
-            Back_type;
+        using Front_type = wrap_with_old_value_if_forward_t<traversal_tag, iterator>;
+        using Back_type = wrap_with_old_value_if_bidirectional_t<traversal_tag, sentinel>;
 
         typedef tuple<Front_type, Back_type> Members;
 

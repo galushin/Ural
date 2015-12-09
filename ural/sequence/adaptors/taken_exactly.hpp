@@ -243,9 +243,6 @@ namespace ural
                    + this->traversed_back_size_;
         }
     private:
-        static auto constexpr is_forward
-            = std::is_convertible<traversal_tag, forward_traversal_tag>::value;
-
         distance_type size_;
         distance_type traversed_front_size_;
         distance_type traversed_back_size_;

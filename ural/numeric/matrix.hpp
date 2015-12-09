@@ -287,11 +287,7 @@ namespace ural
         }
 
     private:
-        static auto constexpr is_forward
-            = std::is_convertible<traversal_tag, forward_traversal_tag>::value;
-
-        typedef typename std::conditional<is_forward, with_old_value<size_type>, size_type>::type
-            Row_type;
+        using Row_type = wrap_with_old_value_if_forward_t<traversal_tag, size_type>;
 
         std::reference_wrapper<Matrix> m_;
         size_type end_;

@@ -161,12 +161,7 @@ namespace ural
         }
 
     private:
-        static auto constexpr is_forward
-            = std::is_convertible<traversal_tag, forward_traversal_tag>::value;
-
-        using Value = typename std::conditional<is_forward,
-                                                with_old_value<value_type>,
-                                                value_type>::type;
+        using Value = wrap_with_old_value_if_forward_t<traversal_tag, value_type>;
 
         tuple<Value, Value, operation_type> data_;
     };
