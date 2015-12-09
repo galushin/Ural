@@ -447,6 +447,25 @@ BOOST_AUTO_TEST_CASE(geometric_progression_plus_assign_regression)
     BOOST_CHECK_EQUAL(*gp1, b0 * ural::natural_power(q, index));
 }
 
+BOOST_AUTO_TEST_CASE(geometric_progression_function_pointer_regression_77)
+{
+    using Integer = int;
+    auto const b0 = Integer(3);
+    auto const q  = Integer(2);
+
+    auto const op = +[](Integer x, Integer y) { return x * y; };
+    using BinOp = Integer(*)(Integer, Integer);
+
+    auto const gp = ural::arithmetic_progression<Integer, BinOp>(b0, q, op);
+
+    auto const index = 5;
+
+    auto gp1 = gp;
+    gp1 += index;
+
+    BOOST_CHECK_EQUAL(*gp1, b0 * ural::natural_power(q, index));
+}
+
 BOOST_AUTO_TEST_CASE(cartesian_product_sequence_is_sorted_test)
 {
     auto digits = ural::numbers(0, 10);

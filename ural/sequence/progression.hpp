@@ -96,10 +96,10 @@ namespace ural
               class Step = use_default>
     class arithmetic_progression
      : public sequence_base<arithmetic_progression<Additive, Plus, Traversal, Step>,
-                            DefaultedType<Plus, plus<>>>
+                            FunctionType<DefaultedType<Plus, plus<>>>>
     {
-        using Base =
-            sequence_base<arithmetic_progression, DefaultedType<Plus, plus<>>>;
+        using Base = sequence_base<arithmetic_progression,
+                                   FunctionType<DefaultedType<Plus, plus<>>>>;
 
         static_assert(!std::is_same<Traversal, bidirectional_traversal_tag>::value,
                       "Infinite sequence can't be bidirectional");
@@ -138,7 +138,7 @@ namespace ural
         typedef value_type const * pointer;
 
         /// @brief Тип операции
-        using operation_type = DefaultedType<Plus, plus<>>;
+        using operation_type = FunctionType<DefaultedType<Plus, plus<>>>;
 
         // Конструкторы
         /** @brief Конструктор
