@@ -87,6 +87,22 @@ namespace
                              ural::modulus<>,
                              ural::modulus<int, void>,
                              ural::modulus<void, int>> Modulus_functions;
+
+
+    using Transparent_functions
+        = boost::mpl::list<ural::plus<>, ural::minus<>, ural::multiplies<>,
+                           ural::divides<>, ural::modulus<>, ural::negate<>,
+                           ural::equal_to<>, ural::not_equal_to<>, ural::greater<>,
+                           ural::less<>, ural::greater_equal<>, ural::less_equal<>,
+                           ural::logical_and<>, ural::logical_or<>, ural::logical_not<>,
+                           ural::bit_and<>, ural::bit_or<>, ural::bit_xor<>, ural::bit_not<>>;
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(functional_is_transparent_check, F, Transparent_functions)
+{
+    using IT = typename F::is_transparent;
+
+    BOOST_CHECK(true);
 }
 
 using ::ural::ValueType;

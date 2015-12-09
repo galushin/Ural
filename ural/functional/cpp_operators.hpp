@@ -363,6 +363,11 @@ namespace ural
         /// @brief Тэг, показывающий что данный функциональный объект прозрачный
         typedef std::true_type is_transparent;
 
+        /** @brief Оператор вызова функции
+        @param x левый операнд
+        @param y правй операнд
+        @return <tt> std::forward<T1>(x) == std::forward<T2>(y) </tt>
+        */
         template <class T1, class T2>
         constexpr auto operator()(T1 const & x, T2 const & y) const
         -> decltype(x == y)
@@ -420,6 +425,11 @@ namespace ural
         /// @brief Тэг, показывающий что данный функциональный объект прозрачный
         typedef std::true_type is_transparent;
 
+        /** @brief Оператор вызова функции
+        @param x левый операнд
+        @param y правй операнд
+        @return <tt> std::forward<T1>(x) < std::forward<T2>(y) </tt>
+        */
         template <class T1, class T2>
         constexpr auto operator()(T1 && x, T2 && y) const
         -> decltype (std::forward<T1>(x) < std::forward<T2>(y))
@@ -446,6 +456,11 @@ namespace ural
         /// @brief Тэг, показывающий что данный функциональный объект прозрачный
         typedef std::true_type is_transparent;
 
+        /** @brief Оператор вызова функции
+        @param x левый операнд
+        @param y правй операнд
+        @return <tt> std::forward<T1>(x) > std::forward<T2>(y) </tt>
+        */
         template <class T1, class T2>
         constexpr auto operator()(T1 && x, T2 && y) const
         -> decltype (std::forward<T1>(x) > std::forward<T2>(y))
@@ -469,6 +484,14 @@ namespace ural
     class less_equal<void, void>
     {
     public:
+        /// @brief Этот функциональный объект прозрачный
+        using is_transparent = std::true_type;
+
+        /** @brief Оператор вызова функции
+        @param x левый операнд
+        @param y правй операнд
+        @return <tt> std::forward<T1>(x) <= std::forward<T2>(y) </tt>
+        */
         template <class T1, class T2>
         constexpr auto operator()(T1 && x, T2 && y) const
         -> decltype (std::forward<T1>(x) <= std::forward<T2>(y))
@@ -492,6 +515,14 @@ namespace ural
     class greater_equal<void, void>
     {
     public:
+        /// @brief Этот функциональный объект прозрачный
+        using is_transparent = std::true_type;
+
+        /** @brief Оператор вызова функции
+        @param x левый операнд
+        @param y правй операнд
+        @return <tt> std::forward<T1>(x) >= std::forward<T2>(y) </tt>
+        */
         template <class T1, class T2>
         constexpr auto operator()(T1 && x, T2 && y) const
         -> decltype (std::forward<T1>(x) >= std::forward<T2>(y))

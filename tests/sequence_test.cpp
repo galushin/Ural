@@ -417,6 +417,22 @@ BOOST_AUTO_TEST_CASE(arithmetic_progression_equality_test)
     BOOST_CHECK(a3 != a4);
 }
 
+BOOST_AUTO_TEST_CASE(arithmetic_progression_single_pass_test_check)
+{
+    using Seq = ural::arithmetic_progression<int, ural::use_default,
+                                             ural::single_pass_traversal_tag>;
+
+    BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Seq>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Seq>));
+
+    auto seq = Seq(1, 2);
+    BOOST_CHECK_EQUAL(seq.front(), 1);
+
+    ++ seq;
+    BOOST_CHECK_EQUAL(seq.front(), 1+2);
+}
+
+
 BOOST_AUTO_TEST_CASE(cartesian_product_sequence_is_sorted_test)
 {
     auto digits = ural::numbers(0, 10);
