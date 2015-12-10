@@ -15,7 +15,7 @@
 */
 
 #include <boost/test/unit_test.hpp>
-#include "../defs.hpp"
+#include "../../defs.hpp"
 
 #include <ural/sequence/adaptors/reversed.hpp>
 #include <ural/sequence/all.hpp>

@@ -20,7 +20,7 @@
 #include <ural/algorithm.hpp>
 #include <ural/numeric.hpp>
 
-#include "../defs.hpp"
+#include "../../defs.hpp"
 
 #include <boost/test/unit_test.hpp>
 
