@@ -93,6 +93,16 @@ namespace ural
         {
             return ural::make_move_iterator(end(x.base()));
         }
+
+    private:
+        friend Adaptor;
+
+        template <class OtherSequence>
+        move_sequence<OtherSequence>
+        rebind_base(OtherSequence s) const
+        {
+            return move_sequence<OtherSequence>(std::move(s));
+        }
     };
 
     /** @brief Тип функционального объекта для создания @c move_sequence в
