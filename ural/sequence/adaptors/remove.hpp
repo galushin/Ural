@@ -82,16 +82,6 @@ namespace ural
         }
 
         // Прямая последовательность
-        /** @brief Пройденная часть последовательности
-        @return Пройденная часть последовательности
-        */
-        remove_if_sequence<TraversedFrontType<Input>, Predicate>
-        traversed_front() const
-        {
-            using Result = remove_if_sequence<TraversedFrontType<Input>, Predicate>;
-            return Result(this->base().traversed_front(), this->predicate());
-        }
-
         remove_if_sequence original() const;
 
         // Двусторонняя последовательность
@@ -107,6 +97,16 @@ namespace ural
         }
 
     private:
+        friend Base;
+
+        template <class OtherInput>
+        remove_if_sequence<OtherInput, Predicate>
+        rebind_base(OtherInput s) const
+        {
+            return remove_if_sequence<OtherInput, Predicate>(std::move(s),
+                                                             this->predicate());
+        }
+
         void seek()
         {
             this->mutable_base() = find_if_not_fn{}(std::move(this->mutable_base()),

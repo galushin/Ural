@@ -36,15 +36,6 @@ namespace ural
         typedef tuple<Inputs...> Bases_tuple;
 
     public:
-        /** @brief Оператор "равно"
-        @param x, y операнды
-        @return <tt> x.bases() == y.bases() </tt>
-        */
-        friend bool operator==(zip_sequence const & x, zip_sequence const & y)
-        {
-            return x.bases() == y.bases();
-        }
-
         // Типы
         /// @brief Тип значения
         using value_type = tuple<ValueType<Inputs>...>;
@@ -125,9 +116,11 @@ namespace ural
         /** @brief Пройденная передняя часть последовательность
         @return Пройденная передняя часть последовательность
         */
-        zip_sequence traversed_front() const
+        zip_sequence<TraversedFrontType<Inputs>...>
+        traversed_front() const
         {
-            return this->transform_bases<zip_sequence>(ural::traversed_front);
+            using Seq = zip_sequence<TraversedFrontType<Inputs>...>;
+            return this->transform_bases<Seq>(ural::traversed_front);
         }
 
         /** @brief Отбрасывание пройденной части последовательности
@@ -305,6 +298,17 @@ namespace ural
     private:
         Bases_tuple bases_;
     };
+
+    /** @brief Оператор "равно"
+    @param x, y операнды
+    @return <tt> x.bases() == y.bases() </tt>
+    */
+    template <class... Inputs1, class... Inputs2>
+    bool operator==(zip_sequence<Inputs1...> const & x,
+                    zip_sequence<Inputs2...> const & y)
+    {
+        return x.bases() == y.bases();
+    }
 
     /// @brief Тип функционального объекта для создания @c zip_sequence
     struct make_zip_sequence_fn

@@ -731,6 +731,50 @@ BOOST_AUTO_TEST_CASE(zip_sequence_test)
     }
 }
 
+BOOST_AUTO_TEST_CASE(zip_delimited_sequence_test)
+{
+    std::vector<int> const x = {1, 2, 3, 4, 5};
+    std::vector<char> const y = {'a', 'b', 'c', 'd', 'e', 'f'};
+
+    auto const xd = 4;
+    auto const yd = 'g';
+
+    // std
+    std::vector<std::tuple<int, char>> r_std;
+
+    for(size_t i = 0; i < std::min(x.size(), y.size()); ++ i)
+    {
+        if(x[i] == xd || y[i] == yd)
+        {
+            break;
+        }
+        r_std.emplace_back(x[i], y[i]);
+    }
+
+    // ural
+    auto in = ural::make_zip_sequence(x | ural::delimited(xd),
+                                      y | ural::delimited(yd));
+
+    std::vector<std::tuple<int, char>> r_ural;
+    in = ural::copy(std::move(in), r_ural | ural::back_inserter)[ural::_1];
+
+    // проверка
+    BOOST_CHECK_GE(x.size(), r_ural.size());
+    BOOST_CHECK_GE(y.size(), r_ural.size());
+
+    BOOST_CHECK_EQUAL(r_std.size(), r_ural.size());
+
+    for(size_t i = 0; i < r_std.size(); ++ i)
+    {
+        BOOST_CHECK(r_std[i] == r_ural[i]);
+    }
+
+    auto const sx = ural::make_iterator_sequence(x.begin(), x.begin() + r_std.size());
+    auto const sy = ural::make_iterator_sequence(y.begin(), y.begin() + r_std.size());
+
+    BOOST_CHECK(ural::make_zip_sequence(sx, sy) == in.traversed_front());
+}
+
 BOOST_AUTO_TEST_CASE(map_keys_and_values_test)
 {
     std::vector<int> const x = {1, 2, 3, 4, 5};
@@ -1405,7 +1449,7 @@ BOOST_AUTO_TEST_CASE(remove_if_sequence_test)
 BOOST_AUTO_TEST_CASE(unique_sequence_test)
 {
     std::forward_list<int> v1{1, 2, 2, 2, 3, 3, 2, 2, 1};
-    auto v2 = v1;
+    auto const v2 = v1;
 
     auto const last = std::unique(v1.begin(), v1.end());
     std::forward_list<int> r_std(v1.begin(), last);
@@ -1414,6 +1458,23 @@ BOOST_AUTO_TEST_CASE(unique_sequence_test)
         = v2 | ural::uniqued | ural::to_container<std::forward_list>{};
 
     URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
+}
+
+BOOST_AUTO_TEST_CASE(uniqued_delimited_sequence_test)
+{
+    // Настройки
+    std::forward_list<int> const src1{1, 2, 2, 2, 3, 3, 2, 2, 1};
+    auto const guard = 3;
+
+    auto const s1 = ural::find(src1 | ural::uniqued, guard).traversed_front();
+
+    auto const sdu = src1 | ural::delimited(guard) | ural::uniqued;
+
+    std::vector<int> r_ural;
+    auto const s2 = ural::copy(sdu, r_ural | ural::back_inserter)[ural::_1];
+
+    // Проверка результатов
+    BOOST_CHECK(s1 == s2.traversed_front());
 }
 
 BOOST_AUTO_TEST_CASE(unique_sequence_test_custom_predicate)
@@ -1777,17 +1838,19 @@ BOOST_AUTO_TEST_CASE(delimit_sequence_forward_test)
     std::forward_list<int> src = {3, 1, 4, 1, 5, 9, 2, 6, 5, 3};
     auto const value = 5;
 
-    auto seq = ::ural::make_delimit_sequence(src, std::cref(value));
-    BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<decltype(seq)>));
+    auto const seq = ::ural::make_delimit_sequence(src, std::cref(value));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<std::decay_t<decltype(seq)>>));
 
     auto const expected = ural::find(src, value).traversed_front();
 
     std::vector<int> result;
-    seq = ural::copy(std::move(seq), result | ural::back_inserter)[ural::_1];
+    auto const seq_after_copy
+        = ural::copy(seq, result | ural::back_inserter)[ural::_1];
 
-    auto seq_traversed = seq.traversed_front();
+    auto const seq_traversed = seq_after_copy.traversed_front();
 
     BOOST_CHECK(seq_traversed == expected);
+    BOOST_CHECK(seq == seq_after_copy.original());
 
     BOOST_CHECK(true);
 }

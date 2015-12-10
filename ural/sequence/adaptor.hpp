@@ -116,7 +116,7 @@ namespace ural
         /** @brief Пройденная передняя часть последовательность
         @return Пройденная передняя часть последовательность
         */
-        T traversed_front() const
+        auto traversed_front() const
         {
             return this->derived().rebind_base(this->base().traversed_front());
         }

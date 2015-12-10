@@ -166,6 +166,17 @@ namespace ural
         }
 
     private:
+        friend Base;
+
+        template <class OtherSequence>
+        replace_sequence<OtherSequence, T1, T2, BinaryPredicate>
+        rebind_base(OtherSequence s) const
+        {
+            using Seq = replace_sequence<OtherSequence, T1, T2, BinaryPredicate>;
+            return Seq(std::move(s), this->old_value(), this->new_value(),
+                       this->predicate());
+        }
+
         static
         transform_sequence<replace_function<T1, T2, BinaryPredicate>, Sequence>
         make_base(Sequence seq, T1 old_value, T2 new_value, BinaryPredicate pred)

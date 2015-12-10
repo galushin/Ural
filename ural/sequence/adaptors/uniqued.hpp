@@ -157,9 +157,11 @@ namespace ural
         /** @brief Пройденная передняя часть последовательность
         @return Пройденная передняя часть последовательность
         */
-        unique_sequence traversed_front() const
+        unique_sequence<TraversedFrontType<Input>, BinaryPredicate>
+        traversed_front() const
         {
-            return unique_sequence(current_.traversed_front(), this->predicate());
+            using Seq = unique_sequence<TraversedFrontType<Input>, BinaryPredicate>;
+            return Seq(current_.traversed_front(), this->predicate());
         }
 
         /** @brief Отбрасывание пройденной части последовательности

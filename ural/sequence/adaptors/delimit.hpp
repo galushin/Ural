@@ -46,8 +46,7 @@ namespace ural
                                Sequence, BinaryPredicate>
     {
 
-        using Base = sequence_adaptor<delimit_sequence<Sequence, Value, BinaryPredicate>,
-                                      Sequence, BinaryPredicate>;
+        using Inherited = sequence_adaptor<delimit_sequence, Sequence, BinaryPredicate>;
 
     public:
         /** @brief Оператор "равно"
@@ -78,7 +77,7 @@ namespace ural
         @post <tt> this->relation() == bin_pred </tt>
         */
         delimit_sequence(Sequence seq, Value value, BinaryPredicate bin_pred)
-         : Base(std::move(seq), std::move(bin_pred))
+         : Inherited(std::move(seq), std::move(bin_pred))
          , value_(std::move(value))
         {}
 
@@ -98,7 +97,7 @@ namespace ural
         */
         FunctionType<BinaryPredicate> const & relation() const
         {
-            return Base::payload();
+            return Inherited::payload();
         }
 
         // Однопроходная последовательность
@@ -119,12 +118,14 @@ namespace ural
             return this->base().traversed_front();
         }
 
-        /** @brief Полная последовательность (включая пройденные части)
-        @return Полная последовательность
-        */
-        delimit_sequence original() const;
-
     private:
+        friend Inherited;
+
+        delimit_sequence rebind_base(Sequence s) const
+        {
+            return delimit_sequence(std::move(s), this->delimiter(), this->relation());
+        }
+
         Value value_;
     };
 
