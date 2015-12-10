@@ -21,12 +21,26 @@
  @brief Последовательность, состаящая из одинаковых элементов.
 */
 
+#include <ural/sequence/adaptors/taken_exactly.hpp>
 #include <ural/functional.hpp>
 #include <ural/sequence/base.hpp>
 #include <ural/sequence/generator.hpp>
 
 namespace ural
 {
+    struct always_zero_int_type
+    {
+    public:
+        constexpr explicit always_zero_int_type(int)
+        {}
+
+        always_zero_int_type &
+        operator++()
+        {
+            return *this;
+        }
+    };
+
     /** @brief Последовательность, состаящая из одинаковых элементов.
     @tparam T Тип элементов
     @tparam D Тип расстояния
@@ -37,8 +51,18 @@ namespace ural
     */
     template <class T, class Traversal = use_default, class D = use_default>
     class constant_sequence
-     : public sequence_base<constant_sequence<T>>
+     : public sequence_base<constant_sequence<T, Traversal, D>>
     {
+        /** @brief Оператор "равно"
+        @param x, y аргументы
+        @return @b true, если аргументы равны, иначе --- @b false
+        */
+        friend bool operator==(constant_sequence const & x,
+                               constant_sequence const & y)
+        {
+            return x.data_ == y.data_;
+        }
+
     public:
         // Типы
         /// @brief Тип значения
@@ -48,10 +72,10 @@ namespace ural
         typedef value_type const & reference;
 
         /// @brief Тип расстояния
-        typedef typename default_helper<D, std::intmax_t>::type distance_type;
+        using distance_type = DefaultedType<D, std::intmax_t>;
 
         /// @brief Категория обхода
-        typedef single_pass_traversal_tag traversal_tag;
+        using traversal_tag = DefaultedType<Traversal, single_pass_traversal_tag>;
 
         /// @brief Тип указателя
         typedef value_type const * pointer;
@@ -63,7 +87,7 @@ namespace ural
         */
         template <class... Args>
         explicit constant_sequence(Args && ... args)
-         : value_(std::forward<Args>(args)...)
+         : data_(value_type(std::forward<Args>(args)...), Distance(0))
         {}
 
         // Однопроходная последовательность
@@ -81,19 +105,53 @@ namespace ural
         */
         reference front() const
         {
-            return this->value_;
+            return this->data_[ural::_1];
         }
 
         /// @brief Переход к следующему элементу
         void pop_front()
-        {}
+        {
+            ++ data_[ural::_2];
+        }
 
         // Прямая последовательность - есть трудности с traversed_front
+        /** @brief Полная последовательность (включая пройденные части)
+        @return Полная последовательность
+        */
+        constant_sequence original() const
+        {
+            return constant_sequence(this->data_[ural::_1]);
+        }
+
+        /** @brief Пройденная часть последовательности
+        @return Пройденная часть последовательности
+        */
+        ural::taken_exactly_sequence<constant_sequence, distance_type>
+        traversed_front() const
+        {
+            return this->original() | ural::taken_exactly(this->data_[ural::_2]);
+        }
+
+        /** @brief Отбрасывание пройденной части последовательности
+        @post <tt> !this->traversed_front() </tt>
+        */
+        void shrink_front()
+        {
+            this->data_[ural::_2] = distance_type(0);
+        }
 
         // Последовательность произвольного доступа
 
     private:
-        value_type value_;
+        constexpr static auto const is_forward
+            = std::is_convertible<traversal_tag, forward_traversal_tag>::value;
+
+        using Distance = typename std::conditional<is_forward, distance_type,
+                                                   always_zero_int_type>::type;
+
+        using Data = tuple<value_type, Distance>;
+
+        Data data_;
     };
 
     /** @brief Функция создания последовательности одинаковых значений
