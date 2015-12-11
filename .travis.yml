@@ -1,3 +1,3 @@
 language: cpp
-compiler: gcc51
-script: cd .\ural_test && make -f makefile.gcc
+compiler: gcc
+script: cd .\ural_test && make -f makefile.gcc release
