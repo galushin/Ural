@@ -5,10 +5,10 @@
 
 WORKDIR = `pwd`
 
-CC = gcc-5
-CXX = g++-5
+CC = gcc-5.1
+CXX = g++-5.1
 AR = ar
-LD = g++-5
+LD = g++-5.1
 WINDRES = windres
 
 INC = -I.. -I../boost/test/include -I../boost/config/include -I../boost/utility/include -I../boost/type_traits/include -I../boost/preprocessor/include -I../boost/core/include -I../boost/smart_ptr/include -I../boost/assert/include -I../boost/throw_exception/include -I../boost/predef/include -I../boostorg/detail/include -I../boost/function/include -I../boost/integer/include -I../boost/static_assert/include -I../boost/type_index/include -I../boost/mpl/include -I../boost/bind/include -I../boost/move/include -I../boost/iterator/include -I../boost/exception/include -I../boost/timer/include -I../boost/io/include -I../boost/algorithm/include -I../boost/range/include -I../boost/optional/include -I../boost/concept_check/include -I../boost/numeric_conversion/include -I../boost/ublas/include -I../boost/serialization/include -I../boost/typeof/include -I../boost/array/include -I../boost/math/include -I../boost/format/include -I../boost/lexical_cast/include -I../boost/container/include
