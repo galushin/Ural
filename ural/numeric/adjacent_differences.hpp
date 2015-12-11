@@ -164,19 +164,19 @@ namespace ural
         /** @brief Функциональный объект для создания последовательности
         разностей соседних элементов исходной последовательности
         */
-        constexpr auto const && adjacent_differences = odr_const<adjacent_differences_fn>;
+        constexpr auto const & adjacent_differences = odr_const<adjacent_differences_fn>;
 
         /** @brief Объект для создания @c adjacent_differences_sequences
         в конвейерном стиле.
         */
-        constexpr auto const && adjacent_differenced
+        constexpr auto const & adjacent_differenced
             = odr_const<pipeable<adjacent_differences_fn>>;
 
         /** @brief Объект для создания @c adjacent_differences_sequences
         с заданной операцией, используемой для вычисления разностей, в
         конвейерном стиле.
         */
-        constexpr auto const && adjacent_differenced_with
+        constexpr auto const & adjacent_differenced_with
             = odr_const<pipeable_maker<adjacent_differences_fn>>;
     }
 }

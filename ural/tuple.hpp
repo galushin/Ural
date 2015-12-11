@@ -153,7 +153,7 @@ namespace ural
 namespace
 {
     /// @brief Функциональный объект для создания кортежей из пачки аргументов
-    constexpr auto const && make_tuple = odr_const<make_tuple_function>;
+    constexpr auto const & make_tuple = odr_const<make_tuple_function>;
 }
 
 namespace tuples
@@ -235,12 +235,12 @@ namespace tuples
         /** @brief Функциональный объект, применяющий функцию к каждому элементу
         кортежа
         */
-        constexpr auto const && for_each = ural::odr_const<for_each_fn>;
+        constexpr auto const & for_each = ural::odr_const<for_each_fn>;
 
         /** @brief Функциональный объект, проверящий, что все элементы кортежа
         удовлетворяют заданному предикату.
         */
-        constexpr auto const && any_of = ural::odr_const<any_of_fn>;
+        constexpr auto const & any_of = ural::odr_const<any_of_fn>;
     }
 }
 // namespace tuples
