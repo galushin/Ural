@@ -1,5 +1,4 @@
 language: cpp
-
 compiler: gcc
 
 addons:
@@ -9,5 +8,8 @@ addons:
         packages:
             - g++-5
             - gcc-5
+
+install:
+    - if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
 
 script: cd ./ural_test && make -f makefile.gcc release
