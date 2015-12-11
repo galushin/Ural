@@ -27,7 +27,6 @@
 
 #include <boost/concept_check.hpp>
 #include <boost/concept/usage.hpp>
-#include <boost/type_traits.hpp>
 
 #include <type_traits>
 

@@ -25,8 +25,6 @@
 #include <ural/utility.hpp>
 #include <ural/operators.hpp>
 
-#include <boost/throw_exception.hpp>
-
 #include <type_traits>
 #include <cassert>
 #include <memory>
@@ -233,7 +231,7 @@ namespace ural
         {
             if(p == nullptr)
             {
-                BOOST_THROW_EXCEPTION(std::logic_error{"unexpected null pointer"});
+                throw std::logic_error{"unexpected null pointer"};
             }
         }
 

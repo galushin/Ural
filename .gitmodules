@@ -1,0 +1,6 @@
+[submodule "boost/test"]
+	path = boost/test
+	url = https://github.com/boostorg/test
+[submodule "boost/utility"]
+	path = boost/utility
+	url = https://github.com/boostorg/utility

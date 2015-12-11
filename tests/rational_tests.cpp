@@ -240,6 +240,7 @@ public:
 
     static const int digits      = limits_type::digits;
     static const int digits10    = limits_type::digits10;
+    static const int max_digits10    = limits_type::digits10;
     static const bool is_signed  = limits_type::is_signed;
     static const bool is_integer = limits_type::is_integer;
     static const bool is_exact   = limits_type::is_exact;
@@ -287,6 +288,7 @@ public:
 
     static const int digits      = limits_type::digits;
     static const int digits10    = limits_type::digits10;
+    static const int max_digits10    = limits_type::digits10;
     static const bool is_signed  = limits_type::is_signed;
     static const bool is_integer = limits_type::is_integer;
     static const bool is_exact   = limits_type::is_exact;
