@@ -24,6 +24,9 @@
 				<Linker>
 					<Add option="-s" />
 				</Linker>
+				<ExtraCommands>
+					<Add after="$exe_output" />
+				</ExtraCommands>
 			</Target>
 		</Build>
 		<Compiler>
