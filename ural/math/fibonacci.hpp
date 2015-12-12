@@ -138,7 +138,7 @@ namespace ural
         /** @brief Передняя пройденная часть последовательности
         @return Передняя пройденная часть последовательности
         */
-        delimit_sequence<fibonacci_sequence>
+        delimit_sequence<fibonacci_sequence, value_type>
         traversed_front() const
         {
             return this->original() | ural::delimited(this->front());
