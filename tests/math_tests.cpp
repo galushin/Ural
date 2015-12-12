@@ -591,8 +591,6 @@ BOOST_AUTO_TEST_CASE(fibonacci_sequence_explicit_single_pass)
     using FS = ural::fibonacci_sequence<Integer, ural::use_default,
                                         ural::single_pass_traversal_tag>;
 
-    using Value = typename FS::value_type;
-
     BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<FS>));
     BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<FS>));
 }
@@ -603,9 +601,6 @@ BOOST_AUTO_TEST_CASE(fibonacci_sequence_explicit_forward)
 
     using FS = ural::fibonacci_sequence<Integer, ural::use_default,
                                         ural::forward_traversal_tag>;
-
-    using Value = typename FS::value_type;
-    static_assert(std::is_same<Value, Integer>::value, "");
 
     BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<FS>));
     BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<FS>));
@@ -620,9 +615,6 @@ BOOST_AUTO_TEST_CASE(fibonacci_sequence_with_operation_single_pass_traversal)
 
     using FS = ural::fibonacci_sequence<Integer, Operation>;
 
-    using Value = typename FS::value_type;
-    static_assert(std::is_same<Value, Integer>::value, "");
-
     BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<FS>));
     BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<FS>));
 }
@@ -634,9 +626,6 @@ BOOST_AUTO_TEST_CASE(fibonacci_sequence_forward_traversal)
     using Operation = Integer(*)(Integer, Integer);
 
     using FS = ural::fibonacci_sequence<Integer, Operation, ural::forward_traversal_tag>;
-
-    using Value = typename FS::value_type;
-    static_assert(std::is_same<Value, Integer>::value, "");
 
     BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<FS>));
     BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<FS>));
