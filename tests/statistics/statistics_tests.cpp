@@ -285,6 +285,7 @@ BOOST_AUTO_TEST_CASE(z_score_test)
     }
 }
 
+/*
 #include "../rnd.hpp"
 
 #include <ural/numeric/matrix.hpp>
@@ -463,3 +464,4 @@ BOOST_AUTO_TEST_CASE(principal_components_test)
         }
     }
 }
+*/
