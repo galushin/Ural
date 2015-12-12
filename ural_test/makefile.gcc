@@ -248,8 +248,7 @@ before_release:
 	test -d $(OBJDIR_RELEASE)/__/tests/sequence/adaptors || mkdir -p $(OBJDIR_RELEASE)/__/tests/sequence/adaptors
 	test -d $(OBJDIR_RELEASE)/__/tests/statistics || mkdir -p $(OBJDIR_RELEASE)/__/tests/statistics
 
-after_release: 
-	$exe_output
+after_release: $(OUT_RELEASE) 
 
 release: before_release out_release after_release
 
