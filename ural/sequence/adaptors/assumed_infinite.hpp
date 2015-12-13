@@ -58,6 +58,14 @@ namespace ural
         }
 
     private:
+        friend Inherited;
+
+        template <class OtherSequence>
+        assumed_infinite_sequence<OtherSequence>
+        rebind_base(OtherSequence seq) const
+        {
+            return assumed_infinite_sequence<OtherSequence>(std::move(seq));
+        }
     };
 
      /** @brief Тип функционального объекта для создания адаптора

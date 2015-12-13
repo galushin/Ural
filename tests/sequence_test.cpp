@@ -42,6 +42,21 @@ BOOST_AUTO_TEST_CASE(assumed_infinite_test_empty_becomes_not)
     BOOST_CHECK(is.base() == s);
 }
 
+BOOST_AUTO_TEST_CASE(assumed_infinite_traversed_front)
+{
+    std::vector<int> const z{11, 11, 22, 33, 55};
+
+    auto zda = z | ural::delimited(z[3]) | ural::assumed_infinite;
+
+    ural::advance(zda, 3);
+    auto const actual = zda.traversed_front();
+
+    auto const expected = zda.base().base().traversed_front()
+                        | ural::assumed_infinite;
+
+    BOOST_CHECK(actual == expected);
+}
+
 using ::ural::ValueType;
 
 BOOST_AUTO_TEST_CASE(sequence_for_lvalue_container)
