@@ -22,7 +22,7 @@
  последовательность
 */
 
-#include <ural/sequence/base.hpp>
+#include <ural/sequence/adaptor.hpp>
 #include <ural/utility/pipeable.hpp>
 
 namespace ural
@@ -33,8 +33,10 @@ namespace ural
     */
     template <class Sequence>
     class outdirected_sequence
-     : public sequence_base<outdirected_sequence<Sequence>>
+     : public sequence_adaptor<outdirected_sequence<Sequence>, Sequence>
     {
+        using Inherited = sequence_adaptor<outdirected_sequence, Sequence>;
+
         template <class U>
         static size_t
         decl_distance_type(...);
@@ -70,18 +72,10 @@ namespace ural
         @post <tt> this->base() == s </tt>
         */
         explicit outdirected_sequence(Sequence s)
-         : base_{std::move(s)}
+         : Inherited(std::move(s))
         {}
 
         // Однопроходная последовательность
-        /** @brief Проверка исчерпания последовательностей
-        @return @b true, если последовательность исчерпана, иначе --- @b false.
-        */
-        bool operator!() const
-        {
-            return !this->base();
-        }
-
         /** @brief Текущий элемент
         @return <tt> this->base() </tt>
         */
@@ -90,32 +84,15 @@ namespace ural
             return this->base();
         }
 
-        /** @brief Переход к следующему элементу
-        @pre <tt> !!*this </tt>
-        */
-        void pop_front()
-        {
-            ++ base_;
-        }
-
-        // Адаптор последовательности
-        //@{
-        /** @brief Базовая последовательность
-        @return Константная ссылка на базовую последовательность
-        */
-        reference base() const &
-        {
-            return this->base_;
-        }
-
-        Sequence && base() &&
-        {
-            return std::move(this->base_);
-        }
-        //@}
-
     private:
-        Sequence base_;
+        friend Inherited;
+
+        template <class OtherSequence>
+        outdirected_sequence<OtherSequence>
+        rebind_base(OtherSequence s) const
+        {
+            return outdirected_sequence<OtherSequence>(std::move(s));
+        }
     };
 
     /// @brief Тип функционального объекта для создания @c outdirected_sequence
