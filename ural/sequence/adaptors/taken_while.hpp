@@ -37,19 +37,9 @@ namespace ural
     template <class Sequence, class Predicate>
     class taken_while_sequence
      : public sequence_adaptor<taken_while_sequence<Sequence, Predicate>,
-                               Sequence>
+                               Sequence, Predicate>
     {
-        using Inherited = sequence_adaptor<taken_while_sequence<Sequence, Predicate>, Sequence>;
-
-    /** @brief Оператор "равно"
-    @param x, y аргументы
-    @return <tt> x.base() == y.base() && x.predicate() == y.predicate() </tt>
-    */
-    friend bool operator==(taken_while_sequence const & x,
-                           taken_while_sequence const & y)
-    {
-        return x.base() == y.base() && x.predicate() == y.predicate();
-    }
+        using Inherited = sequence_adaptor<taken_while_sequence, Sequence, Predicate>;
 
     public:
         // Типы
@@ -65,8 +55,7 @@ namespace ural
         @post <tt> this->predicate() == pred </tt>
         */
         taken_while_sequence(Sequence seq, Predicate pred)
-         : Inherited(std::move(seq))
-         , pred_(std::move(pred))
+         : Inherited(std::move(seq), std::move(pred))
         {}
 
         /** @brief Используемый предикат
@@ -74,7 +63,7 @@ namespace ural
         */
         Predicate const & predicate() const
         {
-            return this->pred_;
+            return Inherited::payload();
         }
 
         // Однопроходная последовательность
@@ -89,13 +78,13 @@ namespace ural
     private:
         friend Inherited;
 
-        taken_while_sequence
-        rebind_base(Sequence seq) const
+        template <class OtherSequence>
+        taken_while_sequence<OtherSequence, Predicate>
+        rebind_base(OtherSequence seq) const
         {
-            return taken_while_sequence(std::move(seq), this->predicate());
+            using Result = taken_while_sequence<OtherSequence, Predicate>;
+            return Result(std::move(seq), this->predicate());
         }
-
-        Predicate pred_;
     };
 
     /// @brief Функциональный объект для создания @c taken_while_sequence

@@ -69,15 +69,40 @@ BOOST_AUTO_TEST_CASE(PE_002_fibonacci_via_pipes_forward)
 BOOST_AUTO_TEST_CASE(taken_while_forward)
 {
     std::vector<int> const xs = {2, 6, 4, 1, 8, 7};
+    auto pred = ural::is_even;
 
-    auto seq = xs | ural::taken_while(ural::is_even);
+    auto seq = xs | ural::taken_while(pred);
+
+    static_assert(std::is_empty<decltype(pred)>::value, "");
+    using ural::sequence;
+    static_assert(sizeof(seq) == sizeof(sequence(xs)), "");
 
     auto xs_prefix
-        = ural::find_if_not(xs, ural::is_even).traversed_front()
+        = ural::find_if_not(xs, pred).traversed_front()
         | ural::to_container<std::vector>{};
     ural::sort(xs_prefix);
 
     BOOST_CHECK(ural::is_permutation(seq, xs_prefix));
+}
+
+BOOST_AUTO_TEST_CASE(taken_while_traversed_front)
+{
+    std::vector<int> const xs = {2, 6, 4, 1, 8, 7};
+    auto pred = ural::is_even;
+
+    auto s = ural::sequence(xs);
+    auto sd = s | ural::delimited(8);
+    auto sdtw = sd | ural::taken_while(pred);
+
+    for(; !!sdtw; ++ sdtw)
+    {}
+
+    auto const actual = sdtw.traversed_front();
+    auto const expected = ural::find_if_not(sd, pred).traversed_front()
+                        | ural::taken_while(pred);
+
+    BOOST_CHECK(ural::equal(actual, expected));
+    BOOST_CHECK(actual == expected);
 }
 
 BOOST_AUTO_TEST_CASE(taken_while_equality)
