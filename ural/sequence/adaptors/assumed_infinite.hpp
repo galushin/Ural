@@ -57,14 +57,14 @@ namespace ural
             return false;
         }
 
-    private:
-        friend Inherited;
-
-        template <class OtherSequence>
-        assumed_infinite_sequence<OtherSequence>
-        rebind_base(OtherSequence seq) const
+        // Прямая последовательность
+        /** @brief Передняя пройденная часть последовательности
+        @return <tt> this->base().front() </tt>
+        */
+        TraversedFrontType<Sequence>
+        traversed_front() const
         {
-            return assumed_infinite_sequence<OtherSequence>(std::move(seq));
+            return this->base().traversed_front();
         }
     };
 

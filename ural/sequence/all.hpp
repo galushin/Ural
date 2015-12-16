@@ -40,6 +40,7 @@
 
 #include <iterator>
 
+#include <ural/sequence/adaptors/assumed_infinite.hpp>
 #include <ural/sequence/adaptors/cartesian_product.hpp>
 #include <ural/sequence/adaptors/delimit.hpp>
 #include <ural/sequence/adaptors/filtered.hpp>

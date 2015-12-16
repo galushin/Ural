@@ -110,20 +110,16 @@ namespace ural
         }
 
         // Прямая последовательность
-        /** @brief Пройденная часть последовательности
-        @return <tt> this->base().traversed_front() </tt>
-        */
-        Sequence traversed_front() const
-        {
-            return this->base().traversed_front();
-        }
 
     private:
         friend Inherited;
 
-        delimit_sequence rebind_base(Sequence s) const
+        template <class OtherSequence>
+        delimit_sequence<OtherSequence, Value, BinaryPredicate>
+        rebind_base(OtherSequence s) const
         {
-            return delimit_sequence(std::move(s), this->delimiter(), this->relation());
+            using Result = delimit_sequence<OtherSequence, Value, BinaryPredicate>;
+            return Result(std::move(s), this->delimiter(), this->relation());
         }
 
         Value value_;

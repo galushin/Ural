@@ -90,18 +90,16 @@ BOOST_AUTO_TEST_CASE(taken_while_traversed_front)
     std::vector<int> const xs = {2, 6, 4, 1, 8, 7};
     auto pred = ural::is_even;
 
-    auto s = ural::sequence(xs);
-    auto sd = s | ural::delimited(8);
-    auto sdtw = sd | ural::taken_while(pred);
+    auto s2 = xs | ural::assumed_infinite | ural::taken_while(pred);
 
-    for(; !!sdtw; ++ sdtw)
+    for(; !!s2; ++ s2)
     {}
 
-    auto const actual = sdtw.traversed_front();
-    auto const expected = ural::find_if_not(sd, pred).traversed_front()
+    auto const actual = s2.traversed_front();
+
+    auto const expected = ural::find_if_not(xs, pred).traversed_front()
                         | ural::taken_while(pred);
 
-    BOOST_CHECK(ural::equal(actual, expected));
     BOOST_CHECK(actual == expected);
 }
 
