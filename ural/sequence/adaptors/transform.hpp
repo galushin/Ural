@@ -119,6 +119,7 @@ namespace ural
         }
 
         // Прямая последовательность
+
         // Двусторонняя последовательность
         /** @brief Последний элемент
         @return Ссылка на последний элемент последовательности
@@ -143,9 +144,17 @@ namespace ural
     private:
         friend Base;
 
-        transform_sequence rebind_base(zip_sequence<Inputs...> new_base) const
+        template <class... OtherInputs>
+        transform_sequence<F, OtherInputs...>
+        rebind_base(zip_sequence<OtherInputs...> new_base) const
         {
-            return transform_sequence(std::move(new_base), this->function());
+            using Result = transform_sequence<F, OtherInputs...>;
+            auto maker = [this](OtherInputs... inputs) -> Result
+            {
+                return Result(this->function(), std::move(inputs)...);
+            };
+
+            return ural::apply(maker, std::move(new_base).bases());
         }
 
         explicit transform_sequence(zip_sequence<Inputs...> base, F f)

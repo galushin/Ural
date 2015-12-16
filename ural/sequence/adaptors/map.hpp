@@ -66,11 +66,11 @@ namespace ural
     private:
         friend Base;
 
-        using Impl_sequence = transform_sequence<tuple_get<Index>, Sequence>;
-
-        elemenents_sequence rebind_base(Impl_sequence seq) const
+        template <class OtherSequence>
+        elemenents_sequence<OtherSequence, Index>
+        rebind_base(transform_sequence<tuple_get<Index>, OtherSequence> seq) const
         {
-            return elemenents_sequence(std::move(seq).bases()[ural::_1]);
+            return elemenents_sequence<OtherSequence, Index>(seq.bases()[ural::_1]);
         }
     };
     /** @brief Тип функционального объекта для создания последовательностей
