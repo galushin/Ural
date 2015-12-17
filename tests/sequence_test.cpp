@@ -1262,50 +1262,6 @@ BOOST_AUTO_TEST_CASE(replace_sequence_custom_predicate)
     BOOST_CHECK_EQUAL(seq.new_value(), new_value);
 }
 
-BOOST_AUTO_TEST_CASE(replace_sequence_if_test)
-{
-    std::array<int, 10> const s{5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
-
-    auto x_std = s;
-    std::vector<int> x_ural;
-
-    auto pred = +[](int x) {return x < 5;};
-    auto const new_value = 55;
-
-    // std
-    std::replace_if(x_std.begin(), x_std.end(), pred, new_value);
-
-    // ural
-    auto seq = s | ural::replaced_if(pred, new_value);
-    ural::copy(seq, x_ural | ural::back_inserter);
-
-    BOOST_CHECK(seq == seq);
-
-    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
-    BOOST_CHECK_EQUAL(seq.new_value(), new_value);
-    BOOST_CHECK_EQUAL(seq.predicate(), pred);
-}
-
-BOOST_AUTO_TEST_CASE(replace_sequence_if_regression_pass_by_cref)
-{
-    // Подготовка
-    std::array<int, 10> const s{5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
-    auto pred = [](int x) {return x < 5;};
-    auto const new_value = 55;
-
-    // std
-    auto x_std = s;
-    std::replace_if(x_std.begin(), x_std.end(), pred, new_value);
-
-    // ural
-    std::vector<int> x_ural;
-    ural::copy(ural::make_replace_if_sequence(s, pred, std::cref(new_value)),
-               x_ural | ural::back_inserter);
-
-    // Сравнение
-    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
-}
-
 BOOST_AUTO_TEST_CASE(fill_n_test_via_sequence_and_copy)
 {
     std::vector<int> v_std{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
@@ -1854,24 +1810,6 @@ BOOST_AUTO_TEST_CASE(delimit_sequence_shrink_front_test)
 
     BOOST_CHECK(ds1.base() == ds2.base());
     BOOST_CHECK(ds1 == ds2);
-}
-
-BOOST_AUTO_TEST_CASE(multy_output_sequence_test)
-{
-    std::vector<int> const src = {3, 1, 4, 1, 5, 9, 2, 6, 5, 3};
-
-    std::vector<int> v1;
-    std::vector<int> v2;
-
-    auto out = ural::simo_sequence(v1 | ural::back_inserter,
-                                   v2 | ural::back_inserter);
-
-    BOOST_CONCEPT_ASSERT((ural::concepts::OutputSequence<decltype(out), int>));
-
-    ural::copy(src, out);
-
-    URAL_CHECK_EQUAL_RANGES(v1, src);
-    URAL_CHECK_EQUAL_RANGES(v2, src);
 }
 
 BOOST_AUTO_TEST_CASE(outdirected_rvalue_base)

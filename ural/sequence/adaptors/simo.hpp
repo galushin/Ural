@@ -28,7 +28,6 @@ namespace ural
     /** @ingroup Sequences
     @brief Адаптор, производящий вывод сразу в несколько последовательностей
     вывода
-    @todo устранить дублирование с zip_sequence
     */
     template <class... Outputs>
     class simo_sequence_t
@@ -36,6 +35,11 @@ namespace ural
     {
         typedef tuple<Outputs...> Bases_tuple;
     public:
+        friend bool operator==(simo_sequence_t const & x, simo_sequence_t const & y)
+        {
+            return x.bases() == y.bases();
+        }
+
         // Типы
         /// @brief Категория обхода
         typedef single_pass_traversal_tag traversal_tag;
@@ -94,6 +98,17 @@ namespace ural
             ural::tuples::for_each(this->mutable_bases(), ural::pop_front);
         }
 
+        // Прямая последовательность
+        /** @brief Передняя пройденная часть последовательности
+        @return Передняя пройденная часть последовательности
+        */
+        simo_sequence_t<TraversedFrontType<Outputs>...>
+        traversed_front() const
+        {
+            using Seq = simo_sequence_t<TraversedFrontType<Outputs>...>;
+            return this->transform_bases<Seq>(ural::traversed_front);
+        }
+
         // Адаптор последовательности
         //@{
         /** @brief Доступ к кортежу базовых последовательностей
@@ -111,6 +126,22 @@ namespace ural
         //@}
 
     private:
+        template <class R, class F, class Reduce, size_t... I>
+        R transform_bases_impl(F f, Reduce reducer, index_sequence<I...>) const
+        {
+            return reducer(f(std::get<I>(this->bases()))...);
+        }
+
+        template <class R, class F>
+        R transform_bases(F f) const
+        {
+            using Indices = index_sequence_for<Outputs...>;
+
+            return this->transform_bases_impl<R>(std::move(f),
+                                                 ural::constructor<R>{},
+                                                 Indices{});
+        }
+
         Bases_tuple & mutable_bases()
         {
             return this->bases_;

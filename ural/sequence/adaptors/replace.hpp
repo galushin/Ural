@@ -85,6 +85,19 @@ namespace ural
         }
 
     private:
+        friend Base;
+
+        using Transformator = replace_if_function<Predicate, T>;
+
+        template <class OtherSequence>
+        replace_if_sequence<OtherSequence, Predicate, T>
+        rebind_base(transform_sequence<Transformator, OtherSequence> seq) const
+        {
+            using Result = replace_if_sequence<OtherSequence, Predicate, T>;
+            return Result(std::move(seq).bases()[ural::_1], this->predicate(),
+                          this->new_value());
+        }
+
         static transform_sequence<replace_if_function<Predicate, T>, Sequence>
         make_base(Sequence seq, Predicate pred, T new_value)
         {
