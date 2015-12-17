@@ -139,6 +139,11 @@ namespace ural
         Predicate predicate;
     };
 
+    /** @brief Создание @c remove_if_sequence в конвейерном стиле
+    @param in входная последовательность
+    @param maker объект, хранящий предикат, определяющий элементы, которые
+    должны быть исключены из входной последовательности
+    */
     template <class Input, class Predicate>
     auto operator|(Input && in, remove_if_sequence_maker<Predicate> maker)
     -> decltype(::ural::make_remove_if_sequence(std::forward<Input>(in), std::move(maker.predicate)))
@@ -223,6 +228,16 @@ namespace ural
         }
 
     private:
+        friend Base;
+
+        template <class OtherSequence>
+        remove_sequence<OtherSequence, T, BinaryPredicate>
+        rebind_base(OtherSequence seq) const
+        {
+            using Result = remove_sequence<OtherSequence, T, BinaryPredicate>;
+            return Result(std::move(seq), this->removed_value(), this->predicate());
+        }
+
         T old_value_;
     };
 
