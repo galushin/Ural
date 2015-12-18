@@ -123,6 +123,7 @@
 		<Unit filename="../tests/sequence/adaptors/remove.cpp" />
 		<Unit filename="../tests/sequence/adaptors/replace.cpp" />
 		<Unit filename="../tests/sequence/adaptors/reversed.cpp" />
+		<Unit filename="../tests/sequence/adaptors/set_operations.cpp" />
 		<Unit filename="../tests/sequence/adaptors/simo.cpp" />
 		<Unit filename="../tests/sequence/adaptors/taken_while.cpp" />
 		<Unit filename="../tests/sequence/adaptors/transformed.cpp" />

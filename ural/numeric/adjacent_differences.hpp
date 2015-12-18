@@ -68,6 +68,7 @@ namespace ural
             }
         }
 
+        // Прямая последовательность
         /** @brief Проверка исчерпания последовательности
         @return <tt> !this->base() </tt>.
         */
@@ -95,6 +96,18 @@ namespace ural
             }
         }
 
+        // Прямая последовательность
+        /** @brief Передняя пройденная часть последовательности
+        @return Передняя пройденная часть последовательности
+        */
+        adjacent_differences_sequence<TraversedFrontType<Input>, BinaryOperation>
+        traversed_front() const
+        {
+            using Result = adjacent_differences_sequence<TraversedFrontType<Input>, BinaryOperation>;
+            return Result(this->base().traversed_front(), this->operation());
+        }
+
+        // Адаптор последовательности
         //@{
         /** @brief Исходная последовательность
         @return Текущее состояние входной последовательности

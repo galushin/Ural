@@ -60,6 +60,17 @@ namespace ural
         typedef sequence_base<merge_sequence, Compare> Base_class;
 
     public:
+        /** @brief Оператора "равно"
+        @param x, y аргументы
+        @return <tt> x.bases() == y.bases() && x.function() == y.function() </tt>
+        */
+        friend bool operator==(merge_sequence const & x, merge_sequence const & y)
+        {
+            return x.first_base() == y.first_base()
+                    && x.second_base() == y.second_base()
+                    && x.function() == y.function();
+        }
+
         /// @brief Тип ссылки
         typedef CommonType<typename Input1::reference, typename Input2::reference>
             reference;
@@ -86,7 +97,7 @@ namespace ural
         @param cmp функция сравнения
         @post <tt> this->function() == cmp </tt>
         */
-        explicit merge_sequence(Input1 in1, Input2 in2, Compare cmp)
+        explicit merge_sequence(Input1 in1, Input2 in2, Compare cmp = Compare{})
          : Base_class(std::move(cmp))
          , in1_{std::move(in1)}
          , in2_{std::move(in2)}
@@ -94,6 +105,7 @@ namespace ural
             this->seek();
         }
 
+        // Однопроходная последовательность
         /** @brief Проверка исчерпания последовательностей
         @return @b true, если последовательность исчерпана, иначе --- @b false.
         */
@@ -141,6 +153,21 @@ namespace ural
             this->seek();
         }
 
+        // Прямая последовательность
+        /** @brief Передняя пройденная часть последовательности
+        @return Передняя пройденная часть последовательности
+        */
+        merge_sequence<TraversedFrontType<Input1>, TraversedFrontType<Input2>, Compare>
+        traversed_front() const
+        {
+            using Result = merge_sequence<TraversedFrontType<Input1>,
+                                          TraversedFrontType<Input2>, Compare>;
+            return Result(this->first_base().traversed_front(),
+                          this->second_base().traversed_front(),
+                          this->function());
+        }
+
+        // Адаптор последовательности
         /** @brief Используемая функция сравнения
         @return Используемая функция сравнения
         */
@@ -267,6 +294,18 @@ namespace ural
 
         typedef sequence_base<set_intersection_sequence, Compare> Base_class;
     public:
+        /** @brief Оператора "равно"
+        @param x, y аргументы
+        @return <tt> x.bases() == y.bases() && x.function() == y.function() </tt>
+        */
+        friend bool operator==(set_intersection_sequence const & x,
+                               set_intersection_sequence const & y)
+        {
+            return x.first_base() == y.first_base()
+                    && x.second_base() == y.second_base()
+                    && x.function() == y.function();
+        }
+
         /// @brief Тип ссылки
         typedef typename Input1::reference reference;
 
@@ -290,7 +329,7 @@ namespace ural
         @param cmp функция сравнения
         @post <tt> this->function() == cmp </tt>
         */
-        explicit set_intersection_sequence(Input1 in1, Input2 in2, Compare cmp)
+        explicit set_intersection_sequence(Input1 in1, Input2 in2, Compare cmp = Compare{})
          : Base_class{std::move(cmp)}
          , in1_(std::move(in1))
          , in2_(std::move(in2))
@@ -298,6 +337,7 @@ namespace ural
             this->seek();
         }
 
+        // Однопроходная последовательность
         /** @brief Проверка исчерпания последовательностей
         @return @b true, если последовательность исчерпана, иначе --- @b false.
         */
@@ -324,6 +364,22 @@ namespace ural
             this->seek();
         }
 
+        // Прямая последовательность
+        /** @brief Передняя пройденная часть последовательности
+        @return Передняя пройденная часть последовательности
+        */
+        set_intersection_sequence<TraversedFrontType<Input1>,
+                                  TraversedFrontType<Input2>, Compare>
+        traversed_front() const
+        {
+            using Result = set_intersection_sequence<TraversedFrontType<Input1>,
+                                          TraversedFrontType<Input2>, Compare>;
+            return Result(this->first_base().traversed_front(),
+                          this->second_base().traversed_front(),
+                          this->function());
+        }
+
+        // Адаптор последовательностей
         /** @brief Используемая функция сравнения
         @return Используемая функция сравнения
         */
@@ -336,7 +392,10 @@ namespace ural
         /** @brief Первая базовая последовательность
         @return Ссылка на первую базовую последовательность
         */
-        Input1 const & first_base() const &;
+        Input1 const & first_base() const &
+        {
+            return this->in1_;
+        }
 
         Input1 && first_base() &&
         {
@@ -348,7 +407,10 @@ namespace ural
         /** @brief Вторая базовая последовательность
         @return Ссылка на вторую базовую последовательность
         */
-        Input2 const & second_base() const &;
+        Input2 const & second_base() const &
+        {
+            return this->in2_;
+        }
 
         Input2 && second_base() &&
         {
@@ -430,6 +492,18 @@ namespace ural
 
         typedef sequence_base<set_difference_sequence, Compare> Base_class;
     public:
+        /** @brief Оператора "равно"
+        @param x, y аргументы
+        @return <tt> x.bases() == y.bases() && x.function() == y.function() </tt>
+        */
+        friend bool operator==(set_difference_sequence const & x,
+                               set_difference_sequence const & y)
+        {
+            return x.first_base() == y.first_base()
+                    && x.second_base() == y.second_base()
+                    && x.function() == y.function();
+        }
+
         /// @brief Тип ссылки
         typedef typename Input1::reference reference;
 
@@ -453,7 +527,7 @@ namespace ural
         @param cmp функция сравнения
         @post <tt> this->function() == cmp </tt>
         */
-        explicit set_difference_sequence(Input1 in1, Input2 in2, Compare cmp)
+        explicit set_difference_sequence(Input1 in1, Input2 in2, Compare cmp  = Compare{})
          : Base_class{std::move(cmp)}
          , in1_(std::move(in1))
          , in2_(std::move(in2))
@@ -487,6 +561,22 @@ namespace ural
             this->seek();
         }
 
+        // Прямая последовательность
+        /** @brief Передняя пройденная часть последовательности
+        @return Передняя пройденная часть последовательности
+        */
+        set_difference_sequence<TraversedFrontType<Input1>,
+                                TraversedFrontType<Input2>, Compare>
+        traversed_front() const
+        {
+            using Result = set_difference_sequence<TraversedFrontType<Input1>,
+                                          TraversedFrontType<Input2>, Compare>;
+            return Result(this->first_base().traversed_front(),
+                          this->second_base().traversed_front(),
+                          this->function());
+        }
+
+        // Адаптор последовательностей
         /** @brief Используемая функция сравнения
         @return Используемая функция сравнения
         */
@@ -499,7 +589,10 @@ namespace ural
         /** @brief Первая базовая последовательность
         @return Ссылка на первую базовую последовательность
         */
-        Input1 const & first_base() const &;
+        Input1 const & first_base() const &
+        {
+            return this->in1_;
+        }
 
         Input1 && first_base() &&
         {
@@ -511,7 +604,10 @@ namespace ural
         /** @brief Вторая базовая последовательность
         @return Ссылка на вторую базовую последовательность
         */
-        Input2 const & second_base() const &;
+        Input2 const & second_base() const &
+        {
+            return this->in2_;
+        }
 
         Input2 && second_base() &&
         {
@@ -594,6 +690,18 @@ namespace ural
 
         typedef sequence_base<set_symmetric_difference_sequence, Compare> Base_class;
     public:
+        /** @brief Оператора "равно"
+        @param x, y аргументы
+        @return <tt> x.bases() == y.bases() && x.function() == y.function() </tt>
+        */
+        friend bool operator==(set_symmetric_difference_sequence const & x,
+                               set_symmetric_difference_sequence const & y)
+        {
+            return x.first_base() == y.first_base()
+                    && x.second_base() == y.second_base()
+                    && x.function() == y.function();
+        }
+
         /// @brief Тип ссылки
         typedef CommonType<typename Input1::reference, typename Input2::reference>
             reference;
@@ -620,7 +728,8 @@ namespace ural
         @param cmp функция сравнения
         @post <tt> this->function() == cmp </tt>
         */
-        explicit set_symmetric_difference_sequence(Input1 in1, Input2 in2, Compare cmp)
+        explicit set_symmetric_difference_sequence(Input1 in1, Input2 in2,
+                                                   Compare cmp = Compare{})
          : Base_class(std::move(cmp))
          , in1_{std::move(in1)}
          , in2_{std::move(in2)}
@@ -675,6 +784,22 @@ namespace ural
             this->seek();
         }
 
+        // Прямая последовательность
+        /** @brief Передняя пройденная часть последовательности
+        @return Передняя пройденная часть последовательности
+        */
+        set_symmetric_difference_sequence<TraversedFrontType<Input1>,
+                                          TraversedFrontType<Input2>, Compare>
+        traversed_front() const
+        {
+            using Result = set_symmetric_difference_sequence<TraversedFrontType<Input1>,
+                                          TraversedFrontType<Input2>, Compare>;
+            return Result(this->first_base().traversed_front(),
+                          this->second_base().traversed_front(),
+                          this->function());
+        }
+
+        // Адаптор последовательностей
         /** @brief Используемая функция сравнения
         @return Используемая функция сравнения
         */
@@ -687,7 +812,10 @@ namespace ural
         /** @brief Первая базовая последовательность
         @return Ссылка на первую базовую последовательность
         */
-        Input1 const & first_base() const &;
+        Input1 const & first_base() const &
+        {
+            return this->in1_;
+        }
 
         Input1 && first_base() &&
         {
@@ -699,7 +827,10 @@ namespace ural
         /** @brief Вторая базовая последовательность
         @return Ссылка на вторую базовую последовательность
         */
-        Input2 const & second_base() const &;
+        Input2 const & second_base() const &
+        {
+            return this->in2_;
+        }
 
         Input2 && second_base() &&
         {
@@ -799,6 +930,18 @@ namespace ural
 
         typedef sequence_base<set_union_sequence, Compare> Base_class;
     public:
+        /** @brief Оператора "равно"
+        @param x, y аргументы
+        @return <tt> x.bases() == y.bases() && x.function() == y.function() </tt>
+        */
+        friend bool operator==(set_union_sequence const & x,
+                               set_union_sequence const & y)
+        {
+            return x.first_base() == y.first_base()
+                    && x.second_base() == y.second_base()
+                    && x.function() == y.function();
+        }
+
         /// @brief Тип ссылки
         typedef CommonType<typename Input1::reference, typename Input2::reference>
             reference;
@@ -825,7 +968,7 @@ namespace ural
         @param cmp функция сравнения
         @post <tt> this->function() == cmp </tt>
         */
-        explicit set_union_sequence(Input1 in1, Input2 in2, Compare cmp)
+        explicit set_union_sequence(Input1 in1, Input2 in2, Compare cmp = Compare{})
          : Base_class(std::move(cmp))
          , in1_{std::move(in1)}
          , in2_{std::move(in2)}
@@ -881,6 +1024,22 @@ namespace ural
             this->seek();
         }
 
+        // Прямая последовательность
+        /** @brief Передняя пройденная часть последовательности
+        @return Передняя пройденная часть последовательности
+        */
+        set_union_sequence<TraversedFrontType<Input1>,
+                           TraversedFrontType<Input2>, Compare>
+        traversed_front() const
+        {
+            using Result = set_union_sequence<TraversedFrontType<Input1>,
+                                          TraversedFrontType<Input2>, Compare>;
+            return Result(this->first_base().traversed_front(),
+                          this->second_base().traversed_front(),
+                          this->function());
+        }
+
+        // Адаптор последовательностей
         /** @brief Используемая функция сравнения
         @return Используемая функция сравнения
         */
@@ -893,7 +1052,10 @@ namespace ural
         /** @brief Первая базовая последовательность
         @return Ссылка на первую базовую последовательность
         */
-        Input1 const & first_base() const &;
+        Input1 const & first_base() const &
+        {
+            return this->in1_;
+        }
 
         Input1 && first_base() &&
         {
@@ -905,7 +1067,10 @@ namespace ural
         /** @brief Вторая базовая последовательность
         @return Ссылка на вторую базовую последовательность
         */
-        Input2 const & second_base() const &;
+        Input2 const & second_base() const &
+        {
+            return this->in2_;
+        }
 
         Input2 && second_base() &&
         {
