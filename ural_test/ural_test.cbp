@@ -120,6 +120,7 @@
 		<Unit filename="../tests/sequence/adaptors/map.cpp" />
 		<Unit filename="../tests/sequence/adaptors/moved.cpp" />
 		<Unit filename="../tests/sequence/adaptors/outdirected.cpp" />
+		<Unit filename="../tests/sequence/adaptors/partition.cpp" />
 		<Unit filename="../tests/sequence/adaptors/remove.cpp" />
 		<Unit filename="../tests/sequence/adaptors/replace.cpp" />
 		<Unit filename="../tests/sequence/adaptors/reversed.cpp" />

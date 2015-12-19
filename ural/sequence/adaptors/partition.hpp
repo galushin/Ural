@@ -43,7 +43,9 @@ namespace ural
     public:
         // Типы
         /// @brief Категория обхода
-        typedef single_pass_traversal_tag traversal_tag;
+        using traversal_tag = CommonType<forward_traversal_tag,
+                                         typename Output1::traversal_tag,
+                                         typename Output2::traversal_tag>;
 
         /// @brief Тип расстояния
         typedef CommonType<DifferenceType<Output1>, DifferenceType<Output2>>
@@ -70,7 +72,7 @@ namespace ural
         */
         bool operator!() const
         {
-            return !this->true_sequence() && !this->false_sequence();
+            return !this->true_sequence() || !this->false_sequence();
         }
 
         /** @return <tt> *this </tt>
