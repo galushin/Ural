@@ -14,7 +14,6 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <ural/flex_string.hpp>
 #include <ural/container/flat_set.hpp>
 #include <ural/container/vector.hpp>
 
@@ -34,9 +33,7 @@ namespace
     typedef ural::tracing_allocator<char> Char_alloc;
     typedef ural::tracing_allocator<int> Int_alloc;
 
-    typedef boost::mpl::list<ural::vector<int, Int_alloc>,
-                             ural::flex_string<char, ural::use_default, Char_alloc>
-                            >
+    typedef boost::mpl::list<ural::vector<int, Int_alloc>>
         Sequence_containers;
 
     typedef boost::mpl::list<ural::flat_set<int, ural::use_default, Int_alloc>>
