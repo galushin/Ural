@@ -26,6 +26,31 @@
 
 namespace ural
 {
+    /// @cond false
+    namespace details
+    {
+        template <class T, class = void>
+        struct has_is_transparent_type
+         : std::false_type
+        {};
+
+        template <class T>
+        struct has_is_transparent_type<T, ural::void_t<typename T::is_transparent>>
+         : std::true_type
+        {};
+    }
+    // namespace details
+    //#endcond
+
+    /** @brief Класс-характеристика для определения того, что тип @c T
+    содержит определения типа @ is_transparent
+    @tparam T тип
+    */
+    template <class T>
+    struct has_is_transparent_type
+     : ::ural::details::has_is_transparent_type<T>
+    {};
+
     /** @brief Вспомогательный класс для функциональных объектов для бинарных
     операторов
     @tparam T1 тип первого аргумента
@@ -35,9 +60,9 @@ namespace ural
     template <class T1, class T2, class F>
     class binary_operator_helper
     {
-    public:
         static_assert(std::is_empty<F>::value, "must be empty class");
-
+        static_assert(ural::has_is_transparent_type<F>::value, "Must be transparent");
+    public:
         /** @brief Оператор вызова функции
         @param x левый операнд
         @param y правый операнд
@@ -48,54 +73,72 @@ namespace ural
                    typename boost::call_traits<T2>::param_type y) const
         -> decltype(std::declval<F const>()(x, y))
         {
-            typedef typename F::is_transparent F_is_transparent;
-
             return F{}(x, y);
         }
     };
 
+    /** @brief Специализация с выводом типа второго аргумента
+    @tparam T1 тип первого аргумента
+    @tparam F тип "прозрачного" функционального объекта, реализующего оператор
+    */
     template <class T1, class F>
     class binary_operator_helper<T1, void, F>
     {
-    public:
         static_assert(std::is_empty<F>::value, "must be empty class");
-
+        static_assert(ural::has_is_transparent_type<F>::value, "Must be transparent");
+    public:
+        /** @brief Оператор вызова функции
+        @param x левый операнд
+        @param y правый операнд
+        @return <tt> F{}(x, y) </tt>
+        */
         template <class T2>
         constexpr auto
         operator()(typename boost::call_traits<T1>::param_type x,
                    T2 && y) const
         -> decltype(std::declval<F const>()(x, std::forward<T2>(y)))
         {
-            typedef typename F::is_transparent F_is_transparent;
-
             return F{}(x, std::forward<T2>(y));
         }
     };
 
+    /** @brief Специализация с выводом типа первого аргумента
+    @tparam T2 тип второго аргумента
+    @tparam F тип "прозрачного" функционального объекта, реализующего оператор
+    */
     template <class T2, class F>
     class binary_operator_helper<void, T2, F>
     {
-    public:
         static_assert(std::is_empty<F>::value, "must be empty class");
-
+        static_assert(ural::has_is_transparent_type<F>::value, "Must be transparent");
+    public:
+        /** @brief Оператор вызова функции
+        @param x левый операнд
+        @param y правый операнд
+        @return <tt> F{}(x, y) </tt>
+        */
         template <class T1>
         constexpr auto
         operator()(T1 && x,
                    typename boost::call_traits<T2>::param_type y) const
         -> decltype(std::declval<F const>()(std::forward<T1>(x), y))
         {
-            typedef typename F::is_transparent F_is_transparent;
-
             return F{}(std::forward<T1>(x), y);
         }
     };
 
+    /** @brief Вспомогательный класс для функциональных объектов для составных
+    операторов присваивания
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    @tparam F тип "прозрачного" функционального объекта, реализующего оператор
+    */
     template <class T1, class T2, class F>
     class compound_assignment_helper
     {
-    public:
         static_assert(std::is_empty<F>::value, "Must be empty!");
-
+        static_assert(ural::has_is_transparent_type<F>::value, "Must be transparent");
+    public:
         /** @brief Оператор вызова функции
         @param x левый операнд
         @param y правый операнд
@@ -103,38 +146,50 @@ namespace ural
         */
         T1 & operator()(T1 & x, T2 const & y) const
         {
-            typedef typename F::is_transparent F_is_transparent;
-
             return F{}(x, y);
         }
     };
 
+    /** @brief Специализация с выводом типа второго аргумента
+    @tparam T1 тип первого аргумента
+    @tparam F тип "прозрачного" функционального объекта, реализующего оператор
+    */
     template <class T1, class F>
     class compound_assignment_helper<T1, void, F>
     {
-    public:
         static_assert(std::is_empty<F>::value, "Must be empty!");
-
+        static_assert(ural::has_is_transparent_type<F>::value, "Must be transparent");
+    public:
+        /** @brief Оператор вызова функции
+        @param x левый операнд
+        @param y правый операнд
+        @return <tt> F{}(x, y) </tt>
+        */
         template <class T2>
         T1 & operator()(T1 & x, T2 && y) const
         {
-            typedef typename F::is_transparent F_is_transparent;
-
             return F{}(x, std::forward<T2>(y));
         }
     };
 
+    /** @brief Специализация с выводом типа первого аргумента
+    @tparam T2 тип второго аргумента
+    @tparam F тип "прозрачного" функционального объекта, реализующего оператор
+    */
     template <class T2, class F>
     class compound_assignment_helper<void, T2, F>
     {
-    public:
         static_assert(std::is_empty<F>::value, "Must be empty!");
-
+        static_assert(ural::has_is_transparent_type<F>::value, "Must be transparent");
+    public:
+        /** @brief Оператор вызова функции
+        @param x левый операнд
+        @param y правый операнд
+        @return <tt> F{}(x, y) </tt>
+        */
         template <class T1>
         T1 & operator()(T1 & x, T2 const & y) const
         {
-            typedef typename F::is_transparent F_is_transparent;
-
             return F{}(x, y);
         }
     };
@@ -147,9 +202,9 @@ namespace ural
     template <class T, class F>
     class unary_operator_helper
     {
-    public:
         static_assert(std::is_empty<F>::value, "must be empty class");
-
+        static_assert(ural::has_is_transparent_type<F>::value, "Must be transparent");
+    public:
         /// @brief Тип аргумента
         typedef T argument_type;
 
@@ -158,12 +213,11 @@ namespace ural
 
         /** @brief Оператор вызова функции
         @param x аргумент
+        @return <tt> F{}(x) </tt>
         */
         constexpr result_type
         operator()(typename boost::call_traits<T>::param_type x) const
         {
-            typedef typename F::is_transparent F_is_transparent;
-
             return F{}(x);
         }
     };
