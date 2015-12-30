@@ -108,7 +108,7 @@ namespace ural
     {
         typedef std::insert_iterator<Container> Iterator;
         typedef DifferenceType<Container> Diff;
-        return weak_output_iterator_sequence<decltype(i), Diff>(std::move(i));
+        return weak_output_iterator_sequence<Iterator, Diff>(std::move(i));
     }
 
     //@{

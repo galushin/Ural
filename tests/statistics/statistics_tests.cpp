@@ -146,8 +146,6 @@ BOOST_AUTO_TEST_CASE(average_type_test)
     using std::is_same;
     using ural::average_type;
 
-    typedef std::common_type<int, size_t>::type int_and_size_t;
-
     static_assert(is_same<double, average_type<int, size_t>::type>::value, "");
     static_assert(is_same<double, average_type<double, size_t>::type>::value, "");
     static_assert(is_same<Rational, average_type<Rational, int>::type>::value, "");

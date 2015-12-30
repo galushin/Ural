@@ -380,7 +380,12 @@ namespace concepts
         /// @brief Примеры использования
         BOOST_CONCEPT_USAGE(Writable)
         {
-            typedef decltype(*seq = make_value()) AssignResult;
+            /* decltype нужен, так как make_value не определена, а static_assert
+            нужен для того, чтобы подавить предупреждение о том, что тип
+            AssignResult объявлен локально, но не используется.
+            */
+            using AssignResult = decltype(*seq = make_value());
+            static_assert(std::is_same<AssignResult, AssignResult>::value, "");
 
             // @todo begin?
             /* @todo OutputIterator
