@@ -25,6 +25,7 @@
 #include <ural/concepts.hpp>
 #include <ural/sequence/base.hpp>
 #include <ural/sequence/make.hpp>
+#include <ural/sequence/adaptors/delimit.hpp>
 
 namespace ural
 {
@@ -105,6 +106,28 @@ namespace ural
         {
             static_assert(sizeof...(Inputs) > 0, "");
             this->pop_front_impl(placeholder<sizeof...(Inputs) - 1>{});
+        }
+
+        // Прямая последовательность
+        /** @brief Полная последовательность (вместе с пройденными частями)
+        @return Исходная последовательность
+        */
+        cartesian_product_sequence original() const
+        {
+            auto f = [this](Inputs const & ... args)->cartesian_product_sequence
+                     { return cartesian_product_sequence((args.original())...); };
+
+            return ::ural::apply(f, bases_);
+        }
+
+        /** @brief Передняя пройденная часть последовательности
+        @return Передняя пройденная часть последовательности
+        */
+        delimit_sequence<cartesian_product_sequence, value_type>
+        traversed_front() const
+        {
+            // @todo this->original() | ural::delimited(this->front());
+            return make_delimit_sequence(this->original(), this->front());
         }
 
     private:

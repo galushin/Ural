@@ -353,24 +353,6 @@ BOOST_AUTO_TEST_CASE(arithmetic_progression_size_test)
     BOOST_CHECK_LE(sizeof(s), sizeof(0) * 3);
 }
 
-BOOST_AUTO_TEST_CASE(cartesian_product_sequence_test)
-{
-    auto digits = ural::numbers(0, 10);
-    auto s2 = ural::make_cartesian_product_sequence(digits, digits);
-
-    std::set<int> r2;
-
-    for(; !!s2; ++ s2)
-    {
-        auto t = *s2;
-        r2.insert(t[ural::_1] * 10 + t[ural::_2]);
-    }
-
-    BOOST_CHECK_EQUAL(100U, r2.size());
-    BOOST_CHECK_EQUAL(0,  *r2.begin());
-    BOOST_CHECK_EQUAL(99, *r2.rbegin());
-}
-
 BOOST_AUTO_TEST_CASE(geometric_progression_test)
 {
     std::vector<int> const zs = {1, 2, 4, 8, 16, 32, 64};

@@ -116,6 +116,7 @@
 		<Unit filename="../tests/rational_tests.cpp" />
 		<Unit filename="../tests/rnd.cpp" />
 		<Unit filename="../tests/rnd.hpp" />
+		<Unit filename="../tests/sequence/adaptors/cartesian_product.cpp" />
 		<Unit filename="../tests/sequence/adaptors/map.cpp" />
 		<Unit filename="../tests/sequence/adaptors/moved.cpp" />
 		<Unit filename="../tests/sequence/adaptors/outdirected.cpp" />
