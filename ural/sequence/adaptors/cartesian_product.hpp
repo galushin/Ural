@@ -126,7 +126,6 @@ namespace ural
         delimit_sequence<cartesian_product_sequence, value_type>
         traversed_front() const
         {
-            // @todo this->original() | ural::delimited(this->front());
             return make_delimit_sequence(this->original(), this->front());
         }
 
@@ -134,19 +133,16 @@ namespace ural
         template <size_t I>
         void shrink_fronts(placeholder<I>)
         {
-            typedef typename std::tuple_element<I, decltype(bases_)>::type
-                Seq;
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Seq>));
-            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Seq>));
+            using Indicies = typename make_int_sequence_helper<size_t, I, sizeof...(Inputs)>::type;
 
-            bases_[placeholder<I>{}].shrink_front();
-
-            return this->shrink_fronts(placeholder<I+1>{});
+            this->shrink_fronts(Indicies{});
         }
 
-        void shrink_fronts(placeholder<sizeof...(Inputs)>)
+        template <size_t... Is>
+        void shrink_fronts(ural::integer_sequence<size_t, Is...>)
         {
-            return;
+            using Sink = int[sizeof...(Is)];
+            (void)Sink{(bases_[placeholder<Is>{}].shrink_front(), 0)...};
         }
 
         void pop_front_impl(placeholder<0>)
