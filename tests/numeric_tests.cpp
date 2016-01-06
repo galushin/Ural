@@ -76,7 +76,29 @@ BOOST_AUTO_TEST_CASE(partial_sums_sequence_test)
 
     // ural
     std::vector<int> x_ural;
-    ural::copy(ural::partial_sums(v), std::back_inserter(x_ural));
+    auto seq = ural::partial_sums(v);
+
+    BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<decltype(seq)>));
+
+    ural::copy(std::move(seq), std::back_inserter(x_ural));
+
+    // Проверка
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
+}
+
+BOOST_AUTO_TEST_CASE(partial_sums_test_minimal)
+{
+    // Подготовка
+    std::vector<int> const src_std = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
+    ural_test::istringstream_helper<int> const src_ural(src_std);
+
+    // std
+    std::vector<int> x_std;
+    std::partial_sum(src_std.begin(), src_std.end(), std::back_inserter(x_std));
+
+    // ural
+    std::vector<int> x_ural;
+    ural::copy(ural::partial_sums(src_ural), std::back_inserter(x_ural));
 
     // Проверка
     URAL_CHECK_EQUAL_RANGES(x_std, x_ural);

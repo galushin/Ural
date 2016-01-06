@@ -38,6 +38,16 @@ namespace ural
         typedef sequence_base<partial_sums_sequence, BinaryOperation>
             Base_class;
     public:
+        /** @brief Оператор "равно"
+        @param x, y аргументы
+        @return <tt> x.base() == y.base() && x.operation() == y.operation() </tt>
+        */
+        friend bool operator==(partial_sums_sequence const & x,
+                               partial_sums_sequence const & y)
+        {
+            return x.base() == y.base() && x.operation() == y.operation();
+        }
+
         /// @brief Тип значения
         typedef ValueType<Input> value_type;
 
@@ -45,7 +55,8 @@ namespace ural
         typedef value_type const & reference;
 
         /// @brief Категория обхода
-        typedef forward_traversal_tag traversal_tag;
+        using traversal_tag =
+            typename ural::common_tag<typename Input::traversal_tag, forward_traversal_tag>::type;
 
         /// @brief Тип указателя
         typedef value_type const & pointer;
@@ -56,6 +67,7 @@ namespace ural
         /// @brief Тип операции, используемой для вычисления суммы
         typedef BinaryOperation operation_type;
 
+        // Создание и свойства
         /** @brief Конструктор
         @param in исходная последовательность
         @param add операция, используемая для вычисления суммы
@@ -72,6 +84,30 @@ namespace ural
             }
         }
 
+        //@{
+        /** @brief Исходная последовательность
+        @return Текущее состояние входной последовательности
+        */
+        Input const & base() const &
+        {
+            return ::ural::get(this->members_, ural::_1);
+        }
+
+        Input && base() &&
+        {
+            return ::ural::get(std::move(this->members_), ural::_1);
+        }
+        //@}
+
+        /** @brief Операция, используемая для вычисления суммы
+        @return Операция, используемая для вычисления суммы
+        */
+        operation_type const & operation() const
+        {
+            return this->payload();
+        }
+
+        // Однопроходная последовательность
         bool operator!() const
         {
             return !this->base();
@@ -101,28 +137,26 @@ namespace ural
             }
         }
 
-        //@{
+        // Прямая последовательность
         /** @brief Исходная последовательность
-        @return Текущее состояние входной последовательности
+        @return Исходная последовательность
         */
-        Input const & base() const &
+        partial_sums_sequence original() const;
+
+        /** @brief Передняя пройденная часть последовательности
+        @return Передняя пройденная часть последовательности
+        */
+        partial_sums_sequence<TraversedFrontType<Input>, BinaryOperation>
+        traversed_front() const
         {
-            return ::ural::get(this->members_, ural::_1);
+            using Result = partial_sums_sequence<TraversedFrontType<Input>, BinaryOperation>;
+            return Result(this->base().traversed_front(), this->operation());
         }
 
-        Input && base() &&
-        {
-            return ::ural::get(std::move(this->members_), ural::_1);
-        }
-        //@}
-
-        /** @brief Операция, используемая для вычисления суммы
-        @return Операция, используемая для вычисления суммы
+        /** @brief Отбрасывание передней пройденной части последовательности
+        @post <tt> !this->traversed_front() </tt>
         */
-        operation_type const & operation() const
-        {
-            return this->payload();
-        }
+        void shrink_front();
 
     private:
         typedef ural::optional<value_type> Optional_value;
