@@ -812,9 +812,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( dice_roll_test, T, all_signed_test_types )
     // Determine the mean number of times a fair six-sided die
     // must be thrown until each side has appeared at least once.
 
-    auto inverse = std::bind(ural::constructor<rational_type>{}, T(1), ural::_1);
+    auto inverse = ural::curry(ural::constructor<rational_type>{}, T(1));
 
-    auto in = ural::numbers(1, 7) | ural::transformed(inverse);
+    auto in = ural::numbers(1, 7) | ural::transformed(std::move(inverse));
 
     auto const r = ural::accumulate(in, rational_type(T(0))) * T(6);
 

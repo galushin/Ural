@@ -702,8 +702,7 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::Writable<ForwardSequence, T2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate, ForwardSequence, T1 const *>));
 
-            auto const pred = std::bind(std::move(bin_pred), ural::_1,
-                                        std::cref(old_value));
+            auto const pred = [&](auto const & x) { return bin_pred(x, old_value); };
 
             return ::ural::replace_if_fn{}(std::move(seq), std::move(pred),
                                            new_value);
@@ -805,10 +804,8 @@ namespace details
                                                              SequenceType<Input>,
                                                              T1 const *>));
 
-            auto const pred
-                = std::bind(::ural::make_callable(std::move(bin_pred)),
-                            std::placeholders::_1,
-                            std::cref(old_value));
+            auto pred = [&](auto const & x) { return bin_pred(x, old_value); };
+
             return ural::replace_copy_if_fn{}(std::forward<Input>(in),
                                               std::forward<Output>(out),
                                               std::move(pred), new_value);
@@ -904,7 +901,8 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::Permutable<ForwardSequence>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<BinaryPredicate, ForwardSequence, T const *>));
 
-            auto pred_1 = std::bind(std::move(pred), ural::_1, std::cref(value));
+            auto pred_1 = [&](auto const & x) { return pred(x, value); };
+
             return remove_if_fn{}(in, std::move(pred_1));
         }
     };
@@ -971,8 +969,8 @@ namespace details
                                                              SequenceType<Input>,
                                                              T const *>));
 
-            auto pred = std::bind(::ural::make_callable(std::move(bin_pred)),
-                                  ural::_1, std::cref(value));
+            auto pred = [&](auto const & x) { return bin_pred(x, value); };
+
             return ::ural::remove_copy_if_fn{}(std::forward<Input>(in),
                                                std::forward<Output>(out),
                                                std::move(pred));

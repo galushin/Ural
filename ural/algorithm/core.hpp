@@ -133,7 +133,7 @@ namespace ural
             BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<BinaryPredicate, Input, T const *>));
 
-            auto pred = std::bind(std::move(bin_pred), ural::_1, std::cref(value));
+            auto pred = [&](auto const & x) { return bin_pred(x, value); };
 
             return find_if_fn{}(std::move(in), std::move(pred));
         }

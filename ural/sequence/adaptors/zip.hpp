@@ -195,7 +195,8 @@ namespace ural
         */
         reference operator[](distance_type n) const
         {
-            auto f = std::bind(ural::subscript, ural::_1, n);
+            auto f = [&](auto const & x) -> decltype(auto) { return ural::subscript(x, n); };
+
             return this->transform_bases<reference>(std::move(f));
         }
 
@@ -207,8 +208,7 @@ namespace ural
         */
         zip_sequence & operator+=(distance_type n)
         {
-            auto op = std::bind(ural::plus_assign<>{}, ural::_1, n);
-            this->for_each_base(std::move(op));
+            this->for_each_base([&](auto & x) { return x += n; });
             return *this;
         }
 
@@ -219,7 +219,7 @@ namespace ural
         */
         void pop_back(distance_type n)
         {
-            this->for_each_base(std::bind(ural::pop_back, ural::_1, n));
+            this->for_each_base([&](auto & x) { return ural::pop_back(x, n); });
         }
 
     private:

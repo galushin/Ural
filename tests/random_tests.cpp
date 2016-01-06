@@ -460,7 +460,8 @@ namespace
 
         std::vector<double> prob = d.probabilities();
 
-        auto gen = std::bind(std::move(d), std::ref(g));
+        auto gen = [&](){ return d(g); };
+
         auto seq = ural::make_generator_sequence(std::move(gen)) | ural::taken(N);
 
         auto p = pearson_test(std::move(seq), prob);

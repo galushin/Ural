@@ -854,7 +854,7 @@ namespace ural
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, T const *, Forward>));
 
-            auto pred = std::bind(std::move(cmp), ural::_1, std::cref(value));
+            auto pred = [&](auto const & x) { return cmp(x, value); };
             return ::ural::partition_point_fn{}(std::move(in), std::move(pred));
         }
     };
@@ -897,7 +897,8 @@ namespace ural
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<RASequence>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, T const *, RASequence>));
 
-            auto pred = ural::not_fn(std::bind(std::move(cmp), std::cref(value), ural::_1));
+            auto pred = [&](auto const & x) { return !cmp(value, x); };
+
             return ::ural::partition_point_fn{}(std::move(in), std::move(pred));
         }
     };

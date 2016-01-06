@@ -584,7 +584,10 @@ namespace ural
         /** @brief Функция
         @return Ссылка на функцию
         */
-        F const & function() const &;
+        F const & function() const &
+        {
+            return this->state_[ural::_1];
+        }
 
         F && function() &&
         {
@@ -596,7 +599,10 @@ namespace ural
         /** @brief Аргумент
         @return Ссылка на закреплённый аргумент
         */
-        Arg const & argument() const &;
+        Arg const & argument() const &
+        {
+            return this->state_[ural::_2];
+        }
 
         Arg && argument() &&
         {

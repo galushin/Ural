@@ -599,7 +599,7 @@ namespace ural
         {
             result_type result_(this->count());
 
-            ural::generate(result_, std::bind(std::ref(param_.d_), std::ref(g)));
+            ural::generate(result_, [&]() { return param_.d_(g); });
 
             return result_;
         }

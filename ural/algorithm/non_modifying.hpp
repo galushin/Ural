@@ -398,9 +398,7 @@ namespace ural
             BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<BinaryPredicate, Input, T const *>));
 
-            return count_if_fn{}(std::move(in),
-                                 std::bind(std::move(pred), ural::_1,
-                                           std::ref(value)));
+            return count_if_fn{}(std::move(in), [&](auto const & x) { return pred(x, value); });
         }
 
     public:

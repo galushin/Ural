@@ -1903,7 +1903,9 @@ BOOST_AUTO_TEST_CASE(partition_test)
 
     auto ys = xs;
 
-    typedef ::ural::ValueType<Container> Element;
+    using Element = ::ural::ValueType<Container>;
+
+    static_assert(std::is_same<Element, int>::value, "");
 
     // Выполнение операции
     auto r_ural = ural::partition(ys, ural::is_even);

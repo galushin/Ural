@@ -491,7 +491,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_copy_with_other_allocator,
 BOOST_AUTO_TEST_CASE_TEMPLATE(container_move_constructor_table_99,
                               Container, Containers_types)
 {
-    typedef typename Container::allocator_type Alloc;
+    using Alloc = typename Container::allocator_type;
 
     // Строка 6
     Container t = {1, 2, 3, 4, 5};
@@ -505,6 +505,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_move_constructor_table_99,
     BOOST_CHECK_EQUAL(t_old_data, u.data());
     BOOST_CHECK_EQUAL(t_old.get_allocator().id(), u.get_allocator().id());
     BOOST_CHECK(t_old.get_allocator() == u.get_allocator());
+
+    static_assert(std::is_same<Alloc, decltype(t.get_allocator())>::value, "");
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(container_move_with_same_allocator,
