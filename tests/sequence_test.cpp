@@ -1720,3 +1720,35 @@ BOOST_AUTO_TEST_CASE(pipeable_combine_3)
 
     BOOST_CHECK(seq1 == seq2);
 }
+
+// size для контейнеров
+namespace
+{
+    using Containers = boost::mpl::list<std::forward_list<int>, std::list<int>,
+                                        std::vector<int>,
+                                        ural::vector<int>>;
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(size_for_containers_test, Container, Containers)
+{
+    auto const n = 42U;
+
+    Container const xs(n, 13);
+
+    BOOST_CHECK_EQUAL(ural::size(xs), n);
+}
+
+BOOST_AUTO_TEST_CASE(size_for_c_array)
+{
+    int xs [] = {1, 2, 3, 4, 5};
+
+    BOOST_CHECK_EQUAL(ural::size(xs), sizeof(xs) / sizeof(xs[0]));
+}
+
+BOOST_AUTO_TEST_CASE(size_for_std_array)
+{
+    constexpr auto const n = 13;
+    std::array<int, n> xs;
+
+    BOOST_CHECK_EQUAL(ural::size(xs), xs.size());
+}

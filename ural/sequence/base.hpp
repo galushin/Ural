@@ -287,7 +287,7 @@ namespace ural
     private:
         template <class Sequence>
         static DifferenceType<Sequence>
-        size_impl(Sequence const & s, single_pass_traversal_tag)
+        sequence_size(Sequence const & s, single_pass_traversal_tag)
         {
             DifferenceType<Sequence> n{0};
 
@@ -301,38 +301,74 @@ namespace ural
 
         template <class Sequence>
         static DifferenceType<Sequence>
-        size_impl(Sequence const & s, random_access_traversal_tag)
+        sequence_size(Sequence const & s, random_access_traversal_tag)
         {
             return s.size();
         }
 
+        template <class Container>
+        typename Container::difference_type
+        container_size(Container const & c, void_t<decltype(c.size())> *) const
+        {
+            return c.size();
+        }
+
+        template <class Container>
+        typename Container::difference_type
+        container_size(Container const & c, ...) const
+        {
+            return std::distance(c.begin(), c.end());
+        }
+
+        template <class Sequenced>
+        DifferenceType<Sequenced>
+        dispatch(Sequenced const & s,
+                 void_t<decltype(ural::make_traversal_tag(s))> *) const
+        {
+            return this->sequence_size(s, ural::make_traversal_tag(s));
+        }
+
+        template <class Sequenced>
+        DifferenceType<Sequenced>
+        dispatch(Sequenced const & s,
+                 void_t<typename Sequenced::allocator_type> *) const
+        {
+            return this->container_size(s, nullptr);
+        }
+
     public:
-        /** @brief Размер последовательности
+        /** @brief Размер последовательности или контейнера
         @param s последовательность
         @return Количество непройденных элементов последовательности
         */
-        template <class Sequence>
-        DifferenceType<Sequence>
-        operator()(Sequence const & s) const
+        template <class Sequenced>
+        DifferenceType<Sequenced>
+        operator()(Sequenced const & s) const
         {
-            return this->size_impl(s, ural::make_traversal_tag(s));
+            return this->dispatch(s, nullptr);
         }
-
-        /** @brief Размер контейнера
-        @param c контейнер
-        @return <tt> this->size() </tt>
-        */
-        template <class Container>
-        typename Container::size_type
-        operator()(Container const & c) const;
 
         /** @brief Размер массива
         @tparam N количество элементов
-        @param a массив
+        @tparam T тип элементов
         @return @c N
         */
         template <class T, size_t N>
-        size_t operator()(T(&a)[N]) const;
+        constexpr size_t operator()(T(&)[N]) const
+        {
+            return N;
+        }
+
+        /** @brief Размер <tt> std::array </tt>
+        @tparam N количество элементов
+        @tparam T тип элементов
+        @return @c N
+        */
+        template <class T, size_t N>
+        constexpr size_t operator()(std::array<T, N> const & a) const
+        {
+            return a.size();
+        }
     };
 
     /** @brief Тип функционального объекта для продвижения последовательности на
