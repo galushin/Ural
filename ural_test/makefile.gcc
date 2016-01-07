@@ -235,6 +235,9 @@ $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/set_operations.o: ../tests/sequence/a
 $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/simo.o: ../tests/sequence/adaptors/simo.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/sequence/adaptors/simo.cpp -o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/simo.o
 
+$(OBJDIR_DEBUG)/__/tests/sequence/adaptors/taken.o: ../tests/sequence/adaptors/taken.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/sequence/adaptors/taken.cpp -o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/taken.o
+
 $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/taken_while.o: ../tests/sequence/adaptors/taken_while.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/sequence/adaptors/taken_while.cpp -o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/taken_while.o
 

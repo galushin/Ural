@@ -23,8 +23,9 @@
 */
 
 #include <ural/sequence/adaptor.hpp>
-#include <ural/sequence/make.hpp>
+#include <ural/sequence/adaptors/taken_exactly.hpp>
 #include <ural/sequence/base.hpp>
+#include <ural/sequence/make.hpp>
 #include <ural/utility.hpp>
 
 namespace ural
@@ -49,6 +50,9 @@ namespace ural
         // Типы
         /// @brief Категория обхода
         using typename Base::traversal_tag;
+
+        /// @brief Тип расстояния
+        using typename Base::distance_type;
 
         // Создание, копирование
         /** @brief Конструктор
@@ -87,7 +91,11 @@ namespace ural
         /** @brief Пройденная часть последовательности
         @return Пройденная часть последовательности
         */
-        take_sequence traversed_front() const;
+        auto traversed_front() const
+        {
+            return this->base().traversed_front()
+                   | ural::taken_exactly(count_.old_value() - count_.value());
+        }
 
         /** @brief Исчерпание последовательности за константное время в прямом
         порядке
@@ -115,6 +123,22 @@ namespace ural
         }
 
         // Последовательность производного доступа
+        /** @brief Пропуск заданного количества элементов в передней части
+        последовательности
+        @param n количество элементов, которое нужно пропустить.
+        @pre <tt> n <= this->size() </tt>
+        @return <tt> *this </tt>
+        */
+        take_sequence & operator+=(distance_type n)
+        {
+            assert(0 <= n && n <= this->count());
+
+            Base::operator+=(n);
+            ural::get(count_) -= n;
+
+            return *this;
+        }
+
         // Адаптор последовательности
         /** @brief Оставшееся количество элементов
         @return Оставшееся количество элементов

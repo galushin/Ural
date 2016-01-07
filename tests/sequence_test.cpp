@@ -607,51 +607,6 @@ BOOST_AUTO_TEST_CASE(filtered_sequence_is_permuation)
                                      xs2 | ural::filtered(pred)));
 }
 
-BOOST_AUTO_TEST_CASE(copy_n_analog_test)
-{
-    std::string const src = "1234567890";
-    std::string r_std;
-    std::string r_ural;
-
-    auto const n = 4;
-
-    std::copy_n(src.begin(), n, std::back_inserter(r_std));
-
-    ural::copy(src | ural::taken(n), std::back_inserter(r_ural));
-
-    BOOST_CHECK_EQUAL(r_std, r_ural);
-}
-
-BOOST_AUTO_TEST_CASE(taken_taken_test_shorter)
-{
-    std::vector<int> const src = {1, 2, 3, 4, 5};
-
-    auto const n1 = 4;
-    auto const n2 = 3;
-
-    auto s_composite = src | ural::taken(n1) | ural::taken(n2);
-    auto s_direct = src | ural::taken(std::min(n1, n2));
-
-    static_assert(std::is_same<decltype(s_composite), decltype(s_direct)>::value, "");
-
-    BOOST_CHECK(s_direct == s_composite);
-}
-
-BOOST_AUTO_TEST_CASE(taken_taken_test_longer)
-{
-    std::vector<int> const src = {1, 2, 3, 4, 5};
-
-    auto const n1 = 3;
-    auto const n2 = 4;
-
-    auto s_composite = src | ural::taken(n1) | ural::taken(n2);
-    auto s_direct = src | ural::taken(std::min(n1, n2));
-
-    static_assert(std::is_same<decltype(s_composite), decltype(s_direct)>::value, "");
-
-    BOOST_CHECK(s_direct == s_composite);
-}
-
 BOOST_AUTO_TEST_CASE(taken_exactly_taken_exactly_test_shorter)
 {
     std::vector<int> const src = {1, 2, 3, 4, 5};
@@ -1244,23 +1199,6 @@ BOOST_AUTO_TEST_CASE(replace_sequence_custom_predicate)
     BOOST_CHECK_EQUAL(seq.new_value(), new_value);
 }
 
-BOOST_AUTO_TEST_CASE(fill_n_test_via_sequence_and_copy)
-{
-    std::vector<int> v_std{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-    auto v_ural = v_std;
-
-    auto const n = v_std.size() / 2;
-    auto const value = -1;
-
-    std::fill_n(v_std.begin(), n, value);
-    auto r = ural::fill(v_ural | ural::taken(n), value);
-
-    BOOST_CHECK_EQUAL(ural::to_signed(n), r.base().traversed_front().size());
-    BOOST_CHECK_EQUAL(ural::to_signed(v_std.size() - n), r.base().size());
-
-    URAL_CHECK_EQUAL_RANGES(v_std, v_ural);
-}
-
 BOOST_AUTO_TEST_CASE(generate_sequence_test)
 {
     std::vector<int> r_std(5);
@@ -1274,28 +1212,6 @@ BOOST_AUTO_TEST_CASE(generate_sequence_test)
 
     ural::copy(ural::make_generator_sequence(gen), r_ural);
 
-    URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
-}
-
-BOOST_AUTO_TEST_CASE(generate_n_test)
-{
-    // Подготовка
-    auto const n = int{5};
-
-    std::vector<int> r_std;
-    auto r_ural = r_std;
-
-    // std
-    auto counter = int{0};
-    auto gen = [&]{ return counter++; };
-    std::generate_n(r_std | ural::back_inserter, n, gen);
-
-    // ural
-    counter = 0;
-    ural::copy(ural::make_generator_sequence(gen) | ural::taken(n),
-               r_ural | ural::back_inserter);
-
-    // Проверка
     URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
 }
 
@@ -1480,17 +1396,6 @@ BOOST_AUTO_TEST_CASE(iterator_sequence_for_istream_iterator_regression)
     ural::copy(seq, x | ural::back_inserter);
 
     URAL_CHECK_EQUAL_RANGES(x, z);
-}
-
-BOOST_AUTO_TEST_CASE(take_sequence_more_than_size)
-{
-    std::vector<int> const z{11, 11, 22, 33, 55};
-
-    std::vector<int> result;
-
-    ural::copy(z | ural::taken(z.size() + 10),  result | ural::back_inserter);
-
-    URAL_CHECK_EQUAL_RANGES(z, result);
 }
 
 BOOST_AUTO_TEST_CASE(chunks_sequence_test)

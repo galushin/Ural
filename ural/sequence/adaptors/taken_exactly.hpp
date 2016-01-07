@@ -93,17 +93,6 @@ namespace ural
         using Inherited = sequence_adaptor<taken_exactly_sequence<Sequence, Distance>, Sequence>;
 
     public:
-        /** @brief Оператор "равно"
-        @param x, y операнды
-        @return <tt> x.front() == y.front() && x.size() == y.size() && x.step() == y.step() </tt>
-        */
-        friend
-        bool operator==(taken_exactly_sequence const & x,
-                        taken_exactly_sequence const & y)
-        {
-            return x.base() == y.base() && x.size() == y.size();
-        }
-
         // Типы
         /// @brief Категория обхода
         using typename Inherited::traversal_tag;
@@ -295,6 +284,17 @@ namespace ural
         distance_type traversed_front_size_;
         distance_type traversed_back_size_;
     };
+
+    /** @brief Оператор "равно"
+    @param x, y операнды
+    @return <tt> x.front() == y.front() && x.size() == y.size() </tt>
+    */
+    template <class S1, class D1, class S2, class D2>
+    bool operator==(taken_exactly_sequence<S1, D1> const & x,
+                    taken_exactly_sequence<S2, D2> const & y)
+    {
+        return x.base() == y.base() && x.size() == y.size();
+    }
 }
 // namespace ural
 
