@@ -143,9 +143,11 @@ namespace ural
     private:
         friend Inherited;
 
-        chunks_sequence rebind_base(Sequence s) const &
+        template <class OtherSequence>
+        chunks_sequence<OtherSequence>
+        rebind_base(OtherSequence s) const &
         {
-            return chunks_sequence(std::move(s), this->chunk_size());
+            return {std::move(s), this->chunk_size()};
         }
 
     private:
