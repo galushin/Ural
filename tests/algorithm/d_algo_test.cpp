@@ -17,6 +17,7 @@
 #include "../defs.hpp"
 
 #include <ural/algorithm.hpp>
+#include <ural/numeric/numbers_sequence.hpp>
 
 #include <boost/test/unit_test.hpp>
 
@@ -86,4 +87,25 @@ BOOST_AUTO_TEST_CASE(common_prefix_test)
     // Тест взят с dlang.org/phobos/std_algorithm_searching.html#commonPrefix
     auto const z = std::string("hello, ");
     URAL_CHECK_EQUAL_RANGES(ural::common_prefix("hello, world", "hello, there"), z);
+}
+
+BOOST_AUTO_TEST_CASE(common_prefix_infinite)
+{
+    auto const x0 = 42;
+    auto const d1 = 2;
+    auto const d2 = 3;
+
+    assert(d1 != d2);
+
+    auto const s1 = ural::make_arithmetic_progression(x0, d1);
+    auto const s2 = ural::make_arithmetic_progression(x0, d2);
+
+    auto result = ural::common_prefix(s1, s2);
+
+    BOOST_CHECK(result.base().original() == s1);
+    BOOST_CHECK_EQUAL(1, result.size());
+    BOOST_CHECK_EQUAL(x0, result.front());
+
+    auto const expected = ural::make_arithmetic_progression(x0, d1) | ural::taken_exactly(1);
+    BOOST_CHECK(result == expected);
 }

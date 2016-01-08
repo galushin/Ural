@@ -1778,6 +1778,30 @@ BOOST_AUTO_TEST_CASE(rotate_copy_test)
     }
 }
 
+BOOST_AUTO_TEST_CASE(rotate_copy_different_traversed_front)
+{
+    auto const s1 = ural::numbers(1, 9);
+    auto const s2 = ural::numbers(0, 9);
+
+    auto const seq = ural::make_cartesian_product_sequence(s1, s2);
+
+    using Value = ural::ValueType<decltype(seq)>;
+
+    auto const n = s1.size() * s2.size() / 2;
+
+    // Первый способ
+    std::vector<Value> v1;
+    ural::copy(seq, v1 | ural::back_inserter);
+    std::rotate(v1.begin(), v1.begin() + n, v1.end());
+
+    // Второй способ
+    std::vector<Value> v2;
+
+    ural::rotate_copy(ural::next(seq, n), v2 | ural::back_inserter);
+
+    BOOST_CHECK(ural::equal(v1, v2));
+}
+
 BOOST_AUTO_TEST_CASE(rotate_copy_return_test)
 {
     std::vector<int> const src{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};

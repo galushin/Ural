@@ -47,7 +47,8 @@ namespace ural
         typedef tuple<typename Inputs::reference...> reference;
 
         /// @brief Категория обхода
-        typedef single_pass_traversal_tag traversal_tag;
+        using traversal_tag
+            = typename ural::common_tag<forward_traversal_tag, typename Inputs::traversal_tag...>::type;
 
         /// @brief Тип значения
         typedef tuple<ValueType<Inputs>...> value_type;
@@ -129,6 +130,8 @@ namespace ural
             return make_delimit_sequence(this->original(), this->front());
         }
 
+        void shrink_front();
+
     private:
         template <size_t I>
         void shrink_fronts(placeholder<I>)
@@ -165,6 +168,10 @@ namespace ural
     private:
         tuple<Inputs...> bases_;
     };
+
+    template <class... Inputs1, class... Inputs2>
+    bool operator==(cartesian_product_sequence<Inputs1...> const & x,
+                    cartesian_product_sequence<Inputs1...> const & y);
 
     /** @brief Создание последовательности всех возможных кортежей
     @param ins базовые последовательности

@@ -283,7 +283,7 @@ namespace ural
         */
         template <class ForwardSequenced, class InputSequenced,
                   class BinaryPredicate = ural::equal_to<>>
-        SequenceType<ForwardSequenced>
+        TraversedFrontType<SequenceType<ForwardSequenced>>
         operator()(ForwardSequenced && s1, InputSequenced && s2,
                    BinaryPredicate bin_pred = BinaryPredicate{}) const
         {
