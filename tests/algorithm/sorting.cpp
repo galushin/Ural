@@ -20,6 +20,7 @@
 
 #include <ural/container/vector.hpp>
 #include <ural/numeric/numbers_sequence.hpp>
+#include <ural/sequence/adaptors/cartesian_product.hpp>
 #include <ural/utility/tracers.hpp>
 
 #include <forward_list>
@@ -276,6 +277,31 @@ BOOST_AUTO_TEST_CASE(equal_range_test)
                       r_ural.end() - r_ural.begin());
     BOOST_CHECK(src.begin() == r_ural.traversed_begin());
     BOOST_CHECK(src.end() == r_ural.traversed_end());
+}
+
+BOOST_AUTO_TEST_CASE(equal_range_different_traversed_front)
+{
+    auto const s1 = ural::numbers(1, 9);
+    auto const s2 = ural::numbers(0, 9);
+
+    auto const s = ural::make_cartesian_product_sequence(s1, s2);
+
+    static_assert(!std::is_same<decltype(s), decltype(s.traversed_front())>::value, "");
+
+    assert(ural::is_sorted(s));
+
+    auto const needle = ural::ValueType<decltype(s)>{4, 2};
+
+    auto pos = ural::equal_range(s, needle);
+
+    assert(!!pos);
+    BOOST_CHECK(*pos == needle);
+    BOOST_CHECK_EQUAL(ural::size(pos), 1);
+
+    BOOST_CHECK(pos.base().original() == s);
+
+    assert(!!pos.traversed_front());
+    BOOST_CHECK(pos.traversed_front().front() == s.front());
 }
 
 BOOST_AUTO_TEST_CASE(binary_search_test)

@@ -923,7 +923,7 @@ namespace ural
         эквивалентны @c value в смысле отношения @c cmp.
         */
         template <class Forward, class T, class Compare = ::ural::less<>>
-        SequenceType<Forward>
+        TraversedFrontType<SequenceType<Forward>>
         operator()(Forward && in,
                    T const & value, Compare cmp = Compare()) const
         {
@@ -937,20 +937,42 @@ namespace ural
 
     private:
         template <class Forward, class T, class Compare>
-        static Forward impl(Forward in, T const & value, Compare cmp)
+        TraversedFrontType<Forward>
+        impl(Forward in, T const & value, Compare cmp) const
+        {
+            return this->impl(std::move(in), value, std::move(cmp),
+                              ::ural::make_traversal_tag(in));
+        }
+
+        template <class Forward, class T, class Compare>
+        TraversedFrontType<Forward>
+        impl(Forward in, T const & value, Compare cmp,
+                            forward_traversal_tag) const
         {
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, T const *, Forward>));
 
-            // @todo Оптимизация
+            auto upper = upper_bound_fn{}(in, value, cmp).traversed_front();
+
+            return lower_bound_fn{}(upper, value, cmp);
+        }
+
+        template <class Bidirectional, class T, class Compare>
+        Bidirectional impl(Bidirectional in, T const & value, Compare cmp,
+                                  bidirectional_traversal_tag) const
+        {
+            BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequence<Bidirectional>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, T const *, Bidirectional>));
+
             auto lower = lower_bound_fn{}(in, value, cmp);
             auto upper = upper_bound_fn{}(in, value, cmp);
 
-            auto n_lower = lower.traversed_front().size();
-            auto n_upper = in.size() - upper.traversed_front().size();
+            auto n_lower = ural::size(lower.traversed_front());
+            auto n_upper = ural::size(in) - ural::size(upper.traversed_front());
 
-            in += n_lower;
-            in.pop_back(n_upper);
+            ural::advance(in, n_lower);
+            ural::pop_back_n(in, n_upper);
+
             return in;
         }
     };

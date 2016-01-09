@@ -301,7 +301,7 @@ namespace ural
 
         template <class Sequence>
         static DifferenceType<Sequence>
-        sequence_size(Sequence const & s, random_access_traversal_tag)
+        sequence_size(Sequence const & s, finite_random_access_traversal_tag)
         {
             return s.size();
         }
@@ -405,6 +405,43 @@ namespace ural
             s += n;
         }
     };
+
+    /** @brief Пропуск заданного числа элементов в задней части
+    последовательности
+    */
+    class pop_back_n_fn
+    {
+    public:
+        /** @brief Отбрасывает последние @c n элементов
+        @pre <tt> n <= this->size() </tt>
+        @param s последовательность
+        @param n количество элементов
+        */
+        template <class BidirectionalSequence>
+        void operator()(BidirectionalSequence & x,
+                        DifferenceType<BidirectionalSequence> n) const
+        {
+            this->impl(x, n, make_traversal_tag(x));
+        }
+
+    private:
+        template <class T>
+        void impl(T & x, DifferenceType<T> n, bidirectional_traversal_tag) const
+        {
+            for(; n > 0; -- n)
+            {
+                x.pop_back();
+            }
+        }
+
+        // @todo Покрыть тестом
+        template <class T>
+        void impl(T & x, DifferenceType<T> n, finite_random_access_traversal_tag) const
+        {
+            x.pop_back(n);
+        }
+    };
+
 
     /** @brief Тип функционального объекта для операции продвижения копии
     последовательности на заданное число шагов.
@@ -513,11 +550,14 @@ namespace ural
     public:
         /** @brief Вызывает <tt> s.shrink_front() </tt>
         @param s последовательность
+        @return @c s
         */
         template <class Sequence>
-        void operator()(Sequence & s)
+        Sequence &
+        operator()(Sequence & s) const
         {
             s.shrink_front();
+            return s;
         }
     };
 
@@ -613,10 +653,15 @@ namespace ural
         constexpr auto const & indirect_swap
             = odr_const<ural::details::indirect_swap_fn>;
 
-        /** @brief Функциональный объект для продвижения последовательности на
-        заданное число шагов
+        /** @brief Функциональный объект для пропуска заданного числа элементов
+        в передней части последовательности
         */
         constexpr auto const & advance = odr_const<advance_fn>;
+
+        /** @brief Функциональный объект для пропуска заданного числа элементов
+        в задней части последовательности
+        */
+        constexpr auto const & pop_back_n = odr_const<pop_back_n_fn>;
 
         /** @brief Функциональный объект для операции продвижения копии
         последовательности на заданное число шагов.

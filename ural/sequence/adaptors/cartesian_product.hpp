@@ -69,14 +69,21 @@ namespace ural
         @post <tt> this->base() == make_tuple(ins...) </tt>
         */
         explicit cartesian_product_sequence(Inputs... ins)
-         : bases_{std::move(ins)...}
+         : current_{std::move(::ural::shrink_front(ins))...}
+         , initial_(current_)
         {
-            typedef typename std::tuple_element<0, decltype(bases_)>::type
+            typedef typename std::tuple_element<0, decltype(current_)>::type
                 Front_seq;
             BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Front_seq>));
             BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Front_seq>));
+        }
 
-            this->shrink_fronts(ural::_2);
+        /** @brief Кортеж базовых последовательностей
+        @return Кортеж базовых последовательностей
+        */
+        tuple<Inputs...> const & bases() const
+        {
+            return this->current_;
         }
 
         // Однопроходная последовательность
@@ -85,7 +92,7 @@ namespace ural
         */
         bool operator!() const
         {
-            return !bases_[ural::_1];
+            return !current_[ural::_1];
         }
 
         /** @brief Текущий элемент последовательности
@@ -97,7 +104,7 @@ namespace ural
             auto f = [this](Inputs const & ... args)->reference
                      { return reference((*args)...); };
 
-            return ::ural::apply(f, bases_);
+            return ::ural::apply(f, current_);
         }
 
         /** @brief Переход к следующему элементу
@@ -118,7 +125,7 @@ namespace ural
             auto f = [this](Inputs const & ... args)->cartesian_product_sequence
                      { return cartesian_product_sequence((args.original())...); };
 
-            return ::ural::apply(f, bases_);
+            return ::ural::apply(f, current_);
         }
 
         /** @brief Передняя пройденная часть последовательности
@@ -130,7 +137,10 @@ namespace ural
             return make_delimit_sequence(this->original(), this->front());
         }
 
-        void shrink_front();
+        void shrink_front()
+        {
+            this->shrink_fronts(placeholder<0>{});
+        }
 
     private:
         template <size_t I>
@@ -145,33 +155,37 @@ namespace ural
         void shrink_fronts(ural::integer_sequence<size_t, Is...>)
         {
             using Sink = int[sizeof...(Is)];
-            (void)Sink{(bases_[placeholder<Is>{}].shrink_front(), 0)...};
+            (void)Sink{(current_[placeholder<Is>{}].shrink_front(), 0)...};
         }
 
         void pop_front_impl(placeholder<0>)
         {
-            ++ bases_[ural::_1];
+            ++ current_[ural::_1];
         }
 
         template <size_t I>
         void pop_front_impl(placeholder<I> first)
         {
-            ++ bases_[first];
+            ++ current_[first];
 
-            if(!bases_[first])
+            if(!current_[first])
             {
-                bases_[first] = bases_[first].traversed_front();
+                current_[first] = initial_[first];
                 return this->pop_front_impl(placeholder<I-1>{});
             }
         }
 
     private:
-        tuple<Inputs...> bases_;
+        tuple<Inputs...> current_;
+        tuple<Inputs...> initial_;
     };
 
     template <class... Inputs1, class... Inputs2>
     bool operator==(cartesian_product_sequence<Inputs1...> const & x,
-                    cartesian_product_sequence<Inputs1...> const & y);
+                    cartesian_product_sequence<Inputs1...> const & y)
+    {
+        return x.bases() == y.bases();
+    }
 
     /** @brief Создание последовательности всех возможных кортежей
     @param ins базовые последовательности

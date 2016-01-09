@@ -30,23 +30,21 @@ namespace ural
     {};
 
     struct forward_traversal_tag
-     : single_pass_traversal_tag
+     : virtual single_pass_traversal_tag
     {};
 
     struct bidirectional_traversal_tag
-     : forward_traversal_tag
+     : virtual forward_traversal_tag
     {};
 
     struct random_access_traversal_tag
-     : forward_traversal_tag
+     : virtual forward_traversal_tag
     {};
 
     struct finite_random_access_traversal_tag
-     : bidirectional_traversal_tag
-    {
-    public:
-        constexpr operator random_access_traversal_tag() const;
-    };
+     : virtual random_access_traversal_tag
+     , virtual bidirectional_traversal_tag
+    {};
 
     single_pass_traversal_tag
     decl_common_type(single_pass_traversal_tag, single_pass_traversal_tag);
@@ -59,6 +57,10 @@ namespace ural
 
     random_access_traversal_tag
     decl_common_type(random_access_traversal_tag, random_access_traversal_tag);
+
+    finite_random_access_traversal_tag
+    decl_common_type(finite_random_access_traversal_tag,
+                     finite_random_access_traversal_tag);
 
     /** Итератор последовательностей для интервалов. Основная цель ---
     интеграция с циклом @c for для интервалов. Измерения показывают, что

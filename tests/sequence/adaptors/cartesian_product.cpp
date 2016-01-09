@@ -5,6 +5,7 @@
 #include <set>
 
 #include <boost/test/unit_test.hpp>
+#include "../../defs.hpp"
 
 BOOST_AUTO_TEST_CASE(cartesian_product_sequence_test)
 {
@@ -83,4 +84,27 @@ BOOST_AUTO_TEST_CASE(cartesian_product_sequence_test_forward)
     auto s2_traversed = copy_result[ural::_1].traversed_front();
 
     BOOST_CHECK(ural::equal(s2_traversed, out));
+}
+
+BOOST_AUTO_TEST_CASE(cartesian_product_sequence_test_copy_halfs_with_shrink_front)
+{
+    auto digits = ural::numbers(0, 10);
+    auto s2 = ural::make_cartesian_product_sequence(digits, digits);
+
+    auto const n = 20;
+
+    using Value = ural::ValueType<decltype(s2)>;
+
+    // Копируем в один приём
+    std::vector<Value> r1;
+    ural::copy(s2, r1 | ural::back_inserter);
+
+    // Копируем в два приёма
+    std::vector<Value> r2;
+
+    s2 = ural::copy_n(s2, n, r2 | ural::back_inserter)[ural::_1];
+    s2.shrink_front();
+    ural::copy(s2, r2 | ural::back_inserter);
+
+    BOOST_CHECK(ural::equal(r1, r2));
 }
