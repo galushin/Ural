@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(PE_002_fibonacci_via_pipes_traversed_front)
     auto const n = Integer{4'000'000};
     auto const pred = [n](Integer const & x) { return x >= n; };
 
-    auto s1 = ural::fibonacci_sequence<Integer, ural::use_default, ural::forward_traversal_tag>()
+    auto s1 = ural::fibonacci_sequence<Integer, ural::use_default, ural::forward_cursor_tag>()
             | ural::filtered(ural::is_even);
 
     auto seq = ural::find_if(std::move(s1), pred).traversed_front();
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(PE_002_fibonacci_via_pipes_forward)
     using Integer = long long;
     auto const n = Integer{4'000'000};
 
-    auto seq = ural::fibonacci_sequence<Integer, ural::use_default, ural::forward_traversal_tag>()
+    auto seq = ural::fibonacci_sequence<Integer, ural::use_default, ural::forward_cursor_tag>()
              | ural::filtered(ural::is_even)
              | ural::taken_while([n](Integer const & x) { return x < n; });
 

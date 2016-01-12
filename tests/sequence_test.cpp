@@ -367,9 +367,9 @@ BOOST_AUTO_TEST_CASE(geometric_progression_test)
 BOOST_AUTO_TEST_CASE(arithmetic_progression_concept_check)
 {
     using namespace ural;
-    typedef arithmetic_progression<int, use_default, single_pass_traversal_tag> SP;
-    typedef arithmetic_progression<int, use_default, forward_traversal_tag> Fw;
-    typedef arithmetic_progression<int, use_default, random_access_traversal_tag> RA;
+    typedef arithmetic_progression<int, use_default, single_pass_cursor_tag> SP;
+    typedef arithmetic_progression<int, use_default, forward_cursor_tag> Fw;
+    typedef arithmetic_progression<int, use_default, random_access_cursor_tag> RA;
 
     BOOST_CHECK_LE(sizeof(SP), 2 * sizeof(int));
     BOOST_CHECK_LE(sizeof(Fw), 3 * sizeof(int));
@@ -418,7 +418,7 @@ BOOST_AUTO_TEST_CASE(arithmetic_progression_equality_test)
 BOOST_AUTO_TEST_CASE(arithmetic_progression_single_pass_test_check)
 {
     using Seq = ural::arithmetic_progression<int, ural::use_default,
-                                             ural::single_pass_traversal_tag>;
+                                             ural::single_pass_cursor_tag>;
 
     BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<Seq>));
     BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<Seq>));
@@ -819,7 +819,7 @@ BOOST_AUTO_TEST_CASE(numbers_exhaust_test)
     // Передняя часть
     auto const ns0 = ::ural::numbers(from, to);
     auto ns1 = ns0;
-    ns1.exhaust_front();
+    ural::exhaust_front(ns1);
 
     BOOST_CHECK(ns0 == ns1.traversed_front());
     BOOST_CHECK(!ns1.traversed_back());
@@ -1424,7 +1424,7 @@ BOOST_AUTO_TEST_CASE(delimeted_sequence_regression_87)
     auto const expected = ::ural::make_delimit_sequence(src, value);
 
     auto seq = expected;
-    seq.exhaust_front();
+    ural::exhaust_front(seq);
 
     BOOST_CHECK(expected == seq.traversed_front());
 }
@@ -1629,7 +1629,7 @@ BOOST_AUTO_TEST_CASE(unique_sequence_forward_test)
 
     BOOST_CHECK(ural::is_permutation(us, v_names));
 
-    us.exhaust_front();
+    ural::exhaust_front(us);
 
     BOOST_CHECK(ural::is_permutation(us.traversed_front(), v_names));
 
@@ -1682,7 +1682,7 @@ BOOST_AUTO_TEST_CASE(zip_sequence_exhaust_test)
     auto const z0 = ural::make_zip_sequence(names, values);
 
     auto z_front = z0;
-    z_front.exhaust_front();
+    ural::exhaust_front(z_front);
 
     BOOST_CHECK(!z_front);
     BOOST_CHECK(!z_front.traversed_back());

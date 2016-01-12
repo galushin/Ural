@@ -1642,6 +1642,28 @@ BOOST_AUTO_TEST_CASE(reverse_test)
     BOOST_CHECK(!result.traversed_back());
 }
 
+BOOST_AUTO_TEST_CASE(reverse_pre_bidirectional_test)
+{
+    std::list<int> const src = {1, 2, 3, 4, 6, 7};
+
+    auto pred = +[](int const & x) { return x < 5; };
+
+    static_assert(ural::concepts::CopyAssignable<decltype(pred)>(), "");
+
+    // Первый способ
+    auto x1 = src;
+    auto const r1 = ural::reverse(ural::find_if_not(x1, pred).traversed_front());
+
+    // Второй способ
+    auto x2 = src;
+    auto const r2 = ural::reverse(x2 | ural::taken_while(pred));
+
+    // Сравнение
+    URAL_CHECK_EQUAL_RANGES(x1, x2);
+
+    URAL_CHECK_EQUAL_RANGES(r1.traversed_front(), r2.base().traversed_front());
+}
+
 BOOST_AUTO_TEST_CASE(reversed_reverse_test)
 {
     std::list<int> const src = {1, 2, 3, 4, 5, 6};

@@ -32,6 +32,9 @@
 
 namespace ural
 {
+    template <class T>
+    T decl_common_type(T, T);
+
     /** @brief Класс-характеристика для вычисления общего типа пачки тэгов
     @tparam Types типы-тэги
     */
@@ -52,7 +55,7 @@ namespace ural
     */
     template <class T1, class T2>
     struct common_tag<T1, T2>
-     : declare_type<decltype(::ural::decl_common_type(std::declval<T1>(), std::declval<T2>()))>
+     : declare_type<decltype(decl_common_type(std::declval<T1>(), std::declval<T2>()))>
     {};
 
     /** @brief Специализация для произвольного количества типов
@@ -69,51 +72,53 @@ namespace ural
         typedef typename common_tag<Head, tail_common_type>::type type;
     };
 
-    /** @brief Создание объекта типа категории обхода последовательности
-    @return <tt> typename S::traversal_tag{} </tt>
+    template <class... Types>
+    using common_tag_t = typename common_tag<Types...>::type;
+
+    /** @brief Создание объекта типа категории курсора
+    @return <tt> typename S::cursor_tag{} </tt>
     */
     template <class S>
-    constexpr typename S::traversal_tag
-    make_traversal_tag(S const & )
+    constexpr typename S::cursor_tag
+    make_cursor_tag(S const & )
     {
-        return typename S::traversal_tag{};
+        return typename S::cursor_tag{};
     }
 
     /** @brief Класс-характеристика, оборачивающая @c T в @c with_old_value,
-    если @c Traversal --- forward_traversal_tag или более сильная категория
-    обхода
-    @tparam Traversal желаемая категория обхода
+    если @c CursorTag --- forward_cursor_tag или более сильная категория
+    курсора
+    @tparam CursorTag желаемая категория курсора
     @tparam T тип
     */
-    template <class Traversal, class T>
+    template <class CursorTag, class T>
     struct wrap_with_old_value_if_forward
-     : std::conditional<std::is_convertible<Traversal, forward_traversal_tag>::value,
+     : std::conditional<std::is_convertible<CursorTag, forward_cursor_tag>::value,
                         with_old_value<T>, T>
     {};
 
-    /** @brief Синоним для <tt> wrap_with_old_value_if_forward<Traversal, T>::type </tt>
-    @tparam Traversal желаемая категория обхода
+    /** @brief Синоним для <tt> wrap_with_old_value_if_forward<CursorTag, T>::type </tt>
+    @tparam CursorTag желаемая категория курсора
     @tparam T тип
     */
-    template <class Traversal, class T>
+    template <class CursorTag, class T>
     using wrap_with_old_value_if_forward_t
-        = typename wrap_with_old_value_if_forward<Traversal, T>::type;
+        = typename wrap_with_old_value_if_forward<CursorTag, T>::type;
 
     /** @brief Класс-характеристика, оборачивающая @c T в @c with_old_value,
-    если @c Traversal --- bidirectional_traversal_tag или более сильная
-    категория обхода
-    @tparam Traversal желаемая категория обхода
+    если @c CursorTag --- bidirectional_traversal_tag или более сильная
+    категория
+    @tparam CursorTag желаемая категория курсора
     @tparam T тип
     */
     template <class Traversal, class T>
     struct wrap_with_old_value_if_bidirectional
-     : std::conditional<std::is_convertible<Traversal, bidirectional_traversal_tag>::value
-                        || std::is_convertible<Traversal, random_access_traversal_tag>::value
-                        , with_old_value<T>, T>
+     : std::conditional<std::is_convertible<Traversal, bidirectional_cursor_tag>::value,
+                        with_old_value<T>, T>
     {};
 
     /** @brief Синоним для <tt> wrap_with_old_value_if_bidirectional<Traversal, T>::type </tt>
-    @tparam Traversal желаемая категория обхода
+    @tparam Traversal желаемая категория курсора
     @tparam T тип
     */
     template <class Traversal, class T>
@@ -287,7 +292,7 @@ namespace ural
     private:
         template <class Sequence>
         static DifferenceType<Sequence>
-        sequence_size(Sequence const & s, single_pass_traversal_tag)
+        sequence_size(Sequence const & s, finite_single_pass_cursor_tag)
         {
             DifferenceType<Sequence> n{0};
 
@@ -301,7 +306,7 @@ namespace ural
 
         template <class Sequence>
         static DifferenceType<Sequence>
-        sequence_size(Sequence const & s, finite_random_access_traversal_tag)
+        sequence_size(Sequence const & s, finite_random_access_cursor_tag)
         {
             return s.size();
         }
@@ -323,9 +328,9 @@ namespace ural
         template <class Sequenced>
         DifferenceType<Sequenced>
         dispatch(Sequenced const & s,
-                 void_t<decltype(ural::make_traversal_tag(s))> *) const
+                 void_t<decltype(ural::make_cursor_tag(s))> *) const
         {
-            return this->sequence_size(s, ural::make_traversal_tag(s));
+            return this->sequence_size(s, ural::make_cursor_tag(s));
         }
 
         template <class Sequenced>
@@ -384,13 +389,13 @@ namespace ural
         template <class Sequence>
         void operator()(Sequence & s, DifferenceType<Sequence> n) const
         {
-            return this->impl(s, std::move(n), ural::make_traversal_tag(s));
+            return this->impl(s, std::move(n), ural::make_cursor_tag(s));
         }
 
     private:
         template <class Sequence>
         static void impl(Sequence & s, DifferenceType<Sequence> n,
-                         single_pass_traversal_tag)
+                         single_pass_cursor_tag)
         {
             for(; n > 0; -- n)
             {
@@ -400,7 +405,7 @@ namespace ural
 
         template <class Sequence>
         static void impl(Sequence & s, DifferenceType<Sequence> n,
-                         random_access_traversal_tag)
+                         random_access_cursor_tag)
         {
             s += n;
         }
@@ -421,12 +426,12 @@ namespace ural
         void operator()(BidirectionalSequence & x,
                         DifferenceType<BidirectionalSequence> n) const
         {
-            this->impl(x, n, make_traversal_tag(x));
+            this->impl(x, n, make_cursor_tag(x));
         }
 
     private:
         template <class T>
-        void impl(T & x, DifferenceType<T> n, bidirectional_traversal_tag) const
+        void impl(T & x, DifferenceType<T> n, bidirectional_cursor_tag) const
         {
             for(; n > 0; -- n)
             {
@@ -436,7 +441,7 @@ namespace ural
 
         // @todo Покрыть тестом
         template <class T>
-        void impl(T & x, DifferenceType<T> n, finite_random_access_traversal_tag) const
+        void impl(T & x, DifferenceType<T> n, finite_random_access_cursor_tag) const
         {
             x.pop_back(n);
         }
@@ -522,7 +527,7 @@ namespace ural
         template <class Sequence>
         void operator()(Sequence & s) const
         {
-            s.exhaust_front();
+            return s.exhaust_front();
         }
     };
 

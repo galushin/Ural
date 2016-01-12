@@ -61,9 +61,8 @@ namespace ural
         /// @brief Тип значения
         typedef ValueType<Input> value_type;
 
-        /// @brief Категория обхода
-        typedef typename ural::common_tag<typename Input::traversal_tag,
-                                          forward_traversal_tag>::type traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = common_tag_t<typename Input::cursor_tag, finite_forward_cursor_tag>;
 
         /// @brief Тип указателя
         typedef typename Input::pointer pointer;
@@ -78,7 +77,7 @@ namespace ural
         @post <tt> this->predicate() == BinaryPredicate{} </tt>
         */
         explicit unique_sequence(Input in)
-         : unique_sequence(std::move(in), traversal_tag{})
+         : unique_sequence(std::move(in), cursor_tag{})
         {}
 
         /** @brief Конструктор
@@ -88,7 +87,7 @@ namespace ural
         @post <tt> this->predicate() == pred </tt>
         */
         explicit unique_sequence(Input in, BinaryPredicate pred)
-         : unique_sequence(std::move(in), std::move(pred), traversal_tag{})
+         : unique_sequence(std::move(in), std::move(pred), cursor_tag{})
         {}
 
         // Адаптор последовательности
@@ -100,12 +99,12 @@ namespace ural
         */
         Input const & base() const &
         {
-            return this->base_impl(traversal_tag{});
+            return this->base_impl(cursor_tag{});
         }
 
         Input && base() &&
         {
-            return std::move(this->base_impl(traversal_tag()));
+            return std::move(this->base_impl(cursor_tag()));
         }
         //@}
 
@@ -142,7 +141,7 @@ namespace ural
         void pop_front()
         {
             assert(!!*this);
-            return this->pop_front_impl(traversal_tag{});
+            return this->pop_front_impl(cursor_tag{});
         }
 
         // Прямая последовательность
@@ -178,13 +177,13 @@ namespace ural
         */
         void exhaust_front()
         {
-            current_.exhaust_front();
+            ural::exhaust_front(current_);
             next_ = current_;
         }
 
     private:
         // Конструкторы
-        unique_sequence(Input in, single_pass_traversal_tag)
+        unique_sequence(Input in, single_pass_cursor_tag)
          : Base()
          , current_()
          , next_(std::move(in))
@@ -197,7 +196,7 @@ namespace ural
             }
         }
 
-        unique_sequence(Input in, forward_traversal_tag)
+        unique_sequence(Input in, forward_cursor_tag)
          : Base()
          , current_(std::move(in))
          , next_(current_)
@@ -209,7 +208,7 @@ namespace ural
             }
         }
 
-        unique_sequence(Input in, BinaryPredicate pred, single_pass_traversal_tag)
+        unique_sequence(Input in, BinaryPredicate pred, single_pass_cursor_tag)
          : Base(std::move(pred))
          , current_()
          , next_(std::move(in))
@@ -222,7 +221,7 @@ namespace ural
             }
         }
 
-        unique_sequence(Input in, BinaryPredicate pred, forward_traversal_tag)
+        unique_sequence(Input in, BinaryPredicate pred, forward_cursor_tag)
          : Base(std::move(pred))
          , current_(std::move(in))
          , next_(current_)
@@ -235,22 +234,22 @@ namespace ural
         }
 
         // Базовая последовательность
-        Input & base_impl(single_pass_traversal_tag)
+        Input & base_impl(single_pass_cursor_tag)
         {
             return this->next_;
         }
 
-        Input const & base_impl(single_pass_traversal_tag) const
+        Input const & base_impl(single_pass_cursor_tag) const
         {
             return this->next_;
         }
 
-        Input & base_impl(forward_traversal_tag)
+        Input & base_impl(forward_cursor_tag)
         {
             return this->current_;
         }
 
-        Input const & base_impl(forward_traversal_tag) const
+        Input const & base_impl(forward_cursor_tag) const
         {
             return this->current_;
         }
@@ -264,7 +263,7 @@ namespace ural
         }
 
         // Переход к следующему элементу
-        void pop_front_impl(single_pass_traversal_tag)
+        void pop_front_impl(single_pass_cursor_tag)
         {
             if(!!next_)
             {
@@ -278,7 +277,7 @@ namespace ural
             }
         }
 
-        void pop_front_impl(forward_traversal_tag)
+        void pop_front_impl(forward_cursor_tag)
         {
             current_ = next_;
 
@@ -291,9 +290,8 @@ namespace ural
 
     private:
         typedef optional<value_type> optional_value;
-        typedef std::is_same<traversal_tag, single_pass_traversal_tag>
-            Is_single_pass;
-        typedef typename std::conditional<Is_single_pass::value, optional_value, Input>::type
+        typedef std::is_convertible<cursor_tag, forward_cursor_tag> Is_forward;
+        typedef typename std::conditional<!Is_forward::value, optional_value, Input>::type
             Holder;
 
         Holder current_;

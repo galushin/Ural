@@ -1077,7 +1077,7 @@ namespace details
 
             auto s = ::ural::sequence_fwd<ForwardSequenced>(seq);
 
-            return this->impl(std::move(s), ::ural::make_traversal_tag(s));
+            return this->impl(std::move(s), ::ural::make_cursor_tag(s));
         }
 
     private:
@@ -1108,7 +1108,7 @@ namespace details
         }
 
         template <class ForwardSequence>
-        ForwardSequence impl(ForwardSequence seq, forward_traversal_tag) const
+        ForwardSequence impl(ForwardSequence seq, finite_forward_cursor_tag) const
         {
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<decltype(seq)>));
             BOOST_CONCEPT_ASSERT((concepts::Permutable<decltype(seq)>));
@@ -1129,13 +1129,13 @@ namespace details
 
         template <class BidirectionalSequence>
         static BidirectionalSequence
-        impl(BidirectionalSequence seq, bidirectional_traversal_tag)
+        impl(BidirectionalSequence cur, finite_pre_bidirectional_cursor_tag)
         {
+            ural::exhaust_front(cur);
+            auto seq = cur.traversed_front();
+
             BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequence<decltype(seq)>));
             BOOST_CONCEPT_ASSERT((concepts::Permutable<decltype(seq)>));
-
-            auto result = seq;
-            result.exhaust_front();
 
             for(; !!seq; ++seq)
             {
@@ -1153,7 +1153,7 @@ namespace details
                 seq = seq_next;
             }
 
-            return result;
+            return cur;
         }
     };
 

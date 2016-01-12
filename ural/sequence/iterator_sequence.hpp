@@ -32,13 +32,13 @@ namespace ural
     /// @cond false
     // @todo Автоматическое построение по списку типов
     template <class IteratorTag>
-    struct iterator_tag_to_traversal_tag
+    struct iterator_tag_to_cursor_tag
     {
     private:
-        static single_pass_traversal_tag make(std::input_iterator_tag);
-        static forward_traversal_tag make(std::forward_iterator_tag);
-        static bidirectional_traversal_tag make(std::bidirectional_iterator_tag);
-        static finite_random_access_traversal_tag make(std::random_access_iterator_tag);
+        static finite_input_cursor_tag make(std::input_iterator_tag);
+        static finite_forward_cursor_tag make(std::forward_iterator_tag);
+        static bidirectional_cursor_tag make(std::bidirectional_iterator_tag);
+        static finite_random_access_cursor_tag make(std::random_access_iterator_tag);
 
     public:
         typedef decltype(make(IteratorTag{})) type;
@@ -80,9 +80,8 @@ namespace ural
         typedef typename std::iterator_traits<Iterator>::iterator_category
             iterator_category;
 
-        /// @brief Категория обхода
-        typedef typename iterator_tag_to_traversal_tag<iterator_category>::type
-            traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = typename iterator_tag_to_cursor_tag<iterator_category>::type;
 
         /// @brief Тип политики обработки ошибок
         typedef typename default_helper<Policy, container_checking_throw_policy>::type
@@ -328,7 +327,7 @@ namespace ural
         */
         sentinel const & traversed_end() const
         {
-            return this->traversed_end_impl(traversal_tag{});
+            return this->traversed_end_impl(cursor_tag{});
         }
 
         friend iterator begin(iterator_sequence const & s)
@@ -342,18 +341,18 @@ namespace ural
         }
 
     private:
-        sentinel const & traversed_end_impl(forward_traversal_tag) const
+        sentinel const & traversed_end_impl(forward_cursor_tag) const
         {
             return members_[ural::_2];
         }
 
-        sentinel const & traversed_end_impl(bidirectional_traversal_tag) const
+        sentinel const & traversed_end_impl(bidirectional_cursor_tag) const
         {
             return members_[ural::_2].old_value();
         }
 
-        using Front_type = wrap_with_old_value_if_forward_t<traversal_tag, iterator>;
-        using Back_type = wrap_with_old_value_if_bidirectional_t<traversal_tag, sentinel>;
+        using Front_type = wrap_with_old_value_if_forward_t<cursor_tag, iterator>;
+        using Back_type = wrap_with_old_value_if_bidirectional_t<cursor_tag, sentinel>;
 
         typedef tuple<Front_type, Back_type> Members;
 

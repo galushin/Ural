@@ -26,41 +26,82 @@
 
 namespace ural
 {
-    struct single_pass_traversal_tag
+    template <class T, class... Other>
+    struct cursor_tag_base
+     : virtual Other...
+    {
+        friend T decl_common_type(T, T)
+        {
+            return T{};
+        }
+    };
+
+    struct single_pass_cursor_tag
+     : cursor_tag_base<single_pass_cursor_tag>
     {};
 
-    struct forward_traversal_tag
-     : virtual single_pass_traversal_tag
+    struct input_cursor_tag
+     : cursor_tag_base<input_cursor_tag, single_pass_cursor_tag>
     {};
 
-    struct bidirectional_traversal_tag
-     : virtual forward_traversal_tag
+    struct output_cursor_tag
+     : cursor_tag_base<output_cursor_tag, single_pass_cursor_tag>
     {};
 
-    struct random_access_traversal_tag
-     : virtual forward_traversal_tag
+    struct forward_cursor_tag
+     : cursor_tag_base<forward_cursor_tag, input_cursor_tag>
     {};
 
-    struct finite_random_access_traversal_tag
-     : virtual random_access_traversal_tag
-     , virtual bidirectional_traversal_tag
+    struct pre_bidirectional_cursor_tag
+     : cursor_tag_base<pre_bidirectional_cursor_tag, forward_cursor_tag>
     {};
 
-    single_pass_traversal_tag
-    decl_common_type(single_pass_traversal_tag, single_pass_traversal_tag);
+    struct random_access_cursor_tag
+     : cursor_tag_base<random_access_cursor_tag, forward_cursor_tag>
+    {};
 
-    forward_traversal_tag
-    decl_common_type(forward_traversal_tag, forward_traversal_tag);
+    struct finite_single_pass_cursor_tag
+     : cursor_tag_base<finite_single_pass_cursor_tag, single_pass_cursor_tag>
+    {};
 
-    bidirectional_traversal_tag
-    decl_common_type(bidirectional_traversal_tag, bidirectional_traversal_tag);
+    struct finite_input_cursor_tag
+     : cursor_tag_base<finite_input_cursor_tag, input_cursor_tag, finite_single_pass_cursor_tag>
+    {};
 
-    random_access_traversal_tag
-    decl_common_type(random_access_traversal_tag, random_access_traversal_tag);
+    struct finite_forward_cursor_tag
+     : cursor_tag_base<finite_forward_cursor_tag, forward_cursor_tag, finite_input_cursor_tag>
+    {};
 
-    finite_random_access_traversal_tag
-    decl_common_type(finite_random_access_traversal_tag,
-                     finite_random_access_traversal_tag);
+    struct finite_pre_bidirectional_cursor_tag
+     : cursor_tag_base<finite_pre_bidirectional_cursor_tag,
+                       pre_bidirectional_cursor_tag, finite_forward_cursor_tag>
+    {};
+
+    struct bidirectional_cursor_tag
+     : cursor_tag_base<bidirectional_cursor_tag, finite_pre_bidirectional_cursor_tag>
+    {};
+
+    struct finite_random_access_cursor_tag
+     : cursor_tag_base<finite_random_access_cursor_tag, bidirectional_cursor_tag>
+    {};
+
+    finite_single_pass_cursor_tag
+    decl_finite_cursor_tag(single_pass_cursor_tag);
+
+    finite_forward_cursor_tag
+    decl_finite_cursor_tag(forward_cursor_tag);
+
+    finite_pre_bidirectional_cursor_tag
+    decl_finite_cursor_tag(pre_bidirectional_cursor_tag);
+
+    bidirectional_cursor_tag
+    decl_finite_cursor_tag(bidirectional_cursor_tag);
+
+    finite_random_access_cursor_tag
+    decl_finite_cursor_tag(random_access_cursor_tag);
+
+    template <class Tag>
+    using make_finite_cursor_tag_t = decltype(decl_finite_cursor_tag(std::declval<Tag>()));
 
     /** Итератор последовательностей для интервалов. Основная цель ---
     интеграция с циклом @c for для интервалов. Измерения показывают, что
@@ -92,7 +133,7 @@ namespace ural
 
         typedef typename std::remove_reference<Sequence>::type Sequence_type;
 
-        typedef std::is_same<typename Sequence_type::traversal_tag, single_pass_traversal_tag>
+        typedef std::is_same<typename Sequence_type::cursor_tag, input_cursor_tag>
             is_single_pass_t;
 
     public:

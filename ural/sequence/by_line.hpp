@@ -50,8 +50,8 @@ namespace ural
         /// @brief Тип символа
         typedef typename stream_traits<stream_type>::char_type char_type;
 
-        /// @brief Категория обхода
-        typedef single_pass_traversal_tag traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = finite_input_cursor_tag;
 
         /// @brief Тип значения
         typedef typename stream_traits<stream_type>::string_type value_type;

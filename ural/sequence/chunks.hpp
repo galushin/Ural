@@ -49,8 +49,8 @@ namespace ural
         /// @brief Тип ссылки
         typedef value_type reference;
 
-        /// @brief Категория обхода
-        typedef typename value_type::traversal_tag traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = typename value_type::cursor_tag;
 
         /// @brief Тип расстояния
         using distance_type = DifferenceType<Sequence>;
@@ -92,7 +92,7 @@ namespace ural
         void pop_front()
         {
             auto s = this->front();
-            s.exhaust_front();
+            ural::exhaust_front(s);
             this->mutable_base() = std::move(s).base();
         }
 

@@ -51,8 +51,8 @@ namespace ural
 
     public:
         // Типы
-        /// @brief Категория обхода
-        typedef typename Sequence::traversal_tag traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = typename Sequence::cursor_tag;
 
         /// @brief Тип значения
         typedef Sequence value_type;

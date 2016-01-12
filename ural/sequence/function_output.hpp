@@ -41,8 +41,8 @@ namespace ural
                                     UnaryFunction> Base_class;
     public:
         // Типы
-        /// @brief Категория обхода
-        typedef single_pass_traversal_tag traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = output_cursor_tag;
 
         /// @brief Категория итератора
         typedef std::output_iterator_tag iterator_category;

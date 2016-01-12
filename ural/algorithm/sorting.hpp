@@ -941,15 +941,15 @@ namespace ural
         impl(Forward in, T const & value, Compare cmp) const
         {
             return this->impl(std::move(in), value, std::move(cmp),
-                              ::ural::make_traversal_tag(in));
+                              ::ural::make_cursor_tag(in));
         }
 
         template <class Forward, class T, class Compare>
         TraversedFrontType<Forward>
         impl(Forward in, T const & value, Compare cmp,
-                            forward_traversal_tag) const
+                            finite_forward_cursor_tag) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::FiniteForwardSequence<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, T const *, Forward>));
 
             auto upper = upper_bound_fn{}(in, value, cmp).traversed_front();
@@ -959,7 +959,7 @@ namespace ural
 
         template <class Bidirectional, class T, class Compare>
         Bidirectional impl(Bidirectional in, T const & value, Compare cmp,
-                                  bidirectional_traversal_tag) const
+                                  bidirectional_cursor_tag) const
         {
             BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequence<Bidirectional>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, T const *, Bidirectional>));

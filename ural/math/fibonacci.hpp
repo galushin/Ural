@@ -29,17 +29,17 @@ namespace ural
     /** @brief Последовательность чисел (типа) Фибоначчи
     @tparam Integer целочисленный тип
     @tparam BinaryOperation бинарная операция, используемая в качестве сложения
-    @tparam Traversal категория обхода
+    @tparam CursorTag желаемая категория курсора
     */
     template <class Integer, class BinaryOperation = use_default,
-              class Traversal = use_default>
+              class CursorTag = use_default>
     class fibonacci_sequence
-     : public sequence_base<fibonacci_sequence<Integer, BinaryOperation, Traversal>>
+     : public sequence_base<fibonacci_sequence<Integer, BinaryOperation, CursorTag>>
     {
-        using Inherited = sequence_base<fibonacci_sequence<Integer, BinaryOperation, Traversal>>;
+        using Inherited = sequence_base<fibonacci_sequence<Integer, BinaryOperation, CursorTag>>;
     public:
-        /// @brief Категория обхода
-        using traversal_tag = DefaultedType<Traversal, single_pass_traversal_tag>;
+        /// @brief Категория курсора
+        using cursor_tag = DefaultedType<CursorTag, input_cursor_tag>;
 
         /// @brief Тип значения
         using value_type = Integer;
@@ -161,7 +161,7 @@ namespace ural
         }
 
     private:
-        using Value = wrap_with_old_value_if_forward_t<traversal_tag, value_type>;
+        using Value = wrap_with_old_value_if_forward_t<cursor_tag, value_type>;
 
         tuple<Value, Value, operation_type> data_;
     };

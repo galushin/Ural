@@ -49,9 +49,8 @@ namespace ural
         /// @brief Тип расстояния
         using distance_type = CommonType<DifferenceType<Inputs>...>;
 
-        /// @brief Категория обхода
-        using traversal_tag
-            = typename common_tag<typename Inputs::traversal_tag...>::type;
+        /// @brief Категория курсора
+        using cursor_tag = CommonType<typename Inputs::cursor_tag...>;
 
         // Конструкторы
         /** @brief Конструктор

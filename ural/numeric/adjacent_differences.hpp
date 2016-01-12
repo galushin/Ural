@@ -43,8 +43,8 @@ namespace ural
         /// @brief Тип ссылки
         typedef value_type const & reference;
 
-        /// @brief Категория обхода
-        typedef forward_traversal_tag traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = common_tag_t<typename Input::cursor_tag, finite_forward_cursor_tag>;
 
         /// @brief Тип указателя
         typedef typename Input::pointer pointer;

@@ -95,7 +95,7 @@ namespace ural
         */
         void exhaust_front()
         {
-            return this->mutable_base().exhaust_back();
+            return ural::exhaust_back(this->mutable_base());
         }
 
         // Двусторонняя последовательность
@@ -134,7 +134,7 @@ namespace ural
         */
         void exhaust_back()
         {
-            return this->mutable_base().exhaust_front();
+            return ural::exhaust_front(this->mutable_base());
         }
 
         // Последовательность произвольного доступа

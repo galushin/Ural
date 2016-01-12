@@ -288,11 +288,11 @@ namespace ural
                 seq.pop_front();
                 // Постфиксный инкремент требует создания копий
 
-                value_consumer<ural::single_pass_traversal_tag>() = traversal_tag{};
+                value_consumer<single_pass_cursor_tag>() = cursor_tag{};
             }
         private:
             static Seq seq;
-            typedef typename Seq::traversal_tag traversal_tag;
+            using cursor_tag = typename Seq::cursor_tag;
 
             typedef DifferenceType<Seq> difference_type;
         };
@@ -334,7 +334,7 @@ namespace ural
             /// @brief Проверка неявных интерфейсов
             BOOST_CONCEPT_USAGE(ForwardSequence)
             {
-                value_consumer<ural::forward_traversal_tag>() = traversal_tag{};
+                value_consumer<forward_cursor_tag>() = cursor_tag{};
 
                 BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<Seq>));
 
@@ -354,7 +354,7 @@ namespace ural
             }
 
         private:
-            using traversal_tag = typename Seq::traversal_tag;
+            using cursor_tag = typename Seq::cursor_tag;
             static Seq seq;
         };
 
@@ -370,10 +370,8 @@ namespace ural
             }
 
         private:
-            void reguire(Seq seq)
-            {
-                seq.exhaust_front();
-            }
+            void reguire(Seq)
+            {}
         };
 
         /** @brief Концепция двустороннней последовательности
@@ -395,6 +393,7 @@ namespace ural
                 value_consumer<Seq>() = seq.traversed_back();
 
                 seq.exhaust_back();
+                seq.exhaust_front();
             }
 
         private:

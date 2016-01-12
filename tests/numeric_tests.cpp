@@ -14,6 +14,7 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <ural/sequence/adaptors/assumed_finite.hpp>
 #include <ural/math/primes.hpp>
 #include <ural/format.hpp>
 #include <ural/numeric/matrix.hpp>
@@ -1186,7 +1187,8 @@ BOOST_AUTO_TEST_CASE(PE_131_adjacent_differences_pipe)
     auto dcs = make_arithmetic_progression(1, 1)
              | transformed(cube)
              | adjacent_differenced
-             | taken_while([n_max](Integer const & x) { return x < n_max; });
+             | taken_while([n_max](Integer const & x) { return x < n_max; })
+             | assumed_finite;
 
     auto result = ural::make_set_intersection_sequence(primes, dcs);
 
@@ -1205,7 +1207,8 @@ BOOST_AUTO_TEST_CASE(PE_131_adjacent_differences_pipe_explicit_operation)
     auto dcs = make_arithmetic_progression(Integer{1}, Integer{1})
              | transformed(cube)
              | adjacent_differenced_with(ural::minus<Integer>{})
-             | taken_while([n_max](Integer const & x) { return x < n_max; });
+             | taken_while([n_max](Integer const & x) { return x < n_max; })
+             | assumed_finite;
 
     auto result = ural::make_set_intersection_sequence(primes, dcs);
 

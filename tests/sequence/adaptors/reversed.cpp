@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE(reversed_exhaust_test)
     BOOST_CHECK(ural::is_permutation(xs, xs_reversed));
 
     auto s1 = xs_reversed;
-    s1.exhaust_front();
+    ural::exhaust_front(s1);
 
     BOOST_CHECK(!s1);
     BOOST_CHECK(!s1.traversed_back());

@@ -32,14 +32,15 @@ namespace ural
     значением
     @tparam Number тип числа
     @tparam D тип приращения
+    @tparam CursorTag желаемая категория курсора
     */
     template <class Number, class Step = use_default,
-              class Traversal = use_default>
+              class CursorTag = use_default>
     class numbers_sequence
-     : public sequence_adaptor<numbers_sequence<Number, Step, Traversal>,
-                               taken_exactly_sequence<arithmetic_progression<Number, use_default, Traversal, Step>, std::ptrdiff_t>>
+     : public sequence_adaptor<numbers_sequence<Number, Step, CursorTag>,
+                               taken_exactly_sequence<arithmetic_progression<Number, use_default, CursorTag, Step>, std::ptrdiff_t>>
     {
-        using Progression = arithmetic_progression<Number, use_default, Traversal, Step>;
+        using Progression = arithmetic_progression<Number, use_default, CursorTag, Step>;
         using Taken = taken_exactly_sequence<Progression, std::ptrdiff_t>;
         using Inherited = sequence_adaptor<numbers_sequence, Taken>;
 
@@ -49,7 +50,10 @@ namespace ural
         using step_type = typename Progression::step_type;
 
         /// @brief Тип расстояния
-        typedef std::ptrdiff_t distance_type;
+        using distance_type = std::ptrdiff_t;
+
+        /// @brief Категория курсора
+        using cursor_tag = make_finite_cursor_tag_t<typename Inherited::cursor_tag>;
 
         // Создание, уничтожение, копирование, равенство
         /** @brief Конструктор

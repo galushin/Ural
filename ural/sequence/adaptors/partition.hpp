@@ -42,10 +42,10 @@ namespace ural
     {
     public:
         // Типы
-        /// @brief Категория обхода
-        using traversal_tag = CommonType<forward_traversal_tag,
-                                         typename Output1::traversal_tag,
-                                         typename Output2::traversal_tag>;
+        /// @brief Категория курсора
+        using cursor_tag = common_tag_t<forward_cursor_tag,
+                                        typename Output1::cursor_tag,
+                                        typename Output2::cursor_tag>;
 
         /// @brief Тип расстояния
         typedef CommonType<DifferenceType<Output1>, DifferenceType<Output2>>

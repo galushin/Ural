@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE(chunks_sequence_original_test)
     BOOST_CHECK(cs_2 != cs);
     BOOST_CHECK(cs_2.original() == cs);
 
-    cs.exhaust_front();
+    ural::exhaust_front(cs);
 
     BOOST_CHECK(cs.traversed_front() == cs_2.original());
 }

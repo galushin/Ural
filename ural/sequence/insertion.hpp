@@ -45,8 +45,8 @@ namespace ural
         /// @brief Тип расстояния
         typedef typename default_helper<D, std::ptrdiff_t>::type distance_type;
 
-        /// @brief Категория обхода
-        typedef single_pass_traversal_tag traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = output_cursor_tag;
 
         // Конструкторы
         /** @brief Конструктор
@@ -151,8 +151,8 @@ namespace ural
      : public sequence_base<set_insert_sequence<Container>>
     {
     public:
-        /// @brief Категория обхода
-        typedef single_pass_traversal_tag traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = single_pass_cursor_tag;
 
         /// @brief Тип расстояния
         typedef typename Container::difference_type difference_type;

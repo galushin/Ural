@@ -41,8 +41,8 @@ namespace ural
         }
 
         // Типы
-        /// @brief Категория обхода
-        typedef single_pass_traversal_tag traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = output_cursor_tag;
 
         /// @brief Тип расстояния
         typedef CommonType<difference_type<Outputs>...> distance_type;
