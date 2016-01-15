@@ -591,6 +591,29 @@ BOOST_AUTO_TEST_CASE(inplace_merge_test_10)
     BOOST_CHECK(!result.traversed_back());
 }
 
+BOOST_AUTO_TEST_CASE(inplace_merge_minimalistic)
+{
+    std::list<int> x_std{1, 2, 3, 5, 8, 0, 4, 6, 7, 9};
+    auto x_ural = x_std;
+
+    auto const pos =  x_std.size() / 2;
+
+    // std
+    std::inplace_merge(x_std.begin(), std::next(x_std.begin(), pos), x_std.end());
+
+    // ural
+    auto s = ::ural::sequence(x_ural);
+    ural::advance(s, pos);
+    auto result = ural::inplace_merge(s);
+
+    // Сравнение
+    URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
+
+    BOOST_CHECK(result.original() == ural::sequence(x_ural));
+    BOOST_CHECK(!result);
+    BOOST_CHECK(!result.traversed_back());
+}
+
 // 25.4.5 Операции со множествами на сортированных структурах
 BOOST_AUTO_TEST_CASE(includes_test)
 {
