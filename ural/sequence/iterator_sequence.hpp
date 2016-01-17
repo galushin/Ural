@@ -25,7 +25,6 @@
 #include <ural/sequence/base.hpp>
 #include <ural/tuple.hpp>
 #include <ural/utility.hpp>
-#include <ural/meta/map.hpp>
 
 namespace ural
 {
@@ -47,21 +46,20 @@ namespace ural
 
     /** @brief Последовательность на основе пары итераторов
     @tparam Iterator тип итератора
-    @tparam Sentinel тип стража, то есть объекта, определяющего конец
-    интервала
     @tparam Policy тип политики обработки ошибок
     */
     template <class Iterator,
-              class Sentinel = use_default,
               class Policy = use_default>
     class iterator_sequence
-     : public sequence_base<iterator_sequence<Iterator, Sentinel, Policy>>
+     : public sequence_base<iterator_sequence<Iterator, Policy>>
     {
     public:
+        // Типы
         /// @brief Тип итератора
         typedef Iterator iterator;
 
-        typedef typename default_helper<Sentinel, iterator>::type sentinel;
+        /// @brief Тип стража, то есть объекта определяющего конец интервала
+        using sentinel = iterator;
 
         /// @brief Тип ссылки
         typedef typename std::iterator_traits<Iterator>::reference reference;
@@ -87,6 +85,7 @@ namespace ural
         typedef typename default_helper<Policy, container_checking_throw_policy>::type
             policy_type;
 
+        // Создание, копирование, уничтожение
         /** @brief Конструктор
         @param first итератор, задающий начало интервала
         @param last итератор, задающий конец интервала
@@ -99,10 +98,9 @@ namespace ural
         /** @brief Конструктор на основе совместимой последовательности
         @param seq последовательность
         @post <tt> *this == seq </tt>
-        @todo Оптимизация (rvalue)
         */
-        template <class I1, class S1, class P1>
-        iterator_sequence(iterator_sequence<I1, S1, P1> seq)
+        template <class I1, class P1>
+        iterator_sequence(iterator_sequence<I1, P1> seq)
          : members_(Front_type(std::move(seq).members()[ural::_1]),
                     Back_type(std::move(seq).members()[ural::_2]))
         {}
@@ -112,16 +110,16 @@ namespace ural
         @post <tt> *this == seq </tt>
         @return <tt> *this </tt>
         */
-        template <class I1, class S1, class P1>
+        template <class I1, class P1>
         iterator_sequence &
-        operator=(iterator_sequence<I1, S1, P1> seq)
+        operator=(iterator_sequence<I1, P1> seq)
         {
-            // @todo Оптимизация (rvalue)
             this->members_[ural::_1] = std::move(seq).members()[ural::_1];
             this->members_[ural::_2] = std::move(seq).members()[ural::_2];
             return *this;
         }
 
+        // Последовательность ввода
         /** @brief Проверка исчерпания последовательности
         @return @b true, если в последовательности больше нет элементов,
         иначе --- @b false.
@@ -160,14 +158,14 @@ namespace ural
             ++ ural::get(ural::get(members_, ural::_1));
         }
 
-        // Многопроходная прямая последовательность
+        // Прямая последовательность
         /** @brief Пройденная передная часть последовательности
         @return Пройденная передная часть последовательности
         */
-        iterator_sequence traversed_front() const
+        iterator_sequence
+        traversed_front() const
         {
-            return iterator_sequence{this->traversed_begin(),
-                                     this->begin()};
+            return iterator_sequence{this->traversed_begin(), this->begin()};
         }
 
         /// @brief Отбросить переднюю пройденную часть последовательности
@@ -375,10 +373,10 @@ namespace ural
     @param x левый операнд
     @param y правый операнд
     */
-    template <class Iterator1, class S1, class P1,
-              class Iterator2, class S2, class P2>
-    bool operator==(iterator_sequence<Iterator1, S1, P1> const & x,
-                    iterator_sequence<Iterator2, S2, P2> const & y)
+    template <class Iterator1, class P1,
+              class Iterator2, class P2>
+    bool operator==(iterator_sequence<Iterator1, P1> const & x,
+                    iterator_sequence<Iterator2, P2> const & y)
     {
         return x.members() == y.members();
     }
@@ -387,14 +385,13 @@ namespace ural
     @param first итератор, задающий начало последовательности
     @param last итератор, задающий конец последовательности
     @pre <tt> [first; last) </tt> должен быть действительным интервалом
-    @return <tt> iterator_sequence<Iterator, Sentinel>{first, last} </tt>
+    @return <tt> iterator_sequence<Iterator>{first, last} </tt>
     */
-    template <class Iterator, class Sentinel>
-    iterator_sequence<Iterator, Sentinel>
-    make_iterator_sequence(Iterator first, Sentinel last)
+    template <class Iterator>
+    iterator_sequence<Iterator>
+    make_iterator_sequence(Iterator first, Iterator last)
     {
-        return iterator_sequence<Iterator, Sentinel>(std::move(first),
-                                                     std::move(last));
+        return iterator_sequence<Iterator>(std::move(first), std::move(last));
     }
 }
 // namespace ural

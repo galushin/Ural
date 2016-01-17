@@ -44,8 +44,7 @@ BOOST_AUTO_TEST_CASE(reversed_iterators_to_sequence_test)
 
     auto rs = ural::make_iterator_sequence(r_begin, r_end);
 
-    typedef ural::reverse_sequence<ural::iterator_sequence<decltype(xs.begin()),
-                                                           decltype(xs.end())>>
+    typedef ural::reverse_sequence<ural::iterator_sequence<decltype(xs.begin())>>
         RSequence;
 
     static_assert(std::is_same<decltype(rs), RSequence>::value, "");
