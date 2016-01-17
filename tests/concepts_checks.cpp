@@ -14,19 +14,25 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <boost/test/unit_test.hpp>
-
-#include "defs.hpp"
-
-#include <ural/sequence/all.hpp>
-#include <ural/math.hpp>
-#include <ural/archetypes.hpp>
 #include <ural/algorithm.hpp>
+#include <ural/archetypes.hpp>
+#include <ural/container/vector.hpp>
+#include <ural/math.hpp>
+#include <ural/sequence/all.hpp>
+#include <ural/type_traits.hpp>
 
+#include <deque>
 #include <forward_list>
 #include <list>
 #include <map>
+#include <set>
 #include <vector>
+#include <unordered_set>
+#include <unordered_map>
+
+#include <boost/mpl/list.hpp>
+#include <boost/test/unit_test.hpp>
+#include "defs.hpp"
 
 BOOST_AUTO_TEST_CASE(archetype_check)
 {
@@ -331,4 +337,37 @@ BOOST_AUTO_TEST_CASE(writable_uniqued_concept_checks)
     BOOST_CONCEPT_ASSERT((Writable<decltype(s_ra), Type>));
 
     BOOST_CHECK(true);
+}
+
+namespace
+{
+    using Containers = boost::mpl::list<std::array<int, 7>,
+                                        std::vector<int>, std::deque<int>,
+                                        std::forward_list<int>,
+                                        std::list<int>,
+                                        std::set<int>,
+                                        std::map<int, std::string>,
+                                        std::multiset<int>,
+                                        std::multimap<int, std::string>,
+                                        std::unordered_set<int>,
+                                        std::unordered_map<int, std::string>,
+                                        std::unordered_multiset<int>,
+                                        std::unordered_multimap<int, std::string>,
+                                        std::string,
+                                        ural::vector<std::string>>;
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(is_container_check_true, Container, Containers)
+{
+    static_assert(ural::experimental::is_container<Container>::value, "Must be container!");
+    static_assert(ural::experimental::is_container_v<Container>, "Must be container!");
+    BOOST_CHECK(ural::experimental::is_container<Container>::value);
+
+    static_assert(!ural::experimental::is_container<int>::value, "Must not be container!");
+    static_assert(!ural::experimental::is_container_v<int>, "Must not be container!");
+
+    static_assert(!ural::experimental::is_container<std::function<int(double)>>::value,
+                  "Must not be container!");
+    static_assert(!ural::experimental::is_container<ural::SequenceType<Container>>::value,
+                  "Must not be container!");
 }

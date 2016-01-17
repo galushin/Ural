@@ -25,6 +25,8 @@
 
 namespace ural
 {
+inline namespace v0
+{
     /** @brief "Отрицание" к <tt> std::enable_if </tt>
     @tparam Flag булево значение
     @tparam T тип
@@ -58,37 +60,41 @@ namespace ural
     */
     template <class T>
     using decay_t = typename std::decay<T>::type;
+}
+// namespace v0
 
-    /// @cond false
-    namespace details
-    {
-        template <class T, class U>
-        std::integral_constant<bool, false>
-        is_assignable_helper(...);
+/// @cond false
+namespace details
+{
+    template <class T, class U>
+    std::integral_constant<bool, false>
+    is_assignable_helper(...);
 
-        template <class T, class U>
-        std::integral_constant<bool, true>
-        is_assignable_helper(ural::declare_type<decltype(std::declval<T>() = std::declval<U>())> *);
+    template <class T, class U>
+    std::integral_constant<bool, true>
+    is_assignable_helper(ural::declare_type<decltype(std::declval<T>() = std::declval<U>())> *);
 
-        template <class T>
-        std::false_type
-        has_pre_increment_helper(...);
+    template <class T>
+    std::false_type
+    has_pre_increment_helper(...);
 
-        template <class T>
-        std::true_type
-        has_pre_increment_helper(ural::declare_type<decltype(++std::declval<T&>())> *);
+    template <class T>
+    std::true_type
+    has_pre_increment_helper(ural::declare_type<decltype(++std::declval<T&>())> *);
 
-        template <class T>
-        std::false_type
-        has_pre_decrement_helper(...);
+    template <class T>
+    std::false_type
+    has_pre_decrement_helper(...);
 
-        template <class T>
-        std::true_type
-        has_pre_decrement_helper(ural::declare_type<decltype(--std::declval<T&>())> *);
-    }
-    // namespace details
-    /// @endcond
+    template <class T>
+    std::true_type
+    has_pre_decrement_helper(ural::declare_type<decltype(--std::declval<T&>())> *);
+}
+// namespace details
+/// @endcond
 
+inline namespace v0
+{
     /** @brief Класс-характеристика, проверяющая, можно ли присвоить объекту
     типа @c T значение типа @c U.
     @tparam T тип левого операнда
@@ -155,6 +161,50 @@ namespace ural
      : declare_type<T &>
     {};
     //@}
+}
+// namespace v0
+
+namespace experimental
+{
+    template <class T, class = void>
+    struct is_range
+     : std::false_type
+    {};
+
+    template <class T>
+    struct is_range<T, void_t<decltype(std::declval<T&>().begin())>>
+     : std::true_type
+    {};
+
+    template <class T, class = void>
+    struct is_cv_invariant_range
+     : std::false_type
+    {};
+
+    template <class T>
+    struct is_cv_invariant_range<T, void_t<decltype(std::declval<T&>().begin()), decltype(std::declval<T const&>().begin())>>
+     : std::is_same<decltype(std::declval<T&>().begin()), decltype(std::declval<T const&>().begin())>
+    {};
+
+    template <class T, class = void>
+    struct has_allocator_type
+     : std::false_type
+    {};
+
+    template <class T>
+    struct has_allocator_type<T, ural::void_t<typename T::allocator_type>>
+     : std::true_type
+    {};
+
+    template <class T>
+    struct is_container
+     : std::integral_constant<bool, is_range<T>::value && (has_allocator_type<T>::value || !is_cv_invariant_range<T>::value)>
+    {};
+
+    template <class T>
+    constexpr bool const is_container_v = is_container<T>::value;
+}
+// namespace experimental
 }
 // namespace ural
 
