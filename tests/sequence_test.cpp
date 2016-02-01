@@ -1582,7 +1582,7 @@ BOOST_AUTO_TEST_CASE(chunks_rvalue_base)
     std::string const source_2(source);
 
     auto s1 = ural::sequence(source_2);
-    auto so = ural::make_chunks_sequence(std::move(s1), 5);
+    auto so = ural::experimental::make_chunks_sequence(std::move(s1), 5);
     auto s2 = std::move(so).base();
 
     std::string str;

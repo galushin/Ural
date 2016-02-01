@@ -29,6 +29,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Адаптор последовательности, разделяющий её на
     подпоследовательности одинаковой длины (кроме, возможно, последней).
     @tparam Sequence базовая последовательность, должна быть как минимум
@@ -190,14 +192,17 @@ namespace ural
 
     namespace
     {
-        /// @brief Функциональный объект создания @c chunk_sequence
-        auto const & make_chunks_sequence = odr_const<make_chunks_sequence_fn>;
+    /// @brief Функциональный объект создания @c chunk_sequence
+    constexpr auto const & make_chunks_sequence = odr_const<make_chunks_sequence_fn>;
 
-        /** @brief Функциональный объект для создания @c chunk_sequence в
-        конвейерном стиле
-        */
-        auto const & chunked = odr_const<pipeable_maker<make_chunks_sequence_fn>>;
+    /** @brief Функциональный объект для создания @c chunk_sequence в
+    конвейерном стиле
+    */
+    constexpr auto const & chunked = odr_const<pipeable_maker<make_chunks_sequence_fn>>;
     }
+    //namespace
+}
+// namespace experimental
 }
 // namespace ural
 

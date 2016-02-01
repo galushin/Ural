@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(chunks_sequence_test)
     typedef ural::ValueType<Source> Value;
     std::vector<std::vector<Value>> expected { {1, 2, 3}, {4, 5, 6}, {7}};
 
-    auto ch = ::ural::make_chunks_sequence(src, 3);
+    auto ch = ::ural::experimental::make_chunks_sequence(src, 3);
 
     BOOST_CONCEPT_ASSERT((::ural::concepts::ForwardSequence<decltype(ch)>));
 
@@ -61,9 +61,9 @@ BOOST_AUTO_TEST_CASE(chunks_sequence_equality_test)
     auto const n1 = 3;
     auto const n2 = n1 + 1;
 
-    auto const s01 = src0 | ural::chunked(n1);
-    auto const s11 = src1 | ural::chunked(n1);
-    auto const s12 = src1 | ural::chunked(n2);
+    auto const s01 = src0 | ural::experimental::chunked(n1);
+    auto const s11 = src1 | ural::experimental::chunked(n1);
+    auto const s12 = src1 | ural::experimental::chunked(n2);
 
     BOOST_CHECK(s01 == s01);
     BOOST_CHECK(s11 == s11);
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(chunks_sequence_original_test)
 {
     auto const seq = ural::numbers(1, 22);
 
-    auto cs = seq | ural::chunked(3);
+    auto cs = seq | ural::experimental::chunked(3);
 
     auto const n = ural::size(cs);
 
@@ -97,7 +97,7 @@ BOOST_AUTO_TEST_CASE(chunks_sequence_traversed_front_test)
 {
     auto const seq = ural::make_arithmetic_progression(1, 3);
 
-    auto cs = seq | ural::chunked(3);
+    auto cs = seq | ural::experimental::chunked(3);
 
     std::vector<int> v1(13, -1);
 
@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE(chunks_sequence_traversed_front_test)
 BOOST_AUTO_TEST_CASE(chunks_sequence_random_access)
 {
     auto const xs = ural::numbers(1, 23) | ural::to_container<std::vector>{};
-    auto seq = xs | ural::chunked(3);
+    auto seq = xs | ural::experimental::chunked(3);
 
     BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(seq)>));
 
@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(chunks_sequence_random_access)
     BOOST_CHECK(ural::equal(seq[1], ural::numbers(4, 7)));
 
     BOOST_CHECK_EQUAL(static_cast<size_t>(seq.size()), xs.size() / seq.chunk_size() + 1);
-    BOOST_CHECK_EQUAL(static_cast<size_t>((xs | ural::chunked(2)).size()),
+    BOOST_CHECK_EQUAL(static_cast<size_t>((xs | ural::experimental::chunked(2)).size()),
                       xs.size() / 2);
 
     auto s2 = seq + 2;

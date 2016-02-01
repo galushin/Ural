@@ -129,8 +129,8 @@ BOOST_AUTO_TEST_CASE(c_array_to_sequence)
 
     auto s = ural::sequence(xs);
 
-    auto const sum_std = std::accumulate(xs, xs + sizeof(xs) / sizeof(xs[0]), 0.0);
-    auto const sum_ural = ural::accumulate(s, 0.0);
+    auto const sum_std = std::accumulate(xs, xs + sizeof(xs) / sizeof(xs[0]), 0);
+    auto const sum_ural = ural::accumulate(s, 0);
 
     BOOST_CHECK_EQUAL(sum_std, sum_ural);
 }
