@@ -48,8 +48,8 @@ namespace ural
         /// @brief Тип расстояния
         using distance_type = DifferenceType<Sequence>;
 
-        /// @brief Категория обхода
-        using traversal_tag = typename Sequence::traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = typename Sequence::cursor_tag;
 
         /// @brief Тип указателя
         using pointer = typename Sequence::pointer;
@@ -135,7 +135,7 @@ namespace ural
         */
         void exhaust_front()
         {
-            return this->mutable_base().exhaust_front();
+            return ural::exhaust_front(this->mutable_base());
         }
 
         // Двусторонняя последовательность

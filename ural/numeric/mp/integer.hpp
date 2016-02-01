@@ -198,8 +198,8 @@ namespace ural
      : public ural::sequence_base<digits_sequence<IntType, radix>>
     {
     public:
-        /// @brief Категорию обхода
-        typedef ural::single_pass_traversal_tag traversal_tag;
+        /// @brief Категорию курсора
+        using cursor_tag = input_cursor_tag;
 
         /// @brief Тип значения
         typedef digit<radix> value_type;

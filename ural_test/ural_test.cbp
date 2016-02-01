@@ -191,6 +191,7 @@
 		<Unit filename="../ural/random.hpp" />
 		<Unit filename="../ural/random/c_rand_engine.hpp" />
 		<Unit filename="../ural/sequence/adaptor.hpp" />
+		<Unit filename="../ural/sequence/adaptors/assumed_finite.hpp" />
 		<Unit filename="../ural/sequence/adaptors/assumed_infinite.hpp" />
 		<Unit filename="../ural/sequence/adaptors/cartesian_product.hpp" />
 		<Unit filename="../ural/sequence/adaptors/delimit.hpp" />

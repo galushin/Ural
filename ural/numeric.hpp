@@ -319,8 +319,8 @@ namespace ural
      : public sequence_base<convolution_sequence<RASequence1, RASequence2> >
     {
     public:
-        /// @brief Категория обхода
-        typedef forward_traversal_tag traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = finite_forward_cursor_tag;
 
         /// @brief Тип расстояния
         typedef CommonType<DifferenceType<RASequence1>,

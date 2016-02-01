@@ -100,7 +100,7 @@ namespace
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(functional_is_transparent_check, F, Transparent_functions)
 {
-    using IT = typename F::is_transparent;
+    static_assert(ural::has_is_transparent_type<F>::value, "");
 
     BOOST_CHECK(true);
 }

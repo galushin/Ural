@@ -63,9 +63,9 @@ namespace ural
         }
 
         // Типы
-        /// @brief Категория обхода
-        using traversal_tag = CommonType<forward_traversal_tag,
-                                         typename Sequence::traversal_tag>;
+        /// @brief Категория курсора
+        using traversal_tag = CommonType<finite_forward_cursor_tag,
+                                         typename Sequence::cursor_tag>;
 
         // Создание, копирование, присваивание
         /** @brief Конструктор

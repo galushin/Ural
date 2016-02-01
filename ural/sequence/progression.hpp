@@ -83,21 +83,21 @@ namespace ural
     /** @brief Арифметическая прогрессия
     @tparam Additive тип значений
     @tparam Plus операция, используемая в качестве сложения
-    @tparam Traversal категория обхода
+    @tparam CursorTag категория курсора
     @tparam Step тип шага
     */
     template <class Additive,
               class Plus = use_default,
-              class Traversal = use_default,
+              class CursorTag = use_default,
               class Step = use_default>
     class arithmetic_progression
-     : public sequence_base<arithmetic_progression<Additive, Plus, Traversal, Step>,
+     : public sequence_base<arithmetic_progression<Additive, Plus, CursorTag, Step>,
                             FunctionType<DefaultedType<Plus, plus<>>>>
     {
         using Base = sequence_base<arithmetic_progression,
                                    FunctionType<DefaultedType<Plus, plus<>>>>;
 
-        static_assert(!std::is_same<Traversal, bidirectional_traversal_tag>::value,
+        static_assert(!std::is_same<CursorTag, bidirectional_cursor_tag>::value,
                       "Infinite sequence can't be bidirectional");
 
     public:
@@ -125,10 +125,11 @@ namespace ural
         /// @brief Тип расстояния
         using distance_type = std::ptrdiff_t;
 
-        /** @note Проблема в том, что при произвольном доступе возвращается
+        /** @brief Категория курсора
+        @note Проблема в том, что при произвольном доступе возвращается
         вычисленное значение, а не ссылка.
         */
-        using traversal_tag = DefaultedType<Traversal, random_access_traversal_tag>;
+        using cursor_tag = DefaultedType<CursorTag, random_access_cursor_tag>;
 
         /// @brief Тип указателя
         typedef value_type const * pointer;
@@ -264,7 +265,7 @@ namespace ural
 
     private:
         using First_type
-            = wrap_with_old_value_if_forward_t<traversal_tag, value_type>;
+            = wrap_with_old_value_if_forward_t<cursor_tag, value_type>;
 
         First_type first_;
         step_type step_;

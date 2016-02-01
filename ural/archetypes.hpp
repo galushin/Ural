@@ -94,8 +94,8 @@ namespace archetypes
         /// @brief Тип для представления расстояния
         typedef DefaultedType<D, std::ptrdiff_t> distance_type;
 
-        /// @brief Тэг категории обхода
-        typedef single_pass_traversal_tag traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = input_cursor_tag;
 
         /** @brief Проверка исчерпания последовательности
         @return @b true

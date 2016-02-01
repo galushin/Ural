@@ -29,6 +29,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Адаптор последовательности, разделяющий её на
     подпоследовательности одинаковой длины (кроме, возможно, последней).
     @tparam Sequence базовая последовательность, должна быть как минимум
@@ -49,8 +51,8 @@ namespace ural
         /// @brief Тип ссылки
         typedef value_type reference;
 
-        /// @brief Категория обхода
-        typedef typename value_type::traversal_tag traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = typename value_type::cursor_tag;
 
         /// @brief Тип расстояния
         using distance_type = DifferenceType<Sequence>;
@@ -92,7 +94,7 @@ namespace ural
         void pop_front()
         {
             auto s = this->front();
-            s.exhaust_front();
+            ural::exhaust_front(s);
             this->mutable_base() = std::move(s).base();
         }
 
@@ -190,14 +192,17 @@ namespace ural
 
     namespace
     {
-        /// @brief Функциональный объект создания @c chunk_sequence
-        auto const & make_chunks_sequence = odr_const<make_chunks_sequence_fn>;
+    /// @brief Функциональный объект создания @c chunk_sequence
+    constexpr auto const & make_chunks_sequence = odr_const<make_chunks_sequence_fn>;
 
-        /** @brief Функциональный объект для создания @c chunk_sequence в
-        конвейерном стиле
-        */
-        auto const & chunked = odr_const<pipeable_maker<make_chunks_sequence_fn>>;
+    /** @brief Функциональный объект для создания @c chunk_sequence в
+    конвейерном стиле
+    */
+    constexpr auto const & chunked = odr_const<pipeable_maker<make_chunks_sequence_fn>>;
     }
+    //namespace
+}
+// namespace experimental
 }
 // namespace ural
 

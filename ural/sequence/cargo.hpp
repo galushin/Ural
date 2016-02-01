@@ -58,8 +58,8 @@ namespace ural
 
     public:
         // Типы
-        /// @brief Категория обхода
-        typedef typename Sequence::traversal_tag traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = typename Sequence::cursor_tag;
 
         /// @brief Тип ссылки
         typedef typename Sequence::reference reference;
@@ -153,7 +153,7 @@ namespace ural
         */
         void exhaust_front()
         {
-            return this->members_[ural::_1].exhaust_front();
+            return ural::exhaust_front(this->members_[ural::_1]);
         }
 
         // Двусторонняя последовательность

@@ -58,8 +58,8 @@ namespace ural
         /// @brief Тип расстояния
         typedef typename default_helper<D, std::ptrdiff_t>::type distance_type;
 
-        /// @brief Категория обхода
-        typedef single_pass_traversal_tag traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = input_cursor_tag;
 
         /// @brief Тип указателя
         typedef typename std::remove_reference<reference>::type * pointer;

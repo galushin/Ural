@@ -44,8 +44,7 @@ BOOST_AUTO_TEST_CASE(reversed_iterators_to_sequence_test)
 
     auto rs = ural::make_iterator_sequence(r_begin, r_end);
 
-    typedef ural::reverse_sequence<ural::iterator_sequence<decltype(xs.begin()),
-                                                           decltype(xs.end())>>
+    typedef ural::reverse_sequence<ural::iterator_sequence<decltype(xs.begin())>>
         RSequence;
 
     static_assert(std::is_same<decltype(rs), RSequence>::value, "");
@@ -69,7 +68,7 @@ BOOST_AUTO_TEST_CASE(reversed_exhaust_test)
     BOOST_CHECK(ural::is_permutation(xs, xs_reversed));
 
     auto s1 = xs_reversed;
-    s1.exhaust_front();
+    ural::exhaust_front(s1);
 
     BOOST_CHECK(!s1);
     BOOST_CHECK(!s1.traversed_back());

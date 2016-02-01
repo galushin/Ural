@@ -103,8 +103,8 @@ namespace ural
         /// @brief Тип указателя
         typedef value_type const * pointer;
 
-        /// @brief Категория обхода
-        typedef single_pass_traversal_tag traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = finite_single_pass_cursor_tag;
 
         /// @brief Тип расстояния
         typedef typename istream_type::off_type distance_type;
@@ -232,8 +232,8 @@ namespace ural
         typedef typename default_helper<OStream, std::ostream>::type Base_type;
     public:
         // Типы
-        /// @brief Категория обхода
-        typedef single_pass_traversal_tag traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = output_cursor_tag;
 
         /// @brief Тип потока вывода
         typedef typename std::remove_reference<Base_type>::type ostream_type;

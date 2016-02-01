@@ -1045,7 +1045,7 @@ namespace ural
 
             auto s = ural::sequence_fwd<InputSequence>(seq);
 
-            typedef typename decltype(s)::traversal_tag Category;
+            using Category = typename decltype(s)::cursor_tag;
 
             return this->insert_impl(position - this->cbegin(),
                                      std::move(s), Category{});
@@ -1178,9 +1178,8 @@ namespace ural
 
     private:
         template <class InputSequence>
-        iterator insert_impl(size_type index,
-                             InputSequence seq,
-                             single_pass_traversal_tag)
+        iterator insert_impl(size_type index, InputSequence seq,
+                             finite_single_pass_cursor_tag)
         {
             auto const old_size = this->size();
 
@@ -1196,12 +1195,12 @@ namespace ural
         template <class InputSequence>
         iterator insert_impl(size_type index,
                              InputSequence seq,
-                             forward_traversal_tag)
+                             finite_forward_cursor_tag)
         {
             this->reserve(this->size() + ural::size(seq));
 
             return this->insert_impl(index, std::move(seq),
-                                     single_pass_traversal_tag{});
+                                     finite_single_pass_cursor_tag{});
         }
 
     private:

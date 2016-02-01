@@ -108,9 +108,9 @@ namespace ural
         /// @brief Тип указателя
         typedef value_type const * pointer;
 
-        // @todo усилить категорию обхода до прямой
-        /// @brief Категория обхода
-        typedef single_pass_traversal_tag traversal_tag;
+        // @todo усилить категорию до прямой
+        /// @brief Категория курсора
+        using cursor_tag = finite_input_cursor_tag;
 
         /// @brief Тип расстояния
         typedef typename default_helper<D, std::intmax_t>::type distance_type;

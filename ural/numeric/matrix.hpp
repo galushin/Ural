@@ -210,17 +210,17 @@ namespace ural
 
     /** @brief Последовательность строк матрицы
     @tparam Matrix тип матрицы
-    @tparam Traversal категория обхода
+    @tparam CursorTag категория курсора
     */
-    template <class Matrix, class Traversal = forward_traversal_tag>
+    template <class Matrix, class CursorTag = finite_forward_cursor_tag>
     class matrix_by_rows_sequence
-     : public ural::sequence_base<matrix_by_rows_sequence<Matrix, Traversal>>
+     : public ural::sequence_base<matrix_by_rows_sequence<Matrix, CursorTag>>
     {
         typedef typename Matrix::size_type size_type;
     public:
         // Типы
-        /// @brief Категория обхода
-        typedef Traversal traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = CursorTag;
 
         /// @brief Тип значения
         typedef boost::numeric::ublas::matrix_row<Matrix> value_type;
@@ -287,7 +287,7 @@ namespace ural
         }
 
     private:
-        using Row_type = wrap_with_old_value_if_forward_t<traversal_tag, size_type>;
+        using Row_type = wrap_with_old_value_if_forward_t<cursor_tag, size_type>;
 
         std::reference_wrapper<Matrix> m_;
         size_type end_;

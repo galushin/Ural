@@ -48,8 +48,8 @@ namespace ural
         using Base = sequence_adaptor<take_sequence<Sequence, Size>, Sequence>;
     public:
         // Типы
-        /// @brief Категория обхода
-        using typename Base::traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = make_finite_cursor_tag_t<typename Base::cursor_tag>;
 
         /// @brief Тип расстояния
         using typename Base::distance_type;
@@ -155,7 +155,7 @@ namespace ural
         }
 
     private:
-        using Count_type = wrap_with_old_value_if_forward_t<traversal_tag, Size>;
+        using Count_type = wrap_with_old_value_if_forward_t<cursor_tag, Size>;
 
         Count_type count_;
     };

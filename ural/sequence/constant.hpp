@@ -43,15 +43,16 @@ namespace ural
 
     /** @brief Последовательность, состаящая из одинаковых элементов.
     @tparam T Тип элементов
+    @tparam CursorTag категория курсора
     @tparam D Тип расстояния
     @todo Настройка структуры и интерфейса в зависимости от категории обхода
     Здесь мы встречаемся с ситуацией, когда для реализации операций
     прямой последовательности нужны данные, которые не требуются операциям
     последовательности произвольного доступа (количество пройденных элементов)
     */
-    template <class T, class Traversal = use_default, class D = use_default>
+    template <class T, class CursorTag = use_default, class D = use_default>
     class constant_sequence
-     : public sequence_base<constant_sequence<T, Traversal, D>>
+     : public sequence_base<constant_sequence<T, CursorTag, D>>
     {
         /** @brief Оператор "равно"
         @param x, y аргументы
@@ -74,8 +75,8 @@ namespace ural
         /// @brief Тип расстояния
         using distance_type = DefaultedType<D, std::intmax_t>;
 
-        /// @brief Категория обхода
-        using traversal_tag = DefaultedType<Traversal, single_pass_traversal_tag>;
+        /// @brief Категория курсора
+        using cursor_tag = DefaultedType<CursorTag, input_cursor_tag>;
 
         /// @brief Тип указателя
         typedef value_type const * pointer;
@@ -144,7 +145,7 @@ namespace ural
 
     private:
         constexpr static auto const is_forward
-            = std::is_convertible<traversal_tag, forward_traversal_tag>::value;
+            = std::is_convertible<cursor_tag, forward_cursor_tag>::value;
 
         using Distance = typename std::conditional<is_forward, distance_type,
                                                    always_zero_int_type>::type;

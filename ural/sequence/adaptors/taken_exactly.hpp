@@ -81,8 +81,7 @@ namespace ural
     последовательности заданное число элементов.
     @tparam Sequence базовая последовательность
     @tparam Distance тип количества элементов
-    @tparam Traversal категория обхода
-    @todo Правильный алгоритм вычисление категории обхода
+    @todo Правильный алгоритм вычисление категории курсора
     @todo Оптимизация размера
     @todo оптимизация taken_(exactly)(n1) | taken_(exactly)(n2)
     */
@@ -94,8 +93,8 @@ namespace ural
 
     public:
         // Типы
-        /// @brief Категория обхода
-        using typename Inherited::traversal_tag;
+        /// @brief Категория курсора
+        using typename Inherited::cursor_tag;
 
         /// @brief Тип расстояния
         using distance_type = Distance;

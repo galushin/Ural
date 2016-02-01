@@ -35,7 +35,6 @@ namespace ural
     @note Идея "зациклить" все последовательности, кроме первой, кажется
     соблазнительной, но, к сожалению, это невозможно, так как требуется
     обнаружение "переполнения" для переноса разрядов.
-    @todo Усилить категорию обхода
     */
     template <class... Inputs>
     class cartesian_product_sequence
@@ -46,9 +45,9 @@ namespace ural
         /// @brief Тип ссылки
         typedef tuple<typename Inputs::reference...> reference;
 
-        /// @brief Категория обхода
-        using traversal_tag
-            = typename ural::common_tag<forward_traversal_tag, typename Inputs::traversal_tag...>::type;
+        /// @brief Категория курсора
+        using cursor_tag
+            = common_tag_t<finite_forward_cursor_tag, typename Inputs::cursor_tag...>;
 
         /// @brief Тип значения
         typedef tuple<ValueType<Inputs>...> value_type;

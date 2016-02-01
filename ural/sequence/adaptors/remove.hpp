@@ -31,7 +31,7 @@ namespace ural
     предикату.
     Если базовая последовательность является однопроходной, то
     данная последовательность так же будет однопроходной. В остальных случаях
-    категория обхода --- прямая (многопроходная).
+    категория курсора --- прямая (многопроходная).
     Категория произвольного доступа не может быть реализована, так как размер
     последовательности невозможно узнать, не посетив все элементы.
     Категория двусторонней последовательности требует дополнительных затрат
@@ -54,9 +54,8 @@ namespace ural
 
     public:
         // Типы
-        /// @brief Категория обхода
-        typedef CommonType<typename Input::traversal_tag, forward_traversal_tag>
-            traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = common_tag_t<typename Input::cursor_tag, finite_forward_cursor_tag>;
 
         // Конструкторы
         /** @brief Конструктор
@@ -172,9 +171,8 @@ namespace ural
 
     public:
         // Типы
-        /// @brief Категория обхода
-        typedef CommonType<typename Input::traversal_tag, forward_traversal_tag>
-            traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = CommonType<typename Input::cursor_tag, finite_forward_cursor_tag>;
 
         // Конструкторы
         /** @brief Конструктор

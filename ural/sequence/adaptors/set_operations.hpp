@@ -78,10 +78,10 @@ namespace ural
         /// @brief Тип значения
         typedef CommonType<ValueType<Input1>, ValueType<Input2>> value_type;
 
-        /// @brief Категория обхода
-        typedef typename common_tag<typename Input1::traversal_tag,
-                                    typename Input2::traversal_tag,
-                                    forward_traversal_tag>::type traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = CommonType<typename Input1::cursor_tag,
+                                      typename Input2::cursor_tag,
+                                      finite_forward_cursor_tag>;
 
         /// @brief Тип указателя
         typedef CommonType<typename Input1::pointer, typename Input2::pointer>
@@ -312,10 +312,10 @@ namespace ural
         /// @brief Тип значения
         typedef ValueType<Input1> value_type;
 
-        /// @brief Категория обхода
-        typedef typename common_tag<typename Input1::traversal_tag,
-                                    typename Input2::traversal_tag,
-                                    forward_traversal_tag>::type traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = CommonType<typename Input1::cursor_tag,
+                                      typename Input2::cursor_tag,
+                                      finite_forward_cursor_tag>;
 
         /// @brief Тип указателя
         typedef typename Input1::pointer pointer;
@@ -510,10 +510,10 @@ namespace ural
         /// @brief Тип значения
         typedef ValueType<Input1> value_type;
 
-        /// @brief Категория обхода
-        typedef typename common_tag<typename Input1::traversal_tag,
-                                    typename Input2::traversal_tag,
-                                    forward_traversal_tag>::type traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = CommonType<typename Input1::cursor_tag,
+                                      typename Input2::cursor_tag,
+                                      finite_forward_cursor_tag>;
 
         /// @brief Тип указателя
         typedef typename Input1::pointer pointer;
@@ -709,10 +709,10 @@ namespace ural
         /// @brief Тип значения
         typedef CommonType<ValueType<Input1>, ValueType<Input2>> value_type;
 
-        /// @brief Категория обхода
-        typedef typename common_tag<typename Input1::traversal_tag,
-                                    typename Input2::traversal_tag,
-                                    forward_traversal_tag>::type traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = CommonType<typename Input1::cursor_tag,
+                                      typename Input2::cursor_tag,
+                                      finite_forward_cursor_tag>;
 
         /// @brief Тип указателя
         typedef CommonType<typename Input1::pointer, typename Input2::pointer>
@@ -949,10 +949,10 @@ namespace ural
         /// @brief Тип значения
         typedef CommonType<ValueType<Input1>, ValueType<Input2>> value_type;
 
-        /// @brief Категория обхода
-        typedef typename common_tag<typename Input1::traversal_tag,
-                                    typename Input2::traversal_tag,
-                                    forward_traversal_tag>::type traversal_tag;
+        /// @brief Категория курсора
+        using cursor_tag = CommonType<typename Input1::cursor_tag,
+                                      typename Input2::cursor_tag,
+                                      finite_forward_cursor_tag>;
 
         /// @brief Тип указателя
         typedef CommonType<typename Input1::pointer, typename Input2::pointer>

@@ -98,15 +98,13 @@ BOOST_AUTO_TEST_CASE(for_each_test)
 
 BOOST_AUTO_TEST_CASE(for_each_input_sequence_test)
 {
-    std::vector<int> const x{1, 2, 3, 4, 5};
-    ural_test::istringstream_helper<int> const x_ural(x);
+    std::vector<int> const src{1, 2, 3, 4, 5};
+    ural_test::istringstream_helper<int> const src_ural(src);
 
     int sum = 0;
-    auto acc = [&sum](auto x) { sum += x; };
+    ural::for_each(src_ural, [&sum](auto const & x) { sum += x; });
 
-    ural::for_each(x_ural, acc);
-
-    BOOST_CHECK_EQUAL(sum, ural::accumulate(x, 0));
+    BOOST_CHECK_EQUAL(sum, ural::accumulate(src, 0));
 }
 
 // 25.2.5

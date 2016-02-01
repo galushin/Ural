@@ -941,15 +941,15 @@ namespace ural
         impl(Forward in, T const & value, Compare cmp) const
         {
             return this->impl(std::move(in), value, std::move(cmp),
-                              ::ural::make_traversal_tag(in));
+                              ::ural::make_cursor_tag(in));
         }
 
         template <class Forward, class T, class Compare>
         TraversedFrontType<Forward>
         impl(Forward in, T const & value, Compare cmp,
-                            forward_traversal_tag) const
+                            finite_forward_cursor_tag) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::FiniteForwardSequence<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, T const *, Forward>));
 
             auto upper = upper_bound_fn{}(in, value, cmp).traversed_front();
@@ -959,7 +959,7 @@ namespace ural
 
         template <class Bidirectional, class T, class Compare>
         Bidirectional impl(Bidirectional in, T const & value, Compare cmp,
-                                  bidirectional_traversal_tag) const
+                                  bidirectional_cursor_tag) const
         {
             BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequence<Bidirectional>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, T const *, Bidirectional>));
@@ -1087,16 +1087,17 @@ namespace ural
             BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequenced<Bidirectional>));
             BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<Bidirectional>, Compare>));
 
-            // @todo Подумать, что возвращать из impl
+            // @todo Возвращать из impl последовательность
             auto seq = ::ural::sequence_fwd<Bidirectional>(s);
             this->impl(seq, ::ural::make_callable(std::move(cmp)));
-            seq += seq.size();
+
+            seq.exhaust_front();
             return seq;
         }
 
     private:
         template <class BidirectionalSequence, class Compare>
-        static void impl(BidirectionalSequence s, Compare cmp)
+        void impl(BidirectionalSequence s, Compare cmp) const
         {
             BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequence<BidirectionalSequence>));
             BOOST_CONCEPT_ASSERT((concepts::Sortable<BidirectionalSequence, Compare>));
@@ -1129,14 +1130,12 @@ namespace ural
 
             if(n1 > n2)
             {
-                auto n11 = n1 / 2;
-                s1_cut += n11;
+                ural::advance(s1_cut, n1 / 2);
                 s2_cut = lower_bound_fn{}(s2, *s1_cut, cmp);
             }
             else
             {
-                auto n21 = n2 / 2;
-                s2_cut += n21;
+                ural::advance(s2_cut, n2 / 2);
                 s1_cut = upper_bound_fn{}(s1, *s2_cut, cmp);
             }
 
@@ -1156,8 +1155,8 @@ namespace ural
             ural::advance(s1_new, n11);
             ural::advance(s2_new, n12);
 
-            inplace_merge_fn::impl(s1_new, cmp);
-            inplace_merge_fn::impl(s2_new, cmp);
+            this->impl(s1_new, cmp);
+            this->impl(s2_new, cmp);
         }
     };
 
