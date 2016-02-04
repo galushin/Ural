@@ -160,7 +160,7 @@ namespace ural
         последовательности
         */
         sequence_iterator()
-         : impl_{nullopt}
+         : impl_{v0::nullopt}
         {}
 
         /** @brief Создание начального итератора для последовательности
@@ -206,7 +206,7 @@ namespace ural
         }
 
     private:
-        ural::optional<Sequence> impl_;
+        ural::v0::optional<Sequence> impl_;
     };
 
     /** @brief Итератор на основе ссылки на последовательность
@@ -244,7 +244,7 @@ namespace ural
         последовательности
         */
         sequence_iterator()
-         : impl_(nullopt)
+         : impl_(v0::nullopt)
         {}
 
         /** @brief Создание начального итератора для последовательности
@@ -288,7 +288,7 @@ namespace ural
         }
 
     private:
-        ural::optional<Sequence&> impl_;
+        ural::v0::optional<Sequence&> impl_;
     };
 }
 // namespace ural

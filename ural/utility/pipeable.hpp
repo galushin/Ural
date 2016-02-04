@@ -32,6 +32,8 @@
 
 namespace ural
 {
+inline namespace v0
+{
     /** @brief Элемент "конвейера"
     @param Factory тип функции создания
     */
@@ -174,6 +176,8 @@ namespace ural
             return pipeable<decltype(f)>(std::move(f));
         }
     };
+}
+// namespace v0
 }
 // namespace ural
 

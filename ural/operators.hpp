@@ -26,6 +26,8 @@
 
 namespace ural
 {
+inline namespace v0
+{
     /** @brief Оператор "равно" для пустых типов
     @return true
     */
@@ -105,6 +107,8 @@ namespace ural
     {
         return ::ural::modify_return_old(ural::pre_decrement<>{}, x);
     }
+}
+// namespace v0
 }
 // namespace ural
 

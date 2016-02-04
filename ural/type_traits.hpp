@@ -60,8 +60,6 @@ inline namespace v0
     */
     template <class T>
     using decay_t = typename std::decay<T>::type;
-}
-// namespace v0
 
 /// @cond false
 namespace details
@@ -93,8 +91,6 @@ namespace details
 // namespace details
 /// @endcond
 
-inline namespace v0
-{
     /** @brief Класс-характеристика, проверяющая, можно ли присвоить объекту
     типа @c T значение типа @c U.
     @tparam T тип левого операнда

@@ -26,6 +26,8 @@
 
 namespace ural
 {
+inline namespace v0
+{
     /// @cond false
     namespace details
     {
@@ -40,7 +42,7 @@ namespace ural
         {};
     }
     // namespace details
-    //#endcond
+    /// @endcond
 
     /** @brief Класс-характеристика для определения того, что тип @c T
     содержит определения типа @ is_transparent
@@ -1044,6 +1046,8 @@ namespace ural
             return *std::forward<T>(x);
         }
     };
+}
+// namespace v0
 }
 // namespace ural
 

@@ -53,6 +53,8 @@ begin и end
 
 namespace ural
 {
+inline namespace v0
+{
     /// @cond false
     namespace details
     {
@@ -291,6 +293,8 @@ namespace ural
         assert_can_insert_before(ConstIterator first, ConstIterator last,
                                  ConstIterator q);
     };
+}
+// namespace v0
 }
 // namespace ural
 

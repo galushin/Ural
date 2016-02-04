@@ -39,6 +39,8 @@
 
 namespace ural
 {
+inline namespace v0
+{
     template <class... Types>
     using CommonType = typename std::common_type<Types...>::type;
 
@@ -676,6 +678,8 @@ namespace concepts
     };
 }
 // namespace concepts
+}
+// namespace v0
 }
 // namespace ural
 

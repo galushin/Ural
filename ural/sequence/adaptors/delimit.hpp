@@ -29,6 +29,8 @@
 
 namespace ural
 {
+inline namespace v0
+{
     /** @brief Адаптор последовательности, содержащие все элементы исходной
     последовательности до первого элемента, эквивалентного заданному значению.
     @tparam Sequence тип исходной последовательности
@@ -164,6 +166,8 @@ namespace ural
         constexpr auto const & delimited =
             odr_const<pipeable_maker<details::make_delimit_sequence_fn>>;
     }
+}
+// namespace v0
 }
 // namespace ural
 

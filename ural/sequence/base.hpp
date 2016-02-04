@@ -32,6 +32,8 @@
 
 namespace ural
 {
+inline namespace v0
+{
     template <class T>
     T decl_common_type(T, T);
 
@@ -711,6 +713,8 @@ namespace ural
 
         // @todo сгруппировать с front...
     }
+}
+// namespace v0
 }
 // namespace ural
 
