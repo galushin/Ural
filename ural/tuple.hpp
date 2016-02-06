@@ -165,18 +165,17 @@ namespace details
     struct tuple_writer
     {
     public:
-        template <class OStream, class... Args>
-        void operator()(OStream & os, tuple<Args...> const & t) const
+        template <class OStream, class Tuple>
+        void operator()(OStream & os, Tuple const & t) const
         {
             os << "{";
-            this->impl(os, t, ural::index_sequence_for<Args...>{});
+            this->impl(os, t, ural::make_index_sequence<std::tuple_size<Tuple>::value>{});
             os << "}";
         }
 
     private:
-        template <class OStream, class... Args, size_t ... Is>
-        void impl(OStream & os, tuple<Args...> const & t,
-                  index_sequence<Is...>) const
+        template <class OStream, class Tuple, size_t ... Is>
+        void impl(OStream & os, Tuple const & t, index_sequence<Is...>) const
         {
             using swallow = int[];
             (void)swallow{0, (void(os << (Is == 0? "" : ", ") << std::get<Is>(t)), 0)...};
@@ -186,18 +185,23 @@ namespace details
 // namespace details
 /// @endcond
 
+inline namespace tuple_io
+{
     /** @brief Вывод кортежа в поток в формате {x1, x2, ... , x3}
     @param os поток вывода
     @param t кортеж
     @return os
     */
-    template <class OStream, class... Args>
-    OStream operator<<(OStream && os, tuple<Args...> const & t)
+    template <class OStream, class Tuple>
+    typename std::enable_if<(std::tuple_size<Tuple>::value > 0), OStream>::type
+    operator<<(OStream && os, Tuple const & t)
     {
         details::tuple_writer{}(os, t);
 
         return std::forward<OStream>(os);
     }
+}
+// namespace tuple_io
 }
 // namespace v0
 

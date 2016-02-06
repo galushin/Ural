@@ -156,3 +156,16 @@ BOOST_AUTO_TEST_CASE(tuple_ostreaming_test)
 
     BOOST_CHECK_EQUAL(os.str(), "{42, 4.2, abs}");
 }
+
+BOOST_AUTO_TEST_CASE(tuple_like_ostreaming_test)
+{
+    std::ostringstream os;
+
+    auto const xs = std::make_pair(42, std::string("abs"));
+
+    using namespace ural::tuple_io;
+
+    os << xs;
+
+    BOOST_CHECK_EQUAL(os.str(), "{42, abs}");
+}

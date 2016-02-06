@@ -23,13 +23,14 @@
  @todo istringstream для произвольных строк, не обязательно basic_string<>
 */
 
-#include <ural/format/stream_traits.hpp>
 #include <ural/algorithm.hpp>
+#include <ural/format/stream_traits.hpp>
 #include <ural/sequence/adaptors/transform.hpp>
-#include <ural/sequence/to.hpp>
-#include <ural/sequence/iostream.hpp>
-#include <ural/sequence/insertion.hpp>
+#include <ural/sequence/base.hpp>
 #include <ural/sequence/by_line.hpp>
+#include <ural/sequence/insertion.hpp>
+#include <ural/sequence/iostream.hpp>
+#include <ural/sequence/to.hpp>
 
 #include <cassert>
 #include <vector>
@@ -37,6 +38,8 @@
 #include <sstream>
 
 namespace ural
+{
+inline namespace v0
 {
     /** @brief Вывод в поток элементов последовательности, разделённых заданным
     объектом.
@@ -51,7 +54,7 @@ namespace ural
     OStream &
     write_separated(OStream & os, Sequence && seq, Delim const & delim)
     {
-        auto s = ::ural::sequence_fwd<Sequence>(seq);
+        auto s = sequence(std::forward<Sequence>(seq));
 
         if(!s)
         {
@@ -275,6 +278,8 @@ namespace details
         /// @brief Функциональный объект преобразования в <tt> std::wstring </tt>s
         constexpr auto & to_wstring = odr_const<to_string_function<wchar_t>>;
     }
+}
+// namespace v0
 }
 // namespace ural
 

@@ -1750,3 +1750,45 @@ BOOST_AUTO_TEST_CASE(size_for_std_array)
 
     BOOST_CHECK_EQUAL(ural::size(xs), xs.size());
 }
+
+BOOST_AUTO_TEST_CASE(cursor_ostreaming_empty)
+{
+    std::vector<int> const xs{};
+
+    auto cur = ural::sequence(xs);
+
+    std::ostringstream os;
+    os << cur;
+
+    auto const expected = std::string("{}");
+
+    BOOST_CHECK_EQUAL(os.str(), expected);
+}
+
+BOOST_AUTO_TEST_CASE(cursor_ostreaming_single)
+{
+    std::vector<int> const xs{1, 2, 3, 4, 5};
+
+    auto cur = ural::sequence(xs);
+
+    std::ostringstream os;
+    os << cur;
+
+    auto const expected = std::string("{1, 2, 3, 4, 5}");
+
+    BOOST_CHECK_EQUAL(os.str(), expected);
+}
+
+BOOST_AUTO_TEST_CASE(cursor_ostreaming_more_than_1)
+{
+    std::vector<int> const xs{1, 2, 3, 4, 5};
+
+    auto cur = ural::sequence(xs);
+
+    std::ostringstream os;
+    os << cur;
+
+    auto const expected = std::string("{1, 2, 3, 4, 5}");
+
+    BOOST_CHECK_EQUAL(os.str(), expected);
+}
