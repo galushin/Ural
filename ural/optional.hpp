@@ -32,6 +32,8 @@
 
 namespace ural
 {
+inline namespace v0
+{
     class nullopt_t{};
 
     namespace
@@ -283,8 +285,7 @@ namespace details
                 }
                 else
                 {
-                    using std::swap;
-                    using ural::swap;
+                    using ::std::swap;
                     swap(this->value_, that.value_);
                 }
             }
@@ -500,8 +501,9 @@ namespace details
         */
         constexpr const value_type * get_pointer() const
         {
-            return !*this ? nullptr
-                          : ural::details::constexpr_addressof(**this);
+            return !*this
+                   ? nullptr
+                   : ::ural::v0::details::constexpr_addressof(**this);
         }
 
         value_type * get_pointer()
@@ -764,7 +766,6 @@ namespace details
         void swap(optional & that) noexcept
         {
             using std::swap;
-            using ural::swap;
             swap(this->ptr_, that.ptr_);
         }
 
@@ -1013,33 +1014,37 @@ namespace details
         return os;
     }
 }
+// namespace v0
+}
 // namespace ural
 
 namespace std
 {
     template <class T>
-    class hash<ural::optional<T>>
+    class hash<ural::v0::optional<T>>
      : private std::hash<T>
     {
         typedef std::hash<T> Base;
     public:
         typedef typename Base::result_type result_type;
 
-        constexpr result_type operator()(ural::optional<T> const & x) const
+        constexpr result_type
+        operator()(ural::v0::optional<T> const & x) const
         {
             return !x ? result_type{} : static_cast<Base const&>(*this)(*x);
         }
     };
 
     template <class T>
-    class hash<ural::optional<T &>>
+    class hash<ural::v0::optional<T &>>
      : private std::hash<T>
     {
         typedef std::hash<T> Base;
     public:
         typedef typename Base::result_type result_type;
 
-        constexpr result_type operator()(ural::optional<T &> const & x) const
+        constexpr result_type
+        operator()(ural::v0::optional<T &> const & x) const
         {
             return !x ? result_type{} : static_cast<Base const&>(*this)(*x);
         }

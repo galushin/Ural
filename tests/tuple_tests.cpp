@@ -145,3 +145,27 @@ BOOST_AUTO_TEST_CASE(tuple_constexpr_get_regeression_first_empty_type)
 }
 #endif // >= 50101
 #endif // ifdef __GNUC__
+
+BOOST_AUTO_TEST_CASE(tuple_ostreaming_test)
+{
+    std::ostringstream os;
+
+    auto const xs = ural::make_tuple(42, 4.2, std::string("abs"));
+
+    os << xs;
+
+    BOOST_CHECK_EQUAL(os.str(), "{42, 4.2, abs}");
+}
+
+BOOST_AUTO_TEST_CASE(tuple_like_ostreaming_test)
+{
+    std::ostringstream os;
+
+    auto const xs = std::make_pair(42, std::string("abs"));
+
+    using namespace ural::tuple_io;
+
+    os << xs;
+
+    BOOST_CHECK_EQUAL(os.str(), "{42, abs}");
+}

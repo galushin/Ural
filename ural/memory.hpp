@@ -31,6 +31,8 @@
 
 namespace ural
 {
+inline namespace v0
+{
     /// @cond false
     namespace details
     {
@@ -588,6 +590,8 @@ namespace ural
     {
         return copy_ptr<T>(make_unique<T>(std::forward<Args>(args)...));
     }
+}
+// namespace v0
 }
 // namespace ural
 

@@ -42,6 +42,8 @@
 
 namespace ural
 {
+inline namespace v0
+{
 /// @cond false
 namespace details
 {
@@ -1680,6 +1682,8 @@ namespace details
             return find_if_not_fn{}(std::move(in), std::move(pred));
         }
     };
+}
+// namespace v0
 }
 // namespace ural
 

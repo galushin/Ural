@@ -32,6 +32,8 @@
 
 namespace ural
 {
+inline namespace v0
+{
     template <class T>
     T decl_common_type(T, T);
 
@@ -151,6 +153,31 @@ namespace ural
         {
             s.pop_front();
             return s;
+        }
+
+        /** @brief Оператор вывода курсора в поток
+        @param os поток вывода
+        @param cur курсор
+        @return @c os
+        @todo устранить дублирование с write_separated
+        */
+        template <class OStream>
+        friend OStream & operator<<(OStream & os, Seq & cur)
+        {
+            os << "{";
+            if(!!cur)
+            {
+                os << *cur;
+                ++ cur;
+
+                for(; !!cur; ++ cur)
+                {
+                    os << ", " << *cur;
+                }
+            }
+            os << "}";
+
+            return os;
         }
 
     public:
@@ -711,6 +738,8 @@ namespace ural
 
         // @todo сгруппировать с front...
     }
+}
+// namespace v0
 }
 // namespace ural
 

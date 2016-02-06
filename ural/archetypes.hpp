@@ -25,7 +25,8 @@
 
 namespace ural
 {
-
+inline namespace v0
+{
 /** @namespace archetypes
  @brief Архетипы -- минималистичные реализации концепций
 */
@@ -126,6 +127,8 @@ namespace archetypes
     };
 }
 // namespace archetypes
+}
+// namespace v0
 }
 // namespace ural
 

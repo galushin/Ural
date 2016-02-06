@@ -33,6 +33,8 @@
 
 namespace ural
 {
+inline namespace v0
+{
     /** @brief Создание последовательности на основе контейнера
     @param c контейнер
     @return <tt> iterator_sequence<decltype(c.begin())>(c.begin(), c.end())</tt>
@@ -559,6 +561,8 @@ namespace ural
         {};
     }
     // namespace concepts
+}
+// namespace v0
 }
 // namespace ural
 
