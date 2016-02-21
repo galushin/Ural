@@ -22,9 +22,11 @@
 #include <boost/test/unit_test.hpp>
 #include "../defs.hpp"
 
+namespace ural_distributions = ural::experimental::distributions;
+
 BOOST_AUTO_TEST_CASE(math_discrete_distribution_default_ctor)
 {
-    typedef ural::distributions::discrete<int> Distribution;
+    typedef ural_distributions::discrete<int> Distribution;
 
     auto const d = Distribution{};
 
@@ -52,7 +54,7 @@ BOOST_AUTO_TEST_CASE(math_discrete_distribution_default_ctor)
 
 BOOST_AUTO_TEST_CASE(math_discrete_distibution_from_empty_container)
 {
-    typedef ural::distributions::discrete<int> Distribution;
+    typedef ural_distributions::discrete<int> Distribution;
 
     auto const w = std::vector<double>{};
 
@@ -88,7 +90,7 @@ namespace
 BOOST_AUTO_TEST_CASE_TEMPLATE(math_discrete_distibution_from_container,
                               Weight, Weight_types)
 {
-    typedef ural::distributions::discrete<int, Weight> Distribution;
+    typedef ural_distributions::discrete<int, Weight> Distribution;
 
     std::vector<int> const w{4, 3, 2, 1};
 
@@ -134,7 +136,7 @@ BOOST_AUTO_TEST_CASE(math_discrete_distibution_from_container_rational_weight)
 {
     typedef ural::rational<int> Weight;
 
-    typedef ural::distributions::discrete<int, Weight> Distribution;
+    typedef ural_distributions::discrete<int, Weight> Distribution;
 
     std::vector<int> const w{4, 3, 2, 1};
 
@@ -171,7 +173,7 @@ BOOST_AUTO_TEST_CASE(math_discrete_distibution_from_container_rational_weight)
 
 BOOST_AUTO_TEST_CASE(math_discrete_distibution_from_init_list)
 {
-    typedef ural::distributions::discrete<int> Distribution;
+    typedef ural_distributions::discrete<int> Distribution;
 
     auto const d = Distribution{4, 3, 2, 1};
 

@@ -36,6 +36,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     template <class T, class Alloc>
     class buffer;
 
@@ -365,7 +367,7 @@ namespace ural
     */
     template <class T, class Alloc = use_default, class Policy = use_default>
     class vector
-     : ural::container_facade<vector<T, Alloc, Policy>>
+     : ::ural::experimental::container_facade<vector<T, Alloc, Policy>>
     {
     public:
         // Типы
@@ -1206,6 +1208,8 @@ namespace ural
     private:
         buffer<value_type, allocator_type> data_;
     };
+}
+// namespace experimental
 }
 // namespace ural
 

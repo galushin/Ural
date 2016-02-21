@@ -30,6 +30,8 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/mpl/list.hpp>
 
+namespace ural_ex = ural::experimental;
+
 namespace
 {
     typedef boost::mpl::list<std::forward_list<int>,
@@ -1302,7 +1304,7 @@ BOOST_AUTO_TEST_CASE(remove_erase_test)
 
     s_std.erase(std::remove(s_std.begin(), s_std.end(), to_remove), s_std.end());
 
-    auto & ref_ural = ural::remove_erase(s_ural, to_remove);
+    auto & ref_ural = ural_ex::remove_erase(s_ural, to_remove);
 
     BOOST_CHECK_EQUAL(s_std, s_ural);
     BOOST_CHECK_EQUAL(&ref_ural, &s_ural);
@@ -1340,7 +1342,7 @@ BOOST_AUTO_TEST_CASE(remove_if_test)
     BOOST_CHECK(s.original() == ural::sequence(s_ural));
     BOOST_CHECK(!s.traversed_back());
 
-    auto & ref_ural = ural::erase(s_ural, s);
+    auto & ref_ural = ural_ex::erase(s_ural, s);
 
     BOOST_CHECK_EQUAL(s_std, s_ural);
     BOOST_CHECK_EQUAL(&ref_ural, &s_ural);
@@ -1355,7 +1357,7 @@ BOOST_AUTO_TEST_CASE(remove_if_erase_test)
 
     s_std.erase(std::remove_if(s_std.begin(), s_std.end(), pred), s_std.end());
 
-    auto & ref_ural = ural::remove_if_erase(s_ural, pred);
+    auto & ref_ural = ural_ex::remove_if_erase(s_ural, pred);
 
     BOOST_CHECK_EQUAL(s_std, s_ural);
     BOOST_CHECK_EQUAL(&ref_ural, &s_ural);
@@ -1371,7 +1373,7 @@ BOOST_AUTO_TEST_CASE(remove_erase_if_test)
 
     s_std.erase(std::remove_if(s_std.begin(), s_std.end(), pred), s_std.end());
 
-    auto & ref_ural = ural::remove_erase_if(s_ural, pred);
+    auto & ref_ural = ural_ex::remove_erase_if(s_ural, pred);
 
     BOOST_CHECK_EQUAL(s_std, s_ural);
     BOOST_CHECK_EQUAL(&ref_ural, &s_ural);
@@ -1526,7 +1528,7 @@ BOOST_AUTO_TEST_CASE(unique_copy_from_istream_to_ostream)
     ural::copy(v1, ural::make_ostream_sequence(src, ' '));
 
     auto v2 = v1;
-    ural::unique_erase(v2);
+    ural_ex::unique_erase(v2);
 
     std::ostringstream z;
     ural::copy(v2, ural::make_ostream_sequence(z, ' '));
@@ -1904,7 +1906,7 @@ BOOST_AUTO_TEST_CASE(random_shuffle_test)
 
     auto const v_old = v;
 
-    auto const result = ural::random_shuffle(v);
+    auto const result = ural_ex::random_shuffle(v);
 
     BOOST_CHECK(result.traversed_front().begin() == v.begin());
     BOOST_CHECK(result.traversed_front().end() == v.end());

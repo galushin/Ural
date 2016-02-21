@@ -29,6 +29,8 @@
 
 #include "defs.hpp"
 
+namespace ural_ex = ural::experimental;
+
 BOOST_AUTO_TEST_CASE(to_string_test)
 {
     for(auto n : ural::numbers(-100, 101))
@@ -93,7 +95,7 @@ BOOST_AUTO_TEST_CASE(by_line_temporary_to_container)
     std::copy(z.begin(), z.end(), std::ostream_iterator<std::string>(os, "\n"));
 
     auto const x = ural::by_line(std::istringstream(os.str()))
-                 | ural::to_container<ural::vector>{};
+                 | ural::to_container<ural_ex::vector>{};
 
     URAL_CHECK_EQUAL_RANGES(z, x);
 }

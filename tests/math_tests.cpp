@@ -491,9 +491,12 @@ BOOST_AUTO_TEST_CASE(abs_constexpr_fn_test)
 #include <ural/numeric.hpp>
 #include <set>
 #include <ural/container/flat_set.hpp>
+
+namespace ural_ex = ural::experimental;
+
 namespace
 {
-    typedef boost::mpl::list<std::set<int>, ural::flat_set<int>> PE_203_Set_types;
+    typedef boost::mpl::list<std::set<int>, ural_ex::flat_set<int>> PE_203_Set_types;
 }
 BOOST_AUTO_TEST_CASE_TEMPLATE(pascal_triangle_PE_203, Set, PE_203_Set_types)
 {

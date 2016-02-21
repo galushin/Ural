@@ -25,10 +25,12 @@
 
 #include "../defs.hpp"
 
+namespace ural_ex = ural::experimental;
+
 BOOST_AUTO_TEST_CASE(vector_default_template_param_types)
 {
     typedef int T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
      static_assert(std::is_same<Vector::allocator_type, std::allocator<T>>::value, "");
 }
@@ -39,7 +41,7 @@ BOOST_AUTO_TEST_CASE(vector_default_template_param_types)
 BOOST_AUTO_TEST_CASE(vector_value_type)
 {
     typedef int T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     // строка 1
     static_assert(std::is_same<::ural::ValueType<Vector>, T>::value, "");
@@ -51,7 +53,7 @@ BOOST_AUTO_TEST_CASE(vector_move_with_different_allocator)
 {
     typedef std::string T;
     typedef ural::tracing_allocator<T> Alloc;
-    typedef ural::vector<T, Alloc> Vector;
+    typedef ural_ex::vector<T, Alloc> Vector;
 
     // Строка 7
     Vector t = {"one", "two", "three", "four", "five"};
@@ -73,8 +75,8 @@ BOOST_AUTO_TEST_CASE(vector_move_with_different_allocator)
 
 BOOST_AUTO_TEST_CASE(vector_n_copies_of_t)
 {
-    typedef int T;
-    typedef ural::vector<T> Vector;
+    using T = int;
+    using Vector = ural_ex::vector<T>;
 
     auto const n = Vector::size_type(5);
     auto const t = ::ural::ValueType<Vector>(42);
@@ -92,7 +94,7 @@ BOOST_AUTO_TEST_CASE(vector_n_copies_of_t)
 BOOST_AUTO_TEST_CASE(vector_construct_from_input_iterators)
 {
     typedef int T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     std::istringstream is("1 2 3 4 5");
     Vector const z{1, 2, 3, 4, 5};
@@ -111,7 +113,7 @@ BOOST_AUTO_TEST_CASE(vector_construct_from_forward_iterators)
 {
     typedef int T;
     typedef ural::tracing_allocator<T> Alloc;
-    typedef ural::vector<T, Alloc> Vector;
+    typedef ural_ex::vector<T, Alloc> Vector;
 
     std::forward_list<T> const z(501, 42);
 
@@ -128,7 +130,7 @@ BOOST_AUTO_TEST_CASE(vector_construct_from_forward_iterators)
 BOOST_AUTO_TEST_CASE(vector_construct_from_init_list)
 {
     typedef int T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     std::vector<T> const x_std = {1, 2, 3, 4, 5};
     Vector const x_ural = {1, 2, 3, 4, 5};
@@ -139,7 +141,7 @@ BOOST_AUTO_TEST_CASE(vector_construct_from_init_list)
 BOOST_AUTO_TEST_CASE(vector_clear_test)
 {
     typedef int T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     Vector x = {1, 3, 5, 7, 9};
 
@@ -158,7 +160,7 @@ BOOST_AUTO_TEST_CASE(vector_clear_test)
 BOOST_AUTO_TEST_CASE(vector_assign_operator_init_list_shrink)
 {
     typedef int T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     Vector const z = {1, 3, 5, 7, 9};
     Vector x(z.size() * 2 + 13, 42);
@@ -173,7 +175,7 @@ BOOST_AUTO_TEST_CASE(vector_assign_operator_init_list_shrink)
 BOOST_AUTO_TEST_CASE(vector_assign_operator_init_list_grow)
 {
     typedef int T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     Vector const z = {1, 3, 5, 7, 9};
     Vector x(z.size() / 2, 42);
@@ -188,7 +190,7 @@ BOOST_AUTO_TEST_CASE(vector_assign_operator_init_list_grow)
 BOOST_AUTO_TEST_CASE(vector_assign_operator_init_list_exact)
 {
     typedef int T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     Vector const z = {1, 3, 5, 7, 9};
     Vector x(z.size(), 42);
@@ -203,7 +205,7 @@ BOOST_AUTO_TEST_CASE(vector_assign_operator_init_list_exact)
 BOOST_AUTO_TEST_CASE(vector_assign_input_iterators)
 {
     typedef int T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     std::istringstream is("1 2 3 4 5");
     Vector const z{1, 2, 3, 4, 5};
@@ -224,7 +226,7 @@ BOOST_AUTO_TEST_CASE(vector_assign_input_iterators)
 BOOST_AUTO_TEST_CASE(vector_assign_n_shrink)
 {
     typedef int T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     Vector x = {1, 3, 5, 7, 9};
 
@@ -241,7 +243,7 @@ BOOST_AUTO_TEST_CASE(vector_assign_n_shrink)
 BOOST_AUTO_TEST_CASE(vector_assign_n_grow)
 {
     typedef int T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     Vector x = {1, 3, 5, 7, 9};
 
@@ -258,7 +260,7 @@ BOOST_AUTO_TEST_CASE(vector_assign_n_grow)
 BOOST_AUTO_TEST_CASE(vector_assign_n_exact)
 {
     typedef int T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     Vector x = {1, 3, 5, 7, 9};
 
@@ -275,7 +277,7 @@ BOOST_AUTO_TEST_CASE(vector_assign_n_exact)
 BOOST_AUTO_TEST_CASE(vector_insert_n)
 {
     typedef int T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     Vector x = {1, 3, 5, 7};
 
@@ -293,7 +295,7 @@ BOOST_AUTO_TEST_CASE(vector_insert_n)
 BOOST_AUTO_TEST_CASE(vector_front_test)
 {
     typedef int T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     Vector xs = {1, 2, 3, 4, 5};
 
@@ -306,7 +308,7 @@ BOOST_AUTO_TEST_CASE(vector_front_test)
 BOOST_AUTO_TEST_CASE(vector_back_test)
 {
     typedef int T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     Vector xs = {1, 2, 3, 4, 5};
 
@@ -318,8 +320,7 @@ BOOST_AUTO_TEST_CASE(vector_back_test)
 
 BOOST_AUTO_TEST_CASE(vector_index_access_exception)
 {
-    typedef ural::vector<int, ural::use_default, ural::container_checking_throw_policy>
-        Vector;
+    using Vector = ural_ex::vector<int, ural::use_default, ural::container_checking_throw_policy>;
 
     Vector const x(13, 42);
 
@@ -329,7 +330,7 @@ BOOST_AUTO_TEST_CASE(vector_index_access_exception)
 BOOST_AUTO_TEST_CASE(vector_at_test)
 {
     typedef int T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     Vector xs = {1, 2, 3, 4, 5};
 
@@ -349,7 +350,7 @@ BOOST_AUTO_TEST_CASE(vector_at_test)
 BOOST_AUTO_TEST_CASE(vector_data_test)
 {
     typedef int T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     std::vector<T> const src = {3, 1, 4, 1, 5};
 
@@ -367,7 +368,7 @@ BOOST_AUTO_TEST_CASE(vector_data_test)
 BOOST_AUTO_TEST_CASE(vector_push_back_rvalue)
 {
     typedef std::string T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     Vector xs;
     // @note строка должна быть достаточно большой, чтобы обойти SSO
@@ -385,7 +386,7 @@ BOOST_AUTO_TEST_CASE(vector_push_back_rvalue)
 BOOST_AUTO_TEST_CASE(vector_pop_back_test)
 {
     typedef int T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     Vector const src = {3, 1, 4, 1, 5};
 
@@ -404,7 +405,7 @@ BOOST_AUTO_TEST_CASE(vector_pop_back_test)
 BOOST_AUTO_TEST_CASE(vector_insert_middle_range)
 {
     typedef int T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     std::vector<T> to_insert = {2, 3};
 
@@ -426,7 +427,7 @@ BOOST_AUTO_TEST_CASE(vector_insert_middle_range)
 BOOST_AUTO_TEST_CASE(vector_insert_middle)
 {
     typedef int T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     auto const pos = 2;
     auto const new_value = T{3};
@@ -446,7 +447,7 @@ BOOST_AUTO_TEST_CASE(vector_insert_middle)
 BOOST_AUTO_TEST_CASE(vector_insert_middle_with_move)
 {
     typedef std::string T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     auto const pos = 2;
     // @note строка должна быть достаточно длинной, чтобы обойти SSO
@@ -470,7 +471,7 @@ BOOST_AUTO_TEST_CASE(vector_insert_middle_with_move)
 BOOST_AUTO_TEST_CASE(vector_insert_middle_init_list)
 {
     typedef int T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     Vector v_ural = {1, 4, 5};
 
@@ -489,7 +490,7 @@ BOOST_AUTO_TEST_CASE(vector_insert_middle_init_list)
 
 BOOST_AUTO_TEST_CASE(vector_erase_one)
 {
-    ural::vector<int> x = {1, 2, -3, 3, 4, 5};
+    ural_ex::vector<int> x = {1, 2, -3, 3, 4, 5};
 
     auto const index = 2;
     auto const pos = x.cbegin() + index;
@@ -500,7 +501,7 @@ BOOST_AUTO_TEST_CASE(vector_erase_one)
 
     BOOST_CHECK_EQUAL(result - x.cbegin(), index);
 
-    ural::vector<int> const z = {1, 2, 3, 4, 5};
+    ural_ex::vector<int> const z = {1, 2, 3, 4, 5};
     URAL_CHECK_EQUAL_RANGES(ural::as_const(x), z);
 }
 
@@ -509,7 +510,7 @@ BOOST_AUTO_TEST_CASE(vector_construct_size_and_allocator)
 {
     typedef std::string T;
     typedef ural::tracing_allocator<T> Alloc;
-    typedef ural::vector<T, Alloc> Vector;
+    typedef ural_ex::vector<T, Alloc> Vector;
 
     Alloc alloc(42);
 
@@ -530,7 +531,7 @@ BOOST_AUTO_TEST_CASE(vector_construct_size_and_allocator)
 BOOST_AUTO_TEST_CASE(vector_resize_grow)
 {
     typedef std::string T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     auto const n0 = 5;
     auto const s0 = T("tree");
@@ -548,7 +549,7 @@ BOOST_AUTO_TEST_CASE(vector_resize_grow)
 BOOST_AUTO_TEST_CASE(vector_resize_shrink)
 {
     typedef std::string T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     auto const s0 = T("tree");
 
@@ -568,7 +569,7 @@ BOOST_AUTO_TEST_CASE(vector_resize_shrink)
 BOOST_AUTO_TEST_CASE(vector_resize_same_size)
 {
     typedef std::string T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     auto const s0 = T("tree");
 
@@ -583,7 +584,7 @@ BOOST_AUTO_TEST_CASE(vector_resize_same_size)
 BOOST_AUTO_TEST_CASE(vector_resize_grow_default)
 {
     typedef std::string T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     auto const n0 = 5;
     auto const s0 = T{};
@@ -601,7 +602,7 @@ BOOST_AUTO_TEST_CASE(vector_resize_grow_default)
 BOOST_AUTO_TEST_CASE(vector_resize_shrink_default)
 {
     typedef std::string T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     Vector x = {"one", "two", "three", "four", "five"};
 
@@ -619,7 +620,7 @@ BOOST_AUTO_TEST_CASE(vector_resize_shrink_default)
 BOOST_AUTO_TEST_CASE(vector_resize_same_size_default)
 {
     typedef std::string T;
-    typedef ural::vector<T> Vector;
+    typedef ural_ex::vector<T> Vector;
 
     Vector x = {"one", "two", "three", "four", "five"};
     auto const x_old = x;
@@ -634,7 +635,7 @@ BOOST_AUTO_TEST_CASE(vector_optimize_empty_allocator)
 {
     typedef std::string T;
     typedef std::allocator<T> Alloc;
-    typedef ural::vector<T, Alloc> Vector;
+    typedef ural_ex::vector<T, Alloc> Vector;
 
     static_assert(std::is_empty<Alloc>::value, "");
 

@@ -21,11 +21,13 @@
 
 #include <boost/test/unit_test.hpp>
 
+namespace ural_ex = ural::experimental;
+
 BOOST_AUTO_TEST_CASE(balanced_parens_tests)
 {
     // Тесты взяты с
     // http://dlang.org/phobos/std_algorithm_searching.html#balancedParens
-    using ural::balanced_parens;
+    using ural::experimental::balanced_parens;
     using std::string;
 
     string const s1 = "1 + (2 * (3 + 1 / 2)";
@@ -57,12 +59,12 @@ BOOST_AUTO_TEST_CASE(min_count_test)
     std::vector<int> const a = {2, 3, 4, 1, 2, 4, 1, 1, 2};
 
     // Minimum is 1 and occurs 3 times
-    BOOST_CHECK_EQUAL(ural::min_count(a)[ural::_1], 1);
-    BOOST_CHECK_EQUAL(ural::min_count(a)[ural::_2], 3);
-    BOOST_CHECK(ural::min_count(a) == std::make_tuple(1, 3));
+    BOOST_CHECK_EQUAL(ural_ex::min_count(a)[ural::_1], 1);
+    BOOST_CHECK_EQUAL(ural_ex::min_count(a)[ural::_2], 3);
+    BOOST_CHECK(ural_ex::min_count(a) == std::make_tuple(1, 3));
 
     // Maximum is 4 and occurs 2 times
-    BOOST_CHECK(ural::min_count(a, ural::greater<>{}) == std::make_tuple(4, 2));
+    BOOST_CHECK(ural_ex::min_count(a, ural::greater<>{}) == std::make_tuple(4, 2));
 }
 
 BOOST_AUTO_TEST_CASE(skip_over_test)
@@ -73,12 +75,12 @@ BOOST_AUTO_TEST_CASE(skip_over_test)
     auto s1 = ural::sequence(str1);
 
     auto const ha = std::string("Ha");
-    BOOST_CHECK(!ural::skip_over(s1, ha));
+    BOOST_CHECK(!ural_ex::skip_over(s1, ha));
     URAL_CHECK_EQUAL_RANGES(s1, str1);
 
     auto const hell = std::string("Hell");
     auto const o_world = std::string("o world");
-    BOOST_CHECK( ural::skip_over(s1, hell));
+    BOOST_CHECK( ural_ex::skip_over(s1, hell));
     URAL_CHECK_EQUAL_RANGES(s1, o_world);
 }
 
@@ -86,7 +88,7 @@ BOOST_AUTO_TEST_CASE(common_prefix_test)
 {
     // Тест взят с dlang.org/phobos/std_algorithm_searching.html#commonPrefix
     auto const z = std::string("hello, ");
-    URAL_CHECK_EQUAL_RANGES(ural::common_prefix("hello, world", "hello, there"), z);
+    URAL_CHECK_EQUAL_RANGES(ural_ex::common_prefix("hello, world", "hello, there"), z);
 }
 
 BOOST_AUTO_TEST_CASE(common_prefix_infinite)
@@ -100,7 +102,7 @@ BOOST_AUTO_TEST_CASE(common_prefix_infinite)
     auto const s1 = ural::make_arithmetic_progression(x0, d1);
     auto const s2 = ural::make_arithmetic_progression(x0, d2);
 
-    auto result = ural::common_prefix(s1, s2);
+    auto result = ural_ex::common_prefix(s1, s2);
 
     BOOST_CHECK(result.base().original() == s1);
     BOOST_CHECK_EQUAL(1, result.size());

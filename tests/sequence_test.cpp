@@ -29,6 +29,8 @@
 #include <set>
 #include <map>
 
+namespace ural_ex = ural::experimental;
+
 BOOST_AUTO_TEST_CASE(assumed_infinite_test_empty_becomes_not)
 {
     std::vector<int> ev;
@@ -735,7 +737,7 @@ BOOST_AUTO_TEST_CASE(set_inserter_container_access)
 
 namespace
 {
-    typedef boost::mpl::list<std::set<int>, ural::flat_set<int>> Int_set_types;
+    typedef boost::mpl::list<std::set<int>, ural::experimental::flat_set<int>> Int_set_types;
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(set_inserter_test, Set, Int_set_types)
@@ -1266,7 +1268,7 @@ BOOST_AUTO_TEST_CASE(unique_sequence_from_istream_to_ostream)
     ural::copy(v1, ural::make_ostream_sequence(src, ' '));
 
     auto v2 = v1;
-    ural::unique_erase(v2);
+    ural_ex::unique_erase(v2);
 
     std::ostringstream z;
     ural::copy(v2, ural::make_ostream_sequence(z, ' '));
@@ -1724,7 +1726,7 @@ namespace
 {
     using Containers = boost::mpl::list<std::forward_list<int>, std::list<int>,
                                         std::vector<int>,
-                                        ural::vector<int>>;
+                                        ural::experimental::vector<int>>;
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(size_for_containers_test, Container, Containers)

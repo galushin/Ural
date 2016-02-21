@@ -28,6 +28,8 @@
 
 namespace ural
 {
+namespace experimental
+{
 /** @namespace distributions
  @brief "Теоретические" распределения вероятностей.
 */
@@ -245,6 +247,8 @@ namespace distributions
     };
 }
 // namespace distributions
+}
+// namespace experimental
 }
 // namespace ural
 

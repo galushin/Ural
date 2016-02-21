@@ -19,20 +19,22 @@
 
 #include <boost/test/unit_test.hpp>
 
+namespace ural_ex = ural::experimental;
+
 BOOST_AUTO_TEST_CASE(flat_set_default_template_parameters)
 {
     typedef int T;
-    typedef ural::flat_set<T> Set;
+    typedef ural_ex::flat_set<T> Set;
 
     static_assert(std::is_same<::ural::ValueType<Set>, T>::value, "");
 
     static_assert(std::is_same<Set::key_compare, std::less<T>>::value, "");
     static_assert(std::is_same<Set::value_compare, Set::key_compare>::value, "");
     static_assert(std::is_same<Set::allocator_type, std::allocator<T>>::value, "");
-    static_assert(std::is_same<Set::policy_type, ural::vector<T>::policy_type>::value, "");
+    static_assert(std::is_same<Set::policy_type, ural_ex::vector<T>::policy_type>::value, "");
 
     typedef std::greater<T> Greater;
-    typedef ural::flat_set<T, Greater> Set_greater;
+    typedef ural_ex::flat_set<T, Greater> Set_greater;
 
     static_assert(std::is_same<Set_greater::key_compare, Greater>::value, "");
 
@@ -42,8 +44,8 @@ BOOST_AUTO_TEST_CASE(flat_set_default_template_parameters)
 BOOST_AUTO_TEST_CASE(flat_set_with_empty_compare_sizeof_test)
 {
     typedef int T;
-    typedef ural::vector<T> Vector;
-    typedef ural::flat_set<T> Set;
+    typedef ural_ex::vector<T> Vector;
+    typedef ural_ex::flat_set<T> Set;
 
     static_assert(std::is_empty<Set::key_compare>::value, "");
 

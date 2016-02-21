@@ -32,6 +32,8 @@
 
 namespace ural
 {
+inline namespace v0
+{
     /** @brief Функциональный объект, реализующий копирование элементов одной
     последовальности в другую
     */
@@ -196,6 +198,8 @@ namespace ural
             return this->impl(::ural::sequence_fwd<Input>(in), std::move(pred));
         }
     };
+}
+// namespace v0
 }
 // namespace ural
 

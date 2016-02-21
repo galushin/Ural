@@ -28,6 +28,8 @@
 #include <boost/mpl/list.hpp>
 #include <boost/test/unit_test.hpp>
 
+namespace ural_ex = ural::experimental;
+
 namespace
 {
     typedef boost::mpl::list<std::forward_list<int>,
@@ -431,7 +433,7 @@ BOOST_AUTO_TEST_CASE(fused_for_each_test)
         z.back().push_back(p[ural::_2]);
     }
 
-    auto result = ural::fused_for_each(xs, &std::string::push_back);
+    auto result = ural_ex::fused_for_each(xs, &std::string::push_back);
 
     BOOST_CHECK(result[ural::_1].original() == ural::sequence(xs));
     BOOST_CHECK(result[ural::_1].traversed_front() == ural::sequence(xs));

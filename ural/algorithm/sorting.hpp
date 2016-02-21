@@ -48,6 +48,8 @@
 
 namespace ural
 {
+inline namespace v0
+{
     // Проверка отсортированности
     /** @ingroup SortingOperations
     @brief Тип функционального объекта для пропуска отсортированной части
@@ -2005,6 +2007,8 @@ namespace ural
             return f(std::move(s), ::ural::not_fn(std::move(cmp)));
         }
     };
+}
+// namespace v0
 }
 // namespace ural
 

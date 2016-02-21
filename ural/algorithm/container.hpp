@@ -28,6 +28,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /// @brief Функциональный объект для функции-члена контейнеров @c erase
     class erase_fn
     {
@@ -64,7 +66,7 @@ namespace ural
                    BinaryPredicate bin_pred = BinaryPredicate()) const
         {
             auto to_erase = ::ural::unique_fn{}(c, std::move(bin_pred));
-            ::ural::erase_fn{}(c, to_erase);
+            ::ural::experimental::erase_fn{}(c, to_erase);
             return c;
         }
     };
@@ -188,6 +190,8 @@ namespace ural
         constexpr auto const & push_front = odr_const<push_front_fn>;
         constexpr auto const & push_back = odr_const<push_back_fn>;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

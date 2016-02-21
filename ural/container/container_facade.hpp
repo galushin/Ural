@@ -25,6 +25,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Базовый класс (CRTP), определяющий операции, не зависящие от
     реализации конкретных контейнеров
     @tparam Container тип контейнера
@@ -62,6 +64,8 @@ namespace ural
             return x.swap(y);
         }
     };
+}
+// namespace experimental
 }
 // namespace ural
 

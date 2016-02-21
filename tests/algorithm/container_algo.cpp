@@ -25,6 +25,8 @@
 #include <list>
 #include <vector>
 
+namespace ural_ex = ural::experimental;
+
 BOOST_AUTO_TEST_CASE(push_front_range_test)
 {
     ural_test::istringstream_helper<int> const in = {2, 7, 1, 8, 2, 8};
@@ -35,7 +37,7 @@ BOOST_AUTO_TEST_CASE(push_front_range_test)
     assert(out_2 == out_1);
 
     ural::copy(in, out_1 | ural::front_inserter);
-    auto & out_2_ref = ural::push_front(out_2, in);
+    auto & out_2_ref = ural_ex::push_front(out_2, in);
 
     URAL_CHECK_EQUAL_RANGES(out_1, out_2);
     BOOST_CHECK_EQUAL(&out_2_ref, &out_2);
@@ -51,7 +53,7 @@ BOOST_AUTO_TEST_CASE(push_back_range_test)
     assert(out_2 == out_1);
 
     ural::copy(in, out_1 | ural::back_inserter);
-    auto & out_2_ref = ural::push_back(out_2, in);
+    auto & out_2_ref = ural_ex::push_back(out_2, in);
 
     URAL_CHECK_EQUAL_RANGES(out_1, out_2);
     BOOST_CHECK_EQUAL(&out_2_ref, &out_2);
@@ -72,7 +74,7 @@ BOOST_AUTO_TEST_CASE(insert_range_test)
 
     out_1.insert(pos_1, source.begin(), source.end());
 
-    auto & out_2_ref = ural::insert(out_2, pos_2, in);
+    auto & out_2_ref = ural_ex::insert(out_2, pos_2, in);
 
     URAL_CHECK_EQUAL_RANGES(out_1, out_2);
     BOOST_CHECK_EQUAL(&out_2_ref, &out_2);
@@ -81,14 +83,14 @@ BOOST_AUTO_TEST_CASE(insert_range_test)
 // Комбинирование вызовов модифицирующих алгоритмов с erase
 BOOST_AUTO_TEST_CASE(unqiue_fn_const_iterator_test)
 {
-    ural::vector<int> v1 = {1, 2, 3, 4, 5, 6};
+    ural_ex::vector<int> v1 = {1, 2, 3, 4, 5, 6};
     auto v2 = v1;
 
     auto const n = v1.size() / 2;
 
     v2.erase(v2.cbegin() + n, v2.cend());
 
-    ural::erase(v1, ural::make_iterator_sequence(v1.cbegin() + n, v1.cend()));
+    ural_ex::erase(v1, ural::make_iterator_sequence(v1.cbegin() + n, v1.cend()));
 
     URAL_CHECK_EQUAL_RANGES(v1, v2);
 }
@@ -106,7 +108,7 @@ BOOST_AUTO_TEST_CASE(unique_erase_combination_test)
 
     // ural
     auto const to_erase = ural::unique(v_ural);
-    ural::erase(v_ural, to_erase);
+    ural_ex::erase(v_ural, to_erase);
 
     // Сравнение результатов
     URAL_CHECK_EQUAL_RANGES(v_std, v_ural);
@@ -124,7 +126,7 @@ BOOST_AUTO_TEST_CASE(unique_erase_test)
     v_std.erase(last, v_std.end());
 
     // ural
-    ural::unique_erase(v_ural);
+    ural_ex::unique_erase(v_ural);
 
     // Сравнение результатов
     URAL_CHECK_EQUAL_RANGES(v_std, v_ural);

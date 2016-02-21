@@ -35,6 +35,8 @@
 
 namespace ural
 {
+inline namespace v0
+{
     /** @ingroup NonModifyingSequenceOperations
     @brief Класс функционального объекта, проверяющего, что все элементы
     последовательности удовлетворяют предикату.
@@ -811,6 +813,8 @@ namespace ural
             return result;
         }
     };
+}
+// namespace v0
 }
 //namespace ural
 

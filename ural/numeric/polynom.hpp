@@ -204,7 +204,7 @@ namespace ural
         typedef A coefficient_type;
 
         /// @brief Тип контейнера коэффициентов
-        typedef ural::vector<coefficient_type, Alloc> coefficients_container;
+        using coefficients_container = ural::experimental::vector<coefficient_type, Alloc>;
 
         /// @brief Тип для представления размера
         typedef typename coefficients_container::size_type size_type;

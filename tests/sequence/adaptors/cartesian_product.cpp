@@ -7,6 +7,8 @@
 #include <boost/test/unit_test.hpp>
 #include "../../defs.hpp"
 
+namespace ural_ex = ural::experimental;
+
 BOOST_AUTO_TEST_CASE(cartesian_product_sequence_test)
 {
     auto digits = ural::numbers(0, 10);
@@ -35,7 +37,7 @@ BOOST_AUTO_TEST_CASE(cartesian_product_lexicographical_sorted)
 
     BOOST_CHECK(ural::is_sorted(r2));
 
-    ural::unique_erase(r2);
+    ural_ex::unique_erase(r2);
 
     BOOST_CHECK_EQUAL(100U, r2.size());
     BOOST_CHECK(ural::make_tuple(0, 0) == *r2.begin());

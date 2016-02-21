@@ -17,6 +17,7 @@
 #include <ural/algorithm.hpp>
 #include <ural/archetypes.hpp>
 #include <ural/container/vector.hpp>
+#include <ural/container/flat_set.hpp>
 #include <ural/math.hpp>
 #include <ural/sequence/all.hpp>
 #include <ural/type_traits.hpp>
@@ -354,7 +355,8 @@ namespace
                                         std::unordered_multiset<int>,
                                         std::unordered_multimap<int, std::string>,
                                         std::string,
-                                        ural::vector<std::string>>;
+                                        ural::experimental::vector<std::string>,
+                                        ural::experimental::flat_set<std::string>>;
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(is_container_check_true, Container, Containers)
