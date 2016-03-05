@@ -27,6 +27,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Класс-характеристика преобразующая тип матрицы в соответствующий
     тип треугольной матрицы.
     @param M исходная матрица
@@ -191,7 +193,7 @@ namespace ural
 
         for(auto n = max_iter; n > 0; -- n)
         {
-            auto qr = ural::QR_decomposition(std::move(A));
+            auto qr = ::ural::experimental::QR_decomposition(std::move(A));
 
             A = prod(qr[ural::_2], qr[ural::_1]);
             V = prod(V, qr[ural::_1]);
@@ -199,6 +201,8 @@ namespace ural
 
         return std::make_tuple(std::move(A), std::move(V));
     }
+}
+// namespace experimental
 }
 // namespace ural
 

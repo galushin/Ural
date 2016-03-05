@@ -82,7 +82,7 @@ namespace experimental
         */
         constexpr first_function_type const & first_function() const
         {
-            return ::ural::get(base_, ural::_1);
+            return ::ural::experimental::get(base_, ural::_1);
         }
 
         /** @brief Второй функциональный объект
@@ -90,7 +90,7 @@ namespace experimental
         */
         constexpr second_function_type const & second_function() const
         {
-            return ::ural::get(base_, ural::_2);
+            return ::ural::experimental::get(base_, ural::_2);
         }
 
         /** @brief Применение функционального объекта

@@ -36,6 +36,8 @@
 
 namespace ural
 {
+inline namespace v0
+{
     /** @brief Класс, представляющий дискретное распределение
     @tparam IntType тип значений
     @todo Пересмотр и оптимизация средств ввода/вывода
@@ -455,7 +457,11 @@ namespace ural
         }
         return is;
     }
+}
+// inline namespace v0
 
+namespace experimental
+{
     // Векторное распределение
     /** @brief Адаптор распределения, генерирующий вектор независимых одинаково
     распределённых случайных величин
@@ -764,7 +770,7 @@ namespace ural
         */
         multivariate_normal_distribution(result_type mu, matrix_type const & C)
          : mu_(std::move(mu))
-         , L_(ural::cholesky_decomposition(C))
+         , L_(::ural::experimental::cholesky_decomposition(C))
          , base_{mu.size()}
         {
             assert(mu.size() == C.size2());
@@ -848,7 +854,7 @@ namespace ural
 
     private:
         result_type mu_;
-        typename make_triangular_matrix<matrix_type, boost::numeric::ublas::lower>::type
+        typename ural::experimental::make_triangular_matrix<matrix_type, boost::numeric::ublas::lower>::type
             L_;
 
         iid_adaptor<std::normal_distribution<element_type>, result_type> base_;
@@ -873,6 +879,8 @@ namespace ural
     std::basic_istream<Char, Traits> &
     operator>>(std::basic_istream<Char, Traits> & is,
                multivariate_normal_distribution<Vector, Matrix> & d);
+}
+// namespace experimental
 }
 // namespace ural
 

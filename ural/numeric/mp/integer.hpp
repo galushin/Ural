@@ -32,6 +32,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Тип для представления результата операции @c div: одновременного
     вычисления частного и остатка
     @tparam T тип операнда
@@ -808,6 +810,8 @@ namespace ural
 
         return os;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

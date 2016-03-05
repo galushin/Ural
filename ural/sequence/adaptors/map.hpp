@@ -35,17 +35,17 @@ namespace ural
     template <class Sequence, size_t Index>
     class elemenents_sequence
      : public sequence_adaptor<elemenents_sequence<Sequence, Index>,
-                               transform_sequence<tuple_get<Index>, Sequence>>
+                               transform_sequence<experimental::tuple_get<Index>, Sequence>>
     {
         using Base = sequence_adaptor<elemenents_sequence<Sequence, Index>,
-                               transform_sequence<tuple_get<Index>, Sequence>>;
+                               transform_sequence<experimental::tuple_get<Index>, Sequence>>;
     public:
         /** @brief Конструктор
         @param seq базовая последовательность
         @post <tt> this->base() == seq </tt>
         */
         explicit elemenents_sequence(Sequence seq)
-         : Base(ural::make_transform_sequence(tuple_get<Index>{}, std::move(seq)))
+         : Base(ural::make_transform_sequence(experimental::tuple_get<Index>{}, std::move(seq)))
         {}
 
         //@{
@@ -68,7 +68,7 @@ namespace ural
 
         template <class OtherSequence>
         elemenents_sequence<OtherSequence, Index>
-        rebind_base(transform_sequence<tuple_get<Index>, OtherSequence> seq) const
+        rebind_base(transform_sequence<experimental::tuple_get<Index>, OtherSequence> seq) const
         {
             return elemenents_sequence<OtherSequence, Index>(seq.bases()[ural::_1]);
         }
@@ -99,12 +99,12 @@ namespace ural
         /** @brief Объект-тэг для создания последовательности ключей ассоциативного
         контейнера */
         constexpr auto const & map_keys
-            = odr_const<pipeable<elements_sequence_fn<0>>>;
+            = odr_const<experimental::pipeable<elements_sequence_fn<0>>>;
 
         /** @brief Объект-тэг для создания последовательности отоброжаемых значений
         ассоциативного контейнера */
         constexpr auto const & map_values
-            = odr_const<pipeable<elements_sequence_fn<1>>>;
+            = odr_const<experimental::pipeable<elements_sequence_fn<1>>>;
     }
 }
 // namespace ural

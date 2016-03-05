@@ -131,7 +131,7 @@ namespace ural
 
         /// @brief Объект для создания @c move_sequence в конвейерном стиле.
         constexpr auto const & moved
-            = odr_const<pipeable<make_move_sequence_fn>>;
+            = odr_const<experimental::pipeable<make_move_sequence_fn>>;
     }
 
     /** @brief Создание последовательности на основе

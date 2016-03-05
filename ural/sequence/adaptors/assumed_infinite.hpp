@@ -102,7 +102,7 @@ namespace ural
         исчерпана в данном контексте, в функциональном стиле.
         */
         constexpr auto const & assumed_infinite
-            = odr_const<pipeable<assume_infinite_fn>>;
+            = odr_const<experimental::pipeable<assume_infinite_fn>>;
     }
 }
 // namespace ural

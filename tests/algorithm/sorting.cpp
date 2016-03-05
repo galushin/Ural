@@ -33,6 +33,8 @@
 
 namespace
 {
+    namespace ural_ex = ::ural::experimental;
+
     typedef boost::mpl::list<std::forward_list<int>,
                              std::list<int>,
                              std::vector<int>,
@@ -1060,7 +1062,7 @@ BOOST_AUTO_TEST_CASE(make_heap_test)
 {
     std::vector<int> v { 3, 1, 4, 1, 5, 9 };
 
-    auto cmp = ural::callable_tracer<ural::less<int>>{};
+    auto cmp = ural_ex::callable_tracer<ural::less<int>>{};
     cmp.reset_calls();
 
     auto result = ural::make_heap(v, cmp);
@@ -1079,7 +1081,7 @@ BOOST_AUTO_TEST_CASE(make_heap_odd_size_test)
 {
     std::vector<int> v { 3, 1, 4, 1, 5, 9, 2};
 
-    auto cmp = ural::callable_tracer<ural::less<int>>{};
+    auto cmp = ural_ex::callable_tracer<ural::less<int>>{};
     cmp.reset_calls();
 
     auto const result = ural::make_heap(v, cmp);

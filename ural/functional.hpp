@@ -292,7 +292,7 @@ namespace ural
         {
             if(this->compare()(new_value, this->result()))
             {
-                ural::get(impl_, ural::_1) = std::forward<Arg>(new_value);
+                ural::experimental::get(impl_, ural::_1) = std::forward<Arg>(new_value);
                 return true;
             }
 
@@ -305,7 +305,7 @@ namespace ural
         */
         value_type const & result() const
         {
-            return ural::get(impl_, ural::_1);
+            return ural::experimental::get(impl_, ural::_1);
         }
 
         /** @brief Используемая функция сравнения
@@ -313,7 +313,7 @@ namespace ural
         */
         Compare const & compare() const
         {
-            return ural::get(impl_, ural::_2);
+            return ural::experimental::get(impl_, ural::_2);
         }
 
     private:

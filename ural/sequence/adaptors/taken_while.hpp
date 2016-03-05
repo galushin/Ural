@@ -116,7 +116,7 @@ namespace ural
         в конвейерном стиле.
         */
         constexpr auto const & taken_while
-            = odr_const<pipeable_maker<make_taken_while_fn>>;
+            = odr_const<experimental::pipeable_maker<make_taken_while_fn>>;
 
     }
 }

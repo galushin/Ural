@@ -28,6 +28,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Последовательность чисел, заданная наименьшим и наибольшим
     значением
     @tparam Number тип числа
@@ -154,20 +156,26 @@ namespace ural
         template <class Vector>
         auto operator()(Vector const & v) const
         {
-            return ural::numbers_fn{}(0, v.size());
+            return ::ural::experimental::numbers_fn{}(0, v.size());
         }
     };
+}
+// namespace experimental
 
+inline namespace v0
+{
     namespace
     {
         /// @brief Функциональный объект для создания @c numbers_sequence
-        constexpr auto const & numbers = odr_const<numbers_fn>;
+        constexpr auto const & numbers = odr_const<::ural::experimental::numbers_fn>;
 
         /** @brief Функциональный объект для создания последовательности
         индексов контейнера
         */
-        constexpr auto const & indices_of = odr_const<indices_of_fn>;
+        constexpr auto const & indices_of = odr_const<::ural::experimental::indices_of_fn>;
     }
+}
+// inline namespace v0
 }
 // namespace ural
 

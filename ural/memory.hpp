@@ -424,7 +424,7 @@ inline namespace v0
         */
         copy_ptr & operator=(copy_ptr const & x)
         {
-            return ::ural::copy_and_swap(*this, x);
+            return ::ural::experimental::copy_and_swap(*this, x);
         }
 
         /** @brief Присваивание умного указателя совместимого типа

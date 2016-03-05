@@ -38,6 +38,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Класс исключения для некорректных попыток создать рациональное
     число
     */
@@ -137,7 +139,7 @@ namespace ural
     */
     friend constexpr rational abs(rational x)
     {
-        return rational(ural::abs_constexpr(std::move(x.num_)),
+        return rational(ural::experimental::abs_constexpr(std::move(x.num_)),
                         std::move(x.denom_),
                         unsafe_reduced_tag{});
     }
@@ -182,7 +184,7 @@ namespace ural
                         IntegerType const & g)
         {
             return (num % g == 0 && denom % g == 0
-                    && ural::gcd(num / g, denom / g) == 1)
+                    && ::ural::experimental::gcd(num / g, denom / g) == 1)
                     ? num : throw std::logic_error("Incorrect gcd");
         }
 
@@ -284,7 +286,7 @@ namespace ural
         constexpr rational(IntegerType num, IntegerType denom)
          : rational(prepare_numerator(num, denom),
                     prepare_denominator(denom),
-                    ural::gcd(num, denom),
+                    ::ural::experimental::gcd(num, denom),
                     unsafe_tag{})
         {}
 
@@ -329,7 +331,7 @@ namespace ural
                 denom = - denom;
             }
 
-            auto g = ural::gcd(num, denom);
+            auto g = ::ural::experimental::gcd(num, denom);
 
             return this->assign(std::move(num), std::move(denom), std::move(g),
                                 unsafe_tag{});
@@ -649,7 +651,7 @@ namespace ural
     constexpr rational<T>
     operator+(rational<T> const & x, rational<T> const & y)
     {
-        return sum_helper(x, y, ural::lcm(x.denominator(), y.denominator()));
+        return sum_helper(x, y, ::ural::experimental::lcm(x.denominator(), y.denominator()));
     }
 
     /** @brief Сумма рационального и целого чисел
@@ -882,6 +884,8 @@ namespace ural
         using std::isfinite;
         return isfinite(x.numerator());
     }
+}
+// namespace experimental
 }
 // namespace ural
 

@@ -265,7 +265,7 @@ namespace ural
         в конвейерном стиле.
         */
         constexpr auto const & replaced
-            = odr_const<pipeable_maker<make_replace_sequence_fn>>;
+            = odr_const<experimental::pipeable_maker<make_replace_sequence_fn>>;
 
         /// @brief Функциональный объект для создания @c replace_if_sequence
         constexpr auto const & make_replace_if_sequence
@@ -275,7 +275,7 @@ namespace ural
         в конвейерном стиле.
         */
         constexpr auto const & replaced_if
-            = odr_const<pipeable_maker<make_replace_if_sequence_fn>>;
+            = odr_const<experimental::pipeable_maker<make_replace_if_sequence_fn>>;
     }
 }
 // namespace ural

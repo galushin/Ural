@@ -30,8 +30,10 @@
 
 namespace
 {
-    typedef ural::tracing_allocator<char> Char_alloc;
-    typedef ural::tracing_allocator<int> Int_alloc;
+    namespace ural_ex = ::ural::experimental;
+
+    typedef ural_ex::tracing_allocator<char> Char_alloc;
+    typedef ural_ex::tracing_allocator<int> Int_alloc;
 
     typedef boost::mpl::list<ural::experimental::vector<int, Int_alloc>>
         Sequence_containers;
@@ -595,8 +597,8 @@ BOOST_AUTO_TEST_CASE(vector_allocator_constructor_regression)
 {
     // Регрессия: при вызове конструктора без параметров память не распределяется
 
-    typedef ural::tracing_allocator<int> Alloc;
-    typedef ural::experimental::vector<int, Alloc> Container;
+    typedef ural_ex::tracing_allocator<int> Alloc;
+    typedef ural_ex::vector<int, Alloc> Container;
 
     // временный объект
     Alloc::reset_traced_info();

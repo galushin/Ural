@@ -23,6 +23,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     template <class X>
     class numeric_policy
     {
@@ -129,6 +131,8 @@ namespace ural
         typedef std::pair<argument_type, result_type> Pair;
         std::vector<Pair> data_;
     };
+}
+// namespace experimental
 }
 // namespace ural
 

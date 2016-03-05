@@ -40,93 +40,95 @@ https://github.com/akrzemi1/Optional/blob/master/test_optional.cpp
 /// @cond false
 namespace
 {
-enum  State
-{
-    sDefaultConstructed,
-    sValueCopyConstructed,
-    sValueMoveConstructed,
-    sCopyConstructed,
-    sMoveConstructed,
-    sMoveAssigned,
-    sCopyAssigned,
-    sValueCopyAssigned,
-    sValueMoveAssigned,
-    sMovedFrom,
-    sValueConstructed
-};
+    namespace tr2 = ural;
+    namespace ural_ex = ::ural::experimental;
 
-struct OracleVal
-{
-    State s;
-    int i;
-    OracleVal(int i = 0) : s(sValueConstructed), i(i) {}
-};
-
-struct Oracle
-{
-    friend bool operator==( Oracle const& a, Oracle const& b )
-    { return a.val.i == b.val.i; }
-
-    friend bool operator!=( Oracle const& a, Oracle const& b )
-    { return a.val.i != b.val.i; }
-
-    State s;
-    OracleVal val;
-
-    Oracle() : s(sDefaultConstructed) {}
-    Oracle(const OracleVal& v) : s(sValueCopyConstructed), val(v) {}
-    Oracle(OracleVal&& v)
-     : s(sValueMoveConstructed), val(std::move(v)) {v.s = sMovedFrom;}
-    Oracle(const Oracle& o) : s(sCopyConstructed), val(o.val) {}
-    Oracle(Oracle&& o)
-     : s(sMoveConstructed), val(std::move(o.val)) {o.s = sMovedFrom;}
-
-    Oracle& operator=(const OracleVal& v)
-    { s = sValueCopyConstructed; val = v; return *this; }
-    Oracle& operator=(OracleVal&& v)
+    enum  State
     {
-        s = sValueMoveConstructed; val = std::move(v); v.s = sMovedFrom;
-        return *this;
-    }
-    Oracle& operator=(const Oracle& o)
-    { s = sCopyConstructed; val = o.val; return *this; }
-    Oracle& operator=(Oracle&& o)
+        sDefaultConstructed,
+        sValueCopyConstructed,
+        sValueMoveConstructed,
+        sCopyConstructed,
+        sMoveConstructed,
+        sMoveAssigned,
+        sCopyAssigned,
+        sValueCopyAssigned,
+        sValueMoveAssigned,
+        sMovedFrom,
+        sValueConstructed
+    };
+
+    struct OracleVal
     {
-        s = sMoveConstructed; val = std::move(o.val); o.s = sMovedFrom;
-        return *this;
-    }
-};
+        State s;
+        int i;
+        OracleVal(int i = 0) : s(sValueConstructed), i(i) {}
+    };
 
-struct Guard
-{
-    std::string val;
-    Guard() : val{} {}
-    explicit Guard(std::string s, int = 0) : val(s) {}
-    Guard(const Guard&) = delete;
-    Guard(Guard&&) = delete;
-    void operator=(const Guard&) = delete;
-    void operator=(Guard&&) = delete;
-};
+    struct Oracle
+    {
+        friend bool operator==( Oracle const& a, Oracle const& b )
+        { return a.val.i == b.val.i; }
 
-struct ExplicitStr
-{
-    std::string s;
-    explicit ExplicitStr(const char* chp) : s(chp) {};
-};
+        friend bool operator!=( Oracle const& a, Oracle const& b )
+        { return a.val.i != b.val.i; }
 
-struct Date
-{
-    int i;
-    Date() = delete;
-    Date(int i) : i{i} {};
-    Date(Date&& d) : i(d.i) { d.i = 0; }
-    Date(const Date&) = delete;
-    Date& operator=(const Date&) = delete;
-    Date& operator=(Date&& d) { i = d.i; d.i = 0; return *this;};
-};
+        State s;
+        OracleVal val;
 
-namespace tr2 = ural;
-/// @endcond
+        Oracle() : s(sDefaultConstructed) {}
+        Oracle(const OracleVal& v) : s(sValueCopyConstructed), val(v) {}
+        Oracle(OracleVal&& v)
+         : s(sValueMoveConstructed), val(std::move(v)) {v.s = sMovedFrom;}
+        Oracle(const Oracle& o) : s(sCopyConstructed), val(o.val) {}
+        Oracle(Oracle&& o)
+         : s(sMoveConstructed), val(std::move(o.val)) {o.s = sMovedFrom;}
+
+        Oracle& operator=(const OracleVal& v)
+        { s = sValueCopyConstructed; val = v; return *this; }
+        Oracle& operator=(OracleVal&& v)
+        {
+            s = sValueMoveConstructed; val = std::move(v); v.s = sMovedFrom;
+            return *this;
+        }
+        Oracle& operator=(const Oracle& o)
+        { s = sCopyConstructed; val = o.val; return *this; }
+        Oracle& operator=(Oracle&& o)
+        {
+            s = sMoveConstructed; val = std::move(o.val); o.s = sMovedFrom;
+            return *this;
+        }
+    };
+
+    struct Guard
+    {
+        std::string val;
+        Guard() : val{} {}
+        explicit Guard(std::string s, int = 0) : val(s) {}
+        Guard(const Guard&) = delete;
+        Guard(Guard&&) = delete;
+        void operator=(const Guard&) = delete;
+        void operator=(Guard&&) = delete;
+    };
+
+    struct ExplicitStr
+    {
+        std::string s;
+        explicit ExplicitStr(const char* chp) : s(chp) {};
+    };
+
+    struct Date
+    {
+        int i;
+        Date() = delete;
+        Date(int i) : i{i} {};
+        Date(Date&& d) : i(d.i) { d.i = 0; }
+        Date(const Date&) = delete;
+        Date& operator=(const Date&) = delete;
+        Date& operator=(Date&& d) { i = d.i; d.i = 0; return *this;};
+    };
+    /// @endcond
+}
 
 BOOST_AUTO_TEST_CASE(empty_init_list_ctor)
 {
@@ -270,26 +272,29 @@ BOOST_AUTO_TEST_CASE(optional_ref_assignment_test)
     BOOST_CHECK (!oi);
 }
 
-/// @cond false
-template <class T>
-struct MoveAware
+namespace
 {
-  T val;
-  bool moved;
-  MoveAware(T val) : val(val), moved(false) {}
-  MoveAware(MoveAware const&) = delete;
-  MoveAware(MoveAware&& rhs) : val(rhs.val), moved(rhs.moved) {
-    rhs.moved = true;
-  }
-  MoveAware& operator=(MoveAware const&) = delete;
-  MoveAware& operator=(MoveAware&& rhs) {
-    val = (rhs.val);
-    moved = (rhs.moved);
-    rhs.moved = true;
-    return *this;
-  }
-};
-/// @endcond
+    /// @cond false
+    template <class T>
+    struct MoveAware
+    {
+      T val;
+      bool moved;
+      MoveAware(T val) : val(val), moved(false) {}
+      MoveAware(MoveAware const&) = delete;
+      MoveAware(MoveAware&& rhs) : val(rhs.val), moved(rhs.moved) {
+        rhs.moved = true;
+      }
+      MoveAware& operator=(MoveAware const&) = delete;
+      MoveAware& operator=(MoveAware&& rhs) {
+        val = (rhs.val);
+        moved = (rhs.moved);
+        rhs.moved = true;
+        return *this;
+      }
+    };
+    /// @endcond
+}
 
 BOOST_AUTO_TEST_CASE(moved_from_state)
 {
@@ -424,14 +429,17 @@ BOOST_AUTO_TEST_CASE(example_guard)
   //FAILS: ogb = {};                          // ERROR: Guard is not Moveable
 }
 
-/// @cond false
-struct Process
+namespace
 {
-    static void process(){}
-    static void process(int){}
-    static void processNil(){}
-};
-/// @endcond
+    /// @cond false
+    struct Process
+    {
+        static void process(){}
+        static void process(int){}
+        static void processNil(){}
+    };
+    /// @endcond
+}
 
 BOOST_AUTO_TEST_CASE(example1)
 {
@@ -560,21 +568,24 @@ BOOST_AUTO_TEST_CASE(example_optional_arg)
   }                                              // guard 2 released (in dtor)
 }
 
-/// @cond false
-std::tuple<Date, Date, Date> getStartMidEnd();
-std::tuple<Date, Date, Date> getStartMidEnd()
-{ return std::tuple<Date, Date, Date>{Date{1}, Date{2}, Date{3}}; }
-
-ural::optional<char> readNextChar();
-ural::optional<char> readNextChar(){ return{}; }
-
-struct Runner
+namespace
 {
-    static void run(ural::optional<std::string>) {}
-    static void run(std::complex<double>) {}
-    static void run(Date const&, Date const&, Date const&) {}
-};
-/// @endcond
+    /// @cond false
+    std::tuple<Date, Date, Date> getStartMidEnd();
+    std::tuple<Date, Date, Date> getStartMidEnd()
+    { return std::tuple<Date, Date, Date>{Date{1}, Date{2}, Date{3}}; }
+
+    ural::optional<char> readNextChar();
+    ural::optional<char> readNextChar(){ return{}; }
+
+    struct Runner
+    {
+        static void run(ural::optional<std::string>) {}
+        static void run(std::complex<double>) {}
+        static void run(Date const&, Date const&, Date const&) {}
+    };
+    /// @endcond
+}
 
 BOOST_AUTO_TEST_CASE(example_date)
 {
@@ -586,11 +597,14 @@ BOOST_AUTO_TEST_CASE(example_date)
   Runner::run(*start, *mid, *end);
 }
 
-template <class T>
-void assign_norebind(tr2::optional<T&>& optref, T& obj)
+namespace
 {
-  if (optref) *optref = obj;
-  else        optref.emplace(obj);
+    template <class T>
+    void assign_norebind(tr2::optional<T&>& optref, T& obj)
+    {
+      if (optref) *optref = obj;
+      else        optref.emplace(obj);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(example_conceptual_model)
@@ -822,16 +836,19 @@ BOOST_AUTO_TEST_CASE(mixed_order)
   BOOST_CHECK ( (1 >= o1));
 }
 
-/// @cond false
-struct BadRelops
+namespace
 {
-  int i;
-};
+    /// @cond false
+    struct BadRelops
+    {
+      int i;
+    };
 
-constexpr bool operator<(BadRelops a, BadRelops b) { return a.i < b.i; }
-// intentional error!
-constexpr bool operator>(BadRelops a, BadRelops b) { return a.i < b.i; }
-///  @endcond
+    constexpr bool operator<(BadRelops a, BadRelops b) { return a.i < b.i; }
+    // intentional error!
+    constexpr bool operator>(BadRelops a, BadRelops b) { return a.i < b.i; }
+    ///  @endcond
+}
 
 BOOST_AUTO_TEST_CASE(bad_relops)
 {
@@ -1192,27 +1209,30 @@ BOOST_AUTO_TEST_CASE(optional_hashing)
     BOOST_CHECK(set.find({"Qa1#"}) != set.end());
 }
 
-/// @cond false
-// optional_ref_emulation
-template <class T>
-struct generic
+namespace
 {
-  typedef T type;
-};
+    /// @cond false
+    // optional_ref_emulation
+    template <class T>
+    struct generic
+    {
+      typedef T type;
+    };
 
-template <class U>
-struct generic<U&>
-{
-  typedef std::reference_wrapper<U> type;
-};
+    template <class U>
+    struct generic<U&>
+    {
+      typedef std::reference_wrapper<U> type;
+    };
 
-template <class X>
-bool generic_fun()
-{
-  ural::optional<typename generic<X>::type> op;
-  return bool(op);
+    template <class X>
+    bool generic_fun()
+    {
+      ural::optional<typename generic<X>::type> op;
+      return bool(op);
+    }
+    /// @endcond
 }
-/// @endcond
 
 BOOST_AUTO_TEST_CASE(optional_ref_emulation)
 {
@@ -1289,28 +1309,31 @@ BOOST_AUTO_TEST_CASE(optional_ref_hashing)
     BOOST_CHECK(set.find({sCAT}) != set.end());
 }
 
-/// @cond false
-struct Combined
+namespace
 {
-  int m;
-  int n;
+    /// @cond false
+    struct Combined
+    {
+      int m;
+      int n;
 
-  constexpr Combined() : m{5}, n{6} {}
-  constexpr Combined(int m, int n) : m{m}, n{n} {}
-};
+      constexpr Combined() : m{5}, n{6} {}
+      constexpr Combined(int m, int n) : m{m}, n{n} {}
+    };
 
-struct Nasty
-{
-  int m;
-  int n;
+    struct Nasty
+    {
+      int m;
+      int n;
 
-  constexpr Nasty() : m{5}, n{6} {}
-  constexpr Nasty(int m, int n) : m{m}, n{n} {}
+      constexpr Nasty() : m{5}, n{6} {}
+      constexpr Nasty(int m, int n) : m{m}, n{n} {}
 
-  int operator&() { return n; }
-  int operator&() const { return n; }
-};
-/// @endcond
+      int operator&() { return n; }
+      int operator&() const { return n; }
+    };
+    /// @endcond
+}
 
 BOOST_AUTO_TEST_CASE(arrow_operator)
 {
@@ -1363,98 +1386,101 @@ BOOST_AUTO_TEST_CASE(arrow_wit_optional_ref)
 }
 
 //// constexpr tests
-
-/// @cond false
-// these 4 classes have different noexcept signatures in move operations
-struct NothrowBoth {
-  NothrowBoth(NothrowBoth&&) noexcept(true) {};
-  void operator=(NothrowBoth&&) noexcept(true) {};
-};
-struct NothrowCtor {
-  NothrowCtor(NothrowCtor&&) noexcept(true) {};
-  void operator=(NothrowCtor&&) noexcept(false) {};
-};
-struct NothrowAssign {
-  NothrowAssign(NothrowAssign&&) noexcept(false) {};
-  void operator=(NothrowAssign&&) noexcept(true) {};
-};
-struct NothrowNone {
-  NothrowNone(NothrowNone&&) noexcept(false) {};
-  void operator=(NothrowNone&&) noexcept(false) {};
-};
-
-struct Previous_declarator
+namespace
 {
-    static void test_noexcept()
+    /// @cond false
+    // these 4 classes have different noexcept signatures in move operations
+    struct NothrowBoth {
+      NothrowBoth(NothrowBoth&&) noexcept(true) {};
+      void operator=(NothrowBoth&&) noexcept(true) {};
+    };
+    struct NothrowCtor {
+      NothrowCtor(NothrowCtor&&) noexcept(true) {};
+      void operator=(NothrowCtor&&) noexcept(false) {};
+    };
+    struct NothrowAssign {
+      NothrowAssign(NothrowAssign&&) noexcept(false) {};
+      void operator=(NothrowAssign&&) noexcept(true) {};
+    };
+    struct NothrowNone {
+      NothrowNone(NothrowNone&&) noexcept(false) {};
+      void operator=(NothrowNone&&) noexcept(false) {};
+    };
+
+    struct Previous_declarator
     {
-      {
-          static_assert(std::is_nothrow_move_assignable<NothrowBoth>::value, "WTF!");
-          static_assert(std::is_nothrow_move_constructible<NothrowBoth>::value, "WTF!");
+        static void test_noexcept()
+        {
+          {
+              static_assert(std::is_nothrow_move_assignable<NothrowBoth>::value, "WTF!");
+              static_assert(std::is_nothrow_move_constructible<NothrowBoth>::value, "WTF!");
 
-        tr2::optional<NothrowBoth> b1, b2;
-        static_assert(noexcept(tr2::optional<NothrowBoth>{std::move(b1)}), "bad noexcept!");
-        static_assert(noexcept(b1 = std::move(b2)), "bad noexcept!");
-      }
-      {
-        tr2::optional<NothrowCtor> c1, c2;
-        static_assert(noexcept(tr2::optional<NothrowCtor>{std::move(c1)}), "bad noexcept!");
-        static_assert(!noexcept(c1 = std::move(c2)), "bad noexcept!");
-      }
-      {
-        tr2::optional<NothrowAssign> a1, a2;
-        static_assert(!noexcept(tr2::optional<NothrowAssign>{std::move(a1)}), "bad noexcept!");
-        static_assert(!noexcept(a1 = std::move(a2)), "bad noexcept!");
-      }
-      {
-        tr2::optional<NothrowNone> n1, n2;
-        static_assert(!noexcept(tr2::optional<NothrowNone>{std::move(n1)}), "bad noexcept!");
-        static_assert(!noexcept(n1 = std::move(n2)), "bad noexcept!");
-      }
-    }
+            tr2::optional<NothrowBoth> b1, b2;
+            static_assert(noexcept(tr2::optional<NothrowBoth>{std::move(b1)}), "bad noexcept!");
+            static_assert(noexcept(b1 = std::move(b2)), "bad noexcept!");
+          }
+          {
+            tr2::optional<NothrowCtor> c1, c2;
+            static_assert(noexcept(tr2::optional<NothrowCtor>{std::move(c1)}), "bad noexcept!");
+            static_assert(!noexcept(c1 = std::move(c2)), "bad noexcept!");
+          }
+          {
+            tr2::optional<NothrowAssign> a1, a2;
+            static_assert(!noexcept(tr2::optional<NothrowAssign>{std::move(a1)}), "bad noexcept!");
+            static_assert(!noexcept(a1 = std::move(a2)), "bad noexcept!");
+          }
+          {
+            tr2::optional<NothrowNone> n1, n2;
+            static_assert(!noexcept(tr2::optional<NothrowNone>{std::move(n1)}), "bad noexcept!");
+            static_assert(!noexcept(n1 = std::move(n2)), "bad noexcept!");
+          }
+        }
 
 
-    static void constexpr_test_disengaged()
-    {
-        static_assert(std::is_trivially_destructible<int>::value,
-                      "int must have trivial destructor");
-        constexpr ural::details::optional_base_constexpr<int> ob0{};
+        static void constexpr_test_disengaged()
+        {
+            static_assert(std::is_trivially_destructible<int>::value,
+                          "int must have trivial destructor");
+            constexpr ural::details::optional_base_constexpr<int> ob0{};
 
-        constexpr tr2::optional<int> g0{};
-        constexpr tr2::optional<int> g1{tr2::nullopt};
-        static_assert( !g0, "initialized!" );
-        static_assert( !g1, "initialized!" );
+            constexpr tr2::optional<int> g0{};
+            constexpr tr2::optional<int> g1{tr2::nullopt};
+            static_assert( !g0, "initialized!" );
+            static_assert( !g1, "initialized!" );
 
-        static_assert( bool(g1) == bool(g0), "ne!" );
+            static_assert( bool(g1) == bool(g0), "ne!" );
 
-        static_assert( g1 == g0, "ne!" );
-        static_assert( !(g1 != g0), "ne!" );
-        static_assert( g1 >= g0, "ne!" );
-        static_assert( !(g1 > g0), "ne!" );
-        static_assert( g1 <= g0, "ne!" );
-        static_assert( !(g1 < g0), "ne!" );
+            static_assert( g1 == g0, "ne!" );
+            static_assert( !(g1 != g0), "ne!" );
+            static_assert( g1 >= g0, "ne!" );
+            static_assert( !(g1 > g0), "ne!" );
+            static_assert( g1 <= g0, "ne!" );
+            static_assert( !(g1 < g0), "ne!" );
 
-        static_assert( g1 == tr2::nullopt, "!" );
-        static_assert( !(g1 != tr2::nullopt), "!" );
-        static_assert( g1 <= tr2::nullopt, "!" );
-        static_assert( !(g1 < tr2::nullopt), "!" );
-        static_assert( g1 >= tr2::nullopt, "!" );
-        static_assert( !(g1 > tr2::nullopt), "!" );
+            static_assert( g1 == tr2::nullopt, "!" );
+            static_assert( !(g1 != tr2::nullopt), "!" );
+            static_assert( g1 <= tr2::nullopt, "!" );
+            static_assert( !(g1 < tr2::nullopt), "!" );
+            static_assert( g1 >= tr2::nullopt, "!" );
+            static_assert( !(g1 > tr2::nullopt), "!" );
 
-        static_assert(  (tr2::nullopt == g0), "!" );
-        static_assert( !(tr2::nullopt != g0), "!" );
-        static_assert(  (tr2::nullopt >= g0), "!" );
-        static_assert( !(tr2::nullopt >  g0), "!" );
-        static_assert(  (tr2::nullopt <= g0), "!" );
-        static_assert( !(tr2::nullopt <  g0), "!" );
+            static_assert(  (tr2::nullopt == g0), "!" );
+            static_assert( !(tr2::nullopt != g0), "!" );
+            static_assert(  (tr2::nullopt >= g0), "!" );
+            static_assert( !(tr2::nullopt >  g0), "!" );
+            static_assert(  (tr2::nullopt <= g0), "!" );
+            static_assert( !(tr2::nullopt <  g0), "!" );
 
-        static_assert(  (g1 != tr2::optional<int>(1)), "!" );
-        static_assert( !(g1 == tr2::optional<int>(1)), "!" );
-        static_assert(  (g1 <  tr2::optional<int>(1)), "!" );
-        static_assert(  (g1 <= tr2::optional<int>(1)), "!" );
-        static_assert( !(g1 >  tr2::optional<int>(1)), "!" );
-        static_assert( !(g1 >  tr2::optional<int>(1)), "!" );
-    }
-};
+            static_assert(  (g1 != tr2::optional<int>(1)), "!" );
+            static_assert( !(g1 == tr2::optional<int>(1)), "!" );
+            static_assert(  (g1 <  tr2::optional<int>(1)), "!" );
+            static_assert(  (g1 <= tr2::optional<int>(1)), "!" );
+            static_assert( !(g1 >  tr2::optional<int>(1)), "!" );
+            static_assert( !(g1 >  tr2::optional<int>(1)), "!" );
+        }
+    };
+    /// @endcond
+}
 
 BOOST_AUTO_TEST_CASE(optional_init_test)
 {
@@ -1497,20 +1523,23 @@ BOOST_AUTO_TEST_CASE(optional_refs_tests)
     BOOST_CHECK(true);
 };
 
-namespace constexpr_optional_ref_and_arrow
+namespace
 {
-  using namespace ural;
-  constexpr Combined c{1, 2};
-  constexpr optional<Combined const&> oc = c;
-  static_assert(oc, "WTF!");
-  static_assert(oc->m == 1, "WTF!");
-  static_assert(oc->n == 2, "WTF!");
+    namespace constexpr_optional_ref_and_arrow
+    {
+      using namespace ural;
+      constexpr Combined c{1, 2};
+      constexpr optional<Combined const&> oc = c;
+      static_assert(oc, "WTF!");
+      static_assert(oc->m == 1, "WTF!");
+      static_assert(oc->n == 2, "WTF!");
+    }
 }
 
 BOOST_AUTO_TEST_CASE(optional_test)
 {
     typedef int Basic_type;
-    typedef ural::regular_tracer<Basic_type, ural::single_thread_policy> Type;
+    typedef ural_ex::regular_tracer<Basic_type, ural::single_thread_policy> Type;
 
     //Конструктор без параметров: конструктор и деструктор объекта не вызывались
     auto const destroyed_old = Type::destroyed_objects();
@@ -1918,5 +1947,3 @@ BOOST_AUTO_TEST_CASE(optional_type_traits_test)
     static_assert(!std::is_nothrow_move_assignable<Unsafe>::value, "WTF!");
 }
 // end constexpr tests
-/// @endcond
-}

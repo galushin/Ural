@@ -209,7 +209,8 @@ namespace experimental
 
         void swap(buffer & x)
         {
-            ural::swap_allocators{}(this->allocator_ref(), x.allocator_ref());
+            ::ural::experimental::swap_allocators{}(this->allocator_ref(),
+                                                    x.allocator_ref());
             this->unsafe_swap_pointers(x);
         }
 

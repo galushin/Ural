@@ -733,7 +733,7 @@ BOOST_AUTO_TEST_CASE(replace_test_different_types)
     std::vector<int> s_std = {5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
     std::forward_list<int> s_ural(s_std.begin(), s_std.end());
 
-    auto const old_value = ural::rational<int>(8);
+    auto const old_value = ural_ex::rational<int>(8);
     auto const new_value = 88;
 
     BOOST_CHECK_EQUAL(old_value.denominator(), 1);

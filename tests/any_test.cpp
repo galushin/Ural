@@ -28,12 +28,14 @@
 
 namespace
 {
+    namespace ural_ex = ::ural::experimental;
+
     typedef boost::mpl::list<int, std::string> any_test_types;
 }
 
 BOOST_AUTO_TEST_CASE(any_default_ctor_test)
 {
-    ural::any a;
+    ural_ex::any a;
 
     bool is_empty = a.empty();
 
@@ -42,14 +44,14 @@ BOOST_AUTO_TEST_CASE(any_default_ctor_test)
 
 BOOST_AUTO_TEST_CASE(any_value_ctor_saves)
 {
-    typedef ural::regular_tracer<int> Type;
+    typedef ural_ex::regular_tracer<int> Type;
     auto const old_active = Type::active_objects();
     auto const old_constructed = Type::constructed_objects();
     auto const old_move_ctor_count = Type::move_ctor_count();
     auto const old_destroyed = Type::destroyed_objects();
 
     {
-        ural::any const a(Type(42));
+        ural_ex::any const a(Type(42));
 
         BOOST_CHECK(!a.empty());
 
@@ -65,7 +67,7 @@ BOOST_AUTO_TEST_CASE(any_value_ctor_saves)
 
 BOOST_AUTO_TEST_CASE(any_value_ctor_from_lvalue)
 {
-    typedef ural::regular_tracer<int> Type;
+    typedef ural_ex::regular_tracer<int> Type;
 
     auto const old_active = Type::active_objects();
     auto const old_constructed = Type::constructed_objects();
@@ -74,7 +76,7 @@ BOOST_AUTO_TEST_CASE(any_value_ctor_from_lvalue)
 
     {
         auto const value = Type(42);
-        ural::any const a(value);
+        ural_ex::any const a(value);
 
         BOOST_CHECK(!a.empty());
 
@@ -90,13 +92,13 @@ BOOST_AUTO_TEST_CASE(any_value_ctor_from_lvalue)
 
 BOOST_AUTO_TEST_CASE(any_move_ctor)
 {
-    typedef ural::regular_tracer<std::string> Type;
+    typedef ural_ex::regular_tracer<std::string> Type;
 
     auto const old_active = Type::active_objects();
 
     {
         // Пустой
-        ural::any a0;
+        ural_ex::any a0;
         auto const a0_m = std::move(a0);
 
         BOOST_CHECK(a0.empty());
@@ -104,7 +106,7 @@ BOOST_AUTO_TEST_CASE(any_move_ctor)
 
         // Не пустой
         auto const value = Type("42");
-        ural::any a1(value);
+        ural_ex::any a1(value);
         auto const a1_m = std::move(a1);
 
         BOOST_CHECK(a1.empty());
@@ -118,13 +120,13 @@ BOOST_AUTO_TEST_CASE(any_move_ctor)
 
 BOOST_AUTO_TEST_CASE(any_swap_member_empty_and_empty)
 {
-    typedef ural::regular_tracer<std::string> Type;
+    typedef ural_ex::regular_tracer<std::string> Type;
 
     auto const old_active = Type::active_objects();
 
     {
-        ural::any x;
-        ural::any y;
+        ural_ex::any x;
+        ural_ex::any y;
 
         x.swap(y);
 
@@ -137,15 +139,15 @@ BOOST_AUTO_TEST_CASE(any_swap_member_empty_and_empty)
 
 BOOST_AUTO_TEST_CASE(any_swap_member_empty_and_value)
 {
-    typedef ural::regular_tracer<std::string> Type;
+    typedef ural_ex::regular_tracer<std::string> Type;
 
     auto const old_active = Type::active_objects();
 
     {
-        ural::any x;
+        ural_ex::any x;
 
         Type const y_value("42");
-        ural::any y(y_value);
+        ural_ex::any y(y_value);
 
         x.swap(y);
 
@@ -161,15 +163,15 @@ BOOST_AUTO_TEST_CASE(any_swap_member_empty_and_value)
 
 BOOST_AUTO_TEST_CASE(any_swap_member_value_and_empty)
 {
-    typedef ural::regular_tracer<std::string> Type;
+    typedef ural_ex::regular_tracer<std::string> Type;
 
     auto const old_active = Type::active_objects();
 
     {
-        ural::any x;
+        ural_ex::any x;
 
         Type const y_value("42");
-        ural::any y(y_value);
+        ural_ex::any y(y_value);
 
         y.swap(x);
 
@@ -185,18 +187,18 @@ BOOST_AUTO_TEST_CASE(any_swap_member_value_and_empty)
 
 BOOST_AUTO_TEST_CASE(any_swap_member_value_and_value)
 {
-    typedef ural::regular_tracer<int> Tx;
-    typedef ural::regular_tracer<std::string> Ty;
+    typedef ural_ex::regular_tracer<int> Tx;
+    typedef ural_ex::regular_tracer<std::string> Ty;
 
     auto const Tx_old_active = Tx::active_objects();
     auto const Ty_old_active = Ty::active_objects();
 
     {
         Tx const x_value(42);
-        ural::any x(x_value);
+        ural_ex::any x(x_value);
 
         Ty const y_value("42");
-        ural::any y(y_value);
+        ural_ex::any y(y_value);
 
         x.swap(y);
 
@@ -215,13 +217,13 @@ BOOST_AUTO_TEST_CASE(any_swap_member_value_and_value)
 
 BOOST_AUTO_TEST_CASE(any_move_assign_empty_and_empty)
 {
-    typedef ural::regular_tracer<std::string> Type;
+    typedef ural_ex::regular_tracer<std::string> Type;
 
     auto const old_active = Type::active_objects();
 
     {
-        ural::any x;
-        ural::any y;
+        ural_ex::any x;
+        ural_ex::any y;
 
         x = std::move(y);
 
@@ -234,15 +236,15 @@ BOOST_AUTO_TEST_CASE(any_move_assign_empty_and_empty)
 
 BOOST_AUTO_TEST_CASE(any_move_assign_empty_and_value)
 {
-    typedef ural::regular_tracer<std::string> Type;
+    typedef ural_ex::regular_tracer<std::string> Type;
 
     auto const old_active = Type::active_objects();
 
     {
-        ural::any x;
+        ural_ex::any x;
 
         Type const y_value("42");
-        ural::any y(y_value);
+        ural_ex::any y(y_value);
 
         x = std::move(y);
 
@@ -258,15 +260,15 @@ BOOST_AUTO_TEST_CASE(any_move_assign_empty_and_value)
 
 BOOST_AUTO_TEST_CASE(any_move_assign_value_and_empty)
 {
-    typedef ural::regular_tracer<std::string> Type;
+    typedef ural_ex::regular_tracer<std::string> Type;
 
     auto const old_active = Type::active_objects();
 
     {
         Type const x_value("42");
-        ural::any x(x_value);
+        ural_ex::any x(x_value);
 
-        ural::any y;
+        ural_ex::any y;
 
         x = std::move(y);
 
@@ -282,20 +284,20 @@ BOOST_AUTO_TEST_CASE(any_move_assign_value_and_empty)
 
 BOOST_AUTO_TEST_CASE(any_move_assign_value_and_value)
 {
-    typedef ural::regular_tracer<int> Tx;
-    typedef ural::regular_tracer<std::string> Ty;
+    typedef ural_ex::regular_tracer<int> Tx;
+    typedef ural_ex::regular_tracer<std::string> Ty;
 
     auto const Tx_old_active = Tx::active_objects();
     auto const Ty_old_active = Ty::active_objects();
 
     {
         Tx const x_value(42);
-        ural::any x(x_value);
+        ural_ex::any x(x_value);
 
         Ty const y_value("42");
-        ural::any y(y_value);
+        ural_ex::any y(y_value);
 
-       x = std::move(y);
+        x = std::move(y);
 
         BOOST_CHECK(!x.empty());
         BOOST_CHECK(x.get_pointer<Ty>() != nullptr);
@@ -312,8 +314,8 @@ BOOST_AUTO_TEST_CASE(any_move_assign_value_and_value)
 
 BOOST_AUTO_TEST_CASE(any_copy_ctor_from_empty_test)
 {
-    ural::any x;
-    ural::any y(x);
+    ural_ex::any x;
+    ural_ex::any y(x);
 
     BOOST_CHECK(x.empty());
     BOOST_CHECK(y.empty());
@@ -324,9 +326,9 @@ BOOST_AUTO_TEST_CASE(any_copy_ctor_from_value_test)
     typedef std::string Type;
 
     Type const x_value("ABC");
-    ural::any x(x_value);
+    ural_ex::any x(x_value);
 
-    ural::any y(x);
+    ural_ex::any y(x);
 
     BOOST_CHECK(!x.empty());
     BOOST_CHECK(!y.empty());
@@ -335,13 +337,13 @@ BOOST_AUTO_TEST_CASE(any_copy_ctor_from_value_test)
 
 BOOST_AUTO_TEST_CASE(any_copy_assign_empty_and_empty)
 {
-    typedef ural::regular_tracer<std::string> Type;
+    typedef ural_ex::regular_tracer<std::string> Type;
 
     auto const old_active = Type::active_objects();
 
     {
-        ural::any x;
-        ural::any y;
+        ural_ex::any x;
+        ural_ex::any y;
 
         x = y;
 
@@ -354,15 +356,15 @@ BOOST_AUTO_TEST_CASE(any_copy_assign_empty_and_empty)
 
 BOOST_AUTO_TEST_CASE(any_copy_assign_empty_and_value)
 {
-    typedef ural::regular_tracer<std::string> Type;
+    typedef ural_ex::regular_tracer<std::string> Type;
 
     auto const old_active = Type::active_objects();
 
     {
-        ural::any x;
+        ural_ex::any x;
 
         Type const y_value("42");
-        ural::any y(y_value);
+        ural_ex::any y(y_value);
 
         x = y;
 
@@ -380,16 +382,16 @@ BOOST_AUTO_TEST_CASE(any_copy_assign_empty_and_value)
 
 BOOST_AUTO_TEST_CASE(any_copy_assign_value_and_empty)
 {
-    typedef ural::regular_tracer<std::string> Type;
+    typedef ural_ex::regular_tracer<std::string> Type;
 
     auto const old_active = Type::active_objects();
 
     {
         Type const x_value("42");
-        ural::any x(x_value);
+        ural_ex::any x(x_value);
         BOOST_CHECK(!x.empty());
 
-        ural::any y;
+        ural_ex::any y;
 
         x = y;
 
@@ -401,18 +403,18 @@ BOOST_AUTO_TEST_CASE(any_copy_assign_value_and_empty)
 
 BOOST_AUTO_TEST_CASE(any_copy_assign_value_and_value)
 {
-    typedef ural::regular_tracer<int> Tx;
-    typedef ural::regular_tracer<std::string> Ty;
+    typedef ural_ex::regular_tracer<int> Tx;
+    typedef ural_ex::regular_tracer<std::string> Ty;
 
     auto const Tx_old_active = Tx::active_objects();
     auto const Ty_old_active = Ty::active_objects();
 
     {
         Tx const x_value(42);
-        ural::any x(x_value);
+        ural_ex::any x(x_value);
 
         Ty const y_value("42");
-        ural::any y(y_value);
+        ural_ex::any y(y_value);
 
         x = y;
 
@@ -434,18 +436,18 @@ BOOST_AUTO_TEST_CASE(any_get_const_pointer_test)
     typedef std::string Type;
 
     // Пустой
-    ural::any const a0;
+    ural_ex::any const a0;
 
     BOOST_CHECK(a0.get_pointer<Type>() == nullptr);
     BOOST_CHECK(a0.get_pointer<int>() == nullptr);
-    BOOST_CHECK_THROW(a0.get<int>(), ural::bad_any_cast);
-    BOOST_CHECK_THROW(a0.get<Type>(), ural::bad_any_cast);
+    BOOST_CHECK_THROW(a0.get<int>(), ural_ex::bad_any_cast);
+    BOOST_CHECK_THROW(a0.get<Type>(), ural_ex::bad_any_cast);
 
     try
     {
         a0.get<Type>();
     }
-    catch(ural::bad_any_cast & e)
+    catch(ural_ex::bad_any_cast & e)
     {
         BOOST_CHECK(e.source_type_info() == typeid(void));
         BOOST_CHECK(e.target_type_info() == typeid(Type));
@@ -457,17 +459,17 @@ BOOST_AUTO_TEST_CASE(any_get_const_pointer_test)
 
     // Не пустой
     auto const value = Type("42");
-    ural::any const a1(value);
+    ural_ex::any const a1(value);
 
     BOOST_REQUIRE(a1.get_pointer<Type>() != nullptr);
     BOOST_CHECK(a1.get_pointer<int>()  == nullptr);
-    BOOST_CHECK_THROW(a1.get<int>(), ural::bad_any_cast);
+    BOOST_CHECK_THROW(a1.get<int>(), ural_ex::bad_any_cast);
 
     try
     {
         a0.get<int>();
     }
-    catch(ural::bad_any_cast & e)
+    catch(ural_ex::bad_any_cast & e)
     {
         BOOST_CHECK(e.source_type_info() == typeid(void));
         BOOST_CHECK(e.target_type_info() == typeid(int));
@@ -488,17 +490,17 @@ BOOST_AUTO_TEST_CASE(any_get_pointer_test)
     typedef std::string Type;
 
     // Пустой
-    ural::any a0;
+    ural_ex::any a0;
 
     BOOST_CHECK(a0.get_pointer<Type>() == nullptr);
     BOOST_CHECK(a0.get_pointer<int>() == nullptr);
     BOOST_CHECK(a0.get_pointer<Type>() == nullptr);
-    BOOST_CHECK_THROW(a0.get<int>(), ural::bad_any_cast);
-    BOOST_CHECK_THROW(a0.get<Type>(), ural::bad_any_cast);
+    BOOST_CHECK_THROW(a0.get<int>(), ural_ex::bad_any_cast);
+    BOOST_CHECK_THROW(a0.get<Type>(), ural_ex::bad_any_cast);
 
     // Не пустой
     auto const value = Type("42");
-    ural::any a1(value);
+    ural_ex::any a1(value);
 
     BOOST_CHECK(a1.get_pointer<int>()  == nullptr);
     BOOST_REQUIRE(a1.get_pointer<Type>() != nullptr);
@@ -527,10 +529,10 @@ BOOST_AUTO_TEST_CASE(any_equal_to_operator_test)
 
     auto const v2 = T2("ABC");
 
-    ural::any a0;
-    ural::any a1(v1);
-    ural::any a1_1(v1_1);
-    ural::any a2(v2);
+    ural_ex::any a0;
+    ural_ex::any a1(v1);
+    ural_ex::any a1_1(v1_1);
+    ural_ex::any a2(v2);
 
     BOOST_CHECK(a0 == a0);
     BOOST_CHECK(a0 != a1);
@@ -554,10 +556,10 @@ BOOST_AUTO_TEST_CASE(any_equal_for_empty_class)
     static_assert(std::is_empty<T1>::value, "");
     static_assert(std::is_empty<T2>::value, "");
 
-    ural::any const a1(T1{});
-    ural::any const a1_1(T1{});
+    ural_ex::any const a1(T1{});
+    ural_ex::any const a1_1(T1{});
 
-    ural::any const a2(T2{});
+    ural_ex::any const a2(T2{});
 
     BOOST_CHECK(a1 == a1_1);
     BOOST_CHECK(a1 != a2);

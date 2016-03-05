@@ -125,7 +125,7 @@ namespace ural
         в конвейерном стиле
         */
         constexpr auto const & filtered
-            = odr_const<pipeable_maker<make_filter_sequence_fn>>;
+            = odr_const<experimental::pipeable_maker<make_filter_sequence_fn>>;
     }
 }
 // namespace ural

@@ -74,7 +74,7 @@ namespace ural
         в конвейерном стиле.
         */
         constexpr auto const & taken_exactly
-            = odr_const<pipeable_maker<make_taken_exactly_sequence_fn>>;
+            = odr_const<experimental::pipeable_maker<make_taken_exactly_sequence_fn>>;
     }
 
     /** @brief Адаптер последовательности, извлекающий из базовой

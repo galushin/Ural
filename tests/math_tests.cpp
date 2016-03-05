@@ -33,82 +33,87 @@
 #include <boost/mpl/list.hpp>
 #include <boost/operators.hpp>
 
-typedef ::boost::mpl::list<signed char, short, int, long>
-    signed_test_types;
-
-typedef ::boost::mpl::list<unsigned char, unsigned short, unsigned>
-    unsigned_test_types;
-
-template < typename IntType, int ID = 0 >
-class my_wrapped_integer
-    : private ::boost::shiftable1<my_wrapped_integer<IntType, ID>,
-        ::boost::operators<my_wrapped_integer<IntType, ID> > >
+namespace
 {
-    // Helper type-aliases
-    typedef my_wrapped_integer    self_type;
-    typedef IntType self_type::*  bool_type;
+    namespace ural_ex = ::ural::experimental;
 
-    // Member data
-    IntType  v_;
+    using signed_test_types = ::boost::mpl::list<signed char, short, int, long>;
 
-public:
-    // Template parameters
-    typedef IntType  int_type;
+    using unsigned_test_types = ::boost::mpl::list<unsigned char, unsigned short, unsigned>;
 
-    BOOST_STATIC_CONSTANT(int,id = ID);
+    template < typename IntType, int ID = 0 >
+    class my_wrapped_integer
+        : private ::boost::shiftable1<my_wrapped_integer<IntType, ID>,
+            ::boost::operators<my_wrapped_integer<IntType, ID> > >
+    {
+        // Helper type-aliases
+        typedef my_wrapped_integer    self_type;
+        typedef IntType self_type::*  bool_type;
 
-    // Lifetime management (use automatic destructor and copy constructor)
-    my_wrapped_integer( int_type const &v = int_type() )  : v_( v )  {}
+        // Member data
+        IntType  v_;
 
-    // Accessors
-    int_type  value() const  { return this->v_; }
+    public:
+        // Template parameters
+        typedef IntType  int_type;
 
-    // Operators (use automatic copy assignment)
-    operator bool_type() const  { return this->v_ ? &self_type::v_ : 0; }
+        BOOST_STATIC_CONSTANT(int,id = ID);
 
-    self_type &  operator ++()  { ++this->v_; return *this; }
-    self_type &  operator --()  { --this->v_; return *this; }
+        // Lifetime management (use automatic destructor and copy constructor)
+        my_wrapped_integer( int_type const &v = int_type() )  : v_( v )  {}
 
-    self_type  operator ~() const  { return self_type( ~this->v_ ); }
-    self_type  operator !() const  { return self_type( !this->v_ ); }
-    self_type  operator +() const  { return self_type( +this->v_ ); }
-    self_type  operator -() const  { return self_type( -this->v_ ); }
+        // Accessors
+        int_type  value() const  { return this->v_; }
 
-    bool  operator  <( self_type const &r ) const  { return this->v_ < r.v_; }
-    bool  operator ==( self_type const &r ) const  { return this->v_ == r.v_; }
+        // Operators (use automatic copy assignment)
+        operator bool_type() const  { return this->v_ ? &self_type::v_ : 0; }
 
-    self_type &operator *=(self_type const &r) {this->v_ *= r.v_; return *this;}
-    self_type &operator /=(self_type const &r) {this->v_ /= r.v_; return *this;}
-    self_type &operator %=(self_type const &r) {this->v_ %= r.v_; return *this;}
-    self_type &operator +=(self_type const &r) {this->v_ += r.v_; return *this;}
-    self_type &operator -=(self_type const &r) {this->v_ -= r.v_; return *this;}
-    self_type &operator<<=(self_type const &r){this->v_ <<= r.v_; return *this;}
-    self_type &operator>>=(self_type const &r){this->v_ >>= r.v_; return *this;}
-    self_type &operator &=(self_type const &r) {this->v_ &= r.v_; return *this;}
-    self_type &operator |=(self_type const &r) {this->v_ |= r.v_; return *this;}
-    self_type &operator ^=(self_type const &r) {this->v_ ^= r.v_; return *this;}
+        self_type &  operator ++()  { ++this->v_; return *this; }
+        self_type &  operator --()  { --this->v_; return *this; }
 
-    // Input & output
-    friend std::istream & operator >>( std::istream &i, self_type &x )
-    { return i >> x.v_; }
+        self_type  operator ~() const  { return self_type( ~this->v_ ); }
+        self_type  operator !() const  { return self_type( !this->v_ ); }
+        self_type  operator +() const  { return self_type( +this->v_ ); }
+        self_type  operator -() const  { return self_type( -this->v_ ); }
 
-    friend std::ostream & operator <<( std::ostream &o, self_type const &x )
-    { return o << x.v_; }
+        bool  operator  <( self_type const &r ) const  { return this->v_ < r.v_; }
+        bool  operator ==( self_type const &r ) const  { return this->v_ == r.v_; }
 
-};  // my_wrapped_integer
+        self_type &operator *=(self_type const &r) {this->v_ *= r.v_; return *this;}
+        self_type &operator /=(self_type const &r) {this->v_ /= r.v_; return *this;}
+        self_type &operator %=(self_type const &r) {this->v_ %= r.v_; return *this;}
+        self_type &operator +=(self_type const &r) {this->v_ += r.v_; return *this;}
+        self_type &operator -=(self_type const &r) {this->v_ -= r.v_; return *this;}
+        self_type &operator<<=(self_type const &r){this->v_ <<= r.v_; return *this;}
+        self_type &operator>>=(self_type const &r){this->v_ >>= r.v_; return *this;}
+        self_type &operator &=(self_type const &r) {this->v_ &= r.v_; return *this;}
+        self_type &operator |=(self_type const &r) {this->v_ |= r.v_; return *this;}
+        self_type &operator ^=(self_type const &r) {this->v_ ^= r.v_; return *this;}
 
-template < typename IntType, int ID >
-my_wrapped_integer<IntType, ID>  abs( my_wrapped_integer<IntType, ID> const &x )
-{ return ( x < my_wrapped_integer<IntType, ID>(0) ) ? -x : +x; }
+        // Input & output
+        friend std::istream & operator >>( std::istream &i, self_type &x )
+        { return i >> x.v_; }
 
-typedef my_wrapped_integer<int, 1>       MyInt2;
-typedef my_wrapped_integer<unsigned, 1>  MyUnsigned2;
+        friend std::ostream & operator <<( std::ostream &o, self_type const &x )
+        { return o << x.v_; }
+
+    };  // my_wrapped_integer
+
+    template < typename IntType, int ID >
+    my_wrapped_integer<IntType, ID>  abs( my_wrapped_integer<IntType, ID> const &x )
+    { return ( x < my_wrapped_integer<IntType, ID>(0) ) ? -x : +x; }
+
+    typedef my_wrapped_integer<int, 1>       MyInt2;
+    typedef my_wrapped_integer<unsigned, 1>  MyUnsigned2;
+
+}
+// namespace
 
 BOOST_AUTO_TEST_SUITE( common_factor_test_suite )
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( gcd_int_test, T, signed_test_types )
 {
-    using ural::gcd;
+    using ::ural_ex::gcd;
 
     // Originally from Boost.Rational tests
     BOOST_CHECK_EQUAL( gcd<T>(  1,  -1), static_cast<T>( 1) );
@@ -132,7 +137,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( gcd_int_test, T, signed_test_types )
 // GCD on unmarked signed integer type
 BOOST_AUTO_TEST_CASE( gcd_unmarked_int_test )
 {
-    using ural::gcd;
+    using ural_ex::gcd;
 
     // The regular signed-integer GCD function performs the unsigned version,
     // then does an absolute-value on the result.  Signed types that are not
@@ -159,7 +164,7 @@ BOOST_AUTO_TEST_CASE( gcd_unmarked_int_test )
 // GCD on unsigned integer types
 BOOST_AUTO_TEST_CASE_TEMPLATE( gcd_unsigned_test, T, unsigned_test_types )
 {
-    using ural::gcd;
+    using ural_ex::gcd;
 
     // Note that unmarked types (i.e. have no std::numeric_limits
     // specialization) are treated like non/unsigned types
@@ -176,7 +181,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( gcd_unsigned_test, T, unsigned_test_types )
 // GCD at compile-time
 BOOST_AUTO_TEST_CASE( gcd_static_test )
 {
-    using ural::static_gcd;
+    using ural_ex::static_gcd;
 
     // Can't use "BOOST_CHECK_EQUAL", otherwise the "value" member will be
     // disqualified as compile-time-only constant, needing explicit definition
@@ -197,7 +202,7 @@ BOOST_AUTO_TEST_CASE( gcd_static_test )
 // LCM on signed integer types
 BOOST_AUTO_TEST_CASE_TEMPLATE( lcm_int_test, T, signed_test_types )
 {
-    using ural::lcm;
+    using ural_ex::lcm;
 
     // Originally from Boost.Rational tests
     BOOST_CHECK_EQUAL( lcm<T>(  1,  -1), static_cast<T>( 1) );
@@ -221,7 +226,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( lcm_int_test, T, signed_test_types )
 // LCM on unmarked signed integer type
 BOOST_AUTO_TEST_CASE( lcm_unmarked_int_test )
 {
-    using ural::lcm;
+    using ural_ex::lcm;
 
     // The regular signed-integer LCM function performs the unsigned version,
     // then does an absolute-value on the result.  Signed types that are not
@@ -248,7 +253,7 @@ BOOST_AUTO_TEST_CASE( lcm_unmarked_int_test )
 // LCM on unsigned integer types
 BOOST_AUTO_TEST_CASE_TEMPLATE( lcm_unsigned_test, T, unsigned_test_types )
 {
-    using ural::lcm;
+    using ural_ex::lcm;
 
     // Note that unmarked types (i.e. have no std::numeric_limits
     // specialization) are treated like non/unsigned types
@@ -265,7 +270,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( lcm_unsigned_test, T, unsigned_test_types )
 // LCM at compile-time
 BOOST_AUTO_TEST_CASE( lcm_static_test )
 {
-    using ural::static_lcm;
+    using ural_ex::static_lcm;
 
     // Can't use "BOOST_CHECK_EQUAL", otherwise the "value" member will be
     // disqualified as compile-time-only constant, needing explicit definition
@@ -331,7 +336,7 @@ BOOST_AUTO_TEST_CASE(square_root_23_as_continued_fraction_back_inserter)
 
     std::vector<int> const a_expected = {4, 1, 3, 1, 8};
 
-    ural::copy(ural::sqrt_as_continued_fraction(N), a | ural::back_inserter);
+    ural::copy(ural_ex::sqrt_as_continued_fraction(N), a | ural::back_inserter);
 
     URAL_CHECK_EQUAL_RANGES(a, a_expected);
 }
@@ -344,7 +349,7 @@ BOOST_AUTO_TEST_CASE(square_root_16_as_continued_fraction_back_inserter)
 
     std::vector<int> const a_expected = {4};
 
-    ural::copy(ural::sqrt_as_continued_fraction(N), a | ural::back_inserter);
+    ural::copy(ural_ex::sqrt_as_continued_fraction(N), a | ural::back_inserter);
 
     URAL_CHECK_EQUAL_RANGES(a, a_expected);
 }
@@ -357,7 +362,7 @@ BOOST_AUTO_TEST_CASE(square_root_23_as_continued_fraction)
 
     std::vector<int> a(a_expected.size(), 0);
 
-    ural::copy(ural::sqrt_as_continued_fraction(N), a);
+    ural::copy(ural_ex::sqrt_as_continued_fraction(N), a);
 
     URAL_CHECK_EQUAL_RANGES(a, a_expected);
 }
@@ -369,7 +374,7 @@ BOOST_AUTO_TEST_CASE(nth_prime_test_PE_7)
 
     auto const N = 10001U;
 
-    auto const primes = ural::make_first_n_primes<Integer>(N);
+    auto const primes = ural_ex::make_first_n_primes<Integer>(N);
 
     BOOST_CHECK_EQUAL(primes.size(), N);
     BOOST_CHECK_EQUAL(primes[6-1], 13);
@@ -380,11 +385,11 @@ BOOST_AUTO_TEST_CASE(primes_below_PE_10)
 {
     typedef long long Integer;
 
-    auto const primes_10 = ural::make_primes_below(Integer{10});
+    auto const primes_10 = ural_ex::make_primes_below(Integer{10});
 
     BOOST_CHECK_EQUAL(ural::accumulate(primes_10, Integer{0}), 17);
 
-    auto const primes_2M = ural::make_primes_below(Integer{2000000});
+    auto const primes_2M = ural_ex::make_primes_below(Integer{2000000});
 
     BOOST_CHECK_EQUAL(ural::accumulate(primes_2M, Integer{0}), 142913828922);
 }
@@ -410,7 +415,7 @@ BOOST_AUTO_TEST_CASE(is_prime_test_PE_58)
         // Проверяем диагонали
         for(size_t k = 1; k <= 4; ++ k)
         {
-            primes_on_diagonal += ural::is_prime(n_max_old + k * step);
+            primes_on_diagonal += ural_ex::is_prime(n_max_old + k * step);
         }
 
         auto const r = double(primes_on_diagonal) / diagonals;
@@ -439,11 +444,11 @@ BOOST_AUTO_TEST_CASE(is_coprime_with_sequence_test)
     std::forward_list<Integer> const v_false_2 = {9, 6};
     std::forward_list<Integer> const v_empty {};
 
-    BOOST_CHECK(ural::is_coprime_with_all(x, v_true));
-    BOOST_CHECK(ural::is_coprime_with_all(x, v_empty));
+    BOOST_CHECK(ural_ex::is_coprime_with_all(x, v_true));
+    BOOST_CHECK(ural_ex::is_coprime_with_all(x, v_empty));
 
-    BOOST_CHECK(ural::is_coprime_with_all(x, v_false_1) == false);
-    BOOST_CHECK(ural::is_coprime_with_all(x, v_false_2) == false);
+    BOOST_CHECK(ural_ex::is_coprime_with_all(x, v_false_1) == false);
+    BOOST_CHECK(ural_ex::is_coprime_with_all(x, v_false_2) == false);
 }
 
 // Функциональный объект для модуля
@@ -456,7 +461,7 @@ BOOST_AUTO_TEST_CASE(abs_fn_test)
     BOOST_CHECK_EQUAL(abs_f(4.5), 4.5);
     BOOST_CHECK_EQUAL(abs_f(-4.5), 4.5);
 
-    auto constexpr r = ural::rational<int>{18, 12};
+    auto constexpr r = ural_ex::rational<int>{18, 12};
 
     BOOST_CHECK(r >= 0);
     BOOST_CHECK_EQUAL(abs_f(r), r);
@@ -480,7 +485,7 @@ BOOST_AUTO_TEST_CASE(abs_constexpr_fn_test)
     URAL_STATIC_ASSERT_EQUAL(abs_f(4.5), 4.5);
     URAL_STATIC_ASSERT_EQUAL(abs_f(-4.5), 4.5);
 
-    auto constexpr r = ural::rational<int>{18, 12};
+    auto constexpr r = ural_ex::rational<int>{18, 12};
 
     static_assert(r >= 0, "");
     URAL_STATIC_ASSERT_EQUAL(abs_f(r), r);
@@ -492,12 +497,11 @@ BOOST_AUTO_TEST_CASE(abs_constexpr_fn_test)
 #include <set>
 #include <ural/container/flat_set.hpp>
 
-namespace ural_ex = ural::experimental;
-
 namespace
 {
     typedef boost::mpl::list<std::set<int>, ural_ex::flat_set<int>> PE_203_Set_types;
 }
+
 BOOST_AUTO_TEST_CASE_TEMPLATE(pascal_triangle_PE_203, Set, PE_203_Set_types)
 {
     Set const z = {1, 2, 3, 4, 5, 6, 7, 10, 15, 20, 21, 35};
@@ -551,12 +555,12 @@ BOOST_AUTO_TEST_CASE(fibonacci_sequence_custom_init_values)
     constexpr auto const x1 = 2;
     constexpr auto const x2 = 3;
 
-    using FS = decltype(ural::make_fibonacci_sequence(x1, x2));
+    using FS = decltype(ural_ex::make_fibonacci_sequence(x1, x2));
 
     BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<FS>));
     BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<FS>));
 
-    constexpr auto const seq = ural::make_fibonacci_sequence(x1, x2);
+    constexpr auto const seq = ural_ex::make_fibonacci_sequence(x1, x2);
 
     static_assert(*seq == x1, "");
 
@@ -571,7 +575,7 @@ BOOST_AUTO_TEST_CASE(fibonacci_sequence_custom_init_values_and_operations)
     constexpr auto const x2 = 3;
     constexpr auto const op = ural::multiplies<decltype(x1)>{};
 
-    constexpr auto const seq = ural::make_fibonacci_sequence(x1, x2, op);
+    constexpr auto const seq = ural_ex::make_fibonacci_sequence(x1, x2, op);
 
     static_assert(sizeof(seq) == 2 * sizeof(x1), "");
 
@@ -591,8 +595,8 @@ BOOST_AUTO_TEST_CASE(fibonacci_sequence_explicit_single_pass)
 {
     using Integer = int;
 
-    using FS = ural::fibonacci_sequence<Integer, ural::use_default,
-                                        ural::single_pass_cursor_tag>;
+    using FS = ural_ex::fibonacci_sequence<Integer, ural::use_default,
+                                           ural::single_pass_cursor_tag>;
 
     BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<FS>));
     BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<FS>));
@@ -602,8 +606,8 @@ BOOST_AUTO_TEST_CASE(fibonacci_sequence_explicit_forward)
 {
     using Integer = int;
 
-    using FS = ural::fibonacci_sequence<Integer, ural::use_default,
-                                        ural::forward_cursor_tag>;
+    using FS = ural_ex::fibonacci_sequence<Integer, ural::use_default,
+                                           ural::forward_cursor_tag>;
 
     BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<FS>));
     BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<FS>));
@@ -615,7 +619,7 @@ BOOST_AUTO_TEST_CASE(fibonacci_sequence_with_operation_single_pass_traversal)
 
     using Operation = Integer(*)(Integer, Integer);
 
-    using FS = ural::fibonacci_sequence<Integer, Operation>;
+    using FS = ural_ex::fibonacci_sequence<Integer, Operation>;
 
     BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<FS>));
     BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<FS>));
@@ -627,7 +631,7 @@ BOOST_AUTO_TEST_CASE(fibonacci_sequence_forward_traversal)
 
     using Operation = Integer(*)(Integer, Integer);
 
-    using FS = ural::fibonacci_sequence<Integer, Operation, ural::forward_cursor_tag>;
+    using FS = ural_ex::fibonacci_sequence<Integer, Operation, ural::forward_cursor_tag>;
 
     BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<FS>));
     BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<FS>));
@@ -651,8 +655,8 @@ BOOST_AUTO_TEST_CASE(fibonacci_sequence_forward_traversal)
 
 BOOST_AUTO_TEST_CASE(fibonacci_sequence_shrink_front)
 {
-    auto seq = ural::fibonacci_sequence<int, ural::use_default,
-                                        ural::forward_cursor_tag>{};
+    auto seq = ural_ex::fibonacci_sequence<int, ural::use_default,
+                                           ural::forward_cursor_tag>{};
 
     ural::advance(seq, 3);
 

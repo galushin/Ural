@@ -31,6 +31,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Класс матрицы
     @tparam T тип элементов матрицы
     @tparam L порядок хране хранения (по строкам или по столбцам)
@@ -338,6 +340,8 @@ namespace ural
 
         return true;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

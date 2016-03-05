@@ -29,7 +29,10 @@
 #include <set>
 #include <map>
 
-namespace ural_ex = ural::experimental;
+namespace
+{
+    namespace ural_ex = ural::experimental;
+}
 
 BOOST_AUTO_TEST_CASE(assumed_infinite_test_empty_becomes_not)
 {
@@ -1144,7 +1147,7 @@ BOOST_AUTO_TEST_CASE(replace_sequence_test_cref)
     std::vector<int> s_std = {5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
     std::vector<int> s_ural = s_std;
 
-    auto const old_value = ural::rational<int>(8);
+    auto const old_value = ural_ex::rational<int>(8);
     auto const new_value = 88;
 
     BOOST_CHECK_EQUAL(old_value.denominator(), 1);

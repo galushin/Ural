@@ -218,7 +218,7 @@ namespace ural
         в конвейерном стиле.
         */
         constexpr auto const & transformed
-            = odr_const<pipeable_maker<binary_reverse_args_function<make_transform_sequence_fn>>>;
+            = odr_const<experimental::pipeable_maker<binary_reverse_args_function<make_transform_sequence_fn>>>;
     }
 }
 // namespace ural

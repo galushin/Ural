@@ -368,7 +368,7 @@ inline namespace v0
             }
         };
 
-        using ural::abs_constexpr;
+        using ::ural::experimental::abs_constexpr;
 
         class abs_constexpr_fn
         {
@@ -407,7 +407,8 @@ inline namespace v0
     */
     template <class... Ts>
     struct are_integral
-     : meta::all_of<typelist<Ts...>, ural::meta::template_to_applied<std::is_integral>>
+     : ::ural::experimental::meta::all_of<typelist<Ts...>,
+                                          ::ural::experimental::meta::template_to_applied<std::is_integral>>
     {};
 
     /** @brief Класс-характеристика для определения типа среднего значения

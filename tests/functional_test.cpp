@@ -118,11 +118,11 @@ BOOST_AUTO_TEST_CASE(memoize_function_test)
 
     typedef ural::abs_fn Target;
 
-    ural::callable_tracer<Target, Tag> f_tracer(ural::abs());
+    ural_ex::callable_tracer<Target, Tag> f_tracer(ural::abs());
 
     static_assert(std::is_empty<decltype(f_tracer)>::value, "Must be empty!");
 
-    auto f = ural::experimental::memoize<Signature>(ural::ref = f_tracer);
+    auto f = ural_ex::memoize<Signature>(ural::ref = f_tracer);
 
     auto const y1 = f(-1);
 
@@ -165,10 +165,10 @@ BOOST_AUTO_TEST_CASE(function_tracer_test)
 {
     typedef double(*Target)(double);
 
-    typedef ural::callable_tracer<Target> Function;
+    typedef ural_ex::callable_tracer<Target> Function;
 
     // Явное преобразование нужно, так как std::abs --- перегруженная функция
-    auto f = ural::make_function_tracer(Target(std::abs));
+    auto f = ural_ex::make_function_tracer(Target(std::abs));
 
     static_assert(std::is_same<decltype(f), Function>::value, "");
 
@@ -229,14 +229,14 @@ BOOST_AUTO_TEST_CASE(replace_if_function_test)
 
 BOOST_AUTO_TEST_CASE(replace_function_test)
 {
-    auto const old_value = ::ural::rational<int>(-1);
+    auto const old_value = ::ural_ex::rational<int>(-1);
     auto const new_value = 1;
     auto const other_value = 42;
 
     BOOST_CHECK(other_value != old_value);
     BOOST_CHECK(other_value != new_value);
 
-    ural::experimental::replace_function<::ural::rational<int>, int> const
+    ural_ex::replace_function<::ural_ex::rational<int>, int> const
         f{old_value, new_value};
 
     BOOST_CHECK_EQUAL(old_value, f.old_value());

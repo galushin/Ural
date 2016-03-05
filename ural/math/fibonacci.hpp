@@ -26,6 +26,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Последовательность чисел (типа) Фибоначчи
     @tparam Integer целочисленный тип
     @tparam BinaryOperation бинарная операция, используемая в качестве сложения
@@ -122,15 +124,15 @@ namespace ural
         */
         constexpr reference front() const
         {
-            return ural::get(this->data_[ural::_1]);
+            return ural::experimental::get(this->data_[ural::_1]);
         }
 
         /// @brief Переход к следующему значению
         void pop_front()
         {
-            auto new_value = this->operation()(std::move(ural::get(data_[ural::_1])),
-                                               ural::get(data_[ural::_2]));
-            data_[ural::_1] = std::move(ural::get(data_[ural::_2]));
+            auto new_value = this->operation()(std::move(ural::experimental::get(data_[ural::_1])),
+                                               ural::experimental::get(data_[ural::_2]));
+            data_[ural::_1] = std::move(ural::experimental::get(data_[ural::_2]));
             data_[ural::_2]= std::move(new_value);
         }
 
@@ -207,6 +209,8 @@ namespace ural
         constexpr auto const & make_fibonacci_sequence
             = odr_const<make_fibonacci_sequence_fn>;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

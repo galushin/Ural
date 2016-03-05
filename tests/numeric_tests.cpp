@@ -29,6 +29,12 @@
 
 #include "defs.hpp"
 
+namespace
+{
+    namespace ural_ex = ::ural::experimental;
+}
+// namespace
+
 BOOST_AUTO_TEST_CASE(iota_test)
 {
     auto const n = 10;
@@ -77,7 +83,7 @@ BOOST_AUTO_TEST_CASE(partial_sums_sequence_test)
 
     // ural
     std::vector<int> x_ural;
-    auto seq = ural::partial_sums(v);
+    auto seq = ural_ex::partial_sums(v);
 
     BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<decltype(seq)>));
 
@@ -99,7 +105,7 @@ BOOST_AUTO_TEST_CASE(partial_sums_test_minimal)
 
     // ural
     std::vector<int> x_ural;
-    ural::copy(ural::partial_sums(src_ural), std::back_inserter(x_ural));
+    ural::copy(ural_ex::partial_sums(src_ural), std::back_inserter(x_ural));
 
     // Проверка
     URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
@@ -186,7 +192,7 @@ BOOST_AUTO_TEST_CASE(adjacent_differences_sequence_test)
 
     // ural
     std::vector<int> r_ural;
-    ural::copy(ural::adjacent_differences(xs), std::back_inserter(r_ural));
+    ural::copy(ural_ex::adjacent_differences(xs), std::back_inserter(r_ural));
 
     // Проверка
     URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
@@ -292,7 +298,7 @@ BOOST_AUTO_TEST_CASE(partial_sums_sequence_test_no_default_ctor)
     std::partial_sum(v.begin(), v.end(), std::back_inserter(x_std));
 
     std::vector<Integer> x_ural;
-    ural::copy(ural::partial_sums(v), std::back_inserter(x_ural));
+    ural::copy(ural_ex::partial_sums(v), std::back_inserter(x_ural));
 
     URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
@@ -306,7 +312,7 @@ BOOST_AUTO_TEST_CASE(adjacent_differences_sequence_test_no_default_ctor)
      std::adjacent_difference(xs.begin(), xs.end(), std::back_inserter(r_std));
 
      std::vector<Integer> r_ural;
-     ural::copy(ural::adjacent_differences(xs), std::back_inserter(r_ural));
+     ural::copy(ural_ex::adjacent_differences(xs), std::back_inserter(r_ural));
 
      URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
 }
@@ -314,12 +320,12 @@ BOOST_AUTO_TEST_CASE(adjacent_differences_sequence_test_no_default_ctor)
 #include <ural/numeric/polynom.hpp>
 #include <boost/mpl/list.hpp>
 
-typedef boost::mpl::list<ural::polynomial<int, double>, ural::polynomial<int>>
+typedef boost::mpl::list<ural_ex::polynomial<int, double>, ural_ex::polynomial<int>>
     Polynom_types;
 
 BOOST_AUTO_TEST_CASE(polynomial_types_test)
 {
-    typedef ural::polynomial<int, double> Polynom;
+    typedef ural_ex::polynomial<int, double> Polynom;
     typedef typename Polynom::coefficient_type coefficient_type;
     typedef typename Polynom::argument_type argument_type;
     typedef typename Polynom::result_type result_type;
@@ -343,7 +349,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(polynomial_default_ctor_test, Polynom, Polynom_typ
 
 BOOST_AUTO_TEST_CASE(polynomial_init_ctor_test)
 {
-    typedef ural::polynomial<int, double> Polynom;
+    typedef ural_ex::polynomial<int, double> Polynom;
 
     auto const x1 = 1;
     auto const y1 = 1;
@@ -371,7 +377,7 @@ BOOST_AUTO_TEST_CASE(polynomial_init_ctor_test)
 
 BOOST_AUTO_TEST_CASE(polynomial_init_test_leading_zeros)
 {
-    typedef ural::polynomial<int, double> Polynom;
+    typedef ural_ex::polynomial<int, double> Polynom;
     auto const P = Polynom{0, 1, 2};
 
     BOOST_CHECK_EQUAL(1U, P.degree());
@@ -381,7 +387,7 @@ BOOST_AUTO_TEST_CASE(polynomial_init_test_leading_zeros)
 
 BOOST_AUTO_TEST_CASE(polynomial_equality_test)
 {
-    typedef ural::polynomial<int, double> Polynom;
+    typedef ural_ex::polynomial<int, double> Polynom;
 
     auto const p0 = Polynom{};
     auto const p = Polynom{1, 2, 1};
@@ -395,7 +401,7 @@ BOOST_AUTO_TEST_CASE(polynomial_equality_test)
 
 BOOST_AUTO_TEST_CASE(polynomial_add_test)
 {
-    typedef ural::polynomial<int, double> Polynom;
+    typedef ural_ex::polynomial<int, double> Polynom;
 
     auto const p1 = Polynom{1, 1, 1};
     auto const p2 = Polynom{2, 4};
@@ -417,7 +423,7 @@ BOOST_AUTO_TEST_CASE(polynomial_add_test)
 
 BOOST_AUTO_TEST_CASE(polynomial_add_different_degree_test)
 {
-    typedef ural::polynomial<int, double> Polynom;
+    typedef ural_ex::polynomial<int, double> Polynom;
 
     auto const p1 = Polynom{1, 1};
     auto const p2 = Polynom{1, 2, 4};
@@ -445,7 +451,7 @@ BOOST_AUTO_TEST_CASE(polynomial_add_different_degree_test)
 
 BOOST_AUTO_TEST_CASE(polynomial_scalar_mult_test)
 {
-    typedef ural::polynomial<int, double> Polynom;
+    typedef ural_ex::polynomial<int, double> Polynom;
 
     auto const P = Polynom{2, 4};
     auto const a = 5;
@@ -473,7 +479,7 @@ BOOST_AUTO_TEST_CASE(polynomial_scalar_mult_test)
 
 BOOST_AUTO_TEST_CASE(polynomial_unary_plus_test)
 {
-    typedef ural::polynomial<int, double> Polynom;
+    typedef ural_ex::polynomial<int, double> Polynom;
 
     auto const P = Polynom{2, 4};
 
@@ -484,7 +490,7 @@ BOOST_AUTO_TEST_CASE(polynomial_unary_plus_test)
 
 BOOST_AUTO_TEST_CASE(polynomial_unary_minus_test)
 {
-    typedef ural::polynomial<int, double> Polynom;
+    typedef ural_ex::polynomial<int, double> Polynom;
 
     auto const P = Polynom{2, 4};
 
@@ -514,7 +520,7 @@ BOOST_AUTO_TEST_CASE(newton_interpolation_test)
     auto const f2 = f(x2);
     auto const f_mid = f(x_mid);
 
-    ural::newton_polynomial<double> P{};
+    ural_ex::newton_polynomial<double> P{};
 
     BOOST_CHECK_EQUAL(0U, P.degree());
 
@@ -560,7 +566,7 @@ BOOST_AUTO_TEST_CASE(qr_decomposition_test)
     A(1, 0) = 6;    A(1, 1) = 167;  A(1, 2) = -68;
     A(2, 0) = -4;   A(2, 1) = 24;   A(2, 2) = -41;
 
-    auto QR = ural::QR_decomposition(A);
+    auto QR = ural_ex::QR_decomposition(A);
     auto Q = QR[ural::_1];
     auto R = QR[ural::_2];
 
@@ -583,7 +589,7 @@ BOOST_AUTO_TEST_CASE(qr_decomposition_test)
 
 BOOST_AUTO_TEST_CASE(matrix_init_test)
 {
-    ural::matrix<double> const A(3, 3, 0.0);
+    ural_ex::matrix<double> const A(3, 3, 0.0);
 
     for(size_t i = 0; i != A.size1(); ++ i)
     for(size_t j = 0; j != A.size2(); ++ j)
@@ -596,18 +602,18 @@ BOOST_AUTO_TEST_CASE(qr_decomposition_test_init_list)
 {
     using namespace boost::numeric::ublas;
 
-    ural::matrix<double> const A
+    ural_ex::matrix<double> const A
         = {{12, -51, 4}, {6, 167, -68}, {-4, 24, -41}};
 
     BOOST_CHECK_EQUAL(3U, A.size1());
     BOOST_CHECK_EQUAL(3U, A.size2());
 
-    auto QR = ural::QR_decomposition(A);
+    auto QR = ural_ex::QR_decomposition(A);
     auto Q = QR[ural::_1];
     auto R = QR[ural::_2];
 
     // столбцы Q - ортогональны
-    for(auto s = ural::matrix_by_rows(Q); !!s; ++ s)
+    for(auto s = ural_ex::matrix_by_rows(Q); !!s; ++ s)
     {
         for(auto r = s.traversed_front(); !!r; ++ r)
         {
@@ -632,11 +638,11 @@ BOOST_AUTO_TEST_CASE(cholesky_descomposition_test)
 {
     using namespace boost::numeric::ublas;
 
-    ural::matrix<double> const A
+    ural_ex::matrix<double> const A
         = {{4, 12, -16}, {12, 37, -43}, {-16, -43, 98}};
 
     boost::numeric::ublas::triangular_matrix<double, lower> const
-        L = ural::cholesky_decomposition(A);
+        L = ural_ex::cholesky_decomposition(A);
 
     BOOST_CHECK_EQUAL(2, L(0, 0));
     BOOST_CHECK_EQUAL(6, L(1, 0));
@@ -676,7 +682,10 @@ BOOST_AUTO_TEST_CASE(cube_constexpr_test)
 
 // Числа произвольной точности
 #include <ural/numeric/mp/integer_10.hpp>
-typedef ural::integer_10 integer;
+namespace
+{
+    using integer = ural_ex::integer_10;
+}
 
 BOOST_AUTO_TEST_CASE(MP_integer_10_init_negative)
 {
@@ -785,7 +794,7 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_wide_ostreaming_test)
 BOOST_AUTO_TEST_CASE(MP_integer_16_ostreaming)
 {
     auto const n = 0xA7;
-    auto const n_mp = ural::integer<16>(n);
+    auto const n_mp = ural_ex::integer<16>(n);
 
     std::ostringstream os;
     os << std::hex << n;
@@ -796,7 +805,7 @@ BOOST_AUTO_TEST_CASE(MP_integer_16_ostreaming)
 BOOST_AUTO_TEST_CASE(MP_integer_16_ostreaming_negative)
 {
     auto const n = -0xA7;
-    auto const n_mp = ural::integer<16>(n);
+    auto const n_mp = ural_ex::integer<16>(n);
 
     BOOST_CHECK(n < 0);
 
@@ -1002,7 +1011,7 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_minus_test)
 
 BOOST_AUTO_TEST_CASE(MP_integer_60_output)
 {
-    ural::integer<60> const x(2*60*60 - 1);
+    ural_ex::integer<60> const x(2*60*60 - 1);
 
     BOOST_CHECK_EQUAL(x.digits()[0], 59);
     BOOST_CHECK_EQUAL(x.digits()[1], 59);
@@ -1020,10 +1029,10 @@ BOOST_AUTO_TEST_CASE(MP_integer_60_output)
 
 BOOST_AUTO_TEST_CASE(continued_fraction_sqrt_2_convergents)
 {
-    typedef int Integer;
-    typedef ural::rational<Integer> Rational;
+    using Integer = int;
+    using Rational = ural_ex::rational<Integer>;
 
-    ural::convergent<Integer> as(1);
+    ural_ex::convergent<Integer> as(1);
     BOOST_CHECK_EQUAL(as.value(), Rational{1});
 
     as.update(2);
@@ -1180,9 +1189,10 @@ BOOST_AUTO_TEST_CASE(PE_131_adjacent_differences_pipe)
     using Integer = long long;
     auto const n_max = 1'000'000;
 
-    auto const primes = ural::make_primes_below(n_max);
+    auto const primes = ural_ex::make_primes_below(n_max);
 
     using namespace ural;
+    using namespace ural_ex;
 
     auto dcs = make_arithmetic_progression(1, 1)
              | transformed(cube)
@@ -1200,9 +1210,10 @@ BOOST_AUTO_TEST_CASE(PE_131_adjacent_differences_pipe_explicit_operation)
     auto const n_max = 1'000'000;
     using Integer = long long;
 
-    auto const primes = ural::make_primes_below(n_max);
+    auto const primes = ural_ex::make_primes_below(n_max);
 
     using namespace ural;
+    using namespace ural_ex;
 
     auto dcs = make_arithmetic_progression(Integer{1}, Integer{1})
              | transformed(cube)

@@ -33,6 +33,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Обёртка для объекта, хранящего исключение
     @tparam E тип, хранящий исключение
     */
@@ -467,7 +469,7 @@ namespace ural
         {
             if(has_value_)
             {
-                return ural::expected_from_call(f, this->value_);
+                return ::ural::experimental::expected_from_call(f, this->value_);
             }
             else
             {
@@ -512,6 +514,8 @@ namespace ural
     {
         return expected<T>(value);
     }
+}
+// namespace experimental
 }
 //namespace ural
 

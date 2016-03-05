@@ -28,6 +28,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Класс-обёртка для отслеживания количества выполненных операций
     для регулярных объектов
     @tparam T тип значения
@@ -559,6 +561,8 @@ namespace ural
         int id_;
         Alloc a_;
     };
+}
+// namespace experimental
 }
 // namespace ural
 

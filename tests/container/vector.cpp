@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE(vector_value_type)
 BOOST_AUTO_TEST_CASE(vector_move_with_different_allocator)
 {
     typedef std::string T;
-    typedef ural::tracing_allocator<T> Alloc;
+    typedef ural_ex::tracing_allocator<T> Alloc;
     typedef ural_ex::vector<T, Alloc> Vector;
 
     // Строка 7
@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE(vector_construct_from_input_iterators)
 BOOST_AUTO_TEST_CASE(vector_construct_from_forward_iterators)
 {
     typedef int T;
-    typedef ural::tracing_allocator<T> Alloc;
+    typedef ural_ex::tracing_allocator<T> Alloc;
     typedef ural_ex::vector<T, Alloc> Vector;
 
     std::forward_list<T> const z(501, 42);
@@ -509,7 +509,7 @@ BOOST_AUTO_TEST_CASE(vector_erase_one)
 BOOST_AUTO_TEST_CASE(vector_construct_size_and_allocator)
 {
     typedef std::string T;
-    typedef ural::tracing_allocator<T> Alloc;
+    typedef ural_ex::tracing_allocator<T> Alloc;
     typedef ural_ex::vector<T, Alloc> Vector;
 
     Alloc alloc(42);

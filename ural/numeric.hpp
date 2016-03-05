@@ -248,8 +248,8 @@ namespace ural
                                                SequenceType<Input>> Result;
             BOOST_CONCEPT_ASSERT((concepts::Writable<SequenceType<Output>, Result>));
 
-            auto in_sum = ural::partial_sums(sequence_fwd<Input>(in),
-                                             ::ural::make_callable(std::move(bin_op)));
+            auto in_sum = ural::experimental::partial_sums(sequence_fwd<Input>(in),
+                                                           ::ural::make_callable(std::move(bin_op)));
             auto res = ural::copy_fn{}(std::move(in_sum),
                                        ::ural::sequence_fwd<Output>(out));
 
@@ -291,8 +291,8 @@ namespace ural
                                                SequenceType<Input>> Result;
             BOOST_CONCEPT_ASSERT((concepts::Writable<SequenceType<Output>, Result>));
 
-            auto in_dif = ural::adjacent_differences(::ural::sequence_fwd<Input>(in),
-                                                     ::ural::make_callable(std::move(bin_op)));
+            auto in_dif = ural::experimental::adjacent_differences(::ural::sequence_fwd<Input>(in),
+                                                                   ::ural::make_callable(std::move(bin_op)));
             auto res = ural::copy_fn{}(std::move(in_dif),
                                        ::ural::sequence_fwd<Output>(out));
             return ural::make_tuple(std::move(res[ural::_1]).base(),

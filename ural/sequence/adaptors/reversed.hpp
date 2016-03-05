@@ -216,7 +216,7 @@ namespace ural
 
         /// @brief Объект для создания @c reverse_sequence
         constexpr auto const & reversed
-            = odr_const<pipeable<make_reverse_sequence_fn>>;
+            = odr_const<experimental::pipeable<make_reverse_sequence_fn>>;
     }
 
     /** @brief Создание обратной последовательности на основе

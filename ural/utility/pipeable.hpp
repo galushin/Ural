@@ -32,7 +32,7 @@
 
 namespace ural
 {
-inline namespace v0
+namespace experimental
 {
     /** @brief Элемент "конвейера"
     @param Factory тип функции создания
@@ -96,7 +96,7 @@ inline namespace v0
     */
     template <class T>
     struct is_pipeable
-     : public ::ural::details::is_pipeable_impl<T>::type
+     : public ::ural::experimental::details::is_pipeable_impl<T>::type
     {};
 
     /** @brief Оператор создания адаптора
@@ -177,7 +177,7 @@ inline namespace v0
         }
     };
 }
-// namespace v0
+// namespace experimental
 }
 // namespace ural
 

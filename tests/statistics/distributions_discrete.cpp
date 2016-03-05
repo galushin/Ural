@@ -22,7 +22,12 @@
 #include <boost/test/unit_test.hpp>
 #include "../defs.hpp"
 
-namespace ural_distributions = ural::experimental::distributions;
+namespace
+{
+    namespace ural_ex = ::ural::experimental;
+    namespace ural_distributions = ural_ex::distributions;
+}
+// namespace
 
 BOOST_AUTO_TEST_CASE(math_discrete_distribution_default_ctor)
 {
@@ -134,7 +139,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(math_discrete_distibution_from_container,
 
 BOOST_AUTO_TEST_CASE(math_discrete_distibution_from_container_rational_weight)
 {
-    typedef ural::rational<int> Weight;
+    typedef ural_ex::rational<int> Weight;
 
     typedef ural_distributions::discrete<int, Weight> Distribution;
 

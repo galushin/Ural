@@ -63,7 +63,7 @@ namespace experimental
         auto operator()(RASequence && s) const
         -> decltype(::ural::sequence_fwd<RASequence>(s))
         {
-            ural::c_rand_engine rnd;
+            ::ural::experimental::c_rand_engine rnd;
             return ::ural::shuffle_fn{}(std::forward<RASequence>(s), rnd);
         }
     };

@@ -32,6 +32,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Функциональный объект накопитель для вычисления значений
     многочленов по схеме Горнера
     @tparam R тип значения многочлена
@@ -418,6 +420,8 @@ namespace ural
     private:
         coefficients_container cs_;
     };
+}
+// namespace experimental
 }
 // namespace ural
 

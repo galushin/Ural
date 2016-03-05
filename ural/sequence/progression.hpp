@@ -198,7 +198,7 @@ namespace ural
         */
         reference front() const
         {
-            return ural::get(this->first_);
+            return ural::experimental::get(this->first_);
         }
 
         /** @brief Переход к следующему элементу последовательности
@@ -207,7 +207,7 @@ namespace ural
         */
         void pop_front()
         {
-            this->first_ = this->function()(std::move(ural::get(this->first_)),
+            this->first_ = this->function()(std::move(ural::experimental::get(this->first_)),
                                             this->step_);
         }
 

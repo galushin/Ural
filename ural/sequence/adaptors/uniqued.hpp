@@ -345,13 +345,13 @@ namespace ural
 
         /// @brief Объект для создающия @c unique_sequence в конвейрном силе.
         constexpr auto & uniqued
-            = odr_const<pipeable<make_unique_sequence_fn>>;
+            = odr_const<experimental::pipeable<make_unique_sequence_fn>>;
 
         /** @brief Объект для создающия @c unique_sequence с заданным условием
         эквивалентности элементов в конвейрном стиле.
         */
         constexpr auto & adjacent_filtered
-            = odr_const<pipeable_maker<make_adjacent_filtered_sequence_fn>>;
+            = odr_const<experimental::pipeable_maker<make_adjacent_filtered_sequence_fn>>;
     }
 }
 // namespace ural

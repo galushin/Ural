@@ -61,6 +61,8 @@
 
 namespace ural
 {
+namespace experimental
+{
 namespace statistics
 {
     /** @brief Список тэгов
@@ -104,7 +106,7 @@ namespace tags
     */
     template <class T1, class T2>
     struct is_depend_on
-     : std::integral_constant<bool, !std::is_same<typename meta::find<typename T1::depends_on, T2>::type, null_type>::value>
+     : std::integral_constant<bool, !std::is_same<typename experimental::meta::find<typename T1::depends_on, T2>::type, null_type>::value>
     {};
 
     // Тэги-типы
@@ -179,7 +181,7 @@ namespace tags
         typedef typename List::head Head;
         typedef typename List::tail Tail;
 
-        typedef typename ::ural::meta::push_front<Out, Head>::type R1;
+        typedef typename ::ural::experimental::meta::push_front<Out, Head>::type R1;
         typedef typename expand_depend_on<typename Head::depends_on, R1>::type
             R2;
 
@@ -208,36 +210,38 @@ namespace tags
         список <A, B, A> при сортировке не изменится и, следовательно,
         после unique будет содержать дубликаты
         */
-        typedef ural::meta::template_to_applied<statistics::tags::is_depend_on>
+        typedef ::ural::experimental::meta::template_to_applied<statistics::tags::is_depend_on>
             is_depend_on;
 
         typedef typename expand_depend_on<typename Tags::list, null_type>::type
             WithDependencies;
 
-        typedef ural::typelist<tags::min_tag, tags::max_tag> L_min_max;
-        typedef meta::includes<WithDependencies, L_min_max> C_min_and_max;
+        typedef ::ural::typelist<tags::min_tag, tags::max_tag> L_min_max;
+        typedef ::ural::experimental::meta::includes<WithDependencies, L_min_max> C_min_and_max;
 
         struct is_min_or_max_tag
         {
             template <class T>
             struct apply
-             : meta::contains<L_min_max, T>
+             : ::ural::experimental::meta::contains<L_min_max, T>
             {};
         };
 
-        typedef meta::replace_if<WithDependencies, is_min_or_max_tag, tags::range_tag> R2;
+        using R2 = ural::experimental::meta::replace_if<WithDependencies,
+                                                        is_min_or_max_tag,
+                                                        tags::range_tag>;
 
         typedef typename std::conditional<C_min_and_max::value,
                                           R2,
                                           declare_type<WithDependencies>>::type::type NeededTags;
 
-        typedef typename meta::copy_without_duplicates<NeededTags>::type
+        typedef typename ::ural::experimental::meta::copy_without_duplicates<NeededTags>::type
             UniqueTags;
-        typedef typename meta::selection_sort<UniqueTags, is_depend_on>::type
+        typedef typename ::ural::experimental::meta::selection_sort<UniqueTags, is_depend_on>::type
             Sorted;
     public:
         /// @brief Список всех необходимых тэгов, топологически отсортированные
-        typedef typename meta::reverse_copy<Sorted>::type type;
+        typedef typename ::ural::experimental::meta::reverse_copy<Sorted>::type type;
     };
 }
 // namespace tags
@@ -1172,8 +1176,8 @@ namespace tags
     template <class Forward, class Output>
     void z_score(Forward && in, Output && out)
     {
-        auto ds = ural::describe(std::forward<Forward>(in),
-                                 ::ural::statistics::tags::std_dev);
+        auto ds = ::ural::experimental::describe(std::forward<Forward>(in),
+                                                 ::ural::experimental::statistics::tags::std_dev);
 
         auto const m = ds.mean();
         auto const s = ds.standard_deviation();
@@ -1313,6 +1317,8 @@ namespace tags
         boost::math::normal_distribution<> distr{};
         return probability<>{cdf(distr, z)};
     }
+}
+// namespace experimental
 }
 // namespace ural
 

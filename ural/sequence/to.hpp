@@ -67,7 +67,7 @@ namespace ural
     распределителя памяти и т.д.
     */
     template <template <class...> class Container, class... Args>
-    using to_container = pipeable<to_container_fn<Container, Args...>>;
+    using to_container = experimental::pipeable<to_container_fn<Container, Args...>>;
 
     /** @brief Вспомогательный тип для преобразования последовательностей
     в ассоцитивный контейнер
@@ -97,8 +97,8 @@ namespace ural
             for(auto && x : ::ural::sequence_fwd<Sequence>(seq))
             {
                 result.emplace_hint(result.end(),
-                                    get(std::forward<decltype(x)>(x), ural::_1),
-                                    get(std::forward<decltype(x)>(x), ural::_2));
+                                    ural::experimental::get(std::forward<decltype(x)>(x), ural::_1),
+                                    ural::experimental::get(std::forward<decltype(x)>(x), ural::_2));
             }
 
             return result;
@@ -112,7 +112,7 @@ namespace ural
     распределителя памяти и т.д.
     */
     template <template <class, class, class...> class Map, class... Args>
-    using to_map = pipeable<to_map_fn<Map, Args...>>;
+    using to_map = experimental::pipeable<to_map_fn<Map, Args...>>;
 
     /** @brief Функциональный объект для преобразования последовательности в
     контейнер с полным указанием типа контейнера:
@@ -161,7 +161,7 @@ namespace ural
         в конвейерном стиле
         */
         constexpr auto const & as_container
-            = odr_const<pipeable<as_container_fn>>;
+            = odr_const<experimental::pipeable<as_container_fn>>;
     }
 }
 // namespace ural

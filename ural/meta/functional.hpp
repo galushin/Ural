@@ -25,6 +25,8 @@
 
 namespace ural
 {
+namespace experimental
+{
 namespace meta
 {
     /** @brief Вспомогательный шаблон, позволяющий получать доступ к вложенному
@@ -156,9 +158,9 @@ namespace meta
         private:
             typedef typename meta::compose::template apply<F_others...>::type
                 F2;
-            typedef meta::composed<F1, F2> F12;
-            typedef std::is_same<F1, ural::meta::identity> F1_is_Id;
-            typedef std::is_same<F2, ural::meta::identity> F2_is_Id;
+            using F12 = meta::composed<F1, F2>;
+            typedef std::is_same<F1, meta::identity> F1_is_Id;
+            typedef std::is_same<F2, meta::identity> F2_is_Id;
 
             typedef ural::declare_type<F2> Then;
             typedef std::conditional<F2_is_Id::value, F1, F12> Else;
@@ -186,17 +188,19 @@ namespace meta
         */
         template <class... Ts>
         struct apply
-         : std::integral_constant<bool, !::ural::meta::apply<F, Ts...>::value>
+         : std::integral_constant<bool, !meta::apply<F, Ts...>::value>
         {};
     };
 
     /// @brief Предикат совпадения двух типов
-    typedef template_to_applied<std::is_same> is_same;
+    using is_same = template_to_applied<std::is_same>;
 
     /// @brief Предикат несовпадения двух типов
-    typedef not_fn<is_same> is_not_same;
+    using is_not_same = not_fn<is_same>;
 }
 // namespace meta
+}
+// namespace experimental
 }
 // namespace ural
 

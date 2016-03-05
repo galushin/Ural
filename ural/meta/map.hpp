@@ -25,6 +25,8 @@
 */
 namespace ural
 {
+namespace experimental
+{
 namespace meta
 {
     /** @brief Пара типов
@@ -61,6 +63,8 @@ namespace meta
     {};
 }
 // namespace meta
+}
+// namespace experimental
 }
 // namespace ural
 

@@ -96,7 +96,7 @@ inline namespace v0
     template <class CursorTag, class T>
     struct wrap_with_old_value_if_forward
      : std::conditional<std::is_convertible<CursorTag, forward_cursor_tag>::value,
-                        with_old_value<T>, T>
+                        experimental::with_old_value<T>, T>
     {};
 
     /** @brief Синоним для <tt> wrap_with_old_value_if_forward<CursorTag, T>::type </tt>
@@ -116,7 +116,7 @@ inline namespace v0
     template <class Traversal, class T>
     struct wrap_with_old_value_if_bidirectional
      : std::conditional<std::is_convertible<Traversal, bidirectional_cursor_tag>::value,
-                        with_old_value<T>, T>
+                        experimental::with_old_value<T>, T>
     {};
 
     /** @brief Синоним для <tt> wrap_with_old_value_if_bidirectional<Traversal, T>::type </tt>

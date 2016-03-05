@@ -22,6 +22,11 @@
 
 #include <boost/test/unit_test.hpp>
 
+namespace
+{
+    namespace ural_ex = ::ural::experimental;
+}
+
 BOOST_AUTO_TEST_CASE(make_unique_array)
 {
     auto const n = 5;
@@ -234,7 +239,7 @@ BOOST_AUTO_TEST_CASE(copy_ptr_move_init_deleter_test)
 
 BOOST_AUTO_TEST_CASE(copy_ptr_move_ctor_test)
 {
-    typedef ural::regular_tracer<int> Type;
+    typedef ural_ex::regular_tracer<int> Type;
 
     auto const old_active = Type::active_objects();
 
