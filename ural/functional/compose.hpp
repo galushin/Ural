@@ -28,6 +28,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     // Композиция функциональных объектов
     /** @brief Композиция функциональных объектов
     @tparam UnaryFunction тип унарного функционального объекта, вычисляющего
@@ -104,6 +106,8 @@ namespace ural
     private:
         Base base_;
     };
+}
+// namespace experimental
 }
 // namespace ural
 

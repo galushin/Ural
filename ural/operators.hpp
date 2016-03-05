@@ -26,7 +26,9 @@
 
 namespace ural
 {
-inline namespace v0
+namespace experimental
+{
+inline namespace operators
 {
     /** @brief Оператор "равно" для пустых типов
     @return true
@@ -37,6 +39,10 @@ inline namespace v0
     {
         return true;
     }
+
+    template <class T>
+    constexpr typename std::enable_if<std::is_empty<T>::value, bool>::type
+    operator<(T const &, T const &);
 
     /** @brief Естественное определение оператора "не равно"
     @param x левый операнд
@@ -92,7 +98,7 @@ inline namespace v0
     typename std::enable_if<std::is_copy_constructible<T>() && has_pre_increment<T>(), T>::type
     operator++(T & x, int)
     {
-        return ::ural::modify_return_old(ural::pre_increment<>{}, x);
+        return ::ural::modify_return_old(::ural::experimental::pre_increment<>{}, x);
     }
 
     /** Обобщённая реализация пост-декремента. Применяет оператор пре-декремента
@@ -105,8 +111,24 @@ inline namespace v0
     typename std::enable_if<std::is_copy_constructible<T>() && has_pre_decrement<T>(), T>::type
     operator--(T & x, int)
     {
-        return ::ural::modify_return_old(ural::pre_decrement<>{}, x);
+        return ::ural::modify_return_old(::ural::experimental::pre_decrement<>{}, x);
     }
+}
+// namespace operators
+}
+// namespace experimental
+
+inline namespace v0
+{
+    using ::ural::experimental::operators::operator==;
+    using ::ural::experimental::operators::operator!=;
+    using ::ural::experimental::operators::operator<;
+    using ::ural::experimental::operators::operator<=;
+    using ::ural::experimental::operators::operator>;
+    using ::ural::experimental::operators::operator>=;
+
+    using ::ural::experimental::operators::operator++;
+    using ::ural::experimental::operators::operator--;
 }
 // namespace v0
 }

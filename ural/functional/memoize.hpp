@@ -26,6 +26,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Адаптор функционального объекта, кэширующий значения
     @tparam Signature сигнатура вызова
     @tparam F тип базового функционального объекта
@@ -180,6 +182,8 @@ namespace ural
     {
         return memoize_function<Signature, F>{std::move(f)};
     }
+}
+// namespace experimental
 }
 // namespace ural
 

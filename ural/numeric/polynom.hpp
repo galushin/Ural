@@ -282,7 +282,7 @@ namespace ural
 
             ural::for_each(cs_ | ural::taken_exactly(n),
                            p.cs_ | ural::assumed_infinite,
-                           ural::plus_assign<>{});
+                           ::ural::experimental::plus_assign<>{});
 
             this->drop_leading_zeros();
 
@@ -314,7 +314,7 @@ namespace ural
 
             ural::for_each(cs_ | ural::taken_exactly(n),
                            p.cs_ | ural::assumed_infinite,
-                           ural::minus_assign<>{});
+                           ::ural::experimental::minus_assign<>{});
 
             this->drop_leading_zeros();
 

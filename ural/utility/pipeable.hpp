@@ -120,10 +120,10 @@ inline namespace v0
     <tt> seq | p1 | p2 </tt>.
     */
     template <class F1, class F2>
-    pipeable<compose_function<F2, F1>>
+    pipeable<::ural::experimental::compose_function<F2, F1>>
     operator|(pipeable<F1> p1, pipeable<F2> p2)
     {
-        using F = compose_function<F2, F1>;
+        using F = ::ural::experimental::compose_function<F2, F1>;
         return pipeable<F>(F(std::move(p2).function(),
                              std::move(p1).function()));
     }

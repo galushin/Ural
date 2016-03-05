@@ -142,8 +142,8 @@ inline namespace v0
 
     namespace
     {
-        constexpr auto const & is_even = odr_const<is_even_fn>;
-        constexpr auto const & is_odd  = odr_const<not_function<is_even_fn>>;
+        constexpr auto const & is_even = odr_const<::ural::is_even_fn>;
+        constexpr auto const & is_odd  = odr_const<::ural::not_function<is_even_fn>>;
     }
 
     /// @brief Тип функционального объекта для вычисления куба (третьей степени)

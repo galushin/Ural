@@ -212,6 +212,7 @@ namespace ural
     /** @brief Итератор на основе ссылки на последовательность
     @note Не должен пережить последовательность, на основе которой создан
     @tparam Sequence тип последовательности
+    @param x, y аргументы
     */
     template <class Sequence>
     class sequence_iterator<Sequence&>

@@ -1004,7 +1004,7 @@ BOOST_AUTO_TEST_CASE(moved_test)
     BOOST_CHECK(std::none_of(r_ural.begin(), r_ural.end(),
                              [](Type const & x) {return !x;}));
 
-    BOOST_CHECK(ural::equal(r_std, r_ural, ural::equal_by(ural::dereference<>{})));
+    BOOST_CHECK(ural::equal(r_std, r_ural, ural_ex::equal_by(ural_ex::dereference<>{})));
 }
 
 BOOST_AUTO_TEST_CASE(move_iterator_cpp_11_moving_from_return_by_value_regression)
@@ -1182,7 +1182,7 @@ BOOST_AUTO_TEST_CASE(replace_sequence_custom_predicate)
     auto const old_value = -8;
     auto const new_value = 88;
 
-    auto abs_eq = ural::equal_by(ural::abs());
+    auto abs_eq = ural_ex::equal_by(ural::abs());
 
     // std
     auto pred_std = [=](int const & x) { return abs_eq(x, old_value);};

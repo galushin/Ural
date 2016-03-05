@@ -1277,7 +1277,7 @@ BOOST_AUTO_TEST_CASE(max_element_test_custom_compare)
 
 BOOST_AUTO_TEST_CASE(max_element_using_compare_by)
 {
-    auto const sq_cmp = ural::compare_by(ural::square);
+    auto const sq_cmp = ural::experimental::compare_by(ural::square);
 
     static_assert(std::is_empty<decltype(sq_cmp)>::value, "Must be empty!");
 

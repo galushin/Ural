@@ -120,7 +120,8 @@ namespace ural
 
             typedef std::initializer_list<T> Row;
 
-            auto r = std::max_element(first, last, ural::compare_by(&Row::size));
+            auto r = std::max_element(first, last,
+                                      ::ural::experimental::compare_by(&Row::size));
 
             assert(r != last);
 

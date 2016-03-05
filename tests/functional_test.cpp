@@ -28,6 +28,8 @@
 #include <boost/mpl/list.hpp>
 namespace
 {
+    namespace ural_ex = ural::experimental;
+
     typedef boost::mpl::list<ural::less<int>,
                              ural::less<int, void>,
                              ural::less<void, int>,
@@ -71,10 +73,10 @@ namespace
                          ural::bit_xor<void, int>,
                          ural::bit_xor<void, void>> Bit_xor_functions;
 
-    typedef boost::mpl::list<ural::logical_implication<bool>,
-                         ural::logical_implication<bool, void>,
-                         ural::logical_implication<void, bool>,
-                         ural::logical_implication<void, void>>
+    typedef boost::mpl::list<ural::experimental::logical_implication<bool>,
+                         ural::experimental::logical_implication<bool, void>,
+                         ural::experimental::logical_implication<void, bool>,
+                         ural::experimental::logical_implication<void, void>>
         Implication_functions;
 
     // Арифметические операторы
@@ -95,12 +97,13 @@ namespace
                            ural::equal_to<>, ural::not_equal_to<>, ural::greater<>,
                            ural::less<>, ural::greater_equal<>, ural::less_equal<>,
                            ural::logical_and<>, ural::logical_or<>, ural::logical_not<>,
-                           ural::bit_and<>, ural::bit_or<>, ural::bit_xor<>, ural::bit_not<>>;
+                           ural::bit_and<>, ural::bit_or<>, ural::bit_xor<>,
+                           ural::experimental::bit_not<>>;
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(functional_is_transparent_check, F, Transparent_functions)
 {
-    static_assert(ural::has_is_transparent_type<F>::value, "");
+    static_assert(ural::experimental::has_is_transparent_type<F>::value, "");
 
     BOOST_CHECK(true);
 }
@@ -119,7 +122,7 @@ BOOST_AUTO_TEST_CASE(memoize_function_test)
 
     static_assert(std::is_empty<decltype(f_tracer)>::value, "Must be empty!");
 
-    auto f = ural::memoize<Signature>(ural::ref = f_tracer);
+    auto f = ural::experimental::memoize<Signature>(ural::ref = f_tracer);
 
     auto const y1 = f(-1);
 
@@ -147,7 +150,7 @@ BOOST_AUTO_TEST_CASE(memoize_function_test)
 BOOST_AUTO_TEST_CASE(memoize_function_equality)
 {
     typedef double(Signature)(double);
-    auto const f1 = ural::memoize<Signature>((Signature*)(std::abs));
+    auto const f1 = ural::experimental::memoize<Signature>((Signature*)(std::abs));
     auto const f2 = f1;
 
     auto const v1 = f1(-42);
@@ -189,8 +192,8 @@ BOOST_AUTO_TEST_CASE(replace_if_function_different_pred_inequality_test)
     auto p1 = +[](int const & x) { return ural::is_even(x); };
     auto p2 = +[](int const & x) { return ural::is_odd(x); };
 
-    auto const f1 = ural::make_replace_if_function(p1, 0);
-    auto const f2 = ural::make_replace_if_function(p2, 0);
+    auto const f1 = ural::experimental::make_replace_if_function(p1, 0);
+    auto const f2 = ural::experimental::make_replace_if_function(p2, 0);
 
     BOOST_CHECK(f1 != f2);
 }
@@ -202,8 +205,8 @@ BOOST_AUTO_TEST_CASE(replace_if_function_test)
     constexpr auto const pred = ural::is_even_fn{};
     constexpr auto const new_value = Type(-7);
 
-    constexpr auto const f = ural::make_replace_if_function(pred, new_value);
-    constexpr auto const f1 = ural::make_replace_if_function(pred, new_value + 1);
+    constexpr auto const f = ural::experimental::make_replace_if_function(pred, new_value);
+    constexpr auto const f1 = ural::experimental::make_replace_if_function(pred, new_value + 1);
 
     BOOST_CHECK(f1 != f);
 
@@ -233,7 +236,7 @@ BOOST_AUTO_TEST_CASE(replace_function_test)
     BOOST_CHECK(other_value != old_value);
     BOOST_CHECK(other_value != new_value);
 
-    ural::replace_function<::ural::rational<int>, int> const
+    ural::experimental::replace_function<::ural::rational<int>, int> const
         f{old_value, new_value};
 
     BOOST_CHECK_EQUAL(old_value, f.old_value());
@@ -263,7 +266,7 @@ BOOST_AUTO_TEST_CASE(replace_function_test_custom_predicate)
     BOOST_CHECK(!eq(other_value, old_value));
     BOOST_CHECK(!eq(other_value, new_value));
 
-    ural::replace_function<decltype(old_value), decltype(new_value), decltype(eq)> const
+    ural::experimental::replace_function<decltype(old_value), decltype(new_value), decltype(eq)> const
         f{old_value, new_value, eq};
 
     BOOST_CHECK(eq(old_value, f.old_value()));
@@ -281,7 +284,7 @@ BOOST_AUTO_TEST_CASE(compare_by_test)
 {
     auto tr = [](int a) { return std::abs(a); };
     auto const cmp1 = [=](int a, int b) {return tr(a) < tr(b);};
-    auto const cmp2 = ural::compare_by(tr);
+    auto const cmp2 = ural::experimental::compare_by(tr);
 
     BOOST_CHECK(cmp2 == cmp2);
     BOOST_CHECK(!(cmp2 != cmp2));
@@ -295,7 +298,7 @@ BOOST_AUTO_TEST_CASE(compare_by_test)
 
 BOOST_AUTO_TEST_CASE(compare_by_consexpr)
 {
-    auto constexpr cmp = ural::compare_by(ural::square);
+    auto constexpr cmp = ural::experimental::compare_by(ural::square);
 
     static_assert(std::is_empty<decltype(cmp)>::value, "Must be empty class");
 
@@ -316,7 +319,7 @@ BOOST_AUTO_TEST_CASE(equals_by_test)
 {
     typedef std::pair<int, int> Pair;
 
-    auto eq = ural::equal_by(&Pair::first);
+    auto eq = ural::experimental::equal_by(&Pair::first);
 
     Pair p11{1, 1};
     Pair p21{2, 1};
@@ -336,7 +339,7 @@ BOOST_AUTO_TEST_CASE(compare_by_test_custom_compare)
     auto cmp_base = ural::greater<>{};
 
     auto cmp1 = [=](int a, int b) {return cmp_base(tr(a), tr(b));};
-    auto cmp2 = ural::compare_by(tr, cmp_base);
+    auto cmp2 = ural::experimental::compare_by(tr, cmp_base);
 
     BOOST_CHECK(cmp2 == cmp2);
     BOOST_CHECK(!(cmp2 != cmp2));
@@ -548,8 +551,8 @@ BOOST_AUTO_TEST_CASE(bit_not_test)
 {
     typedef int Type;
 
-    ural::bit_not<Type> constexpr f{};
-    ural::bit_not<> constexpr fa{};
+    ural::experimental::bit_not<Type> constexpr f{};
+    ural::experimental::bit_not<> constexpr fa{};
 
     static_assert(std::is_same<Type, decltype(f)::result_type>::value, "");
     static_assert(std::is_same<Type, decltype(f)::argument_type>::value, "");
@@ -736,7 +739,7 @@ BOOST_AUTO_TEST_CASE(make_adjoin_function_test)
     auto f1 = [](int a) { return a != 0; };
     auto f2 = [](int a) { return a % 2; };
 
-    auto f = ural::adjoin_functions(f1, f2);
+    auto f = ural::experimental::adjoin_functions(f1, f2);
     std::tuple<bool, int> x = f(5);
 
     BOOST_CHECK_EQUAL(true, std::get<0>(x));
@@ -757,7 +760,7 @@ BOOST_AUTO_TEST_CASE(make_adjoint_function_constexpr_test)
     auto constexpr r3 = std::get<2>(tr);
     auto constexpr r4 = std::get<3>(tr);
 
-    auto constexpr f = ural::adjoin_functions(f1, f2, f3, f4);
+    auto constexpr f = ural::experimental::adjoin_functions(f1, f2, f3, f4);
 
     static_assert(std::is_empty<decltype(f)>::value, "Must be empty class");
 
@@ -842,8 +845,8 @@ BOOST_AUTO_TEST_CASE(replace_function_cref_test)
     auto const old_value = 13;
     auto const new_value = 42;
 
-    auto const f = ural::make_replace_function(ural::cref(old_value),
-                                               ural::cref = new_value);
+    auto const f = ural::experimental::make_replace_function(ural::cref(old_value),
+                                                             ural::cref = new_value);
 
     BOOST_CHECK(f == f);
 
@@ -856,8 +859,8 @@ BOOST_AUTO_TEST_CASE(replace_function_custom_predicate_test)
     auto constexpr old_value = 13;
     auto constexpr new_value = 42;
 
-    auto constexpr f = ural::make_replace_function(old_value, new_value,
-                                                   ural::greater_equal<>{});
+    auto constexpr f = ural_ex::make_replace_function(old_value, new_value,
+                                                      ural::greater_equal<>{});
 
     static_assert(12 == f(12), "");
     static_assert(new_value == f(13), "");
@@ -890,10 +893,10 @@ BOOST_AUTO_TEST_CASE(replace_function_equal_test)
     auto constexpr old_value = 13;
     auto constexpr new_value = 42;
 
-    auto constexpr f1 = ural::make_replace_function(old_value, new_value, Equal{true});
-    auto constexpr f2 = ural::make_replace_function(old_value+1, new_value, Equal{true});
-    auto constexpr f3 = ural::make_replace_function(old_value, new_value+1, Equal{true});
-    auto constexpr f4 = ural::make_replace_function(old_value, new_value, Equal{false});
+    auto constexpr f1 = ural_ex::make_replace_function(old_value, new_value, Equal{true});
+    auto constexpr f2 = ural_ex::make_replace_function(old_value+1, new_value, Equal{true});
+    auto constexpr f3 = ural_ex::make_replace_function(old_value, new_value+1, Equal{true});
+    auto constexpr f4 = ural_ex::make_replace_function(old_value, new_value, Equal{false});
 
     static_assert(f1 == f1, "");
 
@@ -956,30 +959,30 @@ BOOST_AUTO_TEST_CASE(min_element_accumulator_move_ops_test)
 
 namespace
 {
-    using Plus_assigns = boost::mpl::list<ural::plus_assign<int, int>,
-                                          ural::plus_assign<int, void>,
-                                          ural::plus_assign<void, int>,
-                                          ural::plus_assign<>>;
+    using Plus_assigns = boost::mpl::list<ural_ex::plus_assign<int, int>,
+                                          ural_ex::plus_assign<int, void>,
+                                          ural_ex::plus_assign<void, int>,
+                                          ural_ex::plus_assign<>>;
 
-    using Minus_assigns = boost::mpl::list<ural::minus_assign<int, int>,
-                                           ural::minus_assign<int, void>,
-                                           ural::minus_assign<void, int>,
-                                           ural::minus_assign<>>;
+    using Minus_assigns = boost::mpl::list<ural_ex::minus_assign<int, int>,
+                                           ural_ex::minus_assign<int, void>,
+                                           ural_ex::minus_assign<void, int>,
+                                           ural_ex::minus_assign<>>;
 
-    using Mult_assigns = boost::mpl::list<ural::multiplies_assign<int, int>,
-                                          ural::multiplies_assign<int, void>,
-                                          ural::multiplies_assign<void, int>,
-                                          ural::multiplies_assign<>>;
+    using Mult_assigns = boost::mpl::list<ural_ex::multiplies_assign<int, int>,
+                                          ural_ex::multiplies_assign<int, void>,
+                                          ural_ex::multiplies_assign<void, int>,
+                                          ural_ex::multiplies_assign<>>;
 
-    using Divides_assigns = boost::mpl::list<ural::divides_assign<int, int>,
-                                             ural::divides_assign<int, void>,
-                                             ural::divides_assign<void, int>,
-                                             ural::divides_assign<>>;
+    using Divides_assigns = boost::mpl::list<ural_ex::divides_assign<int, int>,
+                                             ural_ex::divides_assign<int, void>,
+                                             ural_ex::divides_assign<void, int>,
+                                             ural_ex::divides_assign<>>;
 
-    using Modulus_assigns = boost::mpl::list<ural::modulus_assign<int, int>,
-                                             ural::modulus_assign<int, void>,
-                                             ural::modulus_assign<void, int>,
-                                             ural::modulus_assign<>>;
+    using Modulus_assigns = boost::mpl::list<ural_ex::modulus_assign<int, int>,
+                                             ural_ex::modulus_assign<int, void>,
+                                             ural_ex::modulus_assign<void, int>,
+                                             ural_ex::modulus_assign<>>;
 }
 BOOST_AUTO_TEST_CASE_TEMPLATE(plus_assign_function_test, Function, Plus_assigns)
 {

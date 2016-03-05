@@ -1672,7 +1672,7 @@ inline namespace v0
                 return in;
             }
 
-            auto cmp_s = ural::compare_by(ural::dereference<>{}, std::move(cmp));
+            auto cmp_s = ::ural::experimental::compare_by(ural::experimental::dereference<>{}, std::move(cmp));
 
             ::ural::min_element_accumulator<ForwardSequence, decltype(cmp_s)>
                 acc(in++, cmp_s);
@@ -1797,7 +1797,7 @@ inline namespace v0
                 return Tuple{in, in};
             }
 
-            auto cmp_min = ural::compare_by(ural::dereference<>{}, std::cref(cmp));
+            auto cmp_min = ::ural::experimental::compare_by(::ural::experimental::dereference<>{}, std::cref(cmp));
             auto cmp_max = ural::make_binary_reverse_args(cmp_min);
 
             ::ural::min_element_accumulator<ForwardSequence, decltype(cmp_min)>
