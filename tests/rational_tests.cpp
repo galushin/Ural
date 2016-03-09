@@ -387,7 +387,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_initialization_test, T,
     BOOST_CHECK_THROW(Rational(-2, 0), ural_ex::bad_rational );
     BOOST_CHECK_THROW(Rational( 0, 0), ural_ex::bad_rational );
 
-    auto constexpr ST = ural::safe_tag{};
+    auto constexpr ST = ural_ex::safe_tag{};
 
     BOOST_CHECK_THROW(Rational( 3, 0, ST), ural_ex::bad_rational );
     BOOST_CHECK_THROW(Rational(-2, 0, ST), ural_ex::bad_rational );
@@ -398,7 +398,7 @@ BOOST_AUTO_TEST_CASE(rational_three_arg_ctor_safe_tag)
 {
     using Rational = ural_ex::rational<int>;
 
-    auto constexpr r = Rational(6, 8, 2, ural::safe_tag{});
+    auto constexpr r = Rational(6, 8, 2, ural_ex::safe_tag{});
 
     auto constexpr r0 = Rational(6, 8);
 
@@ -814,9 +814,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( dice_roll_test, T, all_signed_test_types )
     // Determine the mean number of times a fair six-sided die
     // must be thrown until each side has appeared at least once.
 
-    auto inverse = ural::curry(ural::constructor<rational_type>{}, T(1));
+    auto inverse = ural_ex::curry(ural_ex::constructor<rational_type>{}, T(1));
 
-    auto in = ural::numbers(1, 7) | ural::transformed(std::move(inverse));
+    auto in = ural::numbers(1, 7) | ural_ex::transformed(std::move(inverse));
 
     auto const r = ural::accumulate(in, rational_type(T(0))) * T(6);
 

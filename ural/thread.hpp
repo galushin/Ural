@@ -28,6 +28,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Стратегия многопотоночти: многопоточная программа, использовать
     средства стандартной библиотеки C++11
     */
@@ -84,6 +86,8 @@ namespace ural
         /// @brief Тип мьютекса
         typedef single_thread_mutex mutex_type;
     };
+}
+// namespace experimental
 }
 // namespace ural
 

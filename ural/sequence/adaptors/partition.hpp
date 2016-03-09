@@ -28,6 +28,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Последовательность вывода, записывающая значения в одну из двух
     базовых последовательностей, в зависимости от значения предиката
     @tparam Ouput1 тип последовательности для элементов, удовлетворяющих
@@ -174,6 +176,8 @@ namespace ural
                       ::ural::sequence_fwd<Output2>(out_false),
                       make_callable(std::move(pred)));
     }
+}
+// namespace experimental
 }
 // namespace ural
 

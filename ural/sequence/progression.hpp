@@ -12,6 +12,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /// @brief Тип-тэг, обозначающий (абстрактную единицу)
     struct unit_t
     {
@@ -92,10 +94,10 @@ namespace ural
               class Step = use_default>
     class arithmetic_progression
      : public sequence_base<arithmetic_progression<Additive, Plus, CursorTag, Step>,
-                            FunctionType<DefaultedType<Plus, plus<>>>>
+                            FunctionType<experimental::DefaultedType<Plus, plus<>>>>
     {
         using Base = sequence_base<arithmetic_progression,
-                                   FunctionType<DefaultedType<Plus, plus<>>>>;
+                                   FunctionType<experimental::DefaultedType<Plus, plus<>>>>;
 
         static_assert(!std::is_same<CursorTag, bidirectional_cursor_tag>::value,
                       "Infinite sequence can't be bidirectional");
@@ -114,7 +116,7 @@ namespace ural
 
         // Типы
         /// @brief Тип размера шага
-        using step_type = DefaultedType<Step, Additive>;
+        using step_type = experimental::DefaultedType<Step, Additive>;
 
         /// @brief Тип значения
         typedef Additive value_type;
@@ -129,13 +131,13 @@ namespace ural
         @note Проблема в том, что при произвольном доступе возвращается
         вычисленное значение, а не ссылка.
         */
-        using cursor_tag = DefaultedType<CursorTag, random_access_cursor_tag>;
+        using cursor_tag = experimental::DefaultedType<CursorTag, random_access_cursor_tag>;
 
         /// @brief Тип указателя
         typedef value_type const * pointer;
 
         /// @brief Тип операции
-        using operation_type = FunctionType<DefaultedType<Plus, plus<>>>;
+        using operation_type = FunctionType<experimental::DefaultedType<Plus, plus<>>>;
 
         // Конструкторы
         /** @brief Конструктор
@@ -220,7 +222,7 @@ namespace ural
         {
             distance_type n = (this->front() - this->first_.old_value()) / this->step();
             return arithmetic_progression(this->first_.old_value(), this->step())
-                    | ural::taken_exactly(std::move(n));
+                    | ::ural::experimental::taken_exactly(std::move(n));
         }
 
         /// @brief Отбрасывание пройденной части последовательности
@@ -335,6 +337,8 @@ namespace ural
         constexpr auto const & make_geometric_progression
             = odr_const<make_geometric_progression_fn>;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

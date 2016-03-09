@@ -297,8 +297,8 @@ namespace experimental
             return false;
         }
 
-        return ural::lexicographical_compare(x.digits() | ural::reversed,
-                                             y.digits() | ural::reversed);
+        return ural::lexicographical_compare(x.digits() | ::ural::experimental::reversed,
+                                             y.digits() | ::ural::experimental::reversed);
     }
 
     /** @brief Оператор "меньше"
@@ -799,12 +799,12 @@ namespace experimental
 
         if(radix <= 16)
         {
-            ural::write_separated(os, x.digits() | ural::reversed,
+            ural::write_separated(os, x.digits() | ::ural::experimental::reversed,
                                   ural::no_delimiter{});
         }
         else
         {
-            ural::write_separated(os, x.digits() | ural::reversed, ':');
+            ural::write_separated(os, x.digits() | ::ural::experimental::reversed, ':');
         }
 
 

@@ -43,7 +43,7 @@ namespace ural
         typedef decltype(*std::declval<OutputIterator>())  reference;
 
         /// @brief Тип расстояния
-        typedef typename default_helper<D, std::ptrdiff_t>::type distance_type;
+        using distance_type = experimental::DefaultedType<D, std::ptrdiff_t>;
 
         /// @brief Категория курсора
         using cursor_tag = output_cursor_tag;

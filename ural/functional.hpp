@@ -34,6 +34,8 @@
 
 namespace ural
 {
+inline namespace v0
+{
     /** @brief Класс функционального объекта для создания
     <tt> std::reference_wrapper </tt> без добавления константности.
     */
@@ -127,7 +129,11 @@ namespace ural
         }
         //@}
     };
+}
+// namespace v0
 
+namespace experimental
+{
     /** @brief Функциональный объект без аргументов, возвращающий фиксированное
     знчение
     @tparam T тип значения
@@ -663,21 +669,31 @@ namespace ural
         // Обобщённые операции
         constexpr auto const & modify_return_old = odr_const<modify_return_old_fn>;
 
-        // Управление передачей параметров
-        constexpr auto const & ref = odr_const<ref_fn>;
-        constexpr auto const & cref = odr_const<cref_fn>;
-
-        // Операции контейнеров
-        constexpr auto const & empty = odr_const<empty_fn>;
-
-        constexpr auto const & pop_front = odr_const<pop_front_fn>;
-        constexpr auto const & front = odr_const<front_fn>;
-
-        constexpr auto const & pop_back = odr_const<pop_back_fn>;
-        constexpr auto const & back = odr_const<back_fn>;
-
         constexpr auto const & subscript = odr_const<subscript_fn>;
     }
+}
+// namespace experimental
+
+inline namespace v0
+{
+namespace
+{
+    // Управление передачей параметров
+    constexpr auto const & ref = odr_const<ref_fn>;
+    constexpr auto const & cref = odr_const<cref_fn>;
+
+    // Операции контейнеров
+    constexpr auto const & empty = odr_const<::ural::experimental::empty_fn>;
+
+    constexpr auto const & pop_front = odr_const<::ural::experimental::pop_front_fn>;
+    constexpr auto const & front = odr_const<::ural::experimental::front_fn>;
+
+    constexpr auto const & pop_back = odr_const<::ural::experimental::pop_back_fn>;
+    constexpr auto const & back = odr_const<::ural::experimental::back_fn>;
+}
+// namespace
+}
+// namespace v0
 }
 // namespace ural
 

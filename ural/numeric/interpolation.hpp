@@ -58,14 +58,13 @@ namespace experimental
         typedef size_t size_type;
 
         /// @brief Тип аргумента
-        typedef typename default_helper<X, double>::type argument_type;
+        using argument_type = experimental::DefaultedType<X, double>;
 
         /// @brief Тип возвращаемого значения
-        typedef typename default_helper<Y, argument_type>::type result_type;
+        using result_type = experimental::DefaultedType<Y, argument_type>;
 
         /// @brief Тип стратегии
-        typedef typename default_helper<Policy, numeric_policy<argument_type>>::type
-            policy_type;
+        using policy_type = experimental::DefaultedType<Policy, numeric_policy<argument_type>>;
 
         /// @brief Отпимальный тип для передачи аргумента
         typedef typename boost::call_traits<argument_type>::param_type param_type;

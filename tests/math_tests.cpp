@@ -508,7 +508,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(pascal_triangle_PE_203, Set, PE_203_Set_types)
 
     Set r;
 
-    auto seq = ural::pascal_triangle_rows_sequence<std::vector<int>>{};
+    auto seq = ural_ex::pascal_triangle_rows_sequence<std::vector<int>>{};
 
     for(auto i : ural::numbers(0, 8))
     {

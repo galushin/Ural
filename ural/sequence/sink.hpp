@@ -28,6 +28,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Шаблон класса функционального объекта, который принимает один
     аргумент и ничего не делает.
     @tparam T тип аргумента. Если этот тип совпадает с @c auto_tag, то
@@ -63,7 +65,9 @@ namespace ural
     этот тип совпадает с @c auto_tag, то приниматься будет любой тип.
     */
     template <class T = auto_tag>
-    using sink_sequence = ural::function_output_sequence<sink_function<T>>;
+    using sink_sequence = experimental::function_output_sequence<sink_function<T>>;
+}
+// namespace experimental
 }
 // namespace ural
 

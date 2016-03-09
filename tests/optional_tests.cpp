@@ -40,8 +40,8 @@ https://github.com/akrzemi1/Optional/blob/master/test_optional.cpp
 /// @cond false
 namespace
 {
-    namespace tr2 = ural;
     namespace ural_ex = ::ural::experimental;
+    namespace tr2 = ural_ex;
 
     enum  State
     {
@@ -195,7 +195,7 @@ BOOST_AUTO_TEST_CASE(value_ctor)
 
   {
       OracleVal v;
-      tr2::optional<Oracle> oo1{tr2::inplace, v};
+      tr2::optional<Oracle> oo1{tr2::in_place, v};
       BOOST_CHECK (oo1 != tr2::nullopt);
       BOOST_CHECK (oo1 != tr2::optional<Oracle>{});
       BOOST_CHECK (oo1 == tr2::optional<Oracle>{v});
@@ -204,7 +204,7 @@ BOOST_AUTO_TEST_CASE(value_ctor)
       BOOST_CHECK (oo1->s == sValueCopyConstructed);
       BOOST_CHECK (v.s == sValueConstructed);
 
-      tr2::optional<Oracle> oo2{tr2::inplace, std::move(v)};
+      tr2::optional<Oracle> oo2{tr2::in_place, std::move(v)};
       BOOST_CHECK (oo2 != tr2::nullopt);
       BOOST_CHECK (oo2 != tr2::optional<Oracle>{});
       BOOST_CHECK (oo2 == oo1);
@@ -249,7 +249,7 @@ BOOST_AUTO_TEST_CASE(optional_assignment_test)
     oi = 2;
     BOOST_CHECK (*oi == 2);
 
-    oi = ural::nullopt;
+    oi = tr2::nullopt;
     BOOST_CHECK (!oi);
 }
 
@@ -370,7 +370,7 @@ BOOST_AUTO_TEST_CASE(optional_optional)
   BOOST_CHECK (!oi1);
 
   {
-  tr2::optional<tr2::optional<int>> oi2 {tr2::inplace};
+  tr2::optional<tr2::optional<int>> oi2 {tr2::in_place};
   BOOST_CHECK (oi2 != tr2::nullopt);
   BOOST_CHECK (bool(oi2));
   BOOST_CHECK (*oi2 == tr2::nullopt);
@@ -379,7 +379,7 @@ BOOST_AUTO_TEST_CASE(optional_optional)
   }
 
   {
-  tr2::optional<tr2::optional<int>> oi2 {tr2::inplace, tr2::nullopt};
+  tr2::optional<tr2::optional<int>> oi2 {tr2::in_place, tr2::nullopt};
   BOOST_CHECK (oi2 != tr2::nullopt);
   BOOST_CHECK (bool(oi2));
   BOOST_CHECK (*oi2 == tr2::nullopt);
@@ -407,11 +407,11 @@ BOOST_AUTO_TEST_CASE(example_guard)
   //FAILS: optional<Guard> ogx = "res1";
   //FAILS: optional<Guard> ogx("res1");
   optional<Guard> oga;                     // Guard is non-copyable (and non-moveable)
-  optional<Guard> ogb(inplace, "res1");   // initialzes the contained value with "res1"
+  optional<Guard> ogb(in_place, "res1");   // initialzes the contained value with "res1"
   BOOST_CHECK (bool(ogb));
   BOOST_CHECK (ogb->val == "res1");
 
-  optional<Guard> ogc(inplace);           // default-constructs the contained value
+  optional<Guard> ogc(in_place);           // default-constructs the contained value
   BOOST_CHECK (bool(ogc));
   BOOST_CHECK (ogc->val == "");
 
@@ -558,8 +558,8 @@ BOOST_AUTO_TEST_CASE(example_optional_arg)
   iii = getValue<int>();
 
   {
-    using namespace ural;
-    optional<Guard> grd1{inplace, "res1", 1};   // guard 1 initialized
+    using namespace tr2;
+    optional<Guard> grd1{in_place, "res1", 1};   // guard 1 initialized
     optional<Guard> grd2;
 
     grd2.emplace("res2", 2);                     // guard 2 initialized
@@ -575,12 +575,12 @@ namespace
     std::tuple<Date, Date, Date> getStartMidEnd()
     { return std::tuple<Date, Date, Date>{Date{1}, Date{2}, Date{3}}; }
 
-    ural::optional<char> readNextChar();
-    ural::optional<char> readNextChar(){ return{}; }
+    ural_ex::optional<char> readNextChar();
+    ural_ex::optional<char> readNextChar(){ return{}; }
 
     struct Runner
     {
-        static void run(ural::optional<std::string>) {}
+        static void run(ural_ex::optional<std::string>) {}
         static void run(std::complex<double>) {}
         static void run(Date const&, Date const&, Date const&) {}
     };
@@ -589,7 +589,7 @@ namespace
 
 BOOST_AUTO_TEST_CASE(example_date)
 {
-  using namespace ural;
+  using namespace tr2;
   // Date doesn't have default ctor (no good default date)
   optional<Date> start, mid, end;
 
@@ -609,7 +609,7 @@ namespace
 
 BOOST_AUTO_TEST_CASE(example_conceptual_model)
 {
-  using namespace ural;
+  using namespace tr2;
 
   optional<int> oi = 0;
   optional<int> oj = 1;
@@ -626,7 +626,7 @@ BOOST_AUTO_TEST_CASE(example_conceptual_model)
 
 BOOST_AUTO_TEST_CASE(example_rationale)
 {
-  using namespace ural;
+  using namespace tr2;
   if (optional<char> ch = readNextChar()) {
     // ...
   }
@@ -696,7 +696,7 @@ BOOST_AUTO_TEST_CASE(example_rationale)
   // inconvenient syntax:
   {
 
-      tr2::optional<std::vector<int>> ov2{tr2::inplace, {2, 3}};
+      tr2::optional<std::vector<int>> ov2{tr2::in_place, {2, 3}};
 
       BOOST_CHECK (bool(ov2));
       BOOST_CHECK ((*ov2)[1] == 3);
@@ -704,7 +704,7 @@ BOOST_AUTO_TEST_CASE(example_rationale)
       ////////////////////////////
 
       std::vector<int> v = {1, 2, 4, 8};
-      optional<std::vector<int>> ov{tr2::inplace, {1, 2, 4, 8}};
+      optional<std::vector<int>> ov{tr2::in_place, {1, 2, 4, 8}};
 
       BOOST_CHECK (v == *ov);
 
@@ -720,8 +720,8 @@ BOOST_AUTO_TEST_CASE(example_rationale)
   /////////////////////////////////
   {
   typedef int T;
-  optional<optional<T>> ot {inplace};
-  optional<optional<T>> ou {inplace, nullopt};
+  optional<optional<T>> ot {in_place};
+  optional<optional<T>> ou {in_place, nullopt};
   optional<optional<T>> ov {optional<T>{}};
 
   optional<int> oi;
@@ -730,15 +730,15 @@ BOOST_AUTO_TEST_CASE(example_rationale)
   }
 }
 
-bool fun(std::string , ural::optional<int> oi = ural::nullopt);
-bool fun(std::string , ural::optional<int> oi)
+bool fun(std::string , tr2::optional<int> oi = tr2::nullopt);
+bool fun(std::string , tr2::optional<int> oi)
 {
   return bool(oi);
 }
 
 BOOST_AUTO_TEST_CASE(example_converting_ctor)
 {
-  using namespace ural;
+  using namespace tr2;
 
   BOOST_CHECK (true == fun("dog", 2));
   BOOST_CHECK (false == fun("dog"));
@@ -773,7 +773,7 @@ BOOST_AUTO_TEST_CASE(value_or)
 
 BOOST_AUTO_TEST_CASE(mixed_order)
 {
-  using namespace ural;
+  using namespace tr2;
 
   optional<int> oN {nullopt};
   optional<int> o0 {0};
@@ -852,7 +852,7 @@ namespace
 
 BOOST_AUTO_TEST_CASE(bad_relops)
 {
-  using namespace ural;
+  using namespace tr2;
   BadRelops a{1}, b{2};
   BOOST_CHECK (a < b);
   BOOST_CHECK (a > b);
@@ -882,7 +882,7 @@ BOOST_AUTO_TEST_CASE(bad_relops)
 
 BOOST_AUTO_TEST_CASE(mixed_equality)
 {
-  using namespace ural;
+  using namespace tr2;
 
   BOOST_CHECK (make_optional(0) == 0);
   BOOST_CHECK (make_optional(1) == 1);
@@ -935,7 +935,7 @@ BOOST_AUTO_TEST_CASE(mixed_equality)
 
 BOOST_AUTO_TEST_CASE(const_propagation)
 {
-  using namespace ural;
+  using namespace tr2;
 
   optional<int> mmi{0};
   static_assert(std::is_same<decltype(*mmi), int&>::value, "WTF");
@@ -950,11 +950,11 @@ BOOST_AUTO_TEST_CASE(const_propagation)
   static_assert(std::is_same<decltype(*cci), const int&>::value, "WTF");
 }
 
-static_assert(std::is_base_of<std::logic_error, ural::bad_optional_access>::value, "");
+static_assert(std::is_base_of<std::logic_error, tr2::bad_optional_access>::value, "");
 
 BOOST_AUTO_TEST_CASE(safe_value)
 {
-  using namespace ural;
+  using namespace tr2;
 
   try {
     optional<int> ovN{}, ov1{1};
@@ -1019,7 +1019,7 @@ BOOST_AUTO_TEST_CASE(optional_ref)
 
 BOOST_AUTO_TEST_CASE(optional_ref_const_propagation)
 {
-  using namespace ural;
+  using namespace tr2;
 
   int i = 9;
   const optional<int&> mi = i;
@@ -1033,7 +1033,7 @@ BOOST_AUTO_TEST_CASE(optional_ref_const_propagation)
 
 BOOST_AUTO_TEST_CASE(optional_ref_assign)
 {
-  using namespace ural;
+  using namespace tr2;
 
   int i = 9;
   optional<int&> ori = i;
@@ -1063,7 +1063,7 @@ BOOST_AUTO_TEST_CASE(optional_ref_assign)
   BOOST_CHECK (j == 2);
   BOOST_CHECK (i == 9);
 
-  ori = ural::nullopt;
+  ori = tr2::nullopt;
   BOOST_CHECK (!ori);
   BOOST_CHECK (ori != orj);
   BOOST_CHECK (j == 2);
@@ -1076,8 +1076,8 @@ BOOST_AUTO_TEST_CASE(optional_vector_swap_member)
     Type const z1 = {1, 3, 5};
     Type const z2 = {2, 4};
 
-    auto o1 = ural::make_optional(z1);
-    auto o2 = ural::make_optional(z2);
+    auto o1 = tr2::make_optional(z1);
+    auto o2 = tr2::make_optional(z2);
 
     o1.swap(o2);
 
@@ -1091,8 +1091,8 @@ BOOST_AUTO_TEST_CASE(optional_vector_swap_free)
     Type const z1 = {1, 3, 5};
     Type const z2 = {2, 4};
 
-    auto o1 = ural::make_optional(z1);
-    auto o2 = ural::make_optional(z2);
+    auto o1 = tr2::make_optional(z1);
+    auto o2 = tr2::make_optional(z2);
 
     using std::swap;
     swap(o1, o2);
@@ -1107,10 +1107,10 @@ BOOST_AUTO_TEST_CASE(optional_vector_swap_free_strict)
     Type const z1 = {1, 3, 5};
     Type const z2 = {2, 4};
 
-    auto o1 = ural::make_optional(z1);
-    auto o2 = ural::make_optional(z2);
+    auto o1 = tr2::make_optional(z1);
+    auto o2 = tr2::make_optional(z2);
 
-    ural::swap(o1, o2);
+    tr2::swap(o1, o2);
 
     BOOST_CHECK(o1 == z2);
     BOOST_CHECK(o2 == z1);
@@ -1118,7 +1118,7 @@ BOOST_AUTO_TEST_CASE(optional_vector_swap_free_strict)
 
 BOOST_AUTO_TEST_CASE(optional_ref_swap)
 {
-  using namespace ural;
+  using namespace tr2;
   int i = 0;
   int j = 1;
   optional<int&> oi = i;
@@ -1134,7 +1134,7 @@ BOOST_AUTO_TEST_CASE(optional_ref_swap)
 
 BOOST_AUTO_TEST_CASE(optional_ref_swap_member)
 {
-  using namespace ural;
+  using namespace tr2;
   int i = 0;
   int j = 1;
   optional<int&> oi = i;
@@ -1150,7 +1150,7 @@ BOOST_AUTO_TEST_CASE(optional_ref_swap_member)
 
 BOOST_AUTO_TEST_CASE(optional_value_swap_member)
 {
-  using namespace ural;
+  using namespace tr2;
   int const i = 0;
   int const j = 1;
   optional<int> oi = i;
@@ -1228,7 +1228,7 @@ namespace
     template <class X>
     bool generic_fun()
     {
-      ural::optional<typename generic<X>::type> op;
+      tr2::optional<typename generic<X>::type> op;
       return bool(op);
     }
     /// @endcond
@@ -1236,7 +1236,7 @@ namespace
 
 BOOST_AUTO_TEST_CASE(optional_ref_emulation)
 {
-  using namespace ural;
+  using namespace tr2;
   optional<generic<int>::type> oi = 1;
   BOOST_CHECK (*oi == 1);
 
@@ -1255,7 +1255,7 @@ BOOST_AUTO_TEST_CASE(optional_ref_emulation)
 BOOST_AUTO_TEST_CASE(moved_on_value_or)
 {
   using namespace tr2;
-  optional<Oracle> oo{inplace};
+  optional<Oracle> oo{in_place};
 
   BOOST_CHECK (oo);
   BOOST_CHECK (oo->s == sDefaultConstructed);
@@ -1265,7 +1265,7 @@ BOOST_AUTO_TEST_CASE(moved_on_value_or)
   BOOST_CHECK (oo->s == sMovedFrom);
   BOOST_CHECK (o.s == sMoveConstructed);
 
-  optional<MoveAware<int>> om {inplace, 1};
+  optional<MoveAware<int>> om {in_place, 1};
   BOOST_CHECK (om);
   BOOST_CHECK (om->moved == false);
 
@@ -1337,14 +1337,14 @@ namespace
 
 BOOST_AUTO_TEST_CASE(arrow_operator)
 {
-  using namespace ural;
+  using namespace tr2;
 
-  optional<Combined> oc1{inplace, 1, 2};
+  optional<Combined> oc1{in_place, 1, 2};
   BOOST_CHECK (oc1);
   BOOST_CHECK (oc1->m == 1);
   BOOST_CHECK (oc1->n == 2);
 
-  optional<Nasty> on{inplace, 1, 2};
+  optional<Nasty> on{in_place, 1, 2};
   BOOST_CHECK (on);
   BOOST_CHECK (on->m == 1);
   BOOST_CHECK (on->n == 2);
@@ -1352,7 +1352,7 @@ BOOST_AUTO_TEST_CASE(arrow_operator)
 
 BOOST_AUTO_TEST_CASE(arrow_wit_optional_ref)
 {
-  using namespace ural;
+  using namespace tr2;
 
   Combined c{1, 2};
   optional<Combined&> oc = c;
@@ -1379,7 +1379,7 @@ BOOST_AUTO_TEST_CASE(arrow_wit_optional_ref)
   BOOST_CHECK (on->m == 5);
   BOOST_CHECK (on->n == 6);
 
-  optional<Nasty&> om{inplace, n};
+  optional<Nasty&> om{in_place, n};
   BOOST_CHECK (om);
   BOOST_CHECK (om->m == 1);
   BOOST_CHECK (om->n == 2);
@@ -1441,7 +1441,7 @@ namespace
         {
             static_assert(std::is_trivially_destructible<int>::value,
                           "int must have trivial destructor");
-            constexpr ural::details::optional_base_constexpr<int> ob0{};
+            constexpr tr2::details::optional_base_constexpr<int> ob0{};
 
             constexpr tr2::optional<int> g0{};
             constexpr tr2::optional<int> g1{tr2::nullopt};
@@ -1491,7 +1491,7 @@ BOOST_AUTO_TEST_CASE(optional_init_test)
     static_assert( g2 == tr2::optional<int>(2), "not 2!" );
     static_assert( g2 != g0, "eq!" );
 
-    constexpr tr2::optional<Combined> gc0{tr2::inplace};
+    constexpr tr2::optional<Combined> gc0{tr2::in_place};
     static_assert(gc0->n == 6, "WTF!");
 
     BOOST_CHECK(true);
@@ -1527,7 +1527,7 @@ namespace
 {
     namespace constexpr_optional_ref_and_arrow
     {
-      using namespace ural;
+      using namespace tr2;
       constexpr Combined c{1, 2};
       constexpr optional<Combined const&> oc = c;
       static_assert(oc, "WTF!");
@@ -1539,12 +1539,12 @@ namespace
 BOOST_AUTO_TEST_CASE(optional_test)
 {
     typedef int Basic_type;
-    typedef ural_ex::regular_tracer<Basic_type, ural::single_thread_policy> Type;
+    using Type = ural_ex::regular_tracer<Basic_type, ural_ex::single_thread_policy>;
 
     //Конструктор без параметров: конструктор и деструктор объекта не вызывались
     auto const destroyed_old = Type::destroyed_objects();
     {
-        ural::optional<Type> x0;
+        tr2::optional<Type> x0;
 
         BOOST_CHECK(!x0);
 
@@ -1554,7 +1554,7 @@ BOOST_AUTO_TEST_CASE(optional_test)
 
     // Конструктор с аргументом: вызываются конструктор и деструктор
     {
-        ural::optional<Type> x0{ural::inplace, 42};
+        tr2::optional<Type> x0{tr2::in_place, 42};
 
         BOOST_CHECK(!!x0);
 
@@ -1566,33 +1566,33 @@ BOOST_AUTO_TEST_CASE(optional_test)
 BOOST_AUTO_TEST_CASE(optional_throw_test)
 {
     typedef std::vector<std::string> Type;
-    ural::optional<Type> x0{ural::nullopt};
+    tr2::optional<Type> x0{tr2::nullopt};
     BOOST_CHECK_THROW(x0.value(), std::logic_error);
 
-    ural::optional<Type&> x_def;
+    tr2::optional<Type&> x_def;
     BOOST_CHECK_THROW(x_def.value(), std::logic_error);
 }
 
 BOOST_AUTO_TEST_CASE(optional_bad_access_test)
 {
-    ural::optional<int> x;
-    ural::optional<int&> y;
+    tr2::optional<int> x;
+    tr2::optional<int&> y;
 
-    BOOST_CHECK_THROW(x.value(), ural::bad_optional_access);
-    BOOST_CHECK_THROW(y.value(), ural::bad_optional_access);
+    BOOST_CHECK_THROW(x.value(), tr2::bad_optional_access);
+    BOOST_CHECK_THROW(y.value(), tr2::bad_optional_access);
 }
 
 BOOST_AUTO_TEST_CASE(optional_int_test)
 {
     typedef int Type;
 
-    BOOST_CONCEPT_ASSERT((ural::concepts::Regular<ural::optional<Type>>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::Regular<tr2::optional<Type>>));
 
     // Конструктор копирования
     {
-        ural::optional<Type> x0{ural::nullopt};
-        ural::optional<Type> x1{13};
-        ural::optional<Type> const x2{42};
+        tr2::optional<Type> x0{tr2::nullopt};
+        tr2::optional<Type> x1{13};
+        tr2::optional<Type> const x2{42};
 
         BOOST_CHECK(!x0);
         BOOST_CHECK(!!x1);
@@ -1619,11 +1619,11 @@ BOOST_AUTO_TEST_CASE(optional_int_test)
 BOOST_AUTO_TEST_CASE(optional_none_assign)
 {
     typedef std::string Type;
-    ural::optional<Type> x0;
-    ural::optional<Type> x1{"42"};
+    tr2::optional<Type> x0;
+    tr2::optional<Type> x1{"42"};
 
-    x0 = ural::nullopt;
-    x1 = ural::nullopt;
+    x0 = tr2::nullopt;
+    x1 = tr2::nullopt;
 
     BOOST_CHECK(!x0);
     BOOST_CHECK(!x1);
@@ -1635,10 +1635,10 @@ BOOST_AUTO_TEST_CASE(optional_move_ctor_and_assignment_test)
 
     std::string const s("hello, world");
 
-    ural::optional<Type> x0;
-    ural::optional<Type> x1(s);
-    ural::optional<Type> x2(std::move(x1));
-    ural::optional<Type> x3(std::move(x0));
+    tr2::optional<Type> x0;
+    tr2::optional<Type> x1(s);
+    tr2::optional<Type> x2(std::move(x1));
+    tr2::optional<Type> x3(std::move(x0));
 
     BOOST_CHECK(!x0);
     BOOST_CHECK(!!x1);
@@ -1666,7 +1666,7 @@ BOOST_AUTO_TEST_CASE(optional_assign_value_test)
     typedef std::string Type;
 
     std::string hw = "Hello, world!";
-    ural::optional<Type> x0;
+    tr2::optional<Type> x0;
     x0 = hw;
     BOOST_CHECK_EQUAL(hw, x0);
     BOOST_CHECK_EQUAL(x0, hw);
@@ -1679,7 +1679,7 @@ BOOST_AUTO_TEST_CASE(optional_assign_value_test)
 BOOST_AUTO_TEST_CASE(optional_ostreaming)
 {
     std::string hw = "Hello, world!";
-    ural::optional<std::string> const x {hw};
+    tr2::optional<std::string> const x {hw};
 
     std::ostringstream os;
     os << x;
@@ -1692,7 +1692,7 @@ BOOST_AUTO_TEST_CASE(optional_ostreaming)
 
 BOOST_AUTO_TEST_CASE(optional_ostreaming_empty)
 {
-    ural::optional<std::string> const x = ural::nullopt;
+    tr2::optional<std::string> const x = tr2::nullopt;
 
     std::ostringstream os;
     os << x;
@@ -1702,9 +1702,9 @@ BOOST_AUTO_TEST_CASE(optional_ostreaming_empty)
 
 BOOST_AUTO_TEST_CASE(optional_less_operator_test)
 {
-    ural::optional<std::string> x0;
-    ural::optional<std::string> x1("abc");
-    ural::optional<std::string> x2("hellow");
+    tr2::optional<std::string> x0;
+    tr2::optional<std::string> x1("abc");
+    tr2::optional<std::string> x2("hellow");
 
     BOOST_CHECK(!(x0 < x0));
     BOOST_CHECK(!(x1 < x0));
@@ -1721,9 +1721,9 @@ BOOST_AUTO_TEST_CASE(optional_less_operator_test)
 
 BOOST_AUTO_TEST_CASE(optional_less_or_equal_operator_test)
 {
-    ural::optional<std::string> x0;
-    ural::optional<std::string> x1("abc");
-    ural::optional<std::string> x2("hellow");
+    tr2::optional<std::string> x0;
+    tr2::optional<std::string> x1("abc");
+    tr2::optional<std::string> x2("hellow");
 
     BOOST_CHECK(x0 <= x0);
     BOOST_CHECK(!(x1 <= x0));
@@ -1740,9 +1740,9 @@ BOOST_AUTO_TEST_CASE(optional_less_or_equal_operator_test)
 
 BOOST_AUTO_TEST_CASE(optional_greater_operator_test)
 {
-    ural::optional<std::string> x0;
-    ural::optional<std::string> x1("abc");
-    ural::optional<std::string> x2("hellow");
+    tr2::optional<std::string> x0;
+    tr2::optional<std::string> x1("abc");
+    tr2::optional<std::string> x2("hellow");
 
     BOOST_CHECK(!(x0 > x0));
     BOOST_CHECK(!(x0 > x1));
@@ -1759,9 +1759,9 @@ BOOST_AUTO_TEST_CASE(optional_greater_operator_test)
 
 BOOST_AUTO_TEST_CASE(optional_greater_or_equal_operator_test)
 {
-    ural::optional<std::string> x0;
-    ural::optional<std::string> x1("abc");
-    ural::optional<std::string> x2("hellow");
+    tr2::optional<std::string> x0;
+    tr2::optional<std::string> x1("abc");
+    tr2::optional<std::string> x2("hellow");
 
     BOOST_CHECK(x0 >= x0);
     BOOST_CHECK(!(x0 >= x1));
@@ -1778,8 +1778,8 @@ BOOST_AUTO_TEST_CASE(optional_greater_or_equal_operator_test)
 
 BOOST_AUTO_TEST_CASE(optional_value_or_test)
 {
-    ural::optional<int> x0;
-    ural::optional<int> x1(42);
+    tr2::optional<int> x0;
+    tr2::optional<int> x1(42);
 
     BOOST_CHECK_EQUAL(-1, x0.value_or(-1));
     BOOST_CHECK_EQUAL(42, x1.value_or(-1));
@@ -1787,13 +1787,13 @@ BOOST_AUTO_TEST_CASE(optional_value_or_test)
 
 BOOST_AUTO_TEST_CASE(optional_ref_default_init_test)
 {
-    ural::optional<int&> x0;
+    tr2::optional<int&> x0;
 
     BOOST_CHECK(ural::empty(x0));
     BOOST_CHECK(!x0);
     BOOST_CHECK(!x0.get_pointer());
 
-    ural::optional<int&> x1(ural::nullopt);
+    tr2::optional<int&> x1(tr2::nullopt);
 
     BOOST_CHECK(ural::empty(x1));
     BOOST_CHECK(!x1);
@@ -1808,8 +1808,8 @@ BOOST_AUTO_TEST_CASE(optional_ref_value_init_test)
     Type value = 42;
     Ref  r_value = value;
 
-    ural::optional<Ref> x1(value);
-    ural::optional<Ref> x2(r_value);
+    tr2::optional<Ref> x1(value);
+    tr2::optional<Ref> x2(r_value);
 
     BOOST_CHECK(!ural::empty(x1));
     BOOST_CHECK(!!x1);
@@ -1826,7 +1826,7 @@ BOOST_AUTO_TEST_CASE(optional_ref_value_init_test)
 
 BOOST_AUTO_TEST_CASE(optional_ref_assign_value_test)
 {
-    typedef ural::optional<int&> Optional;
+    typedef tr2::optional<int&> Optional;
     int var = 42;
 
     Optional x0;
@@ -1836,7 +1836,7 @@ BOOST_AUTO_TEST_CASE(optional_ref_assign_value_test)
     BOOST_CHECK_EQUAL(&var, x0.get_pointer());
     BOOST_CHECK_EQUAL(var, x0.value());
 
-    x0 = ural::nullopt;
+    x0 = tr2::nullopt;
 
     BOOST_CHECK(!x0);
     BOOST_CHECK(nullptr == x0.get_pointer());
@@ -1844,7 +1844,7 @@ BOOST_AUTO_TEST_CASE(optional_ref_assign_value_test)
 
 BOOST_AUTO_TEST_CASE(optional_ref_assign_test)
 {
-    typedef ural::optional<int&> Optional;
+    typedef tr2::optional<int&> Optional;
     int var = 42;
 
     Optional x0;
@@ -1869,16 +1869,16 @@ BOOST_AUTO_TEST_CASE(optional_ref_assign_test)
     BOOST_CHECK_EQUAL(&var, x1_2.get_pointer());
 }
 
-BOOST_AUTO_TEST_CASE(optional_inplace_ctor)
+BOOST_AUTO_TEST_CASE(optional_in_place_ctor)
 {
     typedef std::vector<int> Type;
 
-    typedef ural::optional<Type> Optional;
+    typedef tr2::optional<Type> Optional;
 
     size_t const n = 10;
     auto const filler = 42;
 
-    Optional const y{ural::inplace, n, filler};
+    Optional const y{tr2::in_place, n, filler};
 
     BOOST_CHECK(!!y);
     BOOST_CHECK_EQUAL(n, y.value().size());
@@ -1890,7 +1890,7 @@ BOOST_AUTO_TEST_CASE(optional_emplace_test)
 {
     typedef std::vector<int> Type;
 
-    typedef ural::optional<Type> Optional;
+    typedef tr2::optional<Type> Optional;
 
     Optional x;
     x.emplace(5, 2);

@@ -1658,7 +1658,7 @@ BOOST_AUTO_TEST_CASE(reverse_pre_bidirectional_test)
 
     // Второй способ
     auto x2 = src;
-    auto const r2 = ural::reverse(x2 | ural::taken_while(pred));
+    auto const r2 = ural::reverse(x2 | ::ural::experimental::taken_while(pred));
 
     // Сравнение
     URAL_CHECK_EQUAL_RANGES(x1, x2);
@@ -1674,7 +1674,7 @@ BOOST_AUTO_TEST_CASE(reversed_reverse_test)
     auto x_ural = src;
 
     std::reverse(x_std.begin(), x_std.end());
-    ural::reverse(x_ural | ural::reversed);
+    ural::reverse(x_ural | ural_ex::reversed);
 
     URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
@@ -1807,7 +1807,7 @@ BOOST_AUTO_TEST_CASE(rotate_copy_different_traversed_front)
     auto const s1 = ural::numbers(1, 9);
     auto const s2 = ural::numbers(0, 9);
 
-    auto const seq = ural::make_cartesian_product_sequence(s1, s2);
+    auto const seq = ural_ex::make_cartesian_product_sequence(s1, s2);
 
     using Value = ural::ValueType<decltype(seq)>;
 
@@ -1882,7 +1882,7 @@ BOOST_AUTO_TEST_CASE(rotate_copy_to_shorter)
 // 25.3.12 Тусовка
 BOOST_AUTO_TEST_CASE(shuffle_test)
 {
-    auto v = ural::numbers(1, 10) | ural::to_container<std::vector>{};
+    auto v = ural::numbers(1, 10) | ural_ex::to_container<std::vector>{};
 
     auto const v_old = v;
 
@@ -1902,7 +1902,7 @@ BOOST_AUTO_TEST_CASE(shuffle_test)
 
 BOOST_AUTO_TEST_CASE(random_shuffle_test)
 {
-    auto v = ural::numbers(1, 10) | ural::to_container<std::vector>{};
+    auto v = ural::numbers(1, 10) | ural_ex::to_container<std::vector>{};
 
     auto const v_old = v;
 

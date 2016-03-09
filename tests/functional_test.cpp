@@ -784,10 +784,10 @@ BOOST_AUTO_TEST_CASE(make_adjoint_function_constexpr_test)
 
 BOOST_AUTO_TEST_CASE(value_function__test)
 {
-    typedef ural::value_function<int> Function;
+    typedef ural_ex::value_function<int> Function;
 
     auto const n1 = 42;
-    Function constexpr f1 = ural::make_value_function(n1);
+    Function constexpr f1 = ural_ex::make_value_function(n1);
 
     BOOST_CHECK_EQUAL(n1, f1());
     BOOST_CHECK_EQUAL(n1, f1(13));
@@ -797,11 +797,11 @@ BOOST_AUTO_TEST_CASE(value_function__test)
 
 BOOST_AUTO_TEST_CASE(value_function_equality_test)
 {
-    typedef ural::value_function<int> Function;
+    typedef ural_ex::value_function<int> Function;
 
     auto const n1 = 42;
-    Function constexpr f1 = ural::make_value_function(n1);
-    Function constexpr f2 = ural::make_value_function(13);
+    Function constexpr f1 = ural_ex::make_value_function(n1);
+    Function constexpr f2 = ural_ex::make_value_function(13);
 
     auto constexpr r1 = f1();
     auto constexpr r2 = f2();
@@ -818,11 +818,11 @@ BOOST_AUTO_TEST_CASE(value_function_equality_test)
 
 BOOST_AUTO_TEST_CASE(value_function_less_test)
 {
-    typedef ural::value_function<int> Function;
+    typedef ural_ex::value_function<int> Function;
 
     auto const n42 = 42;
-    Function constexpr f1 = ural::make_value_function(13);
-    Function constexpr f2 = ural::make_value_function(n42);
+    Function constexpr f1 = ural_ex::make_value_function(13);
+    Function constexpr f2 = ural_ex::make_value_function(n42);
 
     auto constexpr r1 = f1();
     auto constexpr r2 = f2();
@@ -909,7 +909,7 @@ BOOST_AUTO_TEST_CASE(replace_function_equal_test)
 
 BOOST_AUTO_TEST_CASE(min_element_accumulator_default_function_test)
 {
-    typedef ural::min_element_accumulator<int> Accumulator;
+    typedef ural_ex::min_element_accumulator<int> Accumulator;
     Accumulator acc{42};
 
     static_assert(std::is_same<ural::less<>, Accumulator::compare_type>::value,
@@ -923,7 +923,7 @@ BOOST_AUTO_TEST_CASE(min_element_accumulator_move_ops_test)
 {
     // Подготовка
     typedef std::string Element;
-    typedef ural::min_element_accumulator<Element> Accumulator;
+    typedef ural_ex::min_element_accumulator<Element> Accumulator;
 
     std::vector<Element> xs = {"abc", "ab", "a", "abc"};
 

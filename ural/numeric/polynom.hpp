@@ -152,7 +152,7 @@ namespace experimental
         {
             auto const & r = static_cast<polynomial<A, X, Alloc> const &>(*this);
 
-            return polynom(r.coefficients() | ural::reversed, x);
+            return polynom(r.coefficients() | ::ural::experimental::reversed, x);
         }
 
     protected:
@@ -176,7 +176,7 @@ namespace experimental
 
             auto const & r = static_cast<polynomial<A, void, Alloc> const &>(*this);
 
-            return polynom(r.coefficients() | ural::reversed, x);
+            return polynom(r.coefficients() | ::ural::experimental::reversed, x);
         }
 
     protected:
@@ -282,8 +282,8 @@ namespace experimental
 
             auto const n = ural::min(old_size, p.cs_.size());
 
-            ural::for_each(cs_ | ural::taken_exactly(n),
-                           p.cs_ | ural::assumed_infinite,
+            ural::for_each(cs_ | ::ural::experimental::taken_exactly(n),
+                           p.cs_ | ::ural::experimental::assumed_infinite,
                            ::ural::experimental::plus_assign<>{});
 
             this->drop_leading_zeros();
@@ -314,8 +314,8 @@ namespace experimental
 
             auto const n = ural::min(old_size, p.cs_.size());
 
-            ural::for_each(cs_ | ural::taken_exactly(n),
-                           p.cs_ | ural::assumed_infinite,
+            ural::for_each(cs_ | ural::experimental::taken_exactly(n),
+                           p.cs_ | ::ural::experimental::assumed_infinite,
                            ::ural::experimental::minus_assign<>{});
 
             this->drop_leading_zeros();

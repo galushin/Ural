@@ -839,8 +839,8 @@ namespace experimental
     {
         auto result = RealType{0};
 
-        for(auto q : ural::make_geometric_progression(1.0, 1.0 / Q)
-                   | ural::taken_while([=](RealType const & x) { return x >= eps; }))
+        for(auto q : ::ural::experimental::make_geometric_progression(1.0, 1.0 / Q)
+                   | ::ural::experimental::taken_while([=](RealType const & x) { return x >= eps; }))
         {
             auto const n = rational_cast<typename Rational::int_type>(r);
 

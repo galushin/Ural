@@ -65,7 +65,7 @@ inline namespace v0
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, Forward>));
 
-            auto cmp_2_1 = ural::make_binary_reverse_args(std::move(cmp));
+            auto cmp_2_1 = ::ural::experimental::make_binary_reverse_args(std::move(cmp));
 
             in = ural::adjacent_find_fn{}(std::move(in), std::move(cmp_2_1));
 
@@ -1054,9 +1054,9 @@ inline namespace v0
                                                       SequenceType<Output>,
                                                       Compare>));
 
-            auto inputs = ::ural::merged(::ural::sequence_fwd<Input1>(in1),
-                                         ::ural::sequence_fwd<Input2>(in2),
-                                         ::ural::make_callable(std::move(cmp)));
+            auto inputs = ::ural::experimental::merged(::ural::sequence_fwd<Input1>(in1),
+                                                       ::ural::sequence_fwd<Input2>(in2),
+                                                       ::ural::make_callable(std::move(cmp)));
             auto result = ural::copy_fn{}(std::move(inputs),
                                           ::ural::sequence_fwd<Output>(out));
 
@@ -1254,9 +1254,9 @@ inline namespace v0
                                                       Compare>));
 
             auto in
-                = ::ural::make_set_union_sequence(std::forward<Input1>(in1),
-                                                  std::forward<Input2>(in2),
-                                                  ::ural::make_callable(std::move(cmp)));
+                = ::ural::experimental::make_set_union_sequence(std::forward<Input1>(in1),
+                                                                std::forward<Input2>(in2),
+                                                                ::ural::make_callable(std::move(cmp)));
             auto r = ural::copy_fn{}(std::move(in),
                                      ::ural::sequence_fwd<Output>(out));
             return make_tuple(std::move(r[ural::_1]).first_base(),
@@ -1296,7 +1296,7 @@ inline namespace v0
                                                       Compare>));
 
             auto in
-                = ::ural::make_set_intersection_sequence(std::forward<Input1>(in1),
+                = ::ural::experimental::make_set_intersection_sequence(std::forward<Input1>(in1),
                                                          std::forward<Input2>(in2),
                                                          ::ural::make_callable(std::move(cmp)));
             auto r = ural::copy_fn{}(std::move(in),
@@ -1338,7 +1338,7 @@ inline namespace v0
                                                       Compare>));
 
             auto in
-                = ::ural::make_set_difference_sequence(std::forward<Input1>(in1),
+                = ::ural::experimental::make_set_difference_sequence(std::forward<Input1>(in1),
                                                        std::forward<Input2>(in2),
                                                        ::ural::make_callable(std::move(cmp)));
             auto r = ural::copy_fn{}(std::move(in),
@@ -1380,7 +1380,7 @@ inline namespace v0
                                                       SequenceType<Output>,
                                                       Compare>));
 
-            auto in = ::ural::make_set_symmetric_difference_sequence(std::forward<Input1>(in1),
+            auto in = ::ural::experimental::make_set_symmetric_difference_sequence(std::forward<Input1>(in1),
                                                                      std::forward<Input2>(in2),
                                                                      ::ural::make_callable(std::move(cmp)));
             auto r = ::ural::copy_fn{}(std::move(in),
@@ -1674,10 +1674,10 @@ inline namespace v0
 
             auto cmp_s = ::ural::experimental::compare_by(ural::experimental::dereference<>{}, std::move(cmp));
 
-            ::ural::min_element_accumulator<ForwardSequence, decltype(cmp_s)>
+            ::ural::experimental::min_element_accumulator<ForwardSequence, decltype(cmp_s)>
                 acc(in++, cmp_s);
 
-            auto seq = in | ural::outdirected;
+            auto seq = in | ::ural::experimental::outdirected;
 
             acc = ::ural::for_each_fn{}(std::move(seq), std::move(acc))[ural::_2];
 
@@ -1722,7 +1722,7 @@ inline namespace v0
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, ForwardSequence>));
 
-            auto transposed_cmp = ural::make_binary_reverse_args(std::move(cmp));
+            auto transposed_cmp = ::ural::experimental::make_binary_reverse_args(std::move(cmp));
 
             return ::ural::min_element_fn{}(std::move(in),
                                             std::move(transposed_cmp));
@@ -1798,11 +1798,11 @@ inline namespace v0
             }
 
             auto cmp_min = ::ural::experimental::compare_by(::ural::experimental::dereference<>{}, std::cref(cmp));
-            auto cmp_max = ural::make_binary_reverse_args(cmp_min);
+            auto cmp_max = ::ural::experimental::make_binary_reverse_args(cmp_min);
 
-            ::ural::min_element_accumulator<ForwardSequence, decltype(cmp_min)>
+            ::ural::experimental::min_element_accumulator<ForwardSequence, decltype(cmp_min)>
                 acc_min(in, std::move(cmp_min));
-            ::ural::min_element_accumulator<ForwardSequence, decltype(cmp_max)>
+            ::ural::experimental::min_element_accumulator<ForwardSequence, decltype(cmp_max)>
                 acc_max(in, std::move(cmp_max));
             ++ in;
 
@@ -1944,7 +1944,7 @@ inline namespace v0
                 return false;
             }
 
-            auto r = ::ural::is_sorted_until_fn{}(s | ural::reversed, cmp);
+            auto r = ::ural::is_sorted_until_fn{}(s | ::ural::experimental::reversed, cmp);
 
             if(!r)
             {
@@ -1954,7 +1954,7 @@ inline namespace v0
             else
             {
                 auto r1 = r;
-                auto r2 = s | ural::reversed;
+                auto r2 = s | ::ural::experimental::reversed;
 
                 for(; cmp(*r2, *r1); ++r2)
                 {}

@@ -149,8 +149,8 @@ namespace experimental
             template <class Sequence>
             auto operator()(Sequence && seq) const
             {
-                auto f = ural::curry(Factory{}, std::forward<Sequence>(seq));
-                return ural::apply(std::move(f), args_);
+                auto f = ::ural::experimental::curry(Factory{}, std::forward<Sequence>(seq));
+                return ::ural::apply(std::move(f), args_);
             }
 
         private:

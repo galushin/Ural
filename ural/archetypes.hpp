@@ -25,7 +25,7 @@
 
 namespace ural
 {
-inline namespace v0
+namespace experimental
 {
 /** @namespace archetypes
  @brief Архетипы -- минималистичные реализации концепций
@@ -93,7 +93,7 @@ namespace archetypes
         typedef value_type * pointer;
 
         /// @brief Тип для представления расстояния
-        typedef DefaultedType<D, std::ptrdiff_t> distance_type;
+        using distance_type = experimental::DefaultedType<D, std::ptrdiff_t>;
 
         /// @brief Категория курсора
         using cursor_tag = input_cursor_tag;
@@ -128,7 +128,7 @@ namespace archetypes
 }
 // namespace archetypes
 }
-// namespace v0
+// namespace experimental
 }
 // namespace ural
 

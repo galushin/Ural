@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(with_old_value_inplace_construction)
 
     std::string const x(n, value);
 
-    ural_ex::with_old_value<std::string> const z(ural::inplace, n, value);
+    ural_ex::with_old_value<std::string> const z(ural_ex::in_place, n, value);
 
     BOOST_CHECK_EQUAL(x, z.value());
     BOOST_CHECK_EQUAL(x, z.old_value());

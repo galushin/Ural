@@ -29,6 +29,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Адаптор последовательности, посещающий элементы исходной
     последовательности в обратном порядке.
     @tparam BidirectionalSequence двусторонняя последовательность.
@@ -229,8 +231,11 @@ namespace ural
     auto make_iterator_sequence(std::reverse_iterator<Iterator> first,
                                 std::reverse_iterator<Iterator> last)
     {
+        using ::ural::make_iterator_sequence;
         return make_iterator_sequence(last.base(), first.base()) | reversed;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

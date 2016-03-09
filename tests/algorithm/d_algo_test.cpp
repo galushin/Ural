@@ -99,8 +99,8 @@ BOOST_AUTO_TEST_CASE(common_prefix_infinite)
 
     assert(d1 != d2);
 
-    auto const s1 = ural::make_arithmetic_progression(x0, d1);
-    auto const s2 = ural::make_arithmetic_progression(x0, d2);
+    auto const s1 = ural_ex::make_arithmetic_progression(x0, d1);
+    auto const s2 = ural_ex::make_arithmetic_progression(x0, d2);
 
     auto result = ural_ex::common_prefix(s1, s2);
 
@@ -108,6 +108,7 @@ BOOST_AUTO_TEST_CASE(common_prefix_infinite)
     BOOST_CHECK_EQUAL(1, result.size());
     BOOST_CHECK_EQUAL(x0, result.front());
 
-    auto const expected = ural::make_arithmetic_progression(x0, d1) | ural::taken_exactly(1);
+    auto const expected = ural_ex::make_arithmetic_progression(x0, d1)
+                        | ural_ex::taken_exactly(1);
     BOOST_CHECK(result == expected);
 }

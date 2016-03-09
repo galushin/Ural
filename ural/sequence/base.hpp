@@ -239,21 +239,21 @@ inline namespace v0
     @return <tt> sequence_iterator<Seq>{static_cast<Seq const&>(s)} </tt>
     */
     template <class Seq, class Base>
-    sequence_iterator<Seq> begin(sequence_base<Seq, Base> const & s)
+    experimental::sequence_iterator<Seq> begin(sequence_base<Seq, Base> const & s)
     {
-        return sequence_iterator<Seq>{static_cast<Seq const&>(s)};
+        return experimental::sequence_iterator<Seq>{static_cast<Seq const&>(s)};
     }
 
     template <class Seq, class Base>
-    sequence_iterator<Seq> begin(sequence_base<Seq, Base> && s)
+    experimental::sequence_iterator<Seq> begin(sequence_base<Seq, Base> && s)
     {
-        return sequence_iterator<Seq>{static_cast<Seq &&>(s)};
+        return experimental::sequence_iterator<Seq>{static_cast<Seq &&>(s)};
     }
 
     template <class Seq, class Base>
-    sequence_iterator<Seq &> begin(sequence_base<Seq, Base> & s)
+    experimental::sequence_iterator<Seq &> begin(sequence_base<Seq, Base> & s)
     {
-        return sequence_iterator<Seq &>(static_cast<Seq&>(s));
+        return experimental::sequence_iterator<Seq &>(static_cast<Seq&>(s));
     }
     //@}
 
@@ -262,15 +262,15 @@ inline namespace v0
     @return <tt> sequence_iterator<Seq>{} </tt>
     */
     template <class Seq, class Base>
-    sequence_iterator<Seq> end(sequence_base<Seq, Base> const &)
+    experimental::sequence_iterator<Seq> end(sequence_base<Seq, Base> const &)
     {
-        return sequence_iterator<Seq>{};
+        return experimental::sequence_iterator<Seq>{};
     }
 
     template <class Seq, class Base>
-    sequence_iterator<Seq &> end(sequence_base<Seq, Base> &)
+    experimental::sequence_iterator<Seq &> end(sequence_base<Seq, Base> &)
     {
-        return sequence_iterator<Seq &>{};
+        return experimental::sequence_iterator<Seq &>{};
     }
     //@}
 

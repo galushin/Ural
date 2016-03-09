@@ -25,6 +25,11 @@
 #include <boost/test/unit_test.hpp>
 #include "../defs.hpp"
 
+namespace
+{
+    namespace ural_ex = ::ural::experimental;
+}
+
 BOOST_AUTO_TEST_CASE(chunks_sequence_test)
 {
     typedef std::forward_list<int> Source;
@@ -95,7 +100,7 @@ BOOST_AUTO_TEST_CASE(chunks_sequence_original_test)
 
 BOOST_AUTO_TEST_CASE(chunks_sequence_traversed_front_test)
 {
-    auto const seq = ural::make_arithmetic_progression(1, 3);
+    auto const seq = ural_ex::make_arithmetic_progression(1, 3);
 
     auto cs = seq | ural::experimental::chunked(3);
 
@@ -113,8 +118,8 @@ BOOST_AUTO_TEST_CASE(chunks_sequence_traversed_front_test)
 
 BOOST_AUTO_TEST_CASE(chunks_sequence_random_access)
 {
-    auto const xs = ural::numbers(1, 23) | ural::to_container<std::vector>{};
-    auto seq = xs | ural::experimental::chunked(3);
+    auto const xs = ural::numbers(1, 23) | ural_ex::to_container<std::vector>{};
+    auto seq = xs | ural_ex::chunked(3);
 
     BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(seq)>));
 

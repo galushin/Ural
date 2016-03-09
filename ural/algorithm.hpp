@@ -352,8 +352,8 @@ namespace
 
     // 25.3.2 Перемещение
     constexpr auto const & move = odr_const<move_fn>;
-    constexpr auto const & move_backward = odr_const<move_backward_fn>;
-    constexpr auto const & move_if_noexcept = odr_const<move_if_noexcept_fn>;
+    constexpr auto const & move_backward = odr_const_holder<move_backward_fn>::value;
+    constexpr auto const & move_if_noexcept = odr_const_holder<move_if_noexcept_fn>::value;
 
     // 25.3.3 Обмен
     constexpr auto const & swap_ranges = odr_const<swap_ranges_fn>;
@@ -383,14 +383,14 @@ namespace
 
     // 25.3.9 Устранение последовательных дубликатов
     constexpr auto const & unique = odr_const<unique_fn>;
-    constexpr auto const & unique_copy = odr_const<unique_copy_fn>;
+    constexpr auto const & unique_copy = odr_const_holder<unique_copy_fn>::value;
 
     // 25.3.10 Обращение
-    constexpr auto const & reverse = odr_const<reverse_fn>;
+    constexpr auto const & reverse = odr_const_holder<reverse_fn>::value;
     constexpr auto const & reverse_copy = odr_const<reverse_copy_fn>;
 
     // 25.3.11 Вращение
-    constexpr auto const & rotate = odr_const<rotate_fn>;
+    constexpr auto const & rotate = odr_const_holder<rotate_fn>::value;
     constexpr auto const & rotate_copy = odr_const<rotate_copy_fn>;
 
     // 25.3.12 Тасовка
@@ -433,15 +433,15 @@ namespace
     constexpr auto const & binary_search = odr_const<binary_search_fn>;
 
     // 25.4.4 Слияние
-    constexpr auto const & merge = odr_const<merge_fn>;
-    constexpr auto const & inplace_merge = odr_const<inplace_merge_fn>;
+    constexpr auto const & merge = odr_const_holder<merge_fn>::value;
+    constexpr auto const & inplace_merge = odr_const_holder<inplace_merge_fn>::value;
 
     // 25.4.5 Операции с сортированными множествами
     constexpr auto const & includes = odr_const<includes_fn>;
-    constexpr auto const & set_union = odr_const<set_union_fn>;
-    constexpr auto const & set_intersection = odr_const<set_intersection_fn>;
-    constexpr auto const & set_difference = odr_const<set_difference_fn>;
-    constexpr auto const & set_symmetric_difference = odr_const<set_symmetric_difference_fn>;
+    constexpr auto const & set_union = odr_const_holder<set_union_fn>::value;
+    constexpr auto const & set_intersection = odr_const_holder<set_intersection_fn>::value;
+    constexpr auto const & set_difference = odr_const_holder<set_difference_fn>::value;
+    constexpr auto const & set_symmetric_difference = odr_const_holder<set_symmetric_difference_fn>::value;
 
     // 25.4.6 Операции с бинарными кучами
     constexpr auto const & push_heap = odr_const<push_heap_fn>;

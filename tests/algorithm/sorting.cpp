@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE(partial_sort_reversed_test)
 
     auto xs = ys;
 
-    ural::partial_sort(xs | ural::reversed, xs.size());
+    ural::partial_sort(xs | ural_ex::reversed, xs.size());
 
     BOOST_CHECK(std::is_sorted(xs.rbegin(), xs.rend()));
     BOOST_CHECK(ural::is_permutation(xs, ys));
@@ -286,7 +286,7 @@ BOOST_AUTO_TEST_CASE(equal_range_different_traversed_front)
     auto const s1 = ural::numbers(1, 9);
     auto const s2 = ural::numbers(0, 9);
 
-    auto const s = ural::make_cartesian_product_sequence(s1, s2);
+    auto const s = ural_ex::make_cartesian_product_sequence(s1, s2);
 
     static_assert(!std::is_same<decltype(s), decltype(s.traversed_front())>::value, "");
 

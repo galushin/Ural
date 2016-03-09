@@ -40,8 +40,8 @@ BOOST_AUTO_TEST_CASE(PE_002_fibonacci_via_pipes)
     using Integer = long long;
     auto const n = Integer{4'000'000};
     auto seq = ural_ex::fibonacci_sequence<Integer>()
-             | ural::filtered(ural::is_even)
-             | ural::taken_while([n](Integer const & x) { return x < n; });
+             | ural_ex::filtered(ural::is_even)
+             | ural_ex::taken_while([n](Integer const & x) { return x < n; });
 
     BOOST_CHECK_EQUAL(ural::accumulate(std::move(seq), Integer{0}), 4'613'732);
 }
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(PE_002_fibonacci_via_pipes_traversed_front)
     auto const pred = [n](Integer const & x) { return x >= n; };
 
     auto s1 = ural_ex::fibonacci_sequence<Integer, ural::use_default, ural::forward_cursor_tag>()
-            | ural::filtered(ural::is_even);
+            | ural_ex::filtered(ural::is_even);
 
     auto seq = ural::find_if(std::move(s1), pred).traversed_front();
 
@@ -66,8 +66,8 @@ BOOST_AUTO_TEST_CASE(PE_002_fibonacci_via_pipes_forward)
     auto const n = Integer{4'000'000};
 
     auto seq = ural_ex::fibonacci_sequence<Integer, ural::use_default, ural::forward_cursor_tag>()
-             | ural::filtered(ural::is_even)
-             | ural::taken_while([n](Integer const & x) { return x < n; });
+             | ural_ex::filtered(ural::is_even)
+             | ural_ex::taken_while([n](Integer const & x) { return x < n; });
 
     BOOST_CHECK_EQUAL(ural::accumulate(std::move(seq), Integer{0}), 4'613'732);
 }
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(taken_while_forward)
     std::vector<int> const xs = {2, 6, 4, 1, 8, 7};
     auto pred = ural::is_even;
 
-    auto seq = xs | ural::taken_while(pred);
+    auto seq = xs | ural_ex::taken_while(pred);
 
     static_assert(std::is_empty<decltype(pred)>::value, "");
     using ural::sequence;
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(taken_while_forward)
 
     auto xs_prefix
         = ural::find_if_not(xs, pred).traversed_front()
-        | ural::to_container<std::vector>{};
+        | ural_ex::to_container<std::vector>{};
     ural::sort(xs_prefix);
 
     BOOST_CHECK(ural::is_permutation(seq, xs_prefix));
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE(taken_while_traversed_front)
     std::vector<int> const xs = {2, 6, 4, 1, 8, 7};
     auto pred = ural::is_even;
 
-    auto s2 = xs | ural::assumed_infinite | ural::taken_while(pred);
+    auto s2 = xs | ural_ex::assumed_infinite | ural_ex::taken_while(pred);
 
     for(; !!s2; ++ s2)
     {}
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(taken_while_traversed_front)
     auto const actual = s2.traversed_front();
 
     auto const expected = ural::find_if_not(xs, pred).traversed_front()
-                        | ural::taken_while(pred);
+                        | ural_ex::taken_while(pred);
 
     BOOST_CHECK(actual == expected);
 }
@@ -117,10 +117,10 @@ BOOST_AUTO_TEST_CASE(taken_while_equality)
     auto const p1 = +[](int x) { return ural::is_even(x); };
     auto const p2 = +[](int x) { return ural::is_odd(x); };
 
-    auto const s01 = x0 | ural::taken_while(p1);
-    auto const s02 = x0 | ural::taken_while(p2);
-    auto const s11 = x1 | ural::taken_while(p1);
-    auto const s12 = x1 | ural::taken_while(p2);
+    auto const s01 = x0 | ural_ex::taken_while(p1);
+    auto const s02 = x0 | ural_ex::taken_while(p2);
+    auto const s11 = x1 | ural_ex::taken_while(p1);
+    auto const s12 = x1 | ural_ex::taken_while(p2);
 
     BOOST_CHECK(s01 == s01);
     BOOST_CHECK(s01 != s02);
@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE(taken_while_concepts_checking)
     std::list<int> bidir;
     std::vector<int> ra;
 
-    auto const pipe = ural::taken_while(ural::is_even);
+    auto const pipe = ural_ex::taken_while(ural::is_even);
     using namespace ural::concepts;
 
     BOOST_CONCEPT_ASSERT((SinglePassSequence<decltype(in | pipe)>));

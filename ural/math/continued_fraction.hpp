@@ -115,7 +115,7 @@ namespace experimental
         using cursor_tag = finite_input_cursor_tag;
 
         /// @brief Тип расстояния
-        typedef typename default_helper<D, std::intmax_t>::type distance_type;
+        using distance_type = experimental::DefaultedType<D, std::intmax_t>;
 
         // Конструкторы
         /** @brief Конструктор

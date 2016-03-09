@@ -28,6 +28,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     enum class set_operations_state
     {
         first,
@@ -211,7 +213,7 @@ namespace ural
         {
             if(!in1_ && !in2_)
             {
-                state_ = nullopt;
+                state_ = experimental::nullopt;
                 return;
             }
             if(!in2_)
@@ -242,7 +244,7 @@ namespace ural
     private:
         Input1 in1_;
         Input2 in2_;
-        ural::optional<set_operations_state> state_;
+        ::ural::experimental::optional<set_operations_state> state_;
     };
 
     template <class Input1, class Input2, class Compare>
@@ -265,9 +267,9 @@ namespace ural
     -> merge_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
                                  decltype(::ural::sequence_fwd<Input2>(in2))>
     {
-        return ::ural::merged(std::forward<Input1>(in1),
-                              std::forward<Input2>(in2),
-                              ural::less<>{});
+        return ::ural::experimental::merged(std::forward<Input1>(in1),
+                                            std::forward<Input2>(in2),
+                                            ural::less<>{});
     }
 
     /** @brief Последовательность элементов, полученная в результате пересечения
@@ -443,8 +445,9 @@ namespace ural
         Input2 in2_;
     };
 
-    template <class Input1, class Input2, class Compare>
-    auto make_set_intersection_sequence(Input1 && in1, Input2 && in2, Compare cmp)
+    template <class Input1, class Input2, class Compare = ural::less<>>
+    auto make_set_intersection_sequence(Input1 && in1, Input2 && in2,
+                                        Compare cmp = Compare{})
     -> set_intersection_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
                                  decltype(::ural::sequence_fwd<Input2>(in2)),
                                  decltype(ural::make_callable(std::move(cmp)))>
@@ -456,16 +459,6 @@ namespace ural
         return Result(::ural::sequence_fwd<Input1>(in1),
                       ::ural::sequence_fwd<Input2>(in2),
                       ural::make_callable(std::move(cmp)));
-    }
-
-    template <class Input1, class Input2>
-    auto make_set_intersection_sequence(Input1 && in1, Input2 && in2)
-    -> set_intersection_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
-                                 decltype(::ural::sequence_fwd<Input2>(in2))>
-    {
-        return ::ural::make_set_intersection_sequence(std::forward<Input1>(in1),
-                                                      std::forward<Input2>(in2),
-                                                      ural::less<>{});
     }
 
     /** @brief Последовательность элементов, полученная в результате взятия
@@ -641,8 +634,9 @@ namespace ural
         Input2 in2_;
     };
 
-    template <class Input1, class Input2, class Compare>
-    auto make_set_difference_sequence(Input1 && in1, Input2 && in2, Compare cmp)
+    template <class Input1, class Input2, class Compare = less<>>
+    auto make_set_difference_sequence(Input1 && in1, Input2 && in2,
+                                      Compare cmp = Compare{})
     -> set_difference_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
                                  decltype(::ural::sequence_fwd<Input2>(in2)),
                                  decltype(ural::make_callable(std::move(cmp)))>
@@ -654,16 +648,6 @@ namespace ural
         return Result(::ural::sequence_fwd<Input1>(in1),
                       ::ural::sequence_fwd<Input2>(in2),
                       ural::make_callable(std::move(cmp)));
-    }
-
-    template <class Input1, class Input2>
-    auto make_set_difference_sequence(Input1 && in1, Input2 && in2)
-    -> set_difference_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
-                                 decltype(::ural::sequence_fwd<Input2>(in2))>
-    {
-        return ::ural::make_set_difference_sequence(std::forward<Input1>(in1),
-                                                    std::forward<Input2>(in2),
-                                                    ural::less<>{});
     }
 
     /** @brief Последовательность элементов, полученная в результате взятия
@@ -870,19 +854,19 @@ namespace ural
             }
             else
             {
-                state_ = nullopt;
+                state_ = experimental::nullopt;
             }
         }
 
     private:
         Input1 in1_;
         Input2 in2_;
-        ural::optional<set_operations_state> state_;
+        ural::experimental::optional<set_operations_state> state_;
     };
 
-    template <class Input1, class Input2, class Compare>
+    template <class Input1, class Input2, class Compare = less<>>
     auto make_set_symmetric_difference_sequence(Input1 && in1, Input2 && in2,
-                                                Compare cmp)
+                                                Compare cmp = Compare{})
     -> set_symmetric_difference_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
                                  decltype(::ural::sequence_fwd<Input2>(in2)),
                                  decltype(ural::make_callable(std::move(cmp)))>
@@ -894,16 +878,6 @@ namespace ural
         return Result(::ural::sequence_fwd<Input1>(in1),
                       ::ural::sequence_fwd<Input2>(in2),
                       ural::make_callable(std::move(cmp)));
-    }
-
-    template <class Input1, class Input2>
-    auto make_set_symmetric_difference_sequence(Input1 && in1, Input2 && in2)
-    -> set_symmetric_difference_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
-                                 decltype(::ural::sequence_fwd<Input2>(in2))>
-    {
-        return ::ural::make_set_symmetric_difference_sequence(std::forward<Input1>(in1),
-                                                              std::forward<Input2>(in2),
-                                                              ural::less<>{});
     }
 
     /** @brief Последовательность элементов, полученная в результате объединения
@@ -1083,7 +1057,7 @@ namespace ural
         {
             if(!in1_ && !in2_)
             {
-                state_ = nullopt;
+                state_ = experimental::nullopt;
                 return;
             }
             if(!in2_)
@@ -1114,11 +1088,12 @@ namespace ural
     private:
         Input1 in1_;
         Input2 in2_;
-        ural::optional<set_operations_state> state_;
+        ::ural::experimental::optional<set_operations_state> state_;
     };
 
-    template <class Input1, class Input2, class Compare>
-    auto make_set_union_sequence(Input1 && in1, Input2 && in2, Compare cmp)
+    template <class Input1, class Input2, class Compare = less<>>
+    auto make_set_union_sequence(Input1 && in1, Input2 && in2,
+                                 Compare cmp = Compare{})
     -> set_union_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
                           decltype(::ural::sequence_fwd<Input2>(in2)),
                           decltype(ural::make_callable(std::move(cmp)))>
@@ -1131,16 +1106,8 @@ namespace ural
                       ::ural::sequence_fwd<Input2>(in2),
                       ural::make_callable(std::move(cmp)));
     }
-
-    template <class Input1, class Input2>
-    auto make_set_union_sequence(Input1 && in1, Input2 && in2)
-    -> set_union_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
-                                 decltype(::ural::sequence_fwd<Input2>(in2))>
-    {
-        return ::ural::make_set_union_sequence(std::forward<Input1>(in1),
-                                               std::forward<Input2>(in2),
-                                               ural::less<>{});
-    }
+}
+// namespace experimental
 }
 // namespace ural
 

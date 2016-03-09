@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(by_line_test)
 
     std::istringstream is(os.str());
 
-    auto const x = ural::by_line(is) | ural::to_container<std::vector>{};
+    auto const x = ural::by_line(is) | ural_ex::to_container<std::vector>{};
 
     URAL_CHECK_EQUAL_RANGES(z, x);
 }
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE(by_line_temporary_to_container)
     std::copy(z.begin(), z.end(), std::ostream_iterator<std::string>(os, "\n"));
 
     auto const x = ural::by_line(std::istringstream(os.str()))
-                 | ural::to_container<ural_ex::vector>{};
+                 | ural_ex::to_container<ural_ex::vector>{};
 
     URAL_CHECK_EQUAL_RANGES(z, x);
 }
@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(by_line_temporary_to_container_std_vector)
     std::copy(z.begin(), z.end(), std::ostream_iterator<std::string>(os, "\n"));
 
     auto const x = ural::by_line(std::istringstream(os.str()))
-                 | ural::to_container<std::vector>{};
+                 | ural_ex::to_container<std::vector>{};
 
     URAL_CHECK_EQUAL_RANGES(z, x);
 }
@@ -121,7 +121,7 @@ BOOST_AUTO_TEST_CASE(by_line_temporary_to_container_std_forward_list)
     std::copy(z.begin(), z.end(), std::ostream_iterator<std::string>(os, "\n"));
 
     auto const x = ural::by_line(std::istringstream(os.str()))
-                 | ural::to_container<std::forward_list>{};
+                 | ural_ex::to_container<std::forward_list>{};
 
     URAL_CHECK_EQUAL_RANGES(z, x);
 }
@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE(by_line_test_keep_delimiter)
     std::istringstream is(os.str());
 
     auto const x = ural::by_line(is, '\n', ural::keep_delimiter::yes)
-                   | ural::to_container<std::forward_list>{};
+                 | ural_ex::to_container<std::forward_list>{};
 
     URAL_CHECK_EQUAL_RANGES(z, x);
 }
@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE(by_line_test_keep_delimiter_unexpected_eof)
     std::istringstream is(os.str());
 
     auto const x = ural::by_line(is, '\n', ural::keep_delimiter::yes)
-                   | ural::to_container<std::forward_list>{};
+                 | ural_ex::to_container<std::forward_list>{};
 
     URAL_CHECK_EQUAL_RANGES(z, x);
 }
@@ -166,7 +166,7 @@ BOOST_AUTO_TEST_CASE(by_line_test_custom_separator)
 
     std::istringstream is(os.str());
 
-    auto const x = ural::by_line(is, separator) | ural::to_container<std::list>{};
+    auto const x = ural::by_line(is, separator) | ural_ex::to_container<std::list>{};
 
     URAL_CHECK_EQUAL_RANGES(z, x);
 }

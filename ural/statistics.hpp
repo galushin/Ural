@@ -73,7 +73,7 @@ namespace statistics
     struct tags_list
     {
         /// @brief Список типов-тэгов
-        typedef ::ural::typelist<Ts...> list;
+        typedef ::ural::experimental::typelist<Ts...> list;
     };
 
     /** @brief Конкатенация списков тэгов
@@ -96,7 +96,7 @@ namespace tags
     struct declare_depend_on
     {
         /// @brief Список зависимостей
-        typedef ::ural::typelist<Ts...> depends_on;
+        typedef ::ural::experimental::typelist<Ts...> depends_on;
     };
 
     /** @brief Класс-характеристика для определения, зависит ли тэг @c T1 от
@@ -216,7 +216,7 @@ namespace tags
         typedef typename expand_depend_on<typename Tags::list, null_type>::type
             WithDependencies;
 
-        typedef ::ural::typelist<tags::min_tag, tags::max_tag> L_min_max;
+        typedef ::ural::experimental::typelist<tags::min_tag, tags::max_tag> L_min_max;
         typedef ::ural::experimental::meta::includes<WithDependencies, L_min_max> C_min_and_max;
 
         struct is_min_or_max_tag
@@ -1188,8 +1188,7 @@ namespace tags
 
         auto f = [&m, &s](Value const & x) { return (x - m) / s; };
 
-        ural::copy(ural::make_transform_sequence(std::move(f),
-                                                 std::forward<Forward>(in)),
+        ural::copy(::ural::experimental::make_transform_sequence(std::move(f), std::forward<Forward>(in)),
                    std::forward<Output>(out));
     }
 

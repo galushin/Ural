@@ -448,7 +448,8 @@ inline namespace v0
         std::vector<double> ps;
         ps.reserve(n);
 
-        ural::copy(ural::make_istream_sequence<double>(is) | ural::taken(n),
+        ural::copy(ural::make_istream_sequence<double>(is)
+                   | ::ural::experimental::taken(n),
                    ps | ural::back_inserter);
 
         if(ps.size() == static_cast<size_t>(n))
@@ -480,8 +481,7 @@ namespace experimental
 
     public:
         /// @brief Тип возвращаемого значения
-        typedef typename default_helper<Vector, std::vector<typename Distribution::result_type>>::type
-            result_type;
+        using result_type = experimental::DefaultedType<Vector, std::vector<typename Distribution::result_type>>;
 
         /// @brief Тип расстояния
         typedef typename result_type::size_type size_type;
@@ -702,15 +702,13 @@ namespace experimental
     public:
         // Типы
         /// @brief Тип возвращаемого значения
-        typedef typename default_helper<Vector, boost::numeric::ublas::vector<double>>::type
-            result_type;
+        using result_type = experimental::DefaultedType<Vector, boost::numeric::ublas::vector<double>>;
 
         /// @brief Тип элементов
         typedef ValueType<result_type> element_type;
 
         /// @brief Тип ковариационной матрицы
-        typedef typename default_helper<Matrix, boost::numeric::ublas::matrix<element_type>>::type
-            matrix_type;
+        using matrix_type = experimental::DefaultedType<Matrix, boost::numeric::ublas::matrix<element_type>>;
 
         /// @brief Тип для представления размера
         typedef typename result_type::size_type size_type;

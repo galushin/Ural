@@ -31,6 +31,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Адаптор последовательности, возвращающие rvalue-ссылки для
     элементов базовой последовательности
     @tparam Sequence тип базовой последовательности
@@ -143,8 +145,8 @@ namespace ural
     template <class Iterator>
     auto make_iterator_sequence(std::move_iterator<Iterator> first,
                                 std::move_iterator<Iterator> last)
-    -> move_sequence<decltype(make_iterator_sequence(first.base(), last.base()))>
     {
+        using ::ural::make_iterator_sequence;
         return make_move_sequence(make_iterator_sequence(first.base(),
                                                          last.base()));
     }
@@ -158,11 +160,13 @@ namespace ural
     template <class Iterator>
     auto make_iterator_sequence(ural::move_iterator<Iterator> first,
                                 ural::move_iterator<Iterator> last)
-    -> move_sequence<decltype(make_iterator_sequence(first.base(), last.base()))>
     {
+        using ::ural::make_iterator_sequence;
         return make_move_sequence(make_iterator_sequence(first.base(),
                                                          last.base()));
     }
+}
+// namespace experimental
 }
 // namespace ural
 

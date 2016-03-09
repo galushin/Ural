@@ -29,6 +29,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Адаптор последовательности, возвращающий наибольший префикс, все
     элементы которого удовлетворяют заданному предикату.
     @tparam Sequence тип базовой последовательности
@@ -119,6 +121,8 @@ namespace ural
             = odr_const<experimental::pipeable_maker<make_taken_while_fn>>;
 
     }
+}
+// namespace experimental
 }
 // namespace ural
 

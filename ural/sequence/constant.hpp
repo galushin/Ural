@@ -28,6 +28,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     struct always_zero_int_type
     {
     public:
@@ -73,10 +75,10 @@ namespace ural
         typedef value_type const & reference;
 
         /// @brief Тип расстояния
-        using distance_type = DefaultedType<D, std::intmax_t>;
+        using distance_type = experimental::DefaultedType<D, std::intmax_t>;
 
         /// @brief Категория курсора
-        using cursor_tag = DefaultedType<CursorTag, input_cursor_tag>;
+        using cursor_tag = experimental::DefaultedType<CursorTag, input_cursor_tag>;
 
         /// @brief Тип указателя
         typedef value_type const * pointer;
@@ -127,10 +129,10 @@ namespace ural
         /** @brief Пройденная часть последовательности
         @return Пройденная часть последовательности
         */
-        ural::taken_exactly_sequence<constant_sequence, distance_type>
+        ::ural::experimental::taken_exactly_sequence<constant_sequence, distance_type>
         traversed_front() const
         {
-            return this->original() | ural::taken_exactly(this->data_[ural::_2]);
+            return this->original() | ::ural::experimental::taken_exactly(this->data_[ural::_2]);
         }
 
         /** @brief Отбрасывание пройденной части последовательности
@@ -166,6 +168,8 @@ namespace ural
     {
         return constant_sequence<T>(std::move(value));
     }
+}
+// namespace experimental
 }
 // namespace ural
 

@@ -22,6 +22,11 @@
 
 #include <boost/test/unit_test.hpp>
 
+namespace
+{
+    namespace ural_ex = ::ural::experimental;
+}
+
 BOOST_AUTO_TEST_CASE(remove_sequence_test_make_function)
 {
     std::string s_std = "Text with some   spaces";
@@ -34,7 +39,7 @@ BOOST_AUTO_TEST_CASE(remove_sequence_test_make_function)
                 s_std.end());
 
     // ural
-    auto s = ural::make_remove_sequence(s_ural, to_remove);
+    auto s = ural_ex::make_remove_sequence(s_ural, to_remove);
     auto r = ural::copy(s, s_ural)[ural::_2];
     s_ural.erase(r.begin(), r.end());
 
@@ -54,7 +59,7 @@ BOOST_AUTO_TEST_CASE(remove_sequence_test)
                 s_std.end());
 
     // ural
-    auto r = ural::copy(s_ural | ural::removed(to_remove), s_ural)[ural::_2];
+    auto r = ural::copy(s_ural | ural_ex::removed(to_remove), s_ural)[ural::_2];
     s_ural.erase(r.begin(), r.end());
 
     // Сравнение
@@ -73,7 +78,7 @@ BOOST_AUTO_TEST_CASE(remove_sequence_test_cref)
                 s_std.end());
 
     // ural
-    auto r = ural::copy(s_ural | ural::removed(std::cref(to_remove)), s_ural)[ural::_2];
+    auto r = ural::copy(s_ural | ural_ex::removed(std::cref(to_remove)), s_ural)[ural::_2];
     s_ural.erase(r.begin(), r.end());
 
     // Сравнение
@@ -88,8 +93,8 @@ BOOST_AUTO_TEST_CASE(remove_sequence_traversed_front)
 
     auto const n = str.size() / 2;
 
-    auto s1 = src | ural::removed(to_remove);
-    auto s2 = src | ural::assumed_infinite | ural::removed(to_remove);
+    auto s1 = src | ural_ex::removed(to_remove);
+    auto s2 = src | ural_ex::assumed_infinite | ural_ex::removed(to_remove);
 
     static_assert(!std::is_same<decltype(s2), ural::TraversedFrontType<decltype(s2)>>::value, "");
 
@@ -108,7 +113,7 @@ BOOST_AUTO_TEST_CASE(remove_if_sequence_test)
 
     s_std.erase(std::remove_if(s_std.begin(), s_std.end(), pred), s_std.end());
 
-    auto s = ural::make_remove_if_sequence(s_ural, pred);
+    auto s = ural_ex::make_remove_if_sequence(s_ural, pred);
     auto r = ural::copy(s, s_ural)[ural::_2];
     s_ural.erase(r.begin(), r.end());
 

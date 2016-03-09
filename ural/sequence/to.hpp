@@ -27,6 +27,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Тип функционального объекта для преобразования последовательности
     в контейнер.
     @tparam Container шаблон типа контейнера
@@ -163,6 +165,8 @@ namespace ural
         constexpr auto const & as_container
             = odr_const<experimental::pipeable<as_container_fn>>;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

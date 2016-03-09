@@ -29,7 +29,7 @@
 
 namespace ural
 {
-inline namespace v0
+namespace experimental
 {
     /** @brief Адаптор последовательности, содержащие все элементы исходной
     последовательности до первого элемента, эквивалентного заданному значению.
@@ -167,7 +167,7 @@ inline namespace v0
             odr_const<experimental::pipeable_maker<details::make_delimit_sequence_fn>>;
     }
 }
-// namespace v0
+// namespace experimental
 }
 // namespace ural
 

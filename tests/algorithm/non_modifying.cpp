@@ -351,8 +351,8 @@ BOOST_AUTO_TEST_CASE(is_permutation_test_different_traversed_front)
     auto const s1 = ural::numbers(1, 9);
     auto const s2 = ural::numbers(0, 9);
 
-    auto const seq1 = ural::make_cartesian_product_sequence(s1, s2);
-    auto const seq2 = ural::make_cartesian_product_sequence(s2, s2);
+    auto const seq1 = ural_ex::make_cartesian_product_sequence(s1, s2);
+    auto const seq2 = ural_ex::make_cartesian_product_sequence(s2, s2);
 
     static_assert(!std::is_same<decltype(seq1), decltype(seq1.traversed_front())>::value, "");
 

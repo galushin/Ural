@@ -285,9 +285,12 @@ inline namespace v0
             /// @brief Примеры использования
             BOOST_CONCEPT_USAGE(SinglePassSequence)
             {
+                using ::ural::experimental::value_consumer;
+
                 !seq;
-                ural::value_consumer<Seq&>() = ++ seq;
+                value_consumer<Seq&>() = ++ seq;
                 seq.pop_front();
+
                 // Постфиксный инкремент требует создания копий
 
                 value_consumer<single_pass_cursor_tag>() = cursor_tag{};
@@ -336,16 +339,18 @@ inline namespace v0
             /// @brief Проверка неявных интерфейсов
             BOOST_CONCEPT_USAGE(ForwardSequence)
             {
+                using ::ural::experimental::value_consumer;
+
                 value_consumer<forward_cursor_tag>() = cursor_tag{};
 
                 BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<Seq>));
 
-                ural::value_consumer<Seq>() = seq++;
+                value_consumer<Seq>() = seq++;
 
                 seq.shrink_front();
                 seq.traversed_front();
 
-                ural::value_consumer<Seq>() = seq.original();
+                value_consumer<Seq>() = seq.original();
 
                 // @todo Проверить, что тип traversed_front совпадает с Seq или
                 // tf - прямая последовательность, а также совместимость
@@ -387,6 +392,8 @@ inline namespace v0
             /// @brief Проверка неявных интерфейсов
             BOOST_CONCEPT_USAGE(BidirectionalSequence)
             {
+                using ::ural::experimental::value_consumer;
+
                 seq.pop_back();
                 value_consumer<reference>() = seq.back();
                 seq.shrink_back();
@@ -414,6 +421,8 @@ inline namespace v0
             /// @brief Проверка неявных интерфейсов
             BOOST_CONCEPT_USAGE(RandomAccessSequence)
             {
+                using ::ural::experimental::value_consumer;
+
                 value_consumer<reference>() = seq[distance_type{0}];
                 value_consumer<Seq&>() = (seq += distance_type{0});
                 value_consumer<distance_type>() = seq.size();

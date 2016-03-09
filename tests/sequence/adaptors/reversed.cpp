@@ -22,14 +22,19 @@
 
 #include <ural/abi.hpp>
 
+namespace
+{
+    namespace ural_ex = ::ural::experimental;
+}
+
 BOOST_AUTO_TEST_CASE(reversed_reversed_test)
 {
     std::vector<int> const xs = {1, 2, 3, 4, 5};
     auto s = ural::sequence(xs);
-    auto rr = s | ural::reversed | ural::reversed;
+    auto rr = s | ural_ex::reversed | ural_ex::reversed;
 
-    BOOST_CHECK_EQUAL(ural::abi::demangle_name(typeid(s).name()),
-                      ural::abi::demangle_name(typeid(rr).name()));
+    BOOST_CHECK_EQUAL(ural_ex::abi::demangle_name(typeid(s).name()),
+                      ural_ex::abi::demangle_name(typeid(rr).name()));
     BOOST_CHECK(typeid(s).name() == typeid(rr).name());
     BOOST_CHECK(typeid(s) == typeid(rr));
 }
@@ -42,10 +47,9 @@ BOOST_AUTO_TEST_CASE(reversed_iterators_to_sequence_test)
     auto r_begin = xs.rbegin();
     auto r_end = xs.rend();
 
-    auto rs = ural::make_iterator_sequence(r_begin, r_end);
+    auto rs = ural::experimental::make_iterator_sequence(r_begin, r_end);
 
-    typedef ural::reverse_sequence<ural::iterator_sequence<decltype(xs.begin())>>
-        RSequence;
+    using RSequence = ural_ex::reverse_sequence<ural::iterator_sequence<decltype(xs.begin())>>;
 
     static_assert(std::is_same<decltype(rs), RSequence>::value, "");
 
@@ -63,7 +67,7 @@ BOOST_AUTO_TEST_CASE(reversed_exhaust_test)
 {
     std::vector<int> const xs = {1, 2, 3, 4, 5};
 
-    auto const xs_reversed = xs | ural::reversed;
+    auto const xs_reversed = xs | ural_ex::reversed;
 
     BOOST_CHECK(ural::is_permutation(xs, xs_reversed));
 
@@ -86,11 +90,11 @@ BOOST_AUTO_TEST_CASE(reversed_exhaust_test)
 
 BOOST_AUTO_TEST_CASE(reversed_pop_back_n_test)
 {
-    auto const xs = ural::make_arithmetic_progression(0, 1)
-                  | ural::taken(10) | ural::to_container<std::vector>{};
+    auto const xs = ural_ex::make_arithmetic_progression(0, 1)
+                  | ural_ex::taken(10) | ural_ex::to_container<std::vector>{};
 
     auto s = ural::sequence(xs);
-    auto s_r = s | ural::reversed;
+    auto s_r = s | ural_ex::reversed;
 
     auto const n = xs.size() / 3;
 
@@ -129,7 +133,7 @@ BOOST_AUTO_TEST_CASE(copy_reversed_to_reversed_vs_copy_backward)
 
     auto src = ural::make_iterator_sequence(x_ural.begin(), x_ural.end() - 1);
 
-    ural::copy(src | ural::reversed, x_ural | ural::reversed);
+    ural::copy(src | ural_ex::reversed, x_ural | ural_ex::reversed);
 
     URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
@@ -153,7 +157,7 @@ BOOST_AUTO_TEST_CASE(moved_backward_test_unique_ptr)
     std::move_backward(xs1.begin(), xs1.end() - 1, xs1.end());
 
     auto src = ural::make_iterator_sequence(xs2.begin(), xs2.end() - 1);
-    ural::copy(src | ural::reversed | ural::moved, xs2 | ural::reversed);
+    ural::copy(src | ural_ex::reversed | ural_ex::moved, xs2 | ural_ex::reversed);
 
     for(size_t i = 0; i < xs1.size(); ++ i)
     {
@@ -172,8 +176,8 @@ BOOST_AUTO_TEST_CASE(reversed_iterator_sequence_iterators)
     Container v1 = {0, 2, 4, 6};
     auto const v2 = v1;
 
-    auto const rs1 = ural::sequence(v1) | ural::reversed;
-    auto const rs2 = ural::sequence(v2) | ural::reversed;
+    auto const rs1 = ural::sequence(v1) | ural_ex::reversed;
+    auto const rs2 = ural::sequence(v2) | ural_ex::reversed;
 
     static_assert(std::is_same<decltype(begin(rs1)), Container::reverse_iterator>::value, "");
     static_assert(std::is_same<decltype(begin(rs2)), Container::const_reverse_iterator>::value, "");
@@ -196,7 +200,7 @@ BOOST_AUTO_TEST_CASE(reversed_copy_test)
 
     // ural
     auto const r_ural
-        = src | ural::reversed | ural::to_container<std::list>{};
+        = src | ural_ex::reversed | ural_ex::to_container<std::list>{};
 
     // Проверка
     URAL_CHECK_EQUAL_RANGES(r_std, r_ural);

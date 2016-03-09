@@ -21,14 +21,15 @@
 
 namespace
 {
-    namespace ural_meta = ural::experimental::meta;
+    namespace ural_ex = ::ural::experimental;
+    namespace ural_meta = ::ural_ex::meta;
 }
 // namespace
 
 BOOST_AUTO_TEST_CASE(meta_unique_test)
 {
-    typedef ::ural::typelist<int, int, char, int, char, char, double> Source;
-    typedef ::ural::typelist<int, char, int, char, double> Objective;
+    typedef ::ural_ex::typelist<int, int, char, int, char, char, double> Source;
+    typedef ::ural_ex::typelist<int, char, int, char, double> Objective;
     using Result = ::ural::experimental::meta::unique<Source>::type;
 
     Objective obj = Result{};
@@ -39,7 +40,7 @@ BOOST_AUTO_TEST_CASE(meta_unique_test)
 
 BOOST_AUTO_TEST_CASE(meta_flatten_test)
 {
-    using ural::typelist;
+    using ural_ex::typelist;
 
     typedef typelist<char, typelist<bool, typelist<void, int*>, double>> Source;
     typedef typelist<char, bool, void, int*, double> Objective;
@@ -51,10 +52,10 @@ BOOST_AUTO_TEST_CASE(meta_flatten_test)
 
 BOOST_AUTO_TEST_CASE(meta_remove_first_test)
 {
-    typedef ::ural::typelist<int, int, char, int, char, char, double> Source;
+    typedef ::ural_ex::typelist<int, int, char, int, char, char, double> Source;
     typedef typename ural_meta::remove_first<Source, char>::type Result;
 
-    typedef ::ural::typelist<int, int, int, char, char, double> Objective;
+    typedef ::ural_ex::typelist<int, int, int, char, char, double> Objective;
 
     static_assert(std::is_same<Objective, Result>::value, "");
 
@@ -63,10 +64,10 @@ BOOST_AUTO_TEST_CASE(meta_remove_first_test)
 
 BOOST_AUTO_TEST_CASE(meta_remove_all_test)
 {
-    typedef ::ural::typelist<int, int, char, int, char, char, double> Source;
+    typedef ::ural_ex::typelist<int, int, char, int, char, char, double> Source;
     using Result = typename ural_meta::remove_all<Source, char>::type;
 
-    using Objective = ::ural::typelist<int, int, int, double>;
+    using Objective = ::ural_ex::typelist<int, int, int, double>;
 
     static_assert(std::is_same<Objective, Result>::value, "");
 
@@ -75,7 +76,7 @@ BOOST_AUTO_TEST_CASE(meta_remove_all_test)
 
 BOOST_AUTO_TEST_CASE(meta_count_test)
 {
-    typedef ::ural::typelist<int, int, char, int, char, char, double> Source;
+    typedef ::ural_ex::typelist<int, int, char, int, char, char, double> Source;
     typedef std::integral_constant<size_t, 3> Objective;
     typedef ural_meta::count<Source, int> Result;
 
@@ -86,10 +87,10 @@ BOOST_AUTO_TEST_CASE(meta_count_test)
 
 BOOST_AUTO_TEST_CASE(meta_replace_test)
 {
-    typedef ::ural::typelist<int, char, int, char, void> Source;
+    typedef ::ural_ex::typelist<int, char, int, char, void> Source;
     typedef typename ural_meta::replace<Source, char, double>::type Result;
 
-    typedef ::ural::typelist<int, double, int, double, void> Objective;
+    typedef ::ural_ex::typelist<int, double, int, double, void> Objective;
 
     static_assert(std::is_same<Objective, Result>::value, "");
 
@@ -112,11 +113,11 @@ BOOST_AUTO_TEST_CASE(meta_identity_test)
 
 BOOST_AUTO_TEST_CASE(meta_cartesian_product_single_type_test)
 {
-    using ::ural::typelist;
+    using ::ural_ex::typelist;
 
-    typedef ::ural::typelist<int, long, long long> Integers;
+    typedef ::ural_ex::typelist<int, long, long long> Integers;
 
-    typedef ::ural::typelist<typelist<int>, typelist<long>,
+    typedef ::ural_ex::typelist<typelist<int>, typelist<long>,
                              typelist<long long>> Expected;
 
     typedef typename ural_meta::cartesian_product<Integers>::type
@@ -128,12 +129,12 @@ BOOST_AUTO_TEST_CASE(meta_cartesian_product_single_type_test)
 
 BOOST_AUTO_TEST_CASE(meta_cartesian_product_test)
 {
-    using ::ural::typelist;
+    using ::ural_ex::typelist;
 
-    typedef ::ural::typelist<int, long, long long> Integers;
-    typedef ::ural::typelist<float, double> Doubles;
+    typedef ::ural_ex::typelist<int, long, long long> Integers;
+    typedef ::ural_ex::typelist<float, double> Doubles;
 
-    typedef ::ural::typelist<typelist<int, float>, typelist<int, double>,
+    typedef ::ural_ex::typelist<typelist<int, float>, typelist<int, double>,
                              typelist<long, float>, typelist<long, double>,
                              typelist<long long, float>, typelist<long long, double>> Expected;
 
@@ -148,13 +149,13 @@ BOOST_AUTO_TEST_CASE(meta_cartesian_product_test)
 
 BOOST_AUTO_TEST_CASE(meta_cartesian_product_tree_arg_test)
 {
-    using ::ural::typelist;
+    using ::ural_ex::typelist;
 
-    typedef ::ural::typelist<char, std::string> L1;
-    typedef ::ural::typelist<int, long> L2;
-    typedef ::ural::typelist<float, double> L3;
+    typedef ::ural_ex::typelist<char, std::string> L1;
+    typedef ::ural_ex::typelist<int, long> L2;
+    typedef ::ural_ex::typelist<float, double> L3;
 
-    typedef ::ural::typelist<typelist<char, int, float>,
+    typedef ::ural_ex::typelist<typelist<char, int, float>,
                              typelist<char, int, double>,
                              typelist<char, long, float>,
                              typelist<char, long, double>,
@@ -221,8 +222,8 @@ BOOST_AUTO_TEST_CASE(meta_pop_front_or_not_empty_test)
 {
     typedef void Default;
 
-    typedef ::ural::typelist<int, long, long long> Source;
-    typedef ::ural::typelist<long, long long> Expected;
+    typedef ::ural_ex::typelist<int, long, long long> Source;
+    typedef ::ural_ex::typelist<long, long long> Expected;
     typedef typename ural_meta::pop_front_or<Source, Default>::type Result;
 
     static_assert(std::is_same<Result, Expected>::value, "");
@@ -233,7 +234,7 @@ BOOST_AUTO_TEST_CASE(meta_pop_front_or_empty_test)
 {
     typedef void Default;
 
-    typedef ::ural::typelist<> Source;
+    typedef ::ural_ex::typelist<> Source;
     typedef typename ural_meta::pop_front_or<Source, Default>::type Result;
 
     static_assert(std::is_same<Result, Default>::value, "");

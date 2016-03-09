@@ -28,6 +28,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     template <class Sequence, class Distance>
     class taken_exactly_sequence;
 
@@ -153,7 +155,7 @@ namespace ural
         auto traversed_front() const
         {
             return this->base().traversed_front()
-                   | ural::taken_exactly(this->traversed_front_size_);
+                   | ::ural::experimental::taken_exactly(this->traversed_front_size_);
         }
 
         /** @brief Отбрасывание пройденной части последовательности
@@ -294,6 +296,8 @@ namespace ural
     {
         return x.base() == y.base() && x.size() == y.size();
     }
+}
+// namespace experimental
 }
 // namespace ural
 

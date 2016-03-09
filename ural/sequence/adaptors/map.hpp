@@ -27,6 +27,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Адаптор последовательности
     @tparam Sequence базовая последовательность, элементы которой являются
     кортеже-подобными.
@@ -45,7 +47,7 @@ namespace ural
         @post <tt> this->base() == seq </tt>
         */
         explicit elemenents_sequence(Sequence seq)
-         : Base(ural::make_transform_sequence(experimental::tuple_get<Index>{}, std::move(seq)))
+         : Base(::ural::experimental::make_transform_sequence(experimental::tuple_get<Index>{}, std::move(seq)))
         {}
 
         //@{
@@ -106,6 +108,8 @@ namespace ural
         constexpr auto const & map_values
             = odr_const<experimental::pipeable<elements_sequence_fn<1>>>;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

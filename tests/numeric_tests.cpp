@@ -720,10 +720,10 @@ BOOST_AUTO_TEST_CASE(MP_integer_10_PE_56)
     auto const b_max = 100;
 
     auto max_digit_sum
-        = ural::make_min_element_accumulator(integer{0}, ural::greater<>{});
+        = ural_ex::make_min_element_accumulator(integer{0}, ural::greater<>{});
 
-    for(auto a : ural::make_arithmetic_progression(1, 1) | ural::taken_exactly(a_max))
-    for(auto b : ural::make_arithmetic_progression(1, 1) | ural::taken_exactly(b_max))
+    for(auto a : ural_ex::make_arithmetic_progression(1, 1) | ural_ex::taken_exactly(a_max))
+    for(auto b : ural_ex::make_arithmetic_progression(1, 1) | ural_ex::taken_exactly(b_max))
     {
         auto const r = ural::natural_power(integer{a}, b);
         auto const new_value = digit_sum(r);
@@ -1062,8 +1062,8 @@ BOOST_AUTO_TEST_CASE(convolution_test)
     auto const n_p = 36 / p0.size();
     auto const n_c = 36 / c0.size();
 
-    auto const p = ural::natural_power(p0, n_p, ural::discrete_convolution, Vector{});
-    auto const c = ural::natural_power(c0, n_c, ural::discrete_convolution, Vector{});
+    auto const p = ural::natural_power(p0, n_p, ural_ex::discrete_convolution, Vector{});
+    auto const c = ural::natural_power(c0, n_c, ural_ex::discrete_convolution, Vector{});
 
     auto total = Integer{0};
     auto favor = Integer{0};
@@ -1109,8 +1109,8 @@ BOOST_AUTO_TEST_CASE(convolution_test_valarray)
     auto const n_p = 36 / p0.size();
     auto const n_c = 36 / c0.size();
 
-    auto const p = ural::natural_power(p0, n_p, ural::discrete_convolution, Vector{});
-    auto const c = ural::natural_power(c0, n_c, ural::discrete_convolution, Vector{});
+    auto const p = ural::natural_power(p0, n_p, ural_ex::discrete_convolution, Vector{});
+    auto const c = ural::natural_power(c0, n_c, ural_ex::discrete_convolution, Vector{});
 
     auto total = Integer{0};
     auto favor = Integer{0};
@@ -1136,7 +1136,7 @@ BOOST_AUTO_TEST_CASE(square_root_iterative_zero_test)
     auto const S  = 0.0;
     auto x_0 = S / 2;
 
-    auto seq = ural::make_sqrt_heron_sequence(S, x_0, eps);
+    auto seq = ural_ex::make_sqrt_heron_sequence(S, x_0, eps);
 
     for(; !!seq; ++seq)
     {
@@ -1154,7 +1154,7 @@ BOOST_AUTO_TEST_CASE(square_root_iterative_test)
     {
         auto x_0 = S / 2;
 
-        auto seq = ural::make_sqrt_heron_sequence(S, x_0, eps);
+        auto seq = ural_ex::make_sqrt_heron_sequence(S, x_0, eps);
 
         for(; !!seq; ++ seq)
         {
@@ -1173,7 +1173,7 @@ BOOST_AUTO_TEST_CASE(square_root_iterative_less_then_1_test)
     {
         auto x_0 = S / 2;
 
-        auto seq = ural::make_sqrt_heron_sequence(S, x_0, eps);
+        auto seq = ural_ex::make_sqrt_heron_sequence(S, x_0, eps);
 
         for(; !!seq; ++ seq)
         {
@@ -1200,7 +1200,7 @@ BOOST_AUTO_TEST_CASE(PE_131_adjacent_differences_pipe)
              | taken_while([n_max](Integer const & x) { return x < n_max; })
              | assumed_finite;
 
-    auto result = ural::make_set_intersection_sequence(primes, dcs);
+    auto result = ural_ex::make_set_intersection_sequence(primes, dcs);
 
     BOOST_CHECK_EQUAL(ural::size(result), 173);
 }
@@ -1221,7 +1221,7 @@ BOOST_AUTO_TEST_CASE(PE_131_adjacent_differences_pipe_explicit_operation)
              | taken_while([n_max](Integer const & x) { return x < n_max; })
              | assumed_finite;
 
-    auto result = ural::make_set_intersection_sequence(primes, dcs);
+    auto result = ural_ex::make_set_intersection_sequence(primes, dcs);
 
     BOOST_CHECK_EQUAL(ural::size(result), 173);
 }

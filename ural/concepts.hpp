@@ -239,10 +239,11 @@ namespace concepts
             BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<U>));
             BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<CommonType<T, U>>));
 
-            ural::value_consumer<bool>() = (a == b);
-            ural::value_consumer<bool>() = (a != b);
-            ural::value_consumer<bool>() = (b == a);
-            ural::value_consumer<bool>() = (b != a);
+            using ::ural::experimental::value_consumer;
+            value_consumer<bool>() = (a == b);
+            value_consumer<bool>() = (a != b);
+            value_consumer<bool>() = (b == a);
+            value_consumer<bool>() = (b != a);
 
             // @todo семантические требования
         }
@@ -259,10 +260,12 @@ namespace concepts
         /// @brief Использование
         BOOST_CONCEPT_USAGE(EqualityComparable)
         {
-            ural::value_consumer<bool>() = (a == b);
-            ural::value_consumer<bool>() = (a != b);
-            ural::value_consumer<bool>() = (b == a);
-            ural::value_consumer<bool>() = (b != a);
+            using ::ural::experimental::value_consumer;
+
+            value_consumer<bool>() = (a == b);
+            value_consumer<bool>() = (a != b);
+            value_consumer<bool>() = (b == a);
+            value_consumer<bool>() = (b != a);
 
             // @todo семантические требования
         }
@@ -294,15 +297,16 @@ namespace concepts
             BOOST_CONCEPT_ASSERT((concepts::TotallyOrdered<CommonType<T, U>>));
             BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<T, U>));
 
-            ural::value_consumer<bool>() = a < b;
-            ural::value_consumer<bool>() = a > b;
-            ural::value_consumer<bool>() = a <= b;
-            ural::value_consumer<bool>() = a >= b;
+            using ::ural::experimental::value_consumer;
+            value_consumer<bool>() = a < b;
+            value_consumer<bool>() = a > b;
+            value_consumer<bool>() = a <= b;
+            value_consumer<bool>() = a >= b;
 
-            ural::value_consumer<bool>() = b < a;
-            ural::value_consumer<bool>() = b > a;
-            ural::value_consumer<bool>() = b <= a;
-            ural::value_consumer<bool>() = b >= a;
+            value_consumer<bool>() = b < a;
+            value_consumer<bool>() = b > a;
+            value_consumer<bool>() = b <= a;
+            value_consumer<bool>() = b >= a;
 
             // @todo Семантические требования
         }
@@ -321,10 +325,11 @@ namespace concepts
         {
             BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<T>));
 
-            ural::value_consumer<bool>() = a < b;
-            ural::value_consumer<bool>() = a > b;
-            ural::value_consumer<bool>() = a <= b;
-            ural::value_consumer<bool>() = a >= b;
+            using ::ural::experimental::value_consumer;
+            value_consumer<bool>() = a < b;
+            value_consumer<bool>() = a > b;
+            value_consumer<bool>() = a <= b;
+            value_consumer<bool>() = a >= b;
 
             // @todo Семантические требования
         }
@@ -649,6 +654,7 @@ namespace concepts
 
             ::ural::archetypes::URNG_archetype g;
 
+            using ::ural::experimental::value_consumer;
             value_consumer<T>() = d0(g);
             value_consumer<T>() = d0(g, p0);
 

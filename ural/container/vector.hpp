@@ -158,7 +158,7 @@ namespace experimental
         {
             // @todo Устранить дублирование с копирующим присваиванием
             static_assert(Traits::propagate_on_container_move_assignment::value
-                          || ural::allocator_is_always_equal<allocator_type>::value, "");
+                          || ::ural::experimental::allocator_is_always_equal<allocator_type>::value, "");
 
             // Если нельзя передать владение, то придётся освобождать память
             // А если можно, то просто обмениваем указатели
@@ -376,8 +376,7 @@ namespace experimental
         typedef T value_type;
 
         /// @brief Тип распределителя памяти
-        typedef typename default_helper<Alloc, std::allocator<T>>::type
-            allocator_type;
+        using allocator_type = experimental::DefaultedType<Alloc, std::allocator<T>>;
 
         /// @brief Тип ссылки
         typedef value_type & reference;
@@ -413,8 +412,7 @@ namespace experimental
         typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
         /// @brief Класс-стратегия проверок
-        typedef typename default_helper<Policy, container_checking_assert_policy>::type
-            policy_type;
+        using policy_type = experimental::DefaultedType<Policy, container_checking_assert_policy>;
 
         // Конструкторы
         /** @brief Создание пустого контейнера
@@ -566,7 +564,7 @@ namespace experimental
         */
         vector & operator=(vector && x)
             noexcept(std::allocator_traits<allocator_type>::propagate_on_container_move_assignment::value
-                     || ural::allocator_is_always_equal<allocator_type>::value)
+                     || ::ural::experimental::allocator_is_always_equal<allocator_type>::value)
         {
             data_ = std::move(x.data_);
             return *this;
@@ -631,7 +629,8 @@ namespace experimental
         */
         void assign(size_type n, value_type const & value)
         {
-            auto seq = ural::make_constant_sequence(std::cref(value)) | ural::taken(n);
+            auto seq = ::ural::experimental::make_constant_sequence(std::cref(value))
+                     | ::ural::experimental::taken(n);
 
             return this->assign(std::move(seq));
         }
@@ -1063,7 +1062,8 @@ namespace experimental
         */
         iterator insert(const_iterator position, size_type const n, value_type const & value)
         {
-            auto seq = ural::make_constant_sequence(std::cref(value)) | ural::taken(n);
+            auto seq = ::ural::experimental::make_constant_sequence(std::cref(value))
+                     | ::ural::experimental::taken(n);
 
             return this->insert(position, std::move(seq));
         }
@@ -1163,7 +1163,7 @@ namespace experimental
         */
         void swap(vector & x)
             noexcept(std::allocator_traits<allocator_type>::propagate_on_container_swap::value
-                     || ural::allocator_is_always_equal<allocator_type>::value)
+                     || ::ural::experimental::allocator_is_always_equal<allocator_type>::value)
         {
             data_.swap(x.data_);
         }

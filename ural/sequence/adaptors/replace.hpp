@@ -27,6 +27,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Адаптор последовательности, заменяющий элементы, удовлетворяющие
     заданному условию на новое значение.
     @tparam Sequence тип последовательности
@@ -103,7 +105,7 @@ namespace ural
         {
             using Tr = experimental::replace_if_function<Predicate, T>;
             auto f = Tr(std::move(pred), std::move(new_value));
-            return std::move(seq) | ural::transformed(std::move(f));
+            return std::move(seq) | ::ural::experimental::transformed(std::move(f));
         }
     };
 
@@ -197,7 +199,7 @@ namespace ural
             using Function = experimental::replace_function<T1, T2, BinaryPredicate>;
             auto f = Function(std::move(old_value), std::move(new_value),
                               std::move(pred));
-            return std::move(seq) | ural::transformed(std::move(f));
+            return std::move(seq) | ::ural::experimental::transformed(std::move(f));
         }
     };
 
@@ -277,6 +279,8 @@ namespace ural
         constexpr auto const & replaced_if
             = odr_const<experimental::pipeable_maker<make_replace_if_sequence_fn>>;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

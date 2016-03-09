@@ -29,6 +29,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Последовательность всех кортежей (в лексикографическом порядке)
     @tparam Inputs типы базовых последовательностей
 
@@ -196,6 +198,8 @@ namespace ural
         typedef cartesian_product_sequence<SequenceType<Inputs>...> Result;
         return Result(::ural::sequence_fwd<Inputs>(ins)...);
     }
+}
+// namespace experimental
 }
 // namespace ural
 

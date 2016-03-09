@@ -143,7 +143,7 @@ namespace experimental
         delimit_sequence<fibonacci_sequence, value_type>
         traversed_front() const
         {
-            return this->original() | ural::delimited(this->front());
+            return this->original() | ::ural::experimental::delimited(this->front());
         }
 
         /** @brief Исходная последовательность

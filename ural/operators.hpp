@@ -98,7 +98,7 @@ inline namespace operators
     typename std::enable_if<std::is_copy_constructible<T>() && has_pre_increment<T>(), T>::type
     operator++(T & x, int)
     {
-        return ::ural::modify_return_old(::ural::experimental::pre_increment<>{}, x);
+        return ::ural::experimental::modify_return_old(::ural::experimental::pre_increment<>{}, x);
     }
 
     /** Обобщённая реализация пост-декремента. Применяет оператор пре-декремента
@@ -111,7 +111,7 @@ inline namespace operators
     typename std::enable_if<std::is_copy_constructible<T>() && has_pre_decrement<T>(), T>::type
     operator--(T & x, int)
     {
-        return ::ural::modify_return_old(::ural::experimental::pre_decrement<>{}, x);
+        return ::ural::experimental::modify_return_old(::ural::experimental::pre_decrement<>{}, x);
     }
 }
 // namespace operators

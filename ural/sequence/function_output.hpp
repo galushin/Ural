@@ -27,6 +27,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Выходная последовательность, выполняющая вызов функции для
     каждого "записываемого элемента"
     @tparam UnaryFunction тип унарного функционального объекта
@@ -51,7 +53,7 @@ namespace ural
         typedef void value_type;
 
         /// @brief Тип расстояния
-        typedef typename default_helper<D, std::ptrdiff_t>::type difference_type;
+        using difference_type = experimental::DefaultedType<D, std::ptrdiff_t>;
 
         /// @brief Тип указателя
         typedef void pointer;
@@ -147,6 +149,8 @@ namespace ural
         typedef function_output_sequence<Function> Result;
         return Result(ural::make_callable(std::move(f)));
     }
+}
+// namespace experimental
 }
 // namespace ural
 

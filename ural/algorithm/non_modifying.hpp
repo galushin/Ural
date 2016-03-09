@@ -125,7 +125,7 @@ inline namespace v0
             BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<UnaryFunction, Input>));
 
             auto r = ural::copy_fn{}(std::move(in),
-                                     ural::make_function_output_sequence(std::move(f)));
+                                     ::ural::experimental::make_function_output_sequence(std::move(f)));
             return ::ural::make_tuple(std::move(r[ural::_1]),
                                       std::move(r[ural::_2]).function());
         }
@@ -166,10 +166,10 @@ inline namespace v0
             BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<BinaryFunction, SequenceType<Input1>, SequenceType<Input2>>));
 
-            auto in_zip = ural::make_zip_sequence(::ural::sequence_fwd<Input1>(in1),
-                                                  ::ural::sequence_fwd<Input2>(in2));
+            auto in_zip = ::ural::experimental::make_zip_sequence(::ural::sequence_fwd<Input1>(in1),
+                                                                  ::ural::sequence_fwd<Input2>(in2));
 
-            auto action = ural::curry(ural::apply, std::move(f));
+            auto action = ::ural::experimental::curry(ural::apply, std::move(f));
             auto result = (*this)(std::move(in_zip), std::move(action));
 
             return ural::make_tuple(std::move(result)[ural::_1].bases()[ural::_1],

@@ -28,6 +28,8 @@
 
 namespace ural
 {
+inline namespace v0
+{
     /// @cond false
     // @todo Автоматическое построение по списку типов
     template <class IteratorTag>
@@ -82,8 +84,7 @@ namespace ural
         using cursor_tag = typename iterator_tag_to_cursor_tag<iterator_category>::type;
 
         /// @brief Тип политики обработки ошибок
-        typedef typename default_helper<Policy, container_checking_throw_policy>::type
-            policy_type;
+        using policy_type = experimental::DefaultedType<Policy, container_checking_throw_policy>;
 
         // Создание, копирование, уничтожение
         /** @brief Конструктор
@@ -393,6 +394,8 @@ namespace ural
     {
         return iterator_sequence<Iterator>(std::move(first), std::move(last));
     }
+}
+// namespace v0
 }
 // namespace ural
 

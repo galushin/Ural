@@ -134,7 +134,7 @@ namespace experimental
         }
 
     private:
-        typedef ural::optional<value_type> Optional_value;
+        typedef ural::experimental::optional<value_type> Optional_value;
 
         ural::tuple<Input, BinaryOperation, Optional_value, Optional_value> members_;
     };

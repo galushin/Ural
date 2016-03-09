@@ -298,7 +298,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_non_member_swap_test,
     auto const v1_allocator_old = v1.get_allocator();
     auto const v2_allocator_old = v2.get_allocator();
 
-    using ural::swap;
+    using ural::experimental::swap;
     using std::swap;
     swap(v1, v2);
 

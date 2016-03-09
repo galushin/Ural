@@ -22,6 +22,11 @@
 
 #include <boost/test/unit_test.hpp>
 
+namespace
+{
+    namespace ural_ex = ::ural::experimental;
+}
+
 BOOST_AUTO_TEST_CASE(outdirected_sequence_forward_test)
 {
     // Настройки
@@ -30,10 +35,10 @@ BOOST_AUTO_TEST_CASE(outdirected_sequence_forward_test)
     auto const n = 3;
 
     auto s = ural::sequence(src);
-    auto s_inf = s | ural::assumed_infinite;
+    auto s_inf = s | ural_ex::assumed_infinite;
 
-    auto s_out = s | ural::outdirected;
-    auto s_inf_out = s_inf | ural::outdirected;
+    auto s_out = s | ural_ex::outdirected;
+    auto s_inf_out = s_inf | ural_ex::outdirected;
     auto const s_inf_out_old = s_inf_out;
 
     ural::advance(s_out, n);

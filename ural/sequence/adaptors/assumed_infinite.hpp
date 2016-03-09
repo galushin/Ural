@@ -28,6 +28,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Шаблон адаптора, предпалагающий, что последовательность
     бесконечна, то есть не будет исчерпана в данном контексте.
     @tparam Sequence базовая последовательность
@@ -104,6 +106,8 @@ namespace ural
         constexpr auto const & assumed_infinite
             = odr_const<experimental::pipeable<assume_infinite_fn>>;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

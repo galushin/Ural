@@ -160,7 +160,7 @@ namespace experimental
         void shrink_front();
 
     private:
-        typedef ural::optional<value_type> Optional_value;
+        using Optional_value = ural::experimental::optional<value_type>;
 
         Optional_value & current_value_ref()
         {

@@ -28,7 +28,7 @@ namespace
 
 BOOST_AUTO_TEST_CASE(partial_sums_traversed_front)
 {
-    auto src = ural::make_arithmetic_progression(1, 2);
+    auto src = ural_ex::make_arithmetic_progression(1, 2);
 
     auto src_p = ural_ex::partial_sums(src);
 

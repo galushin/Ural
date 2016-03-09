@@ -27,6 +27,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Последовательность неповторяющихся соседних элементов базовой
     последовательности
     @tparam Input Тип базовой последовательности
@@ -289,7 +291,8 @@ namespace ural
         }
 
     private:
-        typedef optional<value_type> optional_value;
+        using optional_value = experimental::optional<value_type>;
+
         typedef std::is_convertible<cursor_tag, forward_cursor_tag> Is_forward;
         typedef typename std::conditional<!Is_forward::value, optional_value, Input>::type
             Holder;
@@ -353,6 +356,8 @@ namespace ural
         constexpr auto & adjacent_filtered
             = odr_const<experimental::pipeable_maker<make_adjacent_filtered_sequence_fn>>;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

@@ -407,7 +407,7 @@ inline namespace v0
     */
     template <class... Ts>
     struct are_integral
-     : ::ural::experimental::meta::all_of<typelist<Ts...>,
+     : ::ural::experimental::meta::all_of<experimental::typelist<Ts...>,
                                           ::ural::experimental::meta::template_to_applied<std::is_integral>>
     {};
 
@@ -464,7 +464,9 @@ inline namespace v0
         constexpr auto const & square = odr_const_holder<square_fn>::value;
         constexpr auto const & cube = odr_const<cube_fn>;
 
-        constexpr auto const & natural_power = odr_const<natural_power_fn>;
+        constexpr auto const & natural_power
+            = odr_const_holder<natural_power_fn>::value;
+
         constexpr auto const & power_accumulate_semigroup
             = odr_const<power_accumulate_semigroup_fn>;
     }
