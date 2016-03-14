@@ -28,6 +28,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Последовательности на основе итераторов-вставок и других выходных
     итераторов
     @tparam OutputIterator тип выходного итератора
@@ -219,10 +221,10 @@ namespace ural
         @return <tt> set_insert_sequence<Container>(c) </tt>
         */
         template <class Container>
-        ural::set_insert_sequence<Container>
+        set_insert_sequence<Container>
         operator()(Container & c) const
         {
-            return ural::set_insert_sequence<Container>{c};
+            return set_insert_sequence<Container>{c};
         }
     };
 
@@ -231,29 +233,38 @@ namespace ural
     @return <tt> set_insert_sequence<Container>(c) </tt>
     */
     template <class Container>
-    ural::set_insert_sequence<Container>
+    set_insert_sequence<Container>
     operator|(Container & c, set_inserter_helper)
     {
-        return ural::set_inserter_helper{}(c);
+        return set_inserter_helper{}(c);
     }
 
     namespace
     {
-        /** @brief Функциональный объект, создающий итератор вставки в конец
-        контейнера
-        */
-        constexpr auto const & back_inserter = odr_const<back_inserter_helper>;
-
-        /** @brief Функциональный объект, создающий итератор вставки в начало
-        контейнера
-        */
-        constexpr auto const & front_inserter = odr_const<front_inserter_helper>;
-
         /** @brief Функциональный объект, создающий последовательность вставки
         во множество
         */
         constexpr auto const & set_inserter = odr_const<set_inserter_helper>;
     }
+}
+// namespace experimental
+
+inline namespace v0
+{
+    namespace
+    {
+        /** @brief Функциональный объект, создающий итератор вставки в конец
+        контейнера
+        */
+        constexpr auto const & back_inserter = odr_const<experimental::back_inserter_helper>;
+
+        /** @brief Функциональный объект, создающий итератор вставки в начало
+        контейнера
+        */
+        constexpr auto const & front_inserter = odr_const<experimental::front_inserter_helper>;
+    }
+}
+// namespace v0
 }
 // namespace ural
 

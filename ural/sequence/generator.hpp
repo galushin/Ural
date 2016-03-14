@@ -26,6 +26,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Последовательность на основе функции без аргументов
     @tparam Generator функция без аргументов
     @tparam D тип расстояния, по умолчанию используется <tt>std::ptrdiff_t</tt>
@@ -131,6 +133,8 @@ namespace ural
     {
         return generator_sequence<Generator>{std::move(g)};
     }
+}
+// namespace experimental
 }
 // namespace ural
 

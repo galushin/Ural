@@ -50,9 +50,9 @@ inline namespace v0
     template <class Container>
     auto sequence(Container && c)
     -> typename std::enable_if<!std::is_lvalue_reference<Container>::value,
-                               cargo_sequence<iterator_sequence<decltype(c.begin())>, Container>>::type
+                               experimental::cargo_sequence<iterator_sequence<decltype(c.begin())>, Container>>::type
     {
-        typedef ::ural::cargo_sequence<::ural::iterator_sequence<decltype(c.begin())>, Container>
+        typedef ::ural::experimental::cargo_sequence<::ural::iterator_sequence<decltype(c.begin())>, Container>
             Result;
         auto seq = ::ural::iterator_sequence<decltype(c.begin())>(c.begin(), c.end());
         return Result(std::move(seq), std::move(c));
@@ -75,13 +75,11 @@ inline namespace v0
     @return <tt> weak_output_iterator_sequence<Iterator, Diff>(std::move(i)) </tt>
     */
     template <class Container>
-    weak_output_iterator_sequence<std::back_insert_iterator<Container>,
-                             typename Container::difference_type>
-    sequence(std::back_insert_iterator<Container> i)
+    auto sequence(std::back_insert_iterator<Container> i)
     {
         typedef std::back_insert_iterator<Container> Iterator;
         typedef DifferenceType<Container> Diff;
-        return weak_output_iterator_sequence<Iterator, Diff>(std::move(i));
+        return experimental::weak_output_iterator_sequence<Iterator, Diff>(std::move(i));
     }
 
     /** @brief Создание последовательности на основе итератора вставки в начало
@@ -90,13 +88,11 @@ inline namespace v0
     @return <tt> weak_output_iterator_sequence<Iterator, Diff>(std::move(i)) </tt>
     */
     template <class Container>
-    weak_output_iterator_sequence<std::front_insert_iterator<Container>,
-                             typename Container::difference_type>
-    sequence(std::front_insert_iterator<Container> i)
+    auto sequence(std::front_insert_iterator<Container> i)
     {
         typedef std::front_insert_iterator<Container> Iterator;
         typedef DifferenceType<Container> Diff;
-        return weak_output_iterator_sequence<Iterator, Diff>(std::move(i));
+        return experimental::weak_output_iterator_sequence<Iterator, Diff>(std::move(i));
     }
 
     /** @brief Создание последовательности на основе итератора вставки в
@@ -110,7 +106,7 @@ inline namespace v0
     {
         typedef std::insert_iterator<Container> Iterator;
         typedef DifferenceType<Container> Diff;
-        return weak_output_iterator_sequence<Iterator, Diff>(std::move(i));
+        return experimental::weak_output_iterator_sequence<Iterator, Diff>(std::move(i));
     }
 
     //@{
@@ -175,17 +171,17 @@ inline namespace v0
     template <class Char, class Traits>
     auto sequence(std::basic_istream<Char, Traits> & is)
     {
-        using Product = ural::istream_sequence<std::basic_istream<Char, Traits> &,
-                                               Char, istream_get_reader>;
+        using Product = experimental::istream_sequence<std::basic_istream<Char, Traits> &,
+                                               Char, experimental::istream_get_reader>;
         return Product(is);
     }
 
     template <class IStream>
     auto sequence(IStream && is)
     -> typename std::enable_if<details::is_derived_from_basic_istream<IStream>::value,
-                               ural::istream_sequence<IStream, typename IStream::char_type, istream_get_reader>>::type
+                               experimental::istream_sequence<IStream, typename IStream::char_type, experimental::istream_get_reader>>::type
     {
-        using Product = ural::istream_sequence<IStream, typename IStream::char_type, istream_get_reader>;
+        using Product = experimental::istream_sequence<IStream, typename IStream::char_type, experimental::istream_get_reader>;
         return Product(std::forward<IStream>(is));
     }
     //@}
@@ -198,15 +194,15 @@ inline namespace v0
     template <class Char, class Traits>
     auto sequence(std::basic_ostream<Char, Traits> & os)
     {
-        return ::ural::make_ostream_sequence(os);
+        return ::ural::experimental::make_ostream_sequence(os);
     }
 
     template <class OStream>
     auto sequence(OStream && os)
     -> typename std::enable_if<details::is_derived_from_basic_ostream<OStream>::value,
-                               decltype(::ural::make_ostream_sequence(std::move(os)))>::type
+                               decltype(::ural::experimental::make_ostream_sequence(std::move(os)))>::type
     {
-        return ::ural::make_ostream_sequence(std::move(os));
+        return ::ural::experimental::make_ostream_sequence(std::move(os));
     }
     //@}
 

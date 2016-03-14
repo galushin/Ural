@@ -25,6 +25,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Тип функционального объекта чтения из потока ввода с помощью
     функции-члена get
     */
@@ -387,6 +389,8 @@ namespace ural
         typedef ostream_sequence<OStream, use_default, delimiter> Product;
         return Product(std::forward<OStream>(os), std::move(delim));
     }
+}
+// namespace experimental
 }
 // namespace ural
 

@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(map_keys_sequence_readable)
 
     using Pair = std::pair<Key const, Mapped>;
 
-    ural::generator_sequence<std::function<Pair()>> in{};
+    ural_ex::generator_sequence<std::function<Pair()>> in{};
     std::forward_list<Pair> const fwd{};
     std::map<Key, Mapped> const bidir{};
     std::vector<Pair> const ra{};

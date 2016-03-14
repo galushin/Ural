@@ -448,7 +448,7 @@ inline namespace v0
         std::vector<double> ps;
         ps.reserve(n);
 
-        ural::copy(ural::make_istream_sequence<double>(is)
+        ural::copy(::ural::experimental::make_istream_sequence<double>(is)
                    | ::ural::experimental::taken(n),
                    ps | ural::back_inserter);
 

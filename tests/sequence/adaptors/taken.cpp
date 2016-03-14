@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE(generate_n_test)
 
     // ural
     counter = 0;
-    ural::copy(ural::make_generator_sequence(gen) | ural_ex::taken(n),
+    ural::copy(ural_ex::make_generator_sequence(gen) | ural_ex::taken(n),
                r_ural | ural::back_inserter);
 
     // Проверка

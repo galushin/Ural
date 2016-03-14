@@ -516,7 +516,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(pascal_triangle_PE_203, Set, PE_203_Set_types)
 
         BOOST_CHECK_EQUAL(row.size(), ural::to_unsigned(i+1));
 
-        ural::copy(row, r | ural::set_inserter);
+        ural::copy(row, r | ural_ex::set_inserter);
 
         BOOST_CHECK_EQUAL_COLLECTIONS(row.begin(), row.end(),
                                       row.rbegin(), row.rend());

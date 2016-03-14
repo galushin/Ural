@@ -26,6 +26,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Универсальный адаптор последовательности
     @tparam T класс, наследующий от данного sequence_adaptor
     @tparam Sequence адаптируемая последовательность
@@ -277,6 +279,8 @@ namespace ural
         return x.base() == y.base()
                && x.payload() == y.payload();
     }
+}
+// namespace experimental
 }
 // namespace ural
 

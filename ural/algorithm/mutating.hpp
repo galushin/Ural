@@ -503,7 +503,7 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::Function<Generator>));
             BOOST_CONCEPT_ASSERT((concepts::OutputSequence<Output, ResultType<Generator>>));
 
-            auto r = copy_fn{}(::ural::make_generator_sequence(std::move(gen)),
+            auto r = copy_fn{}(::ural::experimental::make_generator_sequence(std::move(gen)),
                                std::move(seq));
             return r[ural::_2];
         }
@@ -535,7 +535,7 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::OutputSequence<SequenceType<Output>,
                                                            ResultType<Generator>>));
 
-            auto in = ural::make_generator_sequence(::ural::make_callable(gen));
+            auto in = ::ural::experimental::make_generator_sequence(::ural::make_callable(gen));
             return ::ural::copy_n_fn{}(::std::move(in), std::move(n),
                                        ::ural::sequence_fwd<Output>(out))[ural::_2];
         }

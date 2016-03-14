@@ -213,7 +213,7 @@ inline namespace v0
         // @todo Проверка концепций
         std::vector<std::vector<T>> result;
 
-        for(auto seq = ural::by_line(is, '\n'); !!seq && !seq.front().empty(); ++ seq)
+        for(auto seq = ::ural::experimental::by_line(is, '\n'); !!seq && !seq.front().empty(); ++ seq)
         {
             typedef typename stream_traits<input_stream_type>::string_type
                 String;
@@ -223,7 +223,7 @@ inline namespace v0
 
             from_string_policy<String, T> constexpr converter{};
 
-            auto row = ural::by_line(str_is, '\t')
+            auto row = ::ural::experimental::by_line(str_is, '\t')
                      | ::ural::experimental::transformed(converter)
                      | ::ural::experimental::to_container<std::vector>{};
 

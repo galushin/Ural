@@ -467,7 +467,7 @@ namespace
 
         auto gen = [&](){ return d(g); };
 
-        auto seq = ural::make_generator_sequence(std::move(gen)) | ural_ex::taken(N);
+        auto seq = ural_ex::make_generator_sequence(std::move(gen)) | ural_ex::taken(N);
 
         auto p = pearson_test(std::move(seq), prob);
 

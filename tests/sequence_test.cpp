@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE(istream_sequence_test)
               r_std | ural::back_inserter);
 
     std::vector<double> r_ural;
-    ural::copy(ural::make_istream_sequence<double>(str2),
+    ural::copy(ural_ex::make_istream_sequence<double>(str2),
                r_ural | ural::back_inserter);
 
     URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
@@ -170,7 +170,7 @@ BOOST_AUTO_TEST_CASE(istream_sequence_regression_1)
     std::vector<double> r_ural;
 
     // @todo можно ли это заменить на for для интервалаов?
-    for(auto s = ural::make_istream_sequence<double>(str2); !!s; ++ s)
+    for(auto s = ural_ex::make_istream_sequence<double>(str2); !!s; ++ s)
     {
         r_ural.push_back(*s);
     }
@@ -188,7 +188,7 @@ BOOST_AUTO_TEST_CASE(ostream_sequence_test)
 
     std::copy(xs.begin(), xs.end(), std::ostream_iterator<Value>(os_std, " "));
 
-    auto seq = ural::make_ostream_sequence<Value>(os_ural, " ");
+    auto seq = ural_ex::make_ostream_sequence<Value>(os_ural, " ");
     std::copy(xs.begin(), xs.end(), std::move(seq));
 
     BOOST_CHECK_EQUAL(os_std.str(), os_ural.str());
@@ -208,7 +208,7 @@ BOOST_AUTO_TEST_CASE(ostream_sequence_test_auto)
 
     std::copy(xs.begin(), xs.end(), std::ostream_iterator<Value>(os_std, " "));
 
-    auto seq = ural::make_ostream_sequence(os_ural, " ");
+    auto seq = ural_ex::make_ostream_sequence(os_ural, " ");
     ural::copy(xs, std::move(seq));
 
     BOOST_CHECK_EQUAL(os_std.str(), os_ural.str());
@@ -226,7 +226,7 @@ BOOST_AUTO_TEST_CASE(ostream_sequence_test_no_delim)
     std::ostringstream os_ural;
 
     std::copy(xs.begin(), xs.end(), std::ostream_iterator<int>(os_std));
-    ural::copy(xs, ural::make_ostream_sequence<int>(os_ural));
+    ural::copy(xs, ural_ex::make_ostream_sequence<int>(os_ural));
 
     BOOST_CHECK_EQUAL(os_std.str(), os_ural.str());
 }
@@ -239,7 +239,7 @@ BOOST_AUTO_TEST_CASE(ostream_sequence_test_auto_no_delim)
     std::ostringstream os_ural;
 
     std::copy(xs.begin(), xs.end(), std::ostream_iterator<int>(os_std));
-    ural::copy(xs, ural::make_ostream_sequence(os_ural));
+    ural::copy(xs, ural_ex::make_ostream_sequence(os_ural));
 
     BOOST_CHECK_EQUAL(os_std.str(), os_ural.str());
 }
@@ -316,7 +316,7 @@ BOOST_AUTO_TEST_CASE(istream_sequence_no_default_ctor_test)
 
     std::istringstream is("42");
 
-    ural::istream_sequence<std::istream &, std::reference_wrapper<int>>
+    ural_ex::istream_sequence<std::istream &, std::reference_wrapper<int>>
         seq(is, std::ref(var));
 
     typedef decltype(seq) Sequence;
@@ -333,15 +333,15 @@ BOOST_AUTO_TEST_CASE(ostream_sequence_default_test)
 {
     typedef std::ostream OStream;
 
-    typedef ural::ostream_sequence<OStream, int> S1;
+    typedef ural_ex::ostream_sequence<OStream, int> S1;
 
     static_assert(std::is_same<std::string, S1::delimiter_type>::value, "");
 
-    typedef ural::ostream_sequence<OStream> S2;
+    typedef ural_ex::ostream_sequence<OStream> S2;
 
     static_assert(std::is_same<std::string, S2::delimiter_type>::value, "");
 
-    typedef ural::ostream_sequence<> S3;
+    typedef ural_ex::ostream_sequence<> S3;
 
     static_assert(std::is_same<std::ostream, S3::ostream_type>::value, "");
     static_assert(std::is_same<std::string, S3::delimiter_type>::value, "");
@@ -733,7 +733,7 @@ BOOST_AUTO_TEST_CASE(set_inserter_container_access)
 {
     std::set<int> s;
 
-    auto seq = s | ural::set_inserter;
+    auto seq = s | ural_ex::set_inserter;
 
     BOOST_CHECK_EQUAL(&s, &seq.container());
 }
@@ -750,7 +750,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(set_inserter_test, Set, Int_set_types)
     Set const z(xs.begin(), xs.end());
 
     Set z_ural;
-    ural::copy(xs, z_ural | ural::set_inserter);
+    ural::copy(xs, z_ural | ural_ex::set_inserter);
 
     URAL_CHECK_EQUAL_RANGES(z, z_ural);
 }
@@ -1213,7 +1213,7 @@ BOOST_AUTO_TEST_CASE(generate_sequence_test)
 
     counter = 0;
 
-    ural::copy(ural::make_generator_sequence(gen), r_ural);
+    ural::copy(ural_ex::make_generator_sequence(gen), r_ural);
 
     URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
 }
@@ -1268,20 +1268,20 @@ BOOST_AUTO_TEST_CASE(unique_sequence_from_istream_to_ostream)
     std::list<int> const v1{1, 2, 2, 2, 3, 3, 2, 2, 1};
 
     std::ostringstream src;
-    ural::copy(v1, ural::make_ostream_sequence(src, ' '));
+    ural::copy(v1, ural_ex::make_ostream_sequence(src, ' '));
 
     auto v2 = v1;
     ural_ex::unique_erase(v2);
 
     std::ostringstream z;
-    ural::copy(v2, ural::make_ostream_sequence(z, ' '));
+    ural::copy(v2, ural_ex::make_ostream_sequence(z, ' '));
 
     // Сам алгоритм
     std::istringstream is(src.str());
     std::ostringstream os;
 
-    auto in_seq = ural::make_istream_sequence<int>(is) | ural_ex::uniqued;
-    ural::copy(std::move(in_seq), ural::make_ostream_sequence(os, ' '));
+    auto in_seq = ural_ex::make_istream_sequence<int>(is) | ural_ex::uniqued;
+    ural::copy(std::move(in_seq), ural_ex::make_ostream_sequence(os, ' '));
 
     BOOST_CHECK_EQUAL(z.str(), os.str());
 }
@@ -1386,7 +1386,7 @@ BOOST_AUTO_TEST_CASE(iterator_sequence_for_istream_iterator_regression)
     std::vector<int> const z{11, 11, 22, 33, 55};
 
     std::ostringstream os;
-    ural::copy(z, ural::make_ostream_sequence(os, " "));
+    ural::copy(z, ural_ex::make_ostream_sequence(os, " "));
 
     std::istringstream is(os.str());
 

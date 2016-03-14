@@ -1512,8 +1512,8 @@ BOOST_AUTO_TEST_CASE(unique_copy_test_custom_predicate)
     std::istringstream is_ural(source);
     std::ostringstream os_ural;
 
-    ural::unique_copy(ural::make_istream_sequence<char>(is_ural),
-                      ural::make_ostream_sequence(os_ural),
+    ural::unique_copy(ural::experimental::make_istream_sequence<char>(is_ural),
+                      ural::experimental::make_ostream_sequence(os_ural),
                       pred);
 
     // Проверка результатов
@@ -1525,19 +1525,19 @@ BOOST_AUTO_TEST_CASE(unique_copy_from_istream_to_ostream)
     std::list<int> const v1{1, 2, 2, 2, 3, 3, 2, 2, 1};
 
     std::ostringstream src;
-    ural::copy(v1, ural::make_ostream_sequence(src, ' '));
+    ural::copy(v1, ural::experimental::make_ostream_sequence(src, ' '));
 
     auto v2 = v1;
     ural_ex::unique_erase(v2);
 
     std::ostringstream z;
-    ural::copy(v2, ural::make_ostream_sequence(z, ' '));
+    ural::copy(v2, ural::experimental::make_ostream_sequence(z, ' '));
 
     // Сам алгоритм
     ural_test::istringstream_helper<int> const is(v1);
     std::ostringstream os;
 
-    ural::unique_copy(is, ural::make_ostream_sequence(os, ' '));
+    ural::unique_copy(is, ural::experimental::make_ostream_sequence(os, ' '));
 
     BOOST_CHECK_EQUAL(z.str(), os.str());
 }

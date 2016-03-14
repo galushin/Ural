@@ -465,8 +465,8 @@ BOOST_AUTO_TEST_CASE(merge_test_minimalistic)
 
     // ural
     std::vector<int> ural_merge;
-    ural::merge(ural::make_istream_sequence<int>(is1_ural),
-                ural::make_istream_sequence<int>(is2_ural),
+    ural::merge(ural::experimental::make_istream_sequence<int>(is1_ural),
+                ural::experimental::make_istream_sequence<int>(is2_ural),
                 ural_merge | ural::back_inserter);
 
     // Проверка
@@ -646,8 +646,8 @@ BOOST_AUTO_TEST_CASE(includes_test_custom_compare)
         std::istringstream v0_stream(v0);
 
         bool const r_ural
-            = ural::includes(ural::make_istream_sequence<char>(s_stream),
-                             ural::make_istream_sequence<char>(v0_stream),
+            = ural::includes(ural::experimental::make_istream_sequence<char>(s_stream),
+                             ural::experimental::make_istream_sequence<char>(v0_stream),
                              cmp_nocase);
         BOOST_CHECK_EQUAL(r_std, r_ural);
     }
@@ -681,8 +681,8 @@ BOOST_AUTO_TEST_CASE(set_union_test)
     std::vector<int> const z {1, 2, 3, 4, 5, 6, 7};
 
     std::vector<int> r_ural;
-    ural::set_union(ural::make_istream_sequence<int>(is1),
-                    ural::make_istream_sequence<int>(is2),
+    ural::set_union(ural::experimental::make_istream_sequence<int>(is1),
+                    ural::experimental::make_istream_sequence<int>(is2),
                     r_ural | ural::back_inserter);
 
     URAL_CHECK_EQUAL_RANGES(z, r_ural);
@@ -766,8 +766,8 @@ BOOST_AUTO_TEST_CASE(set_intersection_test)
     std::vector<int> const z {2, 4, 5};
 
     std::vector<int> r_ural;
-    ural::set_intersection(ural::make_istream_sequence<int>(is1),
-                           ural::make_istream_sequence<int>(is2),
+    ural::set_intersection(ural::experimental::make_istream_sequence<int>(is1),
+                           ural::experimental::make_istream_sequence<int>(is2),
                            r_ural | ural::back_inserter);
 
     URAL_CHECK_EQUAL_RANGES(z, r_ural);

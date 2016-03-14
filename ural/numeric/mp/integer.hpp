@@ -800,7 +800,7 @@ namespace experimental
         if(radix <= 16)
         {
             ural::write_separated(os, x.digits() | ::ural::experimental::reversed,
-                                  ural::no_delimiter{});
+                                  ::ural::experimental::no_delimiter{});
         }
         else
         {

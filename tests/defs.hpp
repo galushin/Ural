@@ -33,7 +33,7 @@ namespace ural_test
     class istringstream_helper
     {
         typedef std::istringstream IStream;
-        typedef ::ural::istream_sequence<IStream, T> Sequence;
+        typedef ::ural::experimental::istream_sequence<IStream, T> Sequence;
 
         friend Sequence
         sequence(istringstream_helper const & x)
@@ -66,7 +66,7 @@ namespace ural_test
         static std::string make(Sequence seq)
         {
             std::ostringstream os;
-            ::ural::copy_fn{}(std::move(seq), ::ural::make_ostream_sequence(os, " "));
+            ::ural::copy_fn{}(std::move(seq), ::ural::experimental::make_ostream_sequence(os, " "));
             return os.str();
         }
 
