@@ -85,7 +85,7 @@ namespace experimental
         */
         reference front() const
         {
-            return this->base() | ural::taken(this->chunk_size());
+            return this->base() | ::ural::experimental::taken(this->chunk_size());
         }
 
         /** @brief Переход к следующему элементу
@@ -118,7 +118,7 @@ namespace experimental
             assert(0 <= index && index < this->size());
 
             return (this->base() + index * this->chunk_size())
-                   | ural::taken(this->chunk_size());
+                   | ::ural::experimental::taken(this->chunk_size());
         }
 
         /** @brief Продвижение на заданное число элементов

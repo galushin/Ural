@@ -27,7 +27,8 @@
 
 namespace ural
 {
-
+namespace experimental
+{
 /** @brief Пространство имён, в котором определяются бинарный интерфейс (ABI)
 компилятор
 */
@@ -47,6 +48,8 @@ namespace abi
         std::free(realname);
         return result;
     }
+}
+// namespace experimental
 }
 // namespace abi
 }

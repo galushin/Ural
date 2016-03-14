@@ -22,6 +22,11 @@
 #include "../../defs.hpp"
 #include <boost/test/unit_test.hpp>
 
+namespace
+{
+    namespace ural_ex = ::ural::experimental;
+}
+
 BOOST_AUTO_TEST_CASE(replace_sequence_if_test)
 {
     std::array<int, 10> const s{5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
@@ -36,7 +41,7 @@ BOOST_AUTO_TEST_CASE(replace_sequence_if_test)
     std::replace_if(x_std.begin(), x_std.end(), pred, new_value);
 
     // ural
-    auto seq = s | ural::replaced_if(pred, new_value);
+    auto seq = s | ural_ex::replaced_if(pred, new_value);
     ural::copy(seq, x_ural | ural::back_inserter);
 
     BOOST_CHECK(seq == seq);
@@ -59,7 +64,7 @@ BOOST_AUTO_TEST_CASE(replace_sequence_if_regression_pass_by_cref)
 
     // ural
     std::vector<int> x_ural;
-    ural::copy(ural::make_replace_if_sequence(s, pred, std::cref(new_value)),
+    ural::copy(ural_ex::make_replace_if_sequence(s, pred, std::cref(new_value)),
                x_ural | ural::back_inserter);
 
     // Сравнение
@@ -73,8 +78,8 @@ BOOST_AUTO_TEST_CASE(replace_if_sequence_traversed_front)
     auto const new_value = -1;
     auto const n = ural::size(ural::sequence(src));
 
-    auto s1 = src | ural::replaced_if(ural::is_even, new_value);
-    auto s2 = src | ural::assumed_infinite | ural::replaced_if(ural::is_even, new_value);
+    auto s1 = src | ural_ex::replaced_if(ural::is_even, new_value);
+    auto s2 = src | ural_ex::assumed_infinite | ural_ex::replaced_if(ural::is_even, new_value);
 
     static_assert(!std::is_same<decltype(s2), decltype(s2.traversed_front())>::value, "");
 

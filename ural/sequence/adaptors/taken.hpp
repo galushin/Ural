@@ -30,6 +30,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Адаптор последовательности, ограничивающий длину базовой
     последовательности
     @tparam Sequence тип последовательности
@@ -85,7 +87,7 @@ namespace ural
             Base::pop_front();
 
             assert(this->count() > 0);
-            -- ural::get(count_);
+            -- ural::experimental::get(count_);
         }
 
         /** @brief Пройденная часть последовательности
@@ -94,7 +96,7 @@ namespace ural
         auto traversed_front() const
         {
             return this->base().traversed_front()
-                   | ural::taken_exactly(count_.old_value() - count_.value());
+                   | ::ural::experimental::taken_exactly(count_.old_value() - count_.value());
         }
 
         /** @brief Исчерпание последовательности за константное время в прямом
@@ -134,7 +136,7 @@ namespace ural
             assert(0 <= n && n <= this->count());
 
             Base::operator+=(n);
-            ural::get(count_) -= n;
+            ::ural::experimental::get(count_) -= n;
 
             return *this;
         }
@@ -145,7 +147,7 @@ namespace ural
         */
         Size const & count() const
         {
-            return ural::get(count_);
+            return ::ural::experimental::get(count_);
         }
 
     private:
@@ -209,8 +211,10 @@ namespace ural
     {
         /// @brief Функциональный объект для создания @c take_sequence
         constexpr auto const & taken
-            = odr_const<pipeable_maker<make_take_sequence_fn>>;
+            = odr_const<experimental::pipeable_maker<make_take_sequence_fn>>;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

@@ -21,11 +21,16 @@
 #include <boost/test/unit_test.hpp>
 #include "../defs.hpp"
 
+namespace
+{
+    namespace ural_ex = ::ural::experimental;
+}
+
 BOOST_AUTO_TEST_CASE(partial_sums_traversed_front)
 {
-    auto src = ural::make_arithmetic_progression(1, 2);
+    auto src = ural_ex::make_arithmetic_progression(1, 2);
 
-    auto src_p = ural::partial_sums(src);
+    auto src_p = ural_ex::partial_sums(src);
 
     auto const n = 13;
     std::vector<ural::ValueType<decltype(src)>> v1(n, -1);

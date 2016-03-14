@@ -38,6 +38,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Тип функционального объекта, для проверки того, что число
     является простым.
 
@@ -140,7 +142,7 @@ namespace ural
         {
             for(auto seq = ::ural::sequence_fwd<Input>(ds); !!seq; ++ seq)
             {
-                using ural::gcd;
+                using ::ural::experimental::gcd;
                 if(gcd(x, *seq) != 1)
                 {
                     return false;
@@ -194,7 +196,7 @@ namespace ural
 
         for(auto k = primes.back() + IntType{1}; primes.size() < n; k += IntType{2})
         {
-            if(::ural::is_not_divisible_by_all_sorted(k, primes))
+            if(::ural::experimental::is_not_divisible_by_all_sorted(k, primes))
             {
                 primes.push_back(k);
             }
@@ -243,6 +245,8 @@ namespace ural
 
         return primes;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

@@ -32,7 +32,7 @@
 
 namespace ural
 {
-inline namespace v0
+namespace experimental
 {
     class nullopt_t{};
 
@@ -503,7 +503,7 @@ namespace details
         {
             return !*this
                    ? nullptr
-                   : ::ural::v0::details::constexpr_addressof(**this);
+                   : details::constexpr_addressof(**this);
         }
 
         value_type * get_pointer()
@@ -1014,14 +1014,14 @@ namespace details
         return os;
     }
 }
-// namespace v0
+// namespace experimental
 }
 // namespace ural
 
 namespace std
 {
     template <class T>
-    class hash<ural::v0::optional<T>>
+    class hash<ural::experimental::optional<T>>
      : private std::hash<T>
     {
         typedef std::hash<T> Base;
@@ -1029,14 +1029,14 @@ namespace std
         typedef typename Base::result_type result_type;
 
         constexpr result_type
-        operator()(ural::v0::optional<T> const & x) const
+        operator()(ural::experimental::optional<T> const & x) const
         {
             return !x ? result_type{} : static_cast<Base const&>(*this)(*x);
         }
     };
 
     template <class T>
-    class hash<ural::v0::optional<T &>>
+    class hash<ural::experimental::optional<T &>>
      : private std::hash<T>
     {
         typedef std::hash<T> Base;
@@ -1044,7 +1044,7 @@ namespace std
         typedef typename Base::result_type result_type;
 
         constexpr result_type
-        operator()(ural::v0::optional<T &> const & x) const
+        operator()(ural::experimental::optional<T &> const & x) const
         {
             return !x ? result_type{} : static_cast<Base const&>(*this)(*x);
         }

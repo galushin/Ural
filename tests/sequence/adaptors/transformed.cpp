@@ -21,6 +21,11 @@
 
 #include <boost/test/unit_test.hpp>
 
+namespace
+{
+    namespace ural_ex = ::ural::experimental;
+}
+
 BOOST_AUTO_TEST_CASE(transformed_traversed_front)
 {
     std::forward_list<int> const src = {1, 2, 3, 3, 4, 5};
@@ -28,8 +33,8 @@ BOOST_AUTO_TEST_CASE(transformed_traversed_front)
     auto const f = ural::square;
     auto const n = ural::size(ural::sequence(src)) / 2;
 
-    auto const s1 = src | ural::transformed(f);
-    auto const s2 = src | ural::assumed_infinite | ural::transformed(f);
+    auto const s1 = src | ural_ex::transformed(f);
+    auto const s2 = src | ural_ex::assumed_infinite | ural_ex::transformed(f);
 
     auto const s1_n = ural::next(s1, n);
     auto const s2_n = ural::next(s2, n);

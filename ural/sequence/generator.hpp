@@ -26,6 +26,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Последовательность на основе функции без аргументов
     @tparam Generator функция без аргументов
     @tparam D тип расстояния, по умолчанию используется <tt>std::ptrdiff_t</tt>
@@ -56,7 +58,7 @@ namespace ural
         typedef decltype(make_value(std::declval<reference>())) value_type;
 
         /// @brief Тип расстояния
-        typedef typename default_helper<D, std::ptrdiff_t>::type distance_type;
+        using distance_type = experimental::DefaultedType<D, std::ptrdiff_t>;
 
         /// @brief Категория курсора
         using cursor_tag = input_cursor_tag;
@@ -131,6 +133,8 @@ namespace ural
     {
         return generator_sequence<Generator>{std::move(g)};
     }
+}
+// namespace experimental
 }
 // namespace ural
 

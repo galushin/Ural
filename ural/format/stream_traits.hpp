@@ -25,6 +25,8 @@
 
 namespace ural
 {
+inline namespace v0
+{
     /** @brief Класс-характеристика для потоков ввода и вывода
     @tparam Stream поток ввода или вывода
     */
@@ -40,6 +42,8 @@ namespace ural
         /// @brief Соответствующий класс строк
         typedef typename std::basic_string<char_type, traits_type> string_type;
     };
+}
+// namespace v0
 }
 // namespace ural
 

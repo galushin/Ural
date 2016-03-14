@@ -27,6 +27,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Класс для вычисления подходящего значения непрерывной дроби
     @tparam IntType целочисленный типы
 
@@ -38,7 +40,7 @@ namespace ural
     {
     public:
         /// @brief Тип результата
-        typedef ural::rational<IntType> result_type;
+        using result_type = ::ural::experimental::rational<IntType>;
 
         /** @brief Конструктор
         @param a целая часть непрерывной дроби
@@ -113,7 +115,7 @@ namespace ural
         using cursor_tag = finite_input_cursor_tag;
 
         /// @brief Тип расстояния
-        typedef typename default_helper<D, std::intmax_t>::type distance_type;
+        using distance_type = experimental::DefaultedType<D, std::intmax_t>;
 
         // Конструкторы
         /** @brief Конструктор
@@ -202,6 +204,8 @@ namespace ural
     {
         return sqrt_as_continued_fraction_sequence<IntType>(std::move(n));
     }
+}
+// namespace experimental
 }
 // namespace ural
 

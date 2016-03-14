@@ -142,8 +142,8 @@ inline namespace v0
 
     namespace
     {
-        constexpr auto const & is_even = odr_const<is_even_fn>;
-        constexpr auto const & is_odd  = odr_const<not_function<is_even_fn>>;
+        constexpr auto const & is_even = odr_const<::ural::is_even_fn>;
+        constexpr auto const & is_odd  = odr_const<::ural::not_function<is_even_fn>>;
     }
 
     /// @brief Тип функционального объекта для вычисления куба (третьей степени)
@@ -368,7 +368,7 @@ inline namespace v0
             }
         };
 
-        using ural::abs_constexpr;
+        using ::ural::experimental::abs_constexpr;
 
         class abs_constexpr_fn
         {
@@ -407,7 +407,8 @@ inline namespace v0
     */
     template <class... Ts>
     struct are_integral
-     : meta::all_of<typelist<Ts...>, ural::meta::template_to_applied<std::is_integral>>
+     : ::ural::experimental::meta::all_of<experimental::typelist<Ts...>,
+                                          ::ural::experimental::meta::template_to_applied<std::is_integral>>
     {};
 
     /** @brief Класс-характеристика для определения типа среднего значения
@@ -463,7 +464,9 @@ inline namespace v0
         constexpr auto const & square = odr_const_holder<square_fn>::value;
         constexpr auto const & cube = odr_const<cube_fn>;
 
-        constexpr auto const & natural_power = odr_const<natural_power_fn>;
+        constexpr auto const & natural_power
+            = odr_const_holder<natural_power_fn>::value;
+
         constexpr auto const & power_accumulate_semigroup
             = odr_const<power_accumulate_semigroup_fn>;
     }

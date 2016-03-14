@@ -26,7 +26,11 @@
 
 namespace ural
 {
+namespace experimental
+{
     typedef integer<10> integer_10;
+}
+// namespace experimental
 }
 // namespace ural
 

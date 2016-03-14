@@ -26,6 +26,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Последовательность разностей соседних элементов базовой
     последовательности
     @tparam Input тип базовая последовательнсоть
@@ -119,7 +121,7 @@ namespace ural
 
         Input && base() &&
         {
-            return ::ural::get(std::move(this->members_), ural::_1);
+            return ::ural::experimental::get(std::move(this->members_), ural::_1);
         }
         //@}
 
@@ -132,7 +134,7 @@ namespace ural
         }
 
     private:
-        typedef ural::optional<value_type> Optional_value;
+        typedef ural::experimental::optional<value_type> Optional_value;
 
         ural::tuple<Input, BinaryOperation, Optional_value, Optional_value> members_;
     };
@@ -192,6 +194,8 @@ namespace ural
         constexpr auto const & adjacent_differenced_with
             = odr_const<pipeable_maker<adjacent_differences_fn>>;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

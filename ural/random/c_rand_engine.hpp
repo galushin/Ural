@@ -27,6 +27,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Генератор случайных чисел, основанный на использовании функции
     <tt> std::rand </tt>.
     */
@@ -60,6 +62,8 @@ namespace ural
             return RAND_MAX;
         }
     };
+}
+// namespace experimental
 }
 // namespace ural
 #endif

@@ -38,6 +38,8 @@
 
 namespace ural
 {
+inline namespace v0
+{
     /** @ingroup Numerics
     @brief Тип функционального объекта для заполнения последовательности
     последовательными значениями
@@ -209,9 +211,9 @@ namespace ural
             typedef ResultType<BinaryOperation1, T, Product> Result;
             BOOST_CONCEPT_ASSERT((concepts::Same<Result, T>));
 
-            auto in_prod = ural::make_transform_sequence(std::move(mult),
-                                                         std::move(in1),
-                                                         std::move(in2));
+            auto in_prod = ::ural::experimental::make_transform_sequence(std::move(mult),
+                                                                         std::move(in1),
+                                                                         std::move(in2));
             return ::ural::accumulate_fn{}(std::move(in_prod),
                                            std::move(value),
                                            std::move(add));
@@ -248,8 +250,8 @@ namespace ural
                                                SequenceType<Input>> Result;
             BOOST_CONCEPT_ASSERT((concepts::Writable<SequenceType<Output>, Result>));
 
-            auto in_sum = ural::partial_sums(sequence_fwd<Input>(in),
-                                             ::ural::make_callable(std::move(bin_op)));
+            auto in_sum = ural::experimental::partial_sums(sequence_fwd<Input>(in),
+                                                           ::ural::make_callable(std::move(bin_op)));
             auto res = ural::copy_fn{}(std::move(in_sum),
                                        ::ural::sequence_fwd<Output>(out));
 
@@ -291,8 +293,8 @@ namespace ural
                                                SequenceType<Input>> Result;
             BOOST_CONCEPT_ASSERT((concepts::Writable<SequenceType<Output>, Result>));
 
-            auto in_dif = ural::adjacent_differences(::ural::sequence_fwd<Input>(in),
-                                                     ::ural::make_callable(std::move(bin_op)));
+            auto in_dif = ural::experimental::adjacent_differences(::ural::sequence_fwd<Input>(in),
+                                                                   ::ural::make_callable(std::move(bin_op)));
             auto res = ural::copy_fn{}(std::move(in_dif),
                                        ::ural::sequence_fwd<Output>(out));
             return ural::make_tuple(std::move(res[ural::_1]).base(),
@@ -305,11 +307,15 @@ namespace ural
         // 26.7 Обобщённые численные операции
         constexpr auto const & accumulate = odr_const<accumulate_fn>;
         constexpr auto const & inner_product = odr_const<inner_product_fn>;
-        constexpr auto const & partial_sum = odr_const<partial_sum_fn>;
-        constexpr auto const & adjacent_difference = odr_const<adjacent_difference_fn>;
+        constexpr auto const & partial_sum = odr_const_holder<partial_sum_fn>::value;
+        constexpr auto const & adjacent_difference = odr_const_holder<adjacent_difference_fn>::value;
         constexpr auto const & iota = odr_const<iota_fn>;
     }
+}
+// namespace v0
 
+namespace experimental
+{
     /** @brief Последовательность, реализующая операцию свёртки
     @tparam RASequence1 тип первой последовательности
     @tparam RASequence2 тип второй последовательности
@@ -424,7 +430,7 @@ namespace ural
 
             Vector result(x.size() + y.size() - 1);
 
-            copy_fn{}(ural::make_convolution_sequence(x, y),
+            copy_fn{}(::ural::experimental::make_convolution_sequence(x, y),
                       ural::sequence(result));
 
             return result;
@@ -586,6 +592,8 @@ namespace ural
     private:
         Vector row_;
     };
+}
+// namespace experimental
 }
 // namespace ural
 

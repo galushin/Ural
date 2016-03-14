@@ -28,6 +28,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     // Композиция функциональных объектов
     /** @brief Композиция функциональных объектов
     @tparam UnaryFunction тип унарного функционального объекта, вычисляющего
@@ -80,7 +82,7 @@ namespace ural
         */
         constexpr first_function_type const & first_function() const
         {
-            return ::ural::get(base_, ural::_1);
+            return ::ural::experimental::get(base_, ural::_1);
         }
 
         /** @brief Второй функциональный объект
@@ -88,7 +90,7 @@ namespace ural
         */
         constexpr second_function_type const & second_function() const
         {
-            return ::ural::get(base_, ural::_2);
+            return ::ural::experimental::get(base_, ural::_2);
         }
 
         /** @brief Применение функционального объекта
@@ -104,6 +106,8 @@ namespace ural
     private:
         Base base_;
     };
+}
+// namespace experimental
 }
 // namespace ural
 

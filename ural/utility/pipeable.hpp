@@ -32,7 +32,7 @@
 
 namespace ural
 {
-inline namespace v0
+namespace experimental
 {
     /** @brief Элемент "конвейера"
     @param Factory тип функции создания
@@ -96,7 +96,7 @@ inline namespace v0
     */
     template <class T>
     struct is_pipeable
-     : public ::ural::details::is_pipeable_impl<T>::type
+     : public ::ural::experimental::details::is_pipeable_impl<T>::type
     {};
 
     /** @brief Оператор создания адаптора
@@ -120,10 +120,10 @@ inline namespace v0
     <tt> seq | p1 | p2 </tt>.
     */
     template <class F1, class F2>
-    pipeable<compose_function<F2, F1>>
+    pipeable<::ural::experimental::compose_function<F2, F1>>
     operator|(pipeable<F1> p1, pipeable<F2> p2)
     {
-        using F = compose_function<F2, F1>;
+        using F = ::ural::experimental::compose_function<F2, F1>;
         return pipeable<F>(F(std::move(p2).function(),
                              std::move(p1).function()));
     }
@@ -149,8 +149,8 @@ inline namespace v0
             template <class Sequence>
             auto operator()(Sequence && seq) const
             {
-                auto f = ural::curry(Factory{}, std::forward<Sequence>(seq));
-                return ural::apply(std::move(f), args_);
+                auto f = ::ural::experimental::curry(Factory{}, std::forward<Sequence>(seq));
+                return ::ural::apply(std::move(f), args_);
             }
 
         private:
@@ -177,7 +177,7 @@ inline namespace v0
         }
     };
 }
-// namespace v0
+// namespace experimental
 }
 // namespace ural
 

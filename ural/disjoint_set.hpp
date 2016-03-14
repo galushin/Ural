@@ -26,6 +26,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Тип для представления непересекающихся множеств
     @tparam IntType Тип элементов
     @tparam Allocator Тип распределителя памяти
@@ -37,10 +39,11 @@ namespace ural
     {
         static_assert(std::is_integral<IntType>::value, "Must be integeral");
 
-        typedef tuple<IntType, IntType> Element;
-        typedef typename default_helper<Allocator, std::allocator<Element>>::type
-            allocator_type;
-        typedef std::vector<Element, allocator_type> Container;
+        using Element = tuple<IntType, IntType>;
+
+        using allocator_type = experimental::DefaultedType<Allocator, std::allocator<Element>>;
+
+        using Container = std::vector<Element, allocator_type>;
 
     public:
         // Типы
@@ -143,6 +146,8 @@ namespace ural
     private:
         Container data_;
     };
+}
+// namespace experimental
 }
 // namespace ural
 

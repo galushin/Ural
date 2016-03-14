@@ -28,6 +28,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Функциональный объект, объединяющий несколько функциональных
     объектов и возвращающий кортеж их результатов
     @tparam Fs типы базовых функциональных объектов
@@ -89,6 +91,8 @@ namespace ural
             Function;
         return Function{ural::make_callable(std::move(fs))...};
     }
+}
+// namespace experimental
 }
 // namespace ural
 

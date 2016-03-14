@@ -36,6 +36,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     template <class T, class Alloc>
     class buffer;
 
@@ -156,7 +158,7 @@ namespace ural
         {
             // @todo Устранить дублирование с копирующим присваиванием
             static_assert(Traits::propagate_on_container_move_assignment::value
-                          || ural::allocator_is_always_equal<allocator_type>::value, "");
+                          || ::ural::experimental::allocator_is_always_equal<allocator_type>::value, "");
 
             // Если нельзя передать владение, то придётся освобождать память
             // А если можно, то просто обмениваем указатели
@@ -207,7 +209,8 @@ namespace ural
 
         void swap(buffer & x)
         {
-            ural::swap_allocators{}(this->allocator_ref(), x.allocator_ref());
+            ::ural::experimental::swap_allocators{}(this->allocator_ref(),
+                                                    x.allocator_ref());
             this->unsafe_swap_pointers(x);
         }
 
@@ -365,7 +368,7 @@ namespace ural
     */
     template <class T, class Alloc = use_default, class Policy = use_default>
     class vector
-     : ural::container_facade<vector<T, Alloc, Policy>>
+     : ::ural::experimental::container_facade<vector<T, Alloc, Policy>>
     {
     public:
         // Типы
@@ -373,8 +376,7 @@ namespace ural
         typedef T value_type;
 
         /// @brief Тип распределителя памяти
-        typedef typename default_helper<Alloc, std::allocator<T>>::type
-            allocator_type;
+        using allocator_type = experimental::DefaultedType<Alloc, std::allocator<T>>;
 
         /// @brief Тип ссылки
         typedef value_type & reference;
@@ -410,8 +412,7 @@ namespace ural
         typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
         /// @brief Класс-стратегия проверок
-        typedef typename default_helper<Policy, container_checking_assert_policy>::type
-            policy_type;
+        using policy_type = experimental::DefaultedType<Policy, container_checking_assert_policy>;
 
         // Конструкторы
         /** @brief Создание пустого контейнера
@@ -563,7 +564,7 @@ namespace ural
         */
         vector & operator=(vector && x)
             noexcept(std::allocator_traits<allocator_type>::propagate_on_container_move_assignment::value
-                     || ural::allocator_is_always_equal<allocator_type>::value)
+                     || ::ural::experimental::allocator_is_always_equal<allocator_type>::value)
         {
             data_ = std::move(x.data_);
             return *this;
@@ -628,7 +629,8 @@ namespace ural
         */
         void assign(size_type n, value_type const & value)
         {
-            auto seq = ural::make_constant_sequence(std::cref(value)) | ural::taken(n);
+            auto seq = ::ural::experimental::make_constant_sequence(std::cref(value))
+                     | ::ural::experimental::taken(n);
 
             return this->assign(std::move(seq));
         }
@@ -1060,7 +1062,8 @@ namespace ural
         */
         iterator insert(const_iterator position, size_type const n, value_type const & value)
         {
-            auto seq = ural::make_constant_sequence(std::cref(value)) | ural::taken(n);
+            auto seq = ::ural::experimental::make_constant_sequence(std::cref(value))
+                     | ::ural::experimental::taken(n);
 
             return this->insert(position, std::move(seq));
         }
@@ -1160,7 +1163,7 @@ namespace ural
         */
         void swap(vector & x)
             noexcept(std::allocator_traits<allocator_type>::propagate_on_container_swap::value
-                     || ural::allocator_is_always_equal<allocator_type>::value)
+                     || ::ural::experimental::allocator_is_always_equal<allocator_type>::value)
         {
             data_.swap(x.data_);
         }
@@ -1206,6 +1209,8 @@ namespace ural
     private:
         buffer<value_type, allocator_type> data_;
     };
+}
+// namespace experimental
 }
 // namespace ural
 

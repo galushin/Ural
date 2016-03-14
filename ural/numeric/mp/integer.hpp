@@ -32,6 +32,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Тип для представления результата операции @c div: одновременного
     вычисления частного и остатка
     @tparam T тип операнда
@@ -295,8 +297,8 @@ namespace ural
             return false;
         }
 
-        return ural::lexicographical_compare(x.digits() | ural::reversed,
-                                             y.digits() | ural::reversed);
+        return ural::lexicographical_compare(x.digits() | ::ural::experimental::reversed,
+                                             y.digits() | ::ural::experimental::reversed);
     }
 
     /** @brief Оператор "меньше"
@@ -797,17 +799,19 @@ namespace ural
 
         if(radix <= 16)
         {
-            ural::write_separated(os, x.digits() | ural::reversed,
-                                  ural::no_delimiter{});
+            ural::write_separated(os, x.digits() | ::ural::experimental::reversed,
+                                  ::ural::experimental::no_delimiter{});
         }
         else
         {
-            ural::write_separated(os, x.digits() | ural::reversed, ':');
+            ural::write_separated(os, x.digits() | ::ural::experimental::reversed, ':');
         }
 
 
         return os;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

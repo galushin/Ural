@@ -35,6 +35,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Реализация для произвольного количества входных
     последовательнсотей
     @tparam F тип функционального объекта
@@ -218,8 +220,10 @@ namespace ural
         в конвейерном стиле.
         */
         constexpr auto const & transformed
-            = odr_const<pipeable_maker<binary_reverse_args_function<make_transform_sequence_fn>>>;
+            = odr_const<experimental::pipeable_maker<experimental::binary_reverse_args_function<make_transform_sequence_fn>>>;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

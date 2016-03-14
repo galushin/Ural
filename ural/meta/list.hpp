@@ -28,6 +28,8 @@
 
 namespace ural
 {
+namespace experimental
+{
 namespace meta
 {
     /** @brief Вставка нового элемента в начало контейнера типов
@@ -133,6 +135,8 @@ namespace meta
     {};
 }
 // namespace meta
+}
+// namespace experimental
 }
 // namespace ural
 

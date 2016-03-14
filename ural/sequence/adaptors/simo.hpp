@@ -25,6 +25,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @ingroup Sequences
     @brief Адаптор, производящий вывод сразу в несколько последовательностей
     вывода
@@ -138,7 +140,7 @@ namespace ural
             using Indices = index_sequence_for<Outputs...>;
 
             return this->transform_bases_impl<R>(std::move(f),
-                                                 ural::constructor<R>{},
+                                                 ::ural::experimental::constructor<R>{},
                                                  Indices{});
         }
 
@@ -163,6 +165,8 @@ namespace ural
         typedef simo_sequence_t<SequenceType<Outputs>...> Result;
         return Result(ural::sequence_fwd<Outputs>(outs)...);
     }
+}
+// namespace experimental
 }
 // namespace ural
 

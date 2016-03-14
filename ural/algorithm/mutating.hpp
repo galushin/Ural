@@ -117,7 +117,7 @@ namespace details
                                         ::ural::sequence_fwd<Output>(out));
             }
 
-            auto in_n = ::ural::sequence_fwd<Input>(in) | ural::taken(n);
+            auto in_n = ::ural::sequence_fwd<Input>(in) | ::ural::experimental::taken(n);
 
             auto result = ::ural::copy_fn{}(std::move(in_n),
                                             ::ural::sequence_fwd<Output>(out));
@@ -152,7 +152,7 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<SequenceType<Input>,
                                                                SequenceType<Output>>));
 
-            auto in_f = ::ural::sequence_fwd<Input>(in) | ural::filtered(pred);
+            auto in_f = ::ural::sequence_fwd<Input>(in) | ::ural::experimental::filtered(pred);
             auto res = ural::copy_fn{}(std::move(in_f),
                                        ::ural::sequence_fwd<Output>(out));
 
@@ -198,8 +198,8 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequence<Bidir2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<Bidir1, Bidir2>));
 
-            auto res = ural::copy_fn{}(std::move(in) | ural::reversed,
-                                       std::move(out) | ural::reversed);
+            auto res = ural::copy_fn{}(std::move(in) | ::ural::experimental::reversed,
+                                       std::move(out) | ::ural::experimental::reversed);
 
             return ural::make_tuple(std::move(res[ural::_1].base()),
                                     std::move(res[ural::_2].base()));
@@ -231,7 +231,7 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::IndirectlyMovable<SequenceType<Input>,
                                                               SequenceType<Output>>));
 
-            auto in_moved = ::ural::sequence_fwd<Input>(in) | ural::moved;
+            auto in_moved = ::ural::sequence_fwd<Input>(in) | ::ural::experimental::moved;
             auto res = ural::copy_fn{}(std::move(in_moved),
                                        ::ural::sequence_fwd<Output>(out));
             return ural::make_tuple(std::move(res[ural::_1]).base(),
@@ -276,8 +276,9 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequence<Bidir2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectlyMovable<Bidir1, Bidir2>));
 
-            auto res = ural::move_fn{}(std::move(in) | ural::reversed | ural::moved,
-                                       std::move(out) | ural::reversed);
+            auto res = ural::move_fn{}(std::move(in) | ::ural::experimental::reversed
+                                       | ::ural::experimental::moved,
+                                       std::move(out) | ::ural::experimental::reversed);
 
             return ural::make_tuple(std::move(res[ural::_1].base().base()),
                                     std::move(res[ural::_2].base()));
@@ -310,7 +311,7 @@ namespace details
         tuple<Input, Output>
         impl(Input in, Output out) const
         {
-            auto r = ural::copy_fn{}(std::move(in) | transformed(cref = *this),
+            auto r = ural::copy_fn{}(std::move(in) | ::ural::experimental::transformed(cref = *this),
                                      std::move(out));
             return ural::make_tuple(r[ural::_1].bases()[ural::_1],
                                     r[ural::_2]);
@@ -350,7 +351,8 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectlySwappable<Forward1, Forward2>));
 
-            auto result = for_each_fn{}(in1 | outdirected, in2 | outdirected,
+            auto result = for_each_fn{}(in1 | ::ural::experimental::outdirected,
+                                        in2 | ::ural::experimental::outdirected,
                                         indirect_swap);
 
             return make_tuple(std::move(result)[ural::_1].base(),
@@ -433,7 +435,7 @@ namespace details
             typedef IndirectCallableResultType<UnaryFunction, Input> F_result;
             BOOST_CONCEPT_ASSERT((concepts::OutputSequence<Output, F_result>));
 
-            auto f_in = ural::make_transform_sequence(std::move(f), std::move(in));
+            auto f_in = ::ural::experimental::make_transform_sequence(std::move(f), std::move(in));
 
             auto r = copy_fn{}(std::move(f_in), std::move(out));
 
@@ -454,9 +456,7 @@ namespace details
             typedef IndirectCallableResultType<BinaryFunction, Input1, Input2> F_result;
             BOOST_CONCEPT_ASSERT((concepts::OutputSequence<Output, F_result>));
 
-            auto f_in = ural::make_transform_sequence(std::move(f),
-                                                      std::move(in1),
-                                                      std::move(in2));
+            auto f_in = ::ural::experimental::make_transform_sequence(std::move(f), std::move(in1), std::move(in2));
 
             auto r = copy_fn{}(std::move(f_in), std::move(out));
 
@@ -503,7 +503,7 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::Function<Generator>));
             BOOST_CONCEPT_ASSERT((concepts::OutputSequence<Output, ResultType<Generator>>));
 
-            auto r = copy_fn{}(::ural::make_generator_sequence(std::move(gen)),
+            auto r = copy_fn{}(::ural::experimental::make_generator_sequence(std::move(gen)),
                                std::move(seq));
             return r[ural::_2];
         }
@@ -535,7 +535,7 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::OutputSequence<SequenceType<Output>,
                                                            ResultType<Generator>>));
 
-            auto in = ural::make_generator_sequence(::ural::make_callable(gen));
+            auto in = ::ural::experimental::make_generator_sequence(::ural::make_callable(gen));
             return ::ural::copy_n_fn{}(::std::move(in), std::move(n),
                                        ::ural::sequence_fwd<Output>(out))[ural::_2];
         }
@@ -575,7 +575,7 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::OutputSequence<Output, T>));
 
             return generate_fn{}(std::move(seq),
-                                 ural::value_function<T const &>(value));
+                                 ::ural::experimental::value_function<T const &>(value));
         }
     };
 
@@ -602,7 +602,7 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::Sequenced<Output>));
             BOOST_CONCEPT_ASSERT((concepts::OutputSequence<SequenceType<Output>, T>));
 
-            auto gen = ::ural::value_function<T const &>(value);
+            auto gen = ::ural::experimental::value_function<T const &>(value);
             return ::ural::generate_n_fn{}(std::forward<Output>(out),
                                            std::move(n), std::move(gen));
         }
@@ -649,7 +649,7 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<Predicate, ForwardSequence>));
             BOOST_CONCEPT_ASSERT((concepts::Writable<ForwardSequence, T>));
 
-            return fill_fn{}(std::move(seq) | filtered(std::move(pred)),
+            return fill_fn{}(std::move(seq) | ::ural::experimental::filtered(std::move(pred)),
                              new_value).base();
         }
     };
@@ -761,9 +761,9 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<Input, Output>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<Predicate, Input>));
 
-            auto in_r = ural::make_replace_if_sequence(std::move(in),
-                                                       std::move(pred),
-                                                       std::cref(new_value));
+            auto in_r = ::ural::experimental::make_replace_if_sequence(std::move(in),
+                                                                       std::move(pred),
+                                                                       std::cref(new_value));
             auto r = ural::copy_fn{}(std::move(in_r), std::move(out));
 
             return ural::make_tuple(std::move(r[ural::_1]).base(),
@@ -856,7 +856,7 @@ namespace details
                 return out;
             }
 
-            auto in_filtered = ural::next(out) | ural::removed_if(std::move(pred));
+            auto in_filtered = ural::next(out) | ::ural::experimental::removed_if(std::move(pred));
 
             return ural::move_fn{}(in_filtered, out)[ural::_2];
         }
@@ -1018,9 +1018,9 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::Permutable<ForwardSequence>));
 
             // @todo Оптимизация
-            auto us = std::move(seq) | ural::adjacent_filtered(std::move(pred));
+            auto us = std::move(seq) | ::ural::experimental::adjacent_filtered(std::move(pred));
 
-            auto result = copy_fn{}(us | ural::moved, seq);
+            auto result = copy_fn{}(us | ::ural::experimental::moved, seq);
 
             return result[ural::_2];
         }
@@ -1050,7 +1050,7 @@ namespace details
                                                              SequenceType<Input>>));
 
             auto u_in = std::forward<Input>(in)
-                      | ural::adjacent_filtered(std::move(bin_pred));
+                      | ::ural::experimental::adjacent_filtered(std::move(bin_pred));
             auto r = ::ural::copy_fn{}(std::move(u_in),
                                        std::forward<Output>(out));
             return ::ural::make_tuple(std::move(r[ural::_1]).base(),
@@ -1100,8 +1100,8 @@ namespace details
                 auto s2 = ::ural::next(seq, n2);
 
                 // size(s2) = size(seq) - n2 = n - n2 = n1
-                ::ural::swap_ranges_fn{}(seq | ural::taken(n1),
-                                         s2  | ural::taken(n1))[ural::_2];
+                ::ural::swap_ranges_fn{}(seq | ::ural::experimental::taken(n1),
+                                         s2  | ::ural::experimental::taken(n1))[ural::_2];
 
                 this->impl_n(std::move(s2), n1);
 
@@ -1181,7 +1181,7 @@ namespace details
                                                                SequenceType<Output>>));
 
             auto in_reversed = ::ural::sequence_fwd<Bidirectional>(in)
-                             | ural::reversed;
+                             | ::ural::experimental::reversed;
             auto result = ural::copy_fn{}(std::move(in_reversed),
                                           ::ural::sequence_fwd<Output>(out));
             return ural::make_tuple(std::move(result[ural::_1]).base(),
@@ -1629,9 +1629,9 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<Input, Output1>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<Input, Output2>));
 
-            auto out = ural::make_partition_sequence(std::move(out_true),
-                                                     std::move(out_false),
-                                                     std::move(pred));
+            auto out = ::ural::experimental::make_partition_sequence(std::move(out_true),
+                                                                     std::move(out_false),
+                                                                     std::move(pred));
             auto r = copy_fn{}(std::move(in), std::move(out));
 
             typedef ural::tuple<Input, Output1, Output2> Tuple;

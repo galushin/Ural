@@ -96,7 +96,7 @@ inline namespace v0
     template <class CursorTag, class T>
     struct wrap_with_old_value_if_forward
      : std::conditional<std::is_convertible<CursorTag, forward_cursor_tag>::value,
-                        with_old_value<T>, T>
+                        experimental::with_old_value<T>, T>
     {};
 
     /** @brief Синоним для <tt> wrap_with_old_value_if_forward<CursorTag, T>::type </tt>
@@ -116,7 +116,7 @@ inline namespace v0
     template <class Traversal, class T>
     struct wrap_with_old_value_if_bidirectional
      : std::conditional<std::is_convertible<Traversal, bidirectional_cursor_tag>::value,
-                        with_old_value<T>, T>
+                        experimental::with_old_value<T>, T>
     {};
 
     /** @brief Синоним для <tt> wrap_with_old_value_if_bidirectional<Traversal, T>::type </tt>
@@ -239,21 +239,21 @@ inline namespace v0
     @return <tt> sequence_iterator<Seq>{static_cast<Seq const&>(s)} </tt>
     */
     template <class Seq, class Base>
-    sequence_iterator<Seq> begin(sequence_base<Seq, Base> const & s)
+    experimental::sequence_iterator<Seq> begin(sequence_base<Seq, Base> const & s)
     {
-        return sequence_iterator<Seq>{static_cast<Seq const&>(s)};
+        return experimental::sequence_iterator<Seq>{static_cast<Seq const&>(s)};
     }
 
     template <class Seq, class Base>
-    sequence_iterator<Seq> begin(sequence_base<Seq, Base> && s)
+    experimental::sequence_iterator<Seq> begin(sequence_base<Seq, Base> && s)
     {
-        return sequence_iterator<Seq>{static_cast<Seq &&>(s)};
+        return experimental::sequence_iterator<Seq>{static_cast<Seq &&>(s)};
     }
 
     template <class Seq, class Base>
-    sequence_iterator<Seq &> begin(sequence_base<Seq, Base> & s)
+    experimental::sequence_iterator<Seq &> begin(sequence_base<Seq, Base> & s)
     {
-        return sequence_iterator<Seq &>(static_cast<Seq&>(s));
+        return experimental::sequence_iterator<Seq &>(static_cast<Seq&>(s));
     }
     //@}
 
@@ -262,15 +262,15 @@ inline namespace v0
     @return <tt> sequence_iterator<Seq>{} </tt>
     */
     template <class Seq, class Base>
-    sequence_iterator<Seq> end(sequence_base<Seq, Base> const &)
+    experimental::sequence_iterator<Seq> end(sequence_base<Seq, Base> const &)
     {
-        return sequence_iterator<Seq>{};
+        return experimental::sequence_iterator<Seq>{};
     }
 
     template <class Seq, class Base>
-    sequence_iterator<Seq &> end(sequence_base<Seq, Base> &)
+    experimental::sequence_iterator<Seq &> end(sequence_base<Seq, Base> &)
     {
-        return sequence_iterator<Seq &>{};
+        return experimental::sequence_iterator<Seq &>{};
     }
     //@}
 

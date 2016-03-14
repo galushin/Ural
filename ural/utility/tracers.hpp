@@ -28,6 +28,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Класс-обёртка для отслеживания количества выполненных операций
     для регулярных объектов
     @tparam T тип значения
@@ -275,8 +277,7 @@ namespace ural
         typedef decltype(ural::make_callable(std::declval<F>())) Base_class;
     public:
         /// @brief Стратегия многопоточности
-        typedef typename default_helper<Threading, single_thread_policy>::type
-            threading_policy;
+        using threading_policy = experimental::DefaultedType<Threading, single_thread_policy>;
 
         /// @brief Тип счётчика
         typedef typename threading_policy::atomic_counter_type counter_type;
@@ -364,7 +365,7 @@ namespace ural
     базовым распределителем памяти
     */
     template <class T, class Alloc = std::allocator<T>,
-              class Threading = ural::single_thread_policy>
+              class Threading = ural::experimental::single_thread_policy>
     class tracing_allocator
     {
         friend bool operator==(tracing_allocator const & x,
@@ -559,6 +560,8 @@ namespace ural
         int id_;
         Alloc a_;
     };
+}
+// namespace experimental
 }
 // namespace ural
 

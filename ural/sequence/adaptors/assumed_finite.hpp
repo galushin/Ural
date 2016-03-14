@@ -12,6 +12,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Шаблон адаптора, предпалагающий, что курсор конечен, то есть
     будет исчерпан в данном контексте.
     @tparam Cursor базовый курсор
@@ -77,8 +79,10 @@ namespace ural
         исчерпана в данном контексте, в функциональном стиле.
         */
         constexpr auto const & assumed_finite
-            = odr_const<pipeable<assume_finite_fn>>;
+            = odr_const<experimental::pipeable<assume_finite_fn>>;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

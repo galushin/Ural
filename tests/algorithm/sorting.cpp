@@ -33,6 +33,8 @@
 
 namespace
 {
+    namespace ural_ex = ::ural::experimental;
+
     typedef boost::mpl::list<std::forward_list<int>,
                              std::list<int>,
                              std::vector<int>,
@@ -123,7 +125,7 @@ BOOST_AUTO_TEST_CASE(partial_sort_reversed_test)
 
     auto xs = ys;
 
-    ural::partial_sort(xs | ural::reversed, xs.size());
+    ural::partial_sort(xs | ural_ex::reversed, xs.size());
 
     BOOST_CHECK(std::is_sorted(xs.rbegin(), xs.rend()));
     BOOST_CHECK(ural::is_permutation(xs, ys));
@@ -284,7 +286,7 @@ BOOST_AUTO_TEST_CASE(equal_range_different_traversed_front)
     auto const s1 = ural::numbers(1, 9);
     auto const s2 = ural::numbers(0, 9);
 
-    auto const s = ural::make_cartesian_product_sequence(s1, s2);
+    auto const s = ural_ex::make_cartesian_product_sequence(s1, s2);
 
     static_assert(!std::is_same<decltype(s), decltype(s.traversed_front())>::value, "");
 
@@ -463,8 +465,8 @@ BOOST_AUTO_TEST_CASE(merge_test_minimalistic)
 
     // ural
     std::vector<int> ural_merge;
-    ural::merge(ural::make_istream_sequence<int>(is1_ural),
-                ural::make_istream_sequence<int>(is2_ural),
+    ural::merge(ural::experimental::make_istream_sequence<int>(is1_ural),
+                ural::experimental::make_istream_sequence<int>(is2_ural),
                 ural_merge | ural::back_inserter);
 
     // Проверка
@@ -644,8 +646,8 @@ BOOST_AUTO_TEST_CASE(includes_test_custom_compare)
         std::istringstream v0_stream(v0);
 
         bool const r_ural
-            = ural::includes(ural::make_istream_sequence<char>(s_stream),
-                             ural::make_istream_sequence<char>(v0_stream),
+            = ural::includes(ural::experimental::make_istream_sequence<char>(s_stream),
+                             ural::experimental::make_istream_sequence<char>(v0_stream),
                              cmp_nocase);
         BOOST_CHECK_EQUAL(r_std, r_ural);
     }
@@ -679,8 +681,8 @@ BOOST_AUTO_TEST_CASE(set_union_test)
     std::vector<int> const z {1, 2, 3, 4, 5, 6, 7};
 
     std::vector<int> r_ural;
-    ural::set_union(ural::make_istream_sequence<int>(is1),
-                    ural::make_istream_sequence<int>(is2),
+    ural::set_union(ural::experimental::make_istream_sequence<int>(is1),
+                    ural::experimental::make_istream_sequence<int>(is2),
                     r_ural | ural::back_inserter);
 
     URAL_CHECK_EQUAL_RANGES(z, r_ural);
@@ -764,8 +766,8 @@ BOOST_AUTO_TEST_CASE(set_intersection_test)
     std::vector<int> const z {2, 4, 5};
 
     std::vector<int> r_ural;
-    ural::set_intersection(ural::make_istream_sequence<int>(is1),
-                           ural::make_istream_sequence<int>(is2),
+    ural::set_intersection(ural::experimental::make_istream_sequence<int>(is1),
+                           ural::experimental::make_istream_sequence<int>(is2),
                            r_ural | ural::back_inserter);
 
     URAL_CHECK_EQUAL_RANGES(z, r_ural);
@@ -1060,7 +1062,7 @@ BOOST_AUTO_TEST_CASE(make_heap_test)
 {
     std::vector<int> v { 3, 1, 4, 1, 5, 9 };
 
-    auto cmp = ural::callable_tracer<ural::less<int>>{};
+    auto cmp = ural_ex::callable_tracer<ural::less<int>>{};
     cmp.reset_calls();
 
     auto result = ural::make_heap(v, cmp);
@@ -1079,7 +1081,7 @@ BOOST_AUTO_TEST_CASE(make_heap_odd_size_test)
 {
     std::vector<int> v { 3, 1, 4, 1, 5, 9, 2};
 
-    auto cmp = ural::callable_tracer<ural::less<int>>{};
+    auto cmp = ural_ex::callable_tracer<ural::less<int>>{};
     cmp.reset_calls();
 
     auto const result = ural::make_heap(v, cmp);
@@ -1277,7 +1279,7 @@ BOOST_AUTO_TEST_CASE(max_element_test_custom_compare)
 
 BOOST_AUTO_TEST_CASE(max_element_using_compare_by)
 {
-    auto const sq_cmp = ural::compare_by(ural::square);
+    auto const sq_cmp = ural::experimental::compare_by(ural::square);
 
     static_assert(std::is_empty<decltype(sq_cmp)>::value, "Must be empty!");
 

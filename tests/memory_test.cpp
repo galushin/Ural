@@ -22,6 +22,11 @@
 
 #include <boost/test/unit_test.hpp>
 
+namespace
+{
+    namespace ural_ex = ::ural::experimental;
+}
+
 BOOST_AUTO_TEST_CASE(make_unique_array)
 {
     auto const n = 5;
@@ -69,7 +74,7 @@ namespace
     private:
         virtual Base * clone_impl() const override
         {
-            return ural::make_copy_new(*this).release();
+            return ural_ex::make_copy_new(*this).release();
         }
     };
 
@@ -88,7 +93,7 @@ namespace
 BOOST_AUTO_TEST_CASE(copy_ptr_types)
 {
     typedef int Type;
-    typedef ural::copy_ptr<Type> Copy_ptr;
+    typedef ural_ex::copy_ptr<Type> Copy_ptr;
     typedef std::unique_ptr<Type> Unique_ptr;
 
     static_assert(std::is_same<typename Copy_ptr::pointer,
@@ -98,9 +103,9 @@ BOOST_AUTO_TEST_CASE(copy_ptr_types)
     static_assert(std::is_same<typename Copy_ptr::deleter_type,
                                typename Unique_ptr::deleter_type>::value, "");
     static_assert(std::is_same<typename Copy_ptr::cloner_type,
-                               ural::default_copy<Type>>::value, "");
+                               ural_ex::default_copy<Type>>::value, "");
     static_assert(std::is_same<typename Copy_ptr::checker_type,
-                               ural::default_ptr_checker<Type*>>::value, "");
+                               ural_ex::default_ptr_checker<Type*>>::value, "");
 
     static_assert(sizeof(Copy_ptr) == sizeof(Unique_ptr),
                   "Copy ptr with default policies must be lean!");
@@ -112,9 +117,9 @@ BOOST_AUTO_TEST_CASE(copy_ptr_default_ctor_test)
 {
     typedef int Type;
 
-    ural::copy_ptr<Type> const p{};
+    ural_ex::copy_ptr<Type> const p{};
 
-    static_assert(noexcept(ural::copy_ptr<Type>{}),
+    static_assert(noexcept(ural_ex::copy_ptr<Type>{}),
                   "default ctor must be noexcept");
 
     BOOST_CHECK(static_cast<bool>(p) == false);
@@ -125,13 +130,13 @@ BOOST_AUTO_TEST_CASE(copy_ptr_default_ctor_test)
 BOOST_AUTO_TEST_CASE(copy_ptr_dereference_check_test)
 {
     typedef int Type;
-    typedef ural::copy_ptr<Type, ural::use_default, ural::use_default,
-                           ural::throwing_ptr_checker<Type*>> Pointer;
+    typedef ural_ex::copy_ptr<Type, ural::use_default, ural::use_default,
+                                ural_ex::throwing_ptr_checker<Type*>> Pointer;
 
     Pointer const p0{};
     Pointer const p1{ural::make_unique<int>(42)};
 
-    static_assert(noexcept(ural::copy_ptr<Pointer>{}),
+    static_assert(noexcept(ural_ex::copy_ptr<Pointer>{}),
                   "default ctor must be noexcept");
 
     BOOST_CHECK(static_cast<bool>(p0) == false);
@@ -146,9 +151,9 @@ BOOST_AUTO_TEST_CASE(copy_ptr_ctor_test)
     typedef int Type;
     Type const value = 42;
 
-    ural::copy_ptr<Type> const p(new Type{value});
+    ural_ex::copy_ptr<Type> const p(new Type{value});
 
-    static_assert(noexcept(ural::copy_ptr<Type>{nullptr}),
+    static_assert(noexcept(ural_ex::copy_ptr<Type>{nullptr}),
                   "ctor must be noexcept");
 
     BOOST_CHECK(static_cast<bool>(p) == true);
@@ -192,7 +197,7 @@ BOOST_AUTO_TEST_CASE(copy_ptr_copy_init_deleter_test)
 {
     deleter_with_id<int> d(13);
 
-    ural::copy_ptr<int, ural::use_default, deleter_with_id<int>>
+    ural_ex::copy_ptr<int, ural::use_default, deleter_with_id<int>>
         p(new int{42}, d);
 
     BOOST_CHECK_EQUAL(d.id(), p.get_deleter().id());
@@ -202,7 +207,7 @@ BOOST_AUTO_TEST_CASE(copy_ptr_copy_init_deleter_cref_test)
 {
     deleter_with_id<int> d(13);
 
-    ural::copy_ptr<int, ural::use_default, deleter_with_id<int> const &>
+    ural_ex::copy_ptr<int, ural::use_default, deleter_with_id<int> const &>
         p(new int{42}, d);
 
     BOOST_CHECK_EQUAL(d.id(), p.get_deleter().id());
@@ -213,7 +218,7 @@ BOOST_AUTO_TEST_CASE(copy_ptr_copy_init_deleter_ref_test)
 {
     deleter_with_id<int> d(13);
 
-    ural::copy_ptr<int, ural::use_default, deleter_with_id<int> const &>
+    ural_ex::copy_ptr<int, ural::use_default, deleter_with_id<int> const &>
         p(new int{42}, d);
 
     BOOST_CHECK_EQUAL(d.id(), p.get_deleter().id());
@@ -226,7 +231,7 @@ BOOST_AUTO_TEST_CASE(copy_ptr_copy_init_deleter_ref_test)
 BOOST_AUTO_TEST_CASE(copy_ptr_move_init_deleter_test)
 {
     const auto id = 13;
-    ural::copy_ptr<int, ural::use_default, deleter_with_id<int>>
+    ural_ex::copy_ptr<int, ural::use_default, deleter_with_id<int>>
         p(new int{42}, deleter_with_id<int>(id));
 
     BOOST_CHECK_EQUAL(id, p.get_deleter().id());
@@ -234,20 +239,20 @@ BOOST_AUTO_TEST_CASE(copy_ptr_move_init_deleter_test)
 
 BOOST_AUTO_TEST_CASE(copy_ptr_move_ctor_test)
 {
-    typedef ural::regular_tracer<int> Type;
+    typedef ural_ex::regular_tracer<int> Type;
 
     auto const old_active = Type::active_objects();
 
     {
         auto const value = Type{42};
 
-        ural::copy_ptr<Type> p1(ural::make_unique<Type>(value));
+        ural_ex::copy_ptr<Type> p1(ural::make_unique<Type>(value));
 
         auto * old_ptr = p1.get();
 
-        ural::copy_ptr<Type> p2(std::move(p1));
+        ural_ex::copy_ptr<Type> p2(std::move(p1));
 
-        static_assert(noexcept(ural::copy_ptr<Type>{ural::copy_ptr<Type>{}}),
+        static_assert(noexcept(ural_ex::copy_ptr<Type>{ural_ex::copy_ptr<Type>{}}),
                       "move ctor must be noexcept");
 
         BOOST_CHECK_EQUAL(old_ptr, p2.get());
@@ -264,9 +269,9 @@ BOOST_AUTO_TEST_CASE(copy_ptr_nullptr_ctor_test)
 {
     typedef int Type;
 
-    ural::copy_ptr<Type> const p{nullptr};
+    ural_ex::copy_ptr<Type> const p{nullptr};
 
-    static_assert(noexcept(ural::copy_ptr<Type>{nullptr}),
+    static_assert(noexcept(ural_ex::copy_ptr<Type>{nullptr}),
                   "default ctor must be noexcept");
 
     BOOST_CHECK(static_cast<bool>(p) == false);
@@ -282,7 +287,7 @@ BOOST_AUTO_TEST_CASE(copy_ptr_ctor_from_unique_ptr)
 
     auto const ptr_old = p_u.get();
 
-    ural::copy_ptr<Type> p(std::move(p_u));
+    ural_ex::copy_ptr<Type> p(std::move(p_u));
 
     BOOST_CHECK(p_u == nullptr);
     BOOST_CHECK_EQUAL(ptr_old, p.get());
@@ -294,7 +299,7 @@ BOOST_AUTO_TEST_CASE(copy_ptr_ctor_unique_ptr_U_test)
     auto const value = 42;
 
     auto pu = ural::make_unique<MoreDerived>(value);
-    ural::copy_ptr<Derived> pc(std::move(pu));
+    ural_ex::copy_ptr<Derived> pc(std::move(pu));
 
     BOOST_CHECK(!!pc);
     BOOST_CHECK_EQUAL(value, pc->value);
@@ -308,7 +313,7 @@ BOOST_AUTO_TEST_CASE(copy_ptr_copy_ctor_test)
 {
     typedef int Type;
 
-    ural::copy_ptr<Type> const p1(ural::make_unique<Type>(42));
+    ural_ex::copy_ptr<Type> const p1(ural::make_unique<Type>(42));
     auto p2 = p1;
 
     BOOST_CHECK(*p1 == *p2);
@@ -319,7 +324,7 @@ BOOST_AUTO_TEST_CASE(copy_ptr_nullptr_assign_test)
 {
     typedef int Type;
 
-    ural::copy_ptr<Type> p{ural::make_unique<Type>(42)};
+    ural_ex::copy_ptr<Type> p{ural::make_unique<Type>(42)};
 
     p = nullptr;
 
@@ -332,8 +337,8 @@ BOOST_AUTO_TEST_CASE(copy_ptr_copy_assign_test)
 {
     typedef int Type;
 
-    ural::copy_ptr<Type> p1(ural::make_unique<Type>(42));
-    ural::copy_ptr<Type> p2;
+    ural_ex::copy_ptr<Type> p1(ural::make_unique<Type>(42));
+    ural_ex::copy_ptr<Type> p2;
     p2 = p1;
 
     BOOST_CHECK(p1.get() != p2.get());
@@ -342,8 +347,8 @@ BOOST_AUTO_TEST_CASE(copy_ptr_copy_assign_test)
 
 BOOST_AUTO_TEST_CASE(copy_ptr_compatible_copy_test)
 {
-    ural::copy_ptr<MoreDerived> p1{ural::make_unique<MoreDerived>(42)};
-    ural::copy_ptr<Derived> p2{p1};
+    ural_ex::copy_ptr<MoreDerived> p1{ural::make_unique<MoreDerived>(42)};
+    ural_ex::copy_ptr<Derived> p2{p1};
 
     BOOST_CHECK(p1.get() != p2.get());
     BOOST_CHECK_EQUAL(p1->value, p2->value);
@@ -356,7 +361,7 @@ BOOST_AUTO_TEST_CASE(copy_ptr_compatible_copy_test)
 
 BOOST_AUTO_TEST_CASE(copy_ptr_copy_polymorhic_test)
 {
-    typedef ural::copy_ptr<Base, ural::member_function_copy<Base>> Pointer;
+    typedef ural_ex::copy_ptr<Base, ural_ex::member_function_copy<Base>> Pointer;
 
     Pointer p1{ural::make_unique<Derived>(42)};
     Pointer p2{p1};
@@ -378,10 +383,10 @@ BOOST_AUTO_TEST_CASE(copy_ptr_move_compatible_ctor_test)
 {
     auto const value = 42;
 
-    ural::copy_ptr<Derived> p1{ural::make_unique<Derived>(value)};
+    ural_ex::copy_ptr<Derived> p1{ural::make_unique<Derived>(value)};
     auto const ptr_old = p1.get();
 
-    ural::copy_ptr<Base> p2{std::move(p1)};
+    ural_ex::copy_ptr<Base> p2{std::move(p1)};
 
     BOOST_CHECK(!p1);
     BOOST_CHECK(!!p2);
@@ -394,10 +399,10 @@ BOOST_AUTO_TEST_CASE(copy_ptr_move_compatible_assign_test)
 {
     auto const value = 42;
 
-    ural::copy_ptr<Derived> p1{ural::make_unique<Derived>(value)};
+    ural_ex::copy_ptr<Derived> p1{ural::make_unique<Derived>(value)};
     auto const ptr_old = p1.get();
 
-    ural::copy_ptr<Base> p2;
+    ural_ex::copy_ptr<Base> p2;
     p2 = std::move(p1);
 
     BOOST_CHECK(!p1);
@@ -409,9 +414,9 @@ BOOST_AUTO_TEST_CASE(copy_ptr_move_compatible_assign_test)
 
 BOOST_AUTO_TEST_CASE(copy_ptr_copy_compatible_ctor_test)
 {
-    ural::copy_ptr<Derived, ural::member_function_copy<Base>>
+    ural_ex::copy_ptr<Derived, ural_ex::member_function_copy<Base>>
         p1{ural::make_unique<Derived>(42)};
-    ural::copy_ptr<Base, ural::member_function_copy<Base>>
+    ural_ex::copy_ptr<Base, ural_ex::member_function_copy<Base>>
         p2{p1};
 
     BOOST_CHECK(p1.get() != p2.get());
@@ -429,7 +434,7 @@ BOOST_AUTO_TEST_CASE(copy_ptr_copy_compatible_ctor_test)
 
 BOOST_AUTO_TEST_CASE(copy_ptr_assign_polymorhic_test)
 {
-    typedef ural::copy_ptr<Base, ural::member_function_copy<Base>> Pointer;
+    typedef ural_ex::copy_ptr<Base, ural_ex::member_function_copy<Base>> Pointer;
 
     Pointer p1{ural::make_unique<Derived>(42)};
     Pointer p2{p1};
@@ -445,8 +450,8 @@ BOOST_AUTO_TEST_CASE(copy_ptr_assign_polymorhic_test)
 
 BOOST_AUTO_TEST_CASE(copy_ptr_compatible_copy_assign)
 {
-    ural::copy_ptr<MoreDerived> p1{ural::make_unique<MoreDerived>(42)};
-    ural::copy_ptr<Derived> p2;
+    ural_ex::copy_ptr<MoreDerived> p1{ural::make_unique<MoreDerived>(42)};
+    ural_ex::copy_ptr<Derived> p2;
     p2 = p1;
 
     BOOST_CHECK(p1.get() != p2.get());
@@ -462,8 +467,8 @@ BOOST_AUTO_TEST_CASE(copy_ptr_move_assign_test)
 {
     typedef int Type;
 
-    ural::copy_ptr<Type> p1(ural::make_unique<Type>(42));
-    ural::copy_ptr<Type> p2(ural::make_unique<Type>(13));
+    ural_ex::copy_ptr<Type> p1(ural::make_unique<Type>(42));
+    ural_ex::copy_ptr<Type> p2(ural::make_unique<Type>(13));
 
     auto * old_p2 = p2.get();
 
@@ -479,7 +484,7 @@ BOOST_AUTO_TEST_CASE(copy_ptr_member_access_test)
 
     auto const value = 42;
 
-    ural::copy_ptr<Derived const> p_c(ural::make_unique<Type>(value));
+    ural_ex::copy_ptr<Derived const> p_c(ural::make_unique<Type>(value));
 
     BOOST_CHECK_EQUAL(value, p_c->value);
 }
@@ -490,7 +495,7 @@ BOOST_AUTO_TEST_CASE(copy_ptr_release_test)
 
     auto const value = 42;
 
-    ural::copy_ptr<Type> p(ural::make_unique<Type>(value));
+    ural_ex::copy_ptr<Type> p(ural::make_unique<Type>(value));
 
     auto const ptr_old = p.get();
 
@@ -503,7 +508,7 @@ BOOST_AUTO_TEST_CASE(copy_ptr_release_test)
 BOOST_AUTO_TEST_CASE(copy_ptr_swap_test)
 {
     typedef int Type;
-    typedef ural::copy_ptr<Type> Pointer;
+    typedef ural_ex::copy_ptr<Type> Pointer;
 
     Pointer p1(ural::make_unique<Type>(42));
     Pointer p2(ural::make_unique<Type>(13));
@@ -517,10 +522,11 @@ BOOST_AUTO_TEST_CASE(copy_ptr_swap_test)
     BOOST_CHECK_EQUAL(p1_old, p2.get());
     BOOST_CHECK_EQUAL(p2_old, p1.get());
 
-    void(*swap_ptr)(Pointer &, Pointer &) = &ural::swap;
+    void(*swap_ptr)(Pointer &, Pointer &) = &ural::experimental::swap;
 
     swap_ptr(p1, p2);
-    static_assert(noexcept(ural::swap(p1, p2)), "swap must be noexcept");
+    static_assert(noexcept(::ural::experimental::swap(p1, p2)),
+                  "swap must be noexcept");
 
     BOOST_CHECK_EQUAL(p1_old, p1.get());
     BOOST_CHECK_EQUAL(p2_old, p2.get());
@@ -529,9 +535,9 @@ BOOST_AUTO_TEST_CASE(copy_ptr_swap_test)
 BOOST_AUTO_TEST_CASE(copy_ptr_equality_test)
 {
     typedef int Type;
-    ural::copy_ptr<Type> const p0{};
-    ural::copy_ptr<Type> const pn(nullptr);
-    ural::copy_ptr<Type> const p(ural::make_unique<Type>(42));
+    ural_ex::copy_ptr<Type> const p0{};
+    ural_ex::copy_ptr<Type> const pn(nullptr);
+    ural_ex::copy_ptr<Type> const p(ural::make_unique<Type>(42));
 
     BOOST_CHECK(p0 == p0);
     BOOST_CHECK(pn == pn);
@@ -561,8 +567,8 @@ BOOST_AUTO_TEST_CASE(copy_ptr_equality_test)
     BOOST_CHECK(p == ptr);
     BOOST_CHECK(ptr == p);
 
-    ural::copy_ptr<long> const p0_long{};
-    ural::copy_ptr<long> const p1_long{ural::make_unique<long>(42)};
+    ural_ex::copy_ptr<long> const p0_long{};
+    ural_ex::copy_ptr<long> const p1_long{ural::make_unique<long>(42)};
 
     BOOST_CHECK(p0_long == p0);
     BOOST_CHECK(p1_long != p);
@@ -571,7 +577,7 @@ BOOST_AUTO_TEST_CASE(copy_ptr_equality_test)
 BOOST_AUTO_TEST_CASE(make_copy_ptr_test)
 {
     auto const value = 42;
-    ural::copy_ptr<Derived> p = ural::make_copy_ptr<Derived>(value);
+    ural_ex::copy_ptr<Derived> p = ural_ex::make_copy_ptr<Derived>(value);
     BOOST_CHECK(!!p);
     BOOST_CHECK_EQUAL(value, p->value);
 }

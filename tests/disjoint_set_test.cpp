@@ -21,11 +21,16 @@
 #include <ural/disjoint_set.hpp>
 #include <ural/numeric/numbers_sequence.hpp>
 
+namespace
+{
+    namespace ural_ex = ::ural::experimental;
+}
+
 BOOST_AUTO_TEST_CASE(disjoint_set_singletons)
 {
     auto const n = 17U;
 
-    ural::disjoint_set<size_t> ds(n);
+    ural_ex::disjoint_set<size_t> ds(n);
 
     BOOST_CHECK_EQUAL(ds.size(), n);
 
@@ -41,7 +46,7 @@ BOOST_AUTO_TEST_CASE(disjoint_set_odd_and_even)
 {
     auto const n = 31;
 
-    ural::disjoint_set<size_t> ds(n);
+    ural_ex::disjoint_set<size_t> ds(n);
 
     for(auto i : ural::numbers(2, ds.size()))
     {
@@ -62,7 +67,7 @@ BOOST_AUTO_TEST_CASE(disjoint_set_odd_and_even)
 
 namespace
 {
-    size_t height(ural::disjoint_set<size_t> const & ds, size_t index)
+    size_t height(ural_ex::disjoint_set<size_t> const & ds, size_t index)
     {
         size_t h = 0;
 
@@ -89,7 +94,7 @@ BOOST_AUTO_TEST_CASE(disjoint_set_left_to_right)
 {
     auto const n = 16;
 
-    ural::disjoint_set<size_t> ds(n);
+    ural_ex::disjoint_set<size_t> ds(n);
 
     for(auto i : ural::indices_of(ds))
     {
@@ -108,7 +113,7 @@ BOOST_AUTO_TEST_CASE(disjoint_set_right_to_left)
 {
     auto const n = 16;
 
-    ural::disjoint_set<size_t> ds(n);
+    ural_ex::disjoint_set<size_t> ds(n);
 
     for(size_t i = ds.size(); i > 0; -- i)
     {

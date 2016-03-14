@@ -27,6 +27,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** Адаптор последовательности, пропускающий элементы, удовлетворяющие
     предикату.
     Если базовая последовательность является однопроходной, то
@@ -145,9 +147,9 @@ namespace ural
     */
     template <class Input, class Predicate>
     auto operator|(Input && in, remove_if_sequence_maker<Predicate> maker)
-    -> decltype(::ural::make_remove_if_sequence(std::forward<Input>(in), std::move(maker.predicate)))
+    -> decltype(::ural::experimental::make_remove_if_sequence(std::forward<Input>(in), std::move(maker.predicate)))
     {
-        return ::ural::make_remove_if_sequence(std::forward<Input>(in), std::move(maker.predicate));
+        return ::ural::experimental::make_remove_if_sequence(std::forward<Input>(in), std::move(maker.predicate));
     }
 
     template <class Predicate>
@@ -308,11 +310,11 @@ namespace ural
     */
     template <class Input, class T, class BinPred>
     auto operator|(Input && in, remove_sequence_maker<T, BinPred> maker)
-    -> decltype(::ural::make_remove_sequence(std::forward<Input>(in), std::move(maker.value), std::move(maker.predicate)))
+    -> decltype(::ural::experimental::make_remove_sequence(std::forward<Input>(in), std::move(maker.value), std::move(maker.predicate)))
     {
-        return ::ural::make_remove_sequence(std::forward<Input>(in),
-                                            std::move(maker.value),
-                                            std::move(maker.predicate));
+        return ::ural::experimental::make_remove_sequence(std::forward<Input>(in),
+                                                          std::move(maker.value),
+                                                          std::move(maker.predicate));
     }
 
     /** @brief Создание вспомогательного объекта для конвейерного создания
@@ -345,6 +347,8 @@ namespace ural
     {
         return removed(std::move(value), ural::equal_to<>{});
     }
+}
+// namespace experimental
 }
 // namespace ural
 

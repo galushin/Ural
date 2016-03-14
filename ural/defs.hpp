@@ -28,6 +28,24 @@
 
 namespace ural
 {
+inline namespace v0
+{
+    /** Пустой базовый класс. Используется, когда формально требуется указать
+    базовый класс, но никакой базовый класс на самом деле не нужен.
+    @brief Пустой базовый класс.
+    */
+    struct empty_type{};
+
+    /** @brief Тип-тэг, обозначающий, что нужно использовать значение по
+    умолчанию
+    */
+    struct use_default{};
+
+    /** @brief Тип-тэг, обозначающий, что тип параметров должен быть выведен
+    по фактическим аргументам
+    */
+    struct auto_tag{};
+
     template <class T>
     struct odr_const_holder
     {
@@ -41,14 +59,12 @@ namespace ural
     которые не нарушают "Правило одного определения" (ODR).
     */
     template <class T>
-    constexpr auto const & odr_const = T{};
+    constexpr T const odr_const = T{};
+}
+// namespace v0
 
-    /** Пустой базовый класс. Используется, когда формально требуется указать
-    базовый класс, но никакой базовый класс на самом деле не нужен.
-    @brief Пустой базовый класс.
-    */
-    struct empty_type{};
-
+namespace experimental
+{
     template <class... Types>
     struct typelist
     {};
@@ -68,16 +84,6 @@ namespace ural
         /// @brief Остальные элементы списка типов
         typedef typelist<Others...> tail;
     };
-
-    /** @brief Тип-тэг, обозначающий, что нужно использовать значение по
-    умолчанию
-    */
-    struct use_default{};
-
-    /** @brief Тип-тэг, обозначающий, что тип параметров должен быть выведен
-    по фактическим аргументам
-    */
-    struct auto_tag{};
 
     /** @brief Тип-тэг, обозначающий, что используется конструкция, в которой
     предусловие должно быть выполнено пользователем.
@@ -102,7 +108,7 @@ namespace ural
         использоваться как аргументы конструктора для создания некоторого
         объекта.
         */
-        constexpr auto const & inplace = odr_const_holder<in_place_t>::value;
+        constexpr auto const & in_place = odr_const<in_place_t>;
     }
 
     /** Если @c T совпадает с @c use_default, то результат @c --- Default,
@@ -113,7 +119,7 @@ namespace ural
     @tparam Default тип, используемый по-умолчанию
     */
     template <class T, class Default>
-    struct default_helper
+    struct defaulted_type
      : std::conditional<std::is_same<T, use_default>::value, Default, T>
     {};
 
@@ -123,7 +129,7 @@ namespace ural
     @c use_default
     */
     template <class T, class D>
-    using DefaultedType = typename default_helper<T, D>::type;
+    using DefaultedType = typename defaulted_type<T, D>::type;
 
     /** @brief Вспомогательный класс, которому можно присвоить значение
     заданного типа
@@ -136,6 +142,8 @@ namespace ural
         void operator=(T const &)
         {}
     };
+}
+// namespace experimental
 }
 // namespace ural
 

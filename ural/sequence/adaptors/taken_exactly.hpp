@@ -28,6 +28,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     template <class Sequence, class Distance>
     class taken_exactly_sequence;
 
@@ -74,7 +76,7 @@ namespace ural
         в конвейерном стиле.
         */
         constexpr auto const & taken_exactly
-            = odr_const<pipeable_maker<make_taken_exactly_sequence_fn>>;
+            = odr_const<experimental::pipeable_maker<make_taken_exactly_sequence_fn>>;
     }
 
     /** @brief Адаптер последовательности, извлекающий из базовой
@@ -153,7 +155,7 @@ namespace ural
         auto traversed_front() const
         {
             return this->base().traversed_front()
-                   | ural::taken_exactly(this->traversed_front_size_);
+                   | ::ural::experimental::taken_exactly(this->traversed_front_size_);
         }
 
         /** @brief Отбрасывание пройденной части последовательности
@@ -294,6 +296,8 @@ namespace ural
     {
         return x.base() == y.base() && x.size() == y.size();
     }
+}
+// namespace experimental
 }
 // namespace ural
 

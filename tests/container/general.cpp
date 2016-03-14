@@ -30,13 +30,15 @@
 
 namespace
 {
-    typedef ural::tracing_allocator<char> Char_alloc;
-    typedef ural::tracing_allocator<int> Int_alloc;
+    namespace ural_ex = ::ural::experimental;
 
-    typedef boost::mpl::list<ural::vector<int, Int_alloc>>
+    typedef ural_ex::tracing_allocator<char> Char_alloc;
+    typedef ural_ex::tracing_allocator<int> Int_alloc;
+
+    typedef boost::mpl::list<ural::experimental::vector<int, Int_alloc>>
         Sequence_containers;
 
-    typedef boost::mpl::list<ural::flat_set<int, ural::use_default, Int_alloc>>
+    typedef boost::mpl::list<ural::experimental::flat_set<int, ural::use_default, Int_alloc>>
         Assosiative_containers_containers;
 
     typedef boost::mpl::copy<Assosiative_containers_containers,
@@ -296,7 +298,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_non_member_swap_test,
     auto const v1_allocator_old = v1.get_allocator();
     auto const v2_allocator_old = v2.get_allocator();
 
-    using ural::swap;
+    using ural::experimental::swap;
     using std::swap;
     swap(v1, v2);
 
@@ -554,8 +556,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_assign_n_value_worse_then_iters_regressi
 // Контейнеры с резервированием памяти
 namespace
 {
-    typedef boost::mpl::list<ural::vector<int, Int_alloc>,
-                             ural::flat_set<int, ural::use_default, Int_alloc>>
+    typedef boost::mpl::list<ural::experimental::vector<int, Int_alloc>,
+                             ural::experimental::flat_set<int, ural::use_default, Int_alloc>>
         Reserving_containers;
 }
 
@@ -595,8 +597,8 @@ BOOST_AUTO_TEST_CASE(vector_allocator_constructor_regression)
 {
     // Регрессия: при вызове конструктора без параметров память не распределяется
 
-    typedef ural::tracing_allocator<int> Alloc;
-    typedef ural::vector<int, Alloc> Container;
+    typedef ural_ex::tracing_allocator<int> Alloc;
+    typedef ural_ex::vector<int, Alloc> Container;
 
     // временный объект
     Alloc::reset_traced_info();

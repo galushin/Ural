@@ -17,6 +17,7 @@
 #include <ural/algorithm.hpp>
 #include <ural/archetypes.hpp>
 #include <ural/container/vector.hpp>
+#include <ural/container/flat_set.hpp>
 #include <ural/math.hpp>
 #include <ural/sequence/all.hpp>
 #include <ural/type_traits.hpp>
@@ -34,29 +35,34 @@
 #include <boost/test/unit_test.hpp>
 #include "defs.hpp"
 
+namespace
+{
+    namespace ural_ex = ::ural::experimental;
+}
+
 BOOST_AUTO_TEST_CASE(archetype_check)
 {
     struct Type {};
-    ural::archetypes::callable<bool(Type)> pred;
-    ural::archetypes::callable<bool(Type, Type)> bin_pred;
-    ural::archetypes::input_sequence<Type> in1;
+    ural_ex::archetypes::callable<bool(Type)> pred;
+    ural_ex::archetypes::callable<bool(Type, Type)> bin_pred;
+    ural_ex::archetypes::input_sequence<Type> in1;
 
-    ural::value_consumer<bool>() = ural::all_of(in1, pred);
-    ural::value_consumer<bool>() = ural::none_of(in1, pred);
-    ural::value_consumer<bool>() = ural::any_of(in1, pred);
+    ural_ex::value_consumer<bool>() = ural::all_of(in1, pred);
+    ural_ex::value_consumer<bool>() = ural::none_of(in1, pred);
+    ural_ex::value_consumer<bool>() = ural::any_of(in1, pred);
 
-    ural::archetypes::callable<void(Type &)> action;
+    ural_ex::archetypes::callable<void(Type &)> action;
 
-    ural::value_consumer<ural::tuple<decltype(in1), decltype(action)>>()
+    ural_ex::value_consumer<ural::tuple<decltype(in1), decltype(action)>>()
         = ural::for_each(in1, action);
 
-    ural::value_consumer<decltype(in1)>() = ural::find(in1, Type{});
-    ural::value_consumer<decltype(in1)>() = ural::find(in1, Type{}, bin_pred);
-    ural::value_consumer<decltype(in1)>() = ural::find_if(in1, pred);
-    ural::value_consumer<decltype(in1)>() = ural::find_if_not(in1, pred);
+    ural_ex::value_consumer<decltype(in1)>() = ural::find(in1, Type{});
+    ural_ex::value_consumer<decltype(in1)>() = ural::find(in1, Type{}, bin_pred);
+    ural_ex::value_consumer<decltype(in1)>() = ural::find_if(in1, pred);
+    ural_ex::value_consumer<decltype(in1)>() = ural::find_if_not(in1, pred);
 
-    ural::value_consumer<size_t>() = ural::count(in1, Type{});
-    ural::value_consumer<size_t>() = ural::count_if(in1, pred);
+    ural_ex::value_consumer<size_t>() = ural::count(in1, Type{});
+    ural_ex::value_consumer<size_t>() = ural::count_if(in1, pred);
 
     BOOST_CHECK(true);
 }
@@ -117,15 +123,15 @@ BOOST_AUTO_TEST_CASE(map_keys_sequence_readable)
 
     using Pair = std::pair<Key const, Mapped>;
 
-    ural::generator_sequence<std::function<Pair()>> in{};
+    ural_ex::generator_sequence<std::function<Pair()>> in{};
     std::forward_list<Pair> const fwd{};
     std::map<Key, Mapped> const bidir{};
     std::vector<Pair> const ra{};
 
-    auto in_key = std::move(in) | ural::map_keys;
-    auto fwd_key = fwd | ural::map_keys;
-    auto bidir_key = bidir | ural::map_keys;
-    auto ra_key = ra | ural::map_keys;
+    auto in_key = std::move(in) | ural_ex::map_keys;
+    auto fwd_key = fwd | ural_ex::map_keys;
+    auto bidir_key = bidir | ural_ex::map_keys;
+    auto ra_key = ra | ural_ex::map_keys;
 
     using namespace ural::concepts;
 
@@ -151,9 +157,9 @@ BOOST_AUTO_TEST_CASE(removed_if_concept_checks)
 
     auto const pred = ural::is_even;
 
-    auto s_in = c_in | removed_if(pred);
-    auto s_fwd = c_fwd | removed_if(pred);
-    auto s_bidir = c_bidir | removed_if(pred);
+    auto s_in = c_in | ural_ex::removed_if(pred);
+    auto s_fwd = c_fwd | ural_ex::removed_if(pred);
+    auto s_bidir = c_bidir | ural_ex::removed_if(pred);
 
     using namespace ural::concepts;
 
@@ -176,8 +182,8 @@ BOOST_AUTO_TEST_CASE(reversed_concept_checks)
     std::list<Type> const c_bidir;
     std::vector<Type> const c_ra;
 
-    auto s_bidir = c_bidir | ural::reversed;
-    auto s_ra = c_ra | ural::reversed;
+    auto s_bidir = c_bidir | ural_ex::reversed;
+    auto s_ra = c_ra | ural_ex::reversed;
 
     using namespace ural::concepts;
 
@@ -197,8 +203,8 @@ BOOST_AUTO_TEST_CASE(reversed_writable_concept_checks)
     std::list<Type> c_bidir;
     std::vector<Type> c_ra;
 
-    auto s_bidir = c_bidir | ural::reversed;
-    auto s_ra = c_ra | ural::reversed;
+    auto s_bidir = c_bidir | ural_ex::reversed;
+    auto s_ra = c_ra | ural_ex::reversed;
 
     using namespace ural::concepts;
 
@@ -225,10 +231,10 @@ BOOST_AUTO_TEST_CASE(transformed_concept_checks)
     auto f = &std::string::size;
 
     // выходной transformed быть не может - не проверяем
-    auto s_in = c_in | ural::transformed(f);
-    auto s_fwd = c_fwd | ural::transformed(f);
-    auto s_bidir = c_bidir | ural::transformed(f);
-    auto s_ra = c_ra | ural::transformed(f);
+    auto s_in = c_in | ural_ex::transformed(f);
+    auto s_fwd = c_fwd | ural_ex::transformed(f);
+    auto s_bidir = c_bidir | ural_ex::transformed(f);
+    auto s_ra = c_ra | ural_ex::transformed(f);
 
     using namespace ural::concepts;
 
@@ -258,9 +264,9 @@ BOOST_AUTO_TEST_CASE(transformed_to_lvalue_concept_checks)
     auto f = ural::make_callable(&Type::first);
 
     // входной и выходной transformed, возвращающий lvalue быть не может - не проверяем
-    auto s_fwd = c_fwd | ural::transformed(f);
-    auto s_bidir = c_bidir | ural::transformed(f);
-    auto s_ra = c_ra | ural::transformed(f);
+    auto s_fwd = c_fwd | ural_ex::transformed(f);
+    auto s_bidir = c_bidir | ural_ex::transformed(f);
+    auto s_ra = c_ra | ural_ex::transformed(f);
 
     using namespace ural::concepts;
 
@@ -288,10 +294,10 @@ BOOST_AUTO_TEST_CASE(uniqued_concept_checks)
     std::list<Type> const c_bidir;
     std::vector<Type> const c_ra;
 
-    auto s_in = c_in | ural::uniqued;
-    auto s_fwd = c_fwd | ural::uniqued;
-    auto s_bidir = c_bidir | ural::uniqued;
-    auto s_ra = c_ra | ural::uniqued;
+    auto s_in = c_in | ural_ex::uniqued;
+    auto s_fwd = c_fwd | ural_ex::uniqued;
+    auto s_bidir = c_bidir | ural_ex::uniqued;
+    auto s_ra = c_ra | ural_ex::uniqued;
 
     using namespace ural::concepts;
 
@@ -318,9 +324,9 @@ BOOST_AUTO_TEST_CASE(writable_uniqued_concept_checks)
     std::list<Type> c_bidir;
     std::vector<Type> c_ra;
 
-    auto s_fwd = c_fwd | ural::uniqued;
-    auto s_bidir = c_bidir | ural::uniqued;
-    auto s_ra = c_ra | ural::uniqued;
+    auto s_fwd = c_fwd | ural_ex::uniqued;
+    auto s_bidir = c_bidir | ural_ex::uniqued;
+    auto s_ra = c_ra | ural_ex::uniqued;
 
     using namespace ural::concepts;
 
@@ -354,7 +360,8 @@ namespace
                                         std::unordered_multiset<int>,
                                         std::unordered_multimap<int, std::string>,
                                         std::string,
-                                        ural::vector<std::string>>;
+                                        ural::experimental::vector<std::string>,
+                                        ural::experimental::flat_set<std::string>>;
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(is_container_check_true, Container, Containers)

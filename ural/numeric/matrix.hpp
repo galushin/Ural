@@ -31,6 +31,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Класс матрицы
     @tparam T тип элементов матрицы
     @tparam L порядок хране хранения (по строкам или по столбцам)
@@ -120,7 +122,8 @@ namespace ural
 
             typedef std::initializer_list<T> Row;
 
-            auto r = std::max_element(first, last, ural::compare_by(&Row::size));
+            auto r = std::max_element(first, last,
+                                      ::ural::experimental::compare_by(&Row::size));
 
             assert(r != last);
 
@@ -337,6 +340,8 @@ namespace ural
 
         return true;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

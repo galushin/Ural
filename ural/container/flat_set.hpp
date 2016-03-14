@@ -27,6 +27,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** Шаблон класса, реализующий упорядоченное множество. Данный контейнер
     предоставляет быстрые (логарифмические) операции поиска. Вставка и удаление
     элементов могут занимать линейное время. Данный алгоритм хранит элементы
@@ -50,7 +52,7 @@ namespace ural
               class Policy = use_default>
     class flat_set
     {
-        typedef ural::vector<Key, Allocator, Policy> Data;
+        typedef ural::experimental::vector<Key, Allocator, Policy> Data;
 
     public:
         friend bool operator==(flat_set const & x, flat_set const & y)
@@ -71,8 +73,7 @@ namespace ural
         typedef Key value_type;
 
         /// @brief Функция сравнения ключей
-        typedef typename default_helper<Compare, std::less<value_type>>::type
-            key_compare;
+        using key_compare = experimental::DefaultedType<Compare, std::less<value_type>>;
 
         /// @brief Функция сравнения элементов
         typedef key_compare value_compare;
@@ -511,6 +512,8 @@ namespace ural
     private:
         tuple<value_compare, Data> members_;
     };
+}
+// namespace experimental
 }
 // namespace ural
 

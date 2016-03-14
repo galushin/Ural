@@ -25,6 +25,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @ingroup Sequences
     @brief Адаптор последовательности, добавляющий к ней объект заданного типа
     @tparam Sequence тип последовательности
@@ -238,6 +240,8 @@ namespace ural
 
         tuple<Sequence, T> members_;
     };
+}
+// namespace experimental
 }
 // namespace ural
 

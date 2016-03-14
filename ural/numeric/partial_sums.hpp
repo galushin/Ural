@@ -28,6 +28,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Последовательность частных сумм
     */
     template <class Input, class BinaryOperation>
@@ -89,12 +91,12 @@ namespace ural
         */
         Input const & base() const &
         {
-            return ::ural::get(this->members_, ural::_1);
+            return ::ural::experimental::get(this->members_, ural::_1);
         }
 
         Input && base() &&
         {
-            return ::ural::get(std::move(this->members_), ural::_1);
+            return ::ural::experimental::get(std::move(this->members_), ural::_1);
         }
         //@}
 
@@ -118,7 +120,7 @@ namespace ural
         reference front() const
         {
             // @note Проверка, что последовательность не пуста - через стратегию
-            return *::ural::get(members_, ural::_2);
+            return *::ural::experimental::get(members_, ural::_2);
         }
 
         /** @brief Переход к следующему элементу
@@ -158,16 +160,16 @@ namespace ural
         void shrink_front();
 
     private:
-        typedef ural::optional<value_type> Optional_value;
+        using Optional_value = ural::experimental::optional<value_type>;
 
         Optional_value & current_value_ref()
         {
-            return ::ural::get(members_, ural::_2);
+            return ::ural::experimental::get(members_, ural::_2);
         }
 
         Input & input_ref()
         {
-            return ::ural::get(members_, ural::_1);
+            return ::ural::experimental::get(members_, ural::_1);
         }
 
     private:
@@ -199,6 +201,8 @@ namespace ural
     {
         return partial_sums(std::forward<Input>(s), ural::plus<>{});
     }
+}
+// namespace experimental
 }
 // namespace ural
 

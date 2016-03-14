@@ -25,6 +25,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Тип функционального объекта чтения из потока ввода с помощью
     функции-члена get
     */
@@ -81,11 +83,8 @@ namespace ural
     class istream_sequence
      : public sequence_base<istream_sequence<IStream, T, Reader>>
     {
-        typedef typename default_helper<IStream, std::istream &>::type
-            Base_type;
-
-        typedef typename default_helper<Reader, istream_extractor_reader>::type
-            Reader_type;
+        using Base_type = experimental::DefaultedType<IStream, std::istream &>;
+        using Reader_type = experimental::DefaultedType<Reader, istream_extractor_reader>;
 
         static_assert(std::is_empty<Reader_type>::value, "or we must store it!");
 
@@ -95,7 +94,7 @@ namespace ural
         typedef typename std::remove_reference<Base_type>::type istream_type;
 
         /// @brief Тип значения
-        typedef typename default_helper<T, char>::type value_type;
+        using value_type = experimental::DefaultedType<T, char>;
 
         /// @brief Тип ссылки
         typedef value_type const & reference;
@@ -229,7 +228,8 @@ namespace ural
     class ostream_sequence
      : public sequence_base<ostream_sequence<OStream, T, Delimiter>>
     {
-        typedef typename default_helper<OStream, std::ostream>::type Base_type;
+        using Base_type = experimental::DefaultedType<OStream, std::ostream>;
+
     public:
         // Типы
         /// @brief Категория курсора
@@ -389,6 +389,8 @@ namespace ural
         typedef ostream_sequence<OStream, use_default, delimiter> Product;
         return Product(std::forward<OStream>(os), std::move(delim));
     }
+}
+// namespace experimental
 }
 // namespace ural
 

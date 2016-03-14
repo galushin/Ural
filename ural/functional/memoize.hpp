@@ -26,6 +26,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Адаптор функционального объекта, кэширующий значения
     @tparam Signature сигнатура вызова
     @tparam F тип базового функционального объекта
@@ -71,8 +73,7 @@ namespace ural
         typedef decltype(ural::make_callable(std::declval<F>())) target_type;
 
         /// @brief Стратегия работы с многопоточьностью
-        typedef typename default_helper<Threading, single_thread_policy>::type
-            threading_policy;
+        using threading_policy = experimental::DefaultedType<Threading, single_thread_policy>;
 
         // Конструкторы
         /** @brief Конструктор
@@ -180,6 +181,8 @@ namespace ural
     {
         return memoize_function<Signature, F>{std::move(f)};
     }
+}
+// namespace experimental
 }
 // namespace ural
 

@@ -29,6 +29,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Последовательность элементов базовой последовательности,
     удовлетворяющих заданному предикату.
     @tparam Sequence входная последовательность
@@ -51,8 +53,7 @@ namespace ural
         @post <tt> this->predicate() == pred </tt>
         */
         explicit filter_sequence(Sequence seq, Predicate pred)
-         : Base{ural::make_remove_if_sequence(std::move(seq),
-                                              ural::not_fn(std::move(pred)))}
+         : Base{ural::experimental::make_remove_if_sequence(std::move(seq), ural::not_fn(std::move(pred)))}
         {}
 
         // Однопроходная последовательность
@@ -125,8 +126,10 @@ namespace ural
         в конвейерном стиле
         */
         constexpr auto const & filtered
-            = odr_const<pipeable_maker<make_filter_sequence_fn>>;
+            = odr_const<experimental::pipeable_maker<make_filter_sequence_fn>>;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

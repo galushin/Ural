@@ -26,6 +26,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Последовательность кортежей значений базовых последовательностей
     @tparam Inputs базовые последовательности
     */
@@ -194,7 +196,8 @@ namespace ural
         */
         reference operator[](distance_type n) const
         {
-            auto f = [&](auto const & x) -> decltype(auto) { return ural::subscript(x, n); };
+            auto f = [&](auto const & x) -> decltype(auto)
+                { return ::ural::experimental::subscript(x, n); };
 
             return this->transform_bases<reference>(std::move(f));
         }
@@ -239,7 +242,7 @@ namespace ural
             using Indices = index_sequence_for<Inputs...>;
 
             return this->transform_bases_impl<R>(std::move(f),
-                                                 ural::constructor<R>{},
+                                                 ::ural::experimental::constructor<R>{},
                                                  Indices{});
         }
 
@@ -335,6 +338,8 @@ namespace ural
         constexpr auto const & combine = make_zip_sequence;
         //@}
     }
+}
+// namespace experimental
 }
 // namespace ural
 

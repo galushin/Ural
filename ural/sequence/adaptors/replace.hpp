@@ -27,6 +27,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Адаптор последовательности, заменяющий элементы, удовлетворяющие
     заданному условию на новое значение.
     @tparam Sequence тип последовательности
@@ -36,10 +38,10 @@ namespace ural
     template <class Sequence, class Predicate, class T>
     class replace_if_sequence
      : public sequence_adaptor<replace_if_sequence<Sequence, Predicate, T>,
-                               transform_sequence<replace_if_function<Predicate, T>, Sequence>>
+                               transform_sequence<experimental::replace_if_function<Predicate, T>, Sequence>>
     {
         using Base = sequence_adaptor<replace_if_sequence<Sequence, Predicate, T>,
-                                      transform_sequence<replace_if_function<Predicate, T>, Sequence>>;
+                                      transform_sequence<experimental::replace_if_function<Predicate, T>, Sequence>>;
     public:
         // Конструирование
         /** @brief Конструктор
@@ -87,7 +89,7 @@ namespace ural
     private:
         friend Base;
 
-        using Transformator = replace_if_function<Predicate, T>;
+        using Transformator = experimental::replace_if_function<Predicate, T>;
 
         template <class OtherSequence>
         replace_if_sequence<OtherSequence, Predicate, T>
@@ -98,12 +100,12 @@ namespace ural
                           this->new_value());
         }
 
-        static transform_sequence<replace_if_function<Predicate, T>, Sequence>
+        static transform_sequence<experimental::replace_if_function<Predicate, T>, Sequence>
         make_base(Sequence seq, Predicate pred, T new_value)
         {
-            auto f = ural::replace_if_function<Predicate, T>(std::move(pred),
-                                                             std::move(new_value));
-            return std::move(seq) | ural::transformed(std::move(f));
+            using Tr = experimental::replace_if_function<Predicate, T>;
+            auto f = Tr(std::move(pred), std::move(new_value));
+            return std::move(seq) | ::ural::experimental::transformed(std::move(f));
         }
     };
 
@@ -119,10 +121,10 @@ namespace ural
     template <class Sequence, class T1, class T2 = T1, class BinaryPredicate = equal_to<>>
     class replace_sequence
      : public sequence_adaptor<replace_sequence<Sequence, T1, T2, BinaryPredicate>,
-                               transform_sequence<replace_function<T1, T2, BinaryPredicate>, Sequence>>
+                               transform_sequence<experimental::replace_function<T1, T2, BinaryPredicate>, Sequence>>
     {
         using Base = sequence_adaptor<replace_sequence<Sequence, T1, T2, BinaryPredicate>,
-                               transform_sequence<replace_function<T1, T2, BinaryPredicate>, Sequence>>;
+                               transform_sequence<experimental::replace_function<T1, T2, BinaryPredicate>, Sequence>>;
     public:
         // Конструирование
         /** @brief Конструктор
@@ -191,13 +193,13 @@ namespace ural
         }
 
         static
-        transform_sequence<replace_function<T1, T2, BinaryPredicate>, Sequence>
+        transform_sequence<experimental::replace_function<T1, T2, BinaryPredicate>, Sequence>
         make_base(Sequence seq, T1 old_value, T2 new_value, BinaryPredicate pred)
         {
-            using Function = replace_function<T1, T2, BinaryPredicate>;
+            using Function = experimental::replace_function<T1, T2, BinaryPredicate>;
             auto f = Function(std::move(old_value), std::move(new_value),
                               std::move(pred));
-            return std::move(seq) | ural::transformed(std::move(f));
+            return std::move(seq) | ::ural::experimental::transformed(std::move(f));
         }
     };
 
@@ -265,7 +267,7 @@ namespace ural
         в конвейерном стиле.
         */
         constexpr auto const & replaced
-            = odr_const<pipeable_maker<make_replace_sequence_fn>>;
+            = odr_const<experimental::pipeable_maker<make_replace_sequence_fn>>;
 
         /// @brief Функциональный объект для создания @c replace_if_sequence
         constexpr auto const & make_replace_if_sequence
@@ -275,8 +277,10 @@ namespace ural
         в конвейерном стиле.
         */
         constexpr auto const & replaced_if
-            = odr_const<pipeable_maker<make_replace_if_sequence_fn>>;
+            = odr_const<experimental::pipeable_maker<make_replace_if_sequence_fn>>;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

@@ -28,6 +28,8 @@
 #include <boost/mpl/list.hpp>
 #include <boost/test/unit_test.hpp>
 
+namespace ural_ex = ural::experimental;
+
 namespace
 {
     typedef boost::mpl::list<std::forward_list<int>,
@@ -349,8 +351,8 @@ BOOST_AUTO_TEST_CASE(is_permutation_test_different_traversed_front)
     auto const s1 = ural::numbers(1, 9);
     auto const s2 = ural::numbers(0, 9);
 
-    auto const seq1 = ural::make_cartesian_product_sequence(s1, s2);
-    auto const seq2 = ural::make_cartesian_product_sequence(s2, s2);
+    auto const seq1 = ural_ex::make_cartesian_product_sequence(s1, s2);
+    auto const seq2 = ural_ex::make_cartesian_product_sequence(s2, s2);
 
     static_assert(!std::is_same<decltype(seq1), decltype(seq1.traversed_front())>::value, "");
 
@@ -431,7 +433,7 @@ BOOST_AUTO_TEST_CASE(fused_for_each_test)
         z.back().push_back(p[ural::_2]);
     }
 
-    auto result = ural::fused_for_each(xs, &std::string::push_back);
+    auto result = ural_ex::fused_for_each(xs, &std::string::push_back);
 
     BOOST_CHECK(result[ural::_1].original() == ural::sequence(xs));
     BOOST_CHECK(result[ural::_1].traversed_front() == ural::sequence(xs));

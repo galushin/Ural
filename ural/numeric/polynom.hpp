@@ -32,6 +32,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Функциональный объект накопитель для вычисления значений
     многочленов по схеме Горнера
     @tparam R тип значения многочлена
@@ -150,7 +152,7 @@ namespace ural
         {
             auto const & r = static_cast<polynomial<A, X, Alloc> const &>(*this);
 
-            return polynom(r.coefficients() | ural::reversed, x);
+            return polynom(r.coefficients() | ::ural::experimental::reversed, x);
         }
 
     protected:
@@ -174,7 +176,7 @@ namespace ural
 
             auto const & r = static_cast<polynomial<A, void, Alloc> const &>(*this);
 
-            return polynom(r.coefficients() | ural::reversed, x);
+            return polynom(r.coefficients() | ::ural::experimental::reversed, x);
         }
 
     protected:
@@ -204,7 +206,7 @@ namespace ural
         typedef A coefficient_type;
 
         /// @brief Тип контейнера коэффициентов
-        typedef ural::vector<coefficient_type, Alloc> coefficients_container;
+        using coefficients_container = ural::experimental::vector<coefficient_type, Alloc>;
 
         /// @brief Тип для представления размера
         typedef typename coefficients_container::size_type size_type;
@@ -280,9 +282,9 @@ namespace ural
 
             auto const n = ural::min(old_size, p.cs_.size());
 
-            ural::for_each(cs_ | ural::taken_exactly(n),
-                           p.cs_ | ural::assumed_infinite,
-                           ural::plus_assign<>{});
+            ural::for_each(cs_ | ::ural::experimental::taken_exactly(n),
+                           p.cs_ | ::ural::experimental::assumed_infinite,
+                           ::ural::experimental::plus_assign<>{});
 
             this->drop_leading_zeros();
 
@@ -312,9 +314,9 @@ namespace ural
 
             auto const n = ural::min(old_size, p.cs_.size());
 
-            ural::for_each(cs_ | ural::taken_exactly(n),
-                           p.cs_ | ural::assumed_infinite,
-                           ural::minus_assign<>{});
+            ural::for_each(cs_ | ural::experimental::taken_exactly(n),
+                           p.cs_ | ::ural::experimental::assumed_infinite,
+                           ::ural::experimental::minus_assign<>{});
 
             this->drop_leading_zeros();
 
@@ -418,6 +420,8 @@ namespace ural
     private:
         coefficients_container cs_;
     };
+}
+// namespace experimental
 }
 // namespace ural
 

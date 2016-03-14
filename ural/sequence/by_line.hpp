@@ -28,6 +28,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /// @brief Перечисление "Сохранять ли разделитель в конце строки)
     enum class keep_delimiter
     {
@@ -185,6 +187,8 @@ namespace ural
         return by_line_sequence<IStream>(std::forward<IStream>(is),
                                          std::move(delimiter), kd);
     }
+}
+// namespace experimental
 }
 // namespace ural
 

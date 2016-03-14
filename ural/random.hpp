@@ -36,6 +36,8 @@
 
 namespace ural
 {
+inline namespace v0
+{
     /** @brief Класс, представляющий дискретное распределение
     @tparam IntType тип значений
     @todo Пересмотр и оптимизация средств ввода/вывода
@@ -446,7 +448,8 @@ namespace ural
         std::vector<double> ps;
         ps.reserve(n);
 
-        ural::copy(ural::make_istream_sequence<double>(is) | ural::taken(n),
+        ural::copy(::ural::experimental::make_istream_sequence<double>(is)
+                   | ::ural::experimental::taken(n),
                    ps | ural::back_inserter);
 
         if(ps.size() == static_cast<size_t>(n))
@@ -455,7 +458,11 @@ namespace ural
         }
         return is;
     }
+}
+// inline namespace v0
 
+namespace experimental
+{
     // Векторное распределение
     /** @brief Адаптор распределения, генерирующий вектор независимых одинаково
     распределённых случайных величин
@@ -474,8 +481,7 @@ namespace ural
 
     public:
         /// @brief Тип возвращаемого значения
-        typedef typename default_helper<Vector, std::vector<typename Distribution::result_type>>::type
-            result_type;
+        using result_type = experimental::DefaultedType<Vector, std::vector<typename Distribution::result_type>>;
 
         /// @brief Тип расстояния
         typedef typename result_type::size_type size_type;
@@ -696,15 +702,13 @@ namespace ural
     public:
         // Типы
         /// @brief Тип возвращаемого значения
-        typedef typename default_helper<Vector, boost::numeric::ublas::vector<double>>::type
-            result_type;
+        using result_type = experimental::DefaultedType<Vector, boost::numeric::ublas::vector<double>>;
 
         /// @brief Тип элементов
         typedef ValueType<result_type> element_type;
 
         /// @brief Тип ковариационной матрицы
-        typedef typename default_helper<Matrix, boost::numeric::ublas::matrix<element_type>>::type
-            matrix_type;
+        using matrix_type = experimental::DefaultedType<Matrix, boost::numeric::ublas::matrix<element_type>>;
 
         /// @brief Тип для представления размера
         typedef typename result_type::size_type size_type;
@@ -764,7 +768,7 @@ namespace ural
         */
         multivariate_normal_distribution(result_type mu, matrix_type const & C)
          : mu_(std::move(mu))
-         , L_(ural::cholesky_decomposition(C))
+         , L_(::ural::experimental::cholesky_decomposition(C))
          , base_{mu.size()}
         {
             assert(mu.size() == C.size2());
@@ -848,7 +852,7 @@ namespace ural
 
     private:
         result_type mu_;
-        typename make_triangular_matrix<matrix_type, boost::numeric::ublas::lower>::type
+        typename ural::experimental::make_triangular_matrix<matrix_type, boost::numeric::ublas::lower>::type
             L_;
 
         iid_adaptor<std::normal_distribution<element_type>, result_type> base_;
@@ -873,6 +877,8 @@ namespace ural
     std::basic_istream<Char, Traits> &
     operator>>(std::basic_istream<Char, Traits> & is,
                multivariate_normal_distribution<Vector, Matrix> & d);
+}
+// namespace experimental
 }
 // namespace ural
 

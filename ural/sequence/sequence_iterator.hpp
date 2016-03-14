@@ -26,63 +26,71 @@
 
 namespace ural
 {
-    template <class T, class... Other>
-    struct cursor_tag_base
-     : virtual Other...
+inline namespace v0
+{
+    /// @cond false
+    namespace details
     {
-        friend T decl_common_type(T, T)
+        template <class T, class... Other>
+        struct cursor_tag_base
+         : virtual Other...
         {
-            return T{};
-        }
-    };
+            friend T decl_common_type(T, T)
+            {
+                return T{};
+            }
+        };
+    }
+    // namespace details
+    /// @endcond
 
     struct single_pass_cursor_tag
-     : cursor_tag_base<single_pass_cursor_tag>
+     : details::cursor_tag_base<single_pass_cursor_tag>
     {};
 
     struct input_cursor_tag
-     : cursor_tag_base<input_cursor_tag, single_pass_cursor_tag>
+     : details::cursor_tag_base<input_cursor_tag, single_pass_cursor_tag>
     {};
 
     struct output_cursor_tag
-     : cursor_tag_base<output_cursor_tag, single_pass_cursor_tag>
+     : details::cursor_tag_base<output_cursor_tag, single_pass_cursor_tag>
     {};
 
     struct forward_cursor_tag
-     : cursor_tag_base<forward_cursor_tag, input_cursor_tag>
+     : details::cursor_tag_base<forward_cursor_tag, input_cursor_tag>
     {};
 
     struct pre_bidirectional_cursor_tag
-     : cursor_tag_base<pre_bidirectional_cursor_tag, forward_cursor_tag>
+     : details::cursor_tag_base<pre_bidirectional_cursor_tag, forward_cursor_tag>
     {};
 
     struct random_access_cursor_tag
-     : cursor_tag_base<random_access_cursor_tag, forward_cursor_tag>
+     : details::cursor_tag_base<random_access_cursor_tag, forward_cursor_tag>
     {};
 
     struct finite_single_pass_cursor_tag
-     : cursor_tag_base<finite_single_pass_cursor_tag, single_pass_cursor_tag>
+     : details::cursor_tag_base<finite_single_pass_cursor_tag, single_pass_cursor_tag>
     {};
 
     struct finite_input_cursor_tag
-     : cursor_tag_base<finite_input_cursor_tag, input_cursor_tag, finite_single_pass_cursor_tag>
+     : details::cursor_tag_base<finite_input_cursor_tag, input_cursor_tag, finite_single_pass_cursor_tag>
     {};
 
     struct finite_forward_cursor_tag
-     : cursor_tag_base<finite_forward_cursor_tag, forward_cursor_tag, finite_input_cursor_tag>
+     : details::cursor_tag_base<finite_forward_cursor_tag, forward_cursor_tag, finite_input_cursor_tag>
     {};
 
     struct finite_pre_bidirectional_cursor_tag
-     : cursor_tag_base<finite_pre_bidirectional_cursor_tag,
-                       pre_bidirectional_cursor_tag, finite_forward_cursor_tag>
+     : details::cursor_tag_base<finite_pre_bidirectional_cursor_tag,
+                                pre_bidirectional_cursor_tag, finite_forward_cursor_tag>
     {};
 
     struct bidirectional_cursor_tag
-     : cursor_tag_base<bidirectional_cursor_tag, finite_pre_bidirectional_cursor_tag>
+     : details::cursor_tag_base<bidirectional_cursor_tag, finite_pre_bidirectional_cursor_tag>
     {};
 
     struct finite_random_access_cursor_tag
-     : cursor_tag_base<finite_random_access_cursor_tag, bidirectional_cursor_tag>
+     : details::cursor_tag_base<finite_random_access_cursor_tag, bidirectional_cursor_tag>
     {};
 
     finite_single_pass_cursor_tag
@@ -102,7 +110,11 @@ namespace ural
 
     template <class Tag>
     using make_finite_cursor_tag_t = decltype(decl_finite_cursor_tag(std::declval<Tag>()));
+}
+// namespace v0
 
+namespace experimental
+{
     /** Итератор последовательностей для интервалов. Основная цель ---
     интеграция с циклом @c for для интервалов. Измерения показывают, что
     данные интераторы имеют "плату за абстракцию" примерно 2,5.
@@ -160,7 +172,7 @@ namespace ural
         последовательности
         */
         sequence_iterator()
-         : impl_{v0::nullopt}
+         : impl_{experimental::nullopt}
         {}
 
         /** @brief Создание начального итератора для последовательности
@@ -206,12 +218,13 @@ namespace ural
         }
 
     private:
-        ural::v0::optional<Sequence> impl_;
+        ural::experimental::optional<Sequence> impl_;
     };
 
     /** @brief Итератор на основе ссылки на последовательность
     @note Не должен пережить последовательность, на основе которой создан
     @tparam Sequence тип последовательности
+    @param x, y аргументы
     */
     template <class Sequence>
     class sequence_iterator<Sequence&>
@@ -244,7 +257,7 @@ namespace ural
         последовательности
         */
         sequence_iterator()
-         : impl_(v0::nullopt)
+         : impl_(experimental::nullopt)
         {}
 
         /** @brief Создание начального итератора для последовательности
@@ -288,8 +301,10 @@ namespace ural
         }
 
     private:
-        ural::v0::optional<Sequence&> impl_;
+        ural::experimental::optional<Sequence&> impl_;
     };
+}
+// namespace experimental
 }
 // namespace ural
 

@@ -29,6 +29,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Функциональный объект, заменяющий значения, удовлетворяющие
     унарному предикату.
     @tparam Predicate тип предиката
@@ -272,6 +274,8 @@ namespace ural
         constexpr auto const & make_replace_if_function
             = odr_const<make_replace_if_function_fn>;
     }
+}
+// namespace experimental
 }
 // namespace ural
 
