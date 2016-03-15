@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE(map_keys_and_values_traversed_front_tests)
     std::forward_list<char> const y = {'a', 'b', 'c', 'd', 'e'};
 
     std::map<int, char> const xy
-        = ural_ex::make_zip_sequence(x, y) | ural_ex::to_map<std::map>{};
+        = ural_ex::make_zip_cursor(x, y) | ural_ex::to_map<std::map>{};
 
     auto sx = xy | ural_ex::map_keys;
     auto sy = xy | ural_ex::map_values;

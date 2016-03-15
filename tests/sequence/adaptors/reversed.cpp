@@ -30,7 +30,7 @@ namespace
 BOOST_AUTO_TEST_CASE(reversed_reversed_test)
 {
     std::vector<int> const xs = {1, 2, 3, 4, 5};
-    auto s = ural::sequence(xs);
+    auto s = ural::cursor(xs);
     auto rr = s | ural_ex::reversed | ural_ex::reversed;
 
     BOOST_CHECK_EQUAL(ural_ex::abi::demangle_name(typeid(s).name()),
@@ -47,9 +47,9 @@ BOOST_AUTO_TEST_CASE(reversed_iterators_to_sequence_test)
     auto r_begin = xs.rbegin();
     auto r_end = xs.rend();
 
-    auto rs = ural::experimental::make_iterator_sequence(r_begin, r_end);
+    auto rs = ural::experimental::make_iterator_cursor(r_begin, r_end);
 
-    using RSequence = ural_ex::reverse_sequence<ural::iterator_sequence<decltype(xs.begin())>>;
+    using RSequence = ural_ex::reverse_sequence<ural::iterator_cursor<decltype(xs.begin())>>;
 
     static_assert(std::is_same<decltype(rs), RSequence>::value, "");
 
@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE(reversed_pop_back_n_test)
     auto const xs = ural_ex::make_arithmetic_progression(0, 1)
                   | ural_ex::taken(10) | ural_ex::to_container<std::vector>{};
 
-    auto s = ural::sequence(xs);
+    auto s = ural::cursor(xs);
     auto s_r = s | ural_ex::reversed;
 
     auto const n = xs.size() / 3;
@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE(copy_reversed_to_reversed_vs_copy_backward)
 
     std::copy_backward(x_std.begin(), x_std.end() - 1, x_std.end());
 
-    auto src = ural::make_iterator_sequence(x_ural.begin(), x_ural.end() - 1);
+    auto src = ural::make_iterator_cursor(x_ural.begin(), x_ural.end() - 1);
 
     ural::copy(src | ural_ex::reversed, x_ural | ural_ex::reversed);
 
@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE(moved_backward_test_unique_ptr)
 
     std::move_backward(xs1.begin(), xs1.end() - 1, xs1.end());
 
-    auto src = ural::make_iterator_sequence(xs2.begin(), xs2.end() - 1);
+    auto src = ural::make_iterator_cursor(xs2.begin(), xs2.end() - 1);
     ural::copy(src | ural_ex::reversed | ural_ex::moved, xs2 | ural_ex::reversed);
 
     for(size_t i = 0; i < xs1.size(); ++ i)
@@ -176,8 +176,8 @@ BOOST_AUTO_TEST_CASE(reversed_iterator_sequence_iterators)
     Container v1 = {0, 2, 4, 6};
     auto const v2 = v1;
 
-    auto const rs1 = ural::sequence(v1) | ural_ex::reversed;
-    auto const rs2 = ural::sequence(v2) | ural_ex::reversed;
+    auto const rs1 = ural::cursor(v1) | ural_ex::reversed;
+    auto const rs2 = ural::cursor(v2) | ural_ex::reversed;
 
     static_assert(std::is_same<decltype(begin(rs1)), Container::reverse_iterator>::value, "");
     static_assert(std::is_same<decltype(begin(rs2)), Container::const_reverse_iterator>::value, "");

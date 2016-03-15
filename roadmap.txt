@@ -189,7 +189,7 @@ partition, stable_partition
 * базовый класс CRTP или другой способ, вводящий операторы сравнения по
 определённому свойству. Полезно для классов-обёрток, инкапсулирующих одно
 значение.
-* Унифицировать arithmetic_progression и outdirected
+* Унифицировать arithmetic_progression_cursor и outdirected
 --------------------------------------------------------------------------------
 D.std.functional
 + аналог binaryReverseArgs = binary_reverse_args_function

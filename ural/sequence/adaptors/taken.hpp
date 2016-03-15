@@ -32,22 +32,21 @@ namespace ural
 {
 namespace experimental
 {
-    /** @brief Адаптор последовательности, ограничивающий длину базовой
-    последовательности
-    @tparam Sequence тип последовательности
-    @tparam Size тип количества элементов, которые должны быть взяты из базовой
-    последовательности
-    @todo take_sequence может быть двусторонней только если исходная
+    /** @brief Адаптор курсора, ограничивающий размер базового курсора
+    @tparam Input Тип базового курсора
+    @tparam Size тип количества элементов, которые должны быть взяты из базового
+    курсора
+    @todo take_cursor может быть двусторонним только если исходная
     последовательность имеет произвольный доступ, уточнить traversal_tag.
     @todo Для последовательностей произвольного доступа можно оптимизировать:
     узнать точный размер в конструкторе, а следовательно делать меньше проверок
     в operator!, быстрее выполнять exhaust_front.
     */
-    template <class Sequence, class Size = DifferenceType<Sequence>>
-    class take_sequence
-     : public sequence_adaptor<take_sequence<Sequence, Size>, Sequence>
+    template <class Input, class Size = DifferenceType<Input>>
+    class take_cursor
+     : public cursor_adaptor<take_cursor<Input, Size>, Input>
     {
-        using Base = sequence_adaptor<take_sequence<Sequence, Size>, Sequence>;
+        using Base = cursor_adaptor<take_cursor, Input>;
     public:
         // Типы
         /// @brief Категория курсора
@@ -58,19 +57,19 @@ namespace experimental
 
         // Создание, копирование
         /** @brief Конструктор
-        @param seq исходная последовательность
+        @param in базовый курсор
         @param count число элементов, которое должно быть извлечено
-        @pre @c seq должна содержать по меньшей мере @c count элементов
+        @pre @c in должен содержать по меньшей мере @c count элементов
         @post <tt> this->base() == seq </tt>
         @post <tt> this->count() == count </tt>
         @todo Добавить проверку, что @c count - конечное число
         */
-        explicit take_sequence(Sequence seq, Size count)
-         : Base(std::move(seq))
+        explicit take_cursor(Input in, Size count)
+         : Base(std::move(in))
          , count_(std::move(count))
         {}
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Проверка исчерпания последовательностей
         @return @b true, если последовательность исчерпана, иначе --- @b false.
         */
@@ -113,7 +112,7 @@ namespace experimental
         /** @brief Полная последовательность (включая пройденные части)
         @return Полная последовательность
         */
-        take_sequence original() const;
+        take_cursor original() const;
 
         /** @brief Отбрасывание пройденной части последовательности
         @post <tt> !this->traversed_front() </tt>
@@ -124,14 +123,14 @@ namespace experimental
             count_.commit();
         }
 
-        // Последовательность производного доступа
+        // Курсор производного доступа
         /** @brief Пропуск заданного количества элементов в передней части
         последовательности
         @param n количество элементов, которое нужно пропустить.
         @pre <tt> n <= this->size() </tt>
         @return <tt> *this </tt>
         */
-        take_sequence & operator+=(distance_type n)
+        take_cursor & operator+=(distance_type n)
         {
             assert(0 <= n && n <= this->count());
 
@@ -141,7 +140,7 @@ namespace experimental
             return *this;
         }
 
-        // Адаптор последовательности
+        // Адаптор курсора
         /** @brief Оставшееся количество элементов
         @return Оставшееся количество элементов
         */
@@ -168,37 +167,37 @@ namespace experimental
     @return <tt> x.count() == y.count() && x.base() == y.base() </tt>
     */
     template <class Sequence, class Size>
-    bool operator==(take_sequence<Sequence, Size> const & x,
-                    take_sequence<Sequence, Size> const & y)
+    bool operator==(take_cursor<Sequence, Size> const & x,
+                    take_cursor<Sequence, Size> const & y)
     {
         return x.base() == y.base() && x.count() == y.count();
     }
 
-    /// @brief Тип Функционального объекта для создания @c take_sequence
+    /// @brief Тип Функционального объекта для создания @c take_cursor
     // @todo Оптимизация для последовательностей произвольного доступа
     // @todo Оптимизация для последовательностей известного размера
-    struct make_take_sequence_fn
+    struct make_take_cursor_fn
     {
     public:
         //@{
-        /** @brief Создание @c take_sequence
+        /** @brief Создание @c take_cursor
         @param seq входная последовательность
         @param n количество элементов, которое нужно взять
         */
-        template <class Sequenced, class Size>
-        take_sequence<SequenceType<Sequenced>, Size>
-        operator()(Sequenced && seq, Size n) const
+        template <class Sequence, class Size>
+        take_cursor<cursor_type_t<Sequence>, Size>
+        operator()(Sequence && seq, Size n) const
         {
-            using Result = take_sequence<SequenceType<Sequenced>, Size>;
-            return Result(::ural::sequence_fwd<Sequenced>(seq), std::move(n));
+            using Result = take_cursor<cursor_type_t<Sequence>, Size>;
+            return Result(::ural::cursor_fwd<Sequence>(seq), std::move(n));
         }
 
         template <class Sequence, class Size1, class Size2>
-        take_sequence<Sequence, CommonType<Size1, Size2>>
-        operator()(take_sequence<Sequence, Size1> seq, Size2 n) const
+        take_cursor<Sequence, CommonType<Size1, Size2>>
+        operator()(take_cursor<Sequence, Size1> seq, Size2 n) const
         {
             using Size = CommonType<Size1, Size2>;
-            using Result = take_sequence<Sequence, Size>;
+            using Result = take_cursor<Sequence, Size>;
 
             auto n_new = std::min(Size(seq.count()), Size(std::move(n)));
 
@@ -209,9 +208,9 @@ namespace experimental
 
     namespace
     {
-        /// @brief Функциональный объект для создания @c take_sequence
+        /// @brief Функциональный объект для создания @c take_cursor
         constexpr auto const & taken
-            = odr_const<experimental::pipeable_maker<make_take_sequence_fn>>;
+            = odr_const<experimental::pipeable_maker<make_take_cursor_fn>>;
     }
 }
 // namespace experimental

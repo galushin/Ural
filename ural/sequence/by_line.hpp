@@ -42,7 +42,7 @@ namespace experimental
     */
     template <class IStream>
     class by_line_sequence
-     : public sequence_base<by_line_sequence<IStream>>
+     : public cursor_base<by_line_sequence<IStream>>
     {
     public:
         // Типы
@@ -87,7 +87,7 @@ namespace experimental
         by_line_sequence(by_line_sequence const &) = default;
         by_line_sequence(by_line_sequence &&) = default;
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Провекра исчерпания последовательности
         @return @b true, если последовательность исчерпана, иначе --- @b false.
         */

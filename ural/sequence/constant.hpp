@@ -54,7 +54,7 @@ namespace experimental
     */
     template <class T, class CursorTag = use_default, class D = use_default>
     class constant_sequence
-     : public sequence_base<constant_sequence<T, CursorTag, D>>
+     : public cursor_base<constant_sequence<T, CursorTag, D>>
     {
         /** @brief Оператор "равно"
         @param x, y аргументы
@@ -75,10 +75,10 @@ namespace experimental
         typedef value_type const & reference;
 
         /// @brief Тип расстояния
-        using distance_type = experimental::DefaultedType<D, std::intmax_t>;
+        using distance_type = experimental::defaulted_type_t<D, std::intmax_t>;
 
         /// @brief Категория курсора
-        using cursor_tag = experimental::DefaultedType<CursorTag, input_cursor_tag>;
+        using cursor_tag = experimental::defaulted_type_t<CursorTag, input_cursor_tag>;
 
         /// @brief Тип указателя
         typedef value_type const * pointer;
@@ -93,7 +93,7 @@ namespace experimental
          : data_(value_type(std::forward<Args>(args)...), Distance(0))
         {}
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Проверка исчерпания последовательности
         @return @b false
         */
@@ -117,7 +117,7 @@ namespace experimental
             ++ data_[ural::_2];
         }
 
-        // Прямая последовательность - есть трудности с traversed_front
+        // Прямой курсор - есть трудности с traversed_front
         /** @brief Полная последовательность (включая пройденные части)
         @return Полная последовательность
         */
@@ -129,7 +129,7 @@ namespace experimental
         /** @brief Пройденная часть последовательности
         @return Пройденная часть последовательности
         */
-        ::ural::experimental::taken_exactly_sequence<constant_sequence, distance_type>
+        ::ural::experimental::taken_exactly_cursor<constant_sequence, distance_type>
         traversed_front() const
         {
             return this->original() | ::ural::experimental::taken_exactly(this->data_[ural::_2]);

@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(outdirected_sequence_forward_test)
 
     auto const n = 3;
 
-    auto s = ural::sequence(src);
+    auto s = ural::cursor(src);
     auto s_inf = s | ural_ex::assumed_infinite;
 
     auto s_out = s | ural_ex::outdirected;

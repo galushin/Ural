@@ -1110,15 +1110,15 @@ namespace tags
     */
     template <class Input, class Tags>
     auto describe(Input && in, Tags)
-    -> descriptives_facade<ValueType<SequenceType<Input>>, Tags>
+    -> descriptives_facade<ValueType<cursor_type_t<Input>>, Tags>
     {
         // @todo Проект: выразить через версию с весами, последовательность
         // весов - value_sequence, првоерить что компилятор устраняет лишние
         // вызовы
-        typedef ValueType<SequenceType<Input>> Value;
+        typedef ValueType<cursor_type_t<Input>> Value;
         typedef descriptives_facade<Value, Tags> Result;
 
-        auto seq = ::ural::sequence_fwd<Input>(in);
+        auto seq = ::ural::cursor_fwd<Input>(in);
 
         if(!seq)
         {
@@ -1139,15 +1139,15 @@ namespace tags
     */
     template <class Input, class Tags, class Weights>
     auto describe(Input && in, Tags, Weights && ws)
-    -> descriptives_facade<ValueType<SequenceType<Input>>, Tags,
-                           ValueType<SequenceType<Weights>>>
+    -> descriptives_facade<ValueType<cursor_type_t<Input>>, Tags,
+                           ValueType<cursor_type_t<Weights>>>
     {
-        typedef ValueType<SequenceType<Input>> Value;
-        typedef ValueType<SequenceType<Weights>> Weight_type;
+        typedef ValueType<cursor_type_t<Input>> Value;
+        typedef ValueType<cursor_type_t<Weights>> Weight_type;
         typedef descriptives_facade<Value, Tags, Weight_type> Result;
 
-        auto s_in = ural::sequence_fwd<Input>(in);
-        auto s_ws = ural::sequence_fwd<Weights>(ws);
+        auto s_in = ural::cursor_fwd<Input>(in);
+        auto s_ws = ural::cursor_fwd<Weights>(ws);
 
         if(!s_in || !s_ws)
         {
@@ -1188,7 +1188,7 @@ namespace tags
 
         auto f = [&m, &s](Value const & x) { return (x - m) / s; };
 
-        ural::copy(::ural::experimental::make_transform_sequence(std::move(f), std::forward<Forward>(in)),
+        ural::copy(::ural::experimental::make_transform_cursor(std::move(f), std::forward<Forward>(in)),
                    std::forward<Output>(out));
     }
 

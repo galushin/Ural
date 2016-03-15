@@ -73,7 +73,7 @@ namespace experimental
         typedef decltype(ural::make_callable(std::declval<F>())) target_type;
 
         /// @brief Стратегия работы с многопоточьностью
-        using threading_policy = experimental::DefaultedType<Threading, single_thread_policy>;
+        using threading_policy = experimental::defaulted_type_t<Threading, single_thread_policy>;
 
         // Конструкторы
         /** @brief Конструктор

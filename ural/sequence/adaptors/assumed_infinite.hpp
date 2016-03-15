@@ -36,9 +36,9 @@ namespace experimental
     */
     template <class Sequence>
     class assumed_infinite_sequence
-     : public sequence_adaptor<assumed_infinite_sequence<Sequence>, Sequence>
+     : public cursor_adaptor<assumed_infinite_sequence<Sequence>, Sequence>
     {
-        using Inherited = sequence_adaptor<assumed_infinite_sequence<Sequence>, Sequence>;
+        using Inherited = cursor_adaptor<assumed_infinite_sequence<Sequence>, Sequence>;
 
     public:
         // Создание, копирование, уничтожение, свойства
@@ -50,7 +50,7 @@ namespace experimental
          : Inherited(std::move(seq))
         {}
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Проверка исчерпания последовательности
         @return @b false
         */
@@ -59,7 +59,7 @@ namespace experimental
             return false;
         }
 
-        // Прямая последовательность
+        // Прямой курсор
         /** @brief Передняя пройденная часть последовательности
         @return <tt> this->base().front() </tt>
         */
@@ -79,15 +79,15 @@ namespace experimental
     public:
         /** @brief Создания @c assumed_infinite_sequence
         @param seq последовательность
-        @return <tt> Result(ural::sequence_fwd<Sequenced>(seq)) </tt>, где
-        @c Result -- <tt> assumed_infinite_sequence<SequenceType<Sequenced>> </tt>
+        @return <tt> Result(ural::cursor_fwd<Sequence>(seq)) </tt>, где
+        @c Result -- <tt> assumed_infinite_sequence<cursor_type_t<Sequence>> </tt>
         */
-        template <class Sequenced>
-        assumed_infinite_sequence<SequenceType<Sequenced>>
-        operator()(Sequenced && seq) const
+        template <class Sequence>
+        assumed_infinite_sequence<cursor_type_t<Sequence>>
+        operator()(Sequence && seq) const
         {
-            using Result = assumed_infinite_sequence<SequenceType<Sequenced>>;
-            return Result(ural::sequence_fwd<Sequenced>(seq));
+            using Result = assumed_infinite_sequence<cursor_type_t<Sequence>>;
+            return Result(ural::cursor_fwd<Sequence>(seq));
         }
     };
 

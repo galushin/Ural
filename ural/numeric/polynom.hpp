@@ -111,11 +111,11 @@ namespace experimental
     */
     template <class Input, class X>
     auto polynom(Input && in, X const & x)
-    -> decltype(sequence(in).front() * x)
+    -> decltype(cursor(in).front() * x)
     {
-        auto s = sequence(in);
+        auto s = cursor(in);
 
-        typedef decltype(sequence(in).front() * x) result_type;
+        typedef decltype(cursor(in).front() * x) result_type;
 
         if(!s)
         {
@@ -229,7 +229,7 @@ namespace experimental
         {
             auto const zero = coefficient_type{0};
 
-            auto seq = find(ural::sequence_fwd<InputSequence>(in),
+            auto seq = find(ural::cursor_fwd<InputSequence>(in),
                             zero, not_equal_to<>{});
 
             if (!seq)
@@ -252,7 +252,7 @@ namespace experimental
         */
         template <class InputIterator>
         polynomial(InputIterator first, InputIterator last)
-         : polynomial(ural::make_iterator_sequence(first, last))
+         : polynomial(ural::make_iterator_cursor(first, last))
         {}
 
         /** @brief Конструктор на основе списка коэффициентов

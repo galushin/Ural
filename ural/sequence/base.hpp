@@ -1,5 +1,5 @@
-#ifndef Z_URAL_SEQUENCE_BASE_HPP_INCLUDED
-#define Z_URAL_SEQUENCE_BASE_HPP_INCLUDED
+#ifndef Z_URAL_cursor_base_HPP_INCLUDED
+#define Z_URAL_cursor_base_HPP_INCLUDED
 
 /*  This file is part of Ural.
 
@@ -26,7 +26,7 @@
 
 #include <ural/defs.hpp>
 #include <ural/concepts.hpp>
-#include <ural/sequence/sequence_iterator.hpp>
+#include <ural/sequence/cursor_iterator.hpp>
 
 #include <utility>
 
@@ -127,32 +127,32 @@ inline namespace v0
     using wrap_with_old_value_if_bidirectional_t
         = typename wrap_with_old_value_if_bidirectional<Traversal, T>::type;
 
-    /** @brief Базовый класс для последовательностей (CRTP)
-    @tparam Seq тип последовательности-наследника
+    /** @brief Базовый класс для курсоров (CRTP)
+    @tparam Cur тип курсора-наследника
     @tparam Payload класс, от которого будет закрыто наследовать данный класс.
     Может использоваться для оптимизации пустых базовых классов.
     */
-    template <class Seq, class Payload = ural::empty_type>
-    class sequence_base
+    template <class Cursor, class Payload = ural::empty_type>
+    class cursor_base
      : private Payload
     {
-        /** @brief Преобразование в последовательность
+        /** @brief Преобразование в курсор
         @param seq исходная последовательность
         @return seq
         */
-        friend Seq sequence(Seq seq)
+        friend Cursor cursor(Cursor cur)
         {
-            return seq;
+            return cur;
         }
 
         /** @brief Переход к следующему элементу
         @pre <tt> !x == false </tt>
         @return @c x
         */
-        friend Seq & operator++(Seq & s)
+        friend Cursor & operator++(Cursor & cur)
         {
-            s.pop_front();
-            return s;
+            cur.pop_front();
+            return cur;
         }
 
         /** @brief Оператор вывода курсора в поток
@@ -162,7 +162,7 @@ inline namespace v0
         @todo устранить дублирование с write_separated
         */
         template <class OStream>
-        friend OStream & operator<<(OStream & os, Seq & cur)
+        friend OStream & operator<<(OStream & os, Cursor & cur)
         {
             os << "{";
             if(!!cur)
@@ -181,12 +181,12 @@ inline namespace v0
         }
 
     public:
-        /** @brief Проверка исчерпания последовательности
-        @return @b true, если последовательность исчерпана, иначе --- @b false
+        /** @brief Проверка исчерпания курсора
+        @return @b true, если курсора исчерпана, иначе --- @b false
         */
         bool empty() const
         {
-            return !static_cast<Seq const &>(*this);
+            return !static_cast<Cursor const &>(*this);
         }
 
     protected:
@@ -194,31 +194,31 @@ inline namespace v0
         @param args список аргументов для конструктора базового класса
         */
         template <class... Args>
-        constexpr sequence_base(Args && ... args)
+        constexpr cursor_base(Args && ... args)
          : Payload(std::forward<Args>(args)...)
         {}
 
         /// @brief Конструктор без аргументов
-        constexpr sequence_base() = default;
+        constexpr cursor_base() = default;
 
         //@{
         /// @brief Конструкторы копирования и перемещения
-        constexpr sequence_base(sequence_base &) = default;
-        constexpr sequence_base(sequence_base const &) = default;
-        constexpr sequence_base(sequence_base &&) = default;
+        constexpr cursor_base(cursor_base &) = default;
+        constexpr cursor_base(cursor_base const &) = default;
+        constexpr cursor_base(cursor_base &&) = default;
         //@}
 
         //@{
         /** @brief Операторы присваивания
         @return <tt> *this </tt>
         */
-        sequence_base & operator=(sequence_base &) = default;
-        sequence_base & operator=(sequence_base const &) = default;
-        sequence_base & operator=(sequence_base &&) = default;
+        cursor_base & operator=(cursor_base &) = default;
+        cursor_base & operator=(cursor_base const &) = default;
+        cursor_base & operator=(cursor_base &&) = default;
         //@}
 
         /// @brief Деструктор
-        ~ sequence_base() = default;
+        ~ cursor_base() = default;
 
         //@{
         constexpr Payload & payload()
@@ -234,80 +234,80 @@ inline namespace v0
     };
 
     //@{
-    /** @brief Создание начального итератора для последовательности
-    @param s последовательность
-    @return <tt> sequence_iterator<Seq>{static_cast<Seq const&>(s)} </tt>
+    /** @brief Создание начального итератора для курсора
+    @param cur курсор
+    @return <tt> cursor_iterator<Cursor>{static_cast<Cursor const&>(cur)} </tt>
     */
-    template <class Seq, class Base>
-    experimental::sequence_iterator<Seq> begin(sequence_base<Seq, Base> const & s)
+    template <class Cursor, class Base>
+    cursor_iterator<Cursor> begin(cursor_base<Cursor, Base> const & cur)
     {
-        return experimental::sequence_iterator<Seq>{static_cast<Seq const&>(s)};
+        return cursor_iterator<Cursor>{static_cast<Cursor const&>(cur)};
     }
 
-    template <class Seq, class Base>
-    experimental::sequence_iterator<Seq> begin(sequence_base<Seq, Base> && s)
+    template <class Cursor, class Base>
+    cursor_iterator<Cursor> begin(cursor_base<Cursor, Base> && cur)
     {
-        return experimental::sequence_iterator<Seq>{static_cast<Seq &&>(s)};
+        return cursor_iterator<Cursor>{static_cast<Cursor &&>(cur)};
     }
 
-    template <class Seq, class Base>
-    experimental::sequence_iterator<Seq &> begin(sequence_base<Seq, Base> & s)
+    template <class Cursor, class Base>
+    cursor_iterator<Cursor &> begin(cursor_base<Cursor, Base> & cur)
     {
-        return experimental::sequence_iterator<Seq &>(static_cast<Seq&>(s));
+        return cursor_iterator<Cursor &>(static_cast<Cursor &>(cur));
     }
     //@}
 
     //@{
-    /** @brief Создание конечного итератора для последовательности
-    @return <tt> sequence_iterator<Seq>{} </tt>
+    /** @brief Создание конечного итератора для курсора
+    @return <tt> cursor_iterator<Cursor>{} </tt>
     */
-    template <class Seq, class Base>
-    experimental::sequence_iterator<Seq> end(sequence_base<Seq, Base> const &)
+    template <class Cursor, class Base>
+    cursor_iterator<Cursor> end(cursor_base<Cursor, Base> const &)
     {
-        return experimental::sequence_iterator<Seq>{};
+        return cursor_iterator<Cursor>{};
     }
 
-    template <class Seq, class Base>
-    experimental::sequence_iterator<Seq &> end(sequence_base<Seq, Base> &)
+    template <class Cursor, class Base>
+    cursor_iterator<Cursor &> end(cursor_base<Cursor, Base> &)
     {
-        return experimental::sequence_iterator<Seq &>{};
+        return cursor_iterator<Cursor &>{};
     }
     //@}
 
-    /** @brief Ссылка на текущий элемент последовательности
+    /** @brief Ссылка на текущий элемент курсора
     @param s последовательность
     @pre <tt> !s == false </tt>
-    @return <tt> static_cast<Seq const&>(s).front() </tt>
-    @todo Реализовать через SFINAE и is_sequence, использовать decltype?
+    @return <tt> static_cast<Cursor const&>(s).front() </tt>
+    @todo Реализовать через SFINAE и is_cursor, использовать decltype?
     */
-    template <class Seq, class Base>
-    constexpr typename Seq::reference
-    operator*(sequence_base<Seq, Base> const & s)
+    template <class Cursor, class Base>
+    constexpr typename Cursor::reference
+    operator*(cursor_base<Cursor, Base> const & s)
     {
-        return static_cast<Seq const&>(s).front();
+        return static_cast<Cursor const&>(s).front();
     }
 
     //@{
-    /** @brief Бинарный оператор "плюс" для последовательности и расстояния
-    @param s последовательность
+    /** @brief Бинарный оператор "плюс" для курсора и расстояния
+    @param cur курсор
     @param n свдиг
     @todo Передавать последовательность по значению
-    @return <tt> Seq{s} + n </tt>
+    @return <tt> Cursor{cur} + n </tt>
     */
-    template <class Seq, class Base>
-    Seq
-    operator+(sequence_base<Seq, Base> const & s, DifferenceType<Seq> n)
+    template <class Cursor, class Base>
+    Cursor
+    operator+(cursor_base<Cursor, Base> const & s, DifferenceType<Cursor> n)
     {
-        auto result = static_cast<Seq const &>(s);
+        auto result = static_cast<Cursor const &>(s);
         result += n;
         return result;
     }
 
-    template <class Seq, class Base>
-    Seq
-    operator+(DifferenceType<Seq> n, sequence_base<Seq, Base> const & s)
+    template <class Cursor, class Base>
+    Cursor
+    operator+(DifferenceType<Cursor> n, cursor_base<Cursor, Base> const & cur)
     {
-        return std::move(s + n);
+        return std::move(cur + n);
     }
     //@}
 
@@ -317,13 +317,13 @@ inline namespace v0
     class size_fn
     {
     private:
-        template <class Sequence>
-        static DifferenceType<Sequence>
-        sequence_size(Sequence const & s, finite_single_pass_cursor_tag)
+        template <class Cursor>
+        static DifferenceType<Cursor>
+        cursor_size(Cursor const & cur, finite_single_pass_cursor_tag)
         {
-            DifferenceType<Sequence> n{0};
+            DifferenceType<Cursor> n{0};
 
-            for(auto in = s; !!in; ++ in)
+            for(auto in = cur; !!in; ++ in)
             {
                 ++ n;
             }
@@ -331,11 +331,11 @@ inline namespace v0
             return n;
         }
 
-        template <class Sequence>
-        static DifferenceType<Sequence>
-        sequence_size(Sequence const & s, finite_random_access_cursor_tag)
+        template <class Cursor>
+        static DifferenceType<Cursor>
+        cursor_size(Cursor const & cur, finite_random_access_cursor_tag)
         {
-            return s.size();
+            return cur.size();
         }
 
         template <class Container>
@@ -352,30 +352,30 @@ inline namespace v0
             return std::distance(c.begin(), c.end());
         }
 
-        template <class Sequenced>
-        DifferenceType<Sequenced>
-        dispatch(Sequenced const & s,
-                 void_t<decltype(ural::make_cursor_tag(s))> *) const
+        template <class Cursor>
+        DifferenceType<Cursor>
+        dispatch(Cursor const & cur,
+                 void_t<decltype(ural::make_cursor_tag(cur))> *) const
         {
-            return this->sequence_size(s, ural::make_cursor_tag(s));
+            return this->cursor_size(cur, ural::make_cursor_tag(cur));
         }
 
-        template <class Sequenced>
-        DifferenceType<Sequenced>
-        dispatch(Sequenced const & s,
-                 void_t<typename Sequenced::allocator_type> *) const
+        template <class Sequence>
+        DifferenceType<Sequence>
+        dispatch(Sequence const & s,
+                 void_t<typename Sequence::allocator_type> *) const
         {
             return this->container_size(s, nullptr);
         }
 
     public:
-        /** @brief Размер последовательности или контейнера
+        /** @brief Размер курсора или контейнера
         @param s последовательность
-        @return Количество непройденных элементов последовательности
+        @return Количество непройденных элементов курсора или размер контейнера
         */
-        template <class Sequenced>
-        DifferenceType<Sequenced>
-        operator()(Sequenced const & s) const
+        template <class Sequence>
+        DifferenceType<Sequence>
+        operator()(Sequence const & s) const
         {
             return this->dispatch(s, nullptr);
         }
@@ -403,97 +403,94 @@ inline namespace v0
         }
     };
 
-    /** @brief Тип функционального объекта для продвижения последовательности на
-    заданное число шагов
+    /** @brief Тип функционального объекта для продвижения курсора на заданное
+    число шагов
     */
     class advance_fn
     {
     public:
-        /** @brief Продвижение последовательности на заданное число шагов
-        @param s последовательность
+        /** @brief Продвижение курсора на заданное число шагов
+        @param cur курсор
         @param n число шагов
         */
-        template <class Sequence>
-        void operator()(Sequence & s, DifferenceType<Sequence> n) const
+        template <class Cursor>
+        void operator()(Cursor & cur, DifferenceType<Cursor> n) const
         {
-            return this->impl(s, std::move(n), ural::make_cursor_tag(s));
+            return this->impl(cur, std::move(n), ural::make_cursor_tag(cur));
         }
 
     private:
-        template <class Sequence>
-        static void impl(Sequence & s, DifferenceType<Sequence> n,
+        template <class Cursor>
+        static void impl(Cursor & cur, DifferenceType<Cursor> n,
                          single_pass_cursor_tag)
         {
             for(; n > 0; -- n)
             {
-                ++ s;
+                ++ cur;
             }
         }
 
-        template <class Sequence>
-        static void impl(Sequence & s, DifferenceType<Sequence> n,
+        template <class Cursor>
+        static void impl(Cursor & cur, DifferenceType<Cursor> n,
                          random_access_cursor_tag)
         {
-            s += n;
+            cur += n;
         }
     };
 
-    /** @brief Пропуск заданного числа элементов в задней части
-    последовательности
-    */
+    /// @brief Пропуск заданного числа элементов в задней части курсора
     class pop_back_n_fn
     {
     public:
         /** @brief Отбрасывает последние @c n элементов
         @pre <tt> n <= this->size() </tt>
-        @param s последовательность
+        @param cur курсор
         @param n количество элементов
         */
-        template <class BidirectionalSequence>
-        void operator()(BidirectionalSequence & x,
-                        DifferenceType<BidirectionalSequence> n) const
+        template <class BidirectionalCursor>
+        void operator()(BidirectionalCursor & cur,
+                        DifferenceType<BidirectionalCursor> n) const
         {
-            this->impl(x, n, make_cursor_tag(x));
+            this->impl(cur, n, make_cursor_tag(cur));
         }
 
     private:
-        template <class T>
-        void impl(T & x, DifferenceType<T> n, bidirectional_cursor_tag) const
+        template <class Cursor>
+        void impl(Cursor & cur, DifferenceType<Cursor> n, bidirectional_cursor_tag) const
         {
             for(; n > 0; -- n)
             {
-                x.pop_back();
+                cur.pop_back();
             }
         }
 
         // @todo Покрыть тестом
-        template <class T>
-        void impl(T & x, DifferenceType<T> n, finite_random_access_cursor_tag) const
+        template <class Cursor>
+        void impl(Cursor & cur, DifferenceType<Cursor> n, finite_random_access_cursor_tag) const
         {
-            x.pop_back(n);
+            cur.pop_back(n);
         }
     };
 
 
     /** @brief Тип функционального объекта для операции продвижения копии
-    последовательности на заданное число шагов.
+    курсора на заданное число шагов.
     */
     class next_fn
     {
     public:
-        /** @brief Продвижение копии последовательнисти на заданное количество
-        шагов
-        @param s последовательность
+        /** @brief Продвижение копии курсора на заданное количество шагов
+        @param cur курсор
         @param n количество шагов
-        @return Копия последовательность @c s продвинутая на @c n шагов c
-        помощью <tt> advance </tt>.
+        @return Копия курсора @c s продвинутая на @c n шагов c помощью
+        <tt> advance </tt>.
         */
-        template <class Sequence>
-        Sequence
-        operator()(Sequence s, DifferenceType<Sequence> n = 1) const
+        template <class Cursor>
+        Cursor
+        operator()(Cursor cur, DifferenceType<Cursor> n = 1) const
         {
-            ::ural::advance_fn{}(s, n);
-            return s;
+            ::ural::advance_fn{}(cur, n);
+            return cur;
         }
     };
 
@@ -542,89 +539,88 @@ inline namespace v0
         }
     };
 
-    /** @brief Тип функционального объекта для исчерпания последовательности
-    в прямом направлении.
+    /** @brief Тип функционального объекта для исчерпания курсора в прямом
+    направлении.
     */
     class exhaust_front_fn
     {
     public:
-        /** @brief Вызывает <tt> s.exhaust_front() </tt>
-        @param s последовательность
+        /** @brief Вызывает <tt> cur.exhaust_front() </tt>
+        @param cur курсор
         */
-        template <class Sequence>
-        void operator()(Sequence & s) const
+        template <class Cursor>
+        void operator()(Cursor & cur) const
         {
-            return s.exhaust_front();
+            return cur.exhaust_front();
         }
     };
 
-    /** @brief Тип функционального объекта для исчерпания последовательности
-    в обратном направлении.
+    /** @brief Тип функционального объекта для исчерпания курсора в обратном
+    направлении.
     */
     class exhaust_back_fn
     {
     public:
-        /** @brief Вызывает <tt> s.exhaust_back() </tt>
-        @param s последовательность
+        /** @brief Вызывает <tt> cur.exhaust_back() </tt>
+        @param cur курсор
         */
-        template <class Sequence>
-        void operator()(Sequence & s) const
+        template <class Cursor>
+        void operator()(Cursor & cur) const
         {
-            s.exhaust_back();
+            cur.exhaust_back();
         }
     };
 
     /** @brief Тип функционального объекта для отбрасывания передней пройденной
-    части последовательности.
+    части курсора.
     */
     class shrink_front_fn
     {
     public:
-        /** @brief Вызывает <tt> s.shrink_front() </tt>
-        @param s последовательность
-        @return @c s
+        /** @brief Вызывает <tt> cur.shrink_front() </tt>
+        @param cur курсор
+        @return @c cur
         */
-        template <class Sequence>
-        Sequence &
-        operator()(Sequence & s) const
+        template <class Cursor>
+        Cursor &
+        operator()(Cursor & cur) const
         {
-            s.shrink_front();
-            return s;
+            cur.shrink_front();
+            return cur;
         }
     };
 
     /** @brief Тип функционального объекта для отбрасывания задней пройденной
-    части последовательности.
+    части курсора.
     */
     class shrink_back_fn
     {
     public:
-        /** @brief Вызывает <tt> s.shrink_back() </tt>
-        @param s последовательность
+        /** @brief Вызывает <tt> cur.shrink_back() </tt>
+        @param cur курсор
         */
-        template <class Sequence>
-        void operator()(Sequence & s)
+        template <class Cursor>
+        void operator()(Cursor & cur)
         {
-            s.shrink_back();
+            cur.shrink_back();
         }
     };
 
-    /** @brief Тип функционального объекта для создания последовательности,
-    отличающейся от исходной только тем, что передняя пройденная часть
-    отсутствует.
+    /** @brief Тип функционального объекта для создания курсора, отличающегося
+    от исходного только тем, что передняя пройденная часть отсутствует.
     */
     struct shrink_front_copy_fn
     {
-        /** @brief Создании последовательности, отличающейся от исходной только
-        тем, что передняя пройденная часть отсутствует.
-        @param s последовательность
-        @return Копию @c s, к которой применена операция @c shrink_front
+        /** @brief Создании курсора, отличающегося от исходного только тем, что
+        передняя пройденная часть отсутствует.
+        @param cur курсор
+        @return Копию @c cur, к которой применена операция @c shrink_front
         */
-        template <class Sequence>
-        Sequence operator()(Sequence s) const
+        template <class Cursor>
+        Cursor operator()(Cursor cur) const
         {
-            s.shrink_front();
-            return s;
+            cur.shrink_front();
+            return cur;
         }
     };
 
@@ -634,24 +630,24 @@ inline namespace v0
         struct at_fn
         {
         public:
-            template <class Sequence, class F>
-            auto operator()(Sequence const & s, F f) const
-            -> decltype(f(s))
+            template <class Cursor, class F>
+            auto operator()(Cursor const & cur, F f) const
+            -> decltype(f(cur))
             {
-                return f(s);
+                return f(cur);
             }
 
-            template <class Sequence>
-            ReferenceType<Sequence>
-            operator()(Sequence const & s, DifferenceType<Sequence> i) const
+            template <class Cursor>
+            ReferenceType<Cursor>
+            operator()(Cursor const & cur, DifferenceType<Cursor> i) const
             {
-                return s[i];
+                return cur[i];
             }
         };
 
-        template <class Sequence, class Index1, class Index2>
-        void indirect_swap_adl_hook(Sequence const & x, Index1 ix,
-                                    Sequence const & y, Index2 iy)
+        template <class Cursor, class Index1, class Index2>
+        void indirect_swap_adl_hook(Cursor const & x, Index1 ix,
+                                    Cursor const & y, Index2 iy)
         {
             using std::swap;
             swap(at_fn{}(x, ix), at_fn{}(y, iy));
@@ -660,15 +656,15 @@ inline namespace v0
         struct indirect_swap_fn
         {
         public:
-            template <class Sequence>
-            void operator()(Sequence const & x, Sequence const & y) const
+            template <class Cursor>
+            void operator()(Cursor const & x, Cursor const & y) const
             {
                 return (*this)(x, front, y, front);
             }
 
-            template <class Sequence, class Index1, class Index2>
-            void operator()(Sequence const & x, Index1 ix,
-                            Sequence const & y, Index2 iy) const
+            template <class Cursor, class Index1, class Index2>
+            void operator()(Cursor const & x, Index1 ix,
+                            Cursor const & y, Index2 iy) const
             {
                 using ::ural::details::indirect_swap_adl_hook;
                 return indirect_swap_adl_hook(x, ix, y, iy);
@@ -679,29 +675,29 @@ inline namespace v0
 
     namespace
     {
-        /** @brief Функциональный объект для обмена элементов
-        последовательностей
+        /** @brief Функциональный объект для обмена элементов, на которые
+        ссылаются курсоры
         */
         constexpr auto const & indirect_swap
             = odr_const<ural::details::indirect_swap_fn>;
 
         /** @brief Функциональный объект для пропуска заданного числа элементов
-        в передней части последовательности
+        в передней части курсора
         */
         constexpr auto const & advance = odr_const<advance_fn>;
 
         /** @brief Функциональный объект для пропуска заданного числа элементов
-        в задней части последовательности
+        в задней части курсора
         */
         constexpr auto const & pop_back_n = odr_const<pop_back_n_fn>;
 
-        /** @brief Функциональный объект для операции продвижения копии
-        последовательности на заданное число шагов.
+        /** @brief Функциональный объект для операции продвижения копии курсора
+        на заданное число шагов.
         */
         constexpr auto const & next = odr_const<next_fn>;
 
-        /** @brief Функциональный объект, вычисляющий размер массивов,
-        контейнеров и последовательностей.
+        /** @brief Функциональный объект, вычисляющий размер массивов, курсоров
+        и контейнеров.
         */
         constexpr auto const & size = odr_const<size_fn>;
 
@@ -720,9 +716,8 @@ inline namespace v0
         /// @brief Функциональный объект для функции-члена @c shrink_back
         constexpr auto const & shrink_back = odr_const<shrink_back_fn>;
 
-        /** @brief Функциональный объект для создания последовательности,
-        отличающейся от исходной только тем, что передняя пройденная часть
-        отсутствует.
+        /** @brief Функциональный объект для создания курсора, отличающегося от
+        исходного только тем, что передняя пройденная часть отсутствует.
         */
         constexpr auto const & shrink_front_copy = odr_const<shrink_front_copy_fn>;
 
@@ -731,8 +726,8 @@ inline namespace v0
         */
         constexpr auto const & exhaust_front = odr_const<exhaust_front_fn>;
 
-        /** @brief  Функциональный объект для исчерпания последовательности
-        в обратном порядке
+        /** @brief  Функциональный объект для исчерпания курсора в обратном
+        порядке
         */
         constexpr auto const & exhaust_back = odr_const<exhaust_back_fn>;
 
@@ -744,4 +739,4 @@ inline namespace v0
 // namespace ural
 
 #endif
-// Z_URAL_SEQUENCE_BASE_HPP_INCLUDED
+// Z_URAL_cursor_base_HPP_INCLUDED

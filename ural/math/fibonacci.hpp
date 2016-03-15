@@ -28,20 +28,20 @@ namespace ural
 {
 namespace experimental
 {
-    /** @brief Последовательность чисел (типа) Фибоначчи
+    /** @brief Курсор последовательности чисел (типа) Фибоначчи
     @tparam Integer целочисленный тип
     @tparam BinaryOperation бинарная операция, используемая в качестве сложения
     @tparam CursorTag желаемая категория курсора
     */
     template <class Integer, class BinaryOperation = use_default,
               class CursorTag = use_default>
-    class fibonacci_sequence
-     : public sequence_base<fibonacci_sequence<Integer, BinaryOperation, CursorTag>>
+    class fibonacci_cursor
+     : public cursor_base<fibonacci_cursor<Integer, BinaryOperation, CursorTag>>
     {
-        using Inherited = sequence_base<fibonacci_sequence<Integer, BinaryOperation, CursorTag>>;
+        using Inherited = cursor_base<fibonacci_cursor>;
     public:
         /// @brief Категория курсора
-        using cursor_tag = DefaultedType<CursorTag, input_cursor_tag>;
+        using cursor_tag = defaulted_type_t<CursorTag, input_cursor_tag>;
 
         /// @brief Тип значения
         using value_type = Integer;
@@ -56,7 +56,7 @@ namespace experimental
         using distance_type = Integer;
 
         /// @brief Тип операции
-        using operation_type = DefaultedType<FunctionType<BinaryOperation>,
+        using operation_type = defaulted_type_t<FunctionType<BinaryOperation>,
                                              ural::plus<Integer>>;
 
         // Конструкторы и свойства
@@ -64,8 +64,8 @@ namespace experimental
         @post <tt> this->front() == Integer(1) </tt>
         @post <tt> next(*this).front() == Integer(1) </tt>
         */
-        constexpr fibonacci_sequence()
-         : fibonacci_sequence(Integer{1}, Integer{1}, operation_type{})
+        constexpr fibonacci_cursor()
+         : fibonacci_cursor(Integer{1}, Integer{1}, operation_type{})
         {}
 
         /** @brief Конструктор
@@ -74,7 +74,7 @@ namespace experimental
         @post <tt> this->front() == first </tt>
         @post <tt> next(*this).front() == second </tt>
         */
-        constexpr fibonacci_sequence(value_type first, value_type second)
+        constexpr fibonacci_cursor(value_type first, value_type second)
          : data_(std::move(first), std::move(second), operation_type{})
         {}
 
@@ -86,7 +86,7 @@ namespace experimental
         @post <tt> this->operation() == op </tt>
         @post <tt> next(*this).front() == second </tt>
         */
-        constexpr fibonacci_sequence(value_type first, value_type second,
+        constexpr fibonacci_cursor(value_type first, value_type second,
                                      operation_type op)
          : data_(Value(std::move(first)), Value(std::move(second)),
                  std::move(op))
@@ -105,12 +105,12 @@ namespace experimental
         @return @b true, если @c x и @c y равны, иначе --- @b false.
         */
         friend bool
-        operator==(fibonacci_sequence const & x, fibonacci_sequence const & y)
+        operator==(fibonacci_cursor const & x, fibonacci_cursor const & y)
         {
             return x.data_ == y.data_;
         }
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Проверка исчерпания последовательности
         @return @b false
         */
@@ -136,11 +136,11 @@ namespace experimental
             data_[ural::_2]= std::move(new_value);
         }
 
-        // Прямая последовательность
+        // Прямой курсор
         /** @brief Передняя пройденная часть последовательности
         @return Передняя пройденная часть последовательности
         */
-        delimit_sequence<fibonacci_sequence, value_type>
+        delimit_cursor<fibonacci_cursor, value_type>
         traversed_front() const
         {
             return this->original() | ::ural::experimental::delimited(this->front());
@@ -149,11 +149,11 @@ namespace experimental
         /** @brief Исходная последовательность
         @return Исходная последовательность
         */
-        fibonacci_sequence original() const
+        fibonacci_cursor original() const
         {
-            return fibonacci_sequence(data_[ural::_1].old_value(),
-                                      data_[ural::_2].old_value(),
-                                      this->operation());
+            return fibonacci_cursor(data_[ural::_1].old_value(),
+                                    data_[ural::_2].old_value(),
+                                    this->operation());
         }
 
         void shrink_front()
@@ -171,7 +171,7 @@ namespace experimental
     /** @brief Тип Функционального объекта для создания последовательности чисел
     (типа) Фибоначчи.
     */
-    struct make_fibonacci_sequence_fn
+    struct make_fibonacci_cursor_fn
     {
     public:
         /** @brief Конструктор
@@ -179,10 +179,10 @@ namespace experimental
         @param second второе значение
         */
         template <class Integer>
-        constexpr fibonacci_sequence<Integer>
+        constexpr fibonacci_cursor<Integer>
         operator()(Integer first, Integer second) const
         {
-            using Result = fibonacci_sequence<Integer>;
+            using Result = fibonacci_cursor<Integer>;
             return Result{std::move(first), std::move(second)};
         }
 
@@ -192,22 +192,22 @@ namespace experimental
         @param op бинарная операция
         */
         template <class Integer, class BinaryOperation>
-        constexpr fibonacci_sequence<Integer, FunctionType<BinaryOperation>>
+        constexpr fibonacci_cursor<Integer, FunctionType<BinaryOperation>>
         operator()(Integer first, Integer second, BinaryOperation op) const
         {
             using F = FunctionType<BinaryOperation>;
-            using Result = fibonacci_sequence<Integer, F>;
+            using Result = fibonacci_cursor<Integer, F>;
             return Result{std::move(first), std::move(second), std::move(op)};
         }
     };
 
     namespace
     {
-        /** @brief Функциональный объект для создания последовательности чисел
-        (типа) Фибоначчи.
+        /** @brief Функциональный объект для создания курсора последовательности
+        чисел (типа) Фибоначчи.
         */
-        constexpr auto const & make_fibonacci_sequence
-            = odr_const<make_fibonacci_sequence_fn>;
+        constexpr auto const & make_fibonacci_cursor
+            = odr_const<make_fibonacci_cursor_fn>;
     }
 }
 // namespace experimental

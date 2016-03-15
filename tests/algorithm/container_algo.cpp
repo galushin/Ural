@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE(unqiue_fn_const_iterator_test)
 
     v2.erase(v2.cbegin() + n, v2.cend());
 
-    ural_ex::erase(v1, ural::make_iterator_sequence(v1.cbegin() + n, v1.cend()));
+    ural_ex::erase(v1, ural::make_iterator_cursor(v1.cbegin() + n, v1.cend()));
 
     URAL_CHECK_EQUAL_RANGES(v1, v2);
 }

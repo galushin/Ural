@@ -277,7 +277,7 @@ namespace experimental
         typedef decltype(ural::make_callable(std::declval<F>())) Base_class;
     public:
         /// @brief Стратегия многопоточности
-        using threading_policy = experimental::DefaultedType<Threading, single_thread_policy>;
+        using threading_policy = experimental::defaulted_type_t<Threading, single_thread_policy>;
 
         /// @brief Тип счётчика
         typedef typename threading_policy::atomic_counter_type counter_type;

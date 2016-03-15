@@ -33,8 +33,8 @@ BOOST_AUTO_TEST_CASE(iterator_sequence_compatible_init)
     std::vector<int> xs = {1, 2, 3, 4};
     auto const & cr = xs;
 
-    auto s = ural::sequence(xs);
-    auto sc = ural::sequence(cr);
+    auto s = ural::cursor(xs);
+    auto sc = ural::cursor(cr);
 
     auto sc1 = decltype(sc)(s);
 
@@ -46,8 +46,8 @@ BOOST_AUTO_TEST_CASE(iterator_sequence_compatible_move_init)
     std::vector<int> xs = {1, 2, 3, 4};
     auto const & cr = xs;
 
-    auto s = ural::sequence(xs);
-    auto sc = ural::sequence(cr);
+    auto s = ural::cursor(xs);
+    auto sc = ural::cursor(cr);
 
     auto const s_old = s;
     auto sc1 = decltype(sc)(std::move(s));
@@ -60,8 +60,8 @@ BOOST_AUTO_TEST_CASE(iterator_sequence_compatible_assign)
     std::vector<int> xs = {1, 2, 3, 4};
     auto const & cr = xs;
 
-    auto s = ural::sequence(xs);
-    auto sc = ural::sequence(cr);
+    auto s = ural::cursor(xs);
+    auto sc = ural::cursor(cr);
 
     sc = s;
 
@@ -73,8 +73,8 @@ BOOST_AUTO_TEST_CASE(iterator_sequence_compatible_move_assign)
     std::vector<int> xs = {1, 2, 3, 4};
     auto const & cr = xs;
 
-    auto s = ural::sequence(xs);
-    auto sc = ural::sequence(cr);
+    auto s = ural::cursor(xs);
+    auto sc = ural::cursor(cr);
 
     auto const s_old = s;
     sc = std::move(s);
@@ -88,12 +88,12 @@ BOOST_AUTO_TEST_CASE(copy_sequence_test_via_details)
 
     std::vector<int> x1(xs.size());
 
-    ural::copy_fn{}(ural::sequence(xs), ural::sequence(x1));
+    ural::copy_fn{}(ural::cursor(xs), ural::cursor(x1));
 
-    BOOST_CHECK(ural::sequence(xs) == ural::sequence(xs));
-    BOOST_CHECK(ural::sequence(x1) == ural::sequence(x1));
-    BOOST_CHECK(ural::sequence(x1) != ural::sequence(xs));
-    BOOST_CHECK(ural::sequence(xs) != ural::sequence(x1));
+    BOOST_CHECK(ural::cursor(xs) == ural::cursor(xs));
+    BOOST_CHECK(ural::cursor(x1) == ural::cursor(x1));
+    BOOST_CHECK(ural::cursor(x1) != ural::cursor(xs));
+    BOOST_CHECK(ural::cursor(xs) != ural::cursor(x1));
 
     URAL_CHECK_EQUAL_RANGES(x1, xs);
 }
@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE(c_array_to_sequence)
 {
     int xs [] = {1, 2, 3, 4};
 
-    auto s = ural::sequence(xs);
+    auto s = ural::cursor(xs);
 
     auto const sum_std = std::accumulate(xs, xs + sizeof(xs) / sizeof(xs[0]), 0);
     auto const sum_ural = ural::accumulate(s, 0);
@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE(c_array_to_sequence)
 BOOST_AUTO_TEST_CASE(iteretor_sequence_plus_assign_test)
 {
     std::vector<int> const xs = {1, 2, 3, 4};
-    auto s = ural::sequence(xs);
+    auto s = ural::cursor(xs);
     auto const n = 2;
     s += 2;
 
@@ -153,11 +153,11 @@ BOOST_AUTO_TEST_CASE(iterator_sequence_size_test)
     std::list<int> bi;
     std::vector<int> ra;
 
-    auto s_in = ::ural::make_iterator_sequence(std::istream_iterator<int>(is),
-                                                std::istream_iterator<int>());
-    auto s_fwd = ::ural::sequence(fwd);
-    auto s_bi = ::ural::sequence(bi);
-    auto s_ra = ::ural::sequence(ra);
+    auto s_in = ::ural::make_iterator_cursor(std::istream_iterator<int>(is),
+                                             std::istream_iterator<int>());
+    auto s_fwd = ::ural::cursor(fwd);
+    auto s_bi = ::ural::cursor(bi);
+    auto s_ra = ::ural::cursor(ra);
 
     BOOST_CHECK_EQUAL(2*sizeof(std::istream_iterator<int>{}), sizeof(s_in));
     BOOST_CHECK_EQUAL(3*sizeof(fwd.begin()), sizeof(s_fwd));
@@ -173,23 +173,23 @@ BOOST_AUTO_TEST_CASE(valarray_to_sequence_test)
     std::valarray<int> const &r0 = x0;
     std::valarray<int> const &r = x;
 
-    auto s0 = ural::sequence(x0);
-    auto s = ural::sequence(x);
-    auto sc0 = ural::sequence(r0);
-    auto sc = ural::sequence(r);
+    auto s0 = ural::cursor(x0);
+    auto s = ural::cursor(x);
+    auto sc0 = ural::cursor(r0);
+    auto sc = ural::cursor(r);
 
-    BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(s0)>));
-    BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(s)>));
-    BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(sc0)>));
-    BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(sc)>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessCursor<decltype(s0)>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessCursor<decltype(s)>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessCursor<decltype(sc0)>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessCursor<decltype(sc)>));
 
-    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<decltype(s0)>));
-    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<decltype(s)>));
-    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<decltype(sc0)>));
-    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<decltype(sc)>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableCursor<decltype(s0)>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableCursor<decltype(s)>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableCursor<decltype(sc0)>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableCursor<decltype(sc)>));
 
-    BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<decltype(s), int>));
-    BOOST_CONCEPT_ASSERT((ural::concepts::WritableSequence<decltype(s0), int>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::WritableCursor<decltype(s), int>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::WritableCursor<decltype(s0), int>));
 
     BOOST_CHECK(s0.traversed_begin() == nullptr);
     BOOST_CHECK(s0.begin() == nullptr);

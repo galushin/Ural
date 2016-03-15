@@ -90,8 +90,8 @@ BOOST_AUTO_TEST_CASE(for_each_test)
     auto const r_std = std::for_each(x_std.begin(), x_std.end(), +action);
     auto const r_ural = ural::for_each(x_ural, +action);
 
-    BOOST_CHECK(r_ural[ural::_1].original() == ural::sequence(x_ural));
-    BOOST_CHECK(r_ural[ural::_1].traversed_front() == ural::sequence(x_ural));
+    BOOST_CHECK(r_ural[ural::_1].original() == ural::cursor(x_ural));
+    BOOST_CHECK(r_ural[ural::_1].traversed_front() == ural::cursor(x_ural));
 
     BOOST_CHECK_EQUAL(r_std, r_ural[ural::_2].target());
 
@@ -351,8 +351,8 @@ BOOST_AUTO_TEST_CASE(is_permutation_test_different_traversed_front)
     auto const s1 = ural::numbers(1, 9);
     auto const s2 = ural::numbers(0, 9);
 
-    auto const seq1 = ural_ex::make_cartesian_product_sequence(s1, s2);
-    auto const seq2 = ural_ex::make_cartesian_product_sequence(s2, s2);
+    auto const seq1 = ural_ex::make_cartesian_product_cursor(s1, s2);
+    auto const seq2 = ural_ex::make_cartesian_product_cursor(s2, s2);
 
     static_assert(!std::is_same<decltype(seq1), decltype(seq1.traversed_front())>::value, "");
 
@@ -435,8 +435,8 @@ BOOST_AUTO_TEST_CASE(fused_for_each_test)
 
     auto result = ural_ex::fused_for_each(xs, &std::string::push_back);
 
-    BOOST_CHECK(result[ural::_1].original() == ural::sequence(xs));
-    BOOST_CHECK(result[ural::_1].traversed_front() == ural::sequence(xs));
+    BOOST_CHECK(result[ural::_1].original() == ural::cursor(xs));
+    BOOST_CHECK(result[ural::_1].traversed_front() == ural::cursor(xs));
 
     BOOST_CHECK(result[ural::_2].target() == &std::string::push_back);
 

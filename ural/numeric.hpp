@@ -55,16 +55,16 @@ inline namespace v0
         элементу последовательности
         */
         template <class Output, class Incrementable>
-        SequenceType<Output>
+        cursor_type_t<Output>
         operator()(Output && seq, Incrementable init_value) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequenced<Output>));
-            BOOST_CONCEPT_ASSERT((concepts::OutputSequence<SequenceType<Output>,
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Output>));
+            BOOST_CONCEPT_ASSERT((concepts::OutputCursor<cursor_type_t<Output>,
                                                            Incrementable>));
             BOOST_CONCEPT_ASSERT((concepts::Semiregular<Incrementable>));
             BOOST_CONCEPT_ASSERT((concepts::WeakIncrementable<Incrementable>));
 
-            return impl(::ural::sequence_fwd<Output>(seq),
+            return impl(::ural::cursor_fwd<Output>(seq),
                         std::move(init_value));
         }
 
@@ -72,7 +72,7 @@ inline namespace v0
         template <class Output, class Incrementable>
         Output impl(Output seq, Incrementable init_value) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::OutputSequence<Output, Incrementable>));
+            BOOST_CONCEPT_ASSERT((concepts::OutputCursor<Output, Incrementable>));
             BOOST_CONCEPT_ASSERT((concepts::Semiregular<Incrementable>));
             BOOST_CONCEPT_ASSERT((concepts::WeakIncrementable<Incrementable>));
 
@@ -108,17 +108,17 @@ inline namespace v0
         T operator()(Input && in, T init_value,
                      BinaryOperation op = BinaryOperation()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<BinaryOperation, T const *,
-                                                             SequenceType<Input>>));
+                                                             cursor_type_t<Input>>));
             BOOST_CONCEPT_ASSERT((concepts::Semiregular<T>));
 
             typedef IndirectCallableResultType<BinaryOperation, T const *,
-                                               SequenceType<Input>> Result;
+                                               cursor_type_t<Input>> Result;
 
             BOOST_CONCEPT_ASSERT((concepts::Same<T, Result>));
 
-            return impl(::ural::sequence_fwd<Input>(in),
+            return impl(::ural::cursor_fwd<Input>(in),
                         std::move(init_value),
                         ::ural::make_callable(std::move(op)));
         }
@@ -127,7 +127,7 @@ inline namespace v0
         template <class Input, class T, class BinaryOperation>
         T impl(Input in, T init_value, BinaryOperation op) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<BinaryOperation, T const *, Input>));
             BOOST_CONCEPT_ASSERT((concepts::Semiregular<T>));
 
@@ -171,23 +171,23 @@ inline namespace v0
                      BinaryOperation1 add = BinaryOperation1(),
                      BinaryOperation2 mult = BinaryOperation2()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input1>));
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input2>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input2>));
             BOOST_CONCEPT_ASSERT((concepts::Semiregular<T>));
 
             BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<BinaryOperation2,
-                                                             SequenceType<Input1>,
-                                                             SequenceType<Input2>>));
+                                                             cursor_type_t<Input1>,
+                                                             cursor_type_t<Input2>>));
 
-            typedef IndirectCallableResultType<BinaryOperation2, SequenceType<Input1>,
-                                               SequenceType<Input2>> Product;
+            typedef IndirectCallableResultType<BinaryOperation2, cursor_type_t<Input1>,
+                                               cursor_type_t<Input2>> Product;
             BOOST_CONCEPT_ASSERT((concepts::Function<BinaryOperation1, T, Product>));
 
             typedef ResultType<BinaryOperation1, T, Product> Result;
             BOOST_CONCEPT_ASSERT((concepts::Same<Result, T>));
 
-            return impl(::ural::sequence_fwd<Input1>(in1),
-                        ::ural::sequence_fwd<Input2>(in2),
+            return impl(::ural::cursor_fwd<Input1>(in1),
+                        ::ural::cursor_fwd<Input2>(in2),
                         std::move(init_value),
                         ::ural::make_callable(std::move(add)),
                         ::ural::make_callable(std::move(mult)));
@@ -199,8 +199,8 @@ inline namespace v0
         T impl(Input1 in1, Input2 in2, T value,
                BinaryOperation1 add, BinaryOperation2 mult) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input1>));
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input2>));
+            BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input2>));
             BOOST_CONCEPT_ASSERT((concepts::Semiregular<T>));
 
             BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<BinaryOperation2, Input1, Input2>));
@@ -211,7 +211,7 @@ inline namespace v0
             typedef ResultType<BinaryOperation1, T, Product> Result;
             BOOST_CONCEPT_ASSERT((concepts::Same<Result, T>));
 
-            auto in_prod = ::ural::experimental::make_transform_sequence(std::move(mult),
+            auto in_prod = ::ural::experimental::make_transform_cursor(std::move(mult),
                                                                          std::move(in1),
                                                                          std::move(in2));
             return ::ural::accumulate_fn{}(std::move(in_prod),
@@ -237,23 +237,23 @@ inline namespace v0
                   class BinaryFunction = ::ural::plus<>>
         auto operator()(Input && in, Output && out,
                         BinaryFunction bin_op = BinaryFunction()) const
-        -> tuple<decltype(::ural::sequence_fwd<Input>(in)),
-                 decltype(::ural::sequence_fwd<Output>(out))>
+        -> tuple<decltype(::ural::cursor_fwd<Input>(in)),
+                 decltype(::ural::cursor_fwd<Output>(out))>
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<BinaryFunction,
-                                                             SequenceType<Input>,
-                                                             SequenceType<Input>>));
-            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequenced<Output>));
+                                                             cursor_type_t<Input>,
+                                                             cursor_type_t<Input>>));
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Output>));
 
-            typedef IndirectCallableResultType<BinaryFunction, SequenceType<Input>,
-                                               SequenceType<Input>> Result;
-            BOOST_CONCEPT_ASSERT((concepts::Writable<SequenceType<Output>, Result>));
+            typedef IndirectCallableResultType<BinaryFunction, cursor_type_t<Input>,
+                                               cursor_type_t<Input>> Result;
+            BOOST_CONCEPT_ASSERT((concepts::Writable<cursor_type_t<Output>, Result>));
 
-            auto in_sum = ural::experimental::partial_sums(sequence_fwd<Input>(in),
+            auto in_sum = ural::experimental::partial_sums(cursor_fwd<Input>(in),
                                                            ::ural::make_callable(std::move(bin_op)));
             auto res = ural::copy_fn{}(std::move(in_sum),
-                                       ::ural::sequence_fwd<Output>(out));
+                                       ::ural::cursor_fwd<Output>(out));
 
             return ural::make_tuple(std::move(res[ural::_1]).base(),
                                     std::move(res[ural::_2]));
@@ -280,23 +280,23 @@ inline namespace v0
                   class BinaryFunction = ::ural::minus<>>
         auto operator()(Input && in, Output && out,
                         BinaryFunction bin_op = BinaryFunction()) const
-        -> tuple<decltype(::ural::sequence_fwd<Input>(in)),
-                 decltype(::ural::sequence_fwd<Output>(out))>
+        -> tuple<decltype(::ural::cursor_fwd<Input>(in)),
+                 decltype(::ural::cursor_fwd<Output>(out))>
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<BinaryFunction,
-                                                             SequenceType<Input>,
-                                                             SequenceType<Input>>));
-            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequenced<Output>));
+                                                             cursor_type_t<Input>,
+                                                             cursor_type_t<Input>>));
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Output>));
 
-            typedef IndirectCallableResultType<BinaryFunction, SequenceType<Input>,
-                                               SequenceType<Input>> Result;
-            BOOST_CONCEPT_ASSERT((concepts::Writable<SequenceType<Output>, Result>));
+            typedef IndirectCallableResultType<BinaryFunction, cursor_type_t<Input>,
+                                               cursor_type_t<Input>> Result;
+            BOOST_CONCEPT_ASSERT((concepts::Writable<cursor_type_t<Output>, Result>));
 
-            auto in_dif = ural::experimental::adjacent_differences(::ural::sequence_fwd<Input>(in),
+            auto in_dif = ural::experimental::adjacent_differences(::ural::cursor_fwd<Input>(in),
                                                                    ::ural::make_callable(std::move(bin_op)));
             auto res = ural::copy_fn{}(std::move(in_dif),
-                                       ::ural::sequence_fwd<Output>(out));
+                                       ::ural::cursor_fwd<Output>(out));
             return ural::make_tuple(std::move(res[ural::_1]).base(),
                                     std::move(res[ural::_2]));
         }
@@ -322,7 +322,7 @@ namespace experimental
     */
     template <class RASequence1, class RASequence2>
     class convolution_sequence
-     : public sequence_base<convolution_sequence<RASequence1, RASequence2> >
+     : public cursor_base<convolution_sequence<RASequence1, RASequence2> >
     {
     public:
         /// @brief Категория курсора
@@ -352,7 +352,7 @@ namespace experimental
             this->calc();
         }
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         bool operator!() const
         {
             auto const n = members_[ural::_1].size() + members_[ural::_2].size();
@@ -413,11 +413,11 @@ namespace experimental
 
     template <class RASequence1, class RASequence2>
     auto make_convolution_sequence(RASequence1 && s1, RASequence2 && s2)
-    -> convolution_sequence<decltype(::ural::sequence_fwd<RASequence1>(s1)),
-                            decltype(::ural::sequence_fwd<RASequence2>(s2))>
+    -> convolution_sequence<decltype(::ural::cursor_fwd<RASequence1>(s1)),
+                            decltype(::ural::cursor_fwd<RASequence2>(s2))>
     {
-        return {::ural::sequence_fwd<RASequence1>(s1),
-                ::ural::sequence_fwd<RASequence2>(s2)};
+        return {::ural::cursor_fwd<RASequence1>(s1),
+                ::ural::cursor_fwd<RASequence2>(s2)};
     }
 
     class discrete_convolution_function
@@ -431,7 +431,7 @@ namespace experimental
             Vector result(x.size() + y.size() - 1);
 
             copy_fn{}(::ural::experimental::make_convolution_sequence(x, y),
-                      ural::sequence(result));
+                      ural::cursor(result));
 
             return result;
         }
@@ -450,7 +450,7 @@ namespace experimental
     */
     template <class RealType>
     class sqrt_heron_sequence
-     : public sequence_base<sqrt_heron_sequence<RealType>>
+     : public cursor_base<sqrt_heron_sequence<RealType>>
     {
     public:
         // Типы
@@ -479,7 +479,7 @@ namespace experimental
             }
         }
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Проверка исчерпания последовательностей
         @return @b true, если последовательность исчерпана, иначе --- @b false.
         */
@@ -534,7 +534,7 @@ namespace experimental
     */
     template <class Vector>
     class pascal_triangle_rows_sequence
-     : public sequence_base<pascal_triangle_rows_sequence<Vector>>
+     : public cursor_base<pascal_triangle_rows_sequence<Vector>>
     {
     public:
         // Типы
@@ -552,7 +552,7 @@ namespace experimental
          : row_{1}
         {}
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Проверка исчерпания последовательности
         @return @b true, если последовательность исчерпана, иначе -- @b false
         */

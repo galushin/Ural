@@ -97,7 +97,7 @@ namespace experimental
     */
     template <class IntType, class D = use_default>
     class sqrt_as_continued_fraction_sequence
-     : public ural::sequence_base<sqrt_as_continued_fraction_sequence<IntType>>
+     : public ural::cursor_base<sqrt_as_continued_fraction_sequence<IntType>>
     {
     public:
         // Типы
@@ -115,7 +115,7 @@ namespace experimental
         using cursor_tag = finite_input_cursor_tag;
 
         /// @brief Тип расстояния
-        using distance_type = experimental::DefaultedType<D, std::intmax_t>;
+        using distance_type = experimental::defaulted_type_t<D, std::intmax_t>;
 
         // Конструкторы
         /** @brief Конструктор
@@ -132,7 +132,7 @@ namespace experimental
             // Порядок инициализации важен: N_ до a_0_
         }
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Проверка исчерпания последовательностей
         @return @b true, если последовательность исчерпана, иначе --- @b false.
         */

@@ -376,7 +376,7 @@ namespace experimental
         typedef T value_type;
 
         /// @brief Тип распределителя памяти
-        using allocator_type = experimental::DefaultedType<Alloc, std::allocator<T>>;
+        using allocator_type = experimental::defaulted_type_t<Alloc, std::allocator<T>>;
 
         /// @brief Тип ссылки
         typedef value_type & reference;
@@ -412,7 +412,7 @@ namespace experimental
         typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
         /// @brief Класс-стратегия проверок
-        using policy_type = experimental::DefaultedType<Policy, container_checking_assert_policy>;
+        using policy_type = experimental::defaulted_type_t<Policy, container_checking_assert_policy>;
 
         // Конструкторы
         /** @brief Создание пустого контейнера
@@ -618,7 +618,7 @@ namespace experimental
             // @todo Проверка, что first и last не ссылаются внутрь контейнера
             // Проблема в том, что first и last могут ссылаться внутрь
             // контейнера косвенно
-            return this->assign(ural::make_iterator_sequence(first, last));
+            return this->assign(ural::make_iterator_cursor(first, last));
         }
 
         /** @brief Замена элементов контейнера на @c n элементов, каждый из
@@ -1045,7 +1045,7 @@ namespace experimental
             policy_type::assert_can_insert_before(this->cbegin(), this->cend(),
                                                   position);
 
-            auto s = ural::sequence_fwd<InputSequence>(seq);
+            auto s = ural::cursor_fwd<InputSequence>(seq);
 
             using Category = typename decltype(s)::cursor_tag;
 
@@ -1080,8 +1080,8 @@ namespace experimental
         insert(const_iterator position, InputIterator first, InputIterator last)
         {
             // @todo Проверка предусловия
-            return this->insert(position, ural::make_iterator_sequence(std::move(first),
-                                                                       std::move(last)));
+            auto cur = ural::make_iterator_cursor(std::move(first), std::move(last));
+            return this->insert(position, std::move(cur));
         }
 
         /** @brief Вставка элементов списка инициализаторов перед указанной
@@ -1141,8 +1141,8 @@ namespace experimental
             auto source = this->begin() + (last - this->cbegin());
 
             // 2. Перемещаем последние элементы на места удаляемых
-            auto in  = ural::make_iterator_sequence(source, this->end());
-            auto out = ural::make_iterator_sequence(sink,   this->end());
+            auto in  = ::ural::make_iterator_cursor(source, this->end());
+            auto out = ::ural::make_iterator_cursor(sink,   this->end());
 
             // first < last, значит sink < source, значит
             // out исчерпается позже, чем in

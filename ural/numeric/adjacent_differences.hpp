@@ -36,7 +36,7 @@ namespace experimental
     */
     template <class Input, class BinaryOperation>
     class adjacent_differences_sequence
-     : public sequence_base<adjacent_differences_sequence<Input, BinaryOperation>>
+     : public cursor_base<adjacent_differences_sequence<Input, BinaryOperation>>
     {
     public:
         /// @brief Тип значения
@@ -70,7 +70,7 @@ namespace experimental
             }
         }
 
-        // Прямая последовательность
+        // Прямой курсор
         /** @brief Проверка исчерпания последовательности
         @return <tt> !this->base() </tt>.
         */
@@ -98,7 +98,7 @@ namespace experimental
             }
         }
 
-        // Прямая последовательность
+        // Прямой курсор
         /** @brief Передняя пройденная часть последовательности
         @return Передняя пройденная часть последовательности
         */
@@ -152,7 +152,7 @@ namespace experimental
         */
         template <class Input>
         auto operator()(Input && in) const
-        -> adjacent_differences_sequence<decltype(::ural::sequence_fwd<Input>(in)),
+        -> adjacent_differences_sequence<decltype(::ural::cursor_fwd<Input>(in)),
                                          ural::minus<>>
         {
             return (*this)(std::forward<Input>(in), ural::minus<>{});
@@ -164,12 +164,12 @@ namespace experimental
         */
         template <class Input, class BinaryOperation>
         auto operator()(Input && in, BinaryOperation sub) const
-        -> adjacent_differences_sequence<decltype(::ural::sequence_fwd<Input>(in)),
+        -> adjacent_differences_sequence<decltype(::ural::cursor_fwd<Input>(in)),
                                          decltype(make_callable(std::move(sub)))>
         {
-            typedef adjacent_differences_sequence<decltype(::ural::sequence_fwd<Input>(in)),
+            typedef adjacent_differences_sequence<decltype(::ural::cursor_fwd<Input>(in)),
                                                   decltype(make_callable(std::move(sub)))> Result;
-            return Result(::ural::sequence_fwd<Input>(in),
+            return Result(::ural::cursor_fwd<Input>(in),
                           make_callable(std::move(sub)));
         }
     };

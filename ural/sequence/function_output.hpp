@@ -29,17 +29,17 @@ namespace ural
 {
 namespace experimental
 {
-    /** @brief Выходная последовательность, выполняющая вызов функции для
-    каждого "записываемого элемента"
+    /** @brief Курсор вывода, выполняющая вызов функции для каждого
+    "записываемого элемента"
     @tparam UnaryFunction тип унарного функционального объекта
     @tparam D тип расстояния, по умолчанию используется <tt>std::ptrdiff_t</tt>
     */
     template <class UnaryFunction, class D = use_default>
-    class function_output_sequence
-     : public ural::sequence_base<function_output_sequence<UnaryFunction>,
+    class function_output_cursor
+     : public ural::cursor_base<function_output_cursor<UnaryFunction>,
                                    UnaryFunction>
     {
-        typedef ural::sequence_base<function_output_sequence<UnaryFunction>,
+        typedef ural::cursor_base<function_output_cursor<UnaryFunction>,
                                     UnaryFunction> Base_class;
     public:
         // Типы
@@ -53,7 +53,7 @@ namespace experimental
         typedef void value_type;
 
         /// @brief Тип расстояния
-        using difference_type = experimental::DefaultedType<D, std::ptrdiff_t>;
+        using difference_type = experimental::defaulted_type_t<D, std::ptrdiff_t>;
 
         /// @brief Тип указателя
         typedef void pointer;
@@ -65,7 +65,7 @@ namespace experimental
         /** @brief Конструктор без аргументов
         @post <tt> this->function() == UnaryFunction{} </tt>
         */
-        function_output_sequence()
+        function_output_cursor()
          : Base_class()
         {}
 
@@ -73,7 +73,7 @@ namespace experimental
         @param f функциональный объект
         @post <tt> this->function() == f </tt>
         */
-        explicit function_output_sequence(UnaryFunction f)
+        explicit function_output_cursor(UnaryFunction f)
          : Base_class{std::move(f)}
         {}
 
@@ -86,7 +86,7 @@ namespace experimental
             return this->payload();
         }
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Провекра исчерпания последовательности
         @return @b false.
         */
@@ -98,7 +98,7 @@ namespace experimental
         /** @brief Текущий элемент
         @return <tt> *this </tt>
         */
-        function_output_sequence & operator*()
+        function_output_cursor & operator*()
         {
             return *this;
         }
@@ -111,11 +111,11 @@ namespace experimental
         /** @brief Оператор присваивания
         @return *this
         */
-        function_output_sequence &
-        operator=(function_output_sequence const &) = default;
+        function_output_cursor &
+        operator=(function_output_cursor const &) = default;
 
-        function_output_sequence &
-        operator=(function_output_sequence &) = default;
+        function_output_cursor &
+        operator=(function_output_cursor &) = default;
         //@}
 
         /** @brief Передача значения функциональному объекту
@@ -123,7 +123,7 @@ namespace experimental
         @return *this
         */
         template <class Arg>
-        function_output_sequence & operator=(Arg && arg)
+        function_output_cursor & operator=(Arg && arg)
         {
             this->function_ref()(std::forward<Arg>(arg));
             return *this;
@@ -136,17 +136,17 @@ namespace experimental
         }
     };
 
-    /** @brief Создание @c make_function_output_sequence
+    /** @brief Создание @c function_output_cursor
     @param f функциональный объект
-    @return <tt> function_output_sequence<F>(make_callable(std::move(f))) </tt>,
+    @return <tt> function_output_cursor<F>(make_callable(std::move(f))) </tt>,
     где @c F есть decltype(ural::make_callable(std::move(f))).
     */
     template <class UnaryFunction>
-    auto make_function_output_sequence(UnaryFunction f)
-    -> function_output_sequence<decltype(ural::make_callable(std::move(f)))>
+    auto make_function_output_cursor(UnaryFunction f)
+    -> function_output_cursor<decltype(ural::make_callable(std::move(f)))>
     {
         typedef decltype(ural::make_callable(std::move(f))) Function;
-        typedef function_output_sequence<Function> Result;
+        typedef function_output_cursor<Function> Result;
         return Result(ural::make_callable(std::move(f)));
     }
 }

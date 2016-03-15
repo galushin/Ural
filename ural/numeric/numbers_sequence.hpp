@@ -30,7 +30,7 @@ namespace ural
 {
 namespace experimental
 {
-    /** @brief Последовательность чисел, заданная наименьшим и наибольшим
+    /** @brief Курсор последовательности чисел, заданной наименьшим и наибольшим
     значением
     @tparam Number тип числа
     @tparam D тип приращения
@@ -38,13 +38,13 @@ namespace experimental
     */
     template <class Number, class Step = use_default,
               class CursorTag = use_default>
-    class numbers_sequence
-     : public sequence_adaptor<numbers_sequence<Number, Step, CursorTag>,
-                               taken_exactly_sequence<arithmetic_progression<Number, use_default, CursorTag, Step>, std::ptrdiff_t>>
+    class numbers_cursor
+     : public cursor_adaptor<numbers_cursor<Number, Step, CursorTag>,
+                               taken_exactly_cursor<arithmetic_progression_cursor<Number, use_default, CursorTag, Step>, std::ptrdiff_t>>
     {
-        using Progression = arithmetic_progression<Number, use_default, CursorTag, Step>;
-        using Taken = taken_exactly_sequence<Progression, std::ptrdiff_t>;
-        using Inherited = sequence_adaptor<numbers_sequence, Taken>;
+        using Progression = arithmetic_progression_cursor<Number, use_default, CursorTag, Step>;
+        using Taken = taken_exactly_cursor<Progression, std::ptrdiff_t>;
+        using Inherited = cursor_adaptor<numbers_cursor, Taken>;
 
     public:
         // Типы
@@ -63,8 +63,8 @@ namespace experimental
         @param n число шагов
         @post <tt> this->front() == x_min </tt>
         */
-        numbers_sequence(Number x_min, distance_type n)
-         : numbers_sequence(std::move(x_min), std::move(n), step_type(1))
+        numbers_cursor(Number x_min, distance_type n)
+         : numbers_cursor(std::move(x_min), std::move(n), step_type(1))
         {}
 
         /** @brief Конструктор
@@ -73,7 +73,7 @@ namespace experimental
         @param step шаг
         @post <tt> this->front() == x_min </tt>
         */
-        numbers_sequence(Number x_min, distance_type n, step_type step)
+        numbers_cursor(Number x_min, distance_type n, step_type step)
          : Inherited(Taken(Progression(std::move(x_min), std::move(step)), std::move(n)))
         {}
 
@@ -85,44 +85,44 @@ namespace experimental
             return Inherited::base().base().step();
         }
 
-        // Прямая последовательность - за счёт адаптора
+        // Прямой курсор - за счёт адаптора
 
     private:
         friend Inherited;
 
-        explicit numbers_sequence(Taken s)
+        explicit numbers_cursor(Taken s)
          : Inherited(std::move(s))
         {}
     };
 
-    /// @brief Тип Функционального объекта для создания @c numbers_sequence
+    /// @brief Тип Функционального объекта для создания @c numbers_cursor
     struct numbers_fn
     {
         // @todo Проверить переполнения и сужения
     public:
-        /** @brief Создание последовательности чисел
+        /** @brief Создание курсора последовательности чисел
         @param x_min наименьшее значение
         @param x_max наибольшее значение
         */
         template <class T1, class T2>
-        numbers_sequence<CommonType<T1, T2>, unit_t>
+        numbers_cursor<CommonType<T1, T2>, unit_t>
         operator()(T1 x_min, T2 x_max) const
         {
             using T = CommonType<T1, T2>;
             assert(T(x_min) <= T(x_max));
 
-            typedef numbers_sequence<T, unit_t> Seq;
+            typedef numbers_cursor<T, unit_t> Seq;
             return Seq(std::move(x_min), std::move(x_max) - x_min, unit_t{});
         }
 
-        /** @brief Создание последовательности чисел
+        /** @brief Создание курсора последовательности чисел
         @param from, to границы интервала <tt> [from, to) </tt>
         @param step шаг
         @pre <tt> step != 0 </tt>
         @pre <tt> (step > 0) ? (first <= last) : (last <= first) </tt>
         */
         template <class T1, class T2, class D>
-        numbers_sequence<CommonType<T1, T2>, D>
+        numbers_cursor<CommonType<T1, T2>, D>
         operator()(T1 first, T2 last, D step) const
         {
             using T = CommonType<T1, T2>;
@@ -138,18 +138,18 @@ namespace experimental
 
             assert(n >= 0);
 
-            using Sequence = numbers_sequence<CommonType<T1, T2>, D>;
-            return Sequence(std::move(first), std::move(n), std::move(step));
+            using Cursor = numbers_cursor<CommonType<T1, T2>, D>;
+            return Cursor(std::move(first), std::move(n), std::move(step));
         }
     };
 
-    /** @brief Тип функционального объекта для создания последовательности
-    индексов контейнера.
+    /** @brief Тип функционального объекта для создания курсора
+    последовательности индексов контейнера.
     */
     struct indices_of_fn
     {
     public:
-        /** @brief Создание последовательности индексов массива
+        /** @brief Создание курсора последовательности индексов массива
         @param v массив
         @return <tt> ural::isequence(0, v.size()) </tt>
         */

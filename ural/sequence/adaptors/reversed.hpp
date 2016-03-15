@@ -37,10 +37,10 @@ namespace experimental
     */
     template <class BidirectionalSequence>
     class reverse_sequence
-     : public sequence_adaptor<reverse_sequence<BidirectionalSequence>,
+     : public cursor_adaptor<reverse_sequence<BidirectionalSequence>,
                                BidirectionalSequence>
     {
-        using Base = sequence_adaptor<reverse_sequence<BidirectionalSequence>,
+        using Base = cursor_adaptor<reverse_sequence<BidirectionalSequence>,
                                       BidirectionalSequence>;
     public:
         // Типы
@@ -59,7 +59,7 @@ namespace experimental
          : Base(std::move(seq))
         {}
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Текущий элемент последовательности
         @pre <tt> !*this == false </tt>
         @return <tt> this->base().back() </tt>
@@ -205,8 +205,8 @@ namespace experimental
         template <class BidirectionalSequence>
         auto operator()(BidirectionalSequence && seq) const
         {
-            typedef reverse_sequence<SequenceType<BidirectionalSequence>> Seq;
-            return Seq(::ural::sequence_fwd<BidirectionalSequence>(seq));
+            typedef reverse_sequence<cursor_type_t<BidirectionalSequence>> Seq;
+            return Seq(::ural::cursor_fwd<BidirectionalSequence>(seq));
         }
     };
 
@@ -221,18 +221,17 @@ namespace experimental
             = odr_const<experimental::pipeable<make_reverse_sequence_fn>>;
     }
 
-    /** @brief Создание обратной последовательности на основе
-    <tt> std::reverse_iterator </tt>
+    /** @brief Создание обратного курсора на основе <tt> std::reverse_iterator </tt>
     @param first итератор, задающий начало последовательности.
     @param last итератор, задающий конец последовательности.
-    @return <tt> make_reverse_sequence(make_iterator_sequence(last.base(), first.base())) </tt>
+    @return <tt> make_reverse_cursor(make_iterator_cursor(last.base(), first.base())) </tt>
     */
     template <class Iterator>
-    auto make_iterator_sequence(std::reverse_iterator<Iterator> first,
-                                std::reverse_iterator<Iterator> last)
+    auto make_iterator_cursor(std::reverse_iterator<Iterator> first,
+                              std::reverse_iterator<Iterator> last)
     {
-        using ::ural::make_iterator_sequence;
-        return make_iterator_sequence(last.base(), first.base()) | reversed;
+        using ::ural::make_iterator_cursor;
+        return make_iterator_cursor(last.base(), first.base()) | reversed;
     }
 }
 // namespace experimental

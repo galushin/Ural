@@ -555,12 +555,12 @@ BOOST_AUTO_TEST_CASE(fibonacci_sequence_custom_init_values)
     constexpr auto const x1 = 2;
     constexpr auto const x2 = 3;
 
-    using FS = decltype(ural_ex::make_fibonacci_sequence(x1, x2));
+    using FS = decltype(ural_ex::make_fibonacci_cursor(x1, x2));
 
-    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<FS>));
-    BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<FS>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableCursor<FS>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassCursor<FS>));
 
-    constexpr auto const seq = ural_ex::make_fibonacci_sequence(x1, x2);
+    constexpr auto const seq = ural_ex::make_fibonacci_cursor(x1, x2);
 
     static_assert(*seq == x1, "");
 
@@ -575,7 +575,7 @@ BOOST_AUTO_TEST_CASE(fibonacci_sequence_custom_init_values_and_operations)
     constexpr auto const x2 = 3;
     constexpr auto const op = ural::multiplies<decltype(x1)>{};
 
-    constexpr auto const seq = ural_ex::make_fibonacci_sequence(x1, x2, op);
+    constexpr auto const seq = ural_ex::make_fibonacci_cursor(x1, x2, op);
 
     static_assert(sizeof(seq) == 2 * sizeof(x1), "");
 
@@ -595,21 +595,21 @@ BOOST_AUTO_TEST_CASE(fibonacci_sequence_explicit_single_pass)
 {
     using Integer = int;
 
-    using FS = ural_ex::fibonacci_sequence<Integer, ural::use_default,
-                                           ural::single_pass_cursor_tag>;
+    using FS = ural_ex::fibonacci_cursor<Integer, ural::use_default,
+                                         ural::single_pass_cursor_tag>;
 
-    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<FS>));
-    BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<FS>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableCursor<FS>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassCursor<FS>));
 }
 
 BOOST_AUTO_TEST_CASE(fibonacci_sequence_explicit_forward)
 {
     using Integer = int;
 
-    using FS = ural_ex::fibonacci_sequence<Integer, ural::use_default,
+    using FS = ural_ex::fibonacci_cursor<Integer, ural::use_default,
                                            ural::forward_cursor_tag>;
 
-    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<FS>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableCursor<FS>));
     BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<FS>));
 }
 
@@ -619,9 +619,9 @@ BOOST_AUTO_TEST_CASE(fibonacci_sequence_with_operation_single_pass_traversal)
 
     using Operation = Integer(*)(Integer, Integer);
 
-    using FS = ural_ex::fibonacci_sequence<Integer, Operation>;
+    using FS = ural_ex::fibonacci_cursor<Integer, Operation>;
 
-    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<FS>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableCursor<FS>));
     BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<FS>));
 }
 
@@ -631,9 +631,9 @@ BOOST_AUTO_TEST_CASE(fibonacci_sequence_forward_traversal)
 
     using Operation = Integer(*)(Integer, Integer);
 
-    using FS = ural_ex::fibonacci_sequence<Integer, Operation, ural::forward_cursor_tag>;
+    using FS = ural_ex::fibonacci_cursor<Integer, Operation, ural::forward_cursor_tag>;
 
-    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<FS>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableCursor<FS>));
     BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<FS>));
 
     auto const op1 = +[](Integer x, Integer y) { return x + y; };
@@ -655,8 +655,8 @@ BOOST_AUTO_TEST_CASE(fibonacci_sequence_forward_traversal)
 
 BOOST_AUTO_TEST_CASE(fibonacci_sequence_shrink_front)
 {
-    auto seq = ural_ex::fibonacci_sequence<int, ural::use_default,
-                                           ural::forward_cursor_tag>{};
+    auto seq = ural_ex::fibonacci_cursor<int, ural::use_default,
+                                         ural::forward_cursor_tag>{};
 
     ural::advance(seq, 3);
 

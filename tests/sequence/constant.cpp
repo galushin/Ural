@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(constant_sequence_explcit_single_pass)
 
     ural_ex::constant_sequence<char, ural::single_pass_cursor_tag> seq(value);
 
-    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<decltype(seq)>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableCursor<decltype(seq)>));
     BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<decltype(seq)>));
 
     ural::copy(std::move(seq), actual);
@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE(constant_sequence_explcit_forward)
     using CS = ural_ex::constant_sequence<char, ural::forward_cursor_tag>;
     auto const seq = CS(value);
 
-    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<CS>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableCursor<CS>));
     BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<CS>));
 
     auto r_seq = ural::copy(std::move(seq), actual)[ural::_1];

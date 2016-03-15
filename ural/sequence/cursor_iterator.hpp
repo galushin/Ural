@@ -1,5 +1,5 @@
-#ifndef Z_URAL_SEQUENCE_SEQUENCE_ITERATOR_HPP_INCLUDED
-#define Z_URAL_SEQUENCE_SEQUENCE_ITERATOR_HPP_INCLUDED
+#ifndef Z_URAL_SEQUENCE_cursor_iterator_HPP_INCLUDED
+#define Z_URAL_SEQUENCE_cursor_iterator_HPP_INCLUDED
 /*  This file is part of Ural.
 
     Ural is free software: you can redistribute it and/or modify
@@ -16,9 +16,9 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/** @file ural/sequence/sequence_iterator.hpp
- @brief Итератор на базе последовательности. Основная цель --- интеграция с
- циклом @c for для интервалов.
+/** @file ural/sequence/cursor_iterator.hpp
+ @brief Итератор на базе курсора. Основная цель --- интеграция с циклом @c for
+ для интервалов.
 */
 
 #include <ural/optional.hpp>
@@ -60,10 +60,6 @@ inline namespace v0
      : details::cursor_tag_base<forward_cursor_tag, input_cursor_tag>
     {};
 
-    struct pre_bidirectional_cursor_tag
-     : details::cursor_tag_base<pre_bidirectional_cursor_tag, forward_cursor_tag>
-    {};
-
     struct random_access_cursor_tag
      : details::cursor_tag_base<random_access_cursor_tag, forward_cursor_tag>
     {};
@@ -80,13 +76,8 @@ inline namespace v0
      : details::cursor_tag_base<finite_forward_cursor_tag, forward_cursor_tag, finite_input_cursor_tag>
     {};
 
-    struct finite_pre_bidirectional_cursor_tag
-     : details::cursor_tag_base<finite_pre_bidirectional_cursor_tag,
-                                pre_bidirectional_cursor_tag, finite_forward_cursor_tag>
-    {};
-
     struct bidirectional_cursor_tag
-     : details::cursor_tag_base<bidirectional_cursor_tag, finite_pre_bidirectional_cursor_tag>
+     : details::cursor_tag_base<bidirectional_cursor_tag, finite_forward_cursor_tag>
     {};
 
     struct finite_random_access_cursor_tag
@@ -99,9 +90,6 @@ inline namespace v0
     finite_forward_cursor_tag
     decl_finite_cursor_tag(forward_cursor_tag);
 
-    finite_pre_bidirectional_cursor_tag
-    decl_finite_cursor_tag(pre_bidirectional_cursor_tag);
-
     bidirectional_cursor_tag
     decl_finite_cursor_tag(bidirectional_cursor_tag);
 
@@ -110,91 +98,88 @@ inline namespace v0
 
     template <class Tag>
     using make_finite_cursor_tag_t = decltype(decl_finite_cursor_tag(std::declval<Tag>()));
-}
-// namespace v0
 
-namespace experimental
-{
-    /** Итератор последовательностей для интервалов. Основная цель ---
-    интеграция с циклом @c for для интервалов. Измерения показывают, что
-    данные интераторы имеют "плату за абстракцию" примерно 2,5.
-    @brief Итератор на базе последовательности.
-    @param Sequence последовательность
+    /** Итератор на основе курсора. Основная цель --- интеграция с циклом @c for
+    для интервалов. Измерения показывают, что данные интераторы имеют "плату
+    за абстракцию" примерно 2,5. Не следует использовать этот класс в критичном
+    по времени выполнения коде.
+    @brief Итератор на базе курсора.
+    @param Cursor курсор
     @todo Есть ли необходимость и возможность усиливать категорию итератора
     до двунаправленного и/или произвольного доступа? Можно было бы реализовать
     операции итератора произвольного доступа относительно легко. Всё становится
     сложнее для двусторонних итераторов
     @todo макрос FOR_EACH для последовательностей
+    @todo Можно ли устранить специализацию?
     */
-    template <class Sequence>
-    class sequence_iterator
+    template <class Cursor>
+    class cursor_iterator
     {
         /** @brief Оператор "равно"
         @param x левый операнд
         @param y правый операнд
-        @return @b true, если последовательность @c x исчерпана, иначе
-        --- @b false.
+        @return @b true, если курсор @c x исчерпан, иначе --- @b false.
         */
-        friend bool operator==(sequence_iterator const & x,
-                               sequence_iterator const & y)
+        friend bool operator==(cursor_iterator const & x,
+                               cursor_iterator const & y)
         {
             assert(!y.impl_);
             assert(!!x.impl_);
             return !x.impl_.value();
         }
 
-        typedef typename std::remove_reference<Sequence>::type Sequence_type;
-
-        typedef std::is_same<typename Sequence_type::cursor_tag, input_cursor_tag>
-            is_single_pass_t;
+        using Cursor_type = typename std::remove_reference<Cursor>::type;
+        using is_single_pass_t = std::is_same<typename Cursor::cursor_tag, input_cursor_tag>;
 
     public:
         // Типы
         /// @brief Категория итератора
-        typedef typename std::conditional<is_single_pass_t::value,
-                                          std::input_iterator_tag,
-                                          std::forward_iterator_tag>::type iterator_category;
+        using iterator_category =
+            typename std::conditional<is_single_pass_t::value,
+                                      std::input_iterator_tag,
+                                      std::forward_iterator_tag>::type ;
 
         /// @brief Тип ссылки
-        typedef typename Sequence_type::reference reference;
+        using reference = ReferenceType<Cursor_type>;
 
         /// @brief Тип значения
-        typedef ValueType<Sequence_type> value_type;
+        using value_type = ValueType<Cursor_type>;
 
         /// @brief Тип указателя
-        typedef typename Sequence_type::pointer pointer;
+        using pointer = typename Cursor_type::pointer;
 
         /// @brief Тип расстояния
-        typedef DifferenceType<Sequence_type> difference_type;
+        using difference_type = DifferenceType<Cursor_type>;
 
         // Конструктор
         /** @brief Конструктор по-умолчанию. Создаёт итератор конца
-        последовательности
+        последовательности, представляемой курсором.
         */
-        sequence_iterator()
+        cursor_iterator()
          : impl_{experimental::nullopt}
         {}
 
-        /** @brief Создание начального итератора для последовательности
+        /** @brief Создание начального итератора для последовательности,
+        представляемой курсором.
         @param s последовательность
         @post <tt> *this </tt> Будет посещать те же элементы, что и @c s
         */
-        sequence_iterator(Sequence s)
+        cursor_iterator(Cursor s)
          : impl_(std::move(s))
         {}
 
         /// @brief Конструктор копий
-        sequence_iterator(sequence_iterator const &) = default;
+        cursor_iterator(cursor_iterator const &) = default;
 
         /// @brief Конструктор перемещения
-        sequence_iterator(sequence_iterator &&) = default;
+        cursor_iterator(cursor_iterator &&) = default;
 
         //@{
         /** @brief Оператор присваивания
         @return *this
         */
-        sequence_iterator & operator=(sequence_iterator const &) = default;
-        sequence_iterator & operator=(sequence_iterator &&) = default;
+        cursor_iterator & operator=(cursor_iterator const &) = default;
+        cursor_iterator & operator=(cursor_iterator &&) = default;
         //@}
 
         // Итератор ввода
@@ -210,7 +195,7 @@ namespace experimental
         /** @brief Переход к следующему элементу
         @return <tt> *this </tt>
         */
-        sequence_iterator & operator++()
+        cursor_iterator & operator++()
         {
             assert(!!impl_);
             ++*impl_;
@@ -218,19 +203,19 @@ namespace experimental
         }
 
     private:
-        ural::experimental::optional<Sequence> impl_;
+        ural::experimental::optional<Cursor> impl_;
     };
 
     /** @brief Итератор на основе ссылки на последовательность
     @note Не должен пережить последовательность, на основе которой создан
-    @tparam Sequence тип последовательности
+    @tparam Cursor тип последовательности
     @param x, y аргументы
     */
-    template <class Sequence>
-    class sequence_iterator<Sequence&>
+    template <class Cursor>
+    class cursor_iterator<Cursor&>
     {
-        friend bool operator==(sequence_iterator const & x,
-                               sequence_iterator const & y)
+        friend bool operator==(cursor_iterator const & x,
+                               cursor_iterator const & y)
         {
             assert(!y.impl_);
             assert(!!x.impl_);
@@ -242,42 +227,42 @@ namespace experimental
         typedef std::input_iterator_tag iterator_category;
 
         /// @brief Тип ссылки
-        typedef typename Sequence::reference reference;
+        typedef typename Cursor::reference reference;
 
         /// @brief Тип значения
-        typedef ValueType<Sequence> value_type;
+        typedef ValueType<Cursor> value_type;
 
         /// @brief Тип указателя
-        typedef typename Sequence::pointer pointer;
+        typedef typename Cursor::pointer pointer;
 
         /// @brief Тип расстояния
-        typedef DifferenceType<Sequence> difference_type;
+        typedef DifferenceType<Cursor> difference_type;
 
         /** @brief Конструктор по-умолчанию. Создаёт итератор конца
         последовательности
         */
-        sequence_iterator()
+        cursor_iterator()
          : impl_(experimental::nullopt)
         {}
 
         /** @brief Создание начального итератора для последовательности
-        @param seq последовательность
+        @param cur курсор
         @post <tt> *this </tt> Будет посещать те же элементы, что и @c seq
         */
-        sequence_iterator(Sequence & seq)
-         : impl_(seq)
+        cursor_iterator(Cursor & cur)
+         : impl_(cur)
         {}
 
         //@{
         /// @brief Конструктор копий
-        sequence_iterator(sequence_iterator const &) = default;
-        sequence_iterator(sequence_iterator &&) = default;
+        cursor_iterator(cursor_iterator const &) = default;
+        cursor_iterator(cursor_iterator &&) = default;
         //@}
 
         //@{
         /// @brief Оператор присваивания
-        sequence_iterator & operator=(sequence_iterator const &) = default;
-        sequence_iterator & operator=(sequence_iterator &&) = default;
+        cursor_iterator & operator=(cursor_iterator const &) = default;
+        cursor_iterator & operator=(cursor_iterator &&) = default;
         //@}
 
         // Итератор ввода
@@ -293,7 +278,7 @@ namespace experimental
         /** @brief Переход к следующему элементу
         @return <tt> *this </tt>
         */
-        sequence_iterator & operator++()
+        cursor_iterator & operator++()
         {
             assert(!!impl_);
             ++*impl_;
@@ -301,12 +286,12 @@ namespace experimental
         }
 
     private:
-        ural::experimental::optional<Sequence&> impl_;
+        ural::experimental::optional<Cursor&> impl_;
     };
 }
-// namespace experimental
+// namespace v0
 }
 // namespace ural
 
 #endif
-// Z_URAL_SEQUENCE_SEQUENCE_ITERATOR_HPP_INCLUDED
+// Z_URAL_SEQUENCE_cursor_iterator_HPP_INCLUDED

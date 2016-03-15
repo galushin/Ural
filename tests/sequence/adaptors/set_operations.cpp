@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(set_union_sequence_test)
     std::set_union(v1.begin(), v1.end(), v2.begin(), v2.end(),
                    std::back_inserter(r_std));
 
-    auto const r_ural = ural_ex::make_set_union_sequence(v1, v2)
+    auto const r_ural = ural_ex::make_set_union_cursor(v1, v2)
                       | ural_ex::to_container<std::vector>{};
 
     URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(set_intersection_sequence_test)
                           std::back_inserter(std_intersection));
 
     auto const ural_intersection
-        = ural_ex::make_set_intersection_sequence(v1, v2)
+        = ural_ex::make_set_intersection_cursor(v1, v2)
         | ural_ex::to_container<std::vector>{};
 
     URAL_CHECK_EQUAL_RANGES(std_intersection, ural_intersection);
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(set_difference_sequence_test)
     std::vector<int> std_diff;
     std::set_difference(v1.begin(), v1.end(), v2.begin(), v2.end(),
                         std::back_inserter(std_diff));
-    auto const ural_diff = ural_ex::make_set_difference_sequence(v1, v2)
+    auto const ural_diff = ural_ex::make_set_difference_cursor(v1, v2)
                          | ural_ex::to_container<std::vector>{};
 
     URAL_CHECK_EQUAL_RANGES(std_diff, ural_diff);
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE(set_symmetric_difference_sequence_test)
                                   std::back_inserter(r_std));
 
     auto const r_ural
-        = ural_ex::make_set_symmetric_difference_sequence(v1, v2)
+        = ural_ex::make_set_symmetric_difference_cursor(v1, v2)
         | ural_ex::to_container<std::vector>{};
 
     URAL_CHECK_EQUAL_RANGES(r_ural, r_std);
@@ -96,21 +96,21 @@ namespace
     struct set_op_sequence_maker
     {
         template <class S1, class S2>
-        SO<ural::SequenceType<S1>, ural::SequenceType<S2>>
+        SO<ural::cursor_type_t<S1>, ural::cursor_type_t<S2>>
         operator()(S1 && s1, S2 && s2) const
         {
-            using Result = SO<ural::SequenceType<S1>, ural::SequenceType<S2>>;
-            using ural::sequence;
-            return Result(sequence(s1), sequence(s2));
+            using Result = SO<ural::cursor_type_t<S1>, ural::cursor_type_t<S2>>;
+            using ural::cursor;
+            return Result(cursor(s1), cursor(s2));
         }
     };
 
     using SetOperationMakers
-        = boost::mpl::list<set_op_sequence_maker<ural_ex::merge_sequence>,
-                           set_op_sequence_maker<ural_ex::set_union_sequence>,
-                           set_op_sequence_maker<ural_ex::set_difference_sequence>,
-                           set_op_sequence_maker<ural_ex::set_intersection_sequence>,
-                           set_op_sequence_maker<ural_ex::set_symmetric_difference_sequence>>;
+        = boost::mpl::list<set_op_sequence_maker<ural_ex::merge_cursor>,
+                           set_op_sequence_maker<ural_ex::set_union_cursor>,
+                           set_op_sequence_maker<ural_ex::set_difference_cursor>,
+                           set_op_sequence_maker<ural_ex::set_intersection_cursor>,
+                           set_op_sequence_maker<ural_ex::set_symmetric_difference_cursor>>;
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(set_operations_traversed_front, Maker, SetOperationMakers)

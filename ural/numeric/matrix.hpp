@@ -217,7 +217,7 @@ namespace experimental
     */
     template <class Matrix, class CursorTag = finite_forward_cursor_tag>
     class matrix_by_rows_sequence
-     : public ural::sequence_base<matrix_by_rows_sequence<Matrix, CursorTag>>
+     : public ural::cursor_base<matrix_by_rows_sequence<Matrix, CursorTag>>
     {
         typedef typename Matrix::size_type size_type;
     public:
@@ -251,7 +251,7 @@ namespace experimental
          , row_(0)
         {}
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Текущий передний элемент последовательности
         @return Текущий передний элемент последовательности
         @pre <tt> !!*this </tt>
@@ -281,7 +281,7 @@ namespace experimental
             return *this;
         }
 
-        // Прямая последовательность
+        // Прямой курсор
         /** @brief Пройденная передняя часть последовательности
         */
         matrix_by_rows_sequence traversed_front() const

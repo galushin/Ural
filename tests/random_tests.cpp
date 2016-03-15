@@ -420,7 +420,7 @@ namespace
         std::vector<ValueType<InputSequence>> u(prob.size());
         ValueType<InputSequence> N = 0;
 
-        for(auto s = ::ural::sequence_fwd<InputSequence>(in); !!s; ++ s)
+        for(auto s = ::ural::cursor_fwd<InputSequence>(in); !!s; ++ s)
         {
             auto v = *s;
 
@@ -467,7 +467,7 @@ namespace
 
         auto gen = [&](){ return d(g); };
 
-        auto seq = ural_ex::make_generator_sequence(std::move(gen)) | ural_ex::taken(N);
+        auto seq = ural_ex::make_generator_cursor(std::move(gen)) | ural_ex::taken(N);
 
         auto p = pearson_test(std::move(seq), prob);
 

@@ -1,5 +1,5 @@
-#ifndef Z_URAL_SEQUENCE_ADAPTOR_HPP_INCLUDED
-#define Z_URAL_SEQUENCE_ADAPTOR_HPP_INCLUDED
+#ifndef Z_URAL_cursor_adaptor_HPP_INCLUDED
+#define Z_URAL_cursor_adaptor_HPP_INCLUDED
 
 /*  This file is part of Ural.
 
@@ -18,7 +18,7 @@
 */
 
 /** @file ural/sequence/adaptor.hpp
- @brief Универсальный адаптор последовательности
+ @brief Универсальный адаптор курсора
 */
 
 #include <ural/sequence/base.hpp>
@@ -28,47 +28,47 @@ namespace ural
 {
 namespace experimental
 {
-    /** @brief Универсальный адаптор последовательности
-    @tparam T класс, наследующий от данного sequence_adaptor
-    @tparam Sequence адаптируемая последовательность
+    /** @brief Универсальный адаптор курсора
+    @tparam T класс, наследующий от данного cursor_adaptor
+    @tparam Cursor тип адаптируемого курсора
     @tparam Payload класс, от которого будет закрыто наследовать данный класс.
     Может использоваться для оптимизации пустых базовых классов.
     */
-    template <class T, class Sequence, class Payload = empty_type>
-    class sequence_adaptor
-     : public sequence_base<T, Payload>
+    template <class T, class Cursor, class Payload = empty_type>
+    class cursor_adaptor
+     : public cursor_base<T, Payload>
     {
-        typedef sequence_base<T, Payload> Base;
+        typedef cursor_base<T, Payload> Base;
     public:
         // Типы
         /// @brief Тип ссылки
-        using reference = typename Sequence::reference;
+        using reference = typename Cursor::reference;
 
         /// @brief Тип значения
-        using value_type = ValueType<Sequence> ;
+        using value_type = ValueType<Cursor> ;
 
         /// @brief Тип расстояния
-        using distance_type = DifferenceType<Sequence>;
+        using distance_type = DifferenceType<Cursor>;
 
         /// @brief Категория курсора
-        using cursor_tag = typename Sequence::cursor_tag;
+        using cursor_tag = typename Cursor::cursor_tag;
 
         /// @brief Тип указателя
-        using pointer = typename Sequence::pointer;
+        using pointer = typename Cursor::pointer;
 
-        // Адаптор последовательности
+        // Адаптор курсора
         //@{
-        /** @brief Базовая последовательность
-        @return Базовая последовательность
+        /** @brief Базовый курсор
+        @return Базовый курсор
         */
-        Sequence const & base() const &
+        Cursor const & base() const &
         {
-            return this->seq_;
+            return this->cur_;
         }
 
-        Sequence && base() &&
+        Cursor && base() &&
         {
-            return std::move(this->seq_);
+            return std::move(this->cur_);
         }
         //@}
 
@@ -80,8 +80,8 @@ namespace experimental
             return Base::payload();
         }
 
-        // Однопроходная последовательность
-        /** @brief Проверка исчерпания последовательностей
+        // Однопроходный курсор
+        /** @brief Проверка исчерпания
         @return <tt> !this->base() </tt>
         */
         bool operator!() const
@@ -89,9 +89,9 @@ namespace experimental
             return !this->base();
         }
 
-        /** @brief Текущий элемент последовательности
+        /** @brief Текущий элемент
         @pre <tt> !*this == false </tt>
-        @return Ссылка на текущий элемент последовательности
+        @return Ссылка на текущий элемент
         */
         reference front() const
         {
@@ -106,24 +106,24 @@ namespace experimental
             return this->mutable_base().pop_front();
         }
 
-        // Прямая последовательность
-        /** @brief Полная последовательность (вместе с пройденными частями)
-        @return Исходная последовательность
+        // Прямой курсор
+        /** @brief Исходный курсор (вместе с пройденными частями)
+        @return Исходный курсор
         */
         T original() const
         {
             return this->derived().rebind_base(this->base().original());
         }
 
-        /** @brief Пройденная передняя часть последовательность
-        @return Пройденная передняя часть последовательность
+        /** @brief Пройденная передняя часть курсора
+        @return Пройденная передняя часть курсора
         */
         auto traversed_front() const
         {
             return this->derived().rebind_base(this->base().traversed_front());
         }
 
-        /** @brief Отбрасывание пройденной части последовательности
+        /** @brief Отбрасывание пройденной части курсора
         @post <tt> !this->traversed_front() </tt>
         */
         void shrink_front()
@@ -131,8 +131,7 @@ namespace experimental
             return this->mutable_base().shrink_front();
         }
 
-        /** @brief Исчерпание последовательности в прямом порядке за константное
-        время.
+        /** @brief Исчерпание курсора в прямом порядке.
         @post <tt> !*this == true </tt>
         */
         void exhaust_front()
@@ -140,8 +139,8 @@ namespace experimental
             return ural::exhaust_front(this->mutable_base());
         }
 
-        // Двусторонняя последовательность
-        /** @brief Задний элемент последовательности
+        // Двусторонний курсор
+        /** @brief Задний элемент курсора
         @pre <tt> !*this == false </tt>
         */
         reference back() const
@@ -149,21 +148,21 @@ namespace experimental
             return this->base().back();
         }
 
-        /** @brief Пройденная задняя часть последовательность
-        @return Пройденная задняя часть последовательность
+        /** @brief Пройденная задняя часть курсора
+        @return Пройденная задняя часть курсора
         */
         T traversed_back() const
         {
             return this->derived().rebind_base(this->base().traversed_back());
         }
 
-        /// @brief Пропуск последнего элемента последовательности
+        /// @brief Пропуск последнего элемента курсора
         void pop_back()
         {
             return this->mutable_base().pop_back();
         }
 
-        /// @brief Отбрасывает пройденную заднюю часть последовательности
+        /// @brief Отбрасывает пройденную заднюю часть курсора
         void shrink_back()
         {
             return this->mutable_base().shrink_back();
@@ -178,7 +177,7 @@ namespace experimental
             return this->mutable_base().exhaust_back();
         }
 
-        // Последовательность произвольного доступа
+        // Курсор произвольного доступа
         /** @brief Количество элементов
         @return Количество непройденных элементов
         */
@@ -198,7 +197,7 @@ namespace experimental
         }
 
         /** @brief Продвижение на заданное число элементов в передней части
-        последовательности
+        курсора
         @param n число элементов, которые будут пропущены
         @pre <tt> 0 <= n && n <= this->size() </tt>
         @return <tt> *this </tt>
@@ -221,29 +220,29 @@ namespace experimental
 
     protected:
         /** @brief Конструктор
-        @param base базовая последовательность
+        @param base базовый курсор
         @param args аргументы для создания объекта, хранящего дополнительную
         информацию
         @post <tt> this->base() == base </tt>
         @post <tt> this->payload() == Payload(std::forward<Args>(args)...) </tt>
         */
         template <class... Args>
-        sequence_adaptor(Sequence base, Args && ... args)
+        cursor_adaptor(Cursor base, Args && ... args)
          : Base(std::forward<Args>(args)...)
-         , seq_(std::move(base))
+         , cur_(std::move(base))
         {}
 
-        sequence_adaptor(sequence_adaptor const &)  = default;
-        sequence_adaptor(sequence_adaptor &&) = default;
+        cursor_adaptor(cursor_adaptor const &)  = default;
+        cursor_adaptor(cursor_adaptor &&) = default;
 
-        sequence_adaptor & operator=(sequence_adaptor const &)  = default;
-        sequence_adaptor & operator=(sequence_adaptor &&)  = default;
+        cursor_adaptor & operator=(cursor_adaptor const &)  = default;
+        cursor_adaptor & operator=(cursor_adaptor &&)  = default;
 
-        ~sequence_adaptor() = default;
+        ~cursor_adaptor() = default;
 
-        Sequence & mutable_base()
+        Cursor & mutable_base()
         {
-            return this->seq_;
+            return this->cur_;
         }
 
         Payload & payload()
@@ -251,7 +250,7 @@ namespace experimental
             return Base::payload();
         }
 
-        T rebind_base(Sequence s) const
+        T rebind_base(Cursor s) const
         {
             return T(std::move(s));
         }
@@ -265,16 +264,16 @@ namespace experimental
         T & derived();
 
     private:
-        Sequence seq_;
+        Cursor cur_;
     };
 
     /** @brief Оператор "равно"
     @param x, y операнды
     @return <tt> x.base() == y.base() && x.payload() == y.payload() </tt>
     */
-    template <class T, class Sequence, class Payload>
-    bool operator==(sequence_adaptor<T, Sequence, Payload> const & x,
-                    sequence_adaptor<T, Sequence, Payload> const & y)
+    template <class T, class Cursor, class Payload>
+    bool operator==(cursor_adaptor<T, Cursor, Payload> const & x,
+                    cursor_adaptor<T, Cursor, Payload> const & y)
     {
         return x.base() == y.base()
                && x.payload() == y.payload();
@@ -285,4 +284,4 @@ namespace experimental
 // namespace ural
 
 #endif
-// Z_URAL_SEQUENCE_ADAPTOR_HPP_INCLUDED
+// Z_URAL_cursor_adaptor_HPP_INCLUDED

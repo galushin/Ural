@@ -54,8 +54,8 @@ inline namespace v0
         template <class Input, class UnaryPredicate>
         bool operator()(Input && in, UnaryPredicate pred) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<UnaryPredicate, SequenceType<Input>>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<UnaryPredicate, cursor_type_t<Input>>));
 
             return !find_if_not_fn{}(std::forward<Input>(in), std::move(pred));
         }
@@ -79,8 +79,8 @@ inline namespace v0
         template <class Input, class UnaryPredicate>
         bool operator()(Input && in, UnaryPredicate pred) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<UnaryPredicate, SequenceType<Input>>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<UnaryPredicate, cursor_type_t<Input>>));
 
             return !find_if_fn{}(std::forward<Input>(in), std::move(pred));
         }
@@ -103,8 +103,8 @@ inline namespace v0
         template <class Input, class UnaryPredicate>
         bool operator()(Input && in, UnaryPredicate pred) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<UnaryPredicate, SequenceType<Input>>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<UnaryPredicate, cursor_type_t<Input>>));
 
             return !none_of_fn{}(std::forward<Input>(in), std::move(pred));
         }
@@ -116,38 +116,24 @@ inline namespace v0
     */
     class for_each_fn
     {
-    private:
-        template <class Input, class UnaryFunction>
-        static tuple<Input, UnaryFunction>
-        impl(Input in, UnaryFunction f)
-        {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<UnaryFunction, Input>));
-
-            auto r = ural::copy_fn{}(std::move(in),
-                                     ::ural::experimental::make_function_output_sequence(std::move(f)));
-            return ::ural::make_tuple(std::move(r[ural::_1]),
-                                      std::move(r[ural::_2]).function());
-        }
-
     public:
         /** @brief Применяет функциональный объект к каждому элементу
         последовательности
         @param in входная последовательность
         @param f функциональный объект
         @return Кортеж, первый компонент которого получается продвижением
-        <tt> ::ural::sequence_fwd<Input>(in) </tt> до исчерпания, а второй
+        <tt> ::ural::cursor_fwd<Input>(in) </tt> до исчерпания, а второй
         --- <tt> ::ural::make_callable(std::move(f)) </tt> после его применения
         ко всем элементам последовательности.
         */
         template <class Input, class UnaryFunction>
-        tuple<SequenceType<Input>, FunctionType<UnaryFunction>>
+        tuple<cursor_type_t<Input>, FunctionType<UnaryFunction>>
         operator()(Input && in, UnaryFunction f) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<UnaryFunction, SequenceType<Input>>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<UnaryFunction, cursor_type_t<Input>>));
 
-            return for_each_fn::impl(::ural::sequence_fwd<Input>(in),
+            return for_each_fn::impl(::ural::cursor_fwd<Input>(in),
                                      ::ural::make_callable(std::move(f)));
         }
 
@@ -159,15 +145,15 @@ inline namespace v0
         последовательностей и функциональный объект
         */
         template <class Input1, class Input2, class BinaryFunction>
-        tuple<SequenceType<Input1>, SequenceType<Input2>, FunctionType<BinaryFunction>>
+        tuple<cursor_type_t<Input1>, cursor_type_t<Input2>, FunctionType<BinaryFunction>>
         operator()(Input1 && in1, Input2 && in2, BinaryFunction f) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input1>));
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input2>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<BinaryFunction, SequenceType<Input1>, SequenceType<Input2>>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input2>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<BinaryFunction, cursor_type_t<Input1>, cursor_type_t<Input2>>));
 
-            auto in_zip = ::ural::experimental::make_zip_sequence(::ural::sequence_fwd<Input1>(in1),
-                                                                  ::ural::sequence_fwd<Input2>(in2));
+            auto in_zip = ::ural::experimental::make_zip_cursor(::ural::cursor_fwd<Input1>(in1),
+                                                                  ::ural::cursor_fwd<Input2>(in2));
 
             auto action = ::ural::experimental::curry(ural::apply, std::move(f));
             auto result = (*this)(std::move(in_zip), std::move(action));
@@ -175,6 +161,20 @@ inline namespace v0
             return ural::make_tuple(std::move(result)[ural::_1].bases()[ural::_1],
                                     std::move(result)[ural::_1].bases()[ural::_2],
                                     std::move(result)[ural::_2].argument());
+        }
+
+    private:
+        template <class Input, class UnaryFunction>
+        static tuple<Input, UnaryFunction>
+        impl(Input in, UnaryFunction f)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<UnaryFunction, Input>));
+
+            auto r = ural::copy_fn{}(std::move(in),
+                                     ::ural::experimental::make_function_output_cursor(std::move(f)));
+            return ::ural::make_tuple(std::move(r[ural::_1]),
+                                      std::move(r[ural::_2]).function());
         }
     };
 
@@ -191,23 +191,23 @@ inline namespace v0
         @param bin_pred бинарный предикат, по умолчанию используется
         <tt> ::ural::equal_to<> </tt>, то есть оператор "равно".
         @return Последовательность @c r, полученная из
-        <tt> ::ural::sequence_fwd<Input>(in) </tt> продвижением до тех пор, пока
+        <tt> ::ural::cursor_fwd<Input>(in) </tt> продвижением до тех пор, пока
         <tt> r.front() </tt> не станет эквивалентным одному из элементов @c s.
         */
         template <class Input, class Forward,
                   class BinaryPredicate = ::ural::equal_to<>>
-        SequenceType<Input>
+        cursor_type_t<Input>
         operator()(Input && in, Forward && s,
                    BinaryPredicate bin_pred = BinaryPredicate()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<BinaryPredicate,
-                                                              SequenceType<Input>,
-                                                              SequenceType<Forward>>));
+                                                              cursor_type_t<Input>,
+                                                              cursor_type_t<Forward>>));
 
-            return this->impl(::ural::sequence_fwd<Input>(in),
-                              ::ural::sequence_fwd<Forward>(s),
+            return this->impl(::ural::cursor_fwd<Input>(in),
+                              ::ural::cursor_fwd<Forward>(s),
                               ::ural::make_callable(std::move(bin_pred)));
         }
 
@@ -215,8 +215,8 @@ inline namespace v0
         template <class Input, class Forward, class BinaryPredicate>
         static Input impl(Input in, Forward s, BinaryPredicate bin_pred)
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<BinaryPredicate, Input, Forward>));
 
             for(; !!in; ++ in)
@@ -249,12 +249,12 @@ inline namespace v0
         */
         template <class Input, class Forward,
                   class BinaryPredicate = ::ural::equal_to<>>
-        SequenceType<Input>
+        cursor_type_t<Input>
         operator()(Input && in, Forward && s,
                    BinaryPredicate bin_pred = BinaryPredicate()) const
         {
-            return this->impl(::ural::sequence_fwd<Input>(in),
-                              ::ural::sequence_fwd<Forward>(s),
+            return this->impl(::ural::cursor_fwd<Input>(in),
+                              ::ural::cursor_fwd<Forward>(s),
                               ::ural::make_callable(std::move(bin_pred)));
         }
 
@@ -262,11 +262,11 @@ inline namespace v0
         template <class Input, class Forward, class BinaryPredicate>
         static Input impl(Input in, Forward s, BinaryPredicate bin_pred)
         {
-            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::ReadableCursor<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassCursor<Input>));
 
-            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Forward>));
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::ReadableCursor<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<Forward>));
 
             typedef typename Input::reference Ref1;
             typedef typename Forward::reference Ref2;
@@ -298,26 +298,26 @@ inline namespace v0
         @param s входная последовательность
         @param bin_pred бинарный предикат
         @return Последовательность @c r, полученная из
-        <tt> ::ural::sequence_fwd<Forward>(s) </tt> продвижением до тех пор,
+        <tt> ::ural::cursor_fwd<Forward>(s) </tt> продвижением до тех пор,
         пока первый непройденный и следующий за ним элементым данной
         последовательности не станут эквивалентными в смысле @c bin_pred.
         */
         template <class Forward, class BinaryPredicate = ::ural::equal_to<>>
-        SequenceType<Forward>
+        cursor_type_t<Forward>
         operator()(Forward && s,
                    BinaryPredicate bin_pred = BinaryPredicate()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate, SequenceType<Forward>>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate, cursor_type_t<Forward>>));
 
-            return this->impl(::ural::sequence_fwd<Forward>(s),
+            return this->impl(::ural::cursor_fwd<Forward>(s),
                               ::ural::make_callable(std::move(bin_pred)));
         }
     private:
         template <class Forward, class BinaryPredicate>
         static Forward impl(Forward s, BinaryPredicate bin_pred)
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate, Forward>));
 
             if(!s)
@@ -350,7 +350,7 @@ inline namespace v0
         static DifferenceType<Input>
         impl(Input in, UnaryPredicate pred)
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<UnaryPredicate, Input>));
 
             DifferenceType<Input> result{0};
@@ -375,13 +375,13 @@ inline namespace v0
         */
         template <class Input, class UnaryPredicate>
         auto operator()(Input && in, UnaryPredicate pred) const
-        -> DifferenceType<SequenceType<Input>>
+        -> DifferenceType<cursor_type_t<Input>>
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<UnaryPredicate,
-                                                              SequenceType<Input>>));
+                                                              cursor_type_t<Input>>));
 
-            return this->impl(::ural::sequence_fwd<Input>(in),
+            return this->impl(::ural::cursor_fwd<Input>(in),
                               ::ural::make_callable(std::move(pred)));
         }
     };
@@ -397,7 +397,7 @@ inline namespace v0
         static DifferenceType<Input>
         impl(Input in, T const & value, BinaryPredicate pred)
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<BinaryPredicate, Input, T const *>));
 
             return count_if_fn{}(std::move(in), [&](auto const & x) { return pred(x, value); });
@@ -416,14 +416,14 @@ inline namespace v0
                   class BinaryPredicate = ::ural::equal_to<>>
         auto operator()(Input && in, T const & value,
                         BinaryPredicate pred = BinaryPredicate()) const
-        -> DifferenceType<SequenceType<Input>>
+        -> DifferenceType<cursor_type_t<Input>>
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<BinaryPredicate,
-                                                             SequenceType<Input>,
+                                                             cursor_type_t<Input>,
                                                              T const *>));
 
-            return this->impl(::ural::sequence_fwd<Input>(in), value,
+            return this->impl(::ural::cursor_fwd<Input>(in), value,
                               ::ural::make_callable(std::move(pred)));
         }
     };
@@ -441,25 +441,25 @@ inline namespace v0
         @param bin_pred бинарный предикат, по умолчанию используется
         <tt> ::ural::equal_to<> </tt>, то есть оператор "равно".
         @return Кортеж из двух последовательностей @c r1 и @c r2, полученных
-        продвижением <tt> ::ural::sequence_fwd<Input1>(in1) </tt>
-        и <tt> ::ural::sequence_fwd<Input1>(in2) </tt> соответственно синхронно
+        продвижением <tt> ::ural::cursor_fwd<Input1>(in1) </tt>
+        и <tt> ::ural::cursor_fwd<Input1>(in2) </tt> соответственно синхронно
         до тех пор, пока их первые элементы не станут неэквивалентными в смысле
         @c bin_pred.
         */
         template <class Input1, class Input2,
                   class BinaryPredicate = ::ural::equal_to<>>
-        tuple<SequenceType<Input1>, SequenceType<Input2>>
+        tuple<cursor_type_t<Input1>, cursor_type_t<Input2>>
         operator()(Input1 && in1, Input2 && in2,
                    BinaryPredicate bin_pred = BinaryPredicate()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input1>));
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input2>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate,
-                                                             SequenceType<Input1>,
-                                                             SequenceType<Input2>>));
+                                                             cursor_type_t<Input1>,
+                                                             cursor_type_t<Input2>>));
 
-            return this->impl(::ural::sequence_fwd<Input1>(in1),
-                              ::ural::sequence_fwd<Input2>(in2),
+            return this->impl(::ural::cursor_fwd<Input1>(in1),
+                              ::ural::cursor_fwd<Input2>(in2),
                               ::ural::make_callable(std::move(bin_pred)));
         }
 
@@ -468,8 +468,8 @@ inline namespace v0
         static tuple<Input1, Input2>
         impl(Input1 in1, Input2 in2, BinaryPredicate pred)
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input1>));
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input2>));
+            BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate, Input1, Input2>));
 
             typedef tuple<Input1, Input2> Tuple;
@@ -504,22 +504,22 @@ inline namespace v0
         bool operator()(Input1 && in1, Input2 && in2,
                         BinaryPredicate bin_pred = BinaryPredicate()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input1>));
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input2>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectlyComparable<SequenceType<Input1>,
-                                                                 SequenceType<Input2>,
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input2>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectlyComparable<cursor_type_t<Input1>,
+                                                                 cursor_type_t<Input2>,
                                                                  BinaryPredicate>));
 
-            return this->impl(::ural::sequence_fwd<Input1>(in1),
-                              ::ural::sequence_fwd<Input2>(in2),
+            return this->impl(::ural::cursor_fwd<Input1>(in1),
+                              ::ural::cursor_fwd<Input2>(in2),
                               ::ural::make_callable(std::move(bin_pred)));
         }
     private:
         template <class Input1, class Input2, class BinaryPredicate>
         static bool impl(Input1 in1, Input2 in2, BinaryPredicate pred)
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input1>));
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input2>));
+            BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectlyComparable<Input1, Input2, BinaryPredicate>));
 
             auto const r = ural::mismatch_fn{}(std::move(in1), std::move(in2),
@@ -547,14 +547,14 @@ inline namespace v0
         bool operator()(Forward1 && s1, Forward2 && s2,
                         BinaryPredicate pred = BinaryPredicate()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward1>));
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward2>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectlyComparable<SequenceType<Forward1>,
-                                                                 SequenceType<Forward2>,
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward1>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward2>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectlyComparable<cursor_type_t<Forward1>,
+                                                                 cursor_type_t<Forward2>,
                                                                  BinaryPredicate>));
 
-            return this->impl(::ural::sequence_fwd<Forward1>(s1),
-                              ::ural::sequence_fwd<Forward2>(s2),
+            return this->impl(::ural::cursor_fwd<Forward1>(s1),
+                              ::ural::cursor_fwd<Forward2>(s2),
                               ::ural::make_callable(std::move(pred)));
         }
 
@@ -563,8 +563,8 @@ inline namespace v0
         static bool
         impl(Forward1 s1, Forward2 s2, BinaryPredicate pred)
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward1>));
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward2>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<Forward1>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<Forward2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectlyComparable<Forward1, Forward2, BinaryPredicate>));
 
             std::tie(s1, s2) = ural::mismatch_fn{}(std::move(s1), std::move(s2),
@@ -616,18 +616,18 @@ inline namespace v0
         */
         template <class Forward1, class Forward2,
                   class BinaryPredicate = ::ural::equal_to<>>
-        SequenceType<Forward1>
+        cursor_type_t<Forward1>
         operator()(Forward1 && in, Forward2 && s,
                    BinaryPredicate bin_pred = BinaryPredicate()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward1>));
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward2>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectlyComparable<SequenceType<Forward1>,
-                                                                 SequenceType<Forward2>,
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward1>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward2>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectlyComparable<cursor_type_t<Forward1>,
+                                                                 cursor_type_t<Forward2>,
                                                                  BinaryPredicate>));
 
-            return this->impl(::ural::sequence_fwd<Forward1>(in),
-                              ::ural::sequence_fwd<Forward2>(s),
+            return this->impl(::ural::cursor_fwd<Forward1>(in),
+                              ::ural::cursor_fwd<Forward2>(s),
                               ::ural::make_callable(std::move(bin_pred)));
         }
 
@@ -635,8 +635,8 @@ inline namespace v0
         template<class Forward1, class Forward2, class BinaryPredicate>
         static Forward1 impl(Forward1 in, Forward2 s, BinaryPredicate p)
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward1>));
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward2>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<Forward1>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<Forward2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectlyComparable<Forward1, Forward2, BinaryPredicate>));
 
             for(;; ++ in)
@@ -682,18 +682,18 @@ inline namespace v0
         */
         template <class Forward, class T,
                   class BinaryPredicate = ::ural::equal_to<>>
-        SequenceType<Forward>
+        cursor_type_t<Forward>
         operator()(Forward && in,
-                   DifferenceType<SequenceType<Forward>> count,
+                   DifferenceType<cursor_type_t<Forward>> count,
                    T const & value,
                    BinaryPredicate bin_pred = BinaryPredicate()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectlyComparable<SequenceType<Forward>,
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectlyComparable<cursor_type_t<Forward>,
                                                                  T const *,
                                                                  BinaryPredicate>));
 
-            return this->impl(::ural::sequence_fwd<Forward>(in),
+            return this->impl(::ural::cursor_fwd<Forward>(in),
                               std::move(count), value,
                               ::ural::make_callable(std::move(bin_pred)));
         }
@@ -705,7 +705,7 @@ inline namespace v0
                             T const & value,
                             BinaryPredicate bin_pred)
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectlyComparable<Forward, T const *, BinaryPredicate>));
 
             if(n == 0)
@@ -758,25 +758,25 @@ inline namespace v0
         @param bin_pred бинарный предикат, по умолчанию используется
         <tt> equal_to<> </tt>, то есть оператор "равно"
         @return Последовательность @c r, полученная из
-        <tt> ::ural::sequence_fwd<Forward1>(in) </tt> продвижением таким образом,
+        <tt> ::ural::cursor_fwd<Forward1>(in) </tt> продвижением таким образом,
         что @c s является эквивалентом префикса непройденной части этой
         последовательности, причём @c s встречается в непройденной части
         этой последовательности ровно один раз.
         */
         template <class Forward1, class Forward2,
                   class BinaryPredicate = ::ural::equal_to<>>
-        SequenceType<Forward1>
+        cursor_type_t<Forward1>
         operator()(Forward1 && in, Forward2 && s,
                    BinaryPredicate bin_pred = BinaryPredicate()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward1>));
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward2>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward1>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate,
-                                                             SequenceType<Forward1>,
-                                                             SequenceType<Forward2>>));
+                                                             cursor_type_t<Forward1>,
+                                                             cursor_type_t<Forward2>>));
 
-            return this->impl(::ural::sequence_fwd<Forward1>(in),
-                              ::ural::sequence_fwd<Forward2>(s),
+            return this->impl(::ural::cursor_fwd<Forward1>(in),
+                              ::ural::cursor_fwd<Forward2>(s),
                               ::ural::make_callable(std::move(bin_pred)));
         }
     private:
@@ -784,8 +784,8 @@ inline namespace v0
         static Forward1
         impl(Forward1 in, Forward2 s, BinaryPredicate bin_pred)
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward1>));
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward2>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<Forward1>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<Forward2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate, Forward1, Forward2>));
 
             if(!s)

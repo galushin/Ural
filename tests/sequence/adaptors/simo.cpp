@@ -34,10 +34,10 @@ BOOST_AUTO_TEST_CASE(multy_output_sequence_test)
     std::vector<int> v1;
     std::vector<int> v2;
 
-    auto out = ural_ex::simo_sequence(v1 | ural::back_inserter,
-                                      v2 | ural::back_inserter);
+    auto out = ural_ex::simo_cursor(v1 | ural::back_inserter,
+                                    v2 | ural::back_inserter);
 
-    BOOST_CONCEPT_ASSERT((ural::concepts::OutputSequence<decltype(out), int>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::OutputCursor<decltype(out), int>));
 
     ural::copy(src, out);
 
@@ -52,9 +52,9 @@ BOOST_AUTO_TEST_CASE(simo_sequence_traversed_front)
     std::forward_list<int> v1(src.size() * 2, -1);
     std::forward_list<int> v2(src.size() * 3, -2);
 
-    auto out1 = ural_ex::simo_sequence(v1, v2);
-    auto out2 = ural_ex::simo_sequence(v1 | ural_ex::assumed_infinite,
-                                       v2 | ural_ex::assumed_infinite);
+    auto out1 = ural_ex::simo_cursor(v1, v2);
+    auto out2 = ural_ex::simo_cursor(v1 | ural_ex::assumed_infinite,
+                                     v2 | ural_ex::assumed_infinite);
 
     out1 = ural::copy(src, out1)[ural::_2];
     out2 = ural::copy(src, out2)[ural::_2];

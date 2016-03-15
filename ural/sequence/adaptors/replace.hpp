@@ -37,11 +37,11 @@ namespace experimental
     */
     template <class Sequence, class Predicate, class T>
     class replace_if_sequence
-     : public sequence_adaptor<replace_if_sequence<Sequence, Predicate, T>,
-                               transform_sequence<experimental::replace_if_function<Predicate, T>, Sequence>>
+     : public cursor_adaptor<replace_if_sequence<Sequence, Predicate, T>,
+                               transform_cursor<experimental::replace_if_function<Predicate, T>, Sequence>>
     {
-        using Base = sequence_adaptor<replace_if_sequence<Sequence, Predicate, T>,
-                                      transform_sequence<experimental::replace_if_function<Predicate, T>, Sequence>>;
+        using Base = cursor_adaptor<replace_if_sequence<Sequence, Predicate, T>,
+                                      transform_cursor<experimental::replace_if_function<Predicate, T>, Sequence>>;
     public:
         // Конструирование
         /** @brief Конструктор
@@ -93,14 +93,14 @@ namespace experimental
 
         template <class OtherSequence>
         replace_if_sequence<OtherSequence, Predicate, T>
-        rebind_base(transform_sequence<Transformator, OtherSequence> seq) const
+        rebind_base(transform_cursor<Transformator, OtherSequence> seq) const
         {
             using Result = replace_if_sequence<OtherSequence, Predicate, T>;
             return Result(std::move(seq).bases()[ural::_1], this->predicate(),
                           this->new_value());
         }
 
-        static transform_sequence<experimental::replace_if_function<Predicate, T>, Sequence>
+        static transform_cursor<experimental::replace_if_function<Predicate, T>, Sequence>
         make_base(Sequence seq, Predicate pred, T new_value)
         {
             using Tr = experimental::replace_if_function<Predicate, T>;
@@ -120,11 +120,11 @@ namespace experimental
     */
     template <class Sequence, class T1, class T2 = T1, class BinaryPredicate = equal_to<>>
     class replace_sequence
-     : public sequence_adaptor<replace_sequence<Sequence, T1, T2, BinaryPredicate>,
-                               transform_sequence<experimental::replace_function<T1, T2, BinaryPredicate>, Sequence>>
+     : public cursor_adaptor<replace_sequence<Sequence, T1, T2, BinaryPredicate>,
+                               transform_cursor<experimental::replace_function<T1, T2, BinaryPredicate>, Sequence>>
     {
-        using Base = sequence_adaptor<replace_sequence<Sequence, T1, T2, BinaryPredicate>,
-                               transform_sequence<experimental::replace_function<T1, T2, BinaryPredicate>, Sequence>>;
+        using Base = cursor_adaptor<replace_sequence<Sequence, T1, T2, BinaryPredicate>,
+                               transform_cursor<experimental::replace_function<T1, T2, BinaryPredicate>, Sequence>>;
     public:
         // Конструирование
         /** @brief Конструктор
@@ -193,7 +193,7 @@ namespace experimental
         }
 
         static
-        transform_sequence<experimental::replace_function<T1, T2, BinaryPredicate>, Sequence>
+        transform_cursor<experimental::replace_function<T1, T2, BinaryPredicate>, Sequence>
         make_base(Sequence seq, T1 old_value, T2 new_value, BinaryPredicate pred)
         {
             using Function = experimental::replace_function<T1, T2, BinaryPredicate>;
@@ -215,18 +215,18 @@ namespace experimental
         @param bin_pred бинарный предикат, если не указать его, будет
         использоваться оператор ==
         */
-        template <class Sequenced, class T1, class T2,
+        template <class Sequence, class T1, class T2,
                   class BinaryPredicate = equal_to<>>
-        auto operator()(Sequenced && seq,
+        auto operator()(Sequence && seq,
                         T1 old_value, T2 new_value,
                         BinaryPredicate bin_pred = BinaryPredicate()) const
         {
             using T1R = typename reference_wrapper_to_reference<T1>::type;
             using T2R = typename reference_wrapper_to_reference<T2>::type;
-            using Result = replace_sequence<SequenceType<Sequenced>,
+            using Result = replace_sequence<cursor_type_t<Sequence>,
                                             T1R, T2R,
                                             FunctionType<BinaryPredicate>>;
-            return Result(::ural::sequence_fwd<Sequenced>(seq),
+            return Result(::ural::cursor_fwd<Sequence>(seq),
                           std::move(old_value),
                           std::move(new_value),
                           ::ural::make_callable(std::move(bin_pred)));
@@ -244,14 +244,14 @@ namespace experimental
         @param pred предикат, определяющий, какие нужно заменить.
         @param new_value новое значение
         */
-        template <class Sequenced, class Predicate, class T>
-        auto operator()(Sequenced && seq, Predicate pred, T new_value) const
+        template <class Sequence, class Predicate, class T>
+        auto operator()(Sequence && seq, Predicate pred, T new_value) const
         {
             using TR = typename reference_wrapper_to_reference<T>::type;
-            using Result = replace_if_sequence<SequenceType<Sequenced>,
+            using Result = replace_if_sequence<cursor_type_t<Sequence>,
                                                FunctionType<Predicate>, TR>;
 
-            return Result(::ural::sequence_fwd<Sequenced>(seq),
+            return Result(::ural::cursor_fwd<Sequence>(seq),
                           ::ural::make_callable(std::move(pred)),
                           std::move(new_value));
         }

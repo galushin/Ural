@@ -35,9 +35,9 @@ namespace experimental
     */
     template <class Sequence>
     class outdirected_sequence
-     : public sequence_adaptor<outdirected_sequence<Sequence>, Sequence>
+     : public cursor_adaptor<outdirected_sequence<Sequence>, Sequence>
     {
-        using Inherited = sequence_adaptor<outdirected_sequence, Sequence>;
+        using Inherited = cursor_adaptor<outdirected_sequence, Sequence>;
 
         template <class U>
         static size_t
@@ -77,7 +77,7 @@ namespace experimental
          : Inherited(std::move(s))
         {}
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Текущий элемент
         @return <tt> this->base() </tt>
         */

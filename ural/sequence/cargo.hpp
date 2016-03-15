@@ -48,12 +48,12 @@ namespace experimental
         }
 
         friend
-        Sequence const & sequence(cargo_sequence const & s)
+        Sequence const & cursor(cargo_sequence const & s)
         {
             return s.base();
         }
 
-        friend cargo_sequence sequence(cargo_sequence && s)
+        friend cargo_sequence cursor(cargo_sequence && s)
         {
             return std::move(s);
         }
@@ -101,7 +101,7 @@ namespace experimental
             return members_[ural::_2];
         }
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Проверка исчерпания последовательности
         @return @b true, если в последовательности больше нет элементов,
         иначе --- @b false.
@@ -129,7 +129,7 @@ namespace experimental
             return this->members_[ural::_1].pop_front();
         }
 
-        // Прямая последовательность
+        // Прямой курсор
         /** @breif Передняя пройденная часть последовательности
         @return Передняя пройденная часть последовательности
         */

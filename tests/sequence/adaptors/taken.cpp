@@ -102,14 +102,14 @@ BOOST_AUTO_TEST_CASE(generate_n_test)
 
     // ural
     counter = 0;
-    ural::copy(ural_ex::make_generator_sequence(gen) | ural_ex::taken(n),
+    ural::copy(ural_ex::make_generator_cursor(gen) | ural_ex::taken(n),
                r_ural | ural::back_inserter);
 
     // Проверка
     URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
 }
 
-BOOST_AUTO_TEST_CASE(take_sequence_more_than_size)
+BOOST_AUTO_TEST_CASE(take_cursor_more_than_size)
 {
     std::vector<int> const z{11, 11, 22, 33, 55};
 
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE(take_sequence_more_than_size)
     URAL_CHECK_EQUAL_RANGES(z, result);
 }
 
-BOOST_AUTO_TEST_CASE(take_sequence_traversed_front)
+BOOST_AUTO_TEST_CASE(take_cursor_traversed_front)
 {
     auto const n1 = 5;
     auto const n2 = 2 * n1;

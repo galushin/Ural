@@ -80,7 +80,7 @@ namespace archetypes
     */
     template <class Value, class D = use_default>
     class input_sequence
-     : public ural::sequence_base<input_sequence<Value>>
+     : public ural::cursor_base<input_sequence<Value>>
     {
     public:
         /// @brief Тип значения
@@ -93,7 +93,7 @@ namespace archetypes
         typedef value_type * pointer;
 
         /// @brief Тип для представления расстояния
-        using distance_type = experimental::DefaultedType<D, std::ptrdiff_t>;
+        using distance_type = experimental::defaulted_type_t<D, std::ptrdiff_t>;
 
         /// @brief Категория курсора
         using cursor_tag = input_cursor_tag;

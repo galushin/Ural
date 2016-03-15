@@ -30,14 +30,13 @@ namespace ural
 {
 namespace experimental
 {
-    /** @brief Последовательности на основе итераторов-вставок и других выходных
-    итераторов
+    /** @brief Курсор на основе итераторов-вставок и других выходных итераторов
     @tparam OutputIterator тип выходного итератора
     @tparam D тип расстояния
     */
     template <class OutputIterator, class D = use_default>
-    class weak_output_iterator_sequence
-     : public sequence_base<weak_output_iterator_sequence<OutputIterator, D>>
+    class weak_output_iterator_cursor
+     : public cursor_base<weak_output_iterator_cursor<OutputIterator, D>>
     {
     public:
         // Типы
@@ -45,7 +44,7 @@ namespace experimental
         typedef decltype(*std::declval<OutputIterator>())  reference;
 
         /// @brief Тип расстояния
-        using distance_type = experimental::DefaultedType<D, std::ptrdiff_t>;
+        using distance_type = experimental::defaulted_type_t<D, std::ptrdiff_t>;
 
         /// @brief Категория курсора
         using cursor_tag = output_cursor_tag;
@@ -55,11 +54,11 @@ namespace experimental
         @param iter итератор, на основе которого будет создана данная
         последовательность
         */
-        explicit weak_output_iterator_sequence(OutputIterator iter)
+        explicit weak_output_iterator_cursor(OutputIterator iter)
          : iter_(std::move(iter))
         {}
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Проверка того, что последовательность исчерпана
         @return @b false
         */
@@ -145,12 +144,12 @@ namespace experimental
         return helper(c);
     }
 
-    /** @brief Выходная последовательность реализующая вставку в множество
+    /** @brief Выходной курсор, реализующия вставку в множество
     @tparam Container тип контейнера, хранящего множество
     */
     template <class Container>
-    class set_insert_sequence
-     : public sequence_base<set_insert_sequence<Container>>
+    class set_insert_cursor
+     : public cursor_base<set_insert_cursor<Container>>
     {
     public:
         /// @brief Категория курсора
@@ -164,7 +163,7 @@ namespace experimental
         @post Выражение вида <tt> **this = value </tt> будет эквивалентно
         <tt> c.insert(value) </tt>
         */
-        explicit set_insert_sequence(Container & c)
+        explicit set_insert_cursor(Container & c)
          : c_{c}
         {}
 
@@ -176,9 +175,9 @@ namespace experimental
             return c_.get();
         }
 
-        // Однопроходная последовательность
-        /** @brief Проверка исчерпания последовательности
-        @return @b false --- это бесконечная последовательность
+        // Однопроходная курсор
+        /** @brief Проверка исчерпания курсора
+        @return @b false --- это бесконечная курсор
         */
         bool operator!() const
         {
@@ -188,7 +187,7 @@ namespace experimental
         /** @brief Доступ к первому элементу
         @return <tt> *this </tt>
         */
-        set_insert_sequence const & operator*() const
+        set_insert_cursor const & operator*() const
         {
             return *this;
         }
@@ -210,30 +209,30 @@ namespace experimental
         std::reference_wrapper<Container> c_;
     };
 
-    /** @brief Вспомогательный класс для создания последовательности вставки
-    элементов в множество
+    /** @brief Вспомогательный класс для создания курсора вставки элементов в
+    множество
     */
     struct set_inserter_helper
     {
     public:
         /** @brief Оператор вызова функции
         @param c контейнер
-        @return <tt> set_insert_sequence<Container>(c) </tt>
+        @return <tt> set_insert_cursor<Container>(c) </tt>
         */
         template <class Container>
-        set_insert_sequence<Container>
+        set_insert_cursor<Container>
         operator()(Container & c) const
         {
-            return set_insert_sequence<Container>{c};
+            return set_insert_cursor<Container>{c};
         }
     };
 
-    /** @brief Создание @c set_insert_sequence конвейерным синтаксисом
+    /** @brief Создание @c set_insert_cursor конвейерным синтаксисом
     @param c контейнера
-    @return <tt> set_insert_sequence<Container>(c) </tt>
+    @return <tt> set_insert_cursor<Container>(c) </tt>
     */
     template <class Container>
-    set_insert_sequence<Container>
+    set_insert_cursor<Container>
     operator|(Container & c, set_inserter_helper)
     {
         return set_inserter_helper{}(c);

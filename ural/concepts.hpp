@@ -339,10 +339,10 @@ namespace concepts
         static T b;
     };
 
-    /** @brief Концепция последовательности, допускающей чтение
-    @tparam Seq тип последовательности, для которого проверяется концепция
+    /** @brief Концепция курсора, допускающего чтение
+    @tparam Cursor тип курсора, для которого проверяется концепция
     */
-    template <class Seq>
+    template <class Cursor>
     class Readable
     {
     public:
@@ -350,20 +350,20 @@ namespace concepts
         BOOST_CONCEPT_USAGE(Readable)
         {
             // @todo нужно ли это требование ?
-            // static_assert(concepts::Semiregular<Seq>(), "");
+            // static_assert(concepts::Semiregular<Cursor>(), "");
 
-            typedef decltype(*seq) Result;
+            typedef decltype(*cur) Result;
 
             static_assert(std::is_convertible<Result, Value const &>::value, "");
         }
 
     private:
-        typedef typename ::ural::ValueType<Seq> Value;
-        static Seq seq;
+        typedef typename ::ural::ValueType<Cursor> Value;
+        static Cursor cur;
     };
 
-    template <class Seq>
-    using ReadableSequence = Readable<Seq>;
+    template <class Cur>
+    using ReadableCursor = Readable<Cur>;
 
     template <class Out, class T>
     struct MoveWritable
@@ -376,8 +376,8 @@ namespace concepts
         }
     };
 
-    /** @brief Конпцепция последовательности, допускающей запись
-    @tparam Seq тип последовательности, для которого проверяется концепция
+    /** @brief Конпцепция курсора, допускающего запись
+    @tparam Seq тип курсора, для которого проверяется концепция
     @tparam T тип записываемого значения
     */
     template <class Seq, class T>
@@ -407,7 +407,7 @@ namespace concepts
     };
 
     template <class Seq, class T>
-    using WritableSequence = Writable<Seq, T>;
+    using WritableCursor = Writable<Seq, T>;
 
     template <class T>
     struct WeakIncrementable

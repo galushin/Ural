@@ -30,22 +30,25 @@ namespace ural
 {
 namespace experimental
 {
-    /** @brief Последовательность частных сумм
+    /** @brief Курсор последовательности частных сумм.
+    @tparam Input тип курсора базовой последовательности.
+    @tparam BinaryOperation тип бинарной операции, используемой для вычисления
+    "суммы".
     */
     template <class Input, class BinaryOperation>
-    class partial_sums_sequence
-     : public sequence_base<partial_sums_sequence<Input, BinaryOperation>,
+    class partial_sums_cursor
+     : public cursor_base<partial_sums_cursor<Input, BinaryOperation>,
                             BinaryOperation>
     {
-        typedef sequence_base<partial_sums_sequence, BinaryOperation>
+        typedef cursor_base<partial_sums_cursor, BinaryOperation>
             Base_class;
     public:
         /** @brief Оператор "равно"
         @param x, y аргументы
         @return <tt> x.base() == y.base() && x.operation() == y.operation() </tt>
         */
-        friend bool operator==(partial_sums_sequence const & x,
-                               partial_sums_sequence const & y)
+        friend bool operator==(partial_sums_cursor const & x,
+                               partial_sums_cursor const & y)
         {
             return x.base() == y.base() && x.operation() == y.operation();
         }
@@ -70,12 +73,12 @@ namespace experimental
 
         // Создание и свойства
         /** @brief Конструктор
-        @param in исходная последовательность
+        @param in базовый курсор
         @param add операция, используемая для вычисления суммы
         @post <tt> this->base() == in </tt>
         @post <tt> this->operation() == add </tt>
         */
-        explicit partial_sums_sequence(Input in, BinaryOperation add)
+        explicit partial_sums_cursor(Input in, BinaryOperation add)
          : Base_class{std::move(add)}
          , members_{std::move(in), {}}
         {
@@ -86,8 +89,8 @@ namespace experimental
         }
 
         //@{
-        /** @brief Исходная последовательность
-        @return Текущее состояние входной последовательности
+        /** @brief Базовый курсор
+        @return Текущее состояние базового курсора
         */
         Input const & base() const &
         {
@@ -108,7 +111,7 @@ namespace experimental
             return this->payload();
         }
 
-        // Однопроходная последовательность
+        // Однопроходный курсор
         bool operator!() const
         {
             return !this->base();
@@ -138,23 +141,23 @@ namespace experimental
             }
         }
 
-        // Прямая последовательность
-        /** @brief Исходная последовательность
-        @return Исходная последовательность
+        // Прямой курсор
+        /** @brief Исходное состояние курсора
+        @return Исходное состояние курсора
         */
-        partial_sums_sequence original() const;
+        partial_sums_cursor original() const;
 
-        /** @brief Передняя пройденная часть последовательности
-        @return Передняя пройденная часть последовательности
+        /** @brief Передняя пройденная часть курсора
+        @return Передняя пройденная часть курсора
         */
-        partial_sums_sequence<TraversedFrontType<Input>, BinaryOperation>
+        partial_sums_cursor<TraversedFrontType<Input>, BinaryOperation>
         traversed_front() const
         {
-            using Result = partial_sums_sequence<TraversedFrontType<Input>, BinaryOperation>;
+            using Result = partial_sums_cursor<TraversedFrontType<Input>, BinaryOperation>;
             return Result(this->base().traversed_front(), this->operation());
         }
 
-        /** @brief Отбрасывание передней пройденной части последовательности
+        /** @brief Отбрасывание передней пройденной части курсора
         @post <tt> !this->traversed_front() </tt>
         */
         void shrink_front();
@@ -182,12 +185,12 @@ namespace experimental
     */
     template <class Input, class BinaryOperation>
     auto partial_sums(Input && s, BinaryOperation add)
-    -> partial_sums_sequence<decltype(::ural::sequence_fwd<Input>(s)),
+    -> partial_sums_cursor<decltype(::ural::cursor_fwd<Input>(s)),
                              decltype(make_callable(std::move(add)))>
     {
-        typedef partial_sums_sequence<decltype(::ural::sequence_fwd<Input>(s)),
+        typedef partial_sums_cursor<decltype(::ural::cursor_fwd<Input>(s)),
                              decltype(make_callable(std::move(add)))> Result;
-        return Result(::ural::sequence_fwd<Input>(s),
+        return Result(::ural::cursor_fwd<Input>(s),
                       make_callable(std::move(add)));
     }
 
@@ -197,7 +200,7 @@ namespace experimental
     */
     template <class Input>
     auto partial_sums(Input && s)
-    -> partial_sums_sequence<decltype(::ural::sequence_fwd<Input>(s)), ural::plus<>>
+    -> partial_sums_cursor<decltype(::ural::cursor_fwd<Input>(s)), ural::plus<>>
     {
         return partial_sums(std::forward<Input>(s), ural::plus<>{});
     }

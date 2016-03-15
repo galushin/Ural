@@ -197,7 +197,7 @@ namespace experimental
     */
     template <class IntType, IntType radix>
     class digits_sequence
-     : public ural::sequence_base<digits_sequence<IntType, radix>>
+     : public ural::cursor_base<digits_sequence<IntType, radix>>
     {
     public:
         /// @brief Категорию курсора
@@ -224,7 +224,7 @@ namespace experimental
             assert(value >= 0);
         }
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Проверка исчерпания последовательности
         @return @b true, если последовательность исчерпана, иначе --- @b false
         */

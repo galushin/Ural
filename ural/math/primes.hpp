@@ -112,7 +112,7 @@ namespace experimental
         template <class IntType, class Input>
         bool operator()(IntType const & x, Input && ds) const
         {
-            for(auto seq = ural::sequence_fwd<Input>(ds); !!seq; ++ seq)
+            for(auto seq = ural::cursor_fwd<Input>(ds); !!seq; ++ seq)
             {
                 auto const & value = *seq;
 
@@ -140,7 +140,7 @@ namespace experimental
         template <class IntType, class Input>
         bool operator()(IntType const & x, Input && ds) const
         {
-            for(auto seq = ::ural::sequence_fwd<Input>(ds); !!seq; ++ seq)
+            for(auto seq = ::ural::cursor_fwd<Input>(ds); !!seq; ++ seq)
             {
                 using ::ural::experimental::gcd;
                 if(gcd(x, *seq) != 1)
@@ -230,7 +230,7 @@ namespace experimental
 
         std::vector<bool> seive((p_max - x_min + 1)/2, true);
 
-        for(auto pos = ural::sequence(seive); !!pos; pos = ural::find(pos, true))
+        for(auto pos = ural::cursor(seive); !!pos; pos = ural::find(pos, true))
         {
             auto const index = pos.traversed_front().size();
             auto value = 2 * index + x_min;

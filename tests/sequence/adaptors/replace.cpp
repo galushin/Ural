@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE(replace_if_sequence_traversed_front)
     std::forward_list<int> const src = {1, 2, 3, 4, 5, 6, 7, 9, 11};
 
     auto const new_value = -1;
-    auto const n = ural::size(ural::sequence(src));
+    auto const n = ural::size(ural::cursor(src));
 
     auto s1 = src | ural_ex::replaced_if(ural::is_even, new_value);
     auto s2 = src | ural_ex::assumed_infinite | ural_ex::replaced_if(ural::is_even, new_value);

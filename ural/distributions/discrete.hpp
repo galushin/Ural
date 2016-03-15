@@ -126,7 +126,7 @@ namespace distributions
             }
 
             // @todo можно ли рассчитать числовые характеристики вместе с суммой весов?
-            auto values = ::ural::experimental::numbers_sequence<value_type>(0, ps_.size());
+            auto values = ::ural::experimental::numbers_cursor<value_type>(0, ps_.size());
 
             auto s = ural::experimental::describe(std::move(values),
                                                   ural::experimental::statistics::tags::variance,

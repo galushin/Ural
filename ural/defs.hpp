@@ -123,13 +123,13 @@ namespace experimental
      : std::conditional<std::is_same<T, use_default>::value, Default, T>
     {};
 
-    /** @brief Шаблонный синоним для @c default_helper
+    /** @brief Шаблонный синоним для @c defaulted_type
     @tparam T тип
     @tparam D тип, который нужно использовать, если @c T совпадает с
     @c use_default
     */
     template <class T, class D>
-    using DefaultedType = typename defaulted_type<T, D>::type;
+    using defaulted_type_t = typename defaulted_type<T, D>::type;
 
     /** @brief Вспомогательный класс, которому можно присвоить значение
     заданного типа
