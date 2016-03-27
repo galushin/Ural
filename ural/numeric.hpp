@@ -70,19 +70,19 @@ inline namespace v0
 
     private:
         template <class Output, class Incrementable>
-        Output impl(Output seq, Incrementable init_value) const
+        Output impl(Output out, Incrementable init_value) const
         {
             BOOST_CONCEPT_ASSERT((concepts::OutputCursor<Output, Incrementable>));
             BOOST_CONCEPT_ASSERT((concepts::Semiregular<Incrementable>));
             BOOST_CONCEPT_ASSERT((concepts::WeakIncrementable<Incrementable>));
 
             // @todo заменить на алгоритм (нужна неограниченная последовательность)
-            for(; !!seq; ++ seq, (void) ++ init_value)
+            for(; !!out; ++ out, (void) ++ init_value)
             {
-                *seq = init_value;
+                *out = init_value;
             }
 
-            return std::move(seq);
+            return std::move(out);
         }
     };
 
@@ -316,24 +316,24 @@ inline namespace v0
 
 namespace experimental
 {
-    /** @brief Последовательность, реализующая операцию свёртки
-    @tparam RASequence1 тип первой последовательности
-    @tparam RASequence2 тип второй последовательности
+    /** @brief Курсор, реализующий операцию свёртки
+    @tparam RASequence1 тип первого курсора
+    @tparam RASequence2 тип второго курсора
     */
-    template <class RASequence1, class RASequence2>
-    class convolution_sequence
-     : public cursor_base<convolution_sequence<RASequence1, RASequence2> >
+    template <class RACursor1, class RACursor2>
+    class convolution_cursor
+     : public cursor_base<convolution_cursor<RACursor1, RACursor2> >
     {
     public:
         /// @brief Категория курсора
         using cursor_tag = finite_forward_cursor_tag;
 
         /// @brief Тип расстояния
-        typedef CommonType<DifferenceType<RASequence1>,
-                           DifferenceType<RASequence2>> distance_type;
+        typedef CommonType<DifferenceType<RACursor1>,
+                           DifferenceType<RACursor2>> distance_type;
 
         /// @brief Тип значения
-        typedef decltype(*std::declval<RASequence1>() * *std::declval<RASequence2>())
+        typedef decltype(*std::declval<RACursor1>() * *std::declval<RACursor2>())
             value_type;
 
         /// @brief Тип ссылки
@@ -346,7 +346,7 @@ namespace experimental
         @param s1 первая последовательность
         @param s2 вторая последовательность
         */
-        convolution_sequence(RASequence1 s1, RASequence2 s2)
+        convolution_cursor(RACursor1 s1, RACursor2 s2)
          : members_(std::move(s1), std::move(s2), 0, value_type{0})
         {
             this->calc();
@@ -408,12 +408,12 @@ namespace experimental
             }
         }
 
-        ural::tuple<RASequence1, RASequence2, distance_type, value_type> members_;
+        ural::tuple<RACursor1, RACursor2, distance_type, value_type> members_;
     };
 
     template <class RASequence1, class RASequence2>
-    auto make_convolution_sequence(RASequence1 && s1, RASequence2 && s2)
-    -> convolution_sequence<decltype(::ural::cursor_fwd<RASequence1>(s1)),
+    auto make_convolution_cursor(RASequence1 && s1, RASequence2 && s2)
+    -> convolution_cursor<decltype(::ural::cursor_fwd<RASequence1>(s1)),
                             decltype(::ural::cursor_fwd<RASequence2>(s2))>
     {
         return {::ural::cursor_fwd<RASequence1>(s1),
@@ -430,7 +430,7 @@ namespace experimental
 
             Vector result(x.size() + y.size() - 1);
 
-            copy_fn{}(::ural::experimental::make_convolution_sequence(x, y),
+            copy_fn{}(::ural::experimental::make_convolution_cursor(x, y),
                       ural::cursor(result));
 
             return result;
@@ -444,13 +444,13 @@ namespace experimental
             odr_const<discrete_convolution_function>;
     }
 
-    /** @brief Последовательность для вычисления приближённого значения
+    /** @brief Курсор последовательности для вычисления приближённого значения
     квадратого корня по итерационному методу Герона. Смотри, например
     http://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Babylonian_method
     */
     template <class RealType>
-    class sqrt_heron_sequence
-     : public cursor_base<sqrt_heron_sequence<RealType>>
+    class sqrt_heron_cursor
+     : public cursor_base<sqrt_heron_cursor<RealType>>
     {
     public:
         // Типы
@@ -465,7 +465,7 @@ namespace experimental
         @param x0 начальное приближение
         @param eps желаемая точность
         */
-        sqrt_heron_sequence(RealType S, RealType x0, RealType eps)
+        sqrt_heron_cursor(RealType S, RealType x0, RealType eps)
          : s_(std::move(S))
          , x0_(std::move(x0))
          , eps_(std::move(eps) * 0.1)
@@ -522,10 +522,10 @@ namespace experimental
     };
 
     template <class RealType>
-    sqrt_heron_sequence<RealType>
-    make_sqrt_heron_sequence(RealType S, RealType x0, RealType eps)
+    sqrt_heron_cursor<RealType>
+    make_sqrt_heron_cursor(RealType S, RealType x0, RealType eps)
     {
-        return sqrt_heron_sequence<RealType>(std::move(S), std::move(x0),
+        return sqrt_heron_cursor<RealType>(std::move(S), std::move(x0),
                                              std::move(eps));
     }
 
@@ -533,8 +533,8 @@ namespace experimental
     @tparam Vector тип массива, используемого для хранения строк
     */
     template <class Vector>
-    class pascal_triangle_rows_sequence
-     : public cursor_base<pascal_triangle_rows_sequence<Vector>>
+    class pascal_triangle_rows_cursor
+     : public cursor_base<pascal_triangle_rows_cursor<Vector>>
     {
     public:
         // Типы
@@ -548,7 +548,7 @@ namespace experimental
         /** @brief Конструктор без параметров
         @post <tt> this->front() == {1} </tt>
         */
-        pascal_triangle_rows_sequence()
+        pascal_triangle_rows_cursor()
          : row_{1}
         {}
 

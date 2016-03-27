@@ -26,7 +26,7 @@
 
 #include <ural/sequence/cargo.hpp>
 #include <ural/sequence/iostream.hpp>
-#include <ural/sequence/iterator_sequence.hpp>
+#include <ural/sequence/iterator_cursor.hpp>
 #include <ural/sequence/insertion.hpp>
 
 #include <ural/concepts.hpp>
@@ -50,9 +50,9 @@ inline namespace v0
     template <class Container>
     auto cursor(Container && c)
     -> typename std::enable_if<!std::is_lvalue_reference<Container>::value,
-                               experimental::cargo_sequence<iterator_cursor<decltype(c.begin())>, Container>>::type
+                               experimental::cargo_cursor<iterator_cursor<decltype(c.begin())>, Container>>::type
     {
-        typedef ::ural::experimental::cargo_sequence<::ural::iterator_cursor<decltype(c.begin())>, Container>
+        typedef ::ural::experimental::cargo_cursor<::ural::iterator_cursor<decltype(c.begin())>, Container>
             Result;
         auto seq = ::ural::iterator_cursor<decltype(c.begin())>(c.begin(), c.end());
         return Result(std::move(seq), std::move(c));
@@ -522,7 +522,7 @@ inline namespace v0
         struct Sequence
         {
             // В Range extensions требуется, чтобы begin и end имели константную
-            // сложность. Нужно ли нам потребовать этого от sequence?
+            // сложность. Нужно ли нам потребовать этого от Sequence?
             /// @brief Использование
             BOOST_CONCEPT_USAGE(Sequence)
             {

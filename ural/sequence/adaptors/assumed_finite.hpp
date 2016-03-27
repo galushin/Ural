@@ -40,9 +40,9 @@ namespace experimental
     private:
         friend Inherited;
 
-        template <class OtherSequence>
-        assumed_finite_cursor<OtherSequence>
-        rebind_base(OtherSequence seq) const;
+        template <class OtherCursor>
+        assumed_finite_cursor<OtherCursor>
+        rebind_base(OtherCursor seq) const;
     };
 
      /** @brief Тип функционального объекта для создания адаптора
@@ -52,10 +52,10 @@ namespace experimental
     struct assume_finite_fn
     {
     public:
-        /** @brief Создания @c assumed_infinite_sequence
+        /** @brief Создания @c assumed_infinite_cursor
         @param seq последовательность
         @return <tt> Result(ural::cursor_fwd<Sequence>(seq)) </tt>, где
-        @c Result -- <tt> assumed_infinite_sequence<cursor_type_t<Sequence>> </tt>
+        @c Result -- <tt> assumed_infinite_cursor<cursor_type_t<Sequence>> </tt>
         */
         template <class Sequence>
         assumed_finite_cursor<cursor_type_t<Sequence>>

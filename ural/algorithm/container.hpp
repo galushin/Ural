@@ -24,7 +24,7 @@
 
 #include <ural/algorithm/mutating.hpp>
 
-#include <ural/sequence/iterator_sequence.hpp>
+#include <ural/sequence/iterator_cursor.hpp>
 
 namespace ural
 {

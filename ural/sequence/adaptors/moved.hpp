@@ -26,7 +26,7 @@
 #include <ural/utility/pipeable.hpp>
 #include <ural/iterator/move.hpp>
 #include <ural/sequence/make.hpp>
-#include <ural/sequence/iterator_sequence.hpp>
+#include <ural/sequence/iterator_cursor.hpp>
 #include <ural/sequence/base.hpp>
 
 namespace ural
@@ -111,14 +111,15 @@ namespace experimental
     class make_move_cursor_fn
     {
     public:
-        /** @brief Создание последовательности rvalue-ссылок базовой
+        /** @brief Создание курсора последовательности rvalue-ссылок базовой
         последовательности.
         @param seq последовательность
         */
         template <class Sequence>
-        auto operator()(Sequence && seq) const
+        move_cursor<cursor_type_t<Sequence>>
+        operator()(Sequence && seq) const
         {
-            typedef move_cursor<cursor_type_t<Sequence>> Result;
+            using Result = move_cursor<cursor_type_t<Sequence>>;
             return Result(::ural::cursor_fwd<Sequence>(seq));
         }
     };
@@ -129,7 +130,7 @@ namespace experimental
         constexpr auto const & make_move_cursor
             = odr_const<make_move_cursor_fn>;
 
-        /// @brief Объект для создания @c move_sequence в конвейерном стиле.
+        /// @brief Объект для создания @c move_cursor в конвейерном стиле.
         constexpr auto const & moved
             = odr_const<experimental::pipeable<make_move_cursor_fn>>;
     }

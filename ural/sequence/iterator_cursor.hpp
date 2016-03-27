@@ -1,5 +1,5 @@
-#ifndef Z_URAL_SEQUENCE_iterator_cursor_HPP_INCLUDED
-#define Z_URAL_SEQUENCE_iterator_cursor_HPP_INCLUDED
+#ifndef Z_URAL_SEQUENCE_ITERATOR_CURSOR_HPP_INCLUDED
+#define Z_URAL_SEQUENCE_ITERATOR_CURSOR_HPP_INCLUDED
 
 /*  This file is part of Ural.
 
@@ -394,4 +394,4 @@ inline namespace v0
 // namespace ural
 
 #endif
-// Z_URAL_SEQUENCE_iterator_cursor_HPP_INCLUDED
+// Z_URAL_SEQUENCE_ITERATOR_CURSOR_HPP_INCLUDED

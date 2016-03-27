@@ -1136,7 +1136,7 @@ BOOST_AUTO_TEST_CASE(square_root_iterative_zero_test)
     auto const S  = 0.0;
     auto x_0 = S / 2;
 
-    auto seq = ural_ex::make_sqrt_heron_sequence(S, x_0, eps);
+    auto seq = ural_ex::make_sqrt_heron_cursor(S, x_0, eps);
 
     for(; !!seq; ++seq)
     {
@@ -1154,7 +1154,7 @@ BOOST_AUTO_TEST_CASE(square_root_iterative_test)
     {
         auto x_0 = S / 2;
 
-        auto seq = ural_ex::make_sqrt_heron_sequence(S, x_0, eps);
+        auto seq = ural_ex::make_sqrt_heron_cursor(S, x_0, eps);
 
         for(; !!seq; ++ seq)
         {
@@ -1173,7 +1173,7 @@ BOOST_AUTO_TEST_CASE(square_root_iterative_less_then_1_test)
     {
         auto x_0 = S / 2;
 
-        auto seq = ural_ex::make_sqrt_heron_sequence(S, x_0, eps);
+        auto seq = ural_ex::make_sqrt_heron_cursor(S, x_0, eps);
 
         for(; !!seq; ++ seq)
         {

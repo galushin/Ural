@@ -190,7 +190,7 @@ namespace experimental
     /** @brief Создание курсора на основе потока ввода
     @tparam T тип элементов
     @param is поток ввода
-    @return <tt> istream_sequence<T, IStream>(is) </tt>
+    @return <tt> istream_cursor<T, IStream>(is) </tt>
     */
     template <class T, class IStream>
     istream_cursor<IStream, T>

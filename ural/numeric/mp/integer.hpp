@@ -196,8 +196,8 @@ namespace experimental
     @tparam radix основание системы счисления
     */
     template <class IntType, IntType radix>
-    class digits_sequence
-     : public ural::cursor_base<digits_sequence<IntType, radix>>
+    class digits_cursor
+     : public ural::cursor_base<digits_cursor<IntType, radix>>
     {
     public:
         /// @brief Категорию курсора
@@ -218,7 +218,7 @@ namespace experimental
         /** @brief Конструктор
         @param value число
         */
-        explicit digits_sequence(IntType value)
+        explicit digits_cursor(IntType value)
          : state_(std::div(value, radix))
         {
             assert(value >= 0);
@@ -406,7 +406,7 @@ namespace experimental
             is_not_negative_ref() = (init_value >= T{0});
 
             using std::abs;
-            ural::copy(digits_sequence<T, base>{abs(std::move(init_value))},
+            ural::copy(digits_cursor<T, base>{abs(std::move(init_value))},
                        this->digits_ref() | ural::back_inserter);
         }
 
@@ -706,7 +706,7 @@ namespace experimental
         if(x.size() > 0 && a != 0)
         {
             using std::abs;
-            auto seq = digits_sequence<T, radix>(abs(a));
+            auto seq = digits_cursor<T, radix>(abs(a));
 
             for(size_t i = 0; !!seq; ++ i, ++ seq)
             {
@@ -759,7 +759,7 @@ namespace experimental
         using std::abs;
 
         return x.is_not_negative() == (a >= 0)
-                && ural::equal(x.digits(), digits_sequence<T, radix>{abs(a)});
+                && ural::equal(x.digits(), digits_cursor<T, radix>{abs(a)});
     }
 
     template <class T, std::intmax_t radix>

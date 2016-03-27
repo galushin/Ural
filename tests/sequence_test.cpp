@@ -1150,8 +1150,8 @@ BOOST_AUTO_TEST_CASE(replace_sequence_test_cref)
     std::replace(s_std.begin(), s_std.end(), old_value.numerator(), new_value);
 
     // ural
-    auto seq = ural_ex::make_replace_sequence(s_ural, std::cref(old_value),
-                                              std::cref(new_value));
+    auto seq = ural_ex::make_replace_cursor(s_ural, std::cref(old_value),
+                                            std::cref(new_value));
     ural::copy(seq, s_ural);
 
     URAL_CHECK_EQUAL_RANGES(s_std, s_ural);
@@ -1166,7 +1166,8 @@ BOOST_AUTO_TEST_CASE(replace_sequence_test)
     auto const new_value = 88;
 
     std::replace(s_std.begin(), s_std.end(), old_value, new_value);
-    ural::copy(ural_ex::make_replace_sequence(s_ural, old_value, new_value), s_ural);
+    ural::copy(ural_ex::make_replace_cursor(s_ural, old_value, new_value),
+               s_ural);
 
     URAL_CHECK_EQUAL_RANGES(s_std, s_ural);
 }

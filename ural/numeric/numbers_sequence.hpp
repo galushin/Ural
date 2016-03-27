@@ -166,7 +166,7 @@ inline namespace v0
 {
     namespace
     {
-        /// @brief Функциональный объект для создания @c numbers_sequence
+        /// @brief Функциональный объект для создания @c numbers_cursor
         constexpr auto const & numbers = odr_const<::ural::experimental::numbers_fn>;
 
         /** @brief Функциональный объект для создания последовательности

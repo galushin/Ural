@@ -168,11 +168,11 @@ namespace experimental
         return x.base() == y.base() && x.chunk_size() == y.chunk_size();
     }
 
-    /// @brief Тип функционального объекта создания @c chunk_sequence
+    /// @brief Тип функционального объекта создания @c chunk_cursor
     struct make_chunks_cursor_fn
     {
     public:
-        /** @brief Создание @c chunk_sequence
+        /** @brief Создание @c chunk_cursor
         @param seq базовая последовательность
         @param n количество элементов в подпоследовательности
         @pre n > 0
@@ -192,10 +192,10 @@ namespace experimental
 
     namespace
     {
-    /// @brief Функциональный объект создания @c chunk_sequence
+    /// @brief Функциональный объект создания @c chunk_cursor
     constexpr auto const & make_chunks_cursor = odr_const<make_chunks_cursor_fn>;
 
-    /** @brief Функциональный объект для создания @c chunk_sequence в
+    /** @brief Функциональный объект для создания @c chunk_cursor в
     конвейерном стиле
     */
     constexpr auto const & chunked = odr_const<pipeable_maker<make_chunks_cursor_fn>>;

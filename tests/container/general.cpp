@@ -39,9 +39,9 @@ namespace
         Sequence_containers;
 
     typedef boost::mpl::list<ural::experimental::flat_set<int, ural::use_default, Int_alloc>>
-        Assosiative_containers_containers;
+        Assosiative_containers;
 
-    typedef boost::mpl::copy<Assosiative_containers_containers,
+    typedef boost::mpl::copy<Assosiative_containers,
                              boost::mpl::front_inserter<Sequence_containers>>::type
         Containers_types;
 }

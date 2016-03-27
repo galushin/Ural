@@ -653,7 +653,7 @@ BOOST_AUTO_TEST_CASE(includes_test_custom_compare)
     }
 }
 
-BOOST_AUTO_TEST_CASE(includes_test_custom_compare_istream_auto_to_sequence)
+BOOST_AUTO_TEST_CASE(includes_test_custom_compare_istream_auto_to_cursor)
 {
     std::vector<std::string> vs{"abcfhx", "abc", "ac", "g", "acg", {}};
     std::string v0 {"ABC"};

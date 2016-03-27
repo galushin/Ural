@@ -449,8 +449,8 @@ namespace details
         tuple<Input1, Input2, Output>
         impl(Input1 in1, Input2 in2, Output out, BinaryFunction f) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input1>));
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input2>));
+            BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<BinaryFunction, Input1, Input2>));
 
             typedef IndirectCallableResultType<BinaryFunction, Input1, Input2> F_result;
@@ -621,7 +621,7 @@ namespace details
         @param new_value новое значение
         @post Всем элементам @c x последовательности @c seq, удовлетворяющим
         предикату @c pred, присваивается значение @c new_value.
-        @return Последовательность, полученная из
+        @return Курсор, полученный из
         <tt> ::ural::cursor_fwd<ForwardSequence>(seq) </tt> продвижением до
         исчерпания.
         */
@@ -640,14 +640,14 @@ namespace details
         }
 
     private:
-        template <class ForwardSequence, class Predicate, class T>
-        static ForwardSequence
-        impl(ForwardSequence seq, Predicate pred, T const & new_value)
+        template <class ForwardCursor, class Predicate, class T>
+        static ForwardCursor
+        impl(ForwardCursor seq, Predicate pred, T const & new_value)
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<ForwardCursor>));
             BOOST_CONCEPT_ASSERT((concepts::Semiregular<T>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<Predicate, ForwardSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Writable<ForwardSequence, T>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<Predicate, ForwardCursor>));
+            BOOST_CONCEPT_ASSERT((concepts::Writable<ForwardCursor, T>));
 
             return fill_fn{}(std::move(seq) | ::ural::experimental::filtered(std::move(pred)),
                              new_value).base();
@@ -694,15 +694,15 @@ namespace details
         }
 
     private:
-        template <class ForwardSequence, class T1, class T2, class BinaryPredicate>
-        static ForwardSequence
-        impl(ForwardSequence seq, T1 const & old_value, T2 const & new_value,
+        template <class ForwardCursor, class T1, class T2, class BinaryPredicate>
+        static ForwardCursor
+        impl(ForwardCursor seq, T1 const & old_value, T2 const & new_value,
              BinaryPredicate bin_pred)
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<ForwardCursor>));
             BOOST_CONCEPT_ASSERT((concepts::Semiregular<T2>));
-            BOOST_CONCEPT_ASSERT((concepts::Writable<ForwardSequence, T2>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate, ForwardSequence, T1 const *>));
+            BOOST_CONCEPT_ASSERT((concepts::Writable<ForwardCursor, T2>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate, ForwardCursor, T1 const *>));
 
             auto const pred = [&](auto const & x) { return bin_pred(x, old_value); };
 
@@ -754,16 +754,16 @@ namespace details
         static tuple<Input, Output>
         impl(Input in, Output out, Predicate pred, T const & new_value)
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input>));
             BOOST_CONCEPT_ASSERT((concepts::Semiregular<T>));
-            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Output>));
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassCursor<Output>));
             BOOST_CONCEPT_ASSERT((concepts::Writable<Output, T>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<Input, Output>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<Predicate, Input>));
 
-            auto in_r = ::ural::experimental::make_replace_if_sequence(std::move(in),
-                                                                       std::move(pred),
-                                                                       std::cref(new_value));
+            auto in_r = ::ural::experimental::make_replace_if_cursor(std::move(in),
+                                                                     std::move(pred),
+                                                                     std::cref(new_value));
             auto r = ural::copy_fn{}(std::move(in_r), std::move(out));
 
             return ural::make_tuple(std::move(r[ural::_1]).base(),
@@ -841,13 +841,13 @@ namespace details
         }
 
     private:
-        template <class ForwardSequence, class Predicate>
-        ForwardSequence
-        impl(ForwardSequence in, Predicate pred) const
+        template <class ForwardCursor, class Predicate>
+        ForwardCursor
+        impl(ForwardCursor in, Predicate pred) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<Predicate, ForwardSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Permutable<ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<ForwardCursor>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<Predicate, ForwardCursor>));
+            BOOST_CONCEPT_ASSERT((concepts::Permutable<ForwardCursor>));
 
             auto out = find_if_fn{}(std::move(in), pred);
 
@@ -894,14 +894,14 @@ namespace details
         }
 
     private:
-        template <class ForwardSequence, class T, class BinaryPredicate>
-        ForwardSequence
-        impl(ForwardSequence in, T const & value,
+        template <class ForwardCursor, class T, class BinaryPredicate>
+        ForwardCursor
+        impl(ForwardCursor in, T const & value,
              BinaryPredicate pred) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Permutable<ForwardSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<BinaryPredicate, ForwardSequence, T const *>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<ForwardCursor>));
+            BOOST_CONCEPT_ASSERT((concepts::Permutable<ForwardCursor>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<BinaryPredicate, ForwardCursor, T const *>));
 
             auto pred_1 = [&](auto const & x) { return pred(x, value); };
 
@@ -1009,13 +1009,13 @@ namespace details
         }
 
     private:
-        template <class ForwardSequence, class BinaryPredicate>
-        ForwardSequence
-        impl(ForwardSequence seq, BinaryPredicate pred) const
+        template <class ForwardCursor, class BinaryPredicate>
+        ForwardCursor
+        impl(ForwardCursor seq, BinaryPredicate pred) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate, ForwardSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Permutable<ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<ForwardCursor>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<BinaryPredicate, ForwardCursor>));
+            BOOST_CONCEPT_ASSERT((concepts::Permutable<ForwardCursor>));
 
             // @todo Оптимизация
             auto us = std::move(seq) | ::ural::experimental::adjacent_filtered(std::move(pred));
@@ -1083,11 +1083,11 @@ namespace details
         }
 
     private:
-        template <class ForwardSequence>
-        void impl_n(ForwardSequence seq,
-                    DifferenceType<ForwardSequence> n) const
+        template <class ForwardCursor>
+        void impl_n(ForwardCursor seq,
+                    DifferenceType<ForwardCursor> n) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<decltype(seq)>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<decltype(seq)>));
             BOOST_CONCEPT_ASSERT((concepts::Permutable<decltype(seq)>));
 
             // Возможная оптимизация - попытаться выделить доп. память
@@ -1109,14 +1109,14 @@ namespace details
             }
         }
 
-        template <class ForwardSequence>
-        ForwardSequence impl(ForwardSequence seq, finite_forward_cursor_tag) const
+        template <class ForwardCursor>
+        ForwardCursor impl(ForwardCursor seq, finite_forward_cursor_tag) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<decltype(seq)>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<decltype(seq)>));
             BOOST_CONCEPT_ASSERT((concepts::Permutable<decltype(seq)>));
 
             // @todo Выделить алгоритм?
-            DifferenceType<ForwardSequence> n = 0;
+            DifferenceType<ForwardCursor> n = 0;
             auto result = seq;
 
             for(; !!result; ++ result)
@@ -1129,14 +1129,14 @@ namespace details
             return result;
         }
 
-        template <class BidirectionalSequence>
-        static BidirectionalSequence
-        impl(BidirectionalSequence cur, bidirectional_cursor_tag)
+        template <class BidirectionalCursor>
+        static BidirectionalCursor
+        impl(BidirectionalCursor cur, bidirectional_cursor_tag)
         {
             ural::exhaust_front(cur);
             auto seq = cur.traversed_front();
 
-            BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequence<decltype(seq)>));
+            BOOST_CONCEPT_ASSERT((concepts::BidirectionalCursor<decltype(seq)>));
             BOOST_CONCEPT_ASSERT((concepts::Permutable<decltype(seq)>));
 
             for(; !!seq; ++seq)
@@ -1236,8 +1236,8 @@ namespace details
         ural::tuple<Forward1, Forward2>
         impl(Forward1 in1, Forward2 in2) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward1>));
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward2>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<Forward1>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<Forward2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectlySwappable<Forward1, Forward2>));
 
             in1.shrink_front();
@@ -1268,11 +1268,11 @@ namespace details
             }
         }
 
-        template <class ForwardSequence>
-        ForwardSequence impl(ForwardSequence seq) const
+        template <class ForwardCursor>
+        ForwardCursor impl(ForwardCursor seq) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Permutable<ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<ForwardCursor>));
+            BOOST_CONCEPT_ASSERT((concepts::Permutable<ForwardCursor>));
 
             auto seq_old = seq.original();
 
@@ -1314,7 +1314,7 @@ namespace details
         static ural::tuple<Forward, Output>
         impl(Forward in, Output out)
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Output>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<Forward, Output>));
 
@@ -1357,13 +1357,13 @@ namespace details
         }
 
     private:
-        template <class RASequence, class URNG>
-        static RASequence impl(RASequence s, URNG && g)
+        template <class RACursor, class URNG>
+        static RACursor impl(RACursor s, URNG && g)
         {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RACursor>));
             BOOST_CONCEPT_ASSERT((concepts::Uniform_random_number_generator<typename std::decay<URNG>::type>));
-            BOOST_CONCEPT_ASSERT((concepts::Permutable<RASequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Convertible<ResultType<URNG>, DifferenceType<RASequence>>));
+            BOOST_CONCEPT_ASSERT((concepts::Permutable<RACursor>));
+            BOOST_CONCEPT_ASSERT((concepts::Convertible<ResultType<URNG>, DifferenceType<RACursor>>));
 
             for(; !!s; ++s)
             {
@@ -1407,7 +1407,7 @@ namespace details
         template <class Input, class UnaryPredicate>
         static bool impl(Input in, UnaryPredicate pred)
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<UnaryPredicate, Input>));
 
             auto tail = find_if_not_fn{}(std::move(in), pred);
@@ -1446,13 +1446,13 @@ namespace details
                               ::ural::make_callable(std::move(pred)));
         }
     private:
-        template <class ForwardSequence, class UnaryPredicate>
-        static ForwardSequence
-        impl(ForwardSequence in, UnaryPredicate pred)
+        template <class ForwardCursor, class UnaryPredicate>
+        static ForwardCursor
+        impl(ForwardCursor in, UnaryPredicate pred)
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<UnaryPredicate, ForwardSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Permutable<ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<ForwardCursor>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<UnaryPredicate, ForwardCursor>));
+            BOOST_CONCEPT_ASSERT((concepts::Permutable<ForwardCursor>));
 
             // пропускаем ведущие "хорошие" элеменнов
             auto sink = find_if_not_fn{}(std::move(in), pred);
@@ -1509,13 +1509,13 @@ namespace details
         }
 
     private:
-        template <class ForwardSequence, class UnaryPredicate>
-        ForwardSequence
-        impl_inplace(ForwardSequence in, UnaryPredicate pred) const
+        template <class ForwardCursor, class UnaryPredicate>
+        ForwardCursor
+        impl_inplace(ForwardCursor in, UnaryPredicate pred) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<UnaryPredicate, ForwardSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Permutable<ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<ForwardCursor>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<UnaryPredicate, ForwardCursor>));
+            BOOST_CONCEPT_ASSERT((concepts::Permutable<ForwardCursor>));
 
             auto const n = ural::size(in);
 
@@ -1557,13 +1557,13 @@ namespace details
             return ural::next(s_orig, nt);
         }
 
-        template <class ForwardSequence, class UnaryPredicate>
-        ForwardSequence
-        impl(ForwardSequence in, UnaryPredicate pred) const
+        template <class ForwardCursor, class UnaryPredicate>
+        ForwardCursor
+        impl(ForwardCursor in, UnaryPredicate pred) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<UnaryPredicate, ForwardSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Permutable<ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<ForwardCursor>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<UnaryPredicate, ForwardCursor>));
+            BOOST_CONCEPT_ASSERT((concepts::Permutable<ForwardCursor>));
 
             in.shrink_front();
             in = find_if_not_fn{}(std::move(in), pred);

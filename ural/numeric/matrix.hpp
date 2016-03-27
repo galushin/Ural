@@ -211,13 +211,13 @@ namespace experimental
         return diagonal_adaptor<Matrix const>{a()};
     }
 
-    /** @brief Последовательность строк матрицы
+    /** @brief Курсор последовательности строк матрицы
     @tparam Matrix тип матрицы
     @tparam CursorTag категория курсора
     */
     template <class Matrix, class CursorTag = finite_forward_cursor_tag>
-    class matrix_by_rows_sequence
-     : public ural::cursor_base<matrix_by_rows_sequence<Matrix, CursorTag>>
+    class matrix_by_rows_cursor
+     : public ural::cursor_base<matrix_by_rows_cursor<Matrix, CursorTag>>
     {
         typedef typename Matrix::size_type size_type;
     public:
@@ -235,7 +235,7 @@ namespace experimental
         /** @brief Конструктор
         @param x матрица
         */
-        explicit matrix_by_rows_sequence(Matrix & x)
+        explicit matrix_by_rows_cursor(Matrix & x)
          : m_(x)
          , end_(x.size1())
          , row_(0)
@@ -245,7 +245,7 @@ namespace experimental
         @param x матрица
         @param nrows количество строк, которые нужно взять
         */
-        explicit matrix_by_rows_sequence(Matrix & x, size_type nrows)
+        explicit matrix_by_rows_cursor(Matrix & x, size_type nrows)
          : m_(x)
          , end_(nrows)
          , row_(0)
@@ -274,7 +274,7 @@ namespace experimental
         @pre <tt> !!*this </tt>
         @return <tt> *this </tt>
         */
-        matrix_by_rows_sequence & pop_front()
+        matrix_by_rows_cursor & pop_front()
         {
             assert(!!*this);
             ++ row_.value();
@@ -284,9 +284,9 @@ namespace experimental
         // Прямой курсор
         /** @brief Пройденная передняя часть последовательности
         */
-        matrix_by_rows_sequence traversed_front() const
+        matrix_by_rows_cursor traversed_front() const
         {
-            return matrix_by_rows_sequence(m_, row_.old_value());
+            return matrix_by_rows_cursor(m_, row_.old_value());
         }
 
     private:
@@ -299,13 +299,13 @@ namespace experimental
 
     /** @brief Создание последовательности строк матрицы
     @param x матрица
-    @return <tt> matrix_by_rows_sequence<Matrix>(std::move(x)) </tt>
+    @return <tt> matrix_by_rows_cursor<Matrix>(std::move(x)) </tt>
     */
     template <class Matrix>
-    matrix_by_rows_sequence<Matrix>
+    matrix_by_rows_cursor<Matrix>
     matrix_by_rows(Matrix & x)
     {
-        return matrix_by_rows_sequence<Matrix>(x);
+        return matrix_by_rows_cursor<Matrix>(x);
     }
 
     /** @brief Првоерка того, что матрица является корреляционной

@@ -74,13 +74,13 @@ namespace archetypes
         {}
     };
 
-    /** @brief Архетип последовательности ввода
+    /** @brief Архетип курсора ввода
     @tparam Value тип значения
     @tparam D тип расстояния, по умолчанию используется std::ptrdiff_t
     */
     template <class Value, class D = use_default>
-    class input_sequence
-     : public ural::cursor_base<input_sequence<Value>>
+    class input_cursor
+     : public ural::cursor_base<input_cursor<Value>>
     {
     public:
         /// @brief Тип значения

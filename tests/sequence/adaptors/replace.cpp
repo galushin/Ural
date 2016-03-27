@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(replace_sequence_if_regression_pass_by_cref)
 
     // ural
     std::vector<int> x_ural;
-    ural::copy(ural_ex::make_replace_if_sequence(s, pred, std::cref(new_value)),
+    ural::copy(ural_ex::make_replace_if_cursor(s, pred, std::cref(new_value)),
                x_ural | ural::back_inserter);
 
     // Сравнение

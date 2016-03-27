@@ -96,8 +96,8 @@ namespace experimental
     @tparam D тип расстояния, по умолчанию используется std::intmax_t
     */
     template <class IntType, class D = use_default>
-    class sqrt_as_continued_fraction_sequence
-     : public ural::cursor_base<sqrt_as_continued_fraction_sequence<IntType>>
+    class sqrt_as_continued_fraction_cursor
+     : public ural::cursor_base<sqrt_as_continued_fraction_cursor<IntType>>
     {
     public:
         // Типы
@@ -122,9 +122,9 @@ namespace experimental
         @param value число, из которого извлекается корень
         @post <tt> this->front() == IntType(sqrt(value)) </tt>
         */
-        explicit sqrt_as_continued_fraction_sequence(IntType value)
+        explicit sqrt_as_continued_fraction_cursor(IntType value)
          : N_(std::move(value))
-         , a_0_(sqrt_as_continued_fraction_sequence::sqrt_impl(N_))
+         , a_0_(sqrt_as_continued_fraction_cursor::sqrt_impl(N_))
          , a_new_(a_0_)
          , x_(0)
          , denom_(1)
@@ -193,16 +193,16 @@ namespace experimental
         }
     };
 
-    /** @brief Создание последовательности подходящих дробей для корня из целого
-    числа
+    /** @brief Создание курсора последовательности подходящих дробей для корня
+    из целого числа.
     @param n Число, из которого извлекается корень.
-    @return <tt> sqrt_as_continued_fraction_sequence<IntType>(std::move(n)) </tt>
+    @return <tt> sqrt_as_continued_fraction_cursor<IntType>(std::move(n)) </tt>
     */
     template <class IntType>
-    sqrt_as_continued_fraction_sequence<IntType>
+    sqrt_as_continued_fraction_cursor<IntType>
     sqrt_as_continued_fraction(IntType n)
     {
-        return sqrt_as_continued_fraction_sequence<IntType>(std::move(n));
+        return sqrt_as_continued_fraction_cursor<IntType>(std::move(n));
     }
 }
 // namespace experimental

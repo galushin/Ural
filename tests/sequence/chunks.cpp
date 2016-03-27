@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(chunks_cursor_test)
 
     auto ch = ::ural::experimental::make_chunks_cursor(src, 3);
 
-    BOOST_CONCEPT_ASSERT((::ural::concepts::ForwardSequence<decltype(ch)>));
+    BOOST_CONCEPT_ASSERT((::ural::concepts::ForwardCursor<decltype(ch)>));
 
     for(auto const & r : expected)
     {

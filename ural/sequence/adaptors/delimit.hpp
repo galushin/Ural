@@ -131,15 +131,15 @@ namespace experimental
     {
         struct make_delimit_cursor_fn
         {
-            /** @brief Создание адаптор последовательности, содержащие все элементы
-            исходной последовательности до первого элемента, эквивалентного заданному
-            значению
+            /** @brief Создание адаптора курсора последовательности, содержащей
+            все элементы исходной последовательности до первого элемента,
+            эквивалентного заданному значению.
             @param in входная последовательность
             @param value искомое значение
             @param bin_pred бинарный предикат
             @return <tt> Seq(::ural::cursor_fwd<Sequence>(in), std::move(value),
                              ural::make_callable(std::move(bin_pred))) </tt>, где
-            @c Seq есть <tt> delimit_sequence<cursor_type_t<Sequence>, Value, BinaryPredicate> </tt>
+            @c Seq есть <tt> delimit_cursor<cursor_type_t<Sequence>, Value, BinaryPredicate> </tt>
             */
             template <class Sequence, class Value,
                       class BinaryPredicate = ural::equal_to<>>

@@ -22,10 +22,10 @@
 */
 
 #include <ural/sequence/adaptors/assumed_infinite.hpp>
-#include <ural/sequence/constant.hpp>
+#include <ural/sequence/repeat_value.hpp>
 #include <ural/container/container_facade.hpp>
 #include <ural/memory.hpp>
-#include <ural/sequence/iterator_sequence.hpp>
+#include <ural/sequence/iterator_cursor.hpp>
 #include <ural/container/policy.hpp>
 #include <ural/sequence/adaptors/taken.hpp>
 #include <ural/algorithm.hpp>
@@ -629,7 +629,7 @@ namespace experimental
         */
         void assign(size_type n, value_type const & value)
         {
-            auto seq = ::ural::experimental::make_constant_sequence(std::cref(value))
+            auto seq = ::ural::experimental::make_repeat_value_cursor(std::cref(value))
                      | ::ural::experimental::taken(n);
 
             return this->assign(std::move(seq));
@@ -1062,7 +1062,7 @@ namespace experimental
         */
         iterator insert(const_iterator position, size_type const n, value_type const & value)
         {
-            auto seq = ::ural::experimental::make_constant_sequence(std::cref(value))
+            auto seq = ::ural::experimental::make_repeat_value_cursor(std::cref(value))
                      | ::ural::experimental::taken(n);
 
             return this->insert(position, std::move(seq));

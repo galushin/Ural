@@ -508,7 +508,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(pascal_triangle_PE_203, Set, PE_203_Set_types)
 
     Set r;
 
-    auto seq = ural_ex::pascal_triangle_rows_sequence<std::vector<int>>{};
+    auto seq = ural_ex::pascal_triangle_rows_cursor<std::vector<int>>{};
 
     for(auto i : ural::numbers(0, 8))
     {
@@ -610,7 +610,7 @@ BOOST_AUTO_TEST_CASE(fibonacci_sequence_explicit_forward)
                                            ural::forward_cursor_tag>;
 
     BOOST_CONCEPT_ASSERT((ural::concepts::ReadableCursor<FS>));
-    BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<FS>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ForwardCursor<FS>));
 }
 
 BOOST_AUTO_TEST_CASE(fibonacci_sequence_with_operation_single_pass_traversal)
@@ -622,7 +622,7 @@ BOOST_AUTO_TEST_CASE(fibonacci_sequence_with_operation_single_pass_traversal)
     using FS = ural_ex::fibonacci_cursor<Integer, Operation>;
 
     BOOST_CONCEPT_ASSERT((ural::concepts::ReadableCursor<FS>));
-    BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<FS>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassCursor<FS>));
 }
 
 BOOST_AUTO_TEST_CASE(fibonacci_sequence_forward_traversal)
@@ -634,7 +634,7 @@ BOOST_AUTO_TEST_CASE(fibonacci_sequence_forward_traversal)
     using FS = ural_ex::fibonacci_cursor<Integer, Operation, ural::forward_cursor_tag>;
 
     BOOST_CONCEPT_ASSERT((ural::concepts::ReadableCursor<FS>));
-    BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<FS>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ForwardCursor<FS>));
 
     auto const op1 = +[](Integer x, Integer y) { return x + y; };
     auto const op2 = +[](Integer x, Integer y) { return x * y; };
@@ -653,7 +653,7 @@ BOOST_AUTO_TEST_CASE(fibonacci_sequence_forward_traversal)
     BOOST_CHECK(s3 == s3);
 }
 
-BOOST_AUTO_TEST_CASE(fibonacci_sequence_shrink_front)
+BOOST_AUTO_TEST_CASE(fibonacci_cursor_shrink_front)
 {
     auto seq = ural_ex::fibonacci_cursor<int, ural::use_default,
                                          ural::forward_cursor_tag>{};

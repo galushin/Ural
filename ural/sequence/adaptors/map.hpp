@@ -88,7 +88,8 @@ namespace experimental
         @param seq (под)последовательность элементов ассоциативного контейнера
         */
         template <class Sequence>
-        auto operator()(Sequence && seq) const
+        elements_cursor<cursor_type_t<Sequence>, Index>
+        operator()(Sequence && seq) const
         {
             using Result = elements_cursor<cursor_type_t<Sequence>, Index>;
 

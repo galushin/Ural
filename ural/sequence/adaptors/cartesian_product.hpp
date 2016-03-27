@@ -76,7 +76,7 @@ namespace experimental
         {
             typedef typename std::tuple_element<0, decltype(current_)>::type
                 Front_seq;
-            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Front_seq>));
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassCursor<Front_seq>));
             BOOST_CONCEPT_ASSERT((concepts::ReadableCursor<Front_seq>));
         }
 

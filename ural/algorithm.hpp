@@ -144,20 +144,20 @@ namespace experimental
                               left_par, right_par, max_nesting_level);
         }
     private:
-        template <class InputSequence, class T>
-        static bool impl(InputSequence in,
+        template <class InputCursor, class T>
+        static bool impl(InputCursor in,
                          T const & left_par, T const & right_par,
-                         DifferenceType<InputSequence> const max_nesting_level)
+                         DifferenceType<InputCursor> const max_nesting_level)
         {
             using namespace ural::concepts;
 
-            BOOST_CONCEPT_ASSERT((SinglePassSequence<InputSequence>));
-            BOOST_CONCEPT_ASSERT((ReadableCursor<InputSequence>));
+            BOOST_CONCEPT_ASSERT((SinglePassCursor<InputCursor>));
+            BOOST_CONCEPT_ASSERT((ReadableCursor<InputCursor>));
             BOOST_CONCEPT_ASSERT((IndirectPredicate<ural::equal_to<>,
-                                                    InputSequence,
+                                                    InputCursor,
                                                     T const *>));
 
-            auto const zero = DifferenceType<InputSequence>{0};
+            auto const zero = DifferenceType<InputCursor>{0};
 
             auto opened = zero;
 
@@ -211,14 +211,14 @@ namespace experimental
         }
 
     private:
-        template <class InputSequence, class Compare>
-        tuple<ValueType<InputSequence>, DifferenceType<InputSequence>>
-        impl(InputSequence in, Compare cmp = Compare{}) const
+        template <class InputCursor, class Compare>
+        tuple<ValueType<InputCursor>, DifferenceType<InputCursor>>
+        impl(InputCursor in, Compare cmp = Compare{}) const
         {
-            const auto unit = DifferenceType<InputSequence>(1);
+            const auto unit = DifferenceType<InputCursor>(1);
             assert(!!in);
 
-            tuple<ValueType<InputSequence>, DifferenceType<InputSequence>>
+            tuple<ValueType<InputCursor>, DifferenceType<InputCursor>>
                 result{*in, unit};
             ++ in;
 

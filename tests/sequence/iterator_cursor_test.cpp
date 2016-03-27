@@ -28,7 +28,7 @@
 #include <ural/numeric.hpp>
 #include <ural/sequence/all.hpp>
 
-BOOST_AUTO_TEST_CASE(iterator_sequence_compatible_init)
+BOOST_AUTO_TEST_CASE(iterator_cursor_compatible_init)
 {
     std::vector<int> xs = {1, 2, 3, 4};
     auto const & cr = xs;
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(iterator_sequence_compatible_init)
     BOOST_CHECK(sc1 == sc);
 }
 
-BOOST_AUTO_TEST_CASE(iterator_sequence_compatible_move_init)
+BOOST_AUTO_TEST_CASE(iterator_cursor_compatible_move_init)
 {
     std::vector<int> xs = {1, 2, 3, 4};
     auto const & cr = xs;
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE(iterator_sequence_compatible_move_init)
     BOOST_CHECK(sc1 == s_old);
 }
 
-BOOST_AUTO_TEST_CASE(iterator_sequence_compatible_assign)
+BOOST_AUTO_TEST_CASE(iterator_cursor_compatible_assign)
 {
     std::vector<int> xs = {1, 2, 3, 4};
     auto const & cr = xs;
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(iterator_sequence_compatible_assign)
     BOOST_CHECK(sc == s);
 }
 
-BOOST_AUTO_TEST_CASE(iterator_sequence_compatible_move_assign)
+BOOST_AUTO_TEST_CASE(iterator_cursor_compatible_move_assign)
 {
     std::vector<int> xs = {1, 2, 3, 4};
     auto const & cr = xs;
@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE(iterator_sequence_compatible_move_assign)
     BOOST_CHECK(sc == s_old);
 }
 
-BOOST_AUTO_TEST_CASE(copy_sequence_test_via_details)
+BOOST_AUTO_TEST_CASE(copy_cursor_test)
 {
     std::vector<int> const xs = {1, 2, 3, 4};
 
@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(copy_to_back_inserter)
     URAL_CHECK_EQUAL_RANGES(xs, x1);
 }
 
-BOOST_AUTO_TEST_CASE(c_array_to_sequence)
+BOOST_AUTO_TEST_CASE(c_array_to_cursor)
 {
     int xs [] = {1, 2, 3, 4};
 
@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(c_array_to_sequence)
     BOOST_CHECK_EQUAL(sum_std, sum_ural);
 }
 
-BOOST_AUTO_TEST_CASE(iteretor_sequence_plus_assign_test)
+BOOST_AUTO_TEST_CASE(iteretor_cursor_plus_assign_test)
 {
     std::vector<int> const xs = {1, 2, 3, 4};
     auto s = ural::cursor(xs);
@@ -146,7 +146,7 @@ BOOST_AUTO_TEST_CASE(iteretor_sequence_plus_assign_test)
     BOOST_CHECK_EQUAL(n, ural::size(s.traversed_front()));
 }
 
-BOOST_AUTO_TEST_CASE(iterator_sequence_size_test)
+BOOST_AUTO_TEST_CASE(iterator_cursor_size_test)
 {
     std::istringstream is;
     std::forward_list<int> fwd;
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE(iterator_sequence_size_test)
     BOOST_CHECK_EQUAL(3*sizeof(ra.begin()) + sizeof(ra.rbegin()), sizeof(s_ra));
 }
 
-BOOST_AUTO_TEST_CASE(valarray_to_sequence_test)
+BOOST_AUTO_TEST_CASE(valarray_to_cursor_test)
 {
     std::valarray<int> x0;
     std::valarray<int> x = {1, 2, 3};
