@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(repeat_value_cursor_explcit_single_pass)
     auto cur = ural_ex::repeat_value_cursor<char, ural::single_pass_cursor_tag>(value);
 
     BOOST_CONCEPT_ASSERT((ural::concepts::ReadableCursor<decltype(cur)>));
-    BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<decltype(cur)>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassCursor<decltype(cur)>));
 
     ural::copy(std::move(cur), actual);
 
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE(repeat_value_cursor_explcit_forward)
     auto const cur = RVC(value);
 
     BOOST_CONCEPT_ASSERT((ural::concepts::ReadableCursor<RVC>));
-    BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<RVC>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassCursor<RVC>));
 
     auto result_cur = ural::copy(std::move(cur), actual)[ural::_1];
 

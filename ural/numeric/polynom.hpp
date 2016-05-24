@@ -229,16 +229,16 @@ namespace experimental
         {
             auto const zero = coefficient_type{0};
 
-            auto seq = find(ural::cursor_fwd<InputSequence>(in),
+            auto cur = find(ural::cursor_fwd<InputSequence>(in),
                             zero, not_equal_to<>{});
 
-            if (!seq)
+            if (!cur)
             {
                 cs_.assign(1, zero);
             }
             else
             {
-                cs_.assign(std::move(seq));
+                cs_.assign(std::move(cur));
                 ural::reverse(cs_);
             }
         }
@@ -248,7 +248,7 @@ namespace experimental
         @param first итератор, задающий начало последовательности
         @param last итератор, задающий конец последовательности
         @pre <tt> [first; last) </tt> должен быть корректным интервалом
-        @post <tt> *this == polynomial(make_iterator_sequence(first, last)) </tt>
+        @post <tt> *this == polynomial(make_iterator_cursor(first, last)) </tt>
         */
         template <class InputIterator>
         polynomial(InputIterator first, InputIterator last)

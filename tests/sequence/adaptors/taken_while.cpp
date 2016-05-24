@@ -153,15 +153,15 @@ BOOST_AUTO_TEST_CASE(taken_while_concepts_checking)
     auto const pipe = ural_ex::taken_while(ural::is_even);
     using namespace ural::concepts;
 
-    BOOST_CONCEPT_ASSERT((SinglePassSequence<decltype(in | pipe)>));
+    BOOST_CONCEPT_ASSERT((SinglePassCursor<decltype(in | pipe)>));
     BOOST_CONCEPT_ASSERT((ReadableCursor<decltype(in | pipe)>));
 
-    BOOST_CONCEPT_ASSERT((ForwardSequence<decltype(fwd | pipe)>));
+    BOOST_CONCEPT_ASSERT((ForwardCursor<decltype(fwd | pipe)>));
     BOOST_CONCEPT_ASSERT((ReadableCursor<decltype(fwd | pipe)>));
 
-    BOOST_CONCEPT_ASSERT((ForwardSequence<decltype(bidir | pipe)>));
+    BOOST_CONCEPT_ASSERT((ForwardCursor<decltype(bidir | pipe)>));
     BOOST_CONCEPT_ASSERT((ReadableCursor<decltype(bidir | pipe)>));
 
-    BOOST_CONCEPT_ASSERT((ForwardSequence<decltype(ra | pipe)>));
+    BOOST_CONCEPT_ASSERT((ForwardCursor<decltype(ra | pipe)>));
     BOOST_CONCEPT_ASSERT((ReadableCursor<decltype(ra | pipe)>));
 }

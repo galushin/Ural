@@ -27,7 +27,7 @@ namespace
     namespace ural_ex = ::ural::experimental;
 }
 
-BOOST_AUTO_TEST_CASE(multy_output_sequence_test)
+BOOST_AUTO_TEST_CASE(multy_output_cursor_test)
 {
     std::vector<int> const src = {3, 1, 4, 1, 5, 9, 2, 6, 5, 3};
 
@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(multy_output_sequence_test)
     URAL_CHECK_EQUAL_RANGES(v2, src);
 }
 
-BOOST_AUTO_TEST_CASE(simo_sequence_traversed_front)
+BOOST_AUTO_TEST_CASE(simo_cursor_traversed_front)
 {
     std::vector<int> const src = {3, 1, 4, 1, 5, 9, 2, 6, 5, 3};
 

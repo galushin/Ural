@@ -166,9 +166,9 @@ namespace experimental
     @param y правый операнд
     @return <tt> x.count() == y.count() && x.base() == y.base() </tt>
     */
-    template <class Sequence, class Size>
-    bool operator==(take_cursor<Sequence, Size> const & x,
-                    take_cursor<Sequence, Size> const & y)
+    template <class Cursor, class Size>
+    bool operator==(take_cursor<Cursor, Size> const & x,
+                    take_cursor<Cursor, Size> const & y)
     {
         return x.base() == y.base() && x.count() == y.count();
     }
@@ -179,7 +179,6 @@ namespace experimental
     struct make_take_cursor_fn
     {
     public:
-        //@{
         /** @brief Создание @c take_cursor
         @param seq входная последовательность
         @param n количество элементов, которое нужно взять
@@ -192,18 +191,17 @@ namespace experimental
             return Result(::ural::cursor_fwd<Sequence>(seq), std::move(n));
         }
 
-        template <class Sequence, class Size1, class Size2>
-        take_cursor<Sequence, CommonType<Size1, Size2>>
-        operator()(take_cursor<Sequence, Size1> seq, Size2 n) const
+        template <class Cursor, class Size1, class Size2>
+        take_cursor<Cursor, CommonType<Size1, Size2>>
+        operator()(take_cursor<Cursor, Size1> cur, Size2 n) const
         {
             using Size = CommonType<Size1, Size2>;
-            using Result = take_cursor<Sequence, Size>;
+            using Result = take_cursor<Cursor, Size>;
 
-            auto n_new = std::min(Size(seq.count()), Size(std::move(n)));
+            auto n_new = std::min(Size(cur.count()), Size(std::move(n)));
 
-            return Result(std::move(seq).base(), std::move(n_new));
+            return Result(std::move(cur).base(), std::move(n_new));
         }
-        //@}
     };
 
     namespace

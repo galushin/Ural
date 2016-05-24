@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(partial_sums_cursor_test)
     std::vector<int> x_ural;
     auto seq = ural_ex::partial_sums(v);
 
-    BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<decltype(seq)>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ForwardCursor<decltype(seq)>));
 
     ural::copy(std::move(seq), std::back_inserter(x_ural));
 
@@ -181,7 +181,7 @@ BOOST_AUTO_TEST_CASE(partial_sum_test_to_shorter)
     BOOST_CHECK(r_ural[ural::_2].traversed_front() == ural::cursor(x_ural));
 }
 
-BOOST_AUTO_TEST_CASE(adjacent_differences_sequence_test)
+BOOST_AUTO_TEST_CASE(adjacent_differences_cursor_test)
 {
     // Подготовка
     std::vector<int> const xs = {1,2,3,5,9,11,12};
@@ -303,7 +303,7 @@ BOOST_AUTO_TEST_CASE(partial_sums_cursor_test_no_default_ctor)
     URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
-BOOST_AUTO_TEST_CASE(adjacent_differences_sequence_test_no_default_ctor)
+BOOST_AUTO_TEST_CASE(adjacent_differences_cursor_test_no_default_ctor)
 {
      typedef no_default_ctor<int> Integer;
      std::vector<Integer> const xs = {1,2,3,5,9,11,12};

@@ -39,7 +39,6 @@ namespace experimental
     struct make_taken_exactly_cursor_fn
     {
     public:
-        //@{
         /** @brief Создание @c taken_exactly_cursor
         @param seq входная последовательность
         @param n количество элементов, которое нужно взять
@@ -52,18 +51,17 @@ namespace experimental
             return Result(::ural::cursor_fwd<Sequence>(seq), std::move(n));
         }
 
-        template <class Sequence, class D1, class D2>
-        taken_exactly_cursor<Sequence, CommonType<D1, D2>>
-        operator()(taken_exactly_cursor<Sequence, D1> seq, D2 n) const
+        template <class Cursor, class D1, class D2>
+        taken_exactly_cursor<Cursor, CommonType<D1, D2>>
+        operator()(taken_exactly_cursor<Cursor, D1> cur, D2 n) const
         {
             using Size = CommonType<D1, D2>;
-            using Result = taken_exactly_cursor<Sequence, Size>;
+            using Result = taken_exactly_cursor<Cursor, Size>;
 
-            auto n_new = std::min(Size(seq.size()), Size(std::move(n)));
+            auto n_new = std::min(Size(cur.size()), Size(std::move(n)));
 
-            return Result(std::move(seq).base(), std::move(n_new));
+            return Result(std::move(cur).base(), std::move(n_new));
         }
-        //@}
     };
 
     namespace

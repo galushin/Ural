@@ -1045,12 +1045,12 @@ namespace experimental
             policy_type::assert_can_insert_before(this->cbegin(), this->cend(),
                                                   position);
 
-            auto s = ural::cursor_fwd<InputSequence>(seq);
+            auto cur = ural::cursor_fwd<InputSequence>(seq);
 
-            using Category = typename decltype(s)::cursor_tag;
+            using Category = typename decltype(cur)::cursor_tag;
 
             return this->insert_impl(position - this->cbegin(),
-                                     std::move(s), Category{});
+                                     std::move(cur), Category{});
         }
 
         /** @brief Вставка копий заданного значения в заданную точку
@@ -1180,29 +1180,29 @@ namespace experimental
         }
 
     private:
-        template <class InputSequence>
-        iterator insert_impl(size_type index, InputSequence seq,
+        template <class InputCursor>
+        iterator insert_impl(size_type index, InputCursor cur,
                              finite_single_pass_cursor_tag)
         {
             auto const old_size = this->size();
 
             assert(index <= old_size);
 
-            ural::copy(std::move(seq), *this | ural::back_inserter);
+            ural::copy(std::move(cur), *this | ural::back_inserter);
 
             std::rotate(this->begin() + index, this->begin() + old_size, this->end());
 
             return this->begin() + index;
         }
 
-        template <class InputSequence>
+        template <class InputCursor>
         iterator insert_impl(size_type index,
-                             InputSequence seq,
+                             InputCursor cur,
                              finite_forward_cursor_tag)
         {
-            this->reserve(this->size() + ural::size(seq));
+            this->reserve(this->size() + ural::size(cur));
 
-            return this->insert_impl(index, std::move(seq),
+            return this->insert_impl(index, std::move(cur),
                                      finite_single_pass_cursor_tag{});
         }
 

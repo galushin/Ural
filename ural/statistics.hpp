@@ -1113,8 +1113,8 @@ namespace tags
     -> descriptives_facade<ValueType<cursor_type_t<Input>>, Tags>
     {
         // @todo Проект: выразить через версию с весами, последовательность
-        // весов - value_sequence, првоерить что компилятор устраняет лишние
-        // вызовы
+        // весов - repeat_value_cursor, првоерить что компилятор устраняет
+        // лишние вызовы
         typedef ValueType<cursor_type_t<Input>> Value;
         typedef descriptives_facade<Value, Tags> Result;
 

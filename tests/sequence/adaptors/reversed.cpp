@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(reversed_reversed_test)
 
 #include <ural/algorithm.hpp>
 
-BOOST_AUTO_TEST_CASE(reversed_iterators_to_sequence_test)
+BOOST_AUTO_TEST_CASE(reversed_iterators_to_cursor_test)
 {
     std::vector<int> const xs = {1, 2, 3, 4, 5};
     auto r_begin = xs.rbegin();
@@ -49,9 +49,9 @@ BOOST_AUTO_TEST_CASE(reversed_iterators_to_sequence_test)
 
     auto rs = ural::experimental::make_iterator_cursor(r_begin, r_end);
 
-    using RSequence = ural_ex::reverse_sequence<ural::iterator_cursor<decltype(xs.begin())>>;
+    using RCursor = ural_ex::reverse_cursor<ural::iterator_cursor<decltype(xs.begin())>>;
 
-    static_assert(std::is_same<decltype(rs), RSequence>::value, "");
+    static_assert(std::is_same<decltype(rs), RCursor>::value, "");
 
     BOOST_CHECK(r_begin.base() == rs.base().end());
     BOOST_CHECK(r_end.base() == rs.base().begin());
@@ -170,7 +170,7 @@ BOOST_AUTO_TEST_CASE(moved_backward_test_unique_ptr)
     }
 }
 
-BOOST_AUTO_TEST_CASE(reversed_iterator_sequence_iterators)
+BOOST_AUTO_TEST_CASE(reversed_iterator_cursor_iterators)
 {
     typedef std::vector<int> Container;
     Container v1 = {0, 2, 4, 6};

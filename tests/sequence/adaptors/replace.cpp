@@ -27,7 +27,7 @@ namespace
     namespace ural_ex = ::ural::experimental;
 }
 
-BOOST_AUTO_TEST_CASE(replace_sequence_if_test)
+BOOST_AUTO_TEST_CASE(replace_if_cursor_test)
 {
     std::array<int, 10> const s{5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
 
@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(replace_sequence_if_test)
     BOOST_CHECK_EQUAL(seq.predicate(), pred);
 }
 
-BOOST_AUTO_TEST_CASE(replace_sequence_if_regression_pass_by_cref)
+BOOST_AUTO_TEST_CASE(replace_if_cursor_regression_pass_by_cref)
 {
     // Подготовка
     std::array<int, 10> const s{5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE(replace_sequence_if_regression_pass_by_cref)
     URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
-BOOST_AUTO_TEST_CASE(replace_if_sequence_traversed_front)
+BOOST_AUTO_TEST_CASE(replace_if_cursor_traversed_front)
 {
     std::forward_list<int> const src = {1, 2, 3, 4, 5, 6, 7, 9, 11};
 

@@ -27,7 +27,7 @@ namespace
     namespace ural_ex = ::ural::experimental;
 }
 
-BOOST_AUTO_TEST_CASE(outdirected_sequence_forward_test)
+BOOST_AUTO_TEST_CASE(outdirected_cursor_forward_test)
 {
     // Настройки
     std::forward_list<int> const src{1, 2, 2, 2, 3, 3, 2, 2, 1};

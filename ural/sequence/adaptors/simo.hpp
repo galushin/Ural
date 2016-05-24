@@ -27,7 +27,7 @@ namespace ural
 {
 namespace experimental
 {
-    /** @ingroup Sequences
+    /** @ingroup Cursors
     @brief Адаптор, производящий вывод сразу в несколько курсоров вывода
     */
     template <class... Outputs>

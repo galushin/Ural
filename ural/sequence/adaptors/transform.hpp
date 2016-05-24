@@ -164,26 +164,26 @@ namespace experimental
         {}
     };
 
-    /** @brief Итератор, задающий начало преобразующей последовательности
-    @param s последовательность
-    @return <tt> {begin(s.bases()[ural::_1]), s.function()} </tt>
+    /** @brief Итератор, задающий начало преобразующего курсора
+    @param cur курсор
+    @return <tt> {begin(cur.bases()[ural::_1]), cur.function()} </tt>
     */
-    template <class UnaryFunction, class Sequence>
-    auto begin(transform_cursor<UnaryFunction, Sequence> const & s)
-    -> boost::transform_iterator<UnaryFunction, decltype(begin(s.bases()[ural::_1]))>
+    template <class UnaryFunction, class Cursor>
+    auto begin(transform_cursor<UnaryFunction, Cursor> const & cur)
+    -> boost::transform_iterator<UnaryFunction, decltype(begin(cur.bases()[ural::_1]))>
     {
-        return {begin(s.bases()[ural::_1]), s.function()};
+        return {begin(cur.bases()[ural::_1]), cur.function()};
     }
 
-    /** @brief Итератор, задающий конец преобразующей последовательности
-    @param s последовательность
-    @return <tt> {end(s.bases()[ural::_1]), s.function()} </tt>
+    /** @brief Итератор, задающий конец преобразующего курсора
+    @param cur курсор
+    @return <tt> {end(cur.bases()[ural::_1]), cur.function()} </tt>
     */
-    template <class UnaryFunction, class Sequence>
-    auto end(transform_cursor<UnaryFunction, Sequence> const & s)
-    -> boost::transform_iterator<UnaryFunction, decltype(begin(s.bases()[ural::_1]))>
+    template <class UnaryFunction, class Cursor>
+    auto end(transform_cursor<UnaryFunction, Cursor> const & cur)
+    -> boost::transform_iterator<UnaryFunction, decltype(begin(cur.bases()[ural::_1]))>
     {
-        return {end(s.bases()[ural::_1]), s.function()};
+        return {end(cur.bases()[ural::_1]), cur.function()};
     }
 
     /// @brief Тип Функционального объекта для создания @c transform_cursor

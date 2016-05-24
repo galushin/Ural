@@ -234,7 +234,7 @@ namespace experimental
         }
     };
 
-    /// @brief Тип функционального объекта для создания @c replace_if_sequence
+    /// @brief Тип функционального объекта для создания @c replace_if_cursor
     struct make_replace_if_cursor_fn
     {
     public:
@@ -269,11 +269,11 @@ namespace experimental
         constexpr auto const & replaced
             = odr_const<experimental::pipeable_maker<make_replace_cursor_fn>>;
 
-        /// @brief Функциональный объект для создания @c replace_if_sequence
+        /// @brief Функциональный объект для создания @c replace_if_cursor
         constexpr auto const & make_replace_if_cursor
             = odr_const<make_replace_if_cursor_fn>;
 
-        /** @brief Функциональный объект для создания @c replace_sequence
+        /** @brief Функциональный объект для создания @c replace_cursor
         в конвейерном стиле.
         */
         constexpr auto const & replaced_if

@@ -24,6 +24,9 @@
 /** @defgroup Sequences Последовательности
 */
 
+/** @defgroup Cursor Курсоры последовательностей
+*/
+
 #include <ural/defs.hpp>
 #include <ural/concepts.hpp>
 #include <ural/sequence/cursor_iterator.hpp>
