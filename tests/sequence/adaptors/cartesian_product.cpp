@@ -12,10 +12,10 @@ namespace
     namespace ural_ex = ::ural::experimental;
 }
 
-BOOST_AUTO_TEST_CASE(cartesian_product_sequence_test)
+BOOST_AUTO_TEST_CASE(cartesian_product_cursor_test)
 {
     auto digits = ural::numbers(0, 10);
-    auto s2 = ural_ex::make_cartesian_product_sequence(digits, digits);
+    auto s2 = ural_ex::make_cartesian_product_cursor(digits, digits);
 
     std::set<int> r2;
 
@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_CASE(cartesian_product_sequence_test)
 BOOST_AUTO_TEST_CASE(cartesian_product_lexicographical_sorted)
 {
     auto digits = ural::numbers(0, 10);
-    auto s2 = ural_ex::make_cartesian_product_sequence(digits, digits);
+    auto s2 = ural_ex::make_cartesian_product_cursor(digits, digits);
 
     std::vector<ural::tuple<int, int>> r2;
     ural::copy(s2, r2 | ural::back_inserter);
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(cartesian_product_regression_102)
     digits.pop_front();
     digits.pop_back();
 
-    auto s2 = ural_ex::make_cartesian_product_sequence(digits, digits);
+    auto s2 = ural_ex::make_cartesian_product_cursor(digits, digits);
 
     std::set<int> r2;
 
@@ -68,10 +68,10 @@ BOOST_AUTO_TEST_CASE(cartesian_product_regression_102)
     BOOST_CHECK_EQUAL(99, *r2.rbegin());
 }
 
-BOOST_AUTO_TEST_CASE(cartesian_product_sequence_test_forward)
+BOOST_AUTO_TEST_CASE(cartesian_product_cursor_test_forward)
 {
     auto digits = ural::numbers(0, 10);
-    auto s2 = ural_ex::make_cartesian_product_sequence(digits, digits);
+    auto s2 = ural_ex::make_cartesian_product_cursor(digits, digits);
 
     auto const n = 20;
 
@@ -91,10 +91,10 @@ BOOST_AUTO_TEST_CASE(cartesian_product_sequence_test_forward)
     BOOST_CHECK(ural::equal(s2_traversed, out));
 }
 
-BOOST_AUTO_TEST_CASE(cartesian_product_sequence_test_copy_halfs_with_shrink_front)
+BOOST_AUTO_TEST_CASE(cartesian_product_cursor_test_copy_halfs_with_shrink_front)
 {
     auto digits = ural::numbers(0, 10);
-    auto s2 = ural_ex::make_cartesian_product_sequence(digits, digits);
+    auto s2 = ural_ex::make_cartesian_product_cursor(digits, digits);
 
     auto const n = 20;
 

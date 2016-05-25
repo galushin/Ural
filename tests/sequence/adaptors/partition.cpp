@@ -24,7 +24,7 @@ namespace
     namespace ural_ex = ::ural::experimental;
 }
 
-BOOST_AUTO_TEST_CASE(partition_sequence_regeression_90_shorter_1)
+BOOST_AUTO_TEST_CASE(partition_cursor_regeression_90_shorter_1)
 {
     auto const src = ural::numbers(1, 10);
 
@@ -38,15 +38,15 @@ BOOST_AUTO_TEST_CASE(partition_sequence_regeression_90_shorter_1)
     std::vector<int> sink_true(n_true - 1, -1);
     std::vector<int> sink_false(n_false + 1, -1);
 
-    auto sink = ural_ex::make_partition_sequence(sink_true, sink_false, pred);
+    auto sink = ural_ex::make_partition_cursor(sink_true, sink_false, pred);
 
     auto const result = ural::copy(src, sink)[ural::_2];
 
-    BOOST_CHECK(!result.true_sequence());
-    BOOST_CHECK(!!result.false_sequence());
+    BOOST_CHECK(!result.true_cursor());
+    BOOST_CHECK(!!result.false_cursor());
 }
 
-BOOST_AUTO_TEST_CASE(partition_sequence_regeression_90_shorter_2)
+BOOST_AUTO_TEST_CASE(partition_cursor_regeression_90_shorter_2)
 {
     auto const src = ural::numbers(1, 10);
 
@@ -60,10 +60,10 @@ BOOST_AUTO_TEST_CASE(partition_sequence_regeression_90_shorter_2)
     std::vector<int> sink_true(n_true + 1, -1);
     std::vector<int> sink_false(n_false - 1, -1);
 
-    auto sink = ural_ex::make_partition_sequence(sink_true, sink_false, pred);
+    auto sink = ural_ex::make_partition_cursor(sink_true, sink_false, pred);
 
     auto const result = ural::copy(src, sink)[ural::_2];
 
-    BOOST_CHECK(!!result.true_sequence());
-    BOOST_CHECK(!result.false_sequence());
+    BOOST_CHECK(!!result.true_cursor());
+    BOOST_CHECK(!result.false_cursor());
 }

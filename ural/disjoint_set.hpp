@@ -41,7 +41,7 @@ namespace experimental
 
         using Element = tuple<IntType, IntType>;
 
-        using allocator_type = experimental::DefaultedType<Allocator, std::allocator<Element>>;
+        using allocator_type = experimental::defaulted_type_t<Allocator, std::allocator<Element>>;
 
         using Container = std::vector<Element, allocator_type>;
 

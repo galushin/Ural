@@ -32,25 +32,25 @@ namespace experimental
 {
     /** @brief Шаблон адаптора, предпалагающий, что последовательность
     бесконечна, то есть не будет исчерпана в данном контексте.
-    @tparam Sequence базовая последовательность
+    @tparam Cursor тип базового курсора
     */
-    template <class Sequence>
-    class assumed_infinite_sequence
-     : public sequence_adaptor<assumed_infinite_sequence<Sequence>, Sequence>
+    template <class Cursor>
+    class assumed_infinite_cursor
+     : public cursor_adaptor<assumed_infinite_cursor<Cursor>, Cursor>
     {
-        using Inherited = sequence_adaptor<assumed_infinite_sequence<Sequence>, Sequence>;
+        using Inherited = cursor_adaptor<assumed_infinite_cursor<Cursor>, Cursor>;
 
     public:
         // Создание, копирование, уничтожение, свойства
         /** @brief Конструктор
-        @param seq базовая последовательность
-        @post <tt> this->base() == seq </tt>
+        @param cur базовая последовательность
+        @post <tt> this->base() == cur </tt>
         */
-        explicit assumed_infinite_sequence(Sequence seq)
-         : Inherited(std::move(seq))
+        explicit assumed_infinite_cursor(Cursor cur)
+         : Inherited(std::move(cur))
         {}
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Проверка исчерпания последовательности
         @return @b false
         */
@@ -59,11 +59,12 @@ namespace experimental
             return false;
         }
 
-        // Прямая последовательность
+        // Прямой курсор
         /** @brief Передняя пройденная часть последовательности
         @return <tt> this->base().front() </tt>
+        @todo уточнить тип возвращаемого значения
         */
-        TraversedFrontType<Sequence>
+        TraversedFrontType<Cursor>
         traversed_front() const
         {
             return this->base().traversed_front();
@@ -71,23 +72,23 @@ namespace experimental
     };
 
      /** @brief Тип функционального объекта для создания адаптора
-    последовательности, предпалагающий, что последовательность бесконечна,
-    то есть не будет исчерпана в данном контексте.
+    курсора, предпалагающий, что последовательность бесконечна, то есть не будет
+    исчерпана в данном контексте.
     */
     struct assume_infinite_fn
     {
     public:
-        /** @brief Создания @c assumed_infinite_sequence
+        /** @brief Создания @c assumed_infinite_cursor
         @param seq последовательность
-        @return <tt> Result(ural::sequence_fwd<Sequenced>(seq)) </tt>, где
-        @c Result -- <tt> assumed_infinite_sequence<SequenceType<Sequenced>> </tt>
+        @return <tt> Result(ural::cursor_fwd<Sequence>(seq)) </tt>, где
+        @c Result -- <tt> assumed_infinite_cursor<cursor_type_t<Sequence>> </tt>
         */
-        template <class Sequenced>
-        assumed_infinite_sequence<SequenceType<Sequenced>>
-        operator()(Sequenced && seq) const
+        template <class Sequence>
+        assumed_infinite_cursor<cursor_type_t<Sequence>>
+        operator()(Sequence && seq) const
         {
-            using Result = assumed_infinite_sequence<SequenceType<Sequenced>>;
-            return Result(ural::sequence_fwd<Sequenced>(seq));
+            using Result = assumed_infinite_cursor<cursor_type_t<Sequence>>;
+            return Result(ural::cursor_fwd<Sequence>(seq));
         }
     };
 

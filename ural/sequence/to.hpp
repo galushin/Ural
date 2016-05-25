@@ -41,22 +41,22 @@ namespace experimental
     public:
         /** @brief Создание контейнера по последовательности
         @param seq последовательность
-        @return <tt> Container<Value>(begin(s), end(s)) </tt>, где @c s есть
-        <tt> ::ural::sequence_fwd<Sequence>(seq) </tt>, а @c Value --- тип
-        значений последовательности @c s.
+        @return <tt> Container<Value>(begin(cur), end(cur)) </tt>, где
+        @c cur есть <tt> ::ural::cursor_fwd<Sequence>(seq) </tt>,
+        а @c Value --- тип значений элементов последовательности @c seq.
         */
         template <class Sequence>
-        Container<ValueType<SequenceType<Sequence>>, Args...>
+        Container<ValueType<cursor_type_t<Sequence>>, Args...>
         operator()(Sequence && seq) const
         {
-            typedef ValueType<SequenceType<Sequence>> Value;
+            typedef ValueType<cursor_type_t<Sequence>> Value;
 
-            auto s = ural::sequence_fwd<Sequence>(seq);
+            auto cur = ural::cursor_fwd<Sequence>(seq);
 
             using ::std::begin;
             using ::std::end;
-            auto first = begin(s);
-            auto last = end(s);
+            auto first = begin(cur);
+            auto last = end(cur);
 
             return Container<Value, Args...>(std::move(first), std::move(last));
         }
@@ -85,18 +85,18 @@ namespace experimental
         @param seq последовательность
         */
         template <class Sequence>
-        Map<typename std::tuple_element<0, ValueType<SequenceType<Sequence>>>::type,
-            typename std::tuple_element<1, ValueType<SequenceType<Sequence>>>::type,
+        Map<typename std::tuple_element<0, ValueType<cursor_type_t<Sequence>>>::type,
+            typename std::tuple_element<1, ValueType<cursor_type_t<Sequence>>>::type,
             Args...>
         operator()(Sequence && seq) const
         {
-            typedef ValueType<SequenceType<Sequence>> Value;
+            typedef ValueType<cursor_type_t<Sequence>> Value;
             typedef typename std::tuple_element<0, Value>::type Key;
             typedef typename std::tuple_element<1, Value>::type Mapped;
 
             Map<Key, Mapped, Args...> result;
 
-            for(auto && x : ::ural::sequence_fwd<Sequence>(seq))
+            for(auto && x : ::ural::cursor_fwd<Sequence>(seq))
             {
                 result.emplace_hint(result.end(),
                                     ural::experimental::get(std::forward<decltype(x)>(x), ural::_1),

@@ -54,7 +54,7 @@ inline namespace v0
     OStream &
     write_separated(OStream & os, Sequence && seq, Delim const & delim)
     {
-        auto s = sequence(std::forward<Sequence>(seq));
+        auto s = ural::cursor_fwd<Sequence>(seq);
 
         if(!s)
         {
@@ -72,23 +72,23 @@ inline namespace v0
         return os;
     }
 
-    template <class Sequence, class Separator>
+    template <class Cursor, class Separator>
     class separated_helper
     {
     public:
         /** @brief Конструктор
-        @param seq последовательность
+        @param seq Курсор
         @param delim разделитель
-        @post <tt> this->sequence == seq </tt>
+        @post <tt> this->cursor == seq </tt>
         @post <tt> this->separator == delim </tt>
         */
-        separated_helper(Sequence seq, Separator delim)
-         : sequence(std::move(seq))
+        separated_helper(Cursor cur, Separator delim)
+         : cursor(std::move(cur))
          , separator(std::move(delim))
         {}
 
         /// @brief Последовательность
-        Sequence sequence;
+        Cursor cursor;
 
         /// @brief Разделитель
         Separator separator;
@@ -97,15 +97,15 @@ inline namespace v0
     template <class OStream, class Seq, class Separator>
     OStream & operator<<(OStream & os, separated_helper<Seq, Separator> && d)
     {
-        return ural::write_separated(os, std::move(d.sequence),
+        return ural::write_separated(os, std::move(d.cursor),
                                      std::move(d.separator));
     }
 
     template <class Sequence, class Separator>
     auto separated(Sequence && seq, Separator separator)
-    -> separated_helper<decltype(::ural::sequence_fwd<Sequence>(seq)), Separator>
+    -> separated_helper<decltype(::ural::cursor_fwd<Sequence>(seq)), Separator>
     {
-        return {::ural::sequence_fwd<Sequence>(seq), std::move(separator)};
+        return {::ural::cursor_fwd<Sequence>(seq), std::move(separator)};
     }
 
     /** @brief Вывод таблицы в поток

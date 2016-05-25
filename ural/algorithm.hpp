@@ -22,7 +22,7 @@
 
  @todo Бинарный поиск: ограничения на функцию сравнения и значение
  @todo Проверка концепций + изменение имён в алгоритмах вида "*_n"
- @todo Проверить возможность замены ForwardSequence на OutputSequence
+ @todo Проверить возможность замены ForwardSequence на OutputCursor
  @todo Определить типы возврщаемых значений как в Range extensions
  @todo устранить дублирование в алгортмах за счёт CRTP/Фасадов
 */
@@ -56,12 +56,12 @@ namespace experimental
         /** @brief Случайная тасовка элементов последовательности
         @param s последовательность произвольного доступа
         @return Последовательность, полученная из
-        <tt> ::ural::sequence_fwd<RASequence>(s) </tt> продвижением до
+        <tt> ::ural::cursor_fwd<RASequence>(s) </tt> продвижением до
         исчерпания.
         */
         template <class RASequence>
         auto operator()(RASequence && s) const
-        -> decltype(::ural::sequence_fwd<RASequence>(s))
+        -> decltype(::ural::cursor_fwd<RASequence>(s))
         {
             ::ural::experimental::c_rand_engine rnd;
             return ::ural::shuffle_fn{}(std::forward<RASequence>(s), rnd);
@@ -82,12 +82,12 @@ namespace experimental
         @param in входная последовательность
         @param f функциональный объект
         @return Кортеж, первый компонент которого получается продвижением
-        <tt> ::ural::sequence_fwd<Input>(in) </tt> до исчерпания, а второй
+        <tt> ::ural::cursor_fwd<Input>(in) </tt> до исчерпания, а второй
         --- <tt> ::ural::make_callable(std::move(f)) </tt> после его применения
         ко всем элементам последовательности.
         */
         template <class Input, class Function>
-        tuple<SequenceType<Input>, FunctionType<Function>>
+        tuple<cursor_type_t<Input>, FunctionType<Function>>
         operator()(Input && in, Function f) const
         {
             auto f_app = curry(apply, make_callable(std::move(f)));
@@ -112,13 +112,13 @@ namespace experimental
         @return @b true, если скобки в последовательности сбалансированы,
         иначе --- @b false
         */
-        template <class InputSequenced, class T>
+        template <class InputSequence, class T>
         bool
-        operator()(InputSequenced && input,
+        operator()(InputSequence && input,
                    T const & left_par, T const & right_par) const
         {
-            using D = DifferenceType<SequenceType<InputSequenced>>;
-            return (*this)(std::forward<InputSequenced>(input),
+            using D = DifferenceType<cursor_type_t<InputSequence>>;
+            return (*this)(std::forward<InputSequence>(input),
                            left_par, right_par,
                            std::numeric_limits<D>::max());
         }
@@ -134,30 +134,30 @@ namespace experimental
         их максимальная вложенность не превышает @c max_nesting_level, иначе ---
         @b false
         */
-        template <class InputSequenced, class T>
+        template <class InputSequence, class T>
         bool
-        operator()(InputSequenced && input,
+        operator()(InputSequence && input,
                    T const & left_par, T const & right_par,
-                   DifferenceType<SequenceType<InputSequenced>> max_nesting_level) const
+                   DifferenceType<cursor_type_t<InputSequence>> max_nesting_level) const
         {
-            return this->impl(ural::sequence_fwd<InputSequenced>(input),
+            return this->impl(ural::cursor_fwd<InputSequence>(input),
                               left_par, right_par, max_nesting_level);
         }
     private:
-        template <class InputSequence, class T>
-        static bool impl(InputSequence in,
+        template <class InputCursor, class T>
+        static bool impl(InputCursor in,
                          T const & left_par, T const & right_par,
-                         DifferenceType<InputSequence> const max_nesting_level)
+                         DifferenceType<InputCursor> const max_nesting_level)
         {
             using namespace ural::concepts;
 
-            BOOST_CONCEPT_ASSERT((SinglePassSequence<InputSequence>));
-            BOOST_CONCEPT_ASSERT((ReadableSequence<InputSequence>));
+            BOOST_CONCEPT_ASSERT((SinglePassCursor<InputCursor>));
+            BOOST_CONCEPT_ASSERT((ReadableCursor<InputCursor>));
             BOOST_CONCEPT_ASSERT((IndirectPredicate<ural::equal_to<>,
-                                                    InputSequence,
+                                                    InputCursor,
                                                     T const *>));
 
-            auto const zero = DifferenceType<InputSequence>{0};
+            auto const zero = DifferenceType<InputCursor>{0};
 
             auto opened = zero;
 
@@ -201,24 +201,24 @@ namespace experimental
         значению в последовательности, а второй --- количество вхождений данного
         значения в последовательности.
         */
-        template <class InputSequenced, class Compare = ural::less<>>
-        tuple<ValueType<SequenceType<InputSequenced>>,
-              DifferenceType<SequenceType<InputSequenced>>>
-        operator()(InputSequenced && in, Compare cmp = Compare{}) const
+        template <class InputSequence, class Compare = ural::less<>>
+        tuple<ValueType<cursor_type_t<InputSequence>>,
+              DifferenceType<cursor_type_t<InputSequence>>>
+        operator()(InputSequence && in, Compare cmp = Compare{}) const
         {
-            return this->impl(ural::sequence_fwd<InputSequenced>(in),
+            return this->impl(ural::cursor_fwd<InputSequence>(in),
                               ural::make_callable(std::move(cmp)));
         }
 
     private:
-        template <class InputSequence, class Compare>
-        tuple<ValueType<InputSequence>, DifferenceType<InputSequence>>
-        impl(InputSequence in, Compare cmp = Compare{}) const
+        template <class InputCursor, class Compare>
+        tuple<ValueType<InputCursor>, DifferenceType<InputCursor>>
+        impl(InputCursor in, Compare cmp = Compare{}) const
         {
-            const auto unit = DifferenceType<InputSequence>(1);
+            const auto unit = DifferenceType<InputCursor>(1);
             assert(!!in);
 
-            tuple<ValueType<InputSequence>, DifferenceType<InputSequence>>
+            tuple<ValueType<InputCursor>, DifferenceType<InputCursor>>
                 result{*in, unit};
             ++ in;
 
@@ -251,12 +251,12 @@ namespace experimental
         @param prefix последовательность, которую нужно пропустить.
         @return То же, что <tt> stars_with(seq, prefix, bin_pred) </tt>.
         */
-        template <class ForwardSequence, class InputSequenced,
+        template <class ForwardSequence, class InputSequence,
                   class BinaryPredicate = equal_to<>>
-        bool operator()(ForwardSequence & seq, InputSequenced && prefix,
+        bool operator()(ForwardSequence & seq, InputSequence && prefix,
                         BinaryPredicate bin_pred = BinaryPredicate{}) const
         {
-            auto res = ural::mismatch_fn{}(seq, std::forward<InputSequenced>(prefix),
+            auto res = ural::mismatch_fn{}(seq, std::forward<InputSequence>(prefix),
                                            std::move(bin_pred));
 
             if(!res[ural::_2])
@@ -283,14 +283,14 @@ namespace experimental
         @param bin_pred бинарный предикат, задающий функцию сравнения
         @return Часть @c s1, которая является префиксом для @c s2.
         */
-        template <class ForwardSequenced, class InputSequenced,
+        template <class ForwardSequence, class InputSequence,
                   class BinaryPredicate = ural::equal_to<>>
-        TraversedFrontType<SequenceType<ForwardSequenced>>
-        operator()(ForwardSequenced && s1, InputSequenced && s2,
+        TraversedFrontType<cursor_type_t<ForwardSequence>>
+        operator()(ForwardSequence && s1, InputSequence && s2,
                    BinaryPredicate bin_pred = BinaryPredicate{}) const
         {
-            auto r = ural::mismatch_fn{}(std::forward<ForwardSequenced>(s1),
-                                         std::forward<InputSequenced>(s2),
+            auto r = ural::mismatch_fn{}(std::forward<ForwardSequence>(s1),
+                                         std::forward<InputSequence>(s2),
                                          std::move(bin_pred));
             return std::move(r)[ural::_1].traversed_front();
         }

@@ -313,10 +313,10 @@ namespace experimental
         typedef typename std::add_lvalue_reference<T>::type reference;
 
         /// @brief Тип стратегии копирования
-        using cloner_type = experimental::DefaultedType<Cloner, default_copy<element_type>>;
+        using cloner_type = experimental::defaulted_type_t<Cloner, default_copy<element_type>>;
 
         /// @brief Тип стратегии удаления
-        using deleter_type = experimental::DefaultedType<Deleter, std::default_delete<element_type>>;
+        using deleter_type = experimental::defaulted_type_t<Deleter, std::default_delete<element_type>>;
 
         static_assert(!std::is_rvalue_reference<deleter_type>::value,
                       "Deleter can't be rvalue reference");
@@ -328,7 +328,7 @@ namespace experimental
         typedef typename Holder::pointer pointer;
 
         /// @brief Тип стратегии проверок
-        using checker_type = experimental::DefaultedType<Checker, default_ptr_checker<pointer>>;
+        using checker_type = experimental::defaulted_type_t<Checker, default_ptr_checker<pointer>>;
 
         // Конструкторы
         /** @brief Конструктор без параметров

@@ -22,10 +22,10 @@
 */
 
 #include <ural/sequence/adaptors/assumed_infinite.hpp>
-#include <ural/sequence/constant.hpp>
+#include <ural/sequence/repeat_value.hpp>
 #include <ural/container/container_facade.hpp>
 #include <ural/memory.hpp>
-#include <ural/sequence/iterator_sequence.hpp>
+#include <ural/sequence/iterator_cursor.hpp>
 #include <ural/container/policy.hpp>
 #include <ural/sequence/adaptors/taken.hpp>
 #include <ural/algorithm.hpp>
@@ -376,7 +376,7 @@ namespace experimental
         typedef T value_type;
 
         /// @brief Тип распределителя памяти
-        using allocator_type = experimental::DefaultedType<Alloc, std::allocator<T>>;
+        using allocator_type = experimental::defaulted_type_t<Alloc, std::allocator<T>>;
 
         /// @brief Тип ссылки
         typedef value_type & reference;
@@ -412,7 +412,7 @@ namespace experimental
         typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
         /// @brief Класс-стратегия проверок
-        using policy_type = experimental::DefaultedType<Policy, container_checking_assert_policy>;
+        using policy_type = experimental::defaulted_type_t<Policy, container_checking_assert_policy>;
 
         // Конструкторы
         /** @brief Создание пустого контейнера
@@ -618,7 +618,7 @@ namespace experimental
             // @todo Проверка, что first и last не ссылаются внутрь контейнера
             // Проблема в том, что first и last могут ссылаться внутрь
             // контейнера косвенно
-            return this->assign(ural::make_iterator_sequence(first, last));
+            return this->assign(ural::make_iterator_cursor(first, last));
         }
 
         /** @brief Замена элементов контейнера на @c n элементов, каждый из
@@ -629,7 +629,7 @@ namespace experimental
         */
         void assign(size_type n, value_type const & value)
         {
-            auto seq = ::ural::experimental::make_constant_sequence(std::cref(value))
+            auto seq = ::ural::experimental::make_repeat_value_cursor(std::cref(value))
                      | ::ural::experimental::taken(n);
 
             return this->assign(std::move(seq));
@@ -1045,12 +1045,12 @@ namespace experimental
             policy_type::assert_can_insert_before(this->cbegin(), this->cend(),
                                                   position);
 
-            auto s = ural::sequence_fwd<InputSequence>(seq);
+            auto cur = ural::cursor_fwd<InputSequence>(seq);
 
-            using Category = typename decltype(s)::cursor_tag;
+            using Category = typename decltype(cur)::cursor_tag;
 
             return this->insert_impl(position - this->cbegin(),
-                                     std::move(s), Category{});
+                                     std::move(cur), Category{});
         }
 
         /** @brief Вставка копий заданного значения в заданную точку
@@ -1062,7 +1062,7 @@ namespace experimental
         */
         iterator insert(const_iterator position, size_type const n, value_type const & value)
         {
-            auto seq = ::ural::experimental::make_constant_sequence(std::cref(value))
+            auto seq = ::ural::experimental::make_repeat_value_cursor(std::cref(value))
                      | ::ural::experimental::taken(n);
 
             return this->insert(position, std::move(seq));
@@ -1080,8 +1080,8 @@ namespace experimental
         insert(const_iterator position, InputIterator first, InputIterator last)
         {
             // @todo Проверка предусловия
-            return this->insert(position, ural::make_iterator_sequence(std::move(first),
-                                                                       std::move(last)));
+            auto cur = ural::make_iterator_cursor(std::move(first), std::move(last));
+            return this->insert(position, std::move(cur));
         }
 
         /** @brief Вставка элементов списка инициализаторов перед указанной
@@ -1141,8 +1141,8 @@ namespace experimental
             auto source = this->begin() + (last - this->cbegin());
 
             // 2. Перемещаем последние элементы на места удаляемых
-            auto in  = ural::make_iterator_sequence(source, this->end());
-            auto out = ural::make_iterator_sequence(sink,   this->end());
+            auto in  = ::ural::make_iterator_cursor(source, this->end());
+            auto out = ::ural::make_iterator_cursor(sink,   this->end());
 
             // first < last, значит sink < source, значит
             // out исчерпается позже, чем in
@@ -1180,29 +1180,29 @@ namespace experimental
         }
 
     private:
-        template <class InputSequence>
-        iterator insert_impl(size_type index, InputSequence seq,
+        template <class InputCursor>
+        iterator insert_impl(size_type index, InputCursor cur,
                              finite_single_pass_cursor_tag)
         {
             auto const old_size = this->size();
 
             assert(index <= old_size);
 
-            ural::copy(std::move(seq), *this | ural::back_inserter);
+            ural::copy(std::move(cur), *this | ural::back_inserter);
 
             std::rotate(this->begin() + index, this->begin() + old_size, this->end());
 
             return this->begin() + index;
         }
 
-        template <class InputSequence>
+        template <class InputCursor>
         iterator insert_impl(size_type index,
-                             InputSequence seq,
+                             InputCursor cur,
                              finite_forward_cursor_tag)
         {
-            this->reserve(this->size() + ural::size(seq));
+            this->reserve(this->size() + ural::size(cur));
 
-            return this->insert_impl(index, std::move(seq),
+            return this->insert_impl(index, std::move(cur),
                                      finite_single_pass_cursor_tag{});
         }
 

@@ -29,37 +29,37 @@ namespace ural
 {
 namespace experimental
 {
-    /** @brief Адаптор последовательности
-    @tparam Sequence базовая последовательность, элементы которой являются
-    кортеже-подобными.
-    @tparam Index индекс элемента значений базовой последовательности
+    /** @brief Адаптор курсора, выделяющего элементы значений-кортежей базового
+    курсора.
+    @tparam Cursor базовый курсор, элементы которого являются кортеже-подобными.
+    @tparam Index индекс элемента значений базового курсора
     */
-    template <class Sequence, size_t Index>
-    class elemenents_sequence
-     : public sequence_adaptor<elemenents_sequence<Sequence, Index>,
-                               transform_sequence<experimental::tuple_get<Index>, Sequence>>
+    template <class Cursor, size_t Index>
+    class elements_cursor
+     : public cursor_adaptor<elements_cursor<Cursor, Index>,
+                             transform_cursor<tuple_get<Index>, Cursor>>
     {
-        using Base = sequence_adaptor<elemenents_sequence<Sequence, Index>,
-                               transform_sequence<experimental::tuple_get<Index>, Sequence>>;
+        using Base = cursor_adaptor<elements_cursor<Cursor, Index>,
+                                    transform_cursor<tuple_get<Index>, Cursor>>;
     public:
         /** @brief Конструктор
-        @param seq базовая последовательность
-        @post <tt> this->base() == seq </tt>
+        @param cur базовый курсор
+        @post <tt> this->base() == cur </tt>
         */
-        explicit elemenents_sequence(Sequence seq)
-         : Base(::ural::experimental::make_transform_sequence(experimental::tuple_get<Index>{}, std::move(seq)))
+        explicit elements_cursor(Cursor cur)
+         : Base(::ural::experimental::make_transform_cursor(tuple_get<Index>{}, std::move(cur)))
         {}
 
         //@{
-        /** @brief Базовая последовательность
-        @return Базовая последовательность
+        /** @brief Базовый курсор
+        @return Базовый курсор
         */
-        Sequence const & base() const &
+        Cursor const & base() const &
         {
             return Base::base().bases()[ural::_1];
         }
 
-        Sequence && base() &&
+        Cursor && base() &&
         {
             return static_cast<Base &&>(*this).base().bases()[ural::_1];
         }
@@ -68,45 +68,46 @@ namespace experimental
     private:
         friend Base;
 
-        template <class OtherSequence>
-        elemenents_sequence<OtherSequence, Index>
-        rebind_base(transform_sequence<experimental::tuple_get<Index>, OtherSequence> seq) const
+        template <class OtherCursor>
+        elements_cursor<OtherCursor, Index>
+        rebind_base(transform_cursor<tuple_get<Index>, OtherCursor> cur) const
         {
-            return elemenents_sequence<OtherSequence, Index>(seq.bases()[ural::_1]);
+            return elements_cursor<OtherCursor, Index>(cur.bases()[ural::_1]);
         }
     };
-    /** @brief Тип функционального объекта для создания последовательностей
-    ключей и отображаемых значений ассоциативного контейнера.
-    @tparam Index индекс последовательности: 0 --- ключи, 1 --- отображаемые
-    значения
+    /** @brief Тип функционального объекта для создания курсора ключей и
+    отображаемых значений ассоциативного контейнера.
+    @tparam Index индекс элемента, в частности: 0 --- ключи, 1 --- отображаемые
+    значения.
     */
     template <size_t Index>
-    struct elements_sequence_fn
+    struct elements_cursor_fn
     {
-        /** @brief Создание последовательностей ключей или отображаемых значений
-        отображений ассоциативного контейнера.
+        /** @brief Создание курсора ключей или отображаемых значений
+        ассоциативного контейнера.
         @param seq (под)последовательность элементов ассоциативного контейнера
         */
-        template <class Sequenced>
-        auto operator()(Sequenced && seq) const
+        template <class Sequence>
+        elements_cursor<cursor_type_t<Sequence>, Index>
+        operator()(Sequence && seq) const
         {
-            using Result = elemenents_sequence<SequenceType<Sequenced>, Index>;
+            using Result = elements_cursor<cursor_type_t<Sequence>, Index>;
 
-            return Result(::ural::sequence_fwd<Sequenced>(seq));
+            return Result(::ural::cursor_fwd<Sequence>(seq));
         }
     };
 
     namespace
     {
-        /** @brief Объект-тэг для создания последовательности ключей ассоциативного
-        контейнера */
-        constexpr auto const & map_keys
-            = odr_const<experimental::pipeable<elements_sequence_fn<0>>>;
-
-        /** @brief Объект-тэг для создания последовательности отоброжаемых значений
+        /** @brief Объект-тэг для создания курсора последовательности ключей
         ассоциативного контейнера */
+        constexpr auto const & map_keys
+            = odr_const<experimental::pipeable<elements_cursor_fn<0>>>;
+
+        /** @brief Объект-тэг для создания курсора последовательности
+        отоброжаемых значений ассоциативного контейнера */
         constexpr auto const & map_values
-            = odr_const<experimental::pipeable<elements_sequence_fn<1>>>;
+            = odr_const<experimental::pipeable<elements_cursor_fn<1>>>;
     }
 }
 // namespace experimental

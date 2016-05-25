@@ -65,7 +65,7 @@ namespace experimental
     этот тип совпадает с @c auto_tag, то приниматься будет любой тип.
     */
     template <class T = auto_tag>
-    using sink_sequence = experimental::function_output_sequence<sink_function<T>>;
+    using sink_cursor = function_output_cursor<sink_function<T>>;
 }
 // namespace experimental
 }

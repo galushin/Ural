@@ -65,7 +65,7 @@ namespace experimental
         }
     };
 
-    /** @brief Последовательность, записывающая элементы в поток вывода
+    /** @brief Курсор, читающий элементы из поток ввода
     @tparam IStream тип потока ввода
     @tparam T тип элементов последовательности
     @tparam Reader функция чтения, по умолчанию используется
@@ -80,11 +80,11 @@ namespace experimental
     template <class IStream = use_default,
               class T = use_default,
               class Reader = use_default>
-    class istream_sequence
-     : public sequence_base<istream_sequence<IStream, T, Reader>>
+    class istream_cursor
+     : public cursor_base<istream_cursor<IStream, T, Reader>>
     {
-        using Base_type = experimental::DefaultedType<IStream, std::istream &>;
-        using Reader_type = experimental::DefaultedType<Reader, istream_extractor_reader>;
+        using Base_type = experimental::defaulted_type_t<IStream, std::istream &>;
+        using Reader_type = experimental::defaulted_type_t<Reader, istream_extractor_reader>;
 
         static_assert(std::is_empty<Reader_type>::value, "or we must store it!");
 
@@ -94,7 +94,7 @@ namespace experimental
         typedef typename std::remove_reference<Base_type>::type istream_type;
 
         /// @brief Тип значения
-        using value_type = experimental::DefaultedType<T, char>;
+        using value_type = experimental::defaulted_type_t<T, char>;
 
         /// @brief Тип ссылки
         typedef value_type const & reference;
@@ -112,7 +112,7 @@ namespace experimental
         /** @brief Конструктор
         @param is ссылка на поток ввода
         */
-        explicit istream_sequence(Base_type is)
+        explicit istream_cursor(Base_type is)
          : is_(static_cast<Base_type &&>(is))
          , value_()
         {
@@ -123,20 +123,20 @@ namespace experimental
         @param is ссылка на поток ввода
         @param init_value начальное значение
         */
-        explicit istream_sequence(Base_type is, T init_value)
+        explicit istream_cursor(Base_type is, T init_value)
          : is_(static_cast<Base_type &&>(is))
          , value_(std::move(init_value))
         {
             this->read();
         }
 
-        istream_sequence(istream_sequence const & ) = delete;
-        istream_sequence(istream_sequence && ) = default;
+        istream_cursor(istream_cursor const & ) = delete;
+        istream_cursor(istream_cursor && ) = default;
 
-        istream_sequence & operator=(istream_sequence const & ) = delete;
-        istream_sequence & operator=(istream_sequence && ) = default;
+        istream_cursor & operator=(istream_cursor const & ) = delete;
+        istream_cursor & operator=(istream_cursor && ) = default;
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Проверка исчерпания
         @return @b true, если последовательность исчерпана, иначе @b --- false
         */
@@ -187,16 +187,16 @@ namespace experimental
         T value_;
     };
 
-    /** @brief Создание последовательности на основе потока ввода
+    /** @brief Создание курсора на основе потока ввода
     @tparam T тип элементов
     @param is поток ввода
-    @return <tt> istream_sequence<T, IStream>(is) </tt>
+    @return <tt> istream_cursor<T, IStream>(is) </tt>
     */
     template <class T, class IStream>
-    istream_sequence<IStream, T>
-    make_istream_sequence(IStream && is)
+    istream_cursor<IStream, T>
+    make_istream_cursor(IStream && is)
     {
-        return istream_sequence<IStream, T>(is);
+        return istream_cursor<IStream, T>(is);
     }
 
     /** @brief Вспомогательный класс для определения типа разделителя
@@ -217,7 +217,7 @@ namespace experimental
                                              typename Stream::traits_type>>
     {};
 
-    /** @brief Последовательность для потока вывода
+    /** @brief Курсор для потока вывода
     @tparam OStream Тип потока вывода
     @tparam T тип выводимых объектов
     @tparam delimiter тип разделителя
@@ -225,10 +225,10 @@ namespace experimental
     template <class OStream = use_default,
               class T  = use_default,
               class Delimiter = use_default>
-    class ostream_sequence
-     : public sequence_base<ostream_sequence<OStream, T, Delimiter>>
+    class ostream_cursor
+     : public cursor_base<ostream_cursor<OStream, T, Delimiter>>
     {
-        using Base_type = experimental::DefaultedType<OStream, std::ostream>;
+        using Base_type = experimental::defaulted_type_t<OStream, std::ostream>;
 
     public:
         // Типы
@@ -261,7 +261,7 @@ namespace experimental
         /** @brief Конструктор
         @param os поток вывода
         */
-        explicit ostream_sequence(Base_type os)
+        explicit ostream_cursor(Base_type os)
          : data_(static_cast<Base_type &&>(os))
         {}
 
@@ -269,7 +269,7 @@ namespace experimental
         @param os поток вывода
         @param delim разделитель
         */
-        explicit ostream_sequence(Base_type os, delimiter_type delim)
+        explicit ostream_cursor(Base_type os, delimiter_type delim)
          : data_(static_cast<Base_type &&>(os), std::move(delim))
         {}
 
@@ -286,8 +286,8 @@ namespace experimental
             return this->data_[ural::_2];
         }
 
-        // Однопроходная последовательность
-        /** @brief Провекра исчерпания последовательности
+        // Однопроходный курсор
+        /** @brief Провекра исчерпания курсора
         @return @b false.
         */
         bool operator!() const
@@ -298,10 +298,10 @@ namespace experimental
         /** @brief Текущий элемент
         @return <tt> *this </tt>
         @note Если вместо оператора * определить фунцию @c front, то возникнет
-        ошибка, так как общее определение оператора * для последовательностей
+        ошибка, так как общее определение оператора * для курсоров
         использует тип ссылки
         */
-        ostream_sequence & operator*()
+        ostream_cursor & operator*()
         {
             return *this;
         }
@@ -361,32 +361,32 @@ namespace experimental
         return os;
     }
 
-    /** @brief Создание последовательности на основе потока вывода с явным
-    указанием типа записываемых объектов c разделителем
+    /** @brief Создание курсора на основе потока вывода с явным указанием типа
+    записываемых объектов c разделителем
     @tparam T тип записываемых элементов
     @param os поток вывода
     @param delim разделитель, если не указать этот параметр, то вывод будет
     производится без разделителя
-    @return <tt> ostream_sequence<OStream, T, delimiter>(os, std::move(delim)) </tt>
+    @return <tt> ostream_cursor<OStream, T, delimiter>(os, std::move(delim)) </tt>
     */
     template <class T, class OStream, class delimiter = no_delimiter>
-    auto make_ostream_sequence(OStream && os, delimiter delim = delimiter{})
+    auto make_ostream_cursor(OStream && os, delimiter delim = delimiter{})
     {
-        typedef ostream_sequence<OStream, T, delimiter> Product;
+        using Product = ostream_cursor<OStream, T, delimiter>;
         return Product(std::forward<OStream>(os), std::move(delim));
     }
 
-    /** @brief Создание последовательности на основе потока вывода без явного
-    указания типа записываемых объектов с разделителем
+    /** @brief Создание курсора на основе потока вывода без явного указания типа
+    записываемых объектов с разделителем
     @param os поток вывода
     @param delim разделитель, если не указать этот параметр, то вывод будет
     производится без разделителя
-    @return <tt> ostream_sequence<OStream, use_default, delimiter>(os, std::move(delim)) </tt>
+    @return <tt> ostream_cursor<OStream, use_default, delimiter>(os, std::move(delim)) </tt>
     */
     template <class OStream, class delimiter = no_delimiter>
-    auto make_ostream_sequence(OStream && os, delimiter delim = delimiter{})
+    auto make_ostream_cursor(OStream && os, delimiter delim = delimiter{})
     {
-        typedef ostream_sequence<OStream, use_default, delimiter> Product;
+        typedef ostream_cursor<OStream, use_default, delimiter> Product;
         return Product(std::forward<OStream>(os), std::move(delim));
     }
 }

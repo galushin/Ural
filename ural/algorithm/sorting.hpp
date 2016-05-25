@@ -62,7 +62,7 @@ inline namespace v0
         static Forward
         impl(Forward in, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, Forward>));
 
             auto cmp_2_1 = ::ural::experimental::make_binary_reverse_args(std::move(cmp));
@@ -88,13 +88,13 @@ inline namespace v0
         @c cmp и <tt> cmp(r.traversed_front().back(), r.front()) == false </tt>.
         */
         template <class Forward, class Compare = ::ural::less<>>
-        SequenceType<Forward>
+        cursor_type_t<Forward>
         operator()(Forward && in, Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, SequenceType<Forward>>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, cursor_type_t<Forward>>));
 
-            return this->impl(::ural::sequence_fwd<Forward>(in),
+            return this->impl(::ural::cursor_fwd<Forward>(in),
                               ::ural::make_callable(std::move(cmp)));
         }
     };
@@ -110,7 +110,7 @@ inline namespace v0
         static bool
         impl(Forward in, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, Forward>));
 
             return !is_sorted_until_fn{}(std::move(in), std::move(cmp));
@@ -128,11 +128,11 @@ inline namespace v0
         template <class Forward, class Compare = ural::less<>>
         bool operator()(Forward && in, Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare,
-                                                             SequenceType<Forward>>));
+                                                             cursor_type_t<Forward>>));
 
-            return this->impl(::ural::sequence_fwd<Forward>(in),
+            return this->impl(::ural::cursor_fwd<Forward>(in),
                               ::ural::make_callable(std::move(cmp)));
         }
     };
@@ -149,36 +149,36 @@ inline namespace v0
         кучей.
         @param seq последовательность
         @param cmp функция сравнения
-        @return Последовательность @c r такая, что
-        <tt> original(r) == sequence(seq) </tt>, <tt> r.traversed_front() </tt>
-        является наибольшим префиксом @c seq, который является бинарной кучей.
+        @return Курсор @c r такой, что <tt> original(r) == cursor(seq) </tt>,
+        <tt> r.traversed_front() </tt> является наибольшим префиксом @c seq,
+        который является бинарной кучей.
         */
-        template <class RASequenced, class Compare = ural::less<>>
-        SequenceType<RASequenced>
-        operator()(RASequenced && seq, Compare cmp = Compare()) const
+        template <class RASequence, class Compare = ural::less<>>
+        cursor_type_t<RASequence>
+        operator()(RASequence && seq, Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequenced<RASequenced>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, SequenceType<RASequenced>>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, cursor_type_t<RASequence>>));
 
-            return this->impl(::ural::sequence_fwd<RASequenced>(seq),
+            return this->impl(::ural::cursor_fwd<RASequence>(seq),
                               ::ural::make_callable(std::move(cmp)));
         }
 
     private:
-        template <class RASequence, class Compare>
-        static RASequence
-        impl(RASequence seq, Compare cmp)
+        template <class RACursor, class Compare>
+        static RACursor
+        impl(RACursor cur, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessCursor<RACursor>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, RACursor>));
 
             // Пустая последовательность - куча
-            if(!seq)
+            if(!cur)
             {
-                return seq;
+                return cur;
             }
 
-            auto const n = seq.size();
+            auto const n = cur.size();
 
             auto index = 1;
 
@@ -186,13 +186,13 @@ inline namespace v0
             {
                 auto const p = ural::details::heap_parent(index);
 
-                if(cmp(seq[p], seq[index]))
+                if(cmp(cur[p], cur[index]))
                 {
                     break;
                 }
             }
 
-            return std::move(seq) + index;
+            return std::move(cur) + index;
         }
     };
 
@@ -209,81 +209,81 @@ inline namespace v0
         @param cmp функция сравнения
         @return @b true, если @c seq является кучей, иначе --- @b false.
         */
-        template <class RASequenced, class Compare = ::ural::less<>>
-        bool operator()(RASequenced && seq, Compare cmp = Compare()) const
+        template <class RASequence, class Compare = ::ural::less<>>
+        bool operator()(RASequence && seq, Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequenced<RASequenced>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, SequenceType<RASequenced>>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, cursor_type_t<RASequence>>));
 
-            return this->impl(::ural::sequence_fwd<RASequenced>(seq),
+            return this->impl(::ural::cursor_fwd<RASequence>(seq),
                               ::ural::make_callable(std::move(cmp)));
         }
 
     private:
-        template <class RASequence, class Compare>
+        template <class RACursor, class Compare>
         static bool
-        impl(RASequence seq, Compare cmp)
+        impl(RACursor cur, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessCursor<RACursor>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, RACursor>));
 
-            return !::ural::is_heap_until_fn{}(seq, cmp);
+            return !::ural::is_heap_until_fn{}(cur, cmp);
         }
     };
 
     class heap_sink_fn
     {
     public:
-        template <class RASequenced, class Compare = ::ural::less<>>
-        void operator()(RASequenced && seq,
-                        DifferenceType<SequenceType<RASequenced>> first,
-                        DifferenceType<SequenceType<RASequenced>> last,
+        template <class RASequence, class Compare = ::ural::less<>>
+        void operator()(RASequence && seq,
+                        DifferenceType<cursor_type_t<RASequence>> first,
+                        DifferenceType<cursor_type_t<RASequence>> last,
                         Compare cmp = Compare()) const
         {
-            return this->impl(::ural::sequence_fwd<RASequenced>(seq),
+            return this->impl(::ural::cursor_fwd<RASequence>(seq),
                               std::move(first), std::move(last),
                               ::ural::make_callable(std::move(cmp)));
         }
 
     private:
-        template <class RASequence, class Compare>
+        template <class RACursor, class Compare>
         static void
-        update_largest(RASequence seq,
-                       DifferenceType<RASequence> & largest,
-                       DifferenceType<RASequence> candidate,
-                       DifferenceType<RASequence> last,
+        update_largest(RACursor cur,
+                       DifferenceType<RACursor> & largest,
+                       DifferenceType<RACursor> candidate,
+                       DifferenceType<RACursor> last,
                        Compare cmp)
         {
-            if(candidate < last && cmp(seq[largest], seq[candidate]))
+            if(candidate < last && cmp(cur[largest], cur[candidate]))
             {
                 largest = candidate;
             }
         }
 
-        template <class RASequence, class Compare>
-        void impl(RASequence seq,
-                  DifferenceType<RASequence> first,
-                  DifferenceType<RASequence> last,
+        template <class RACursor, class Compare>
+        void impl(RACursor cur,
+                  DifferenceType<RACursor> first,
+                  DifferenceType<RACursor> last,
                   Compare cmp) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<RASequence, Compare>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessCursor<RACursor>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<RACursor, Compare>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, RACursor>));
 
-            assert(ural::to_signed(last) <= seq.size());
+            assert(ural::to_signed(last) <= cur.size());
 
             for(; first != last;)
             {
                 auto largest = first;
-                update_largest(seq, largest, details::heap_child_1(first), last, cmp);
-                update_largest(seq, largest, details::heap_child_2(first), last, cmp);
+                update_largest(cur, largest, details::heap_child_1(first), last, cmp);
+                update_largest(cur, largest, details::heap_child_2(first), last, cmp);
 
                 if(largest == first)
                 {
                     return;
                 }
 
-                ::ural::indirect_swap(seq, largest, seq, first);
+                ::ural::indirect_swap(cur, largest, cur, first);
 
                 first = largest;
             }
@@ -306,36 +306,36 @@ inline namespace v0
         кучу по отношению @c cmp
         @post <tt> is_heap(seq, cmp) </tt>
         */
-        template <class RASequenced, class Compare = ural::less<>>
-        SequenceType<RASequenced>
-        operator()(RASequenced && seq, Compare cmp = Compare()) const
+        template <class RASequence, class Compare = ural::less<>>
+        cursor_type_t<RASequence>
+        operator()(RASequence && seq, Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequenced<RASequenced>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<RASequenced>, Compare>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<cursor_type_t<RASequence>, Compare>));
 
-            return this->impl(::ural::sequence_fwd<RASequenced>(seq),
+            return this->impl(::ural::cursor_fwd<RASequence>(seq),
                               ::ural::make_callable(std::move(cmp)));
         }
 
     private:
-        template <class RASequence, class Compare>
-        RASequence
-        impl(RASequence seq, Compare cmp) const
+        template <class RACursor, class Compare>
+        RACursor
+        impl(RACursor cur, Compare cmp) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<RASequence, Compare>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessCursor<RACursor>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<RACursor, Compare>));
 
-            assert(::ural::is_heap_until_fn{}(seq, cmp).size() <= 1);
+            assert(::ural::is_heap_until_fn{}(cur, cmp).size() <= 1);
 
-            if(seq.size() >= 1)
+            if(cur.size() >= 1)
             {
-                ::ural::details::heap_swim(seq, seq.size() - 1, cmp);
+                ::ural::details::heap_swim(cur, cur.size() - 1, cmp);
             }
 
-            assert(is_heap_fn{}(seq, cmp));
+            assert(is_heap_fn{}(cur, cmp));
 
-            seq += seq.size();
-            return seq;
+            cur += cur.size();
+            return cur;
         }
     };
 
@@ -350,38 +350,38 @@ inline namespace v0
         @param cmp функция сравнения, по умолчанию используется
         <tt> less<> </tt>, то есть оператор "меньше".
         @return Последовательность, полученная
-        <tt>::ural::sequence_fwd<RASequenced>(seq)</tt> путём продвижения до
+        <tt>::ural::cursor_fwd<RASequence>(seq)</tt> путём продвижения до
         исчерпания.
         */
-        template <class RASequenced, class Compare = ural::less<>>
-        SequenceType<RASequenced>
-        operator()(RASequenced && seq, Compare cmp = Compare()) const
+        template <class RASequence, class Compare = ural::less<>>
+        cursor_type_t<RASequence>
+        operator()(RASequence && seq, Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequenced<RASequenced>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<RASequenced>, Compare>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<cursor_type_t<RASequence>, Compare>));
 
-            return this->impl(::ural::sequence_fwd<RASequenced>(seq),
+            return this->impl(::ural::cursor_fwd<RASequence>(seq),
                               ::ural::make_callable(std::move(cmp)));
         }
 
     private:
-        template <class RASequence, class Compare>
-        static RASequence
-        impl(RASequence seq, Compare cmp)
+        template <class RACursor, class Compare>
+        static RACursor
+        impl(RACursor cur, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<RASequence, Compare>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessCursor<RACursor>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<RACursor, Compare>));
 
-            assert(is_heap_fn{}(seq, cmp));
-            auto const N = seq.size();
+            assert(is_heap_fn{}(cur, cmp));
+            auto const N = cur.size();
 
             if(N > 1)
             {
-                ::ural::indirect_swap(seq, 0, seq, N-1);
-                heap_sink_fn{}(seq, 0*N, N-1, cmp);
+                ::ural::indirect_swap(cur, 0, cur, N-1);
+                heap_sink_fn{}(cur, 0*N, N-1, cmp);
             }
 
-            return seq += N;
+            return cur += N;
         }
     };
 
@@ -396,37 +396,37 @@ inline namespace v0
         @param seq последовательность
         @param cmp функция сравнения, по умолчанию используется
         <tt> less<> </tt>, то есть оператор "меньше".
-        @post <tt> is_heap(std::forward<RASequenced>(seq), cmp) </tt>
+        @post <tt> is_heap(std::forward<RASequence>(seq), cmp) </tt>
         @return Последовательность, полученная из std::forward<RASequence>(seq)
         путём продвижения до исчерпания.
         */
-        template <class RASequenced, class Compare = ural::less<>>
-        SequenceType<RASequenced>
-        operator()(RASequenced && seq, Compare cmp = Compare()) const
+        template <class RASequence, class Compare = ural::less<>>
+        cursor_type_t<RASequence>
+        operator()(RASequence && seq, Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequenced<RASequenced>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<RASequenced>, Compare>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<cursor_type_t<RASequence>, Compare>));
 
-            return this->impl(::ural::sequence_fwd<RASequenced>(seq),
+            return this->impl(::ural::cursor_fwd<RASequence>(seq),
                               ::ural::make_callable(std::move(cmp)));
         }
 
     private:
-        template <class RASequence, class Compare>
-        static RASequence
-        impl(RASequence seq, Compare cmp)
+        template <class RACursor, class Compare>
+        static RACursor
+        impl(RACursor cur, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<RASequence, Compare>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessCursor<RACursor>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<RACursor, Compare>));
 
-            for(auto n = seq.size() / 2; n > 0; -- n)
+            for(auto n = cur.size() / 2; n > 0; -- n)
             {
-                heap_sink_fn{}(seq, n - 1, seq.size(), cmp);
+                heap_sink_fn{}(cur, n - 1, cur.size(), cmp);
             }
 
-            assert(is_heap_fn{}(seq, cmp));
+            assert(is_heap_fn{}(cur, cmp));
 
-            return seq += seq.size();
+            return cur += cur.size();
         }
     };
 
@@ -443,38 +443,38 @@ inline namespace v0
         <tt> less<> </tt>, то есть оператор "меньше"
         @post <tt> is_sorted(seq, cmp) </tt>
         @return Последовательность, полученная
-        <tt>::ural::sequence_fwd<RASequenced>(seq)</tt> путём продвижения до
+        <tt>::ural::cursor_fwd<RASequence>(seq)</tt> путём продвижения до
         исчерпания.
         */
-        template <class RASequenced, class Compare = ural::less<>>
-        SequenceType<RASequenced>
-        operator()(RASequenced && seq, Compare cmp = Compare()) const
+        template <class RASequence, class Compare = ural::less<>>
+        cursor_type_t<RASequence>
+        operator()(RASequence && seq, Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequenced<RASequenced>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<RASequenced>, Compare>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<cursor_type_t<RASequence>, Compare>));
 
-            return this->impl(::ural::sequence_fwd<RASequenced>(seq),
+            return this->impl(::ural::cursor_fwd<RASequence>(seq),
                               ::ural::make_callable(std::move(cmp)));
         }
 
     private:
-        template <class RASequence, class Compare>
-        static RASequence
-        impl(RASequence seq, Compare cmp)
+        template <class RACursor, class Compare>
+        static RACursor
+        impl(RACursor cur, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<RASequence, Compare>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessCursor<RACursor>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<RACursor, Compare>));
 
-            assert(is_heap_fn{}(seq, cmp));
-            for(auto n = seq.size(); n > 0; --n)
+            assert(is_heap_fn{}(cur, cmp));
+            for(auto n = cur.size(); n > 0; --n)
             {
-                pop_heap_fn{}(seq, cmp);
-                seq.pop_back();
+                pop_heap_fn{}(cur, cmp);
+                cur.pop_back();
             }
-            assert(!seq);
-            assert(::ural::is_sorted_fn{}(seq.traversed_back(), cmp));
+            assert(!cur);
+            assert(::ural::is_sorted_fn{}(cur.traversed_back(), cmp));
 
-            auto result = seq.traversed_back();
+            auto result = cur.traversed_back();
             result += result.size();
             return result;
         }
@@ -484,49 +484,49 @@ inline namespace v0
     {
     public:
         template <class RASequence, class Compare = ::ural::less<>>
-        SequenceType<RASequence>
-        operator()(RASequence && s, Compare cmp = Compare()) const
+        cursor_type_t<RASequence>
+        operator()(RASequence && seq, Compare cmp = Compare()) const
         {
             // @todo Подумать, что можно возвращать из impl
-            auto seq = ::ural::sequence_fwd<RASequence>(s);
-            this->impl(seq, ::ural::make_callable(std::move(cmp)));
-            seq += seq.size();
-            return seq;
+            auto cur = ::ural::cursor_fwd<RASequence>(seq);
+            this->impl(cur, ::ural::make_callable(std::move(cmp)));
+            cur += cur.size();
+            return cur;
         }
 
     private:
-        template <class RASequence, class Compare>
+        template <class RACursor, class Compare>
         static void
-        impl(RASequence s, Compare cmp)
+        impl(RACursor cur, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<RASequence, Compare>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessCursor<RACursor>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<RACursor, Compare>));
 
-            if(!s)
+            if(!cur)
             {
                 return;
             }
 
-            ++ s;
-            auto s1 = s.traversed_front();
+            ++ cur;
+            auto cur1 = cur.traversed_front();
 
-            if(!s1 || !s)
+            if(!cur1 || !cur)
             {
                 return;
             }
 
-            make_heap_fn{}(s1, cmp);
+            make_heap_fn{}(cur1, cmp);
 
-            for(; !!s; ++ s)
+            for(; !!cur; ++ cur)
             {
-                if(cmp(*s, *s1))
+                if(cmp(*cur, *cur1))
                 {
-                    ::ural::indirect_swap(s, s1);
-                    auto const n = s1.size();
-                    heap_sink_fn{}(s1, 0*n, n, cmp);
+                    ::ural::indirect_swap(cur, cur1);
+                    auto const n = cur1.size();
+                    heap_sink_fn{}(cur1, 0*n, n, cmp);
                 }
             }
-            pop_heap_fn{}(s1, cmp);
+            pop_heap_fn{}(cur1, cmp);
         }
     };
 
@@ -544,37 +544,37 @@ inline namespace v0
         @return Последовательность, полученная из @c s путём продвижения до
         исчерпания.
         */
-        template <class RASequenced, class Compare>
-        SequenceType<RASequenced>
-        operator()(RASequenced && s, Compare cmp) const
+        template <class RASequence, class Compare>
+        cursor_type_t<RASequence>
+        operator()(RASequence && s, Compare cmp) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequenced<RASequenced>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<RASequenced>, Compare>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<cursor_type_t<RASequence>, Compare>));
 
-            return this->impl(::ural::sequence_fwd<RASequenced>(s),
+            return this->impl(::ural::cursor_fwd<RASequence>(s),
                               ::ural::make_callable(std::move(cmp)));
         }
 
     private:
-        template <class RASequence, class Compare>
-        static RASequence impl(RASequence s, Compare cmp)
+        template <class RACursor, class Compare>
+        static RACursor impl(RACursor cur, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<RASequence, Compare>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessCursor<RACursor>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<RACursor, Compare>));
 
-            if(!s)
+            if(!cur)
             {
-                return s;
+                return cur;
             }
 
-            typedef decltype(s.size()) Index;
+            typedef decltype(cur.size()) Index;
 
-            for(Index i = 1; i != s.size(); ++ i)
+            for(Index i = 1; i != cur.size(); ++ i)
             for(Index j = i; j > 0; -- j)
             {
-                if(cmp(s[j], s[j-1]))
+                if(cmp(cur[j], cur[j-1]))
                 {
-                    ural::indirect_swap(s, j, s, j-1);
+                    ural::indirect_swap(cur, j, cur, j-1);
                 }
                 else
                 {
@@ -582,8 +582,8 @@ inline namespace v0
                 }
             }
 
-            s += s.size();
-            return s;
+            cur += cur.size();
+            return cur;
         }
     };
 
@@ -600,24 +600,24 @@ inline namespace v0
         @return Последовательность, полученная из @c s путём продвижения до
         исчерпания.
         */
-        template <class RASequenced, class Compare = ::ural::less<>>
-        SequenceType<RASequenced>
-        operator()(RASequenced && s, Compare cmp = Compare()) const
+        template <class RASequence, class Compare = ::ural::less<>>
+        cursor_type_t<RASequence>
+        operator()(RASequence && s, Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequenced<RASequenced>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<RASequenced>, Compare>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<cursor_type_t<RASequence>, Compare>));
 
-            return this->impl(::ural::sequence_fwd<RASequenced>(s),
+            return this->impl(::ural::cursor_fwd<RASequence>(s),
                               ::ural::make_callable(std::move(cmp)));
         }
     private:
-        template <class RASequence, class Compare>
-        static RASequence impl(RASequence s, Compare cmp)
+        template <class RACursor, class Compare>
+        static RACursor impl(RACursor cur, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<RASequence, Compare>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessCursor<RACursor>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<RACursor, Compare>));
 
-            return ::ural::insertion_sort_fn{}(std::move(s), std::move(cmp));
+            return ::ural::insertion_sort_fn{}(std::move(cur), std::move(cmp));
         }
     };
 
@@ -635,22 +635,22 @@ inline namespace v0
         @return Последовательность, полученная из @c s путём продвижения до
         исчерпания.
         */
-        template <class RASequenced, class Compare = ::ural::less<>>
-        SequenceType<RASequenced>
-        operator()(RASequenced && s, Compare cmp = Compare()) const
+        template <class RASequence, class Compare = ::ural::less<>>
+        cursor_type_t<RASequence>
+        operator()(RASequence && s, Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequenced<RASequenced>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<RASequenced>, Compare>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<cursor_type_t<RASequence>, Compare>));
 
-            return this->impl(::ural::sequence_fwd<RASequenced>(s),
+            return this->impl(::ural::cursor_fwd<RASequence>(s),
                               ::ural::make_callable(std::move(cmp)));
         }
 
     private:
-        template <class RASequence, class Compare>
-        static RASequence impl(RASequence s, Compare cmp)
+        template <class RACursor, class Compare>
+        static RACursor impl(RACursor cur, Compare cmp)
         {
-            return ::ural::insertion_sort_fn{}(std::move(s), std::move(cmp));
+            return ::ural::insertion_sort_fn{}(std::move(cur), std::move(cmp));
         }
     };
 
@@ -668,20 +668,20 @@ inline namespace v0
         @param cmp функция сравнения, по умолчанию используется
         <tt> less<> </tt>, то есть оператор "меньше".
         @return Последовательность, полученная из
-        <tt> ::ural::sequence_fwd<RASequenced>(s) </tt> продвижением до
+        <tt> ::ural::cursor_fwd<RASequence>(s) </tt> продвижением до
         исчерпания.
         */
-        template <class RASequenced, class Compare = ::ural::less<>>
-        SequenceType<RASequenced>
-        operator()(RASequenced && s,
-                   DifferenceType<SequenceType<RASequenced>> part,
+        template <class RASequence, class Compare = ::ural::less<>>
+        cursor_type_t<RASequence>
+        operator()(RASequence && s,
+                   DifferenceType<cursor_type_t<RASequence>> part,
                    Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequenced<RASequenced>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<RASequenced>, Compare>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<cursor_type_t<RASequence>, Compare>));
 
             // @todo Подумать, что можно возвращать из impl
-            auto seq = ::ural::sequence_fwd<RASequenced>(s);
+            auto seq = ::ural::cursor_fwd<RASequence>(s);
             this->impl(seq, std::move(part),
                        ::ural::make_callable(std::move(cmp)));
             seq += seq.size();
@@ -689,26 +689,26 @@ inline namespace v0
         }
 
     private:
-        template <class RASequence, class Compare>
+        template <class RACursor, class Compare>
         static void
-        impl(RASequence s, DifferenceType<RASequence> const part, Compare cmp)
+        impl(RACursor cur, DifferenceType<RACursor> const part, Compare cmp)
         {
-            make_heap_fn{}(s, cmp);
+            make_heap_fn{}(cur, cmp);
 
-            s.shrink_front();
-            auto const s_old = s;
-            s += part;
+            cur.shrink_front();
+            auto const cur_old = cur;
+            cur += part;
 
-            for(auto i = s; !!i; ++ i)
+            for(auto i = cur; !!i; ++ i)
             {
-                if(cmp(*i, *s_old))
+                if(cmp(*i, *cur_old))
                 {
-                    ::ural::indirect_swap(s_old, i);
-                    heap_sink_fn{}(s.traversed_front(), 0*part, part, cmp);
+                    ::ural::indirect_swap(cur_old, i);
+                    heap_sink_fn{}(cur.traversed_front(), 0*part, part, cmp);
                 }
             }
 
-            sort_heap_fn{}(s.traversed_front(), cmp);
+            sort_heap_fn{}(cur.traversed_front(), cmp);
         }
     };
 
@@ -725,31 +725,31 @@ inline namespace v0
         @param cmp функция сравнения, по умолчанию используется
         <tt> less<> </tt>, то есть оператор "меньше".
         */
-        template <class Input, class RASequenced, class Compare = ::ural::less<>>
-        SequenceType<RASequenced>
-        operator()(Input && in, RASequenced && out,
+        template <class Input, class RASequence, class Compare = ::ural::less<>>
+        cursor_type_t<RASequence>
+        operator()(Input && in, RASequence && out,
                    Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequenced<RASequenced>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<SequenceType<Input>,
-                                                               SequenceType<RASequenced>>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<RASequenced>, Compare>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<cursor_type_t<Input>,
+                                                               cursor_type_t<RASequence>>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<cursor_type_t<RASequence>, Compare>));
 
-            return this->impl(::ural::sequence_fwd<Input>(in),
-                              ::ural::sequence_fwd<RASequenced>(out),
+            return this->impl(::ural::cursor_fwd<Input>(in),
+                              ::ural::cursor_fwd<RASequence>(out),
                               ::ural::make_callable(std::move(cmp)));
         }
 
     private:
-        template <class Input, class RASequence, class Compare>
-        static RASequence
-        impl(Input in, RASequence out, Compare cmp)
+        template <class Input, class RACursor, class Compare>
+        static RACursor
+        impl(Input in, RACursor out, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<Input, RASequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<RASequence, Compare>));
+            BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessCursor<RACursor>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<Input, RACursor>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<RACursor, Compare>));
 
             out.shrink_front();
             std::tie(in, out) = copy_fn{}(std::move(in), std::move(out));
@@ -793,29 +793,29 @@ inline namespace v0
         @param cmp функция сравнения, по умолчанию используется
         <tt> less<> </tt>, то есть оператор "меньше".
         @return Последовательность, полученная из
-        <tt> ::ural::sequence_fwd<RASequenced>(s) </tt>, продвижением до
+        <tt> ::ural::cursor_fwd<RASequence>(s) </tt>, продвижением до
         исчерпания.
         @todo перегрузка, получающая номер элемента
         */
-        template <class RASequenced, class Compare = ::ural::less<>>
-        SequenceType<RASequenced>
-        operator()(RASequenced && s, Compare cmp = Compare()) const
+        template <class RASequence, class Compare = ::ural::less<>>
+        cursor_type_t<RASequence>
+        operator()(RASequence && s, Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequenced<RASequenced>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<RASequenced>, Compare>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<cursor_type_t<RASequence>, Compare>));
 
-            return this->impl(::ural::sequence_fwd<RASequenced>(s),
+            return this->impl(::ural::cursor_fwd<RASequence>(s),
                               ::ural::make_callable(std::move(cmp)));
         }
 
     private:
-        template <class RASequence, class Compare>
-        static RASequence impl(RASequence s, Compare cmp)
+        template <class RACursor, class Compare>
+        static RACursor impl(RACursor cur, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<RASequence, Compare>));
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessCursor<RACursor>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<RACursor, Compare>));
 
-            return heap_select_fn{}(std::move(s), std::move(cmp));
+            return heap_select_fn{}(std::move(cur), std::move(cmp));
         }
     };
 
@@ -830,22 +830,22 @@ inline namespace v0
         @param value значение
         @param cmp функция сравнения, по умолчанию используется
         <tt> less<> </tt>, то есть оператор "меньше"
-        @pre Элементы @c e последовательности @c in должны быть разделены
-        относительно предиката <tt> cmp(e, value) </tt>.
-        @return Последовательность @c r такая, что
-        <tt> original(r) == sequence(in) </tt> и <tt> r.traversed_front() </tt>
-        является наибольшей возможной последовательностью, всё элементы @c x
-        которой удовлетворяют условию <tt> cmp(x, value) </tt>.
+        @pre Элементы @c e курсора @c in должны быть разделены относительно
+        предиката <tt> cmp(e, value) </tt>.
+        @return Курсор @c r такой, что <tt> original(r) == cursor(in) </tt> и
+        <tt> r.traversed_front() </tt> является наибольшей возможной
+        последовательностью, всё элементы @c x которой удовлетворяют условию
+        <tt> cmp(x, value) </tt>.
         */
         template <class Forward, class T, class Compare = ::ural::less<>>
-        SequenceType<Forward>
+        cursor_type_t<Forward>
         operator()(Forward && in, T const & value, Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, T const *,
-                                                             SequenceType<Forward>>));
+                                                             cursor_type_t<Forward>>));
 
-            return this->impl(::ural::sequence_fwd<Forward>(in), value,
+            return this->impl(::ural::cursor_fwd<Forward>(in), value,
                               ::ural::make_callable(std::move(cmp)));
         }
     private:
@@ -853,7 +853,7 @@ inline namespace v0
         static Forward
         impl(Forward in, T const & value, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, T const *, Forward>));
 
             auto pred = [&](auto const & x) { return cmp(x, value); };
@@ -875,29 +875,29 @@ inline namespace v0
         @pre Элементы @c e последовательности @c in должны быть разделены
         относительно предиката <tt> cmp(e, value) </tt>.
         @return Последовательность @c r такая, что
-        <tt> original(r) == sequence(in) </tt> и <tt> r.traversed_front() </tt>
+        <tt> original(r) == cursor(in) </tt> и <tt> r.traversed_front() </tt>
         является наибольшей возможной последовательностью, всё элементы @c x
         которой удовлетворяют условию <tt> !cmp(value, x) </tt>.
         */
         template <class Forward, class T, class Compare = ::ural::less<>>
-        SequenceType<Forward>
+        cursor_type_t<Forward>
         operator()(Forward && in,
                    T const & value, Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, T const *,
-                                                             SequenceType<Forward>>));
+                                                             cursor_type_t<Forward>>));
 
-            return this->impl(::ural::sequence_fwd<Forward>(in), value,
+            return this->impl(::ural::cursor_fwd<Forward>(in), value,
                               ::ural::make_callable(std::move(cmp)));
         }
     private:
-        template <class RASequence, class T, class Compare>
-        static RASequence
-        impl(RASequence in, T const & value, Compare cmp)
+        template <class RACursor, class T, class Compare>
+        static RACursor
+        impl(RACursor in, T const & value, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<RASequence>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, T const *, RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<RACursor>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, T const *, RACursor>));
 
             auto pred = [&](auto const & x) { return !cmp(value, x); };
 
@@ -921,19 +921,19 @@ inline namespace v0
         @pre Элементы @c e последовательности @c in должны быть разделены
         относительно предиката <tt> cmp(e, value) </tt>.
         @return Последовательность @c r такая, что
-        <tt> original(r) == sequence(in) </tt>, причём все элементы @c r
+        <tt> original(r) == cursor(in) </tt>, причём все элементы @c r
         эквивалентны @c value в смысле отношения @c cmp.
         */
         template <class Forward, class T, class Compare = ::ural::less<>>
-        TraversedFrontType<SequenceType<Forward>>
+        TraversedFrontType<cursor_type_t<Forward>>
         operator()(Forward && in,
                    T const & value, Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, T const *,
-                                                             SequenceType<Forward>>));
+                                                             cursor_type_t<Forward>>));
 
-            return this->impl(::ural::sequence_fwd<Forward>(in), value,
+            return this->impl(::ural::cursor_fwd<Forward>(in), value,
                               ::ural::make_callable(std::move(cmp)));
         }
 
@@ -951,7 +951,7 @@ inline namespace v0
         impl(Forward in, T const & value, Compare cmp,
                             finite_forward_cursor_tag) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::FiniteForwardSequence<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::FiniteForwardCursor<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, T const *, Forward>));
 
             auto upper = upper_bound_fn{}(in, value, cmp).traversed_front();
@@ -963,7 +963,7 @@ inline namespace v0
         Bidirectional impl(Bidirectional in, T const & value, Compare cmp,
                                   bidirectional_cursor_tag) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequence<Bidirectional>));
+            BOOST_CONCEPT_ASSERT((concepts::BidirectionalCursor<Bidirectional>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, T const *, Bidirectional>));
 
             auto lower = lower_bound_fn{}(in, value, cmp);
@@ -1002,11 +1002,11 @@ inline namespace v0
         bool operator()(Forward && in, T const & value,
                         Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, T const *,
-                                                             SequenceType<Forward>>));
+                                                             cursor_type_t<Forward>>));
 
-            return this->impl(::ural::sequence_fwd<Forward>(in), value,
+            return this->impl(::ural::cursor_fwd<Forward>(in), value,
                               ::ural::make_callable(std::move(cmp)));
         }
 
@@ -1014,7 +1014,7 @@ inline namespace v0
         template <class Forward, class T, class Compare>
         static bool impl(Forward in, T const & value, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, T const *, Forward>));
 
             in = lower_bound_fn{}(std::move(in), value, cmp);
@@ -1042,23 +1042,23 @@ inline namespace v0
         */
         template <class Input1, class Input2, class Output,
                   class Compare = ::ural::less<>>
-        tuple<SequenceType<Input1>, SequenceType<Input2>, SequenceType<Output>>
+        tuple<cursor_type_t<Input1>, cursor_type_t<Input2>, cursor_type_t<Output>>
         operator()(Input1 && in1, Input2 && in2, Output && out,
                    Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input1>));
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input2>));
-            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequenced<Output>));
-            BOOST_CONCEPT_ASSERT((concepts::Mergeable<SequenceType<Input1>,
-                                                      SequenceType<Input2>,
-                                                      SequenceType<Output>,
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input2>));
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Output>));
+            BOOST_CONCEPT_ASSERT((concepts::Mergeable<cursor_type_t<Input1>,
+                                                      cursor_type_t<Input2>,
+                                                      cursor_type_t<Output>,
                                                       Compare>));
 
-            auto inputs = ::ural::experimental::merged(::ural::sequence_fwd<Input1>(in1),
-                                                       ::ural::sequence_fwd<Input2>(in2),
+            auto inputs = ::ural::experimental::merged(::ural::cursor_fwd<Input1>(in1),
+                                                       ::ural::cursor_fwd<Input2>(in2),
                                                        ::ural::make_callable(std::move(cmp)));
             auto result = ural::copy_fn{}(std::move(inputs),
-                                          ::ural::sequence_fwd<Output>(out));
+                                          ::ural::cursor_fwd<Output>(out));
 
             return ural::make_tuple(std::move(result[ural::_1]).first_base(),
                                     std::move(result[ural::_1]).second_base(),
@@ -1079,18 +1079,18 @@ inline namespace v0
         @param cmp функция сравнения, по умолчанию используется
         <tt> less<> </tt>, то есть оператор "меньше".
         @return Последовательность, полученная
-        <tt>::ural::sequence_fwd<Bidirectional>(seq)</tt> путём продвижения до
+        <tt>::ural::cursor_fwd<Bidirectional>(seq)</tt> путём продвижения до
         исчерпания.
         */
         template <class Bidirectional, class Compare = ::ural::less<>>
-        SequenceType<Bidirectional>
+        cursor_type_t<Bidirectional>
         operator()(Bidirectional && s, Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequenced<Bidirectional>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<Bidirectional>, Compare>));
+            BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequence<Bidirectional>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<cursor_type_t<Bidirectional>, Compare>));
 
             // @todo Возвращать из impl последовательность
-            auto seq = ::ural::sequence_fwd<Bidirectional>(s);
+            auto seq = ::ural::cursor_fwd<Bidirectional>(s);
             this->impl(seq, ::ural::make_callable(std::move(cmp)));
 
             seq.exhaust_front();
@@ -1098,67 +1098,67 @@ inline namespace v0
         }
 
     private:
-        template <class BidirectionalSequence, class Compare>
-        void impl(BidirectionalSequence s, Compare cmp) const
+        template <class BidirectionalCursor, class Compare>
+        void impl(BidirectionalCursor cur, Compare cmp) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequence<BidirectionalSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<BidirectionalSequence, Compare>));
+            BOOST_CONCEPT_ASSERT((concepts::BidirectionalCursor<BidirectionalCursor>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<BidirectionalCursor, Compare>));
 
-            auto s1 = s.traversed_front();
-            auto s2 = ural::shrink_front_copy(s);
+            auto cur1 = cur.traversed_front();
+            auto cur2 = ural::shrink_front_copy(cur);
 
-            auto n1 = ural::size(s1);
-            auto n2 = ural::size(s2);
+            auto n1 = ural::size(cur1);
+            auto n2 = ural::size(cur2);
 
-            if(!s1 || !s2)
+            if(!cur1 || !cur2)
             {
                 return;
             }
 
-            assert(::ural::is_sorted_fn{}(s1, cmp));
-            assert(::ural::is_sorted_fn{}(s2, cmp));
+            assert(::ural::is_sorted_fn{}(cur1, cmp));
+            assert(::ural::is_sorted_fn{}(cur2, cmp));
 
             if(n1 + n2 == 2)
             {
-                if(cmp(*s2, *s1))
+                if(cmp(*cur2, *cur1))
                 {
-                    ::ural::indirect_swap(s1, s2);
+                    ::ural::indirect_swap(cur1, cur2);
                 }
                 return;
             }
 
-            auto s1_cut = s1;
-            auto s2_cut = s2;
+            auto cur1_cut = cur1;
+            auto cur2_cut = cur2;
 
             if(n1 > n2)
             {
-                ural::advance(s1_cut, n1 / 2);
-                s2_cut = lower_bound_fn{}(s2, *s1_cut, cmp);
+                ural::advance(cur1_cut, n1 / 2);
+                cur2_cut = lower_bound_fn{}(cur2, *cur1_cut, cmp);
             }
             else
             {
-                ural::advance(s2_cut, n2 / 2);
-                s1_cut = upper_bound_fn{}(s1, *s2_cut, cmp);
+                ural::advance(cur2_cut, n2 / 2);
+                cur1_cut = upper_bound_fn{}(cur1, *cur2_cut, cmp);
             }
 
-            ::ural::rotate_fn{}(s1_cut, s2_cut.traversed_front());
+            ::ural::rotate_fn{}(cur1_cut, cur2_cut.traversed_front());
 
-            auto s_new = s.original();
+            auto cur_new = cur.original();
 
-            auto n11 = ural::size(s1_cut.traversed_front());
-            auto n12 = ural::size(s1_cut);
-            auto n21 = ural::size(s2_cut.traversed_front());
+            auto n11 = ural::size(cur1_cut.traversed_front());
+            auto n12 = ural::size(cur1_cut);
+            auto n21 = ural::size(cur2_cut.traversed_front());
 
-            ural::advance(s_new, n11 + n21);
+            ural::advance(cur_new, n11 + n21);
 
-            auto s1_new = s_new.traversed_front();
-            auto s2_new = ural::shrink_front_copy(s_new);
+            auto cur1_new = cur_new.traversed_front();
+            auto cur2_new = ural::shrink_front_copy(cur_new);
 
-            ural::advance(s1_new, n11);
-            ural::advance(s2_new, n12);
+            ural::advance(cur1_new, n11);
+            ural::advance(cur2_new, n12);
 
-            this->impl(s1_new, cmp);
-            this->impl(s2_new, cmp);
+            this->impl(cur1_new, cmp);
+            this->impl(cur2_new, cmp);
         }
     };
 
@@ -1183,14 +1183,14 @@ inline namespace v0
         bool operator()(Input1 && in1, Input2 && in2,
                         Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input1>));
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input2>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare,
-                                                             SequenceType<Input1>,
-                                                             SequenceType<Input2>>));
+                                                             cursor_type_t<Input1>,
+                                                             cursor_type_t<Input2>>));
 
-            return this->impl(::ural::sequence_fwd<Input1>(in1),
-                              ::ural::sequence_fwd<Input2>(in2),
+            return this->impl(::ural::cursor_fwd<Input1>(in1),
+                              ::ural::cursor_fwd<Input2>(in2),
                               ::ural::make_callable(std::move(cmp)));
         }
 
@@ -1198,8 +1198,8 @@ inline namespace v0
         template <class Input1, class  Input2, class Compare>
         static bool impl(Input1 in1, Input2 in2, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input1>));
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input2>));
+            BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, Input1, Input2>));
 
             for(; !!in1 && !!in2;)
@@ -1239,26 +1239,26 @@ inline namespace v0
         */
         template <class Input1, class Input2, class Output,
                   class Compare = ::ural::less<>>
-        tuple<SequenceType<Input1>, SequenceType<Input2>, SequenceType<Output>>
+        tuple<cursor_type_t<Input1>, cursor_type_t<Input2>, cursor_type_t<Output>>
         operator()(Input1 && in1, Input2 && in2, Output && out,
                         Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input1>));
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input2>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare,
-                                                             SequenceType<Input1>,
-                                                             SequenceType<Input2>>));
-            BOOST_CONCEPT_ASSERT((concepts::Mergeable<SequenceType<Input1>,
-                                                      SequenceType<Input2>,
-                                                      SequenceType<Output>,
+                                                             cursor_type_t<Input1>,
+                                                             cursor_type_t<Input2>>));
+            BOOST_CONCEPT_ASSERT((concepts::Mergeable<cursor_type_t<Input1>,
+                                                      cursor_type_t<Input2>,
+                                                      cursor_type_t<Output>,
                                                       Compare>));
 
             auto in
-                = ::ural::experimental::make_set_union_sequence(std::forward<Input1>(in1),
-                                                                std::forward<Input2>(in2),
-                                                                ::ural::make_callable(std::move(cmp)));
+                = ::ural::experimental::make_set_union_cursor(std::forward<Input1>(in1),
+                                                              std::forward<Input2>(in2),
+                                                              ::ural::make_callable(std::move(cmp)));
             auto r = ural::copy_fn{}(std::move(in),
-                                     ::ural::sequence_fwd<Output>(out));
+                                     ::ural::cursor_fwd<Output>(out));
             return make_tuple(std::move(r[ural::_1]).first_base(),
                               std::move(r[ural::_1]).second_base(),
                               std::move(r[ural::_2]));
@@ -1281,26 +1281,26 @@ inline namespace v0
         */
         template <class Input1, class Input2, class Output,
                   class Compare = ::ural::less<>>
-        tuple<SequenceType<Input1>, SequenceType<Input2>, SequenceType<Output>>
+        tuple<cursor_type_t<Input1>, cursor_type_t<Input2>, cursor_type_t<Output>>
         operator()(Input1 && in1, Input2 && in2, Output && out,
                    Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input1>));
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input2>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare,
-                                                             SequenceType<Input1>,
-                                                             SequenceType<Input2>>));
-            BOOST_CONCEPT_ASSERT((concepts::Mergeable<SequenceType<Input1>,
-                                                      SequenceType<Input2>,
-                                                      SequenceType<Output>,
+                                                             cursor_type_t<Input1>,
+                                                             cursor_type_t<Input2>>));
+            BOOST_CONCEPT_ASSERT((concepts::Mergeable<cursor_type_t<Input1>,
+                                                      cursor_type_t<Input2>,
+                                                      cursor_type_t<Output>,
                                                       Compare>));
 
             auto in
-                = ::ural::experimental::make_set_intersection_sequence(std::forward<Input1>(in1),
-                                                         std::forward<Input2>(in2),
-                                                         ::ural::make_callable(std::move(cmp)));
+                = ::ural::experimental::make_set_intersection_cursor(std::forward<Input1>(in1),
+                                                                     std::forward<Input2>(in2),
+                                                                     ::ural::make_callable(std::move(cmp)));
             auto r = ural::copy_fn{}(std::move(in),
-                                     ::ural::sequence_fwd<Output>(out));
+                                     ::ural::cursor_fwd<Output>(out));
             return make_tuple(std::move(r[ural::_1]).first_base(),
                               std::move(r[ural::_1]).second_base(),
                               std::move(r[ural::_2]));
@@ -1323,26 +1323,26 @@ inline namespace v0
         */
         template <class Input1, class Input2, class Output,
                   class Compare = ::ural::less<>>
-        tuple<SequenceType<Input1>, SequenceType<Input2>, SequenceType<Output>>
+        tuple<cursor_type_t<Input1>, cursor_type_t<Input2>, cursor_type_t<Output>>
         operator()(Input1 && in1, Input2 && in2, Output && out,
                         Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input1>));
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input2>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare,
-                                                             SequenceType<Input1>,
-                                                             SequenceType<Input2>>));
-            BOOST_CONCEPT_ASSERT((concepts::Mergeable<SequenceType<Input1>,
-                                                      SequenceType<Input2>,
-                                                      SequenceType<Output>,
+                                                             cursor_type_t<Input1>,
+                                                             cursor_type_t<Input2>>));
+            BOOST_CONCEPT_ASSERT((concepts::Mergeable<cursor_type_t<Input1>,
+                                                      cursor_type_t<Input2>,
+                                                      cursor_type_t<Output>,
                                                       Compare>));
 
             auto in
-                = ::ural::experimental::make_set_difference_sequence(std::forward<Input1>(in1),
+                = ::ural::experimental::make_set_difference_cursor(std::forward<Input1>(in1),
                                                        std::forward<Input2>(in2),
                                                        ::ural::make_callable(std::move(cmp)));
             auto r = ural::copy_fn{}(std::move(in),
-                                     ::ural::sequence_fwd<Output>(out));
+                                     ::ural::cursor_fwd<Output>(out));
             return make_tuple(std::move(r[ural::_1]).first_base(),
                               std::move(r[ural::_1]).second_base(),
                               std::move(r[ural::_2]));
@@ -1366,25 +1366,25 @@ inline namespace v0
         */
         template <class Input1, class Input2, class Output,
                   class Compare = ::ural::less<>>
-        tuple<SequenceType<Input1>, SequenceType<Input2>, SequenceType<Output>>
+        tuple<cursor_type_t<Input1>, cursor_type_t<Input2>, cursor_type_t<Output>>
         operator()(Input1 && in1, Input2 && in2, Output && out,
                    Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input1>));
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input2>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare,
-                                                             SequenceType<Input1>,
-                                                             SequenceType<Input2>>));
-            BOOST_CONCEPT_ASSERT((concepts::Mergeable<SequenceType<Input1>,
-                                                      SequenceType<Input2>,
-                                                      SequenceType<Output>,
+                                                             cursor_type_t<Input1>,
+                                                             cursor_type_t<Input2>>));
+            BOOST_CONCEPT_ASSERT((concepts::Mergeable<cursor_type_t<Input1>,
+                                                      cursor_type_t<Input2>,
+                                                      cursor_type_t<Output>,
                                                       Compare>));
 
-            auto in = ::ural::experimental::make_set_symmetric_difference_sequence(std::forward<Input1>(in1),
+            auto in = ::ural::experimental::make_set_symmetric_difference_cursor(std::forward<Input1>(in1),
                                                                      std::forward<Input2>(in2),
                                                                      ::ural::make_callable(std::move(cmp)));
             auto r = ::ural::copy_fn{}(std::move(in),
-                                       ::ural::sequence_fwd<Output>(out));
+                                       ::ural::cursor_fwd<Output>(out));
             return make_tuple(std::move(r[ural::_1]).first_base(),
                               std::move(r[ural::_1]).second_base(),
                               std::move(r[ural::_2]));
@@ -1660,12 +1660,12 @@ inline namespace v0
     class min_element_fn
     {
     private:
-        template <class ForwardSequence, class Compare>
-        static ForwardSequence
-        impl(ForwardSequence in, Compare cmp)
+        template <class Forward, class Compare>
+        static Forward
+        impl(Forward in, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, Forward>));
 
             if(!in)
             {
@@ -1674,7 +1674,7 @@ inline namespace v0
 
             auto cmp_s = ::ural::experimental::compare_by(ural::experimental::dereference<>{}, std::move(cmp));
 
-            ::ural::experimental::min_element_accumulator<ForwardSequence, decltype(cmp_s)>
+            ::ural::experimental::min_element_accumulator<Forward, decltype(cmp_s)>
                 acc(in++, cmp_s);
 
             auto seq = in | ::ural::experimental::outdirected;
@@ -1689,21 +1689,21 @@ inline namespace v0
         @param cmp функция сравнения, по умолчанию используется
         <tt> ural::less<> </tt>, то есть оператор "меньше".
         @return Последовательность @c r такая, что
-        <tt> original(r) == sequence(in) </tt>, а для любого элемента @c x
+        <tt> original(r) == cursor(in) </tt>, а для любого элемента @c x
         последовательности @c in, выполняется условие
         <tt> cmp(x, r.front()) == false </tt>, а среди элементов
         последовательности <tt> r.traversed_front() </tt> нет элементов,
         эквивалентных <tt> r.front() </tt>.
         */
         template <class Forward, class Compare = ::ural::less<>>
-        SequenceType<Forward>
+        cursor_type_t<Forward>
         operator()(Forward && in, Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare,
-                                                             SequenceType<Forward>>));
+                                                             cursor_type_t<Forward>>));
 
-            return this->impl(::ural::sequence_fwd<Forward>(in),
+            return this->impl(::ural::cursor_fwd<Forward>(in),
                               ::ural::make_callable(std::move(cmp)));
         }
     };
@@ -1715,12 +1715,12 @@ inline namespace v0
     class max_element_fn
     {
     private:
-        template <class ForwardSequence, class Compare>
-        static ForwardSequence
-        impl(ForwardSequence in, Compare cmp)
+        template <class Forward, class Compare>
+        static Forward
+        impl(Forward in, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, Forward>));
 
             auto transposed_cmp = ::ural::experimental::make_binary_reverse_args(std::move(cmp));
 
@@ -1734,21 +1734,21 @@ inline namespace v0
         @param cmp функция сравнения, по умолчанию используется
         <tt> ural::less<> </tt>, то есть оператор "меньше".
         @return Последовательность @c r такая, что
-        <tt> original(r) == sequence(in) </tt>, а для любого элемента @c x
+        <tt> original(r) == cursor(in) </tt>, а для любого элемента @c x
         последовательности @c in, выполняется условие
         <tt> cmp(r.front(), x) == false </tt>, а среди элементов
         последовательности <tt> r.traversed_front() </tt> нет элементов,
         эквивалентных <tt> r.front() </tt>.
         */
         template <class Forward, class Compare = ::ural::less<>>
-        SequenceType<Forward>
+        cursor_type_t<Forward>
         operator()(Forward && in, Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare,
-                                                             SequenceType<Forward>>));
+                                                             cursor_type_t<Forward>>));
 
-            return this->impl(::ural::sequence_fwd<Forward>(in),
+            return this->impl(::ural::cursor_fwd<Forward>(in),
                               ::ural::make_callable(std::move(cmp)));
         }
     };
@@ -1771,26 +1771,26 @@ inline namespace v0
         --- с <tt> max_element(std::forward<Forward>(in), cmp) </tt>
         */
         template <class Forward, class Compare = ::ural::less<>>
-        tuple<SequenceType<Forward>, SequenceType<Forward>>
+        tuple<cursor_type_t<Forward>, cursor_type_t<Forward>>
         operator()(Forward && in, Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequenced<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<Forward>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare,
-                                                             SequenceType<Forward>>));
+                                                             cursor_type_t<Forward>>));
 
-            return this->impl(::ural::sequence_fwd<Forward>(in),
+            return this->impl(::ural::cursor_fwd<Forward>(in),
                               ::ural::make_callable(std::move(cmp)));
         }
 
     private:
-        template <class ForwardSequence, class Compare>
-        static tuple<ForwardSequence, ForwardSequence>
-        impl(ForwardSequence in, Compare cmp)
+        template <class Forward, class Compare>
+        static tuple<Forward, Forward>
+        impl(Forward in, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<ForwardSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, ForwardSequence>));
+            BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<Forward>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, Forward>));
 
-            typedef tuple<ForwardSequence, ForwardSequence> Tuple;
+            using Tuple = tuple<Forward, Forward>;
 
             if(!in)
             {
@@ -1800,9 +1800,9 @@ inline namespace v0
             auto cmp_min = ::ural::experimental::compare_by(::ural::experimental::dereference<>{}, std::cref(cmp));
             auto cmp_max = ::ural::experimental::make_binary_reverse_args(cmp_min);
 
-            ::ural::experimental::min_element_accumulator<ForwardSequence, decltype(cmp_min)>
+            ::ural::experimental::min_element_accumulator<Forward, decltype(cmp_min)>
                 acc_min(in, std::move(cmp_min));
-            ::ural::experimental::min_element_accumulator<ForwardSequence, decltype(cmp_max)>
+            ::ural::experimental::min_element_accumulator<Forward, decltype(cmp_max)>
                 acc_max(in, std::move(cmp_max));
             ++ in;
 
@@ -1860,14 +1860,14 @@ inline namespace v0
         bool operator()(Input1 && in1, Input2 && in2,
                         Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input1>));
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input2>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare,
-                                                             SequenceType<Input1>,
-                                                             SequenceType<Input2>>));
+                                                             cursor_type_t<Input1>,
+                                                             cursor_type_t<Input2>>));
 
-            return this->impl(::ural::sequence_fwd<Input1>(in1),
-                              ::ural::sequence_fwd<Input2>(in2),
+            return this->impl(::ural::cursor_fwd<Input1>(in1),
+                              ::ural::cursor_fwd<Input2>(in2),
                               ::ural::make_callable(std::move(cmp)));
         }
 
@@ -1876,8 +1876,8 @@ inline namespace v0
         static bool
         impl(Input1 in1, Input2 in2, Compare cmp)
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input1>));
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input2>));
+            BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input1>));
+            BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, Input1, Input2>));
 
             for(; !!in1 && !!in2; ++ in1, (void) ++ in2)
@@ -1911,50 +1911,50 @@ inline namespace v0
         @return Если последовательность @c s в начале выполнения операции
         упорядочена по убыванию, то @b false, иначе @b --- @b true.
         */
-        template <class BiSequenced, class Compare = ::ural::less<>>
-        bool operator()(BiSequenced && s, Compare cmp = Compare()) const
+        template <class BiSequence, class Compare = ::ural::less<>>
+        bool operator()(BiSequence && s, Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequenced<BiSequenced>));
+            BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequence<BiSequence>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare,
-                                                             SequenceType<BiSequenced>>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<BiSequenced>, Compare>));
+                                                             cursor_type_t<BiSequence>>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<cursor_type_t<BiSequence>, Compare>));
 
-            return this->impl(::ural::sequence_fwd<BiSequenced>(s),
+            return this->impl(::ural::cursor_fwd<BiSequence>(s),
                               ::ural::make_callable(std::move(cmp)));
 
         }
 
     private:
-        template <class BiSequence, class Compare>
-        bool impl(BiSequence s, Compare cmp) const
+        template <class BiCursor, class Compare>
+        bool impl(BiCursor cur, Compare cmp) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequence<BiSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, BiSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<BiSequence, Compare>));
+            BOOST_CONCEPT_ASSERT((concepts::BidirectionalCursor<BiCursor>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, BiCursor>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<BiCursor, Compare>));
 
-            if(!s)
+            if(!cur)
             {
                 return false;
             }
 
-            auto s1 = ural::next(s);
+            auto cur1 = ural::next(cur);
 
-            if(!s1)
+            if(!cur1)
             {
                 return false;
             }
 
-            auto r = ::ural::is_sorted_until_fn{}(s | ::ural::experimental::reversed, cmp);
+            auto r = ::ural::is_sorted_until_fn{}(cur | ::ural::experimental::reversed, cmp);
 
             if(!r)
             {
-                ::ural::reverse_fn{}(std::move(s));
+                ::ural::reverse_fn{}(std::move(cur));
                 return false;
             }
             else
             {
                 auto r1 = r;
-                auto r2 = s | ::ural::experimental::reversed;
+                auto r2 = cur | ::ural::experimental::reversed;
 
                 for(; cmp(*r2, *r1); ++r2)
                 {}
@@ -1982,29 +1982,29 @@ inline namespace v0
         @return Если последовательность @c s в начале выполнения операции
         упорядочена по возрастанию, то @b false, иначе @b --- @b true.
         */
-        template <class BiSequenced, class Compare = ::ural::less<>>
-        bool operator()(BiSequenced && s, Compare cmp = Compare()) const
+        template <class BiSequence, class Compare = ::ural::less<>>
+        bool operator()(BiSequence && s, Compare cmp = Compare()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequenced<BiSequenced>));
+            BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequence<BiSequence>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare,
-                                                             SequenceType<BiSequenced>>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<SequenceType<BiSequenced>, Compare>));
+                                                             cursor_type_t<BiSequence>>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<cursor_type_t<BiSequence>, Compare>));
 
-            return this->impl(::ural::sequence_fwd<BiSequenced>(s),
+            return this->impl(::ural::cursor_fwd<BiSequence>(s),
                               ::ural::make_callable(std::move(cmp)));
 
         }
 
     private:
-        template <class BiSequence, class Compare>
-        bool impl(BiSequence s, Compare cmp) const
+        template <class BiCursor, class Compare>
+        bool impl(BiCursor cur, Compare cmp) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::BidirectionalSequence<BiSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, BiSequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<BiSequence, Compare>));
+            BOOST_CONCEPT_ASSERT((concepts::BidirectionalCursor<BiCursor>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<Compare, BiCursor>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<BiCursor, Compare>));
 
             auto constexpr f = next_permutation_fn{};
-            return f(std::move(s), ::ural::not_fn(std::move(cmp)));
+            return f(std::move(cur), ::ural::not_fn(std::move(cmp)));
         }
     };
 }

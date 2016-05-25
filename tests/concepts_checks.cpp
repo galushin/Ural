@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(archetype_check)
     struct Type {};
     ural_ex::archetypes::callable<bool(Type)> pred;
     ural_ex::archetypes::callable<bool(Type, Type)> bin_pred;
-    ural_ex::archetypes::input_sequence<Type> in1;
+    ural_ex::archetypes::input_cursor<Type> in1;
 
     ural_ex::value_consumer<bool>() = ural::all_of(in1, pred);
     ural_ex::value_consumer<bool>() = ural::none_of(in1, pred);
@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(map_keys_sequence_readable)
 
     using Pair = std::pair<Key const, Mapped>;
 
-    ural_ex::generator_sequence<std::function<Pair()>> in{};
+    ural_ex::generator_cursor<std::function<Pair()>> in{};
     std::forward_list<Pair> const fwd{};
     std::map<Key, Mapped> const bidir{};
     std::vector<Pair> const ra{};
@@ -135,16 +135,17 @@ BOOST_AUTO_TEST_CASE(map_keys_sequence_readable)
 
     using namespace ural::concepts;
 
-    BOOST_CONCEPT_ASSERT((InputSequence<decltype(in_key)>));
+    BOOST_CONCEPT_ASSERT((InputCursor<decltype(in_key)>));
+    BOOST_CONCEPT_ASSERT((ReadableCursor<decltype(in_key)>));
 
-    BOOST_CONCEPT_ASSERT((FiniteForwardSequence<decltype(fwd_key)>));
-    BOOST_CONCEPT_ASSERT((ReadableSequence<decltype(fwd_key)>));
+    BOOST_CONCEPT_ASSERT((FiniteForwardCursor<decltype(fwd_key)>));
+    BOOST_CONCEPT_ASSERT((ReadableCursor<decltype(fwd_key)>));
 
-    BOOST_CONCEPT_ASSERT((BidirectionalSequence<decltype(bidir_key)>));
-    BOOST_CONCEPT_ASSERT((ReadableSequence<decltype(bidir_key)>));
+    BOOST_CONCEPT_ASSERT((BidirectionalCursor<decltype(bidir_key)>));
+    BOOST_CONCEPT_ASSERT((ReadableCursor<decltype(bidir_key)>));
 
-    BOOST_CONCEPT_ASSERT((RandomAccessSequence<decltype(ra_key)>));
-    BOOST_CONCEPT_ASSERT((ReadableSequence<decltype(ra_key)>));
+    BOOST_CONCEPT_ASSERT((RandomAccessCursor<decltype(ra_key)>));
+    BOOST_CONCEPT_ASSERT((ReadableCursor<decltype(ra_key)>));
 }
 
 BOOST_AUTO_TEST_CASE(removed_if_concept_checks)
@@ -163,13 +164,13 @@ BOOST_AUTO_TEST_CASE(removed_if_concept_checks)
 
     using namespace ural::concepts;
 
-    BOOST_CONCEPT_ASSERT((SinglePassSequence<decltype(s_in)>));
+    BOOST_CONCEPT_ASSERT((SinglePassCursor<decltype(s_in)>));
     BOOST_CONCEPT_ASSERT((Readable<decltype(s_in)>));
 
-    BOOST_CONCEPT_ASSERT((ForwardSequence<decltype(s_fwd)>));
+    BOOST_CONCEPT_ASSERT((ForwardCursor<decltype(s_fwd)>));
     BOOST_CONCEPT_ASSERT((Readable<decltype(s_fwd)>));
 
-    BOOST_CONCEPT_ASSERT((BidirectionalSequence<decltype(s_bidir)>));
+    BOOST_CONCEPT_ASSERT((BidirectionalCursor<decltype(s_bidir)>));
     BOOST_CONCEPT_ASSERT((Readable<decltype(s_bidir)>));
 
     BOOST_CHECK(true);
@@ -187,10 +188,10 @@ BOOST_AUTO_TEST_CASE(reversed_concept_checks)
 
     using namespace ural::concepts;
 
-    BOOST_CONCEPT_ASSERT((BidirectionalSequence<decltype(s_bidir)>));
+    BOOST_CONCEPT_ASSERT((BidirectionalCursor<decltype(s_bidir)>));
     BOOST_CONCEPT_ASSERT((Readable<decltype(s_bidir)>));
 
-    BOOST_CONCEPT_ASSERT((RandomAccessSequence<decltype(s_ra)>));
+    BOOST_CONCEPT_ASSERT((RandomAccessCursor<decltype(s_ra)>));
     BOOST_CONCEPT_ASSERT((Readable<decltype(s_ra)>));
 
     BOOST_CHECK(true);
@@ -208,12 +209,12 @@ BOOST_AUTO_TEST_CASE(reversed_writable_concept_checks)
 
     using namespace ural::concepts;
 
-    BOOST_CONCEPT_ASSERT((BidirectionalSequence<decltype(s_bidir)>));
-    BOOST_CONCEPT_ASSERT((OutputSequence<decltype(s_bidir), Type>));
+    BOOST_CONCEPT_ASSERT((BidirectionalCursor<decltype(s_bidir)>));
+    BOOST_CONCEPT_ASSERT((OutputCursor<decltype(s_bidir), Type>));
     BOOST_CONCEPT_ASSERT((Readable<decltype(s_bidir)>));
 
-    BOOST_CONCEPT_ASSERT((RandomAccessSequence<decltype(s_ra)>));
-    BOOST_CONCEPT_ASSERT((OutputSequence<decltype(s_ra), Type>));
+    BOOST_CONCEPT_ASSERT((RandomAccessCursor<decltype(s_ra)>));
+    BOOST_CONCEPT_ASSERT((OutputCursor<decltype(s_ra), Type>));
     BOOST_CONCEPT_ASSERT((Readable<decltype(s_ra)>));
 
     BOOST_CHECK(true);
@@ -238,16 +239,16 @@ BOOST_AUTO_TEST_CASE(transformed_concept_checks)
 
     using namespace ural::concepts;
 
-    BOOST_CONCEPT_ASSERT((SinglePassSequence<decltype(s_in)>));
+    BOOST_CONCEPT_ASSERT((SinglePassCursor<decltype(s_in)>));
     BOOST_CONCEPT_ASSERT((Readable<decltype(s_in)>));
 
-    BOOST_CONCEPT_ASSERT((ForwardSequence<decltype(s_fwd)>));
+    BOOST_CONCEPT_ASSERT((ForwardCursor<decltype(s_fwd)>));
     BOOST_CONCEPT_ASSERT((Readable<decltype(s_fwd)>));
 
-    BOOST_CONCEPT_ASSERT((BidirectionalSequence<decltype(s_bidir)>));
+    BOOST_CONCEPT_ASSERT((BidirectionalCursor<decltype(s_bidir)>));
     BOOST_CONCEPT_ASSERT((Readable<decltype(s_bidir)>));
 
-    BOOST_CONCEPT_ASSERT((RandomAccessSequence<decltype(s_ra)>));
+    BOOST_CONCEPT_ASSERT((RandomAccessCursor<decltype(s_ra)>));
     BOOST_CONCEPT_ASSERT((Readable<decltype(s_ra)>));
 
     BOOST_CHECK(true);
@@ -270,16 +271,16 @@ BOOST_AUTO_TEST_CASE(transformed_to_lvalue_concept_checks)
 
     using namespace ural::concepts;
 
-    BOOST_CONCEPT_ASSERT((ForwardSequence<decltype(s_fwd)>));
-    BOOST_CONCEPT_ASSERT((OutputSequence<decltype(s_fwd), int>));
+    BOOST_CONCEPT_ASSERT((ForwardCursor<decltype(s_fwd)>));
+    BOOST_CONCEPT_ASSERT((OutputCursor<decltype(s_fwd), int>));
     BOOST_CONCEPT_ASSERT((Readable<decltype(s_fwd)>));
 
-    BOOST_CONCEPT_ASSERT((BidirectionalSequence<decltype(s_bidir)>));
-    BOOST_CONCEPT_ASSERT((OutputSequence<decltype(s_bidir), int>));
+    BOOST_CONCEPT_ASSERT((BidirectionalCursor<decltype(s_bidir)>));
+    BOOST_CONCEPT_ASSERT((OutputCursor<decltype(s_bidir), int>));
     BOOST_CONCEPT_ASSERT((Readable<decltype(s_bidir)>));
 
-    BOOST_CONCEPT_ASSERT((RandomAccessSequence<decltype(s_ra)>));
-    BOOST_CONCEPT_ASSERT((OutputSequence<decltype(s_ra), int>));
+    BOOST_CONCEPT_ASSERT((RandomAccessCursor<decltype(s_ra)>));
+    BOOST_CONCEPT_ASSERT((OutputCursor<decltype(s_ra), int>));
     BOOST_CONCEPT_ASSERT((Readable<decltype(s_ra)>));
 
     BOOST_CHECK(true);
@@ -304,13 +305,13 @@ BOOST_AUTO_TEST_CASE(uniqued_concept_checks)
     BOOST_CONCEPT_ASSERT((SinglePassSequence<decltype(s_in)>));
     BOOST_CONCEPT_ASSERT((Readable<decltype(s_in)>));
 
-    BOOST_CONCEPT_ASSERT((FiniteForwardSequence<decltype(s_fwd)>));
+    BOOST_CONCEPT_ASSERT((FiniteForwardCursor<decltype(s_fwd)>));
     BOOST_CONCEPT_ASSERT((Readable<decltype(s_fwd)>));
 
-    BOOST_CONCEPT_ASSERT((FiniteForwardSequence<decltype(s_bidir)>));
+    BOOST_CONCEPT_ASSERT((FiniteForwardCursor<decltype(s_bidir)>));
     BOOST_CONCEPT_ASSERT((Readable<decltype(s_bidir)>));
 
-    BOOST_CONCEPT_ASSERT((FiniteForwardSequence<decltype(s_ra)>));
+    BOOST_CONCEPT_ASSERT((FiniteForwardCursor<decltype(s_ra)>));
     BOOST_CONCEPT_ASSERT((Readable<decltype(s_ra)>));
 
     BOOST_CHECK(true);
@@ -330,15 +331,15 @@ BOOST_AUTO_TEST_CASE(writable_uniqued_concept_checks)
 
     using namespace ural::concepts;
 
-    BOOST_CONCEPT_ASSERT((FiniteForwardSequence<decltype(s_fwd)>));
+    BOOST_CONCEPT_ASSERT((FiniteForwardCursor<decltype(s_fwd)>));
     BOOST_CONCEPT_ASSERT((Readable<decltype(s_fwd)>));
     BOOST_CONCEPT_ASSERT((Writable<decltype(s_fwd), Type>));
 
-    BOOST_CONCEPT_ASSERT((FiniteForwardSequence<decltype(s_bidir)>));
+    BOOST_CONCEPT_ASSERT((FiniteForwardCursor<decltype(s_bidir)>));
     BOOST_CONCEPT_ASSERT((Readable<decltype(s_bidir)>));
     BOOST_CONCEPT_ASSERT((Writable<decltype(s_bidir), Type>));
 
-    BOOST_CONCEPT_ASSERT((FiniteForwardSequence<decltype(s_ra)>));
+    BOOST_CONCEPT_ASSERT((FiniteForwardCursor<decltype(s_ra)>));
     BOOST_CONCEPT_ASSERT((Readable<decltype(s_ra)>));
     BOOST_CONCEPT_ASSERT((Writable<decltype(s_ra), Type>));
 
@@ -375,6 +376,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(is_container_check_true, Container, Containers)
 
     static_assert(!ural::experimental::is_container<std::function<int(double)>>::value,
                   "Must not be container!");
-    static_assert(!ural::experimental::is_container<ural::SequenceType<Container>>::value,
+    static_assert(!ural::experimental::is_container<ural::cursor_type_t<Container>>::value,
                   "Must not be container!");
 }

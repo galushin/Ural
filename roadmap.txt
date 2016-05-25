@@ -101,7 +101,7 @@ http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3657.html
 * Разобраться с иерархией категорий последовательностей. В частности, от чего
 должен наследовать random_access_traversal_tag
 * аналоги возможностей <algorithm>: shuffle и random_shuffle
-* Определить, должен ли SinglePassSequence быть EqualityComparable
+* Определить, должен ли SinglePassCursor быть EqualityComparable
 * Полная документация
 --------------------------------------------------------------------------------
 1.1
@@ -189,7 +189,7 @@ partition, stable_partition
 * базовый класс CRTP или другой способ, вводящий операторы сравнения по
 определённому свойству. Полезно для классов-обёрток, инкапсулирующих одно
 значение.
-* Унифицировать arithmetic_progression и outdirected
+* Унифицировать arithmetic_progression_cursor и outdirected
 --------------------------------------------------------------------------------
 D.std.functional
 + аналог binaryReverseArgs = binary_reverse_args_function

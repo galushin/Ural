@@ -19,7 +19,7 @@
 
 /** @file ural/algorithm/core.hpp
  @brief Базовые алгоритмы, через которые реализуются многие другие алгоритмы
- и последовательности.
+ и операции курсоров.
  @note Этот файл предназначен для разработчиков библиотеки, не включайте его
  в свой код, только если это действительно необходимо.
 */
@@ -44,8 +44,8 @@ inline namespace v0
         static ural::tuple<Input, Output>
         copy_impl(Input in, Output out)
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Output>));
+            BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassCursor<Output>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<Input, Output>));
 
             for(; !!in && !!out; ++ in, (void) ++ out)
@@ -66,16 +66,16 @@ inline namespace v0
         последовательностей (одна из них будет пустой).
         */
         template <class Input, class Output>
-        tuple<SequenceType<Input>, SequenceType<Output>>
+        tuple<cursor_type_t<Input>, cursor_type_t<Output>>
         operator()(Input && in, Output && out) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequenced<Output>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<SequenceType<Input>,
-                                                               SequenceType<Output>>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Output>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<cursor_type_t<Input>,
+                                                               cursor_type_t<Output>>));
 
-            return ::ural::copy_fn::copy_impl(::ural::sequence_fwd<Input>(in),
-                                              ::ural::sequence_fwd<Output>(out));
+            return ::ural::copy_fn::copy_impl(::ural::cursor_fwd<Input>(in),
+                                              ::ural::cursor_fwd<Output>(out));
         }
     };
 
@@ -89,7 +89,7 @@ inline namespace v0
         static Input
         impl(Input in, Predicate pred)
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<Predicate, Input>));
 
             for(; !!in; ++ in)
@@ -107,17 +107,17 @@ inline namespace v0
         @param in входная последовательность
         @param pred унарный предикат
         @return Последовательность @c r, полученная из
-        <tt> ::ural::sequence_fwd<Input>(in) </tt> продвижением до тех пор,
+        <tt> ::ural::cursor_fwd<Input>(in) </tt> продвижением до тех пор,
         пока не выполнится условие <tt> pred(r.front()) != false </tt>.
         */
         template <class Input, class Predicate>
-        SequenceType<Input>
+        cursor_type_t<Input>
         operator()(Input && in, Predicate pred) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<Predicate, SequenceType<Input>>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<Predicate, cursor_type_t<Input>>));
 
-            return this->impl(::ural::sequence_fwd<Input>(in),
+            return this->impl(::ural::cursor_fwd<Input>(in),
                               ::ural::make_callable(std::move(pred)));
         }
     };
@@ -132,7 +132,7 @@ inline namespace v0
         static Input
         impl(Input in, T const & value, BinaryPredicate bin_pred)
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<BinaryPredicate, Input, T const *>));
 
             auto pred = [&](auto const & x) { return bin_pred(x, value); };
@@ -148,19 +148,19 @@ inline namespace v0
         последовательности и заданного значения. Если этот параметр не указан,
         то используется <tt> equal_to<>() </tt>, то есть оператор "равно".
         @return Последовательность @c r, полученная из
-        <tt> ::ural::sequence_fwd<Input>(in) </tt> продвижением до тех пор, пока
+        <tt> ::ural::cursor_fwd<Input>(in) </tt> продвижением до тех пор, пока
         не встретится элемент @c x такой, что <tt> pred(r.front(), value) </tt>.
         */
         template <class Input, class T,
                   class BinaryPredicate = ural::equal_to<>>
-        SequenceType<Input>
+        cursor_type_t<Input>
         operator()(Input && in, T const & value,
                    BinaryPredicate pred = BinaryPredicate()) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<BinaryPredicate, SequenceType<Input>, T const *>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<BinaryPredicate, cursor_type_t<Input>, T const *>));
 
-            return this->impl(::ural::sequence_fwd<Input>(in), value,
+            return this->impl(::ural::cursor_fwd<Input>(in), value,
                               ::ural::make_callable(std::move(pred)));
         }
     };
@@ -174,7 +174,7 @@ inline namespace v0
         template <class Input, class Predicate>
         static Input impl(Input in, Predicate pred)
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<Predicate, Input>));
 
             return find_if_fn{}(std::move(in), ural::not_fn(std::move(pred)));
@@ -185,17 +185,17 @@ inline namespace v0
         @param in входная последовательность
         @param pred унарный предикат
         @return Последовательность @c r, полученная из
-        <tt> ::ural::sequence_fwd<Input>(in) </tt> продвижением до тех пор, пока
+        <tt> ::ural::cursor_fwd<Input>(in) </tt> продвижением до тех пор, пока
         не выполнится условие <tt> pred(r.front()) == false </tt>.
         */
         template <class Input, class Predicate>
-        SequenceType<Input>
+        cursor_type_t<Input>
         operator()(Input && in, Predicate pred) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::InputSequenced<Input>));
-            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<Predicate, SequenceType<Input>>));
+            BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
+            BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<Predicate, cursor_type_t<Input>>));
 
-            return this->impl(::ural::sequence_fwd<Input>(in), std::move(pred));
+            return this->impl(::ural::cursor_fwd<Input>(in), std::move(pred));
         }
     };
 }

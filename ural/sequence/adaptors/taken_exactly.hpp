@@ -30,68 +30,66 @@ namespace ural
 {
 namespace experimental
 {
-    template <class Sequence, class Distance>
-    class taken_exactly_sequence;
+    template <class Sequence, class Distance = DifferenceType<Sequence>>
+    class taken_exactly_cursor;
 
     /**
-    @brief Тип функционального объекта для создания @c taken_exactly_sequence
+    @brief Тип функционального объекта для создания @c taken_exactly_cursor
     */
-    struct make_taken_exactly_sequence_fn
+    struct make_taken_exactly_cursor_fn
     {
     public:
-        //@{
-        /** @brief Создание @c taken_exactly_sequence
+        /** @brief Создание @c taken_exactly_cursor
         @param seq входная последовательность
         @param n количество элементов, которое нужно взять
         */
-        template <class Sequenced, class Distance>
-        taken_exactly_sequence<SequenceType<Sequenced>, Distance>
-        operator()(Sequenced && seq, Distance n) const
+        template <class Sequence, class Distance>
+        taken_exactly_cursor<cursor_type_t<Sequence>, Distance>
+        operator()(Sequence && seq, Distance n) const
         {
-            using Result = taken_exactly_sequence<SequenceType<Sequenced>, Distance>;
-            return Result(::ural::sequence_fwd<Sequenced>(seq), std::move(n));
+            using Result = taken_exactly_cursor<cursor_type_t<Sequence>, Distance>;
+            return Result(::ural::cursor_fwd<Sequence>(seq), std::move(n));
         }
 
-        template <class Sequence, class D1, class D2>
-        taken_exactly_sequence<Sequence, CommonType<D1, D2>>
-        operator()(taken_exactly_sequence<Sequence, D1> seq, D2 n) const
+        template <class Cursor, class D1, class D2>
+        taken_exactly_cursor<Cursor, CommonType<D1, D2>>
+        operator()(taken_exactly_cursor<Cursor, D1> cur, D2 n) const
         {
             using Size = CommonType<D1, D2>;
-            using Result = taken_exactly_sequence<Sequence, Size>;
+            using Result = taken_exactly_cursor<Cursor, Size>;
 
-            auto n_new = std::min(Size(seq.size()), Size(std::move(n)));
+            auto n_new = std::min(Size(cur.size()), Size(std::move(n)));
 
-            return Result(std::move(seq).base(), std::move(n_new));
+            return Result(std::move(cur).base(), std::move(n_new));
         }
-        //@}
     };
 
     namespace
     {
-        /// @brief Функциональный объект для создания @c taken_exactly_sequence
-        constexpr auto const & make_taken_exactly_sequence
-            = odr_const<make_taken_exactly_sequence_fn>;
+        /// @brief Функциональный объект для создания @c taken_exactly_cursor
+        constexpr auto const & make_taken_exactly_cursor
+            = odr_const<make_taken_exactly_cursor_fn>;
 
-        /** @brief Функциональный объект для создания @c taken_exactly_sequence
+        /** @brief Функциональный объект для создания @c taken_exactly_cursor
         в конвейерном стиле.
         */
         constexpr auto const & taken_exactly
-            = odr_const<experimental::pipeable_maker<make_taken_exactly_sequence_fn>>;
+            = odr_const<experimental::pipeable_maker<make_taken_exactly_cursor_fn>>;
     }
 
-    /** @brief Адаптер последовательности, извлекающий из базовой
-    последовательности заданное число элементов.
-    @tparam Sequence базовая последовательность
+    /** @brief Адаптер курсора, извлекающий из базового курсора заданное число
+    элементов.
+    @tparam Input базовый курсор
     @tparam Distance тип количества элементов
     @todo Правильный алгоритм вычисление категории курсора
     @todo Оптимизация размера
     @todo оптимизация taken_(exactly)(n1) | taken_(exactly)(n2)
     */
-    template <class Sequence, class Distance>
-    class taken_exactly_sequence
-     : public sequence_adaptor<taken_exactly_sequence<Sequence, Distance>, Sequence>
+    template <class Input, class Distance>
+    class taken_exactly_cursor
+     : public cursor_adaptor<taken_exactly_cursor<Input, Distance>, Input>
     {
-        using Inherited = sequence_adaptor<taken_exactly_sequence<Sequence, Distance>, Sequence>;
+        using Inherited = cursor_adaptor<taken_exactly_cursor, Input>;
 
     public:
         // Типы
@@ -106,19 +104,19 @@ namespace experimental
 
         // Конструирование
         /** @brief Конструктор
-        @param base базовая последовательность
+        @param base базовый курсор
         @param n количество элементов
         */
-        taken_exactly_sequence(Sequence base, distance_type n)
+        taken_exactly_cursor(Input base, distance_type n)
          : Inherited(std::move(base))
          , size_(std::move(n))
          , traversed_front_size_(0)
          , traversed_back_size_(0)
         {}
 
-        // Однопроходная последовательность
-        /** @brief Проверка исчерпания последовательности
-        @return @b true, если последовательность исчерпана, иначе -- @b false
+        // Однопроходный курсор
+        /** @brief Проверка исчерпания
+        @return @b true, если курсор исчерпан, иначе -- @b false
         */
         bool operator!() const
         {
@@ -139,13 +137,13 @@ namespace experimental
             -- this->size_;
         }
 
-        // Прямая последовательность
-        /** @brief Полная последовательность (вместе с пройденными частями)
-        @return Исходная последовательность
+        // Прямой курсор
+        /** @brief Исходный курсор (вместе с пройденными частями)
+        @return Исходный курсор
         */
-        taken_exactly_sequence original() const
+        taken_exactly_cursor original() const
         {
-            return taken_exactly_sequence(this->base().original(),
+            return taken_exactly_cursor(this->base().original(),
                                           this->original_size());
         }
 
@@ -175,7 +173,7 @@ namespace experimental
             ural::advance(*this, this->size());
         }
 
-        // Двусторонняя последовательность
+        // Двусторонний курсор
         /** @brief Задний элемент последовательности
         @pre <tt> !*this == false </tt>
         */
@@ -200,13 +198,13 @@ namespace experimental
         /** @brief Пройденная задняя часть последовательность
         @return Пройденная задняя часть последовательность
         */
-        taken_exactly_sequence traversed_back() const
+        taken_exactly_cursor traversed_back() const
         {
             auto new_base = this->base();
             new_base += this->size();
             new_base.shrink_front();
 
-            return taken_exactly_sequence(std::move(new_base),
+            return taken_exactly_cursor(std::move(new_base),
                                           this->traversed_back_size_);
         }
 
@@ -225,7 +223,7 @@ namespace experimental
             this->pop_back(this->size());
         }
 
-        // Последовательность произвольного доступа
+        // Курсор произвольного доступа
         /** @brief Количество элементов
         @return Количество непройденных элементов
         */
@@ -251,7 +249,7 @@ namespace experimental
         @pre <tt> 0 <= n && n <= this->size() </tt>
         @return <tt> *this </tt>
         */
-        taken_exactly_sequence & operator+=(distance_type n)
+        taken_exactly_cursor & operator+=(distance_type n)
         {
             assert(0 <= n && n <= this->size());
 
@@ -291,8 +289,8 @@ namespace experimental
     @return <tt> x.front() == y.front() && x.size() == y.size() </tt>
     */
     template <class S1, class D1, class S2, class D2>
-    bool operator==(taken_exactly_sequence<S1, D1> const & x,
-                    taken_exactly_sequence<S2, D2> const & y)
+    bool operator==(taken_exactly_cursor<S1, D1> const & x,
+                    taken_exactly_cursor<S2, D2> const & y)
     {
         return x.base() == y.base() && x.size() == y.size();
     }

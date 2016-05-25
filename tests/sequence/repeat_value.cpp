@@ -16,7 +16,7 @@
 
 #include <ural/algorithm.hpp>
 #include <ural/sequence/make.hpp>
-#include <ural/sequence/constant.hpp>
+#include <ural/sequence/repeat_value.hpp>
 
 #include <boost/test/unit_test.hpp>
 
@@ -25,7 +25,7 @@ namespace
     namespace ural_ex = ::ural::experimental;
 }
 
-BOOST_AUTO_TEST_CASE(constant_sequence_explcit_single_pass)
+BOOST_AUTO_TEST_CASE(repeat_value_cursor_explcit_single_pass)
 {
     auto const value = 'z';
     auto const n = 17;
@@ -37,17 +37,17 @@ BOOST_AUTO_TEST_CASE(constant_sequence_explcit_single_pass)
     BOOST_CHECK_EQUAL(expected.size(), actual.size());
     BOOST_CHECK_NE(expected, actual);
 
-    ural_ex::constant_sequence<char, ural::single_pass_cursor_tag> seq(value);
+    auto cur = ural_ex::repeat_value_cursor<char, ural::single_pass_cursor_tag>(value);
 
-    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<decltype(seq)>));
-    BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<decltype(seq)>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableCursor<decltype(cur)>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassCursor<decltype(cur)>));
 
-    ural::copy(std::move(seq), actual);
+    ural::copy(std::move(cur), actual);
 
     BOOST_CHECK_EQUAL(actual, expected);
 }
 
-BOOST_AUTO_TEST_CASE(constant_sequence_explcit_forward)
+BOOST_AUTO_TEST_CASE(repeat_value_cursor_explcit_forward)
 {
     auto const value = 'z';
     auto const n = 17;
@@ -59,22 +59,22 @@ BOOST_AUTO_TEST_CASE(constant_sequence_explcit_forward)
     BOOST_CHECK_EQUAL(expected.size(), actual.size());
     BOOST_CHECK_NE(expected, actual);
 
-    using CS = ural_ex::constant_sequence<char, ural::forward_cursor_tag>;
-    auto const seq = CS(value);
+    using RVC = ural_ex::repeat_value_cursor<char, ural::forward_cursor_tag>;
+    auto const cur = RVC(value);
 
-    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableSequence<CS>));
-    BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassSequence<CS>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ReadableCursor<RVC>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::SinglePassCursor<RVC>));
 
-    auto r_seq = ural::copy(std::move(seq), actual)[ural::_1];
+    auto result_cur = ural::copy(std::move(cur), actual)[ural::_1];
 
     BOOST_CHECK_EQUAL(actual, expected);
-    BOOST_CHECK(ural::equal(r_seq.traversed_front(), expected));
-    BOOST_CHECK(r_seq.original() == seq);
+    BOOST_CHECK(ural::equal(result_cur.traversed_front(), expected));
+    BOOST_CHECK(result_cur.original() == cur);
 
-    BOOST_CHECK(r_seq != seq);
-    r_seq.shrink_front();
+    BOOST_CHECK(result_cur != cur);
+    result_cur.shrink_front();
 
-    BOOST_CHECK(r_seq == seq);
+    BOOST_CHECK(result_cur == cur);
 }
 
 // @todo explicit random access

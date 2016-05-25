@@ -47,8 +47,8 @@ BOOST_AUTO_TEST_CASE(iota_test)
 
     URAL_CHECK_EQUAL_RANGES(x1, x2);
 
-    BOOST_CHECK(result.original() == ural::sequence(x2));
-    BOOST_CHECK(result.traversed_front() == ural::sequence(x2));
+    BOOST_CHECK(result.original() == ural::cursor(x2));
+    BOOST_CHECK(result.traversed_front() == ural::cursor(x2));
 }
 
 BOOST_AUTO_TEST_CASE(accumulate_test)
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(inner_product_test)
     BOOST_CHECK_EQUAL(r_std, r_ural);
 }
 
-BOOST_AUTO_TEST_CASE(partial_sums_sequence_test)
+BOOST_AUTO_TEST_CASE(partial_sums_cursor_test)
 {
     // Подготовка
     std::vector<int> const v = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(partial_sums_sequence_test)
     std::vector<int> x_ural;
     auto seq = ural_ex::partial_sums(v);
 
-    BOOST_CONCEPT_ASSERT((ural::concepts::ForwardSequence<decltype(seq)>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::ForwardCursor<decltype(seq)>));
 
     ural::copy(std::move(seq), std::back_inserter(x_ural));
 
@@ -146,10 +146,10 @@ BOOST_AUTO_TEST_CASE(partial_sum_test_to_longer)
 
     URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 
-    BOOST_CHECK(r_ural[ural::_1].original() == ural::sequence(src));
-    BOOST_CHECK(r_ural[ural::_1].traversed_front() == ural::sequence(src));
+    BOOST_CHECK(r_ural[ural::_1].original() == ural::cursor(src));
+    BOOST_CHECK(r_ural[ural::_1].traversed_front() == ural::cursor(src));
 
-    BOOST_CHECK(r_ural[ural::_2].original() == ural::sequence(x_ural));
+    BOOST_CHECK(r_ural[ural::_2].original() == ural::cursor(x_ural));
     BOOST_CHECK_EQUAL(r_ural[ural::_2].size(), x_std.end() - r_std);
     BOOST_CHECK(!r_ural[ural::_2].traversed_back());
 }
@@ -172,16 +172,16 @@ BOOST_AUTO_TEST_CASE(partial_sum_test_to_shorter)
     BOOST_CHECK_EQUAL_COLLECTIONS(x_ural.begin(), x_ural.end(),
                                   x_std.begin(), x_std.begin() + x_ural.size());
 
-    BOOST_CHECK(r_ural[ural::_1].original() == ural::sequence(src));
+    BOOST_CHECK(r_ural[ural::_1].original() == ural::cursor(src));
     BOOST_CHECK(!r_ural[ural::_1].traversed_back());
     BOOST_CHECK_EQUAL(r_ural[ural::_1].size(),
                       ural::to_signed(src.size() - x_ural.size()));
 
-    BOOST_CHECK(r_ural[ural::_2].original() == ural::sequence(x_ural));
-    BOOST_CHECK(r_ural[ural::_2].traversed_front() == ural::sequence(x_ural));
+    BOOST_CHECK(r_ural[ural::_2].original() == ural::cursor(x_ural));
+    BOOST_CHECK(r_ural[ural::_2].traversed_front() == ural::cursor(x_ural));
 }
 
-BOOST_AUTO_TEST_CASE(adjacent_differences_sequence_test)
+BOOST_AUTO_TEST_CASE(adjacent_differences_cursor_test)
 {
     // Подготовка
     std::vector<int> const xs = {1,2,3,5,9,11,12};
@@ -234,10 +234,10 @@ BOOST_AUTO_TEST_CASE(adjacent_difference_test_to_longer)
 
     URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 
-    BOOST_CHECK(r_ural[ural::_1].original() == ural::sequence(src));
-    BOOST_CHECK(r_ural[ural::_1].traversed_front() == ural::sequence(src));
+    BOOST_CHECK(r_ural[ural::_1].original() == ural::cursor(src));
+    BOOST_CHECK(r_ural[ural::_1].traversed_front() == ural::cursor(src));
 
-    BOOST_CHECK(r_ural[ural::_2].original() == ural::sequence(x_ural));
+    BOOST_CHECK(r_ural[ural::_2].original() == ural::cursor(x_ural));
     BOOST_CHECK_EQUAL(r_ural[ural::_2].size(), x_std.end() - r_std);
     BOOST_CHECK(!r_ural[ural::_2].traversed_back());
 }
@@ -260,13 +260,13 @@ BOOST_AUTO_TEST_CASE(adjacent_differences_test_to_shorter)
     BOOST_CHECK_EQUAL_COLLECTIONS(x_ural.begin(), x_ural.end(),
                                   x_std.begin(), x_std.begin() + x_ural.size());
 
-    BOOST_CHECK(r_ural[ural::_1].original() == ural::sequence(src));
+    BOOST_CHECK(r_ural[ural::_1].original() == ural::cursor(src));
     BOOST_CHECK(!r_ural[ural::_1].traversed_back());
     BOOST_CHECK_EQUAL(r_ural[ural::_1].size(),
                       ural::to_signed(src.size() - x_ural.size()));
 
-    BOOST_CHECK(r_ural[ural::_2].original() == ural::sequence(x_ural));
-    BOOST_CHECK(r_ural[ural::_2].traversed_front() == ural::sequence(x_ural));
+    BOOST_CHECK(r_ural[ural::_2].original() == ural::cursor(x_ural));
+    BOOST_CHECK(r_ural[ural::_2].traversed_front() == ural::cursor(x_ural));
 }
 
 namespace
@@ -289,7 +289,7 @@ namespace
     };
 }
 
-BOOST_AUTO_TEST_CASE(partial_sums_sequence_test_no_default_ctor)
+BOOST_AUTO_TEST_CASE(partial_sums_cursor_test_no_default_ctor)
 {
     typedef no_default_ctor<int> Integer;
     std::vector<Integer> const v = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
@@ -303,7 +303,7 @@ BOOST_AUTO_TEST_CASE(partial_sums_sequence_test_no_default_ctor)
     URAL_CHECK_EQUAL_RANGES(x_std, x_ural);
 }
 
-BOOST_AUTO_TEST_CASE(adjacent_differences_sequence_test_no_default_ctor)
+BOOST_AUTO_TEST_CASE(adjacent_differences_cursor_test_no_default_ctor)
 {
      typedef no_default_ctor<int> Integer;
      std::vector<Integer> const xs = {1,2,3,5,9,11,12};
@@ -1136,7 +1136,7 @@ BOOST_AUTO_TEST_CASE(square_root_iterative_zero_test)
     auto const S  = 0.0;
     auto x_0 = S / 2;
 
-    auto seq = ural_ex::make_sqrt_heron_sequence(S, x_0, eps);
+    auto seq = ural_ex::make_sqrt_heron_cursor(S, x_0, eps);
 
     for(; !!seq; ++seq)
     {
@@ -1154,7 +1154,7 @@ BOOST_AUTO_TEST_CASE(square_root_iterative_test)
     {
         auto x_0 = S / 2;
 
-        auto seq = ural_ex::make_sqrt_heron_sequence(S, x_0, eps);
+        auto seq = ural_ex::make_sqrt_heron_cursor(S, x_0, eps);
 
         for(; !!seq; ++ seq)
         {
@@ -1173,7 +1173,7 @@ BOOST_AUTO_TEST_CASE(square_root_iterative_less_then_1_test)
     {
         auto x_0 = S / 2;
 
-        auto seq = ural_ex::make_sqrt_heron_sequence(S, x_0, eps);
+        auto seq = ural_ex::make_sqrt_heron_cursor(S, x_0, eps);
 
         for(; !!seq; ++ seq)
         {
@@ -1200,7 +1200,7 @@ BOOST_AUTO_TEST_CASE(PE_131_adjacent_differences_pipe)
              | taken_while([n_max](Integer const & x) { return x < n_max; })
              | assumed_finite;
 
-    auto result = ural_ex::make_set_intersection_sequence(primes, dcs);
+    auto result = ural_ex::make_set_intersection_cursor(primes, dcs);
 
     BOOST_CHECK_EQUAL(ural::size(result), 173);
 }
@@ -1221,7 +1221,7 @@ BOOST_AUTO_TEST_CASE(PE_131_adjacent_differences_pipe_explicit_operation)
              | taken_while([n_max](Integer const & x) { return x < n_max; })
              | assumed_finite;
 
-    auto result = ural_ex::make_set_intersection_sequence(primes, dcs);
+    auto result = ural_ex::make_set_intersection_cursor(primes, dcs);
 
     BOOST_CHECK_EQUAL(ural::size(result), 173);
 }

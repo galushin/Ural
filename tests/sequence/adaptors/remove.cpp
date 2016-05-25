@@ -27,7 +27,7 @@ namespace
     namespace ural_ex = ::ural::experimental;
 }
 
-BOOST_AUTO_TEST_CASE(remove_sequence_test_make_function)
+BOOST_AUTO_TEST_CASE(remove_cursor_test_make_function)
 {
     std::string s_std = "Text with some   spaces";
     auto s_ural = s_std;
@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(remove_sequence_test_make_function)
                 s_std.end());
 
     // ural
-    auto s = ural_ex::make_remove_sequence(s_ural, to_remove);
+    auto s = ural_ex::make_remove_cursor(s_ural, to_remove);
     auto r = ural::copy(s, s_ural)[ural::_2];
     s_ural.erase(r.begin(), r.end());
 
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(remove_sequence_test_make_function)
     BOOST_CHECK_EQUAL(s_std, s_ural);
 }
 
-BOOST_AUTO_TEST_CASE(remove_sequence_test)
+BOOST_AUTO_TEST_CASE(remove_cursor_test)
 {
     std::string s_std = "Text with some   spaces";
     auto s_ural = s_std;
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(remove_sequence_test)
     BOOST_CHECK_EQUAL(s_std, s_ural);
 }
 
-BOOST_AUTO_TEST_CASE(remove_sequence_test_cref)
+BOOST_AUTO_TEST_CASE(remove_cursor_test_cref)
 {
     std::string s_std = "Text with some   spaces";
     auto s_ural = s_std;
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(remove_sequence_test_cref)
     BOOST_CHECK_EQUAL(s_std, s_ural);
 }
 
-BOOST_AUTO_TEST_CASE(remove_sequence_traversed_front)
+BOOST_AUTO_TEST_CASE(remove_cursor_traversed_front)
 {
     std::string const str = "Text with some   spaces";
     std::forward_list<char> const src(str.begin(), str.end());
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(remove_sequence_traversed_front)
     BOOST_CHECK(s1.traversed_front() == s2.traversed_front());
 }
 
-BOOST_AUTO_TEST_CASE(remove_if_sequence_test)
+BOOST_AUTO_TEST_CASE(remove_if_cursor_test)
 {
     std::string s_std = "Text\n with\tsome \t  whitespaces\n\n";
     auto s_ural = s_std;
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(remove_if_sequence_test)
 
     s_std.erase(std::remove_if(s_std.begin(), s_std.end(), pred), s_std.end());
 
-    auto s = ural_ex::make_remove_if_sequence(s_ural, pred);
+    auto s = ural_ex::make_remove_if_cursor(s_ural, pred);
     auto r = ural::copy(s, s_ural)[ural::_2];
     s_ural.erase(r.begin(), r.end());
 

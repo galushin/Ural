@@ -30,7 +30,7 @@ namespace
     namespace ural_ex = ::ural::experimental;
 }
 
-BOOST_AUTO_TEST_CASE(chunks_sequence_test)
+BOOST_AUTO_TEST_CASE(chunks_cursor_test)
 {
     typedef std::forward_list<int> Source;
     auto const seq = ural::numbers(1, 8);
@@ -39,9 +39,9 @@ BOOST_AUTO_TEST_CASE(chunks_sequence_test)
     typedef ural::ValueType<Source> Value;
     std::vector<std::vector<Value>> expected { {1, 2, 3}, {4, 5, 6}, {7}};
 
-    auto ch = ::ural::experimental::make_chunks_sequence(src, 3);
+    auto ch = ::ural::experimental::make_chunks_cursor(src, 3);
 
-    BOOST_CONCEPT_ASSERT((::ural::concepts::ForwardSequence<decltype(ch)>));
+    BOOST_CONCEPT_ASSERT((::ural::concepts::ForwardCursor<decltype(ch)>));
 
     for(auto const & r : expected)
     {
@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(chunks_sequence_test)
     BOOST_CHECK(!ch);
 }
 
-BOOST_AUTO_TEST_CASE(chunks_sequence_equality_test)
+BOOST_AUTO_TEST_CASE(chunks_cursor_equality_test)
 {
     std::vector<int> const src0;
     std::vector<int> const src1 = {1, 2, 3};
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(chunks_sequence_equality_test)
     BOOST_CHECK(s11 != s12);
 }
 
-BOOST_AUTO_TEST_CASE(chunks_sequence_original_test)
+BOOST_AUTO_TEST_CASE(chunks_cursor_original_test)
 {
     auto const seq = ural::numbers(1, 22);
 
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(chunks_sequence_original_test)
     BOOST_CHECK(cs.traversed_front() == cs_2.original());
 }
 
-BOOST_AUTO_TEST_CASE(chunks_sequence_traversed_front_test)
+BOOST_AUTO_TEST_CASE(chunks_cursor_traversed_front_test)
 {
     auto const seq = ural_ex::make_arithmetic_progression(1, 3);
 
@@ -116,12 +116,12 @@ BOOST_AUTO_TEST_CASE(chunks_sequence_traversed_front_test)
     URAL_CHECK_EQUAL_RANGES(v1, v2);
 }
 
-BOOST_AUTO_TEST_CASE(chunks_sequence_random_access)
+BOOST_AUTO_TEST_CASE(chunks_cursor_random_access)
 {
     auto const xs = ural::numbers(1, 23) | ural_ex::to_container<std::vector>{};
     auto seq = xs | ural_ex::chunked(3);
 
-    BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessSequence<decltype(seq)>));
+    BOOST_CONCEPT_ASSERT((ural::concepts::RandomAccessCursor<decltype(seq)>));
 
     BOOST_CHECK(seq[0] == seq.front());
     BOOST_CHECK(ural::equal(seq[0], ural::numbers(1, 4)));

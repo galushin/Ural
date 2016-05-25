@@ -31,24 +31,24 @@ namespace ural
 {
 namespace experimental
 {
-    /** @brief Адаптор последовательности, содержащие все элементы исходной
+    /** @brief Адаптор курсора, содержащий все элементы исходной
     последовательности до первого элемента, эквивалентного заданному значению.
-    @tparam Sequence тип исходной последовательности
+    @tparam Input тип базового курсора
     @tparam Value тип искомого значения
     @tparam BinaryPredicate бинарный предикат
     @todo Возможность не пропускать элемент, равный заданному значению
     @todo выразить через более общий (until_sequence)
     @todo Использовать для последовательности на основе C-строк
     */
-    template <class Sequence,
-              class Value = ValueType<Sequence>,
+    template <class Input,
+              class Value = ValueType<Input>,
               class BinaryPredicate = ::ural::equal_to<>>
-    class delimit_sequence
-     : public sequence_adaptor<delimit_sequence<Sequence, Value, BinaryPredicate>,
-                               Sequence, BinaryPredicate>
+    class delimit_cursor
+     : public cursor_adaptor<delimit_cursor<Input, Value, BinaryPredicate>,
+                               Input, BinaryPredicate>
     {
 
-        using Inherited = sequence_adaptor<delimit_sequence, Sequence, BinaryPredicate>;
+        using Inherited = cursor_adaptor<delimit_cursor, Input, BinaryPredicate>;
 
     public:
         /** @brief Оператор "равно"
@@ -57,7 +57,7 @@ namespace experimental
         @return <tt> x.base() == y.base() && x.relation() == y.relation()
                      && x.delimiter() == y.delimiter() </tt>
         */
-        friend bool operator==(delimit_sequence const & x, delimit_sequence const & y)
+        friend bool operator==(delimit_cursor const & x, delimit_cursor const & y)
         {
             return x.base() == y.base()
                    && x.relation() == y.relation()
@@ -67,19 +67,19 @@ namespace experimental
         // Типы
         /// @brief Категория курсора
         using traversal_tag = CommonType<finite_forward_cursor_tag,
-                                         typename Sequence::cursor_tag>;
+                                         typename Input::cursor_tag>;
 
         // Создание, копирование, присваивание
         /** @brief Конструктор
-        @param seq базовая последовательность
+        @param in базовый курсор
         @param value искомое значение
         @param bin_pred бинарный предикат
-        @post <tt> this->base() == seq </tt>
+        @post <tt> this->base() == in </tt>
         @post <tt> this->delimiter() == value </tt>
         @post <tt> this->relation() == bin_pred </tt>
         */
-        delimit_sequence(Sequence seq, Value value, BinaryPredicate bin_pred)
-         : Inherited(std::move(seq), std::move(bin_pred))
+        delimit_cursor(Input in, Value value, BinaryPredicate bin_pred)
+         : Inherited(std::move(in), std::move(bin_pred))
          , value_(std::move(value))
         {}
 
@@ -102,7 +102,7 @@ namespace experimental
             return Inherited::payload();
         }
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Проверка исчерпания последовательностей
         @return @b true, если последовательность исчерпана, иначе --- @b false.
         */
@@ -111,17 +111,17 @@ namespace experimental
             return !this->base() || this->relation()(*this->base(), this->delimiter());
         }
 
-        // Прямая последовательность
+        // Прямой курсор
 
     private:
         friend Inherited;
 
-        template <class OtherSequence>
-        delimit_sequence<OtherSequence, Value, BinaryPredicate>
-        rebind_base(OtherSequence s) const
+        template <class OtherCursor>
+        delimit_cursor<OtherCursor, Value, BinaryPredicate>
+        rebind_base(OtherCursor cur) const
         {
-            using Result = delimit_sequence<OtherSequence, Value, BinaryPredicate>;
-            return Result(std::move(s), this->delimiter(), this->relation());
+            using Result = delimit_cursor<OtherCursor, Value, BinaryPredicate>;
+            return Result(std::move(cur), this->delimiter(), this->relation());
         }
 
         Value value_;
@@ -129,28 +129,28 @@ namespace experimental
 
     namespace details
     {
-        struct make_delimit_sequence_fn
+        struct make_delimit_cursor_fn
         {
-            /** @brief Создание адаптор последовательности, содержащие все элементы
-            исходной последовательности до первого элемента, эквивалентного заданному
-            значению
+            /** @brief Создание адаптора курсора последовательности, содержащей
+            все элементы исходной последовательности до первого элемента,
+            эквивалентного заданному значению.
             @param in входная последовательность
             @param value искомое значение
             @param bin_pred бинарный предикат
-            @return <tt> Seq(::ural::sequence_fwd<Sequenced>(in), std::move(value),
+            @return <tt> Seq(::ural::cursor_fwd<Sequence>(in), std::move(value),
                              ural::make_callable(std::move(bin_pred))) </tt>, где
-            @c Seq есть <tt> delimit_sequence<SequenceType<Sequenced>, Value, BinaryPredicate> </tt>
+            @c Seq есть <tt> delimit_cursor<cursor_type_t<Sequence>, Value, BinaryPredicate> </tt>
             */
-            template <class Sequenced, class Value,
+            template <class Sequence, class Value,
                       class BinaryPredicate = ural::equal_to<>>
-            delimit_sequence<SequenceType<Sequenced>, Value,
+            delimit_cursor<cursor_type_t<Sequence>, Value,
                              FunctionType<BinaryPredicate>>
-            operator()(Sequenced && in, Value value,
+            operator()(Sequence && in, Value value,
                        BinaryPredicate bin_pred = BinaryPredicate()) const
             {
-                using Seq = delimit_sequence<SequenceType<Sequenced>, Value,
-                                             FunctionType<BinaryPredicate>>;
-                return Seq(::ural::sequence_fwd<Sequenced>(in),
+                using Seq = delimit_cursor<cursor_type_t<Sequence>, Value,
+                                           FunctionType<BinaryPredicate>>;
+                return Seq(::ural::cursor_fwd<Sequence>(in),
                            std::move(value),
                            make_callable(std::move(bin_pred)));
             }
@@ -160,11 +160,11 @@ namespace experimental
 
     namespace
     {
-        constexpr auto const & make_delimit_sequence
-            = odr_const<details::make_delimit_sequence_fn>;
+        constexpr auto const & make_delimit_cursor
+            = odr_const<details::make_delimit_cursor_fn>;
 
         constexpr auto const & delimited =
-            odr_const<experimental::pipeable_maker<details::make_delimit_sequence_fn>>;
+            odr_const<experimental::pipeable_maker<details::make_delimit_cursor_fn>>;
     }
 }
 // namespace experimental

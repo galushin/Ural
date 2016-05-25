@@ -1,5 +1,5 @@
-#ifndef Z_URAL_SEQUENCE_CONSTANT_HPP_INCLUDED
-#define Z_URAL_SEQUENCE_CONSTANT_HPP_INCLUDED
+#ifndef Z_URAL_SEQUENCE_REPEAT_VALUE_HPP_INCLUDED
+#define Z_URAL_SEQUENCE_REPEAT_VALUE_HPP_INCLUDED
 
 /*  This file is part of Ural.
 
@@ -17,7 +17,7 @@
     along with Ural.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/** @file ural/sequence/constant.hpp
+/** @file ural/sequence/repeat_value.hpp
  @brief Последовательность, состаящая из одинаковых элементов.
 */
 
@@ -43,7 +43,7 @@ namespace experimental
         }
     };
 
-    /** @brief Последовательность, состаящая из одинаковых элементов.
+    /** @brief Курсор последовательности, состаящей из одинаковых элементов.
     @tparam T Тип элементов
     @tparam CursorTag категория курсора
     @tparam D Тип расстояния
@@ -53,15 +53,15 @@ namespace experimental
     последовательности произвольного доступа (количество пройденных элементов)
     */
     template <class T, class CursorTag = use_default, class D = use_default>
-    class constant_sequence
-     : public sequence_base<constant_sequence<T, CursorTag, D>>
+    class repeat_value_cursor
+     : public cursor_base<repeat_value_cursor<T, CursorTag, D>>
     {
         /** @brief Оператор "равно"
         @param x, y аргументы
         @return @b true, если аргументы равны, иначе --- @b false
         */
-        friend bool operator==(constant_sequence const & x,
-                               constant_sequence const & y)
+        friend bool operator==(repeat_value_cursor const & x,
+                               repeat_value_cursor const & y)
         {
             return x.data_ == y.data_;
         }
@@ -75,10 +75,10 @@ namespace experimental
         typedef value_type const & reference;
 
         /// @brief Тип расстояния
-        using distance_type = experimental::DefaultedType<D, std::intmax_t>;
+        using distance_type = experimental::defaulted_type_t<D, std::intmax_t>;
 
         /// @brief Категория курсора
-        using cursor_tag = experimental::DefaultedType<CursorTag, input_cursor_tag>;
+        using cursor_tag = experimental::defaulted_type_t<CursorTag, input_cursor_tag>;
 
         /// @brief Тип указателя
         typedef value_type const * pointer;
@@ -89,12 +89,12 @@ namespace experimental
         @post <tt> this->front() == T(std::forward<Args>(args)...) </tt>
         */
         template <class... Args>
-        explicit constant_sequence(Args && ... args)
+        explicit repeat_value_cursor(Args && ... args)
          : data_(value_type(std::forward<Args>(args)...), Distance(0))
         {}
 
-        // Однопроходная последовательность
-        /** @brief Проверка исчерпания последовательности
+        // Однопроходый курсор
+        /** @brief Проверка исчерпания
         @return @b false
         */
         bool operator!() const
@@ -117,25 +117,25 @@ namespace experimental
             ++ data_[ural::_2];
         }
 
-        // Прямая последовательность - есть трудности с traversed_front
+        // Прямой курсор - есть трудности с traversed_front
         /** @brief Полная последовательность (включая пройденные части)
         @return Полная последовательность
         */
-        constant_sequence original() const
+        repeat_value_cursor original() const
         {
-            return constant_sequence(this->data_[ural::_1]);
+            return repeat_value_cursor(this->data_[ural::_1]);
         }
 
-        /** @brief Пройденная часть последовательности
-        @return Пройденная часть последовательности
+        /** @brief Передняя ройденная часть последовательности
+        @return Передняя пройденная часть последовательности
         */
-        ::ural::experimental::taken_exactly_sequence<constant_sequence, distance_type>
+        ::ural::experimental::taken_exactly_cursor<repeat_value_cursor, distance_type>
         traversed_front() const
         {
             return this->original() | ::ural::experimental::taken_exactly(this->data_[ural::_2]);
         }
 
-        /** @brief Отбрасывание пройденной части последовательности
+        /** @brief Отбрасывание передней пройденной части последовательности
         @post <tt> !this->traversed_front() </tt>
         */
         void shrink_front()
@@ -143,7 +143,7 @@ namespace experimental
             this->data_[ural::_2] = distance_type(0);
         }
 
-        // Последовательность произвольного доступа
+        // Курсор произвольного доступа
 
     private:
         constexpr static auto const is_forward
@@ -157,16 +157,16 @@ namespace experimental
         Data data_;
     };
 
-    /** @brief Функция создания последовательности одинаковых значений
+    /** @brief Функция создания курсора последовательности одинаковых значений
     @param value значение. Если нужна передача по ссылке, нужно воспользоваться
     обёрткой <tt> std::cref </tt>
-    @return <tt> constant_sequence<T>(std::move(value)) </tt>
+    @return <tt> repeat_value_cursor<T>(std::move(value)) </tt>
     */
     template <class T>
-    constant_sequence<T>
-    make_constant_sequence(T value)
+    repeat_value_cursor<T>
+    make_repeat_value_cursor(T value)
     {
-        return constant_sequence<T>(std::move(value));
+        return repeat_value_cursor<T>(std::move(value));
     }
 }
 // namespace experimental
@@ -174,4 +174,4 @@ namespace experimental
 // namespace ural
 
 #endif
-// Z_URAL_SEQUENCE_CONSTANT_HPP_INCLUDED
+// Z_URAL_SEQUENCE_REPEAT_VALUEHPP_INCLUDED

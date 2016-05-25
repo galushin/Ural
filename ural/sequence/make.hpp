@@ -26,7 +26,7 @@
 
 #include <ural/sequence/cargo.hpp>
 #include <ural/sequence/iostream.hpp>
-#include <ural/sequence/iterator_sequence.hpp>
+#include <ural/sequence/iterator_cursor.hpp>
 #include <ural/sequence/insertion.hpp>
 
 #include <ural/concepts.hpp>
@@ -37,110 +37,108 @@ inline namespace v0
 {
     /** @brief Создание последовательности на основе контейнера
     @param c контейнер
-    @return <tt> iterator_sequence<decltype(c.begin())>(c.begin(), c.end())</tt>
+    @return <tt> iterator_cursor<decltype(c.begin())>(c.begin(), c.end())</tt>
     */
     template <class Container>
-    auto sequence(Container && c)
+    auto cursor(Container && c)
     -> typename std::enable_if<std::is_lvalue_reference<Container>::value,
-                               ::ural::iterator_sequence<decltype(c.begin())>>::type
+                               ::ural::iterator_cursor<decltype(c.begin())>>::type
     {
-        return iterator_sequence<decltype(c.begin())>(c.begin(), c.end());
+        return iterator_cursor<decltype(c.begin())>(c.begin(), c.end());
     }
 
     template <class Container>
-    auto sequence(Container && c)
+    auto cursor(Container && c)
     -> typename std::enable_if<!std::is_lvalue_reference<Container>::value,
-                               experimental::cargo_sequence<iterator_sequence<decltype(c.begin())>, Container>>::type
+                               experimental::cargo_cursor<iterator_cursor<decltype(c.begin())>, Container>>::type
     {
-        typedef ::ural::experimental::cargo_sequence<::ural::iterator_sequence<decltype(c.begin())>, Container>
+        typedef ::ural::experimental::cargo_cursor<::ural::iterator_cursor<decltype(c.begin())>, Container>
             Result;
-        auto seq = ::ural::iterator_sequence<decltype(c.begin())>(c.begin(), c.end());
+        auto seq = ::ural::iterator_cursor<decltype(c.begin())>(c.begin(), c.end());
         return Result(std::move(seq), std::move(c));
     }
 
-    /** @brief Создание последовательности на основе массива фиксированной длины
+    /** @brief Создание курсора на основе массива фиксированной длины
     @param x массив
-    @return <tt> iterator_sequence<T *>{x, x + N} </tt>
+    @return <tt> iterator_cursor<T *>{x, x + N} </tt>
     */
     template <class T, size_t N>
-    iterator_sequence<T *>
-    sequence(T (&x)[N])
+    iterator_cursor<T *>
+    cursor(T (&x)[N])
     {
-        return iterator_sequence<T *>{x, x + N};
+        return iterator_cursor<T *>{x, x + N};
     }
 
-    /** @brief Создание последовательности на основе итератора вставки в конец
-    контейнера
+    /** @brief Создание курсора на основе итератора вставки в конец контейнера
     @param i итератор-вставка
-    @return <tt> weak_output_iterator_sequence<Iterator, Diff>(std::move(i)) </tt>
+    @return <tt> weak_output_iterator_cursor<Iterator, Diff>(std::move(i)) </tt>
     */
     template <class Container>
-    auto sequence(std::back_insert_iterator<Container> i)
+    auto cursor(std::back_insert_iterator<Container> i)
     {
         typedef std::back_insert_iterator<Container> Iterator;
         typedef DifferenceType<Container> Diff;
-        return experimental::weak_output_iterator_sequence<Iterator, Diff>(std::move(i));
+        return experimental::weak_output_iterator_cursor<Iterator, Diff>(std::move(i));
     }
 
-    /** @brief Создание последовательности на основе итератора вставки в начало
-    контейнера
+    /** @brief Создание курсора на основе итератора вставки в начало контейнера
     @param i итератор-вставка
-    @return <tt> weak_output_iterator_sequence<Iterator, Diff>(std::move(i)) </tt>
+    @return <tt> weak_output_iterator_cursor<Iterator, Diff>(std::move(i)) </tt>
     */
     template <class Container>
-    auto sequence(std::front_insert_iterator<Container> i)
+    auto cursor(std::front_insert_iterator<Container> i)
     {
         typedef std::front_insert_iterator<Container> Iterator;
         typedef DifferenceType<Container> Diff;
-        return experimental::weak_output_iterator_sequence<Iterator, Diff>(std::move(i));
+        return experimental::weak_output_iterator_cursor<Iterator, Diff>(std::move(i));
     }
 
-    /** @brief Создание последовательности на основе итератора вставки в
-    заданную точку контейнера
+    /** @brief Создание курсора на основе итератора вставки в заданную точку
+    контейнера
     @param i итератор-вставка
-    @return <tt> weak_output_iterator_sequence<decltype(i), Diff>(std::move(i)) </tt>,
+    @return <tt> weak_output_iterator_cursor<decltype(i), Diff>(std::move(i)) </tt>,
     где @c Diff --- <tt> DifferenceType<Container> </tt>
     */
     template <class Container>
-    auto sequence(std::insert_iterator<Container> i)
+    auto cursor(std::insert_iterator<Container> i)
     {
         typedef std::insert_iterator<Container> Iterator;
         typedef DifferenceType<Container> Diff;
-        return experimental::weak_output_iterator_sequence<Iterator, Diff>(std::move(i));
+        return experimental::weak_output_iterator_cursor<Iterator, Diff>(std::move(i));
     }
 
     //@{
-    /** @brief Создание последовательности на основе <tt> std::valarray </tt>
-    @param c вектор для которого создаётся последовательность
-    @return <tt> iterator_sequence<T*>(begin(c), end(c)) </tt>
+    /** @brief Создание курсора на основе <tt> std::valarray </tt>
+    @param c вектор для которого создаётся курсор
+    @return <tt> iterator_cursor<T*>(begin(c), end(c)) </tt>
     */
     template <class T>
-    iterator_sequence<T*>
-    sequence(std::valarray<T> & c)
+    iterator_cursor<T*>
+    cursor(std::valarray<T> & c)
     {
         if(c.size() == 0)
         {
-            return iterator_sequence<T*>(nullptr, nullptr);
+            return iterator_cursor<T*>(nullptr, nullptr);
         }
         else
         {
             auto first = std::addressof(c[0]);
-            return iterator_sequence<T*>(first, first + c.size());
+            return iterator_cursor<T*>(first, first + c.size());
         }
     }
 
     template <class T>
-    iterator_sequence<T const*>
-    sequence(std::valarray<T> const & c)
+    iterator_cursor<T const*>
+    cursor(std::valarray<T> const & c)
     {
         if(c.size() == 0)
         {
-            return iterator_sequence<const T*>(nullptr, nullptr);
+            return iterator_cursor<const T*>(nullptr, nullptr);
         }
         else
         {
             auto first = std::addressof(c[0]);
-            return iterator_sequence<const T*>(first, first + c.size());
+            return iterator_cursor<const T*>(first, first + c.size());
         }
     }
     //@}
@@ -165,88 +163,88 @@ inline namespace v0
     /// @endcond
 
     //@{
-    /** @brief Преобразование потока ввода в последовательность символов
+    /** @brief Преобразование потока ввода в курсор последовательности символов
     @param is поток ввода
     */
     template <class Char, class Traits>
-    auto sequence(std::basic_istream<Char, Traits> & is)
+    auto cursor(std::basic_istream<Char, Traits> & is)
     {
-        using Product = experimental::istream_sequence<std::basic_istream<Char, Traits> &,
-                                               Char, experimental::istream_get_reader>;
+        using Product = experimental::istream_cursor<std::basic_istream<Char, Traits> &,
+                                                     Char, experimental::istream_get_reader>;
         return Product(is);
     }
 
     template <class IStream>
-    auto sequence(IStream && is)
+    auto cursor(IStream && is)
     -> typename std::enable_if<details::is_derived_from_basic_istream<IStream>::value,
-                               experimental::istream_sequence<IStream, typename IStream::char_type, experimental::istream_get_reader>>::type
+                               experimental::istream_cursor<IStream, typename IStream::char_type, experimental::istream_get_reader>>::type
     {
-        using Product = experimental::istream_sequence<IStream, typename IStream::char_type, experimental::istream_get_reader>;
+        using Product = experimental::istream_cursor<IStream, typename IStream::char_type, experimental::istream_get_reader>;
         return Product(std::forward<IStream>(is));
     }
     //@}
 
     //@{
-    /** @brief Преобразование потока вывода в последовательность символов
+    /** @brief Преобразование потока вывода в курсор
     @param os поток вывода
-    @return <tt> ::ural::make_ostream_sequence(os) </tt>
+    @return <tt> ::ural::make_ostream_cursor(os) </tt>
     */
     template <class Char, class Traits>
-    auto sequence(std::basic_ostream<Char, Traits> & os)
+    auto cursor(std::basic_ostream<Char, Traits> & os)
     {
-        return ::ural::experimental::make_ostream_sequence(os);
+        return ::ural::experimental::make_ostream_cursor(os);
     }
 
     template <class OStream>
-    auto sequence(OStream && os)
+    auto cursor(OStream && os)
     -> typename std::enable_if<details::is_derived_from_basic_ostream<OStream>::value,
-                               decltype(::ural::experimental::make_ostream_sequence(std::move(os)))>::type
+                               decltype(::ural::experimental::make_ostream_cursor(std::move(os)))>::type
     {
-        return ::ural::experimental::make_ostream_sequence(std::move(os));
+        return ::ural::experimental::make_ostream_cursor(std::move(os));
     }
     //@}
 
     //@{
-    /** @brief Функция, комбинирующая @c sequence и <tt> std::forward </tt>
+    /** @brief Функция, комбинирующая @c cursor и <tt> std::forward </tt>
     @param t аргумент
-    @return <tt> sequence(std::forward<Traversable>(t)) </tt>
+    @return <tt> cursor(std::forward<Sequence>(t)) </tt>
     @todo Преобразовать в функциональный объект/шаблон переменной
     */
-    template <class Traversable>
-    auto sequence_fwd(typename std::remove_reference<Traversable>::type & t)
-    -> decltype(sequence(std::forward<Traversable>(t)))
+    template <class Sequence>
+    auto cursor_fwd(typename std::remove_reference<Sequence>::type & t)
+    -> decltype(cursor(std::forward<Sequence>(t)))
     {
-        return sequence(std::forward<Traversable>(t));
+        return cursor(std::forward<Sequence>(t));
     }
 
-    template <class Traversable>
-    auto sequence_fwd(typename std::remove_reference<Traversable>::type && t)
-    -> decltype(sequence(std::forward<Traversable>(t)))
+    template <class Sequence>
+    auto cursor_fwd(typename std::remove_reference<Sequence>::type && t)
+    -> decltype(cursor(std::forward<Sequence>(t)))
     {
-        return sequence(std::forward<Traversable>(t));
+        return cursor(std::forward<Sequence>(t));
     }
     //@}
 
-    /** @brief Класс-характеристика для определения типа последовательности
-    @tparam S тип, на основе которого создаётся последовательность
+    /** @brief Класс-характеристика для определения типа курсора
+    @tparam S тип последовательности
     */
     template <class S>
-    struct sequence_type
-     : declare_type<typename std::decay<decltype(sequence(std::declval<S>()))>::type>
+    struct cursor_type
+     : declare_type<typename std::decay<decltype(cursor(std::declval<S>()))>::type>
     {};
 
-    /** @brief Синоним для типа последовательности, определяемого
-    классом-характеристикой @c sequence_type
-    @tparam S тип, на основе которого создаётся последовательность
+    /** @brief Синоним для типа курсора, определяемого классом-характеристикой
+    @c cursor_type
+    @tparam S тип, на основе которого создаётся курсора.
     */
     template <class S>
-    using SequenceType = typename sequence_type<S>::type;
+    using cursor_type_t = typename cursor_type<S>::type;
 
     /** @brief Класс характеристика для определения типа передней пройденной
-    части последовательности
-    @tparam S тип
+    части курсора
+    @tparam Cur тип курсора
     */
-    template <class S>
+    template <class Cur>
     struct traversed_front_type
     {
     private:
@@ -258,7 +256,7 @@ inline namespace v0
         static void declare (...);
 
     public:
-        using type = decltype(declare<S>(nullptr));
+        using type = decltype(declare<Cur>(nullptr));
     };
 
     /** @brief Тип синонима для типа передней пройденной части
@@ -274,177 +272,177 @@ inline namespace v0
         /** @brief Концепция однопроходной последовательности
         @tparam тип последовательности, для которого проверяется концепция
         */
-        template <class Seq>
-        class SinglePassSequence
+        template <class Cur>
+        class SinglePassCursor
         {
         public:
             /// @brief Примеры использования
-            BOOST_CONCEPT_USAGE(SinglePassSequence)
+            BOOST_CONCEPT_USAGE(SinglePassCursor)
             {
                 using ::ural::experimental::value_consumer;
 
-                !seq;
-                value_consumer<Seq&>() = ++ seq;
-                seq.pop_front();
+                !cur;
+                value_consumer<Cur&>() = ++ cur;
+                cur.pop_front();
 
                 // Постфиксный инкремент требует создания копий
 
                 value_consumer<single_pass_cursor_tag>() = cursor_tag{};
             }
         private:
-            static Seq seq;
-            using cursor_tag = typename Seq::cursor_tag;
+            static Cur cur;
+            using cursor_tag = typename Cur::cursor_tag;
 
-            typedef DifferenceType<Seq> difference_type;
+            using difference_type = DifferenceType<Cur>;
         };
 
-        template <class Seq>
-        struct InputSequence
+        template <class Cur>
+        struct InputCursor
         {
             // @todo Как в Range extensions
         public:
             /// @brief Использование
-            BOOST_CONCEPT_USAGE(InputSequence)
+            BOOST_CONCEPT_USAGE(InputCursor)
             {
-                BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Seq>));
-                BOOST_CONCEPT_ASSERT((concepts::Readable<Seq>));
+                BOOST_CONCEPT_ASSERT((concepts::SinglePassCursor<Cur>));
+                BOOST_CONCEPT_ASSERT((concepts::Readable<Cur>));
             }
         };
 
-        template <class Seq, class T>
-        struct OutputSequence
+        template <class Cur, class T>
+        struct OutputCursor
         {
         public:
             /// @brief Использование
-            BOOST_CONCEPT_USAGE(OutputSequence)
+            BOOST_CONCEPT_USAGE(OutputCursor)
             {
-                BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Seq>));
-                BOOST_CONCEPT_ASSERT((concepts::Writable<Seq, T>));
+                BOOST_CONCEPT_ASSERT((concepts::SinglePassCursor<Cur>));
+                BOOST_CONCEPT_ASSERT((concepts::Writable<Cur, T>));
             }
         };
 
         /** @brief Концепция прямой последовательности
         @tparam тип последовательности, для которого проверяется концепция
         */
-        template <class Seq>
-        class ForwardSequence
-         : InputSequence<Seq>
-         , Incrementable<Seq>
+        template <class Cur>
+        class ForwardCursor
+         : InputCursor<Cur>
+         , Incrementable<Cur>
         {
         public:
             /// @brief Проверка неявных интерфейсов
-            BOOST_CONCEPT_USAGE(ForwardSequence)
+            BOOST_CONCEPT_USAGE(ForwardCursor)
             {
                 using ::ural::experimental::value_consumer;
 
                 value_consumer<forward_cursor_tag>() = cursor_tag{};
 
-                BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<Seq>));
+                BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<Cur>));
 
-                value_consumer<Seq>() = seq++;
+                value_consumer<Cur>() = cur++;
 
-                seq.shrink_front();
-                seq.traversed_front();
+                cur.shrink_front();
+                cur.traversed_front();
 
-                value_consumer<Seq>() = seq.original();
+                value_consumer<Cur>() = cur.original();
 
                 // @todo Проверить, что тип traversed_front совпадает с Seq или
                 // tf - прямая последовательность, а также совместимость
                 // типов ссылки, значения, указателя и разности для
                 // самой последовательности и её передней пройденной части
 
-                static_assert(std::is_same<decltype(seq.front()), decltype(*seq)>::value, "");
+                static_assert(std::is_same<decltype(cur.front()), decltype(*cur)>::value, "");
             }
 
         private:
-            using cursor_tag = typename Seq::cursor_tag;
-            static Seq seq;
+            using cursor_tag = typename Cur::cursor_tag;
+            static Cur cur;
         };
 
-        template <class Seq>
-        class FiniteForwardSequence
-         : ForwardSequence<Seq>
+        template <class Cur>
+        class FiniteForwardCursor
+         : ForwardCursor<Cur>
         {
         public:
             /// @brief Проверка неявных интерфейсов
-            BOOST_CONCEPT_USAGE(FiniteForwardSequence)
+            BOOST_CONCEPT_USAGE(FiniteForwardCursor)
             {
-                static_assert(&FiniteForwardSequence::reguire != 0, "");
+                static_assert(&FiniteForwardCursor::reguire != 0, "");
             }
 
         private:
-            void reguire(Seq)
+            void reguire(Cur)
             {}
         };
 
         /** @brief Концепция двустороннней последовательности
         @tparam тип последовательности, для которого проверяется концепция
         */
-        template <class Seq>
-        class BidirectionalSequence
-         : FiniteForwardSequence<Seq>
+        template <class Cur>
+        class BidirectionalCursor
+         : FiniteForwardCursor<Cur>
         {
         public:
             /// @brief Проверка неявных интерфейсов
-            BOOST_CONCEPT_USAGE(BidirectionalSequence)
+            BOOST_CONCEPT_USAGE(BidirectionalCursor)
             {
                 using ::ural::experimental::value_consumer;
 
-                seq.pop_back();
-                value_consumer<reference>() = seq.back();
-                seq.shrink_back();
+                cur.pop_back();
+                value_consumer<reference>() = cur.back();
+                cur.shrink_back();
 
-                value_consumer<Seq>() = seq.traversed_front();
-                value_consumer<Seq>() = seq.traversed_back();
+                value_consumer<Cur>() = cur.traversed_front();
+                value_consumer<Cur>() = cur.traversed_back();
 
-                seq.exhaust_back();
-                seq.exhaust_front();
+                cur.exhaust_back();
+                cur.exhaust_front();
             }
 
         private:
-            typedef typename Seq::reference reference;
-            static Seq seq;
+            typedef typename Cur::reference reference;
+            static Cur cur;
         };
 
         /** @brief Концепция последовательности произвольного доступа
         @tparam Seq тип последовательности, для которого проверяется концепция
         */
-        template <class Seq>
-        class RandomAccessSequence
-         : ForwardSequence<Seq>
+        template <class Cur>
+        class RandomAccessCursor
+         : ForwardCursor<Cur>
         {
         public:
             /// @brief Проверка неявных интерфейсов
-            BOOST_CONCEPT_USAGE(RandomAccessSequence)
+            BOOST_CONCEPT_USAGE(RandomAccessCursor)
             {
                 using ::ural::experimental::value_consumer;
 
-                value_consumer<reference>() = seq[distance_type{0}];
-                value_consumer<Seq&>() = (seq += distance_type{0});
-                value_consumer<distance_type>() = seq.size();
+                value_consumer<reference>() = cur[distance_type{0}];
+                value_consumer<Cur&>() = (cur += distance_type{0});
+                value_consumer<distance_type>() = cur.size();
 
-                seq.pop_back(distance_type{1});
+                cur.pop_back(distance_type{1});
             }
 
         private:
-            static Seq seq;
-            typedef DifferenceType<Seq> distance_type;
-            typedef typename Seq::reference reference;
+            static Cur cur;
+            typedef DifferenceType<Cur> distance_type;
+            typedef typename Cur::reference reference;
         };
 
-        template <class Seq, class Out>
+        template <class Cur, class Out>
         struct IndirectlyMovable
         {
             /// @brief Использование
             BOOST_CONCEPT_USAGE(IndirectlyMovable)
             {
                 // @todo нужно ли это static_assert(concepts::Semiregular<Out>(), "");?
-                BOOST_CONCEPT_ASSERT((concepts::Readable<Seq>));
-                BOOST_CONCEPT_ASSERT((concepts::MoveWritable<Out, ReferenceType<Seq>>));
+                BOOST_CONCEPT_ASSERT((concepts::Readable<Cur>));
+                BOOST_CONCEPT_ASSERT((concepts::MoveWritable<Out, ReferenceType<Cur>>));
             }
         };
 
-        template <class Seq, class Out>
+        template <class Cur, class Out>
         struct IndirectlyCopyable
         {
             /// @brief Использование
@@ -452,39 +450,39 @@ inline namespace v0
             {
                 // @todo нужно ли это static_assert(concepts::Semiregular<Seq>(), "");?
 
-                BOOST_CONCEPT_ASSERT((concepts::Readable<Seq>));
+                BOOST_CONCEPT_ASSERT((concepts::Readable<Cur>));
                 // @todo нужно ли это BOOST_CONCEPT_ASSERT((concepts::IndirectlyMovable<Seq, Out>))?;
-                BOOST_CONCEPT_ASSERT((concepts::Writable<Out, ReferenceType<Seq>>));
+                BOOST_CONCEPT_ASSERT((concepts::Writable<Out, ReferenceType<Cur>>));
             }
         };
 
-        template <class S1, class S2>
+        template <class Cur1, class Cur2>
         class IndirectlySwappable
         {
         public:
             /// @brief Использование
             BOOST_CONCEPT_USAGE(IndirectlySwappable)
             {
-                BOOST_CONCEPT_ASSERT((concepts::Readable<S1>));
-                BOOST_CONCEPT_ASSERT((concepts::Readable<S2>));
-                BOOST_CONCEPT_ASSERT((concepts::Swappable<ReferenceType<S1>,
-                                                          ReferenceType<S2>>));
-                BOOST_CONCEPT_ASSERT((concepts::Swappable<ReferenceType<S1>>));
-                BOOST_CONCEPT_ASSERT((concepts::Swappable<ReferenceType<S2>>));
+                BOOST_CONCEPT_ASSERT((concepts::Readable<Cur1>));
+                BOOST_CONCEPT_ASSERT((concepts::Readable<Cur2>));
+                BOOST_CONCEPT_ASSERT((concepts::Swappable<ReferenceType<Cur1>,
+                                                          ReferenceType<Cur2>>));
+                BOOST_CONCEPT_ASSERT((concepts::Swappable<ReferenceType<Cur1>>));
+                BOOST_CONCEPT_ASSERT((concepts::Swappable<ReferenceType<Cur2>>));
             }
         };
 
-        template <class Seq>
+        template <class Cur>
         struct Permutable
-         : concepts::ForwardSequence<Seq>
+         : concepts::ForwardCursor<Cur>
          // @todo Уточнить второй шаблонный параметр
-         , concepts::IndirectlyMovable<Seq, Seq>
+         , concepts::IndirectlyMovable<Cur, Cur>
         {
         public:
             /// @brief Использование
             BOOST_CONCEPT_USAGE(Permutable)
             {
-                BOOST_CONCEPT_ASSERT((concepts::Semiregular<ValueType<Seq>>));
+                BOOST_CONCEPT_ASSERT((concepts::Semiregular<ValueType<Cur>>));
             }
         };
 
@@ -495,9 +493,9 @@ inline namespace v0
             /// @brief Использование
             BOOST_CONCEPT_USAGE(Mergeable)
             {
-                BOOST_CONCEPT_ASSERT((concepts::InputSequence<I1>));
-                BOOST_CONCEPT_ASSERT((concepts::InputSequence<I2>));
-                BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<O>));
+                BOOST_CONCEPT_ASSERT((concepts::InputCursor<I1>));
+                BOOST_CONCEPT_ASSERT((concepts::InputCursor<I2>));
+                BOOST_CONCEPT_ASSERT((concepts::SinglePassCursor<O>));
                 BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<I1, O>));
                 BOOST_CONCEPT_ASSERT((concepts::IndirectlyCopyable<I2, O>));
                 BOOST_CONCEPT_ASSERT((concepts::IndirectlyComparable<I1, I2, R>));
@@ -507,62 +505,62 @@ inline namespace v0
             }
         };
 
-        template <class S, class R = ::ural::less<>>
+        template <class Cur, class R = ::ural::less<>>
         struct Sortable
         {
         public:
             /// @brief Использование
             BOOST_CONCEPT_USAGE(Sortable)
             {
-                BOOST_CONCEPT_ASSERT((concepts::ForwardSequence<S>));
-                BOOST_CONCEPT_ASSERT((concepts::Permutable<S>));
-                BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<R, S>));
+                BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<Cur>));
+                BOOST_CONCEPT_ASSERT((concepts::Permutable<Cur>));
+                BOOST_CONCEPT_ASSERT((concepts::IndirectRelation<R, Cur>));
             }
         };
 
         template <class S>
-        struct Sequenced
+        struct Sequence
         {
             // В Range extensions требуется, чтобы begin и end имели константную
-            // сложность. Нужно ли нам потребовать этого от sequence?
+            // сложность. Нужно ли нам потребовать этого от Sequence?
             /// @brief Использование
-            BOOST_CONCEPT_USAGE(Sequenced)
+            BOOST_CONCEPT_USAGE(Sequence)
             {
-                typedef typename std::decay<decltype(sequence(std::declval<S>()))>::type Seq;
-                static_assert(std::is_same<Seq, sequence_type>::value, "");
+                using Cursor =  typename std::decay<decltype(cursor(std::declval<S>()))>::type;
+                static_assert(std::is_same<Cursor, cursor_type>::value, "");
             }
         private:
-            typedef SequenceType<S> sequence_type;
+            using cursor_type = cursor_type_t<S>;
         };
 
         template <class S>
-        struct SinglePassSequenced
-         : Sequenced<S>
-         , SinglePassSequence<SequenceType<S>>
+        struct SinglePassSequence
+         : Sequence<S>
+         , SinglePassCursor<cursor_type_t<S>>
         {};
 
         template <class S>
-        struct InputSequenced
-         : concepts::SinglePassSequenced<S>
-         , concepts::InputSequence<::ural::SequenceType<S>>
+        struct InputSequence
+         : concepts::SinglePassSequence<S>
+         , concepts::InputCursor<cursor_type_t<S>>
         {};
 
         template <class S>
-        struct ForwardSequenced
-         : concepts::InputSequenced<S>
-         , concepts::ForwardSequence<::ural::SequenceType<S>>
+        struct ForwardSequence
+         : concepts::InputSequence<S>
+         , concepts::ForwardCursor<cursor_type_t<S>>
         {};
 
         template <class S>
-        struct BidirectionalSequenced
-         : concepts::ForwardSequenced<S>
-         , concepts::BidirectionalSequence<::ural::SequenceType<S>>
+        struct BidirectionalSequence
+         : concepts::ForwardSequence<S>
+         , concepts::BidirectionalCursor<cursor_type_t<S>>
         {};
 
         template <class S>
-        struct RandomAccessSequenced
-         : concepts::BidirectionalSequenced<S>
-         , concepts::RandomAccessSequence<::ural::SequenceType<S>>
+        struct RandomAccessSequence
+         : concepts::BidirectionalSequence<S>
+         , concepts::RandomAccessCursor<cursor_type_t<S>>
         {};
     }
     // namespace concepts

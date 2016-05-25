@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(skip_over_test)
     // Тесты взяты из
     // http://dlang.org/phobos/std_algorithm_searching.html#skipOver
     auto const str1 = std::string("Hello world");
-    auto s1 = ural::sequence(str1);
+    auto s1 = ural::cursor(str1);
 
     auto const ha = std::string("Ha");
     BOOST_CHECK(!ural_ex::skip_over(s1, ha));

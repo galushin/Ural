@@ -19,7 +19,7 @@
 
 /** @file ural/sequence/cartesian_product.hpp
  @brief Последовательность всех кортежей
- @todo Устранить дублирование с @c transform_sequence
+ @todo Устранить дублирование с @c transform_cursor
 */
 
 #include <ural/concepts.hpp>
@@ -31,16 +31,17 @@ namespace ural
 {
 namespace experimental
 {
-    /** @brief Последовательность всех кортежей (в лексикографическом порядке)
+    /** @brief Курсор последовательностей всех кортежей в лексикографическом
+    порядке.
     @tparam Inputs типы базовых последовательностей
 
-    @note Идея "зациклить" все последовательности, кроме первой, кажется
-    соблазнительной, но, к сожалению, это невозможно, так как требуется
-    обнаружение "переполнения" для переноса разрядов.
+    @note Идея "зациклить" все курсоры, кроме первого, кажется соблазнительной,
+    но, к сожалению, это невозможно, так как требуется обнаружение
+    "переполнения" для переноса разрядов.
     */
     template <class... Inputs>
-    class cartesian_product_sequence
-     : public sequence_base<cartesian_product_sequence<Inputs...>>
+    class cartesian_product_cursor
+     : public cursor_base<cartesian_product_cursor<Inputs...>>
     {
     public:
         // Типы
@@ -69,14 +70,14 @@ namespace experimental
         @param ins базовые последовательности
         @post <tt> this->base() == make_tuple(ins...) </tt>
         */
-        explicit cartesian_product_sequence(Inputs... ins)
+        explicit cartesian_product_cursor(Inputs... ins)
          : current_{std::move(::ural::shrink_front(ins))...}
          , initial_(current_)
         {
             typedef typename std::tuple_element<0, decltype(current_)>::type
                 Front_seq;
-            BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Front_seq>));
-            BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Front_seq>));
+            BOOST_CONCEPT_ASSERT((concepts::SinglePassCursor<Front_seq>));
+            BOOST_CONCEPT_ASSERT((concepts::ReadableCursor<Front_seq>));
         }
 
         /** @brief Кортеж базовых последовательностей
@@ -87,7 +88,7 @@ namespace experimental
             return this->current_;
         }
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Проверка исчерпания последовательностей
         @return @b true, если последовательность исчерпана, иначе --- @b false.
         */
@@ -117,14 +118,14 @@ namespace experimental
             this->pop_front_impl(placeholder<sizeof...(Inputs) - 1>{});
         }
 
-        // Прямая последовательность
+        // Прямой курсор
         /** @brief Полная последовательность (вместе с пройденными частями)
         @return Исходная последовательность
         */
-        cartesian_product_sequence original() const
+        cartesian_product_cursor original() const
         {
-            auto f = [this](Inputs const & ... args)->cartesian_product_sequence
-                     { return cartesian_product_sequence((args.original())...); };
+            auto f = [this](Inputs const & ... args)->cartesian_product_cursor
+                     { return cartesian_product_cursor((args.original())...); };
 
             return ::ural::apply(f, current_);
         }
@@ -132,10 +133,10 @@ namespace experimental
         /** @brief Передняя пройденная часть последовательности
         @return Передняя пройденная часть последовательности
         */
-        delimit_sequence<cartesian_product_sequence, value_type>
+        delimit_cursor<cartesian_product_cursor, value_type>
         traversed_front() const
         {
-            return make_delimit_sequence(this->original(), this->front());
+            return make_delimit_cursor(this->original(), this->front());
         }
 
         void shrink_front()
@@ -182,8 +183,8 @@ namespace experimental
     };
 
     template <class... Inputs1, class... Inputs2>
-    bool operator==(cartesian_product_sequence<Inputs1...> const & x,
-                    cartesian_product_sequence<Inputs1...> const & y)
+    bool operator==(cartesian_product_cursor<Inputs1...> const & x,
+                    cartesian_product_cursor<Inputs1...> const & y)
     {
         return x.bases() == y.bases();
     }
@@ -192,11 +193,11 @@ namespace experimental
     @param ins базовые последовательности
     */
     template <class... Inputs>
-    cartesian_product_sequence<SequenceType<Inputs>...>
-    make_cartesian_product_sequence(Inputs && ... ins)
+    cartesian_product_cursor<cursor_type_t<Inputs>...>
+    make_cartesian_product_cursor(Inputs && ... ins)
     {
-        typedef cartesian_product_sequence<SequenceType<Inputs>...> Result;
-        return Result(::ural::sequence_fwd<Inputs>(ins)...);
+        typedef cartesian_product_cursor<cursor_type_t<Inputs>...> Result;
+        return Result(::ural::cursor_fwd<Inputs>(ins)...);
     }
 }
 // namespace experimental

@@ -27,14 +27,14 @@ namespace
     namespace ural_ex = ::ural::experimental;
 }
 
-BOOST_AUTO_TEST_CASE(outdirected_sequence_forward_test)
+BOOST_AUTO_TEST_CASE(outdirected_cursor_forward_test)
 {
     // Настройки
     std::forward_list<int> const src{1, 2, 2, 2, 3, 3, 2, 2, 1};
 
     auto const n = 3;
 
-    auto s = ural::sequence(src);
+    auto s = ural::cursor(src);
     auto s_inf = s | ural_ex::assumed_infinite;
 
     auto s_out = s | ural_ex::outdirected;

@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(PE_002_fibonacci_via_pipes)
 {
     using Integer = long long;
     auto const n = Integer{4'000'000};
-    auto seq = ural_ex::fibonacci_sequence<Integer>()
+    auto seq = ural_ex::fibonacci_cursor<Integer>()
              | ural_ex::filtered(ural::is_even)
              | ural_ex::taken_while([n](Integer const & x) { return x < n; });
 
@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE(PE_002_fibonacci_via_pipes_traversed_front)
     auto const n = Integer{4'000'000};
     auto const pred = [n](Integer const & x) { return x >= n; };
 
-    auto s1 = ural_ex::fibonacci_sequence<Integer, ural::use_default, ural::forward_cursor_tag>()
+    auto s1 = ural_ex::fibonacci_cursor<Integer, ural::use_default, ural::forward_cursor_tag>()
             | ural_ex::filtered(ural::is_even);
 
     auto seq = ural::find_if(std::move(s1), pred).traversed_front();
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(PE_002_fibonacci_via_pipes_forward)
     using Integer = long long;
     auto const n = Integer{4'000'000};
 
-    auto seq = ural_ex::fibonacci_sequence<Integer, ural::use_default, ural::forward_cursor_tag>()
+    auto seq = ural_ex::fibonacci_cursor<Integer, ural::use_default, ural::forward_cursor_tag>()
              | ural_ex::filtered(ural::is_even)
              | ural_ex::taken_while([n](Integer const & x) { return x < n; });
 
@@ -80,8 +80,8 @@ BOOST_AUTO_TEST_CASE(taken_while_forward)
     auto seq = xs | ural_ex::taken_while(pred);
 
     static_assert(std::is_empty<decltype(pred)>::value, "");
-    using ural::sequence;
-    static_assert(sizeof(seq) == sizeof(sequence(xs)), "");
+    using ural::cursor;
+    static_assert(sizeof(seq) == sizeof(cursor(xs)), "");
 
     auto xs_prefix
         = ural::find_if_not(xs, pred).traversed_front()
@@ -153,15 +153,15 @@ BOOST_AUTO_TEST_CASE(taken_while_concepts_checking)
     auto const pipe = ural_ex::taken_while(ural::is_even);
     using namespace ural::concepts;
 
-    BOOST_CONCEPT_ASSERT((SinglePassSequence<decltype(in | pipe)>));
-    BOOST_CONCEPT_ASSERT((ReadableSequence<decltype(in | pipe)>));
+    BOOST_CONCEPT_ASSERT((SinglePassCursor<decltype(in | pipe)>));
+    BOOST_CONCEPT_ASSERT((ReadableCursor<decltype(in | pipe)>));
 
-    BOOST_CONCEPT_ASSERT((ForwardSequence<decltype(fwd | pipe)>));
-    BOOST_CONCEPT_ASSERT((ReadableSequence<decltype(fwd | pipe)>));
+    BOOST_CONCEPT_ASSERT((ForwardCursor<decltype(fwd | pipe)>));
+    BOOST_CONCEPT_ASSERT((ReadableCursor<decltype(fwd | pipe)>));
 
-    BOOST_CONCEPT_ASSERT((ForwardSequence<decltype(bidir | pipe)>));
-    BOOST_CONCEPT_ASSERT((ReadableSequence<decltype(bidir | pipe)>));
+    BOOST_CONCEPT_ASSERT((ForwardCursor<decltype(bidir | pipe)>));
+    BOOST_CONCEPT_ASSERT((ReadableCursor<decltype(bidir | pipe)>));
 
-    BOOST_CONCEPT_ASSERT((ForwardSequence<decltype(ra | pipe)>));
-    BOOST_CONCEPT_ASSERT((ReadableSequence<decltype(ra | pipe)>));
+    BOOST_CONCEPT_ASSERT((ForwardCursor<decltype(ra | pipe)>));
+    BOOST_CONCEPT_ASSERT((ReadableCursor<decltype(ra | pipe)>));
 }

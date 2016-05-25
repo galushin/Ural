@@ -31,39 +31,39 @@ namespace ural
 {
 namespace experimental
 {
-    /** @brief Последовательность элементов базовой последовательности,
+    /** @brief Курсор последовательности элементов базового курсора,
     удовлетворяющих заданному предикату.
-    @tparam Sequence входная последовательность
+    @tparam Input входная последовательность
     @tparam Predicate унарный предикат
     */
-    template <class Sequence, class Predicate>
-    class filter_sequence
-     : public sequence_adaptor<filter_sequence<Sequence, Predicate>,
-                               remove_if_sequence<Sequence, not_function<Predicate>>>
+    template <class Input, class Predicate>
+    class filter_cursor
+     : public cursor_adaptor<filter_cursor<Input, Predicate>,
+                               remove_if_cursor<Input, not_function<Predicate>>>
     {
-        using Base = sequence_adaptor<filter_sequence<Sequence, Predicate>,
-                                      remove_if_sequence<Sequence, not_function<Predicate>>>;
+        using Base = cursor_adaptor<filter_cursor,
+                                    remove_if_cursor<Input, not_function<Predicate>>>;
 
     public:
         // Конструкторы
         /** @brief Конструктор
-        @param seq базовая последовательность
+        @param in базовый курсор
         @param pred предикат
         @post <tt> this->base() == seq </tt>
         @post <tt> this->predicate() == pred </tt>
         */
-        explicit filter_sequence(Sequence seq, Predicate pred)
-         : Base{ural::experimental::make_remove_if_sequence(std::move(seq), ural::not_fn(std::move(pred)))}
+        explicit filter_cursor(Input in, Predicate pred)
+         : Base{ural::experimental::make_remove_if_cursor(std::move(in), ural::not_fn(std::move(pred)))}
         {}
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Пройденная часть последовательности
         @return Пройденная часть последовательности
         */
-        filter_sequence<TraversedFrontType<Sequence>, Predicate>
+        filter_cursor<TraversedFrontType<Input>, Predicate>
         traversed_front() const
         {
-            using Result = filter_sequence<TraversedFrontType<Sequence>, Predicate>;
+            using Result = filter_cursor<TraversedFrontType<Input>, Predicate>;
             return Result(Base::base().traversed_front().base(),
                           this->predicate());
         }
@@ -71,9 +71,9 @@ namespace experimental
         /** @brief Полная последовательность (включая пройденные части)
         @return Полная последовательность
         */
-        filter_sequence original() const;
+        filter_cursor original() const;
 
-        // Адаптор последовательности
+        // Адаптор курсора
         /** @brief Предикат
         @return Используемый предикат
         */
@@ -86,47 +86,47 @@ namespace experimental
         /** @brief Базовая последовательность
         @return Базовая последовательность
         */
-        Sequence const & base() const &;
+        Input const & base() const &;
 
-        Sequence && base() &&
+        Input && base() &&
         {
             return static_cast<Base&&>(*this).base().base();
         }
     };
 
-    /// @brief Тип функционального объекта для создания @c filter_sequence
-    class make_filter_sequence_fn
+    /// @brief Тип функционального объекта для создания @c filter_cursor
+    class make_filter_cursor_fn
     {
     public:
-        /** @brief Функция создания @c filter_sequence
+        /** @brief Функция создания @c filter_cursor
         @param seq исходная последовательность
         @param pred унарный предикат
-        @return <tt> Seq(::ural::sequence_fwd<Sequence>(seq), make_callable(std::move(pred))) </tt>,
-        где @c Seq --- это экземпляр @c filter_sequence с подходящими шаблонными
+        @return <tt> Seq(::ural::cursor_fwd<Sequence>(seq), make_callable(std::move(pred))) </tt>,
+        где @c Seq --- это экземпляр @c filter_cursor с подходящими шаблонными
         параметрами
         */
         template <class Sequence, class Predicate>
         auto operator()(Sequence && seq, Predicate pred) const
         {
-            typedef filter_sequence<SequenceType<Sequence>,
+            typedef filter_cursor<cursor_type_t<Sequence>,
                                     FunctionType<Predicate>> Result;
 
-            return Result(::ural::sequence_fwd<Sequence>(seq),
+            return Result(::ural::cursor_fwd<Sequence>(seq),
                           ::ural::make_callable(std::move(pred)));
         }
     };
 
     namespace
     {
-        /// @brief Функциональный объект для создания @c filter_sequence
-        constexpr auto const & make_filter_sequence
-            = odr_const<make_filter_sequence_fn>;
+        /// @brief Функциональный объект для создания @c filter_cursor
+        constexpr auto const & make_filter_cursor
+            = odr_const<make_filter_cursor_fn>;
 
-        /** @brief Функциональный объект для создания @c filter_sequence
+        /** @brief Функциональный объект для создания @c filter_cursor
         в конвейерном стиле
         */
         constexpr auto const & filtered
-            = odr_const<experimental::pipeable_maker<make_filter_sequence_fn>>;
+            = odr_const<experimental::pipeable_maker<make_filter_cursor_fn>>;
     }
 }
 // namespace experimental

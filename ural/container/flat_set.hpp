@@ -73,7 +73,7 @@ namespace experimental
         typedef Key value_type;
 
         /// @brief Функция сравнения ключей
-        using key_compare = experimental::DefaultedType<Compare, std::less<value_type>>;
+        using key_compare = experimental::defaulted_type_t<Compare, std::less<value_type>>;
 
         /// @brief Функция сравнения элементов
         typedef key_compare value_compare;

@@ -448,7 +448,7 @@ inline namespace v0
         std::vector<double> ps;
         ps.reserve(n);
 
-        ural::copy(::ural::experimental::make_istream_sequence<double>(is)
+        ural::copy(::ural::experimental::make_istream_cursor<double>(is)
                    | ::ural::experimental::taken(n),
                    ps | ural::back_inserter);
 
@@ -481,7 +481,7 @@ namespace experimental
 
     public:
         /// @brief Тип возвращаемого значения
-        using result_type = experimental::DefaultedType<Vector, std::vector<typename Distribution::result_type>>;
+        using result_type = experimental::defaulted_type_t<Vector, std::vector<typename Distribution::result_type>>;
 
         /// @brief Тип расстояния
         typedef typename result_type::size_type size_type;
@@ -702,13 +702,13 @@ namespace experimental
     public:
         // Типы
         /// @brief Тип возвращаемого значения
-        using result_type = experimental::DefaultedType<Vector, boost::numeric::ublas::vector<double>>;
+        using result_type = experimental::defaulted_type_t<Vector, boost::numeric::ublas::vector<double>>;
 
         /// @brief Тип элементов
         typedef ValueType<result_type> element_type;
 
         /// @brief Тип ковариационной матрицы
-        using matrix_type = experimental::DefaultedType<Matrix, boost::numeric::ublas::matrix<element_type>>;
+        using matrix_type = experimental::defaulted_type_t<Matrix, boost::numeric::ublas::matrix<element_type>>;
 
         /// @brief Тип для представления размера
         typedef typename result_type::size_type size_type;

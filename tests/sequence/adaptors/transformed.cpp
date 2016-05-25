@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE(transformed_traversed_front)
     std::forward_list<int> const src = {1, 2, 3, 3, 4, 5};
 
     auto const f = ural::square;
-    auto const n = ural::size(ural::sequence(src)) / 2;
+    auto const n = ural::size(ural::cursor(src)) / 2;
 
     auto const s1 = src | ural_ex::transformed(f);
     auto const s2 = src | ural_ex::assumed_infinite | ural_ex::transformed(f);

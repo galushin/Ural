@@ -84,7 +84,7 @@ namespace ural
 следующим образом:
 
 @code
-auto seq = ural::make_transform_sequence(xs, ural::abs());
+auto seq = ural::make_transform_cursor(xs, ural::abs());
 @endcode
 */
 

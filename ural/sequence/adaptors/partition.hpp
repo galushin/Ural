@@ -30,17 +30,16 @@ namespace ural
 {
 namespace experimental
 {
-    /** @brief Последовательность вывода, записывающая значения в одну из двух
-    базовых последовательностей, в зависимости от значения предиката
-    @tparam Ouput1 тип последовательности для элементов, удовлетворяющих
-    предикату
-    @tparam Ouput2 тип последовательности для элементов, не удовлетворяющих
+    /** @brief Курсор последовательности вывода, записывающая значения в одну из
+    двух базовых последовательностей, в зависимости от значения предиката.
+    @tparam Ouput1 тип курсора для элементов, удовлетворяющих предикату
+    @tparam Ouput2 тип курсора для элементов, не удовлетворяющих
     предикату
     @tparam Predicate тип предикат
     */
     template <class Output1, class Output2, class Predicate>
-    class partition_sequence
-     : public sequence_base<partition_sequence<Output1, Output2, Predicate>>
+    class partition_cursor
+     : public cursor_base<partition_cursor<Output1, Output2, Predicate>>
     {
     public:
         // Типы
@@ -55,36 +54,36 @@ namespace experimental
 
         // Конструкторы
         /** @brief Конструктор
-        @param out_true выходная последовательность для "истинных" элементов
-        @param out_false выходная последовательность для "ложных" элементов
+        @param out_true выходной курсор для "истинных" элементов
+        @param out_false выходной курсор для "ложных" элементов
         @param pred предикат
-        @post <tt> this->true_sequence() == out_true </tt>
-        @post <tt> this->false_sequence() == out_false </tt>
+        @post <tt> this->true_cursor() == out_true </tt>
+        @post <tt> this->false_cursor() == out_false </tt>
         @post <tt> this->predicate() == pred </tt>
         */
-        explicit partition_sequence(Output1 out_true, Output2 out_false,
+        explicit partition_cursor(Output1 out_true, Output2 out_false,
                                     Predicate pred)
          : data_{Bases{std::move(out_true), std::move(out_false)},
                  std::move(pred)}
         {}
 
-        // Однопроходная последовательность
-        /** @brief Проверка исчерпания последовательностей
-        @return @b true, если последовательность исчерпана, иначе --- @b false.
+        // Однопроходый курсор
+        /** @brief Проверка исчерпания курсора
+        @return @b true, если курсор исчерпан, иначе --- @b false.
         */
         bool operator!() const
         {
-            return !this->true_sequence() || !this->false_sequence();
+            return !this->true_cursor() || !this->false_cursor();
         }
 
         /** @return <tt> *this </tt>
         */
-        partition_sequence & operator*()
+        partition_cursor & operator*()
         {
             return *this;
         }
 
-        /** @brief Запись элемента в последовательность
+        /** @brief Запись элемента
         @param x новый элемент
         */
         template <class T>
@@ -108,36 +107,36 @@ namespace experimental
         void pop_front()
         {}
 
-        // Адаптор последовательности
+        // Адаптор курсора
         //@{
-        /** @brief Последовательность, в которую записываются элементы,
-        удовлетворяющие предикату
-        @return Последовательность, в которую записываются элементы,
-        удовлетворяющие предикату.
+        /** @brief Курсор, в который записываются элементы, удовлетворяющие
+        предикату.
+        @return Курсор, в который записываются элементы, удовлетворяющие
+        предикату.
         */
-        Output1 const & true_sequence() const &
+        Output1 const & true_cursor() const &
         {
             return data_.first()[ural::_1];
         }
 
-        Output1 && true_sequence() &&
+        Output1 && true_cursor() &&
         {
             return std::move(data_.first())[ural::_1];
         }
         //@}
 
         //@{
-        /** @brief Последовательность, в которую записываются элементы, не
-        удовлетворяющие предикату
-        @return Последовательность, в которую записываются элементы, не
-        удовлетворяющие предикату.
+        /** @brief Курсор, в который записываются элементы, не удовлетворяющие
+        предикату.
+        @return Курсор, в который записываются элементы, не удовлетворяющие
+        предикату.
         */
-        Output2 const & false_sequence() const &
+        Output2 const & false_cursor() const &
         {
             return data_.first()[ural::_2];
         }
 
-        Output2 && false_sequence() &&
+        Output2 && false_cursor() &&
         {
             return std::move(data_.first())[ural::_2];
         }
@@ -156,24 +155,24 @@ namespace experimental
         boost::compressed_pair<Bases, Predicate> data_;
     };
 
-    /** @brief Создание последовательность вывода, записывающая значения в одну
-    из двух базовых последовательностей, в зависимости от значения предиката.
+    /** @brief Создание курсора вывода, записывающего значения в один из двух
+    базовых курсоров, в зависимости от значения предиката.
     @param out_true выходная последовательность для "истинных" элементов
     @param out_false выходная последовательность для "ложных" элементов
     @param pred предикат
     */
     template <class Output1, class Output2, class Predicate>
-    auto make_partition_sequence(Output1 && out_true, Output2 && out_false,
+    auto make_partition_cursor(Output1 && out_true, Output2 && out_false,
                                  Predicate pred)
-    -> partition_sequence<decltype(::ural::sequence_fwd<Output1>(out_true)),
-                          decltype(::ural::sequence_fwd<Output2>(out_false)),
+    -> partition_cursor<decltype(::ural::cursor_fwd<Output1>(out_true)),
+                          decltype(::ural::cursor_fwd<Output2>(out_false)),
                           decltype(make_callable(std::move(pred)))>
     {
-        typedef partition_sequence<decltype(::ural::sequence_fwd<Output1>(out_true)),
-                          decltype(::ural::sequence_fwd<Output2>(out_false)),
+        typedef partition_cursor<decltype(::ural::cursor_fwd<Output1>(out_true)),
+                          decltype(::ural::cursor_fwd<Output2>(out_false)),
                           decltype(make_callable(std::move(pred)))> Result;
-        return Result(::ural::sequence_fwd<Output1>(out_true),
-                      ::ural::sequence_fwd<Output2>(out_false),
+        return Result(::ural::cursor_fwd<Output1>(out_true),
+                      ::ural::cursor_fwd<Output2>(out_false),
                       make_callable(std::move(pred)));
     }
 }
