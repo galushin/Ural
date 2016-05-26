@@ -131,41 +131,46 @@ namespace experimental
     /** @brief Вспомогательный класс для создания функциональных объектов,
     результаты которых можно использовать как этапы "конвейерного" создания
     последовательностей.
-    @tparam Factory тип функционального объекта без состояния
+    @tparam Factory тип функционального объекта
     */
     template <class Factory>
     class pipeable_maker
     {
-        static_assert(std::is_empty<Factory>::value, "must be empty!");
-
         template <class... Args>
         struct pipeable_binder
         {
         public:
-            explicit pipeable_binder(Args && ... args)
-             : args_(std::forward_as_tuple(std::forward<Args>(args)...))
+            explicit pipeable_binder(Factory f, Args && ... args)
+             : f_(std::move(f))
+             , args_(std::forward_as_tuple(std::forward<Args>(args)...))
             {}
 
             template <class Sequence>
             auto operator()(Sequence && seq) const
             {
-                auto f = ::ural::experimental::curry(Factory{}, std::forward<Sequence>(seq));
+                auto f = ::ural::experimental::curry(this->f_, std::forward<Sequence>(seq));
                 return ::ural::apply(std::move(f), args_);
             }
 
         private:
+            Factory f_;
             std::tuple<Args...> args_;
         };
 
         template <class... Args>
-        static
         pipeable_binder<Args...>
-        pipeable_bind(Args &&... args)
+        pipeable_bind(Args &&... args) const
         {
-            return pipeable_binder<Args...>(std::forward<Args>(args)...);
+            return pipeable_binder<Args...>(this->factory_, std::forward<Args>(args)...);
         }
 
     public:
+        pipeable_maker() = default;
+
+        explicit pipeable_maker(Factory f)
+         : factory_(std::move(f))
+        {}
+
         /** @brief Оператор вызова функции
         @param args список аргументов
         */
@@ -175,6 +180,9 @@ namespace experimental
             auto f = this->pipeable_bind(std::forward<Args>(args)...);
             return pipeable<decltype(f)>(std::move(f));
         }
+
+    private:
+        Factory factory_;
     };
 }
 // namespace experimental
