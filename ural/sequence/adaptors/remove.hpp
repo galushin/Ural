@@ -115,48 +115,31 @@ namespace experimental
         }
     };
 
-    /** @brief Функция создания @c remove_if_cursor
-    @param in входная последовательность
-    @param pred унарный предикат, определяющий, какие элементы должны быть
-    исключены из последовательности
-    @return <tt> remove_if_cursor(cursor_fwd<Input>(in), make_callable(pred)) </tt>
-    */
-    template <class Input, class Predicate>
-    remove_if_cursor<cursor_type_t<Input>, FunctionType<Predicate>>
-    make_remove_if_cursor(Input && in, Predicate pred)
-    {
-        using Cursor = remove_if_cursor<cursor_type_t<Input>, FunctionType<Predicate>>;
-        return Cursor(::ural::cursor_fwd<Input>(in), make_callable(std::move(pred)));
-    }
-
-    template <class Predicate>
-    class remove_if_cursor_maker
+    class make_remove_if_cursor_fn
     {
     public:
-        explicit remove_if_cursor_maker(Predicate pred)
-         : predicate(std::move(pred))
-        {}
-
-        Predicate predicate;
+        /** @brief Функция создания @c remove_if_cursor
+        @param in входная последовательность
+        @param pred унарный предикат, определяющий, какие элементы должны быть
+        исключены из последовательности
+        @return <tt> remove_if_cursor(cursor_fwd<Input>(in), make_callable(pred)) </tt>
+        */
+        template <class Input, class Predicate>
+        remove_if_cursor<cursor_type_t<Input>, FunctionType<Predicate>>
+        operator()(Input && in, Predicate pred) const
+        {
+            using Cursor = remove_if_cursor<cursor_type_t<Input>, FunctionType<Predicate>>;
+            return Cursor(::ural::cursor_fwd<Input>(in), make_callable(std::move(pred)));
+        }
     };
 
-    /** @brief Создание @c remove_if_cursor в конвейерном стиле
-    @param in входная последовательность
-    @param maker объект, хранящий предикат, определяющий элементы, которые
-    должны быть исключены из входной последовательности
-    */
-    template <class Input, class Predicate>
-    auto operator|(Input && in, remove_if_cursor_maker<Predicate> maker)
-    -> decltype(::ural::experimental::make_remove_if_cursor(std::forward<Input>(in), std::move(maker.predicate)))
+    namespace
     {
-        return ::ural::experimental::make_remove_if_cursor(std::forward<Input>(in), std::move(maker.predicate));
-    }
+        constexpr auto const & make_remove_if_cursor
+            = odr_const<make_remove_if_cursor_fn>;
 
-    template <class Predicate>
-    remove_if_cursor_maker<Predicate>
-    removed_if(Predicate pred)
-    {
-        return remove_if_cursor_maker<Predicate>(std::move(pred));
+        constexpr auto const & removed_if
+            = odr_const<pipeable_maker<make_remove_if_cursor_fn>>;
     }
 
     /** @brief Адаптор последовательности, исключающий элементы базовой
@@ -241,111 +224,47 @@ namespace experimental
         T old_value_;
     };
 
-    /** @brief Функция создания @c remove_cursor
-    @param in входная последовательность
-    @param value значение, которое должно быть исключено из последовательности
-    @param pred бинарный предикат, определяющий сравнение элементов со
-    значением, которое должно быть удалено
-    @return <tt> remove_cursor<>(std::forward<Input>(in), value, ural::equal_to<>{}); </tt>
-    */
-    template <class Input, class T, class BinaryPredicate>
-    auto make_remove_cursor(Input && in, T const & value, BinaryPredicate pred)
-    -> remove_cursor<decltype(::ural::cursor_fwd<Input>(in)),
-                       typename reference_wrapper_to_reference<T>::type,
-                       decltype(::ural::make_callable(std::move(pred)))>
-    {
-        using Cursor = remove_cursor<decltype(::ural::cursor_fwd<Input>(in)),
-                                     typename reference_wrapper_to_reference<T>::type,
-                                     decltype(make_callable(std::move(pred)))>;
-        return Cursor(::ural::cursor_fwd<Input>(in), value,
-                      ::ural::make_callable(std::move(pred)));
-    }
-
-    /** @brief Функция создания @c remove_cursor
-    @param in входная последовательность
-    @param value значение, которое должно быть исключено из последовательности
-    @return <tt> make_remove_cursor(std::forward<Input>(in), value, ural::equal_to<>{}); </tt>
-    */
-    template <class Input, class T>
-    auto make_remove_cursor(Input && in, T const & value)
-    -> decltype(make_remove_cursor(std::forward<Input>(in), value, ural::equal_to<>{}))
-    {
-        return make_remove_cursor(std::forward<Input>(in), value, ural::equal_to<>{});
-    }
-
-    /** @brief Вспомогательный объект для конвейерного создания
-    @c remove_cursor
-    @tparam T тип значения, которое должно быть исключено из последовательности.
-    @tparam BinaryPredicate тип бинарного предиката, используемого для
-    определения значений, которые нужно исключить из последовательности.
-    */
-    template <class T, class BinaryPredicate>
-    class remove_cursor_maker
+    class make_remove_cursor_fn
     {
     public:
-        /** @brief Конструктор
-        @param x значение, которое должно быть исключено из последовательности.
-        @param eq бинарный предикат
-        @note В отличие от стандартного алгоритма @c remove, параметр @c x будет
-        скопирован. Чтобы избежать копирования, используйте на формальном
-        аргументе обёртку <tt> std::cref </tt>
+        /** @brief Создание @c remove_cursor
+        @param in входная последовательность
+        @param value значение, которое должно быть исключено из последовательности
+        @return <tt> (*this)(std::forward<Input>(in), value, ural::equal_to<>{}); </tt>
         */
-        explicit remove_cursor_maker(T x, BinaryPredicate eq)
-         : predicate(std::move(eq))
-         , value(std::move(x))
-        {}
+        template <class Input, class T>
+        remove_cursor<cursor_type_t<Input>, typename reference_wrapper_to_reference<T>::type, ural::equal_to<>>
+        operator()(Input && in, T const & value) const
+        {
+            return (*this)(std::forward<Input>(in), value, ural::equal_to<>{});
+        }
 
-        /// @brief Предикат
-        BinaryPredicate predicate;
-
-        /// @brief Исключаемое значение
-        T value;
-
+        /** @brief Создание @c remove_cursor
+        @param in входная последовательность
+        @param value значение, которое должно быть исключено из последовательности
+        @param pred бинарный предикат, определяющий сравнение элементов со
+        значением, которое должно быть удалено
+        @return <tt> remove_cursor<>(std::forward<Input>(in), value, ural::equal_to<>{}); </tt>
+        */
+        template <class Input, class T, class BinaryPredicate>
+        auto operator()(Input && in, T const & value, BinaryPredicate pred) const
+        -> remove_cursor<decltype(::ural::cursor_fwd<Input>(in)),
+                           typename reference_wrapper_to_reference<T>::type,
+                           decltype(::ural::make_callable(std::move(pred)))>
+        {
+            using Cursor = remove_cursor<decltype(::ural::cursor_fwd<Input>(in)),
+                                         typename reference_wrapper_to_reference<T>::type,
+                                         decltype(make_callable(std::move(pred)))>;
+            return Cursor(::ural::cursor_fwd<Input>(in), value,
+                          ::ural::make_callable(std::move(pred)));
+        }
     };
 
-    /** @brief Конвейерное создание @c remove_cursor
-    @param in входная последовательность
-    @param maker вспомогательный объект, хранящий информацию об исключаемом
-    значении
-    */
-    template <class Input, class T, class BinPred>
-    auto operator|(Input && in, remove_cursor_maker<T, BinPred> maker)
-    -> decltype(::ural::experimental::make_remove_cursor(std::forward<Input>(in), std::move(maker.value), std::move(maker.predicate)))
+    namespace
     {
-        return ::ural::experimental::make_remove_cursor(std::forward<Input>(in),
-                                                          std::move(maker.value),
-                                                          std::move(maker.predicate));
-    }
+        constexpr auto const & make_remove_cursor = odr_const<make_remove_cursor_fn>;
 
-    /** @brief Создание вспомогательного объекта для конвейерного создания
-    @c remove_cursor
-    @param value значение, которое должно быть исключено из последовательности.
-    @param bin_pred бинарный предикат, используемый для определения значений,
-    которые нужно исключить из последовательности.
-    @note В отличие от стандартного алгоритма @c remove, параметр @c value будет
-    скопирован. Чтобы избежать копирования, используйте на формальном аргументе
-    обёртку <tt> std::cref </tt>
-    */
-    template <class T, class BinaryPredicate>
-    remove_cursor_maker<T, BinaryPredicate>
-    removed(T value, BinaryPredicate bin_pred)
-    {
-        return remove_cursor_maker<T, BinaryPredicate>(std::move(value),
-                                                         std::move(bin_pred));
-    }
-
-    /** @brief Создание вспомогательного объекта для конвейерного создания
-    @c remove_cursor
-    @param value значение, которое должно быть исключено из последовательности.
-    @note В отличие от стандартного алгоритма @c remove, параметр @c value будет
-    скопирован. Чтобы избежать копирования, используйте на формальном аргументе
-    обёртку <tt> std::cref </tt>
-    */
-    template <class T>
-    remove_cursor_maker<T, ural::equal_to<>>
-    removed(T value)
-    {
-        return removed(std::move(value), ural::equal_to<>{});
+        constexpr auto const & removed = odr_const<pipeable_maker<make_remove_cursor_fn>>;
     }
 }
 // namespace experimental
