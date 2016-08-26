@@ -109,9 +109,9 @@ BOOST_AUTO_TEST_CASE(value_type_for_c_arrays)
     typedef T Array[];
     typedef std::unique_ptr<T> Pointer;
 
-    static_assert(std::is_same<T, ural::ValueType<ArrayN>>::value, "");
-    static_assert(std::is_same<T, ural::ValueType<Array>>::value, "");
-    static_assert(std::is_same<T, ural::ValueType<Pointer>>::value, "");
+    static_assert(std::is_same<T, ural::value_type_t<ArrayN>>::value, "");
+    static_assert(std::is_same<T, ural::value_type_t<Array>>::value, "");
+    static_assert(std::is_same<T, ural::value_type_t<Pointer>>::value, "");
 
     BOOST_CHECK(true);
 }

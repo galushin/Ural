@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(functional_is_transparent_check, F, Transparent_fu
     BOOST_CHECK(true);
 }
 
-using ::ural::ValueType;
+using ::ural::value_type_t;
 
 BOOST_AUTO_TEST_CASE(memoize_function_test)
 {
@@ -914,7 +914,7 @@ BOOST_AUTO_TEST_CASE(min_element_accumulator_default_function_test)
 
     static_assert(std::is_same<ural::less<>, Accumulator::compare_type>::value,
                   "Incorrect compare type");
-    BOOST_CHECK_EQUAL(sizeof(ValueType<Accumulator>), sizeof(Accumulator));
+    BOOST_CHECK_EQUAL(sizeof(value_type_t<Accumulator>), sizeof(Accumulator));
 
     BOOST_CHECK_EQUAL(42, acc.result());
 }

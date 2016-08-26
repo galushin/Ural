@@ -25,7 +25,7 @@
 
 namespace ural
 {
-inline namespace v0
+inline namespace v1
 {
     /** @brief "Отрицание" к <tt> std::enable_if </tt>
     @tparam Flag булево значение
@@ -158,7 +158,7 @@ namespace details
     {};
     //@}
 }
-// namespace v0
+// namespace v1
 
 namespace experimental
 {

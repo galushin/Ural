@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE(assumed_infinite_traversed_front)
     BOOST_CHECK(actual == expected);
 }
 
-using ::ural::ValueType;
+using ::ural::value_type_t;
 
 BOOST_AUTO_TEST_CASE(cursor_for_lvalue_container)
 {
@@ -466,7 +466,7 @@ BOOST_AUTO_TEST_CASE(cartesian_product_cursor_is_sorted_test)
     auto digits = ural::numbers(0, 10);
     auto cur2 = ural_ex::make_cartesian_product_cursor(digits, digits);
 
-    std::vector<ValueType<decltype(cur2)>> r2;
+    std::vector<value_type_t<decltype(cur2)>> r2;
 
     ural::copy(cur2, r2 | ural::back_inserter);
 
@@ -585,7 +585,7 @@ BOOST_AUTO_TEST_CASE(filtered_cursor_for_each)
 
     // Цикл вместо алгоритма используется специально, чтобы проверить, что
     // тип ссылки - неконстантная ссылка
-    for(ValueType<decltype(xs)> & x : cur)
+    for(value_type_t<decltype(xs)> & x : cur)
     {
         r.push_back(x);
     }

@@ -90,7 +90,7 @@ auto seq = ural::make_transform_cursor(xs, ural::abs());
 
 namespace ural
 {
-inline namespace v0
+inline namespace v1
 {
     /** @brief Тип функционального объекта для вычисления квадрата
     (второй степени)
@@ -471,7 +471,7 @@ inline namespace v0
             = odr_const<power_accumulate_semigroup_fn>;
     }
 }
-// namespace v0
+// namespace v1
 }
 // namespace ural
 

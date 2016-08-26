@@ -28,7 +28,7 @@
 
 namespace ural
 {
-inline namespace v0
+inline namespace v1
 {
     /** Пустой базовый класс. Используется, когда формально требуется указать
     базовый класс, но никакой базовый класс на самом деле не нужен.
@@ -61,7 +61,7 @@ inline namespace v0
     template <class T>
     constexpr T const odr_const = T{};
 }
-// namespace v0
+// namespace v1
 
 namespace experimental
 {

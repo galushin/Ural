@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE(expected_value_ctor_test)
 {
     typedef ural_ex::expected<int> Expected;
 
-    ::ural::ValueType<Expected> const init_value = 42;
+    ::ural::value_type_t<Expected> const init_value = 42;
 
     Expected const e{init_value};
 
@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(expected_move_value_ctor_test)
     typedef ural_ex::expected<Type> Expected;
 
     auto const init_value = 42;
-    ::ural::ValueType<Expected> init = ural::make_unique<Type::element_type>(init_value);
+    ::ural::value_type_t<Expected> init = ural::make_unique<Type::element_type>(init_value);
 
     Expected const e{std::move(init)};
 
@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(make_expected_test)
 {
     typedef ural_ex::expected<int> Expected;
 
-    ::ural::ValueType<Expected> const init_value = 42;
+    ::ural::value_type_t<Expected> const init_value = 42;
 
     auto e = ural_ex::make_expected(init_value);
 
@@ -75,8 +75,8 @@ BOOST_AUTO_TEST_CASE(expected_notconst_value_test)
 {
     typedef ural_ex::expected<int> Expected;
 
-    ::ural::ValueType<Expected> const x1 = 13;
-    ::ural::ValueType<Expected> const x2 = 42;
+    ::ural::value_type_t<Expected> const x1 = 13;
+    ::ural::value_type_t<Expected> const x2 = 42;
 
     Expected e{x1};
     e.value() = x2;

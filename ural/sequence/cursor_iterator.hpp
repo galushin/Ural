@@ -26,7 +26,7 @@
 
 namespace ural
 {
-inline namespace v0
+inline namespace v1
 {
     /// @cond false
     namespace details
@@ -140,16 +140,16 @@ inline namespace v0
                                       std::forward_iterator_tag>::type ;
 
         /// @brief Тип ссылки
-        using reference = ReferenceType<Cursor_type>;
+        using reference = reference_type_t<Cursor_type>;
 
         /// @brief Тип значения
-        using value_type = ValueType<Cursor_type>;
+        using value_type = value_type_t<Cursor_type>;
 
         /// @brief Тип указателя
         using pointer = typename Cursor_type::pointer;
 
         /// @brief Тип расстояния
-        using difference_type = DifferenceType<Cursor_type>;
+        using difference_type = difference_type_t<Cursor_type>;
 
         // Конструктор
         /** @brief Конструктор по-умолчанию. Создаёт итератор конца
@@ -230,13 +230,13 @@ inline namespace v0
         typedef typename Cursor::reference reference;
 
         /// @brief Тип значения
-        typedef ValueType<Cursor> value_type;
+        using value_type = value_type_t<Cursor>;
 
         /// @brief Тип указателя
         typedef typename Cursor::pointer pointer;
 
         /// @brief Тип расстояния
-        typedef DifferenceType<Cursor> difference_type;
+        using difference_type = difference_type_t<Cursor>;
 
         /** @brief Конструктор по-умолчанию. Создаёт итератор конца
         последовательности
@@ -289,7 +289,7 @@ inline namespace v0
         ural::experimental::optional<Cursor&> impl_;
     };
 }
-// namespace v0
+// namespace v1
 }
 // namespace ural
 

@@ -29,7 +29,7 @@
 
 namespace ural
 {
-inline namespace v0
+inline namespace v1
 {
     /** @brief Кортеж
     @tparam Ts типы элементов кортежа
@@ -203,7 +203,7 @@ inline namespace tuple_io
 }
 // namespace tuple_io
 }
-// namespace v0
+// namespace v1
 
 namespace experimental
 {

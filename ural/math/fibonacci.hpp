@@ -56,7 +56,7 @@ namespace experimental
         using distance_type = Integer;
 
         /// @brief Тип операции
-        using operation_type = defaulted_type_t<FunctionType<BinaryOperation>,
+        using operation_type = defaulted_type_t<function_type_t<BinaryOperation>,
                                              ural::plus<Integer>>;
 
         // Конструкторы и свойства
@@ -192,10 +192,10 @@ namespace experimental
         @param op бинарная операция
         */
         template <class Integer, class BinaryOperation>
-        constexpr fibonacci_cursor<Integer, FunctionType<BinaryOperation>>
+        constexpr fibonacci_cursor<Integer, function_type_t<BinaryOperation>>
         operator()(Integer first, Integer second, BinaryOperation op) const
         {
-            using F = FunctionType<BinaryOperation>;
+            using F = function_type_t<BinaryOperation>;
             using Result = fibonacci_cursor<Integer, F>;
             return Result{std::move(first), std::move(second), std::move(op)};
         }

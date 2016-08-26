@@ -55,7 +55,7 @@ namespace experimental
         using cursor_tag = typename value_type::cursor_tag;
 
         /// @brief Тип расстояния
-        using distance_type = DifferenceType<Cursor>;
+        using distance_type = difference_type_t<Cursor>;
 
         // Конструкторы
         /** @brief Конструктор
@@ -181,7 +181,7 @@ namespace experimental
         template <class Sequence>
         chunks_cursor<cursor_type_t<Sequence>>
         operator()(Sequence && seq,
-                   DifferenceType<cursor_type_t<Sequence>> n) const
+                   difference_type_t<cursor_type_t<Sequence>> n) const
         {
             assert(n > 0);
 

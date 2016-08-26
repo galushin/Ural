@@ -45,10 +45,10 @@ namespace experimental
         using reference = typename Cursor::reference;
 
         /// @brief Тип значения
-        using value_type = ValueType<Cursor> ;
+        using value_type = value_type_t<Cursor> ;
 
         /// @brief Тип расстояния
-        using distance_type = DifferenceType<Cursor>;
+        using distance_type = difference_type_t<Cursor>;
 
         /// @brief Категория курсора
         using cursor_tag = typename Cursor::cursor_tag;

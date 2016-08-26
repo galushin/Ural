@@ -94,7 +94,7 @@ namespace
     namespace ural_ex = ::ural::experimental;
 }
 
-using ::ural::ValueType;
+using ::ural::value_type_t;
 
 // Типы
 BOOST_AUTO_TEST_CASE(discrete_distribution_types_test)
@@ -153,7 +153,7 @@ namespace
     template <class Vector>
     Vector & normalize_weights(Vector & ws)
     {
-        auto w_sum = ural::accumulate(ws, ValueType<Vector>{0});
+        auto w_sum = ural::accumulate(ws, value_type_t<Vector>{0});
 
         ural::for_each(ws, [=](typename Vector::reference x) { x /= w_sum;});
 
@@ -417,8 +417,8 @@ namespace
     ural_ex::probability<>
     pearson_test(InputSequence && in, Probabilities const & prob)
     {
-        std::vector<ValueType<InputSequence>> u(prob.size());
-        ValueType<InputSequence> N = 0;
+        std::vector<value_type_t<InputSequence>> u(prob.size());
+        value_type_t<InputSequence> N = 0;
 
         for(auto s = ::ural::cursor_fwd<InputSequence>(in); !!s; ++ s)
         {

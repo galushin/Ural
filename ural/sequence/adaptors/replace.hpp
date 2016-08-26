@@ -225,7 +225,7 @@ namespace experimental
             using T2R = typename reference_wrapper_to_reference<T2>::type;
             using Result = replace_cursor<cursor_type_t<Sequence>,
                                             T1R, T2R,
-                                            FunctionType<BinaryPredicate>>;
+                                            function_type_t<BinaryPredicate>>;
             return Result(::ural::cursor_fwd<Sequence>(seq),
                           std::move(old_value),
                           std::move(new_value),
@@ -249,7 +249,7 @@ namespace experimental
         {
             using TR = typename reference_wrapper_to_reference<T>::type;
             using Result = replace_if_cursor<cursor_type_t<Sequence>,
-                                             FunctionType<Predicate>, TR>;
+                                             function_type_t<Predicate>, TR>;
 
             return Result(::ural::cursor_fwd<Sequence>(seq),
                           ::ural::make_callable(std::move(pred)),

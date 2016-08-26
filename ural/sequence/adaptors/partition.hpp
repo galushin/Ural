@@ -49,8 +49,8 @@ namespace experimental
                                         typename Output2::cursor_tag>;
 
         /// @brief Тип расстояния
-        typedef CommonType<DifferenceType<Output1>, DifferenceType<Output2>>
-            difference_type;
+        using difference_type = common_type_t<difference_type_t<Output1>,
+                                              difference_type_t<Output2>>;
 
         // Конструкторы
         /** @brief Конструктор

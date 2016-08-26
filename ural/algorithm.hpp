@@ -87,7 +87,7 @@ namespace experimental
         ко всем элементам последовательности.
         */
         template <class Input, class Function>
-        tuple<cursor_type_t<Input>, FunctionType<Function>>
+        tuple<cursor_type_t<Input>, function_type_t<Function>>
         operator()(Input && in, Function f) const
         {
             auto f_app = curry(apply, make_callable(std::move(f)));
@@ -117,7 +117,7 @@ namespace experimental
         operator()(InputSequence && input,
                    T const & left_par, T const & right_par) const
         {
-            using D = DifferenceType<cursor_type_t<InputSequence>>;
+            using D = difference_type_t<cursor_type_t<InputSequence>>;
             return (*this)(std::forward<InputSequence>(input),
                            left_par, right_par,
                            std::numeric_limits<D>::max());
@@ -138,7 +138,7 @@ namespace experimental
         bool
         operator()(InputSequence && input,
                    T const & left_par, T const & right_par,
-                   DifferenceType<cursor_type_t<InputSequence>> max_nesting_level) const
+                   difference_type_t<cursor_type_t<InputSequence>> max_nesting_level) const
         {
             return this->impl(ural::cursor_fwd<InputSequence>(input),
                               left_par, right_par, max_nesting_level);
@@ -147,7 +147,7 @@ namespace experimental
         template <class InputCursor, class T>
         static bool impl(InputCursor in,
                          T const & left_par, T const & right_par,
-                         DifferenceType<InputCursor> const max_nesting_level)
+                         difference_type_t<InputCursor> const max_nesting_level)
         {
             using namespace ural::concepts;
 
@@ -157,7 +157,7 @@ namespace experimental
                                                     InputCursor,
                                                     T const *>));
 
-            auto const zero = DifferenceType<InputCursor>{0};
+            auto const zero = difference_type_t<InputCursor>{0};
 
             auto opened = zero;
 
@@ -202,8 +202,8 @@ namespace experimental
         значения в последовательности.
         */
         template <class InputSequence, class Compare = ural::less<>>
-        tuple<ValueType<cursor_type_t<InputSequence>>,
-              DifferenceType<cursor_type_t<InputSequence>>>
+        tuple<value_type_t<cursor_type_t<InputSequence>>,
+              difference_type_t<cursor_type_t<InputSequence>>>
         operator()(InputSequence && in, Compare cmp = Compare{}) const
         {
             return this->impl(ural::cursor_fwd<InputSequence>(in),
@@ -212,13 +212,13 @@ namespace experimental
 
     private:
         template <class InputCursor, class Compare>
-        tuple<ValueType<InputCursor>, DifferenceType<InputCursor>>
+        tuple<value_type_t<InputCursor>, difference_type_t<InputCursor>>
         impl(InputCursor in, Compare cmp = Compare{}) const
         {
-            const auto unit = DifferenceType<InputCursor>(1);
+            const auto unit = difference_type_t<InputCursor>(1);
             assert(!!in);
 
-            tuple<ValueType<InputCursor>, DifferenceType<InputCursor>>
+            tuple<value_type_t<InputCursor>, difference_type_t<InputCursor>>
                 result{*in, unit};
             ++ in;
 
@@ -298,7 +298,7 @@ namespace experimental
 }
 // namespace experimental
 
-inline namespace v0
+inline namespace v1
 {
 namespace
 {
@@ -469,7 +469,7 @@ namespace
 }
 // namespace
 }
-// namespace v0
+// namespace v1
 
 namespace experimental
 {

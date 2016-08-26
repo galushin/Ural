@@ -30,7 +30,7 @@ namespace ural
 {
 namespace experimental
 {
-    template <class Sequence, class Distance = DifferenceType<Sequence>>
+    template <class Sequence, class Distance = difference_type_t<Sequence>>
     class taken_exactly_cursor;
 
     /**
@@ -52,10 +52,10 @@ namespace experimental
         }
 
         template <class Cursor, class D1, class D2>
-        taken_exactly_cursor<Cursor, CommonType<D1, D2>>
+        taken_exactly_cursor<Cursor, common_type_t<D1, D2>>
         operator()(taken_exactly_cursor<Cursor, D1> cur, D2 n) const
         {
-            using Size = CommonType<D1, D2>;
+            using Size = common_type_t<D1, D2>;
             using Result = taken_exactly_cursor<Cursor, Size>;
 
             auto n_new = std::min(Size(cur.size()), Size(std::move(n)));

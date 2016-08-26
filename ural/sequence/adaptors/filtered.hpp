@@ -106,10 +106,10 @@ namespace experimental
         параметрами
         */
         template <class Sequence, class Predicate>
-        auto operator()(Sequence && seq, Predicate pred) const
+        filter_cursor<cursor_type_t<Sequence>, function_type_t<Predicate>>
+        operator()(Sequence && seq, Predicate pred) const
         {
-            typedef filter_cursor<cursor_type_t<Sequence>,
-                                    FunctionType<Predicate>> Result;
+            using Result = filter_cursor<cursor_type_t<Sequence>, function_type_t<Predicate>>;
 
             return Result(::ural::cursor_fwd<Sequence>(seq),
                           ::ural::make_callable(std::move(pred)));

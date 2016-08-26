@@ -98,11 +98,11 @@ namespace experimental
         @param Predicate унарный предикат
         */
         template <class Sequence, class Predicate>
-        taken_while_cursor<cursor_type_t<Sequence>, FunctionType<Predicate>>
+        taken_while_cursor<cursor_type_t<Sequence>, function_type_t<Predicate>>
         operator()(Sequence && seq, Predicate pred) const
         {
             using Result = taken_while_cursor<cursor_type_t<Sequence>,
-                                                FunctionType<Predicate>>;
+                                                function_type_t<Predicate>>;
             return Result(ural::cursor_fwd<Sequence>(seq),
                           ural::make_callable(std::move(pred)));
         }

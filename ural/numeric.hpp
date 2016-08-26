@@ -38,7 +38,7 @@
 
 namespace ural
 {
-inline namespace v0
+inline namespace v1
 {
     /** @ingroup Numerics
     @brief Тип функционального объекта для заполнения последовательности
@@ -113,8 +113,8 @@ inline namespace v0
                                                              cursor_type_t<Input>>));
             BOOST_CONCEPT_ASSERT((concepts::Semiregular<T>));
 
-            typedef IndirectCallableResultType<BinaryOperation, T const *,
-                                               cursor_type_t<Input>> Result;
+            using Result = indirect_callable_result_type_t<BinaryOperation, T const *,
+                                                           cursor_type_t<Input>>;
 
             BOOST_CONCEPT_ASSERT((concepts::Same<T, Result>));
 
@@ -131,7 +131,7 @@ inline namespace v0
             BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<BinaryOperation, T const *, Input>));
             BOOST_CONCEPT_ASSERT((concepts::Semiregular<T>));
 
-            typedef IndirectCallableResultType<BinaryOperation, T const *, Input> Result;
+            using Result = indirect_callable_result_type_t<BinaryOperation, T const *, Input>;
             BOOST_CONCEPT_ASSERT((concepts::Same<T, Result>));
 
             for(; !!in; ++ in)
@@ -179,11 +179,12 @@ inline namespace v0
                                                              cursor_type_t<Input1>,
                                                              cursor_type_t<Input2>>));
 
-            typedef IndirectCallableResultType<BinaryOperation2, cursor_type_t<Input1>,
-                                               cursor_type_t<Input2>> Product;
+            using Product = indirect_callable_result_type_t<BinaryOperation2, cursor_type_t<Input1>,
+                                                            cursor_type_t<Input2>>;
             BOOST_CONCEPT_ASSERT((concepts::Function<BinaryOperation1, T, Product>));
 
-            typedef ResultType<BinaryOperation1, T, Product> Result;
+            using Result = result_type_t<BinaryOperation1, T, Product>;
+
             BOOST_CONCEPT_ASSERT((concepts::Same<Result, T>));
 
             return impl(::ural::cursor_fwd<Input1>(in1),
@@ -205,10 +206,10 @@ inline namespace v0
 
             BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<BinaryOperation2, Input1, Input2>));
 
-            typedef IndirectCallableResultType<BinaryOperation2, Input1, Input2> Product;
+            using Product = indirect_callable_result_type_t<BinaryOperation2, Input1, Input2>;
             BOOST_CONCEPT_ASSERT((concepts::Function<BinaryOperation1, T, Product>));
 
-            typedef ResultType<BinaryOperation1, T, Product> Result;
+            using Result = result_type_t<BinaryOperation1, T, Product>;
             BOOST_CONCEPT_ASSERT((concepts::Same<Result, T>));
 
             auto in_prod = ::ural::experimental::make_transform_cursor(std::move(mult),
@@ -246,8 +247,8 @@ inline namespace v0
                                                              cursor_type_t<Input>>));
             BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Output>));
 
-            typedef IndirectCallableResultType<BinaryFunction, cursor_type_t<Input>,
-                                               cursor_type_t<Input>> Result;
+            using Result = indirect_callable_result_type_t<BinaryFunction, cursor_type_t<Input>,
+                                                           cursor_type_t<Input>>;
             BOOST_CONCEPT_ASSERT((concepts::Writable<cursor_type_t<Output>, Result>));
 
             auto in_sum = ural::experimental::partial_sums(cursor_fwd<Input>(in),
@@ -289,8 +290,8 @@ inline namespace v0
                                                              cursor_type_t<Input>>));
             BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Output>));
 
-            typedef IndirectCallableResultType<BinaryFunction, cursor_type_t<Input>,
-                                               cursor_type_t<Input>> Result;
+            using Result = indirect_callable_result_type_t<BinaryFunction, cursor_type_t<Input>,
+                                                           cursor_type_t<Input>>;
             BOOST_CONCEPT_ASSERT((concepts::Writable<cursor_type_t<Output>, Result>));
 
             auto in_dif = ural::experimental::adjacent_differences(::ural::cursor_fwd<Input>(in),
@@ -312,7 +313,7 @@ inline namespace v0
         constexpr auto const & iota = odr_const<iota_fn>;
     }
 }
-// namespace v0
+// namespace v1
 
 namespace experimental
 {
@@ -329,8 +330,8 @@ namespace experimental
         using cursor_tag = finite_forward_cursor_tag;
 
         /// @brief Тип расстояния
-        typedef CommonType<DifferenceType<RACursor1>,
-                           DifferenceType<RACursor2>> distance_type;
+        using distance_type = common_type_t<difference_type_t<RACursor1>,
+                                            difference_type_t<RACursor2>> ;
 
         /// @brief Тип значения
         typedef decltype(*std::declval<RACursor1>() * *std::declval<RACursor2>())

@@ -31,7 +31,7 @@
 
 namespace ural
 {
-inline namespace v0
+inline namespace v1
 {
     // Создание объектов в динамической памяти, обёрнутых в unique_ptr
     /** @brief Создание объекта в динамической памяти, обёрнутого в
@@ -68,7 +68,7 @@ inline namespace v0
                             std::unique_ptr<T>>::type
     make_unique(size_t size) = delete;
 }
-// inline namespace v0
+// inline namespace v1
 
 namespace experimental
 {

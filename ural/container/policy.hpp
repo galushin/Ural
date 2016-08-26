@@ -53,7 +53,7 @@ begin и end
 
 namespace ural
 {
-inline namespace v0
+inline namespace v1
 {
     /// @cond false
     namespace details
@@ -294,7 +294,7 @@ inline namespace v0
                                  ConstIterator q);
     };
 }
-// namespace v0
+// namespace v1
 }
 // namespace ural
 

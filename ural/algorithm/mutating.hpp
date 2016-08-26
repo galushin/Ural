@@ -42,7 +42,7 @@
 
 namespace ural
 {
-inline namespace v0
+inline namespace v1
 {
 /// @cond false
 namespace details
@@ -103,7 +103,7 @@ namespace details
         template <class Input, class Output>
         tuple<cursor_type_t<Input>, cursor_type_t<Output>>
         operator()(Input && in,
-                   DifferenceType<cursor_type_t<Input>> n,
+                   difference_type_t<cursor_type_t<Input>> n,
                    Output && out) const
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
@@ -384,7 +384,8 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<UnaryFunction,
                                                              cursor_type_t<Input>>));
 
-            typedef IndirectCallableResultType<UnaryFunction, cursor_type_t<Input>> F_result;
+            using F_result = indirect_callable_result_type_t<UnaryFunction, cursor_type_t<Input>>;
+
             BOOST_CONCEPT_ASSERT((concepts::Sequence<Output>));
             BOOST_CONCEPT_ASSERT((concepts::OutputCursor<cursor_type_t<Output>, F_result>));
 
@@ -412,8 +413,8 @@ namespace details
                                                              cursor_type_t<Input1>,
                                                              cursor_type_t<Input2>>));
 
-            typedef IndirectCallableResultType<BinaryFunction, cursor_type_t<Input1>,
-                                                cursor_type_t<Input2>> F_result;
+            using F_result = indirect_callable_result_type_t<BinaryFunction, cursor_type_t<Input1>,
+                                                             cursor_type_t<Input2>>;
 
             BOOST_CONCEPT_ASSERT((concepts::Sequence<Output>));
             BOOST_CONCEPT_ASSERT((concepts::OutputCursor<cursor_type_t<Output>, F_result>));
@@ -432,7 +433,7 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<UnaryFunction, Input>));
 
-            typedef IndirectCallableResultType<UnaryFunction, Input> F_result;
+            using F_result = indirect_callable_result_type_t<UnaryFunction, Input>;
             BOOST_CONCEPT_ASSERT((concepts::OutputCursor<Output, F_result>));
 
             auto f_in = ::ural::experimental::make_transform_cursor(std::move(f), std::move(in));
@@ -453,7 +454,7 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input2>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectCallable<BinaryFunction, Input1, Input2>));
 
-            typedef IndirectCallableResultType<BinaryFunction, Input1, Input2> F_result;
+            using F_result = indirect_callable_result_type_t<BinaryFunction, Input1, Input2>;
             BOOST_CONCEPT_ASSERT((concepts::OutputCursor<Output, F_result>));
 
             auto f_in = ::ural::experimental::make_transform_cursor(std::move(f), std::move(in1), std::move(in2));
@@ -489,7 +490,7 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::Function<Generator>));
             BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Output>));
             BOOST_CONCEPT_ASSERT((concepts::OutputCursor<cursor_type_t<Output>,
-                                                           ResultType<Generator>>));
+                                                           result_type_t<Generator>>));
 
             return this->impl(::ural::cursor_fwd<Output>(seq),
                               ::ural::make_callable(std::move(gen)));
@@ -501,7 +502,7 @@ namespace details
         impl(Output seq, Generator gen)
         {
             BOOST_CONCEPT_ASSERT((concepts::Function<Generator>));
-            BOOST_CONCEPT_ASSERT((concepts::OutputCursor<Output, ResultType<Generator>>));
+            BOOST_CONCEPT_ASSERT((concepts::OutputCursor<Output, result_type_t<Generator>>));
 
             auto r = copy_fn{}(::ural::experimental::make_generator_cursor(std::move(gen)),
                                std::move(seq));
@@ -527,13 +528,13 @@ namespace details
         */
         template <class Generator, class Output>
         cursor_type_t<Output>
-        operator()(Output && out, DifferenceType<cursor_type_t<Output>> n,
+        operator()(Output && out, difference_type_t<cursor_type_t<Output>> n,
                    Generator gen) const
         {
             BOOST_CONCEPT_ASSERT((concepts::Function<Generator>));
             BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Output>));
             BOOST_CONCEPT_ASSERT((concepts::OutputCursor<cursor_type_t<Output>,
-                                                           ResultType<Generator>>));
+                                                           result_type_t<Generator>>));
 
             auto in = ::ural::experimental::make_generator_cursor(::ural::make_callable(gen));
             return ::ural::copy_n_fn{}(::std::move(in), std::move(n),
@@ -595,7 +596,7 @@ namespace details
         */
         template <class Output, class T>
         cursor_type_t<Output>
-        operator()(Output && out, DifferenceType<cursor_type_t<Output>> n,
+        operator()(Output && out, difference_type_t<cursor_type_t<Output>> n,
                    T const & value) const
         {
             BOOST_CONCEPT_ASSERT((concepts::Semiregular<T>));
@@ -1085,7 +1086,7 @@ namespace details
     private:
         template <class ForwardCursor>
         void impl_n(ForwardCursor seq,
-                    DifferenceType<ForwardCursor> n) const
+                    difference_type_t<ForwardCursor> n) const
         {
             BOOST_CONCEPT_ASSERT((concepts::ForwardCursor<decltype(seq)>));
             BOOST_CONCEPT_ASSERT((concepts::Permutable<decltype(seq)>));
@@ -1116,7 +1117,7 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::Permutable<decltype(seq)>));
 
             // @todo Выделить алгоритм?
-            DifferenceType<ForwardCursor> n = 0;
+            difference_type_t<ForwardCursor> n = 0;
             auto result = seq;
 
             for(; !!result; ++ result)
@@ -1349,8 +1350,8 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
             BOOST_CONCEPT_ASSERT((concepts::Uniform_random_number_generator<typename std::decay<URNG>::type>));
             BOOST_CONCEPT_ASSERT((concepts::Permutable<cursor_type_t<RASequence>>));
-            BOOST_CONCEPT_ASSERT((concepts::Convertible<ResultType<URNG>,
-                                                        DifferenceType<cursor_type_t<RASequence>>>));
+            BOOST_CONCEPT_ASSERT((concepts::Convertible<result_type_t<URNG>,
+                                                        difference_type_t<cursor_type_t<RASequence>>>));
 
             return this->impl(::ural::cursor_fwd<RASequence>(s),
                               std::forward<URNG>(g));
@@ -1363,7 +1364,7 @@ namespace details
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RACursor>));
             BOOST_CONCEPT_ASSERT((concepts::Uniform_random_number_generator<typename std::decay<URNG>::type>));
             BOOST_CONCEPT_ASSERT((concepts::Permutable<RACursor>));
-            BOOST_CONCEPT_ASSERT((concepts::Convertible<ResultType<URNG>, DifferenceType<RACursor>>));
+            BOOST_CONCEPT_ASSERT((concepts::Convertible<result_type_t<URNG>, difference_type_t<RACursor>>));
 
             for(; !!s; ++s)
             {
@@ -1683,7 +1684,7 @@ namespace details
         }
     };
 }
-// namespace v0
+// namespace v1
 }
 // namespace ural
 

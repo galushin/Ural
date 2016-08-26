@@ -32,11 +32,11 @@ namespace
 
 BOOST_AUTO_TEST_CASE(chunks_cursor_test)
 {
-    typedef std::forward_list<int> Source;
+    using Source = std::forward_list<int>;
     auto const seq = ural::numbers(1, 8);
     Source src(begin(seq), end(seq));
 
-    typedef ural::ValueType<Source> Value;
+    using Value = ural::value_type_t<Source>;
     std::vector<std::vector<Value>> expected { {1, 2, 3}, {4, 5, 6}, {7}};
 
     auto ch = ::ural::experimental::make_chunks_cursor(src, 3);

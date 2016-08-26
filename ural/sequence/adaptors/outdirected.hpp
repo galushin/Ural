@@ -48,7 +48,7 @@ namespace experimental
         decl_distance_type(void *);
 
         template <class U>
-        static DifferenceType<U>
+        static difference_type_t<U>
         decl_distance_type(declare_type<Cursor> *);
 
     public:

@@ -1110,13 +1110,13 @@ namespace tags
     */
     template <class Input, class Tags>
     auto describe(Input && in, Tags)
-    -> descriptives_facade<ValueType<cursor_type_t<Input>>, Tags>
+    -> descriptives_facade<value_type_t<cursor_type_t<Input>>, Tags>
     {
         // @todo Проект: выразить через версию с весами, последовательность
         // весов - repeat_value_cursor, првоерить что компилятор устраняет
         // лишние вызовы
-        typedef ValueType<cursor_type_t<Input>> Value;
-        typedef descriptives_facade<Value, Tags> Result;
+        using Value = value_type_t<cursor_type_t<Input>>;
+        using Result = descriptives_facade<Value, Tags>;
 
         auto seq = ::ural::cursor_fwd<Input>(in);
 
@@ -1139,12 +1139,12 @@ namespace tags
     */
     template <class Input, class Tags, class Weights>
     auto describe(Input && in, Tags, Weights && ws)
-    -> descriptives_facade<ValueType<cursor_type_t<Input>>, Tags,
-                           ValueType<cursor_type_t<Weights>>>
+    -> descriptives_facade<value_type_t<cursor_type_t<Input>>, Tags,
+                           value_type_t<cursor_type_t<Weights>>>
     {
-        typedef ValueType<cursor_type_t<Input>> Value;
-        typedef ValueType<cursor_type_t<Weights>> Weight_type;
-        typedef descriptives_facade<Value, Tags, Weight_type> Result;
+        using Value = value_type_t<cursor_type_t<Input>>;
+        using Weight_type = value_type_t<cursor_type_t<Weights>>;
+        using Result = descriptives_facade<Value, Tags, Weight_type>;
 
         auto s_in = ural::cursor_fwd<Input>(in);
         auto s_ws = ural::cursor_fwd<Weights>(ws);
@@ -1182,7 +1182,7 @@ namespace tags
         auto const m = ds.mean();
         auto const s = ds.standard_deviation();
 
-        typedef ValueType<decltype(ds)> Value;
+        using Value = value_type_t<decltype(ds)>;
 
         assert(s != 0);
 
@@ -1201,14 +1201,13 @@ namespace tags
     {
     public:
         /// @brief Тип элементов
-        typedef ValueType<Vector> element_type;
+        using element_type = value_type_t<Vector>;
 
         /// @brief Тип среднего
-        typedef Vector mean_type;
+        using mean_type = Vector;
 
         /// @brief Тип коваирационной матрицы
-        typedef boost::numeric::ublas::symmetric_matrix<element_type>
-            covariance_matrix_type;
+        using covariance_matrix_type = boost::numeric::ublas::symmetric_matrix<element_type>;
 
         /** @brief Конструктор
         @param dim размерность вектора

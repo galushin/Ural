@@ -35,7 +35,7 @@
 
 namespace ural
 {
-inline namespace v0
+inline namespace v1
 {
     /** @ingroup NonModifyingSequenceOperations
     @brief Класс функционального объекта, проверяющего, что все элементы
@@ -127,7 +127,7 @@ inline namespace v0
         ко всем элементам последовательности.
         */
         template <class Input, class UnaryFunction>
-        tuple<cursor_type_t<Input>, FunctionType<UnaryFunction>>
+        tuple<cursor_type_t<Input>, function_type_t<UnaryFunction>>
         operator()(Input && in, UnaryFunction f) const
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
@@ -145,7 +145,7 @@ inline namespace v0
         последовательностей и функциональный объект
         */
         template <class Input1, class Input2, class BinaryFunction>
-        tuple<cursor_type_t<Input1>, cursor_type_t<Input2>, FunctionType<BinaryFunction>>
+        tuple<cursor_type_t<Input1>, cursor_type_t<Input2>, function_type_t<BinaryFunction>>
         operator()(Input1 && in1, Input2 && in2, BinaryFunction f) const
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input1>));
@@ -347,13 +347,13 @@ inline namespace v0
     {
     private:
         template <class Input, class UnaryPredicate>
-        static DifferenceType<Input>
+        static difference_type_t<Input>
         impl(Input in, UnaryPredicate pred)
         {
             BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<UnaryPredicate, Input>));
 
-            DifferenceType<Input> result{0};
+            difference_type_t<Input> result{0};
 
             for(; !!in; ++ in)
             {
@@ -375,7 +375,7 @@ inline namespace v0
         */
         template <class Input, class UnaryPredicate>
         auto operator()(Input && in, UnaryPredicate pred) const
-        -> DifferenceType<cursor_type_t<Input>>
+        -> difference_type_t<cursor_type_t<Input>>
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<UnaryPredicate,
@@ -394,7 +394,7 @@ inline namespace v0
     {
     private:
         template <class Input, class T, class BinaryPredicate>
-        static DifferenceType<Input>
+        static difference_type_t<Input>
         impl(Input in, T const & value, BinaryPredicate pred)
         {
             BOOST_CONCEPT_ASSERT((concepts::InputCursor<Input>));
@@ -416,7 +416,7 @@ inline namespace v0
                   class BinaryPredicate = ::ural::equal_to<>>
         auto operator()(Input && in, T const & value,
                         BinaryPredicate pred = BinaryPredicate()) const
-        -> DifferenceType<cursor_type_t<Input>>
+        -> difference_type_t<cursor_type_t<Input>>
         {
             BOOST_CONCEPT_ASSERT((concepts::InputSequence<Input>));
             BOOST_CONCEPT_ASSERT((concepts::IndirectPredicate<BinaryPredicate,
@@ -684,7 +684,7 @@ inline namespace v0
                   class BinaryPredicate = ::ural::equal_to<>>
         cursor_type_t<Forward>
         operator()(Forward && in,
-                   DifferenceType<cursor_type_t<Forward>> count,
+                   difference_type_t<cursor_type_t<Forward>> count,
                    T const & value,
                    BinaryPredicate bin_pred = BinaryPredicate()) const
         {
@@ -701,7 +701,7 @@ inline namespace v0
     private:
         template <class Forward, class T,  class BinaryPredicate>
         static Forward impl(Forward in,
-                            DifferenceType<Forward> const n,
+                            difference_type_t<Forward> const n,
                             T const & value,
                             BinaryPredicate bin_pred)
         {
@@ -721,7 +721,7 @@ inline namespace v0
                 }
 
                 auto candidate = in;
-                auto cur_count = DifferenceType<Forward>{0};
+                auto cur_count = difference_type_t<Forward>{0};
 
                 while(true)
                 {
@@ -814,7 +814,7 @@ inline namespace v0
         }
     };
 }
-// namespace v0
+// namespace v1
 }
 //namespace ural
 

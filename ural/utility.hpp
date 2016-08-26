@@ -32,7 +32,7 @@
 
 namespace ural
 {
-inline namespace v0
+inline namespace v1
 {
     /** @brief Последовательность целых чисел времени компиляции
     @tparam T тип целых чисел
@@ -171,7 +171,7 @@ inline namespace v0
         constexpr auto const & as_const = odr_const<as_const_fn>;
     }
 }
-// namespace v0
+// namespace v1
 
 namespace experimental
 {

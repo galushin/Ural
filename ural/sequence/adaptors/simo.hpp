@@ -46,7 +46,7 @@ namespace experimental
         using cursor_tag = output_cursor_tag;
 
         /// @brief Тип расстояния
-        typedef CommonType<difference_type<Outputs>...> distance_type;
+        using distance_type = common_type_t<difference_type<Outputs>...>;
 
         /// @brief Тип ссылки
         using reference = simo_cursor_type &;

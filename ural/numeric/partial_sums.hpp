@@ -54,22 +54,22 @@ namespace experimental
         }
 
         /// @brief Тип значения
-        typedef ValueType<Input> value_type;
+        using value_type = value_type_t<Input>;
 
         /// @brief Тип ссылки
-        typedef value_type const & reference;
+        using reference = value_type const &;
 
         /// @brief Категория курсора
         using cursor_tag = common_tag_t<typename Input::cursor_tag, finite_forward_cursor_tag>;
 
         /// @brief Тип указателя
-        typedef value_type const & pointer;
+        using pointer = value_type const *;
 
         /// @brief Тип расстояния
-        typedef DifferenceType<Input> distance_type;
+        using distance_type = difference_type_t<Input>;
 
         /// @brief Тип операции, используемой для вычисления суммы
-        typedef BinaryOperation operation_type;
+        using operation_type = BinaryOperation;
 
         // Создание и свойства
         /** @brief Конструктор

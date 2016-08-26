@@ -39,10 +39,10 @@
 
 namespace ural
 {
-inline namespace v0
+inline namespace v1
 {
     template <class... Types>
-    using CommonType = typename std::common_type<Types...>::type;
+    using common_type_t = typename std::common_type<Types...>::type;
 
     /** @brief Класс-характеристика для определения типа элемента или
     указываемого объекта
@@ -106,7 +106,7 @@ inline namespace v0
     @tparam T тип составного объекта или (умного) указателя
     */
     template <class T>
-    using ValueType = typename value_type<T>::type;
+    using value_type_t = typename value_type<T>::type;
 
     template <class T, class = void>
     struct difference_type;
@@ -124,17 +124,17 @@ inline namespace v0
     {};
 
     template <class T>
-    using DifferenceType = typename difference_type<T>::type;
+    using difference_type_t = typename difference_type<T>::type;
 
     template <class Readable>
-    using ReferenceType = decltype(*std::declval<Readable>());
+    using reference_type_t = decltype(*std::declval<Readable>());
 
     template <class F, class... Args>
-    using ResultType = decltype(std::declval<F>()(std::declval<Args>()...));
+    using result_type_t = decltype(std::declval<F>()(std::declval<Args>()...));
 
     template <class F, class... Ins>
-    using IndirectCallableResultType
-        = ResultType<FunctionType<F>, ValueType<Ins>...>;
+    using indirect_callable_result_type_t
+        = result_type_t<function_type_t<F>, value_type_t<Ins>...>;
 
 /** @namespace concepts
  @brief Концепции --- коллекции требований к типам
@@ -170,7 +170,7 @@ namespace concepts
         }
 
     private:
-        typedef CommonType<T, U> CT;
+        using CT = common_type_t<T, U>;
     };
 
     template <class T>
@@ -237,7 +237,7 @@ namespace concepts
             BOOST_CONCEPT_ASSERT((concepts::Common<T, U>));
             BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<T>));
             BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<U>));
-            BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<CommonType<T, U>>));
+            BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<common_type_t<T, U>>));
 
             using ::ural::experimental::value_consumer;
             value_consumer<bool>() = (a == b);
@@ -294,7 +294,7 @@ namespace concepts
             BOOST_CONCEPT_ASSERT((concepts::Common<T, U>));
             BOOST_CONCEPT_ASSERT((concepts::TotallyOrdered<T>));
             BOOST_CONCEPT_ASSERT((concepts::TotallyOrdered<U>));
-            BOOST_CONCEPT_ASSERT((concepts::TotallyOrdered<CommonType<T, U>>));
+            BOOST_CONCEPT_ASSERT((concepts::TotallyOrdered<common_type_t<T, U>>));
             BOOST_CONCEPT_ASSERT((concepts::EqualityComparable<T, U>));
 
             using ::ural::experimental::value_consumer;
@@ -358,7 +358,7 @@ namespace concepts
         }
 
     private:
-        typedef typename ::ural::ValueType<Cursor> Value;
+        using Value = ::ural::value_type_t<Cursor>;
         static Cursor cur;
     };
 
@@ -443,13 +443,13 @@ namespace concepts
 
 
             typedef decltype(f(std::declval<Args>()...)) Result;
-            static_assert(std::is_same<ResultType<F, Args...>, Result>::value, "");
+            static_assert(std::is_same<result_type_t<F, Args...>, Result>::value, "");
         }
         // @todo Нужно ли проверять new и delete?
         // @todo Как проверить, что &f == std::adderssof(f)?
 
     private:
-        using Result = ResultType<F, Args...>;
+        using Result = result_type_t<F, Args...>;
         static F f;
     };
 
@@ -461,7 +461,7 @@ namespace concepts
     template <class F, class... Args>
     struct Predicate
      : concepts::RegularFunction<F, Args...>
-     , concepts::Convertible<ResultType<F, Args...>, bool>
+     , concepts::Convertible<result_type_t<F, Args...>, bool>
     {};
 
     template <class R, class... Args>
@@ -482,7 +482,7 @@ namespace concepts
             BOOST_CONCEPT_ASSERT((concepts::Relation<R, T>));
             BOOST_CONCEPT_ASSERT((concepts::Relation<R, U>));
             BOOST_CONCEPT_ASSERT((concepts::Common<T, U>));
-            BOOST_CONCEPT_ASSERT((concepts::Relation<R, CommonType<T, U>>));
+            BOOST_CONCEPT_ASSERT((concepts::Relation<R, common_type_t<T, U>>));
 
             BOOST_CONCEPT_ASSERT((Convertible<decltype(r(a, b)), bool>));
             BOOST_CONCEPT_ASSERT((Convertible<decltype(r(b, a)), bool>));
@@ -496,21 +496,21 @@ namespace concepts
 
     template <class F, class... Seqs>
     struct IndirectCallable
-     : Function<FunctionType<F>, ReferenceType<Seqs>...>
+     : Function<function_type_t<F>, reference_type_t<Seqs>...>
     {
         // @todo Проверить, что Seqs - Readable
     };
 
     template <class F, class... Seqs>
     struct IndirectPredicate
-     : Predicate<FunctionType<F>, ValueType<Seqs>...>
+     : Predicate<function_type_t<F>, value_type_t<Seqs>...>
     {
         // @todo Проверить, что Seqs - Readable
     };
 
     template <class F, class S1, class S2 = S1>
     struct IndirectRelation
-     : concepts::Relation<FunctionType<F>, ValueType<S1>, ValueType<S2>>
+     : concepts::Relation<function_type_t<F>, value_type_t<S1>, value_type_t<S2>>
     {
     public:
         /// @brief Использование
@@ -685,7 +685,7 @@ namespace concepts
 }
 // namespace concepts
 }
-// namespace v0
+// namespace v1
 }
 // namespace ural
 

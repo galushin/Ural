@@ -197,10 +197,10 @@ namespace experimental
         @return <tt> { ::ural::make_callable(std::move(f)), ::ural::cursor_fwd<Inputs>(in)...</tt> }
         */
         template <class Function, class... Inputs>
-        transform_cursor<FunctionType<Function>, cursor_type_t<Inputs>...>
+        transform_cursor<function_type_t<Function>, cursor_type_t<Inputs>...>
         operator()(Function f, Inputs && ... in) const
         {
-            using Seq = transform_cursor<FunctionType<Function>,
+            using Seq = transform_cursor<function_type_t<Function>,
                                            cursor_type_t<Inputs>...>;
 
             return Seq(::ural::make_callable(std::move(f)),

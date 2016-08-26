@@ -28,7 +28,7 @@
 
 namespace ural
 {
-inline namespace v0
+inline namespace v1
 {
     /// @cond false
     // @todo Автоматическое построение по списку типов
@@ -70,15 +70,13 @@ inline namespace v0
         typedef typename std::iterator_traits<Iterator>::pointer pointer;
 
         /// @brief Тип значения
-        typedef ValueType<std::iterator_traits<Iterator>> value_type;
+        using value_type = value_type_t<std::iterator_traits<Iterator>>;
 
         /// @brief Тип расстояния
-        typedef typename std::iterator_traits<Iterator>::difference_type
-            distance_type;
+        using distance_type = typename std::iterator_traits<Iterator>::difference_type;
 
         /// @brief Категория итератора
-        typedef typename std::iterator_traits<Iterator>::iterator_category
-            iterator_category;
+        using iterator_category = typename std::iterator_traits<Iterator>::iterator_category;
 
         /// @brief Категория курсора
         using cursor_tag = typename iterator_tag_to_cursor_tag<iterator_category>::type;
@@ -389,7 +387,7 @@ inline namespace v0
         return iterator_cursor<Iterator>(std::move(first), std::move(last));
     }
 }
-// namespace v0
+// namespace v1
 }
 // namespace ural
 

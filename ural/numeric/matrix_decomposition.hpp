@@ -38,11 +38,11 @@ namespace experimental
     struct make_triangular_matrix
     {
     private:
-        typedef ValueType<M> Value;
+        using Value = value_type_t<M>;
 
     public:
         /// @brief Тип-результат
-        typedef boost::numeric::ublas::triangular_matrix<Value, Type> type;
+        using type = boost::numeric::ublas::triangular_matrix<Value, Type>;
     };
 
     /** @brief Функциональный объект вычисления скалярного (внутреннего)
@@ -184,7 +184,7 @@ namespace experimental
     tuple<Matrix, Matrix>
     qr_eigenvectors(Matrix A, size_t max_iter, double)
     {
-        typedef ValueType<Matrix> Value;
+        using Value = value_type_t<Matrix>;
         auto const dim = A.size1();
 
         assert(A.size2() == dim);

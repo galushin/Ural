@@ -468,7 +468,7 @@ namespace experimental
 }
 // namespace experimental
 
-inline namespace v0
+inline namespace v1
 {
 // Функциональные объекты для операторов
     /** @brief Функциональный объект для оператора "бинарный плюс"
@@ -1058,7 +1058,7 @@ inline namespace v0
         return Function{make_callable(std::move(pred))};
     }
 }
-// namespace v0
+// namespace v1
 }
 // namespace ural
 

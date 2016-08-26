@@ -1809,7 +1809,7 @@ BOOST_AUTO_TEST_CASE(rotate_copy_different_traversed_front)
 
     auto const seq = ural_ex::make_cartesian_product_cursor(s1, s2);
 
-    using Value = ural::ValueType<decltype(seq)>;
+    using Value = ural::value_type_t<decltype(seq)>;
 
     auto const n = s1.size() * s2.size() / 2;
 
@@ -1951,7 +1951,7 @@ BOOST_AUTO_TEST_CASE(partition_test)
 
     auto ys = xs;
 
-    using Element = ::ural::ValueType<Container>;
+    using Element = ::ural::value_type_t<Container>;
 
     static_assert(std::is_same<Element, int>::value, "");
 

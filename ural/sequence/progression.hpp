@@ -94,10 +94,10 @@ namespace experimental
               class Step = use_default>
     class arithmetic_progression_cursor
      : public cursor_base<arithmetic_progression_cursor<Additive, Plus, CursorTag, Step>,
-                            FunctionType<experimental::defaulted_type_t<Plus, plus<>>>>
+                            function_type_t<experimental::defaulted_type_t<Plus, plus<>>>>
     {
         using Base = cursor_base<arithmetic_progression_cursor,
-                                   FunctionType<experimental::defaulted_type_t<Plus, plus<>>>>;
+                                   function_type_t<experimental::defaulted_type_t<Plus, plus<>>>>;
 
         static_assert(!std::is_same<CursorTag, bidirectional_cursor_tag>::value,
                       "Infinite sequence can't be bidirectional");
@@ -137,7 +137,7 @@ namespace experimental
         typedef value_type const * pointer;
 
         /// @brief Тип операции
-        using operation_type = FunctionType<experimental::defaulted_type_t<Plus, plus<>>>;
+        using operation_type = function_type_t<experimental::defaulted_type_t<Plus, plus<>>>;
 
         // Конструкторы
         /** @brief Конструктор

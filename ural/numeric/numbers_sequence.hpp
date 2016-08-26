@@ -105,10 +105,10 @@ namespace experimental
         @param x_max наибольшее значение
         */
         template <class T1, class T2>
-        numbers_cursor<CommonType<T1, T2>, unit_t>
+        numbers_cursor<common_type_t<T1, T2>, unit_t>
         operator()(T1 x_min, T2 x_max) const
         {
-            using T = CommonType<T1, T2>;
+            using T = common_type_t<T1, T2>;
             assert(T(x_min) <= T(x_max));
 
             typedef numbers_cursor<T, unit_t> Seq;
@@ -122,10 +122,10 @@ namespace experimental
         @pre <tt> (step > 0) ? (first <= last) : (last <= first) </tt>
         */
         template <class T1, class T2, class D>
-        numbers_cursor<CommonType<T1, T2>, D>
+        numbers_cursor<common_type_t<T1, T2>, D>
         operator()(T1 first, T2 last, D step) const
         {
-            using T = CommonType<T1, T2>;
+            using T = common_type_t<T1, T2>;
 
             assert(step != 0);
             assert((step > 0) ? (T(first) <= T(last)) : (T(last) <= T(first)));
@@ -138,7 +138,7 @@ namespace experimental
 
             assert(n >= 0);
 
-            using Cursor = numbers_cursor<CommonType<T1, T2>, D>;
+            using Cursor = numbers_cursor<common_type_t<T1, T2>, D>;
             return Cursor(std::move(first), std::move(n), std::move(step));
         }
     };
@@ -162,7 +162,7 @@ namespace experimental
 }
 // namespace experimental
 
-inline namespace v0
+inline namespace v1
 {
     namespace
     {
@@ -175,7 +175,7 @@ inline namespace v0
         constexpr auto const & indices_of = odr_const<::ural::experimental::indices_of_fn>;
     }
 }
-// inline namespace v0
+// inline namespace v1
 }
 // namespace ural
 

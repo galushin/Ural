@@ -74,24 +74,21 @@ namespace experimental
         }
 
         /// @brief Тип ссылки
-        typedef CommonType<typename Input1::reference, typename Input2::reference>
-            reference;
+        using reference = common_type_t<typename Input1::reference, typename Input2::reference>;
 
         /// @brief Тип значения
-        typedef CommonType<ValueType<Input1>, ValueType<Input2>> value_type;
+        using value_type = common_type_t<value_type_t<Input1>, value_type_t<Input2>>;
 
         /// @brief Категория курсора
-        using cursor_tag = CommonType<typename Input1::cursor_tag,
+        using cursor_tag = common_type_t<typename Input1::cursor_tag,
                                       typename Input2::cursor_tag,
                                       finite_forward_cursor_tag>;
 
         /// @brief Тип указателя
-        typedef CommonType<typename Input1::pointer, typename Input2::pointer>
-            pointer;
+        using pointer = common_type_t<typename Input1::pointer, typename Input2::pointer>;
 
         /// @brief Тип расстояния
-        typedef CommonType<DifferenceType<Input1>, DifferenceType<Input2>>
-            distance_type;
+        using distance_type = common_type_t<difference_type_t<Input1>, difference_type_t<Input2>>;
 
         /** @brief Конструктор
         @param in1 первый базовый курсор
@@ -311,21 +308,21 @@ namespace experimental
         }
 
         /// @brief Тип ссылки
-        typedef typename Input1::reference reference;
+        using reference = typename Input1::reference;
 
         /// @brief Тип значения
-        typedef ValueType<Input1> value_type;
+        using value_type = value_type_t<Input1>;
 
         /// @brief Категория курсора
-        using cursor_tag = CommonType<typename Input1::cursor_tag,
+        using cursor_tag = common_type_t<typename Input1::cursor_tag,
                                       typename Input2::cursor_tag,
                                       finite_forward_cursor_tag>;
 
         /// @brief Тип указателя
-        typedef typename Input1::pointer pointer;
+        using pointer = typename Input1::pointer;
 
         /// @brief Тип расстояния
-        typedef DifferenceType<Input1> distance_type;
+        using distance_type = difference_type_t<Input1>;
 
         /** @brief Конструктор
         @param in1 первый базовый курсор
@@ -502,21 +499,21 @@ namespace experimental
         }
 
         /// @brief Тип ссылки
-        typedef typename Input1::reference reference;
+        using reference = typename Input1::reference;
 
         /// @brief Тип значения
-        typedef ValueType<Input1> value_type;
+        using value_type = value_type_t<Input1>;
 
         /// @brief Категория курсора
-        using cursor_tag = CommonType<typename Input1::cursor_tag,
+        using cursor_tag = common_type_t<typename Input1::cursor_tag,
                                       typename Input2::cursor_tag,
                                       finite_forward_cursor_tag>;
 
         /// @brief Тип указателя
-        typedef typename Input1::pointer pointer;
+        using pointer = typename Input1::pointer;
 
         /// @brief Тип расстояния
-        typedef DifferenceType<Input1> distance_type;
+        using distance_type = difference_type_t<Input1>;
 
         /** @brief Конструктор
         @param in1 первый базовый курсор
@@ -693,24 +690,21 @@ namespace experimental
         }
 
         /// @brief Тип ссылки
-        typedef CommonType<typename Input1::reference, typename Input2::reference>
-            reference;
+        using reference = common_type_t<typename Input1::reference, typename Input2::reference>;
 
         /// @brief Тип значения
-        typedef CommonType<ValueType<Input1>, ValueType<Input2>> value_type;
+        using value_type = common_type_t<value_type_t<Input1>, value_type_t<Input2>>;
 
         /// @brief Категория курсора
-        using cursor_tag = CommonType<typename Input1::cursor_tag,
+        using cursor_tag = common_type_t<typename Input1::cursor_tag,
                                       typename Input2::cursor_tag,
                                       finite_forward_cursor_tag>;
 
         /// @brief Тип указателя
-        typedef CommonType<typename Input1::pointer, typename Input2::pointer>
-            pointer;
+        using pointer = common_type_t<typename Input1::pointer, typename Input2::pointer>;
 
         /// @brief Тип расстояния
-        typedef CommonType<DifferenceType<Input1>, DifferenceType<Input2>>
-            distance_type;
+        using distance_type = common_type_t<difference_type_t<Input1>, difference_type_t<Input2>>;
 
         /** @brief Конструктор
         @param in1 первый базовый курсор
@@ -924,24 +918,21 @@ namespace experimental
         }
 
         /// @brief Тип ссылки
-        typedef CommonType<typename Input1::reference, typename Input2::reference>
-            reference;
+        using reference = common_type_t<typename Input1::reference, typename Input2::reference>;
 
         /// @brief Тип значения
-        typedef CommonType<ValueType<Input1>, ValueType<Input2>> value_type;
+        using value_type = common_type_t<value_type_t<Input1>, value_type_t<Input2>>;
 
         /// @brief Категория курсора
-        using cursor_tag = CommonType<typename Input1::cursor_tag,
+        using cursor_tag = common_type_t<typename Input1::cursor_tag,
                                       typename Input2::cursor_tag,
                                       finite_forward_cursor_tag>;
 
         /// @brief Тип указателя
-        typedef CommonType<typename Input1::pointer, typename Input2::pointer>
-            pointer;
+        using pointer = common_type_t<typename Input1::pointer, typename Input2::pointer>;
 
         /// @brief Тип расстояния
-        typedef CommonType<DifferenceType<Input1>, DifferenceType<Input2>>
-            distance_type;
+        using distance_type = common_type_t<difference_type_t<Input1>, difference_type_t<Input2>>;
 
         /** @brief Конструктор
         @param in1 первый базовый курсор

@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE(flat_set_default_template_parameters)
     typedef int T;
     typedef ural_ex::flat_set<T> Set;
 
-    static_assert(std::is_same<::ural::ValueType<Set>, T>::value, "");
+    static_assert(std::is_same<::ural::value_type_t<Set>, T>::value, "");
 
     static_assert(std::is_same<Set::key_compare, std::less<T>>::value, "");
     static_assert(std::is_same<Set::value_compare, Set::key_compare>::value, "");

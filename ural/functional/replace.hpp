@@ -52,7 +52,7 @@ namespace experimental
 
         // Типы
         /// @brief Тип предиката
-        using predicate_type = FunctionType<Predicate>;
+        using predicate_type = function_type_t<Predicate>;
 
         /// @brief Тип возвращаемого значения
         typedef T const & result_type;
@@ -130,7 +130,7 @@ namespace experimental
             return x.members_ == y.members_;
         }
         /// @brief Тип предиката
-        using predicate_type = FunctionType<BinaryPredicate>;
+        using predicate_type = function_type_t<BinaryPredicate>;
 
         /// @brief Тип возвращаемого значения
         typedef T const & result_type;

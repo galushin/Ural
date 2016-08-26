@@ -36,7 +36,7 @@
 
 namespace ural
 {
-inline namespace v0
+inline namespace v1
 {
     /** @brief Класс, представляющий дискретное распределение
     @tparam IntType тип значений
@@ -459,7 +459,7 @@ inline namespace v0
         return is;
     }
 }
-// inline namespace v0
+// inline namespace v1
 
 namespace experimental
 {
@@ -705,7 +705,7 @@ namespace experimental
         using result_type = experimental::defaulted_type_t<Vector, boost::numeric::ublas::vector<double>>;
 
         /// @brief Тип элементов
-        typedef ValueType<result_type> element_type;
+        using element_type = value_type_t<result_type>;
 
         /// @brief Тип ковариационной матрицы
         using matrix_type = experimental::defaulted_type_t<Matrix, boost::numeric::ublas::matrix<element_type>>;

@@ -33,11 +33,11 @@ BOOST_AUTO_TEST_CASE(partial_sums_traversed_front)
     auto src_p = ural_ex::partial_sums(src);
 
     auto const n = 13;
-    std::vector<ural::ValueType<decltype(src)>> v1(n, -1);
+    std::vector<ural::value_type_t<decltype(src)>> v1(n, -1);
 
     auto res = ural::copy(src_p, v1)[ural::_1].traversed_front();
 
-    std::vector<ural::ValueType<decltype(src)>> v2;
+    std::vector<ural::value_type_t<decltype(src)>> v2;
 
     ural::copy(std::move(res), v2 | ural::back_inserter);
 

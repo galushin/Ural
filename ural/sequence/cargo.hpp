@@ -68,10 +68,10 @@ namespace experimental
         typedef typename Cursor::reference reference;
 
         /// @brief Тип значения
-        typedef ValueType<Cursor> value_type;
+        using value_type = value_type_t<Cursor>;
 
         /// @brief Тип расстояния
-        typedef DifferenceType<Cursor> distance_type;
+        using distance_type = difference_type_t<Cursor>;
 
         /// @brief Тип указателя
         typedef typename Cursor::pointer pointer;

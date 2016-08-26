@@ -380,38 +380,38 @@ namespace experimental
 
     public:
         /// @brief Тип объектов, создаваемых данным распределителем
-        typedef ValueType<std::allocator_traits<Base>> value_type;
+        using value_type = value_type_t<std::allocator_traits<Base>>;
 
         /// @brief Тип для представления размера
-        typedef typename std::allocator_traits<Base>::size_type size_type;
+        using size_type = typename std::allocator_traits<Base>::size_type;
 
         /// @brief Тип разности значений указателя
-        typedef typename std::allocator_traits<Base>::difference_type difference_type;
+        using difference_type = typename std::allocator_traits<Base>::difference_type;
 
         /// @brief Тип указателя
-        typedef typename std::allocator_traits<Base>::pointer pointer;
+        using pointer = typename std::allocator_traits<Base>::pointer;
 
         /// @brief Тип константного указателя
-        typedef typename Base::const_pointer const_pointer;
+        using const_pointer = typename Base::const_pointer;
 
         /** @brief Нужно ли передавать распределитель памяти при копирующем
         присваивании контейнера
         */
-        typedef typename std::allocator_traits<Base>::propagate_on_container_copy_assignment
-            propagate_on_container_copy_assignment;
+        using propagate_on_container_copy_assignment =
+            typename std::allocator_traits<Base>::propagate_on_container_copy_assignment;
 
         /** @brief Нужно ли передавать распределитель памяти при присваивании
         контейнера с перемещением
         */
-        typedef typename std::allocator_traits<Base>::propagate_on_container_move_assignment
-            propagate_on_container_move_assignment;
+        using propagate_on_container_move_assignment
+            = typename std::allocator_traits<Base>::propagate_on_container_move_assignment;
 
         /** @brief Нужно ли передавать распределитель памяти при обмене
         контейнеров
         @note Данный распределитель содержит состояние (идентификатор),
         следовательно, его нужно обменивать.
         */
-        typedef std::true_type propagate_on_container_swap;
+        using propagate_on_container_swap = std::true_type;
 
         /** @brief Конструктор
         @param id идентификатор

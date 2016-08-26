@@ -34,7 +34,7 @@
 
 namespace ural
 {
-inline namespace v0
+inline namespace v1
 {
     /** @brief Класс функционального объекта для создания
     <tt> std::reference_wrapper </tt> без добавления константности.
@@ -130,7 +130,7 @@ inline namespace v0
         //@}
     };
 }
-// namespace v0
+// namespace v1
 
 namespace experimental
 {
@@ -475,7 +475,7 @@ namespace experimental
         }
 
         template <class T>
-        void operator()(T & x, DifferenceType<T> n) const
+        void operator()(T & x, difference_type_t<T> n) const
         {
             x.pop_back(n);
         }
@@ -500,7 +500,7 @@ namespace experimental
     {
     public:
         template <class T>
-        decltype(auto) operator()(T const & x, DifferenceType<T> n) const
+        decltype(auto) operator()(T const & x, difference_type_t<T> n) const
         {
             return x[n];
         }
@@ -648,13 +648,13 @@ namespace experimental
         @param f функция
         @param arg значение для первого аргумента
         @return <tt> Fun(make_callable(std::move(f)), std::forward<Arg>(arg)) </tt>,
-        где @c Fun -- <tt> curried_function<FunctionType<F>, Arg> <tt>
+        где @c Fun -- <tt> curried_function<function_type_t<F>, Arg> <tt>
         */
         template <class F, class Arg>
-        curried_function<FunctionType<F>, Arg>
+        curried_function<function_type_t<F>, Arg>
         operator()(F f, Arg && arg) const
         {
-            using Fun = curried_function<FunctionType<F>, Arg>;
+            using Fun = curried_function<function_type_t<F>, Arg>;
             return Fun(make_callable(std::move(f)), std::forward<Arg>(arg));
         }
     };
@@ -674,7 +674,7 @@ namespace experimental
 }
 // namespace experimental
 
-inline namespace v0
+inline namespace v1
 {
 namespace
 {
@@ -693,7 +693,7 @@ namespace
 }
 // namespace
 }
-// namespace v0
+// namespace v1
 }
 // namespace ural
 

@@ -248,7 +248,7 @@ namespace experimental
 }
 // namespace experimental
 
-inline namespace v0
+inline namespace v1
 {
     namespace
     {
@@ -263,7 +263,7 @@ inline namespace v0
         constexpr auto const & front_inserter = odr_const<experimental::front_inserter_helper>;
     }
 }
-// namespace v0
+// namespace v1
 }
 // namespace ural
 

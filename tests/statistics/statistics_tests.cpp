@@ -27,7 +27,7 @@ namespace
 {
     namespace ural_ex = ::ural::experimental;
 
-    using ::ural::ValueType;
+    using ::ural::value_type_t;
 
     typedef boost::mpl::list<double, ural_ex::rational<int>> Real_types;
 
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(probability_default_param_type_test)
 {
     using P = ural::experimental::probability<>;
 
-    static_assert(std::is_same<double, ValueType<P>>::value,
+    static_assert(std::is_same<double, value_type_t<P>>::value,
                   "default is double");
 }
 
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(probability_default_ctor_test, T, Real_types)
     static_assert(p == 0, "p must be 0");
     static_assert(0 == p, "p must be 0");
 
-    static_assert(sizeof(p) == sizeof(ValueType<decltype(p)>),
+    static_assert(sizeof(p) == sizeof(value_type_t<decltype(p)>),
                   "Too big!");
 }
 

@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(cartesian_product_cursor_test_forward)
 
     assert(n < ural::size(s2));
 
-    using Value = ural::ValueType<decltype(s2)>;
+    using Value = ural::value_type_t<decltype(s2)>;
 
     std::vector<Value> out(n);
 
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(cartesian_product_cursor_test_copy_halfs_with_shrink_front)
 
     auto const n = 20;
 
-    using Value = ural::ValueType<decltype(s2)>;
+    using Value = ural::value_type_t<decltype(s2)>;
 
     // Копируем в один приём
     std::vector<Value> r1;

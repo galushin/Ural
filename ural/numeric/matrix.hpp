@@ -157,7 +157,7 @@ namespace experimental
         typedef typename Matrix::size_type size_type;
 
         /// @brief Тип значений
-        typedef ValueType<Matrix> value_type;
+        using value_type = value_type_t<Matrix>;
 
         /// @brief Тип ссылки
         typedef typename Matrix::const_reference const_reference;
@@ -319,7 +319,7 @@ namespace experimental
     {
         assert(eps > 0.0);
 
-        typedef ValueType<Matrix> Element;
+        using Element = value_type_t<Matrix>;
 
         for(size_t i = 0; i != S.size1(); ++ i)
         {

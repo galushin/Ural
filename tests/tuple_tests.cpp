@@ -133,13 +133,13 @@ BOOST_AUTO_TEST_CASE(tuple_constexpr_get)
 #if __GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__ >= 50101
 BOOST_AUTO_TEST_CASE(tuple_constexpr_get_regeression_first_empty_type)
 {
-    constexpr auto const v0 = ural::equal_to<>{};
-    constexpr auto const v1 = 42;
-    constexpr auto const v2 = 4.2;
-    constexpr auto const ts = ural::make_tuple(v0, v1, v2);
+    constexpr auto const x0 = ural::equal_to<>{};
+    constexpr auto const x1 = 42;
+    constexpr auto const x2 = 4.2;
+    constexpr auto const ts = ural::make_tuple(x0, x1, x2);
 
-    static_assert(std::get<1>(ts) == v1, "");
-    static_assert(std::get<2>(ts) == v2, "");
+    static_assert(std::get<1>(ts) == x1, "");
+    static_assert(std::get<2>(ts) == x2, "");
 
     BOOST_CHECK(true);
 }

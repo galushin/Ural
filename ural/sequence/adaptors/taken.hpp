@@ -42,7 +42,7 @@ namespace experimental
     узнать точный размер в конструкторе, а следовательно делать меньше проверок
     в operator!, быстрее выполнять exhaust_front.
     */
-    template <class Input, class Size = DifferenceType<Input>>
+    template <class Input, class Size = difference_type_t<Input>>
     class take_cursor
      : public cursor_adaptor<take_cursor<Input, Size>, Input>
     {
@@ -192,10 +192,10 @@ namespace experimental
         }
 
         template <class Cursor, class Size1, class Size2>
-        take_cursor<Cursor, CommonType<Size1, Size2>>
+        take_cursor<Cursor, common_type_t<Size1, Size2>>
         operator()(take_cursor<Cursor, Size1> cur, Size2 n) const
         {
-            using Size = CommonType<Size1, Size2>;
+            using Size = common_type_t<Size1, Size2>;
             using Result = take_cursor<Cursor, Size>;
 
             auto n_new = std::min(Size(cur.count()), Size(std::move(n)));

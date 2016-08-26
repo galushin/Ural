@@ -40,19 +40,19 @@ namespace experimental
     {
     public:
         /// @brief Тип значения
-        typedef ValueType<Input> value_type;
+        using value_type = value_type_t<Input>;
 
         /// @brief Тип ссылки
-        typedef value_type const & reference;
+        using reference = value_type const &;
 
         /// @brief Категория курсора
         using cursor_tag = common_tag_t<typename Input::cursor_tag, finite_forward_cursor_tag>;
 
         /// @brief Тип указателя
-        typedef typename Input::pointer pointer;
+        using pointer = typename Input::pointer;
 
         /// @brief Тип расстояния
-        typedef DifferenceType<Input> distance_type;
+        using distance_type = difference_type_t<Input>;
 
         /** @brief Конструктор
         @param in исходная последовательность

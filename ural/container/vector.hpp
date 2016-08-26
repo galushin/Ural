@@ -72,11 +72,11 @@ namespace experimental
 
     public:
         // Типы
-        typedef Alloc allocator_type;
-        typedef ValueType<Traits> value_type;
-        typedef typename Traits::pointer pointer;
-        typedef typename Traits::size_type size_type;
-        typedef typename Traits::difference_type difference_type;
+        using allocator_type = Alloc ;
+        using value_type = value_type_t<Traits>;
+        using pointer = typename Traits::pointer;
+        using size_type = typename Traits::size_type;
+        using difference_type = typename Traits::difference_type;
 
         // Создание, копирование, уничтожение
         buffer(Alloc const & a, size_type capacity = 0)

@@ -140,7 +140,7 @@ namespace experimental
         typedef digit<radix> value_type;
 
         // Конструкторы
-        explicit digit_arithmetics_result(ValueType<value_type> word)
+        explicit digit_arithmetics_result(value_type_t<value_type> word)
          : value_{word % radix}
          , carry_{word / radix}
         {}

@@ -53,7 +53,7 @@ namespace experimental
             = common_tag_t<finite_forward_cursor_tag, typename Inputs::cursor_tag...>;
 
         /// @brief Тип значения
-        typedef tuple<ValueType<Inputs>...> value_type;
+        typedef tuple<value_type_t<Inputs>...> value_type;
 
         /** @brief Тип указателя
         У кортежей нет именованных функций-членов, поэтому предоставление
@@ -63,7 +63,7 @@ namespace experimental
         typedef void pointer;
 
         /// @brief Тип расстояния
-        typedef CommonType<DifferenceType<Inputs>...> distance_type;
+        using distance_type = common_type_t<difference_type_t<Inputs>...>;
 
         // Конструкторы
         /** @brief Конструктор

@@ -46,10 +46,10 @@ namespace experimental
         а @c Value --- тип значений элементов последовательности @c seq.
         */
         template <class Sequence>
-        Container<ValueType<cursor_type_t<Sequence>>, Args...>
+        Container<value_type_t<cursor_type_t<Sequence>>, Args...>
         operator()(Sequence && seq) const
         {
-            typedef ValueType<cursor_type_t<Sequence>> Value;
+            using Value = value_type_t<cursor_type_t<Sequence>>;
 
             auto cur = ural::cursor_fwd<Sequence>(seq);
 
@@ -85,14 +85,14 @@ namespace experimental
         @param seq последовательность
         */
         template <class Sequence>
-        Map<typename std::tuple_element<0, ValueType<cursor_type_t<Sequence>>>::type,
-            typename std::tuple_element<1, ValueType<cursor_type_t<Sequence>>>::type,
+        Map<typename std::tuple_element<0, value_type_t<cursor_type_t<Sequence>>>::type,
+            typename std::tuple_element<1, value_type_t<cursor_type_t<Sequence>>>::type,
             Args...>
         operator()(Sequence && seq) const
         {
-            typedef ValueType<cursor_type_t<Sequence>> Value;
-            typedef typename std::tuple_element<0, Value>::type Key;
-            typedef typename std::tuple_element<1, Value>::type Mapped;
+            using Value = value_type_t<cursor_type_t<Sequence>> ;
+            using Key = typename std::tuple_element<0, Value>::type;
+            using Mapped = typename std::tuple_element<1, Value>::type;
 
             Map<Key, Mapped, Args...> result;
 

@@ -42,19 +42,19 @@ namespace experimental
     public:
         // Типы
         /// @brief Тип значения
-        using value_type = tuple<ValueType<Inputs>...>;
+        using value_type = tuple<value_type_t<Inputs>...>;
 
         /// @brief Тип ссылки
-        using reference = tuple<ReferenceType<Inputs>...>;
+        using reference = tuple<reference_type_t<Inputs>...>;
 
         /// @brief Тип указателя
         using pointer = void;
 
         /// @brief Тип расстояния
-        using distance_type = CommonType<DifferenceType<Inputs>...>;
+        using distance_type = common_type_t<difference_type_t<Inputs>...>;
 
         /// @brief Категория курсора
-        using cursor_tag = CommonType<typename Inputs::cursor_tag...>;
+        using cursor_tag = common_type_t<typename Inputs::cursor_tag...>;
 
         // Конструкторы
         /** @brief Конструктор

@@ -125,10 +125,10 @@ namespace experimental
         @return <tt> remove_if_cursor(cursor_fwd<Input>(in), make_callable(pred)) </tt>
         */
         template <class Input, class Predicate>
-        remove_if_cursor<cursor_type_t<Input>, FunctionType<Predicate>>
+        remove_if_cursor<cursor_type_t<Input>, function_type_t<Predicate>>
         operator()(Input && in, Predicate pred) const
         {
-            using Cursor = remove_if_cursor<cursor_type_t<Input>, FunctionType<Predicate>>;
+            using Cursor = remove_if_cursor<cursor_type_t<Input>, function_type_t<Predicate>>;
             return Cursor(::ural::cursor_fwd<Input>(in), make_callable(std::move(pred)));
         }
     };
@@ -157,7 +157,7 @@ namespace experimental
     public:
         // Типы
         /// @brief Категория курсора
-        using cursor_tag = CommonType<typename Input::cursor_tag, finite_forward_cursor_tag>;
+        using cursor_tag = common_type_t<typename Input::cursor_tag, finite_forward_cursor_tag>;
 
         // Конструкторы
         /** @brief Конструктор

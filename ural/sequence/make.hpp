@@ -33,7 +33,7 @@
 
 namespace ural
 {
-inline namespace v0
+inline namespace v1
 {
     /** @brief Создание последовательности на основе контейнера
     @param c контейнер
@@ -76,8 +76,8 @@ inline namespace v0
     template <class Container>
     auto cursor(std::back_insert_iterator<Container> i)
     {
-        typedef std::back_insert_iterator<Container> Iterator;
-        typedef DifferenceType<Container> Diff;
+        using Iterator = std::back_insert_iterator<Container>;
+        using Diff = difference_type_t<Container>;
         return experimental::weak_output_iterator_cursor<Iterator, Diff>(std::move(i));
     }
 
@@ -88,8 +88,8 @@ inline namespace v0
     template <class Container>
     auto cursor(std::front_insert_iterator<Container> i)
     {
-        typedef std::front_insert_iterator<Container> Iterator;
-        typedef DifferenceType<Container> Diff;
+        using Iterator = std::front_insert_iterator<Container>;
+        using Diff = difference_type_t<Container>;
         return experimental::weak_output_iterator_cursor<Iterator, Diff>(std::move(i));
     }
 
@@ -97,13 +97,13 @@ inline namespace v0
     контейнера
     @param i итератор-вставка
     @return <tt> weak_output_iterator_cursor<decltype(i), Diff>(std::move(i)) </tt>,
-    где @c Diff --- <tt> DifferenceType<Container> </tt>
+    где @c Diff --- <tt> difference_type_t<Container> </tt>
     */
     template <class Container>
     auto cursor(std::insert_iterator<Container> i)
     {
-        typedef std::insert_iterator<Container> Iterator;
-        typedef DifferenceType<Container> Diff;
+        using Iterator = std::insert_iterator<Container>;
+        using Diff = difference_type_t<Container>;
         return experimental::weak_output_iterator_cursor<Iterator, Diff>(std::move(i));
     }
 
@@ -293,7 +293,7 @@ inline namespace v0
             static Cur cur;
             using cursor_tag = typename Cur::cursor_tag;
 
-            using difference_type = DifferenceType<Cur>;
+            using difference_type = difference_type_t<Cur>;
         };
 
         template <class Cur>
@@ -426,8 +426,8 @@ inline namespace v0
 
         private:
             static Cur cur;
-            typedef DifferenceType<Cur> distance_type;
-            typedef typename Cur::reference reference;
+            using distance_type = difference_type_t<Cur>;
+            using reference = typename Cur::reference;
         };
 
         template <class Cur, class Out>
@@ -438,7 +438,7 @@ inline namespace v0
             {
                 // @todo нужно ли это static_assert(concepts::Semiregular<Out>(), "");?
                 BOOST_CONCEPT_ASSERT((concepts::Readable<Cur>));
-                BOOST_CONCEPT_ASSERT((concepts::MoveWritable<Out, ReferenceType<Cur>>));
+                BOOST_CONCEPT_ASSERT((concepts::MoveWritable<Out, reference_type_t<Cur>>));
             }
         };
 
@@ -452,7 +452,7 @@ inline namespace v0
 
                 BOOST_CONCEPT_ASSERT((concepts::Readable<Cur>));
                 // @todo нужно ли это BOOST_CONCEPT_ASSERT((concepts::IndirectlyMovable<Seq, Out>))?;
-                BOOST_CONCEPT_ASSERT((concepts::Writable<Out, ReferenceType<Cur>>));
+                BOOST_CONCEPT_ASSERT((concepts::Writable<Out, reference_type_t<Cur>>));
             }
         };
 
@@ -465,10 +465,10 @@ inline namespace v0
             {
                 BOOST_CONCEPT_ASSERT((concepts::Readable<Cur1>));
                 BOOST_CONCEPT_ASSERT((concepts::Readable<Cur2>));
-                BOOST_CONCEPT_ASSERT((concepts::Swappable<ReferenceType<Cur1>,
-                                                          ReferenceType<Cur2>>));
-                BOOST_CONCEPT_ASSERT((concepts::Swappable<ReferenceType<Cur1>>));
-                BOOST_CONCEPT_ASSERT((concepts::Swappable<ReferenceType<Cur2>>));
+                BOOST_CONCEPT_ASSERT((concepts::Swappable<reference_type_t<Cur1>,
+                                                          reference_type_t<Cur2>>));
+                BOOST_CONCEPT_ASSERT((concepts::Swappable<reference_type_t<Cur1>>));
+                BOOST_CONCEPT_ASSERT((concepts::Swappable<reference_type_t<Cur2>>));
             }
         };
 
@@ -482,7 +482,7 @@ inline namespace v0
             /// @brief Использование
             BOOST_CONCEPT_USAGE(Permutable)
             {
-                BOOST_CONCEPT_ASSERT((concepts::Semiregular<ValueType<Cur>>));
+                BOOST_CONCEPT_ASSERT((concepts::Semiregular<value_type_t<Cur>>));
             }
         };
 
@@ -565,7 +565,7 @@ inline namespace v0
     }
     // namespace concepts
 }
-// namespace v0
+// namespace v1
 }
 // namespace ural
 

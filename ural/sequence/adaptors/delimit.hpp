@@ -41,7 +41,7 @@ namespace experimental
     @todo Использовать для последовательности на основе C-строк
     */
     template <class Input,
-              class Value = ValueType<Input>,
+              class Value = value_type_t<Input>,
               class BinaryPredicate = ::ural::equal_to<>>
     class delimit_cursor
      : public cursor_adaptor<delimit_cursor<Input, Value, BinaryPredicate>,
@@ -66,7 +66,7 @@ namespace experimental
 
         // Типы
         /// @brief Категория курсора
-        using traversal_tag = CommonType<finite_forward_cursor_tag,
+        using traversal_tag = common_type_t<finite_forward_cursor_tag,
                                          typename Input::cursor_tag>;
 
         // Создание, копирование, присваивание
@@ -97,7 +97,7 @@ namespace experimental
         @return Отношение, определяющее эквивалентность значению, на котором
         нужно остановиться.
         */
-        FunctionType<BinaryPredicate> const & relation() const
+        function_type_t<BinaryPredicate> const & relation() const
         {
             return Inherited::payload();
         }
@@ -144,12 +144,12 @@ namespace experimental
             template <class Sequence, class Value,
                       class BinaryPredicate = ural::equal_to<>>
             delimit_cursor<cursor_type_t<Sequence>, Value,
-                             FunctionType<BinaryPredicate>>
+                             function_type_t<BinaryPredicate>>
             operator()(Sequence && in, Value value,
                        BinaryPredicate bin_pred = BinaryPredicate()) const
             {
                 using Seq = delimit_cursor<cursor_type_t<Sequence>, Value,
-                                           FunctionType<BinaryPredicate>>;
+                                           function_type_t<BinaryPredicate>>;
                 return Seq(::ural::cursor_fwd<Sequence>(in),
                            std::move(value),
                            make_callable(std::move(bin_pred)));

@@ -35,7 +35,7 @@
 
 namespace ural
 {
-inline namespace v0
+inline namespace v1
 {
     template <class T>
     T decl_common_type(T, T);
@@ -299,7 +299,7 @@ inline namespace v0
     */
     template <class Cursor, class Base>
     Cursor
-    operator+(cursor_base<Cursor, Base> const & s, DifferenceType<Cursor> n)
+    operator+(cursor_base<Cursor, Base> const & s, difference_type_t<Cursor> n)
     {
         auto result = static_cast<Cursor const &>(s);
         result += n;
@@ -308,7 +308,7 @@ inline namespace v0
 
     template <class Cursor, class Base>
     Cursor
-    operator+(DifferenceType<Cursor> n, cursor_base<Cursor, Base> const & cur)
+    operator+(difference_type_t<Cursor> n, cursor_base<Cursor, Base> const & cur)
     {
         return std::move(cur + n);
     }
@@ -321,10 +321,10 @@ inline namespace v0
     {
     private:
         template <class Cursor>
-        static DifferenceType<Cursor>
+        static difference_type_t<Cursor>
         cursor_size(Cursor const & cur, finite_single_pass_cursor_tag)
         {
-            DifferenceType<Cursor> n{0};
+            difference_type_t<Cursor> n{0};
 
             for(auto in = cur; !!in; ++ in)
             {
@@ -335,7 +335,7 @@ inline namespace v0
         }
 
         template <class Cursor>
-        static DifferenceType<Cursor>
+        static difference_type_t<Cursor>
         cursor_size(Cursor const & cur, finite_random_access_cursor_tag)
         {
             return cur.size();
@@ -356,7 +356,7 @@ inline namespace v0
         }
 
         template <class Cursor>
-        DifferenceType<Cursor>
+        difference_type_t<Cursor>
         dispatch(Cursor const & cur,
                  void_t<decltype(ural::make_cursor_tag(cur))> *) const
         {
@@ -364,7 +364,7 @@ inline namespace v0
         }
 
         template <class Sequence>
-        DifferenceType<Sequence>
+        difference_type_t<Sequence>
         dispatch(Sequence const & s,
                  void_t<typename Sequence::allocator_type> *) const
         {
@@ -377,7 +377,7 @@ inline namespace v0
         @return Количество непройденных элементов курсора или размер контейнера
         */
         template <class Sequence>
-        DifferenceType<Sequence>
+        difference_type_t<Sequence>
         operator()(Sequence const & s) const
         {
             return this->dispatch(s, nullptr);
@@ -417,14 +417,14 @@ inline namespace v0
         @param n число шагов
         */
         template <class Cursor>
-        void operator()(Cursor & cur, DifferenceType<Cursor> n) const
+        void operator()(Cursor & cur, difference_type_t<Cursor> n) const
         {
             return this->impl(cur, std::move(n), ural::make_cursor_tag(cur));
         }
 
     private:
         template <class Cursor>
-        static void impl(Cursor & cur, DifferenceType<Cursor> n,
+        static void impl(Cursor & cur, difference_type_t<Cursor> n,
                          single_pass_cursor_tag)
         {
             for(; n > 0; -- n)
@@ -434,7 +434,7 @@ inline namespace v0
         }
 
         template <class Cursor>
-        static void impl(Cursor & cur, DifferenceType<Cursor> n,
+        static void impl(Cursor & cur, difference_type_t<Cursor> n,
                          random_access_cursor_tag)
         {
             cur += n;
@@ -452,14 +452,14 @@ inline namespace v0
         */
         template <class BidirectionalCursor>
         void operator()(BidirectionalCursor & cur,
-                        DifferenceType<BidirectionalCursor> n) const
+                        difference_type_t<BidirectionalCursor> n) const
         {
             this->impl(cur, n, make_cursor_tag(cur));
         }
 
     private:
         template <class Cursor>
-        void impl(Cursor & cur, DifferenceType<Cursor> n, bidirectional_cursor_tag) const
+        void impl(Cursor & cur, difference_type_t<Cursor> n, bidirectional_cursor_tag) const
         {
             for(; n > 0; -- n)
             {
@@ -469,7 +469,7 @@ inline namespace v0
 
         // @todo Покрыть тестом
         template <class Cursor>
-        void impl(Cursor & cur, DifferenceType<Cursor> n, finite_random_access_cursor_tag) const
+        void impl(Cursor & cur, difference_type_t<Cursor> n, finite_random_access_cursor_tag) const
         {
             cur.pop_back(n);
         }
@@ -490,7 +490,7 @@ inline namespace v0
         */
         template <class Cursor>
         Cursor
-        operator()(Cursor cur, DifferenceType<Cursor> n = 1) const
+        operator()(Cursor cur, difference_type_t<Cursor> n = 1) const
         {
             ::ural::advance_fn{}(cur, n);
             return cur;
@@ -641,8 +641,8 @@ inline namespace v0
             }
 
             template <class Cursor>
-            ReferenceType<Cursor>
-            operator()(Cursor const & cur, DifferenceType<Cursor> i) const
+            reference_type_t<Cursor>
+            operator()(Cursor const & cur, difference_type_t<Cursor> i) const
             {
                 return cur[i];
             }
@@ -737,7 +737,7 @@ inline namespace v0
         // @todo сгруппировать с front...
     }
 }
-// namespace v0
+// namespace v1
 }
 // namespace ural
 

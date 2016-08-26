@@ -133,14 +133,14 @@ BOOST_AUTO_TEST_CASE(partial_sort_reversed_test)
 
 BOOST_AUTO_TEST_CASE(partial_sort_copy_test)
 {
-    std::list<int> const v0{4, 2, 5, 1, 3};
+    std::list<int> const src{4, 2, 5, 1, 3};
 
     std::vector<int> r1_std{10, 11, 12};
     std::vector<int> r1_ural{10, 11, 12};
 
-    auto pos_std = std::partial_sort_copy(v0.begin(), v0.end(),
+    auto pos_std = std::partial_sort_copy(src.begin(), src.end(),
                                           r1_std.begin(), r1_std.end());
-    auto pos_ural = ural::partial_sort_copy(v0, r1_ural);
+    auto pos_ural = ural::partial_sort_copy(src, r1_ural);
 
     BOOST_CHECK(pos_ural.original() == ural::cursor(r1_ural));
     BOOST_CHECK_EQUAL(r1_std.end() - pos_std, pos_ural.size());
@@ -151,15 +151,15 @@ BOOST_AUTO_TEST_CASE(partial_sort_copy_test)
 
 BOOST_AUTO_TEST_CASE(partial_sort_copy_test_custom_predicate_to_greater)
 {
-    std::list<int> const v0{4, 2, 5, 1, 3};
+    std::list<int> const src{4, 2, 5, 1, 3};
 
     std::vector<int> r2_std{10, 11, 12, 13, 14, 15, 16};
     std::vector<int> r2_ural{10, 11, 12, 13, 14, 15, 16};
 
-    auto pos_std = std::partial_sort_copy(v0.begin(), v0.end(),
+    auto pos_std = std::partial_sort_copy(src.begin(), src.end(),
                                      r2_std.begin(), r2_std.end(),
                                      std::greater<int>());
-    auto pos_ural = ural::partial_sort_copy(v0, r2_ural, ural::greater<>());
+    auto pos_ural = ural::partial_sort_copy(src, r2_ural, ural::greater<>());
 
     BOOST_CHECK(pos_ural.original() == ural::cursor(r2_ural));
     BOOST_CHECK_EQUAL(r2_std.end() - pos_std, pos_ural.size());
@@ -292,7 +292,7 @@ BOOST_AUTO_TEST_CASE(equal_range_different_traversed_front)
 
     assert(ural::is_sorted(s));
 
-    auto const needle = ural::ValueType<decltype(s)>{4, 2};
+    auto const needle = ural::value_type_t<decltype(s)>{4, 2};
 
     auto pos = ural::equal_range(s, needle);
 
@@ -633,7 +633,7 @@ BOOST_AUTO_TEST_CASE(includes_test)
 BOOST_AUTO_TEST_CASE(includes_test_custom_compare)
 {
     std::vector<std::string> vs{"abcfhx", "abc", "ac", "g", "acg", {}};
-    std::string v0 {"ABC"};
+    std::string v_0 {"ABC"};
 
     auto cmp_nocase = [](char a, char b) {
     return std::tolower(a) < std::tolower(b);
@@ -642,12 +642,12 @@ BOOST_AUTO_TEST_CASE(includes_test_custom_compare)
     for(auto const & s : vs)
     {
         bool const r_std = std::includes(s.begin(), s.end(),
-                                         v0.begin(), v0.end(), cmp_nocase);        std::istringstream s_stream(s);
-        std::istringstream v0_stream(v0);
+                                         v_0.begin(), v_0.end(), cmp_nocase);        std::istringstream s_stream(s);
+        std::istringstream v_0_stream(v_0);
 
         bool const r_ural
             = ural::includes(ural::experimental::make_istream_cursor<char>(s_stream),
-                             ural::experimental::make_istream_cursor<char>(v0_stream),
+                             ural::experimental::make_istream_cursor<char>(v_0_stream),
                              cmp_nocase);
         BOOST_CHECK_EQUAL(r_std, r_ural);
     }
@@ -656,7 +656,7 @@ BOOST_AUTO_TEST_CASE(includes_test_custom_compare)
 BOOST_AUTO_TEST_CASE(includes_test_custom_compare_istream_auto_to_cursor)
 {
     std::vector<std::string> vs{"abcfhx", "abc", "ac", "g", "acg", {}};
-    std::string v0 {"ABC"};
+    std::string v_0 {"ABC"};
 
     auto cmp_nocase = [](char a, char b) {
     return std::tolower(a) < std::tolower(b);
@@ -665,10 +665,10 @@ BOOST_AUTO_TEST_CASE(includes_test_custom_compare_istream_auto_to_cursor)
     for(auto const & s : vs)
     {
         bool const r_std = std::includes(s.begin(), s.end(),
-                                         v0.begin(), v0.end(), cmp_nocase);        std::istringstream s_stream(s);
-        std::istringstream v0_stream(v0);
+                                         v_0.begin(), v_0.end(), cmp_nocase);        std::istringstream s_stream(s);
+        std::istringstream v_0_stream(v_0);
 
-        bool const r_ural = ural::includes(s_stream, v0_stream, cmp_nocase);
+        bool const r_ural = ural::includes(s_stream, v_0_stream, cmp_nocase);
         BOOST_CHECK_EQUAL(r_std, r_ural);
     }
 }

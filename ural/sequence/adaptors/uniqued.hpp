@@ -58,19 +58,19 @@ namespace experimental
 
         // Типы
         /// @brief Тип ссылки
-        typedef typename Input::reference reference;
+        using reference = typename Input::reference;
 
         /// @brief Тип значения
-        typedef ValueType<Input> value_type;
+        using value_type = value_type_t<Input>;
 
         /// @brief Категория курсора
         using cursor_tag = common_tag_t<typename Input::cursor_tag, finite_forward_cursor_tag>;
 
         /// @brief Тип указателя
-        typedef typename Input::pointer pointer;
+        using pointer = typename Input::pointer;
 
         /// @brief Тип расстояния
-        typedef DifferenceType<Input> distance_type;
+        using distance_type = difference_type_t<Input>;
 
         // Конструкторы
         /** @brief Конструктор

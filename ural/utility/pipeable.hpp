@@ -39,13 +39,13 @@ namespace experimental
     */
     template <class Factory>
     class pipeable
-     : private FunctionType<Factory>
+     : private function_type_t<Factory>
     {
-        using Base = FunctionType<Factory>;
+        using Base = function_type_t<Factory>;
 
     public:
         /** @brief Конструктор без аргументов
-        @post <tt> this->function() == FunctionType<Factory>{} </tt>
+        @post <tt> this->function() == function_type_t<Factory>{} </tt>
         */
         constexpr explicit pipeable() = default;
 
@@ -61,14 +61,14 @@ namespace experimental
         /** @brief Используемый функциональный объект
         @return Константная ссылка на используемый функциональный объект
         */
-        FunctionType<Factory> const & function() const &
+        function_type_t<Factory> const & function() const &
         {
             return *this;
         }
 
-        FunctionType<Factory> && function() &&
+        function_type_t<Factory> && function() &&
         {
-            return static_cast<FunctionType<Factory> &&>(*this);
+            return static_cast<function_type_t<Factory> &&>(*this);
         }
         //@}
     };

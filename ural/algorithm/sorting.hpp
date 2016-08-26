@@ -48,7 +48,7 @@
 
 namespace ural
 {
-inline namespace v0
+inline namespace v1
 {
     // Проверка отсортированности
     /** @ingroup SortingOperations
@@ -236,8 +236,8 @@ inline namespace v0
     public:
         template <class RASequence, class Compare = ::ural::less<>>
         void operator()(RASequence && seq,
-                        DifferenceType<cursor_type_t<RASequence>> first,
-                        DifferenceType<cursor_type_t<RASequence>> last,
+                        difference_type_t<cursor_type_t<RASequence>> first,
+                        difference_type_t<cursor_type_t<RASequence>> last,
                         Compare cmp = Compare()) const
         {
             return this->impl(::ural::cursor_fwd<RASequence>(seq),
@@ -249,9 +249,9 @@ inline namespace v0
         template <class RACursor, class Compare>
         static void
         update_largest(RACursor cur,
-                       DifferenceType<RACursor> & largest,
-                       DifferenceType<RACursor> candidate,
-                       DifferenceType<RACursor> last,
+                       difference_type_t<RACursor> & largest,
+                       difference_type_t<RACursor> candidate,
+                       difference_type_t<RACursor> last,
                        Compare cmp)
         {
             if(candidate < last && cmp(cur[largest], cur[candidate]))
@@ -262,8 +262,8 @@ inline namespace v0
 
         template <class RACursor, class Compare>
         void impl(RACursor cur,
-                  DifferenceType<RACursor> first,
-                  DifferenceType<RACursor> last,
+                  difference_type_t<RACursor> first,
+                  difference_type_t<RACursor> last,
                   Compare cmp) const
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessCursor<RACursor>));
@@ -674,7 +674,7 @@ inline namespace v0
         template <class RASequence, class Compare = ::ural::less<>>
         cursor_type_t<RASequence>
         operator()(RASequence && s,
-                   DifferenceType<cursor_type_t<RASequence>> part,
+                   difference_type_t<cursor_type_t<RASequence>> part,
                    Compare cmp = Compare()) const
         {
             BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
@@ -691,7 +691,7 @@ inline namespace v0
     private:
         template <class RACursor, class Compare>
         static void
-        impl(RACursor cur, DifferenceType<RACursor> const part, Compare cmp)
+        impl(RACursor cur, difference_type_t<RACursor> const part, Compare cmp)
         {
             make_heap_fn{}(cur, cmp);
 
@@ -1414,14 +1414,14 @@ inline namespace v0
         /** @brief Определение наименьшего из двух значений
         @param x, y аргументы
         @param cmp функция сравнения
-        @pre @c Compare должент быть <tt> Relation<FunctionType<Comp>, T> </tt>
+        @pre @c Compare должент быть <tt> Relation<function_type_t<Comp>, T> </tt>
         @return Если <tt> cmp(y, x) </tt>, то возвращает @c y, иначе --- @c x.
         */
         template <class T, class Compare>
         constexpr T const &
         operator()(T const & x, T const & y, Compare cmp) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::Relation<FunctionType<Compare>, T>));
+            BOOST_CONCEPT_ASSERT((concepts::Relation<function_type_t<Compare>, T>));
 
             return ::ural::make_callable(std::move(cmp))(y, x) ? y : x;
         }
@@ -1451,7 +1451,7 @@ inline namespace v0
         operator()(std::initializer_list<T> values, Compare cmp) const
         {
             BOOST_CONCEPT_ASSERT((concepts::Semiregular<T>));
-            BOOST_CONCEPT_ASSERT((concepts::Relation<FunctionType<Compare>, T>));
+            BOOST_CONCEPT_ASSERT((concepts::Relation<function_type_t<Compare>, T>));
 
             return values.size() > 0
                    ? this->impl(values.begin() + 1, values.end(),
@@ -1495,14 +1495,14 @@ inline namespace v0
         /** @brief Определение наибольшего из двух значений
         @param x, y аргументы
         @param cmp функция сравнения
-        @pre @c Compare должент быть <tt> Relation<FunctionType<Comp>, T> </tt>
+        @pre @c Compare должент быть <tt> Relation<function_type_t<Comp>, T> </tt>
         @return Наибольший из @c x и @c y, если они равны, то возвращает @c x.
         */
         template <class T, class Compare>
         constexpr T const &
         operator()(T const & x, T const & y, Compare cmp) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::Relation<FunctionType<Compare>, T>));
+            BOOST_CONCEPT_ASSERT((concepts::Relation<function_type_t<Compare>, T>));
 
             return ::ural::make_callable(std::move(cmp))(x, y) ? y : x;
         }
@@ -1533,7 +1533,7 @@ inline namespace v0
         operator()(std::initializer_list<T> values, Compare cmp) const
         {
             BOOST_CONCEPT_ASSERT((concepts::Semiregular<T>));
-            BOOST_CONCEPT_ASSERT((concepts::Relation<FunctionType<Compare>, T>));
+            BOOST_CONCEPT_ASSERT((concepts::Relation<function_type_t<Compare>, T>));
 
             return values.size() > 0
                    ? this->impl(values.begin() + 1, values.end(),
@@ -1578,7 +1578,7 @@ inline namespace v0
         /** @brief Определение наименьшего и наименьшего из двух значений
         @param x, y аргументы
         @param cmp функция сравнения
-        @pre @c Compare должент быть <tt> Relation<FunctionType<Comp>, T> </tt>
+        @pre @c Compare должент быть <tt> Relation<function_type_t<Comp>, T> </tt>
         Если <tt> cmp(y, x) </tt>, то возвращает <tt> {y, x} </tt>, иначе
         --- <tt> {x, y} </tt>.
         */
@@ -1586,7 +1586,7 @@ inline namespace v0
         constexpr std::pair<T const &, T const &>
         operator()(T const & x, T const & y, Compare cmp) const
         {
-            BOOST_CONCEPT_ASSERT((concepts::Relation<FunctionType<Compare>, T>));
+            BOOST_CONCEPT_ASSERT((concepts::Relation<function_type_t<Compare>, T>));
 
             using Pair = std::pair<T const &, T const &>;
             return ::ural::make_callable(std::move(cmp))(y, x) ? Pair(y, x) : Pair(x, y);
@@ -1621,7 +1621,7 @@ inline namespace v0
         operator()(std::initializer_list<T> values, Compare cmp) const
         {
             BOOST_CONCEPT_ASSERT((concepts::Semiregular<T>));
-            BOOST_CONCEPT_ASSERT((concepts::Relation<FunctionType<Compare>, T>));
+            BOOST_CONCEPT_ASSERT((concepts::Relation<function_type_t<Compare>, T>));
 
             return values.size() > 0
                    ? this->impl(values.begin() + 1, values.end(),
@@ -2008,7 +2008,7 @@ inline namespace v0
         }
     };
 }
-// namespace v0
+// namespace v1
 }
 // namespace ural
 

@@ -39,7 +39,7 @@
 
 namespace ural
 {
-inline namespace v0
+inline namespace v1
 {
     /** @brief Вывод в поток элементов последовательности, разделённых заданным
     объектом.
@@ -126,10 +126,10 @@ inline namespace v0
 
     template <class String>
     class basic_istringstream
-     : public std::basic_istringstream<ValueType<String>,
+     : public std::basic_istringstream<value_type_t<String>,
                                        typename String::traits_type>
     {
-        typedef std::basic_istringstream<ValueType<String>,
+        typedef std::basic_istringstream<value_type_t<String>,
                                          typename String::traits_type> Base;
 
     public:
@@ -279,7 +279,7 @@ namespace details
         constexpr auto & to_wstring = odr_const<to_string_function<wchar_t>>;
     }
 }
-// namespace v0
+// namespace v1
 }
 // namespace ural
 

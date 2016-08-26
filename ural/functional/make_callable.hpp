@@ -30,7 +30,7 @@
 
 namespace ural
 {
-inline namespace v0
+inline namespace v1
 {
     template <class Signature>
     class function_ptr_wrapper;
@@ -419,9 +419,9 @@ inline namespace v0
     }
 
     template <class T>
-    using FunctionType = decltype(make_callable_fn{}(std::declval<T>()));
+    using function_type_t = decltype(make_callable_fn{}(std::declval<T>()));
 }
-// inline namespace v0
+// inline namespace v1
 }
 // namespace ural
 

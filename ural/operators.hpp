@@ -118,7 +118,7 @@ inline namespace operators
 }
 // namespace experimental
 
-inline namespace v0
+inline namespace v1
 {
     using ::ural::experimental::operators::operator==;
     using ::ural::experimental::operators::operator!=;
@@ -130,7 +130,7 @@ inline namespace v0
     using ::ural::experimental::operators::operator++;
     using ::ural::experimental::operators::operator--;
 }
-// namespace v0
+// namespace v1
 }
 // namespace ural
 
