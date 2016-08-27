@@ -19,8 +19,9 @@
 
 #include <forward_list>
 #include <list>
-#include <vector>
+#include <numeric>
 #include <valarray>
+#include <vector>
 
 #include <boost/concept/assert.hpp>
 
