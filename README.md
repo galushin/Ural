@@ -19,13 +19,16 @@ Ural распространяется по открытой лицензии GNU
 Поддерживаемы компиляторы
 ----
 
-В настоящий момент поддерживается только TDM-GCC 5.1.0 (MS Windows и GNU/Linux).
+В настоящий момент поддерживается только GCC 5.1.0 (MS Windows и GNU/Linux).
 
-Статус сборки на **Travis-CI** [![Build Status](https://travis-ci.org/galushin/Ural.svg?branch=master)](https://travis-ci.org/galushin/Ural)
+Статус основной ветки (master): GNU/linux+gcc [![Build Status](https://travis-ci.org/galushin/Ural.svg?branch=master)](https://travis-ci.org/galushin/Ural)
+
+Статус ветки разработки (develop): GNU/linux+gcc [![Build Status](https://travis-ci.org/galushin/Ural.svg?branch=develop)](https://travis-ci.org/galushin/Ural)
 
 В ближайших планах включить в тестирование Clang (GNU/Linux).
 
 Поддержка Clang под MS Windows будет добавлена после реализации стандартной библиотеки этого компилятора.
+
 Поддержка Visual Studio будет добавлена только после реализации в ней C++14
 
 Зависимости
