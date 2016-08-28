@@ -36,6 +36,7 @@ inline namespace v1
 {
     /** @brief Функциональный объект, реализующий копирование элементов одной
     последовальности в другую
+    @ingroup MutatingSequenceOperations
     */
     class copy_fn
     {
@@ -81,6 +82,7 @@ inline namespace v1
 
     /** @brief Класс функционального объекта, выполняющего поиск элемента
     последовательности, удовлетворяющего заданному предикату.
+    @ingroup NonModifyingSequenceOperations
     */
     class find_if_fn
     {
@@ -124,6 +126,7 @@ inline namespace v1
 
     /** @brief Класс функционального объекта, выполняющего поиск заданного
     значения в последовательности.
+    @ingroup NonModifyingSequenceOperations
     */
     class find_fn
     {
@@ -167,6 +170,7 @@ inline namespace v1
 
     /** @brief Класс функционального объекта, выполняющего поиск элемента
     последовательности, не удовлетворяющего заданному предикату.
+    @ingroup NonModifyingSequenceOperations
     */
     class find_if_not_fn
     {

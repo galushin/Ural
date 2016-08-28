@@ -27,6 +27,12 @@
  элементов существующих последовательностей.
 */
 
+/** @defgroup PartitioningOperations Операции, связанные с разделением
+ @ingroup MutatingSequenceOperations
+ @brief Операции, связанные с разделением последовательности в соответствии с
+ заданным предикатом.
+*/
+
 #include <ural/sequence/adaptors/outdirected.hpp>
 #include <ural/sequence/adaptors/partition.hpp>
 #include <ural/sequence/adaptors/uniqued.hpp>
@@ -1379,7 +1385,7 @@ namespace details
     };
 
     // Разделение
-    /** @ingroup MutatingSequenceOperations
+    /** @ingroup PartitioningOperations
     @brief Тип функционального объекта для проверки того, последовательность
     является разделённой согласно предикату.
     */
@@ -1416,7 +1422,7 @@ namespace details
         }
     };
 
-    /** @ingroup MutatingSequenceOperations
+    /** @ingroup PartitioningOperations
     @brief Тип функционального объекта для разделения последовательности
     согласно заданному предикату
     */
@@ -1474,7 +1480,7 @@ namespace details
         }
     };
 
-    /** @ingroup MutatingSequenceOperations
+    /** @ingroup PartitioningOperations
     @brief Тип функционального объекта для устойчивого разделения
     последовательности согласно заданному предикату.
     @todo может быть двунаправленные как в Range extensions?
@@ -1582,7 +1588,7 @@ namespace details
         }
     };
 
-    /** @ingroup MutatingSequenceOperations
+    /** @ingroup PartitioningOperations
     @brief Тип функционального объекта для копирования элементов
     последовательности в две разные последовательности в зависимости от того,
     удовлетворяют ли они предикату.
@@ -1642,7 +1648,7 @@ namespace details
         }
     };
 
-    /** @ingroup MutatingSequenceOperations
+    /** @ingroup PartitioningOperations
     @brief Тип функционального объекта для поиска точки разделения
     последовательности
     */

@@ -24,8 +24,7 @@
 /** @defgroup SortingOperations Сортировка и связанные с ней операции
  @ingroup Algorithms
  @brief Алгоритмы, связанные с сортировкой и/или обработкой сортированных
- последовательностей
- @todo Более подробная таксономия (см. стандарт)
+ последовательностей.
 */
 
 /** @defgroup BinarySearch Бинарный поиск
@@ -40,6 +39,28 @@
  производится логарифмическое число перемещений по структуре данных. Для
  последовательностей, не предоставляющих произвольный доступ, будет производится
  линейное число перемещений.
+*/
+
+/** @defgroup SetOperations Операции над множествами
+ @ingroup SortingOperations
+ @brief Операции над сортированными множествами и мульти-множествами
+*/
+
+/** @defgroup HeapOperations Операции над кучами
+ @ingroup SortingOperations
+ @brief Операции, связанные с бинарными кучами. То есть структурами данных,
+ имеющих операции вставку элемента за логорифмическое время, а также
+ определения наибольшего элемента и его удаления за постоянное время.
+*/
+
+/** @defgroup MinMaxOperations Наибольшие и наименьшие элементы
+ @ingroup SortingOperations
+ @brief Операции поиска наибольших и наименьших элементов последовательностей.
+*/
+
+/** @defgroup PermutationGenerators Генераторы перестановок
+ @ingroup SortingOperations
+ @brief Операции порождения перестановок в лексикографическом порядке.
 */
 
 #include <ural/algorithm/non_modifying.hpp>
@@ -138,7 +159,7 @@ inline namespace v1
     };
 
     // Бинарные кучи
-    /** @ingroup SortingOperations
+    /** @ingroup HeapOperations
     @brief Тип функционального поиска префикса последовательности, являющегося
     бинарной кучей.
     */
@@ -196,7 +217,7 @@ inline namespace v1
         }
     };
 
-    /** @ingroup SortingOperations
+    /** @ingroup HeapOperations
     @brief Тип функционального объекта для проверки того, что последовательность
     является бинарной кучей.
     */
@@ -290,7 +311,7 @@ inline namespace v1
         }
     };
 
-    /** @ingroup SortingOperations
+    /** @ingroup HeapOperations
     @brief Тип функционального объекта для добавления элемента в кучу.
     */
     class push_heap_fn
@@ -339,7 +360,7 @@ inline namespace v1
         }
     };
 
-    /** @ingroup SortingOperations
+    /** @ingroup HeapOperations
     @brief Тип функционального объекта для удаления первого элемента из кучи
     */
     class pop_heap_fn
@@ -385,7 +406,7 @@ inline namespace v1
         }
     };
 
-    /** @ingroup SortingOperations
+    /** @ingroup HeapOperations
     @brief Тип функционального объекта для преобразование последовательности
     в бинарную кучу
     */
@@ -430,7 +451,7 @@ inline namespace v1
         }
     };
 
-    /** @ingroup SortingOperations
+    /** @ingroup HeapOperations
     @brief Тип функционального объекта преобразования последовательности
     в бинарную кучу.
     */
@@ -1024,7 +1045,7 @@ inline namespace v1
     };
 
     // Слияние
-    /** @ingroup SortingOperations
+    /** @ingroup SetOperations
     @brief Тип функционального объекта для слияния сортированных
     последовательности.
     */
@@ -1066,7 +1087,7 @@ inline namespace v1
         }
     };
 
-    /** @ingroup SortingOperations
+    /** @ingroup SetOperations
     @brief Тип функционального объекта для слияния сортированных частей
     последовательности.
     */
@@ -1163,7 +1184,7 @@ inline namespace v1
     };
 
     // Операции с множествами
-    /** @ingroup SortingOperations
+    /** @ingroup SetOperations
     @brief Тип функционального объекта для проверки того, что одно множество
     является подмножеством другого.
     */
@@ -1223,7 +1244,7 @@ inline namespace v1
         }
     };
 
-    /** @ingroup SortingOperations
+    /** @ingroup SetOperations
     @brief Тип функционального объекта для построения объединения двух множеств.
     */
     class set_union_fn
@@ -1265,7 +1286,7 @@ inline namespace v1
         }
     };
 
-    /** @ingroup SortingOperations
+    /** @ingroup SetOperations
     @brief Тип функционального объекта для построения пересечения двух множеств.
     */
     class set_intersection_fn
@@ -1307,7 +1328,7 @@ inline namespace v1
         }
     };
 
-    /** @ingroup SortingOperations
+    /** @ingroup SetOperations
     @brief Тип функционального объекта для построения разности двух множеств.
     */
     class set_difference_fn
@@ -1349,7 +1370,7 @@ inline namespace v1
         }
     };
 
-    /** @ingroup SortingOperations
+    /** @ingroup SetOperations
     @brief Тип функционального объекта для построения симметричной разности
     двух множеств.
     */
@@ -1392,7 +1413,7 @@ inline namespace v1
     };
 
     // Поиск наибольшего и наименьшего
-    /** @ingroup SortingOperations
+    /** @ingroup MinMaxOperations
     @brief Тип функционального объекта для поиска наименьшего значения
     */
     class min_fn
@@ -1471,7 +1492,7 @@ inline namespace v1
         }
     };
 
-    /** @ingroup SortingOperations
+    /** @ingroup MinMaxOperations
     @brief Тип функционального объекта для поиска наибольшего значения
     @note А. Степанов считает, что при эквивалентности аргументов нужно
     возвращать второй, чтобы обеспечить устойчивость.
@@ -1553,7 +1574,7 @@ inline namespace v1
         }
     };
 
-    /** @ingroup SortingOperations
+    /** @ingroup MinMaxOperations
     @brief Тип функционального объекта для поиска наименьшего и наибольшего
     значений одновременно.
     */
@@ -1653,7 +1674,7 @@ inline namespace v1
         }
     };
 
-    /** @ingroup SortingOperations
+    /** @ingroup MinMaxOperations
     @brief Тип функционального объекта для поиска наименьшего элемента
     последовательности.
     */
@@ -1708,7 +1729,7 @@ inline namespace v1
         }
     };
 
-    /** @ingroup SortingOperations
+    /** @ingroup MinMaxOperations
     @brief Тип функционального объекта для поиска наибольшего элемента
     последовательности.
     */
@@ -1753,7 +1774,7 @@ inline namespace v1
         }
     };
 
-    /** @ingroup SortingOperations
+    /** @ingroup MinMaxOperations
     @brief Тип функционального объекта для поиска наименьшего и наибольшего
     элементов последовательности.
     */
@@ -1896,7 +1917,7 @@ inline namespace v1
     };
 
     // Перестановки
-    /** @ingroup SortingOperations
+    /** @ingroup PermutationGenerators
     @brief Тип функционального объекта, порождающего лексикографически
     следующей перестановки.
     */
@@ -1967,7 +1988,7 @@ inline namespace v1
         }
     };
 
-    /** @ingroup SortingOperations
+    /** @ingroup PermutationGenerators
     @brief Тип функционального объекта, порождающего лексикографически
     предыдущей перестановки.
     */
