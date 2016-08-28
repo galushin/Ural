@@ -9,4 +9,7 @@ addons:
 language: cpp
 compiler: gcc
 
-script: cd ./ural_test && make -f makefile.gcc release && ./bin/Release/ural_test
+script:
+    - cd ./ural_test 
+    - make -f makefile.gcc debug && ./bin/Debug/ural_test
+    - make -f makefile.gcc release && ./bin/Release/ural_test
