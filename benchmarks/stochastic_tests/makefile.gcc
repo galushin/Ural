@@ -12,7 +12,7 @@ LD = g++-5
 WINDRES = windres
 
 INC = -I../../../Ural -I../../boost/concept_check/include -I../../boost/config/include -I../../boost/core/include -I../../boost/iterator/include -I../../boost/mpl/include -I../../boost/preprocessor/include -I../../boost/static_assert/include -I../../boost/type_traits/include -I../../boost/utility/include -I../../boostorg/detail/include
-CFLAGS = -Wall -fexceptions
+CFLAGS = -Wall -fexceptions -std=gnu++14 -DBOOST_NO_AUTO_PTR
 RESINC = 
 LIBDIR = 
 LIB = 
