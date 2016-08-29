@@ -25,6 +25,8 @@
 */
 namespace ural
 {
+namespace experimental
+{
 namespace meta
 {
     /** @brief Пара типов
@@ -57,10 +59,12 @@ namespace meta
     */
     template <class... Ts>
     struct map
-     : public ::ural::typelist<Ts...>
+     : public ::ural::experimental::typelist<Ts...>
     {};
 }
 // namespace meta
+}
+// namespace experimental
 }
 // namespace ural
 

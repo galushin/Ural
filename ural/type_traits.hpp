@@ -25,7 +25,7 @@
 
 namespace ural
 {
-inline namespace v0
+inline namespace v1
 {
     /** @brief "Отрицание" к <tt> std::enable_if </tt>
     @tparam Flag булево значение
@@ -60,8 +60,6 @@ inline namespace v0
     */
     template <class T>
     using decay_t = typename std::decay<T>::type;
-}
-// namespace v0
 
 /// @cond false
 namespace details
@@ -93,8 +91,6 @@ namespace details
 // namespace details
 /// @endcond
 
-inline namespace v0
-{
     /** @brief Класс-характеристика, проверяющая, можно ли присвоить объекту
     типа @c T значение типа @c U.
     @tparam T тип левого операнда
@@ -162,7 +158,7 @@ inline namespace v0
     {};
     //@}
 }
-// namespace v0
+// namespace v1
 
 namespace experimental
 {

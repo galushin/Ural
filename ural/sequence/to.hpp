@@ -27,6 +27,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Тип функционального объекта для преобразования последовательности
     в контейнер.
     @tparam Container шаблон типа контейнера
@@ -39,22 +41,22 @@ namespace ural
     public:
         /** @brief Создание контейнера по последовательности
         @param seq последовательность
-        @return <tt> Container<Value>(begin(s), end(s)) </tt>, где @c s есть
-        <tt> ::ural::sequence_fwd<Sequence>(seq) </tt>, а @c Value --- тип
-        значений последовательности @c s.
+        @return <tt> Container<Value>(begin(cur), end(cur)) </tt>, где
+        @c cur есть <tt> ::ural::cursor_fwd<Sequence>(seq) </tt>,
+        а @c Value --- тип значений элементов последовательности @c seq.
         */
         template <class Sequence>
-        Container<ValueType<SequenceType<Sequence>>, Args...>
+        Container<value_type_t<cursor_type_t<Sequence>>, Args...>
         operator()(Sequence && seq) const
         {
-            typedef ValueType<SequenceType<Sequence>> Value;
+            using Value = value_type_t<cursor_type_t<Sequence>>;
 
-            auto s = ural::sequence_fwd<Sequence>(seq);
+            auto cur = ural::cursor_fwd<Sequence>(seq);
 
             using ::std::begin;
             using ::std::end;
-            auto first = begin(s);
-            auto last = end(s);
+            auto first = begin(cur);
+            auto last = end(cur);
 
             return Container<Value, Args...>(std::move(first), std::move(last));
         }
@@ -67,7 +69,7 @@ namespace ural
     распределителя памяти и т.д.
     */
     template <template <class...> class Container, class... Args>
-    using to_container = pipeable<to_container_fn<Container, Args...>>;
+    using to_container = experimental::pipeable<to_container_fn<Container, Args...>>;
 
     /** @brief Вспомогательный тип для преобразования последовательностей
     в ассоцитивный контейнер
@@ -83,22 +85,22 @@ namespace ural
         @param seq последовательность
         */
         template <class Sequence>
-        Map<typename std::tuple_element<0, ValueType<SequenceType<Sequence>>>::type,
-            typename std::tuple_element<1, ValueType<SequenceType<Sequence>>>::type,
+        Map<typename std::tuple_element<0, value_type_t<cursor_type_t<Sequence>>>::type,
+            typename std::tuple_element<1, value_type_t<cursor_type_t<Sequence>>>::type,
             Args...>
         operator()(Sequence && seq) const
         {
-            typedef ValueType<SequenceType<Sequence>> Value;
-            typedef typename std::tuple_element<0, Value>::type Key;
-            typedef typename std::tuple_element<1, Value>::type Mapped;
+            using Value = value_type_t<cursor_type_t<Sequence>> ;
+            using Key = typename std::tuple_element<0, Value>::type;
+            using Mapped = typename std::tuple_element<1, Value>::type;
 
             Map<Key, Mapped, Args...> result;
 
-            for(auto && x : ::ural::sequence_fwd<Sequence>(seq))
+            for(auto && x : ::ural::cursor_fwd<Sequence>(seq))
             {
                 result.emplace_hint(result.end(),
-                                    get(std::forward<decltype(x)>(x), ural::_1),
-                                    get(std::forward<decltype(x)>(x), ural::_2));
+                                    ural::experimental::get(std::forward<decltype(x)>(x), ural::_1),
+                                    ural::experimental::get(std::forward<decltype(x)>(x), ural::_2));
             }
 
             return result;
@@ -112,7 +114,7 @@ namespace ural
     распределителя памяти и т.д.
     */
     template <template <class, class, class...> class Map, class... Args>
-    using to_map = pipeable<to_map_fn<Map, Args...>>;
+    using to_map = experimental::pipeable<to_map_fn<Map, Args...>>;
 
     /** @brief Функциональный объект для преобразования последовательности в
     контейнер с полным указанием типа контейнера:
@@ -161,8 +163,10 @@ namespace ural
         в конвейерном стиле
         */
         constexpr auto const & as_container
-            = odr_const<pipeable<as_container_fn>>;
+            = odr_const<experimental::pipeable<as_container_fn>>;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

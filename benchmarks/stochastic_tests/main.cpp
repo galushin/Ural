@@ -34,7 +34,7 @@ int main(int argc, char const * argv[])
         std::cout << p.first << "\t" << p.second / p_expected << "\n";
     }
 
-    auto mm = ural::minmax_element(counter | ural::map_values);
+    auto mm = ural::minmax_element(counter | ural::experimental::map_values);
 
     std::cout << "\n"
               << mm[ural::_1].front() / p_expected << "\n"

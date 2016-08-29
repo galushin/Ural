@@ -27,6 +27,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Класс-характеристика преобразующая тип матрицы в соответствующий
     тип треугольной матрицы.
     @param M исходная матрица
@@ -36,11 +38,11 @@ namespace ural
     struct make_triangular_matrix
     {
     private:
-        typedef ValueType<M> Value;
+        using Value = value_type_t<M>;
 
     public:
         /// @brief Тип-результат
-        typedef boost::numeric::ublas::triangular_matrix<Value, Type> type;
+        using type = boost::numeric::ublas::triangular_matrix<Value, Type>;
     };
 
     /** @brief Функциональный объект вычисления скалярного (внутреннего)
@@ -182,7 +184,7 @@ namespace ural
     tuple<Matrix, Matrix>
     qr_eigenvectors(Matrix A, size_t max_iter, double)
     {
-        typedef ValueType<Matrix> Value;
+        using Value = value_type_t<Matrix>;
         auto const dim = A.size1();
 
         assert(A.size2() == dim);
@@ -191,7 +193,7 @@ namespace ural
 
         for(auto n = max_iter; n > 0; -- n)
         {
-            auto qr = ural::QR_decomposition(std::move(A));
+            auto qr = ::ural::experimental::QR_decomposition(std::move(A));
 
             A = prod(qr[ural::_2], qr[ural::_1]);
             V = prod(V, qr[ural::_1]);
@@ -199,6 +201,8 @@ namespace ural
 
         return std::make_tuple(std::move(A), std::move(V));
     }
+}
+// namespace experimental
 }
 // namespace ural
 

@@ -29,33 +29,35 @@
 
 namespace ural
 {
-    /** @brief Адаптор последовательности, возвращающий наибольший префикс, все
-    элементы которого удовлетворяют заданному предикату.
-    @tparam Sequence тип базовой последовательности
+namespace experimental
+{
+    /** @brief Адаптор курсора, возвращающий наибольший префикс, все элементы
+    которого удовлетворяют заданному предикату.
+    @tparam Input тип базового курсора
     @tparam Predicate тип унарного предиката
     */
-    template <class Sequence, class Predicate>
-    class taken_while_sequence
-     : public sequence_adaptor<taken_while_sequence<Sequence, Predicate>,
-                               Sequence, Predicate>
+    template <class Input, class Predicate>
+    class taken_while_cursor
+     : public cursor_adaptor<taken_while_cursor<Input, Predicate>,
+                             Input, Predicate>
     {
-        using Inherited = sequence_adaptor<taken_while_sequence, Sequence, Predicate>;
+        using Inherited = cursor_adaptor<taken_while_cursor, Input, Predicate>;
 
     public:
         // Типы
         /// @brief Категория курсора
         using cursor_tag
-            = common_tag_t<typename Sequence::cursor_tag, finite_forward_cursor_tag>;
+            = common_tag_t<typename Input::cursor_tag, finite_forward_cursor_tag>;
 
         // Создание, копирование, уничтожение, свойства
         /** @brief Конструктор
-        @param seq базовая последовательность
+        @param in базовый курсор
         @param pred предикат
-        @post <tt> this->base() == seq </tt>
+        @post <tt> this->base() == in </tt>
         @post <tt> this->predicate() == pred </tt>
         */
-        taken_while_sequence(Sequence seq, Predicate pred)
-         : Inherited(std::move(seq), std::move(pred))
+        taken_while_cursor(Input in, Predicate pred)
+         : Inherited(std::move(in), std::move(pred))
         {}
 
         /** @brief Используемый предикат
@@ -66,7 +68,7 @@ namespace ural
             return Inherited::payload();
         }
 
-        // Однопроходная последовательность
+        // Однопроходный курсор
         /** @brief Проверка исчерпания
         @return <tt> !this->base() || !this->predicate()(*this->base()) </tt>
         */
@@ -78,47 +80,49 @@ namespace ural
     private:
         friend Inherited;
 
-        template <class OtherSequence>
-        taken_while_sequence<OtherSequence, Predicate>
-        rebind_base(OtherSequence seq) const
+        template <class OtherCursor>
+        taken_while_cursor<OtherCursor, Predicate>
+        rebind_base(OtherCursor cur) const
         {
-            using Result = taken_while_sequence<OtherSequence, Predicate>;
-            return Result(std::move(seq), this->predicate());
+            using Result = taken_while_cursor<OtherCursor, Predicate>;
+            return Result(std::move(cur), this->predicate());
         }
     };
 
-    /// @brief Функциональный объект для создания @c taken_while_sequence
+    /// @brief Функциональный объект для создания @c taken_while_cursor
     class make_taken_while_fn
     {
     public:
-        /** @brief Создание @c taken_while_sequence
+        /** @brief Создание @c taken_while_cursor
         @param seq базовая последовательность
         @param Predicate унарный предикат
         */
-        template <class Sequenced, class Predicate>
-        taken_while_sequence<SequenceType<Sequenced>, FunctionType<Predicate>>
-        operator()(Sequenced && seq, Predicate pred) const
+        template <class Sequence, class Predicate>
+        taken_while_cursor<cursor_type_t<Sequence>, function_type_t<Predicate>>
+        operator()(Sequence && seq, Predicate pred) const
         {
-            using Result = taken_while_sequence<SequenceType<Sequenced>,
-                                                FunctionType<Predicate>>;
-            return Result(ural::sequence_fwd<Sequenced>(seq),
+            using Result = taken_while_cursor<cursor_type_t<Sequence>,
+                                                function_type_t<Predicate>>;
+            return Result(ural::cursor_fwd<Sequence>(seq),
                           ural::make_callable(std::move(pred)));
         }
     };
 
     namespace
     {
-        /// @brief Функциональный объект создания @c taken_while_sequence
+        /// @brief Функциональный объект создания @c taken_while_cursor
         constexpr auto const & make_taken_while
             = odr_const<make_taken_while_fn>;
 
-        /** @brief Функциональный объект создания @c taken_while_sequence
+        /** @brief Функциональный объект создания @c taken_while_cursor
         в конвейерном стиле.
         */
         constexpr auto const & taken_while
-            = odr_const<pipeable_maker<make_taken_while_fn>>;
+            = odr_const<experimental::pipeable_maker<make_taken_while_fn>>;
 
     }
+}
+// namespace experimental
 }
 // namespace ural
 

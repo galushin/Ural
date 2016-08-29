@@ -30,16 +30,18 @@
 
 namespace
 {
-    typedef ural::tracing_allocator<char> Char_alloc;
-    typedef ural::tracing_allocator<int> Int_alloc;
+    namespace ural_ex = ::ural::experimental;
 
-    typedef boost::mpl::list<ural::vector<int, Int_alloc>>
+    typedef ural_ex::tracing_allocator<char> Char_alloc;
+    typedef ural_ex::tracing_allocator<int> Int_alloc;
+
+    typedef boost::mpl::list<ural::experimental::vector<int, Int_alloc>>
         Sequence_containers;
 
-    typedef boost::mpl::list<ural::flat_set<int, ural::use_default, Int_alloc>>
-        Assosiative_containers_containers;
+    typedef boost::mpl::list<ural::experimental::flat_set<int, ural::use_default, Int_alloc>>
+        Assosiative_containers;
 
-    typedef boost::mpl::copy<Assosiative_containers_containers,
+    typedef boost::mpl::copy<Assosiative_containers,
                              boost::mpl::front_inserter<Sequence_containers>>::type
         Containers_types;
 }
@@ -49,7 +51,7 @@ namespace
 BOOST_AUTO_TEST_CASE_TEMPLATE(container_types_test, Container, Containers_types)
 {
     // Строка 1
-    typedef ::ural::ValueType<Container> T;
+    using T = ::ural::value_type_t<Container>;
 
     // @todo "T is Erasable from X" из таблицы 96
 
@@ -69,13 +71,13 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_types_test, Container, Containers_types)
     // строка 4
     static_assert(std::is_convertible<typename Iterator_traits::iterator_category,
                                       std::forward_iterator_tag>::value, "");
-    static_assert(std::is_same<::ural::ValueType<Iterator_traits>, T>::value, "");
+    static_assert(std::is_same<::ural::value_type_t<Iterator_traits>, T>::value, "");
     static_assert(std::is_convertible<Iterator, Const_iterator>::value, "");
 
     // строка 5
     static_assert(std::is_convertible<typename Const_iterator_traits::iterator_category,
                                       std::forward_iterator_tag>::value, "");
-    static_assert(std::is_same<::ural::ValueType<Const_iterator_traits>, T>::value, "");
+    static_assert(std::is_same<::ural::value_type_t<Const_iterator_traits>, T>::value, "");
 
     // строка 6
     typedef typename Container::difference_type Difference;
@@ -296,7 +298,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_non_member_swap_test,
     auto const v1_allocator_old = v1.get_allocator();
     auto const v2_allocator_old = v2.get_allocator();
 
-    using ural::swap;
+    using ural::experimental::swap;
     using std::swap;
     swap(v1, v2);
 
@@ -339,14 +341,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_copy_assign_lesser,
 // Строка 23
 BOOST_AUTO_TEST_CASE_TEMPLATE(container_size_test, Container, Containers_types)
 {
-    auto const v0 = Container();
+    auto const v_0 = Container();
 
-    BOOST_CHECK_EQUAL(v0.size(), 0U);
+    BOOST_CHECK_EQUAL(v_0.size(), 0U);
 
-    auto const v1 = Container{1, 1, 2, 3, 5, 8, 13};
+    auto const v_1 = Container{1, 1, 2, 3, 5, 8, 13};
 
-    BOOST_CHECK_EQUAL(v1.size(),
-                      static_cast<size_t>(std::distance(v1.begin(), v1.end())));
+    BOOST_CHECK_EQUAL(v_1.size(),
+                      static_cast<size_t>(std::distance(v_1.begin(), v_1.end())));
 }
 
 // Строка 24
@@ -447,8 +449,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_allocator_constructor,
     typedef typename Container::allocator_type Alloc;
 
     // Строка 1
-    static_assert(std::is_same<::ural::ValueType<typename Container::allocator_type>,
-                               ::ural::ValueType<Container>>::value,
+    static_assert(std::is_same<::ural::value_type_t<typename Container::allocator_type>,
+                               ::ural::value_type_t<Container>>::value,
                   "Allocator for wrong type!");
 
     // Строка 2
@@ -537,14 +539,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_move_with_same_allocator,
 BOOST_AUTO_TEST_CASE_TEMPLATE(container_assign_n_value_worse_then_iters_regression,
                               Container, Sequence_containers)
 {
-    static_assert(std::is_signed<::ural::ValueType<Container>>::value, "");
+    static_assert(std::is_signed<::ural::value_type_t<Container>>::value, "");
 
     Container x;
     x.assign(13, 42);
 
     Container z;
     z.assign(typename Container::size_type(13),
-             ::ural::ValueType<Container>(42));
+             ::ural::value_type_t<Container>(42));
 
     URAL_CHECK_EQUAL_RANGES(z, x);
 }
@@ -554,8 +556,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_assign_n_value_worse_then_iters_regressi
 // Контейнеры с резервированием памяти
 namespace
 {
-    typedef boost::mpl::list<ural::vector<int, Int_alloc>,
-                             ural::flat_set<int, ural::use_default, Int_alloc>>
+    typedef boost::mpl::list<ural::experimental::vector<int, Int_alloc>,
+                             ural::experimental::flat_set<int, ural::use_default, Int_alloc>>
         Reserving_containers;
 }
 
@@ -563,7 +565,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(container_const_data_test, Container, Reserving_co
 {
     Container const cs = {1, 3, 5, 7, 9};
 
-    typedef ::ural::ValueType<Container> Value_type;
+    typedef ::ural::value_type_t<Container> Value_type;
     typedef decltype(cs.data()) Data_result;
 
     static_assert(std::is_same<Value_type const *, Data_result>::value, "");
@@ -595,8 +597,8 @@ BOOST_AUTO_TEST_CASE(vector_allocator_constructor_regression)
 {
     // Регрессия: при вызове конструктора без параметров память не распределяется
 
-    typedef ural::tracing_allocator<int> Alloc;
-    typedef ural::vector<int, Alloc> Container;
+    typedef ural_ex::tracing_allocator<int> Alloc;
+    typedef ural_ex::vector<int, Alloc> Container;
 
     // временный объект
     Alloc::reset_traced_info();

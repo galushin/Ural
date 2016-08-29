@@ -26,6 +26,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Абсолютное значение
     @param x аргумент
     @return <tt> (x < IntegerType(0)) ? -std::move(x) : x </tt>
@@ -107,7 +109,7 @@ namespace ural
     }
 
     /// @brief Целочисленный тип, используемый в статических НОД и НОК
-    typedef int static_gcd_type;
+    using static_gcd_type = int;
 
     /** @brief Класс-характеристика для вычисления НОД
     @tparam Value1 первый операнд
@@ -126,6 +128,8 @@ namespace ural
     struct static_lcm
      : std::integral_constant<static_gcd_type, lcm(Value1, Value2)>
     {};
+}
+// namespace experimental
 }
 // namespace ural
 

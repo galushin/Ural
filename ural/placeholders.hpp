@@ -25,6 +25,8 @@
 
 namespace ural
 {
+inline namespace v1
+{
     /** @brief Тип-тэг, обозначающий номер аргумента
     @tparam N номер аргумента
     */
@@ -38,6 +40,8 @@ namespace ural
     constexpr placeholder<3> _4 {};
     constexpr placeholder<4> _5 {};
     /// @endcond
+}
+// namespace v1
 }
 // namespace ural
 

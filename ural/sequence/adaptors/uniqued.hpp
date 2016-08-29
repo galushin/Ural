@@ -27,28 +27,30 @@
 
 namespace ural
 {
-    /** @brief Последовательность неповторяющихся соседних элементов базовой
-    последовательности
-    @tparam Input Тип базовой последовательности
+namespace experimental
+{
+    /** @brief Курсор последовательности неповторяющихся соседних элементов
+    базовой последовательности
+    @tparam Input Тип базового курсора
     @tparam BinaryPredicat бинарный предикат, определяющий, совпадают ли два
-    последовательных элемента.
+    соседних элемента.
 
-    @note Было решено увеличить размер объекта за возможность менять текущий
+    @note Было решено увеличить размер курсора за возможность менять текущий
     элемент последовательности. Другим возможным вариантом было сделать ссылку
     константной.
     @todo Уменьшить дублирование, где это возможно
     */
     template <class Input, class BinaryPredicate = ural::equal_to<> >
-    class unique_sequence
-     : public sequence_base<unique_sequence<Input, BinaryPredicate>,
+    class unique_cursor
+     : public cursor_base<unique_cursor<Input, BinaryPredicate>,
                             BinaryPredicate>
     {
-        using Base = sequence_base<unique_sequence<Input, BinaryPredicate>,
+        using Base = cursor_base<unique_cursor<Input, BinaryPredicate>,
                                    BinaryPredicate>;
     public:
         // Оператор "равно"
-        friend bool operator==(unique_sequence const & x,
-                               unique_sequence const & y)
+        friend bool operator==(unique_cursor const & x,
+                               unique_cursor const & y)
         {
             return x.current_ == y.current_
                     && x.next_ == y.next_ && x.predicate() == y.predicate();
@@ -56,46 +58,46 @@ namespace ural
 
         // Типы
         /// @brief Тип ссылки
-        typedef typename Input::reference reference;
+        using reference = typename Input::reference;
 
         /// @brief Тип значения
-        typedef ValueType<Input> value_type;
+        using value_type = value_type_t<Input>;
 
         /// @brief Категория курсора
         using cursor_tag = common_tag_t<typename Input::cursor_tag, finite_forward_cursor_tag>;
 
         /// @brief Тип указателя
-        typedef typename Input::pointer pointer;
+        using pointer = typename Input::pointer;
 
         /// @brief Тип расстояния
-        typedef DifferenceType<Input> distance_type;
+        using distance_type = difference_type_t<Input>;
 
         // Конструкторы
         /** @brief Конструктор
-        @param in входная последовательность
+        @param in базовый курсор
         @post <tt> this->base() == in </tt>
         @post <tt> this->predicate() == BinaryPredicate{} </tt>
         */
-        explicit unique_sequence(Input in)
-         : unique_sequence(std::move(in), cursor_tag{})
+        explicit unique_cursor(Input in)
+         : unique_cursor(std::move(in), cursor_tag{})
         {}
 
         /** @brief Конструктор
-        @param in входная последовательность
+        @param in базовый курсор
         @param pred используемый предикат
         @post <tt> this->base() == in </tt>
         @post <tt> this->predicate() == pred </tt>
         */
-        explicit unique_sequence(Input in, BinaryPredicate pred)
-         : unique_sequence(std::move(in), std::move(pred), cursor_tag{})
+        explicit unique_cursor(Input in, BinaryPredicate pred)
+         : unique_cursor(std::move(in), std::move(pred), cursor_tag{})
         {}
 
-        // Адаптор последовательности
+        // Адаптор курсора
         //@{
-        /** @brief Базовая последовательность
-        @return Ссылка на базовую последовательность
+        /** @brief Базовый курсор
+        @return Константная ссылка на базовый курсор
         @note <tt> this->base().front() </tt> и <tt> this->front() </tt>
-        ссылаются на разные элементы в случае однопроходной последовательности.
+        ссылаются на разные элементы в случае однопроходного курсора.
         */
         Input const & base() const &
         {
@@ -116,18 +118,18 @@ namespace ural
             return this->payload();
         }
 
-        // Однопроходная последовательность
-        /** @brief Проверка исчерпания последовательностей
-        @return @b true, если последовательность исчерпана, иначе --- @b false.
+        // Однопроходный курсор
+        /** @brief Проверка исчерпания
+        @return @b true, если курсор исчерпан, иначе --- @b false.
         */
         bool operator!() const
         {
             return !current_;
         }
 
-        /** @brief Текущий элемент последовательности
+        /** @brief Текущий элемент
         @pre <tt> !*this == false </tt>
-        @return Ссылка на текущий элемент последовательности
+        @return Ссылка на текущий элемент
         */
         reference front() const
         {
@@ -144,22 +146,22 @@ namespace ural
             return this->pop_front_impl(cursor_tag{});
         }
 
-        // Прямая последовательность
-        /** @brief Полная последовательность (вместе с пройденными частями)
-        @return Исходная последовательность
+        // Прямой курсор
+        /** @brief Исходный курсор (вместе с пройденными частями)
+        @return Исходный курсор
         */
-        unique_sequence original() const
+        unique_cursor original() const
         {
-            return unique_sequence(current_.original(), this->predicate());
+            return unique_cursor(current_.original(), this->predicate());
         }
 
-        /** @brief Пройденная передняя часть последовательность
-        @return Пройденная передняя часть последовательность
+        /** @brief Пройденная передняя часть последовательности
+        @return Пройденная передняя часть последовательности
         */
-        unique_sequence<TraversedFrontType<Input>, BinaryPredicate>
+        unique_cursor<TraversedFrontType<Input>, BinaryPredicate>
         traversed_front() const
         {
-            using Seq = unique_sequence<TraversedFrontType<Input>, BinaryPredicate>;
+            using Seq = unique_cursor<TraversedFrontType<Input>, BinaryPredicate>;
             return Seq(current_.traversed_front(), this->predicate());
         }
 
@@ -183,7 +185,7 @@ namespace ural
 
     private:
         // Конструкторы
-        unique_sequence(Input in, single_pass_cursor_tag)
+        unique_cursor(Input in, single_pass_cursor_tag)
          : Base()
          , current_()
          , next_(std::move(in))
@@ -196,7 +198,7 @@ namespace ural
             }
         }
 
-        unique_sequence(Input in, forward_cursor_tag)
+        unique_cursor(Input in, forward_cursor_tag)
          : Base()
          , current_(std::move(in))
          , next_(current_)
@@ -208,7 +210,7 @@ namespace ural
             }
         }
 
-        unique_sequence(Input in, BinaryPredicate pred, single_pass_cursor_tag)
+        unique_cursor(Input in, BinaryPredicate pred, single_pass_cursor_tag)
          : Base(std::move(pred))
          , current_()
          , next_(std::move(in))
@@ -221,7 +223,7 @@ namespace ural
             }
         }
 
-        unique_sequence(Input in, BinaryPredicate pred, forward_cursor_tag)
+        unique_cursor(Input in, BinaryPredicate pred, forward_cursor_tag)
          : Base(std::move(pred))
          , current_(std::move(in))
          , next_(current_)
@@ -289,7 +291,8 @@ namespace ural
         }
 
     private:
-        typedef optional<value_type> optional_value;
+        using optional_value = experimental::optional<value_type>;
+
         typedef std::is_convertible<cursor_tag, forward_cursor_tag> Is_forward;
         typedef typename std::conditional<!Is_forward::value, optional_value, Input>::type
             Holder;
@@ -298,13 +301,13 @@ namespace ural
         Input next_;
     };
 
-    /** @brief Тип функционального объекта для создания @c unique_sequence
+    /** @brief Тип функционального объекта для создания @c unique_cursor
     с заданным условием эквивалентности элементов.
     */
-    struct make_adjacent_filtered_sequence_fn
+    struct make_adjacent_filtered_cursor_fn
     {
     public:
-        /** @brief Функция создания @c unique_sequence с заданным условием
+        /** @brief Функция создания @c unique_cursor с заданным условием
         эквивалентности элементов
         @param in входная последовательность
         @param pred бинарный предикат
@@ -312,47 +315,49 @@ namespace ural
         template <class Forward, class BinaryPredicate>
         auto operator()(Forward && in, BinaryPredicate pred) const
         {
-            typedef unique_sequence<decltype(::ural::sequence_fwd<Forward>(in)),
+            typedef unique_cursor<decltype(::ural::cursor_fwd<Forward>(in)),
                                     decltype(make_callable(std::move(pred)))> Seq;
-            return Seq(::ural::sequence_fwd<Forward>(in),
+            return Seq(::ural::cursor_fwd<Forward>(in),
                        make_callable(std::move(pred)));
         }
     };
 
-    /// @brief Тип Функционального объекта для создания @c unique_sequence.
-    class make_unique_sequence_fn
+    /// @brief Тип Функционального объекта для создания @c unique_cursor.
+    class make_unique_cursor_fn
     {
     public:
-        /** @brief Функция создания @c unique_sequence
+        /** @brief Функция создания @c unique_cursor
         @param in входная последовательность
-        @return <tt> unique_sequence<Seq>(sequence_fwd<Forward>(in)) </tt>, где
-        @c Seq -- <tt> unique_sequence<decltype(sequence_fwd<Forward>(in))> </tt>
+        @return <tt> unique_cursor<Seq>(cursor_fwd<Forward>(in)) </tt>, где
+        @c Seq -- <tt> unique_cursor<decltype(cursor_fwd<Forward>(in))> </tt>
         */
         template <class Forward>
         auto operator()(Forward && in) const
         {
-            auto f = make_adjacent_filtered_sequence_fn{};
+            auto f = make_adjacent_filtered_cursor_fn{};
 
-            return f(::ural::sequence_fwd<Forward>(in), ural::equal_to<>{});
+            return f(::ural::cursor_fwd<Forward>(in), ural::equal_to<>{});
         }
     };
 
     namespace
     {
-        /// @brief Функциональный объект для создания @c unique_sequence в
-        constexpr auto & make_unique_sequence
-            = odr_const<make_unique_sequence_fn>;
+        /// @brief Функциональный объект для создания @c unique_cursor.
+        constexpr auto & make_unique_cursor
+            = odr_const<make_unique_cursor_fn>;
 
-        /// @brief Объект для создающия @c unique_sequence в конвейрном силе.
+        /// @brief Объект для создающия @c unique_cursor в конвейрном стиле.
         constexpr auto & uniqued
-            = odr_const<pipeable<make_unique_sequence_fn>>;
+            = odr_const<pipeable<make_unique_cursor_fn>>;
 
-        /** @brief Объект для создающия @c unique_sequence с заданным условием
+        /** @brief Объект для создающия @c unique_cursor с заданным условием
         эквивалентности элементов в конвейрном стиле.
         */
         constexpr auto & adjacent_filtered
-            = odr_const<pipeable_maker<make_adjacent_filtered_sequence_fn>>;
+            = odr_const<pipeable_maker<make_adjacent_filtered_cursor_fn>>;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

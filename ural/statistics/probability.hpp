@@ -29,6 +29,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Класс исключения "некорректное значение вероятности"
     */
     class bad_probability
@@ -241,6 +243,8 @@ namespace ural
 
         return is;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

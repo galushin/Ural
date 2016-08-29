@@ -22,7 +22,7 @@
 
  @todo Бинарный поиск: ограничения на функцию сравнения и значение
  @todo Проверка концепций + изменение имён в алгоритмах вида "*_n"
- @todo Проверить возможность замены ForwardSequence на OutputSequence
+ @todo Проверить возможность замены ForwardSequence на OutputCursor
  @todo Определить типы возврщаемых значений как в Range extensions
  @todo устранить дублирование в алгортмах за счёт CRTP/Фасадов
 */
@@ -47,6 +47,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     // Модифицирующие последовательность алгоритмы
     class random_shuffle_fn
     {
@@ -54,14 +56,14 @@ namespace ural
         /** @brief Случайная тасовка элементов последовательности
         @param s последовательность произвольного доступа
         @return Последовательность, полученная из
-        <tt> ::ural::sequence_fwd<RASequence>(s) </tt> продвижением до
+        <tt> ::ural::cursor_fwd<RASequence>(s) </tt> продвижением до
         исчерпания.
         */
         template <class RASequence>
         auto operator()(RASequence && s) const
-        -> decltype(::ural::sequence_fwd<RASequence>(s))
+        -> decltype(::ural::cursor_fwd<RASequence>(s))
         {
-            ural::c_rand_engine rnd;
+            ::ural::experimental::c_rand_engine rnd;
             return ::ural::shuffle_fn{}(std::forward<RASequence>(s), rnd);
         }
     };
@@ -80,12 +82,12 @@ namespace ural
         @param in входная последовательность
         @param f функциональный объект
         @return Кортеж, первый компонент которого получается продвижением
-        <tt> ::ural::sequence_fwd<Input>(in) </tt> до исчерпания, а второй
+        <tt> ::ural::cursor_fwd<Input>(in) </tt> до исчерпания, а второй
         --- <tt> ::ural::make_callable(std::move(f)) </tt> после его применения
         ко всем элементам последовательности.
         */
         template <class Input, class Function>
-        tuple<SequenceType<Input>, FunctionType<Function>>
+        tuple<cursor_type_t<Input>, function_type_t<Function>>
         operator()(Input && in, Function f) const
         {
             auto f_app = curry(apply, make_callable(std::move(f)));
@@ -110,13 +112,13 @@ namespace ural
         @return @b true, если скобки в последовательности сбалансированы,
         иначе --- @b false
         */
-        template <class InputSequenced, class T>
+        template <class InputSequence, class T>
         bool
-        operator()(InputSequenced && input,
+        operator()(InputSequence && input,
                    T const & left_par, T const & right_par) const
         {
-            using D = DifferenceType<SequenceType<InputSequenced>>;
-            return (*this)(std::forward<InputSequenced>(input),
+            using D = difference_type_t<cursor_type_t<InputSequence>>;
+            return (*this)(std::forward<InputSequence>(input),
                            left_par, right_par,
                            std::numeric_limits<D>::max());
         }
@@ -132,30 +134,30 @@ namespace ural
         их максимальная вложенность не превышает @c max_nesting_level, иначе ---
         @b false
         */
-        template <class InputSequenced, class T>
+        template <class InputSequence, class T>
         bool
-        operator()(InputSequenced && input,
+        operator()(InputSequence && input,
                    T const & left_par, T const & right_par,
-                   DifferenceType<SequenceType<InputSequenced>> max_nesting_level) const
+                   difference_type_t<cursor_type_t<InputSequence>> max_nesting_level) const
         {
-            return this->impl(ural::sequence_fwd<InputSequenced>(input),
+            return this->impl(ural::cursor_fwd<InputSequence>(input),
                               left_par, right_par, max_nesting_level);
         }
     private:
-        template <class InputSequence, class T>
-        static bool impl(InputSequence in,
+        template <class InputCursor, class T>
+        static bool impl(InputCursor in,
                          T const & left_par, T const & right_par,
-                         DifferenceType<InputSequence> const max_nesting_level)
+                         difference_type_t<InputCursor> const max_nesting_level)
         {
             using namespace ural::concepts;
 
-            BOOST_CONCEPT_ASSERT((SinglePassSequence<InputSequence>));
-            BOOST_CONCEPT_ASSERT((ReadableSequence<InputSequence>));
+            BOOST_CONCEPT_ASSERT((SinglePassCursor<InputCursor>));
+            BOOST_CONCEPT_ASSERT((ReadableCursor<InputCursor>));
             BOOST_CONCEPT_ASSERT((IndirectPredicate<ural::equal_to<>,
-                                                    InputSequence,
+                                                    InputCursor,
                                                     T const *>));
 
-            auto const zero = DifferenceType<InputSequence>{0};
+            auto const zero = difference_type_t<InputCursor>{0};
 
             auto opened = zero;
 
@@ -199,24 +201,24 @@ namespace ural
         значению в последовательности, а второй --- количество вхождений данного
         значения в последовательности.
         */
-        template <class InputSequenced, class Compare = ural::less<>>
-        tuple<ValueType<SequenceType<InputSequenced>>,
-              DifferenceType<SequenceType<InputSequenced>>>
-        operator()(InputSequenced && in, Compare cmp = Compare{}) const
+        template <class InputSequence, class Compare = ural::less<>>
+        tuple<value_type_t<cursor_type_t<InputSequence>>,
+              difference_type_t<cursor_type_t<InputSequence>>>
+        operator()(InputSequence && in, Compare cmp = Compare{}) const
         {
-            return this->impl(ural::sequence_fwd<InputSequenced>(in),
+            return this->impl(ural::cursor_fwd<InputSequence>(in),
                               ural::make_callable(std::move(cmp)));
         }
 
     private:
-        template <class InputSequence, class Compare>
-        tuple<ValueType<InputSequence>, DifferenceType<InputSequence>>
-        impl(InputSequence in, Compare cmp = Compare{}) const
+        template <class InputCursor, class Compare>
+        tuple<value_type_t<InputCursor>, difference_type_t<InputCursor>>
+        impl(InputCursor in, Compare cmp = Compare{}) const
         {
-            const auto unit = DifferenceType<InputSequence>(1);
+            const auto unit = difference_type_t<InputCursor>(1);
             assert(!!in);
 
-            tuple<ValueType<InputSequence>, DifferenceType<InputSequence>>
+            tuple<value_type_t<InputCursor>, difference_type_t<InputCursor>>
                 result{*in, unit};
             ++ in;
 
@@ -249,12 +251,12 @@ namespace ural
         @param prefix последовательность, которую нужно пропустить.
         @return То же, что <tt> stars_with(seq, prefix, bin_pred) </tt>.
         */
-        template <class ForwardSequence, class InputSequenced,
+        template <class ForwardSequence, class InputSequence,
                   class BinaryPredicate = equal_to<>>
-        bool operator()(ForwardSequence & seq, InputSequenced && prefix,
+        bool operator()(ForwardSequence & seq, InputSequence && prefix,
                         BinaryPredicate bin_pred = BinaryPredicate{}) const
         {
-            auto res = ural::mismatch_fn{}(seq, std::forward<InputSequenced>(prefix),
+            auto res = ural::mismatch_fn{}(seq, std::forward<InputSequence>(prefix),
                                            std::move(bin_pred));
 
             if(!res[ural::_2])
@@ -281,210 +283,224 @@ namespace ural
         @param bin_pred бинарный предикат, задающий функцию сравнения
         @return Часть @c s1, которая является префиксом для @c s2.
         */
-        template <class ForwardSequenced, class InputSequenced,
+        template <class ForwardSequence, class InputSequence,
                   class BinaryPredicate = ural::equal_to<>>
-        TraversedFrontType<SequenceType<ForwardSequenced>>
-        operator()(ForwardSequenced && s1, InputSequenced && s2,
+        TraversedFrontType<cursor_type_t<ForwardSequence>>
+        operator()(ForwardSequence && s1, InputSequence && s2,
                    BinaryPredicate bin_pred = BinaryPredicate{}) const
         {
-            auto r = ural::mismatch_fn{}(std::forward<ForwardSequenced>(s1),
-                                         std::forward<InputSequenced>(s2),
+            auto r = ural::mismatch_fn{}(std::forward<ForwardSequence>(s1),
+                                         std::forward<InputSequence>(s2),
                                          std::move(bin_pred));
             return std::move(r)[ural::_1].traversed_front();
         }
     };
+}
+// namespace experimental
 
-    namespace
-    {
-        // 25.2 Немодифицирующие
-        // 25.2.1-3 Кванторы
-        constexpr auto const & all_of = odr_const<all_of_fn>;
-        constexpr auto const & none_of = odr_const<none_of_fn>;
-        constexpr auto const & any_of = odr_const<any_of_fn>;
+inline namespace v1
+{
+namespace
+{
+    // 25.2 Немодифицирующие
+    // 25.2.1-3 Кванторы
+    constexpr auto const & all_of = odr_const<all_of_fn>;
+    constexpr auto const & none_of = odr_const<none_of_fn>;
+    constexpr auto const & any_of = odr_const<any_of_fn>;
 
-        // 25.2.4 for_each
-        constexpr auto const & for_each = odr_const<for_each_fn>;
+    // 25.2.4 for_each
+    constexpr auto const & for_each = odr_const<for_each_fn>;
 
-        // 25.2.5 Поиск
-        constexpr auto const & find = odr_const<find_fn>;
-        constexpr auto const & find_if = odr_const<find_if_fn>;
-        constexpr auto const & find_if_not = odr_const<find_if_not_fn>;
+    // 25.2.5 Поиск
+    constexpr auto const & find = odr_const<find_fn>;
+    constexpr auto const & find_if = odr_const<find_if_fn>;
+    constexpr auto const & find_if_not = odr_const<find_if_not_fn>;
 
-        // 25.2.6 Поиск конца подпоследовательности (find_end)
-        constexpr auto const & find_end = odr_const<find_end_fn>;
+    // 25.2.6 Поиск конца подпоследовательности (find_end)
+    constexpr auto const & find_end = odr_const<find_end_fn>;
 
-        // 25.2.7 Поиск первого вхождения
-        constexpr auto const & find_first_of = odr_const<find_first_of_fn>;
-        constexpr auto const & find_first_not_of = odr_const<find_first_not_of_fn>;
+    // 25.2.7 Поиск первого вхождения
+    constexpr auto const & find_first_of = odr_const<find_first_of_fn>;
+    constexpr auto const & find_first_not_of = odr_const<find_first_not_of_fn>;
 
-        // 25.2.8 Поиск соседних одинаковых элементов
-        constexpr auto const & adjacent_find = odr_const<adjacent_find_fn>;
+    // 25.2.8 Поиск соседних одинаковых элементов
+    constexpr auto const & adjacent_find = odr_const<adjacent_find_fn>;
 
-        // 25.2.9 Подсчёт
-        constexpr auto const & count = odr_const<count_fn>;
-        constexpr auto const & count_if = odr_const<count_if_fn>;
+    // 25.2.9 Подсчёт
+    constexpr auto const & count = odr_const<count_fn>;
+    constexpr auto const & count_if = odr_const<count_if_fn>;
 
-        // 25.2.10 Поиск несовпадения
-        constexpr auto const & mismatch = odr_const<mismatch_fn>;
+    // 25.2.10 Поиск несовпадения
+    constexpr auto const & mismatch = odr_const<mismatch_fn>;
 
-        // 25.2.11 Равенство
-        constexpr auto const & equal = odr_const<equal_fn>;
+    // 25.2.11 Равенство
+    constexpr auto const & equal = odr_const<equal_fn>;
 
-        // 25.2.12 Являются ли две последовательности перестановками?
-        constexpr auto const & is_permutation = odr_const<is_permutation_fn>;
+    // 25.2.12 Являются ли две последовательности перестановками?
+    constexpr auto const & is_permutation = odr_const<is_permutation_fn>;
 
-        // 25.2.13 Поиск подпоследовательностей
-        constexpr auto const & search = odr_const<search_fn>;
-        constexpr auto const & search_n = odr_const<search_n_fn>;
+    // 25.2.13 Поиск подпоследовательностей
+    constexpr auto const & search = odr_const<search_fn>;
+    constexpr auto const & search_n = odr_const<search_n_fn>;
 
-        // 25.3 Модифицирующие алгоритмы
-        // 25.3.1 Копирование
-        constexpr auto const & copy = odr_const<copy_fn>;
-        constexpr auto const & copy_n = odr_const<copy_n_fn>;
-        constexpr auto const & copy_if = odr_const<copy_if_fn>;
-        constexpr auto const & copy_backward = odr_const<copy_backward_fn>;
+    // 25.3 Модифицирующие алгоритмы
+    // 25.3.1 Копирование
+    constexpr auto const & copy = odr_const<copy_fn>;
+    constexpr auto const & copy_n = odr_const<copy_n_fn>;
+    constexpr auto const & copy_if = odr_const<copy_if_fn>;
+    constexpr auto const & copy_backward = odr_const<copy_backward_fn>;
 
-        // 25.3.2 Перемещение
-        constexpr auto const & move = odr_const<move_fn>;
-        constexpr auto const & move_backward = odr_const<move_backward_fn>;
-        constexpr auto const & move_if_noexcept = odr_const<move_if_noexcept_fn>;
+    // 25.3.2 Перемещение
+    constexpr auto const & move = odr_const<move_fn>;
+    constexpr auto const & move_backward = odr_const_holder<move_backward_fn>::value;
+    constexpr auto const & move_if_noexcept = odr_const_holder<move_if_noexcept_fn>::value;
 
-        // 25.3.3 Обмен
-        constexpr auto const & swap_ranges = odr_const<swap_ranges_fn>;
+    // 25.3.3 Обмен
+    constexpr auto const & swap_ranges = odr_const<swap_ranges_fn>;
 
-        // 25.3.4 Преобразование
-        constexpr auto const & transform = odr_const<transform_fn>;
+    // 25.3.4 Преобразование
+    constexpr auto const & transform = odr_const<transform_fn>;
 
-        // 25.3.5 Замена
-        constexpr auto const & replace = odr_const<replace_fn>;
-        constexpr auto const & replace_if = odr_const<replace_if_fn>;
-        constexpr auto const & replace_copy = odr_const<replace_copy_fn>;
-        constexpr auto const & replace_copy_if = odr_const<replace_copy_if_fn>;
+    // 25.3.5 Замена
+    constexpr auto const & replace = odr_const<replace_fn>;
+    constexpr auto const & replace_if = odr_const<replace_if_fn>;
+    constexpr auto const & replace_copy = odr_const<replace_copy_fn>;
+    constexpr auto const & replace_copy_if = odr_const<replace_copy_if_fn>;
 
-        // 25.3.6 Заполнение
-        constexpr auto const & fill = odr_const<fill_fn>;
-        constexpr auto const & fill_n = odr_const<fill_n_fn>;
+    // 25.3.6 Заполнение
+    constexpr auto const & fill = odr_const<fill_fn>;
+    constexpr auto const & fill_n = odr_const<fill_n_fn>;
 
-        // 25.3.7 Порождение
-        constexpr auto const & generate = odr_const<generate_fn>;
-        constexpr auto const & generate_n = odr_const<generate_n_fn>;
+    // 25.3.7 Порождение
+    constexpr auto const & generate = odr_const<generate_fn>;
+    constexpr auto const & generate_n = odr_const<generate_n_fn>;
 
-        // 25.3.8 Удаление
-        constexpr auto const & remove = odr_const<remove_fn>;
-        constexpr auto const & remove_if = odr_const<remove_if_fn>;
-        constexpr auto const & remove_copy = odr_const<remove_copy_fn>;
-        constexpr auto const & remove_copy_if = odr_const<remove_copy_if_fn>;
+    // 25.3.8 Удаление
+    constexpr auto const & remove = odr_const<remove_fn>;
+    constexpr auto const & remove_if = odr_const<remove_if_fn>;
+    constexpr auto const & remove_copy = odr_const<remove_copy_fn>;
+    constexpr auto const & remove_copy_if = odr_const<remove_copy_if_fn>;
 
-        // 25.3.9 Устранение последовательных дубликатов
-        constexpr auto const & unique = odr_const<unique_fn>;
-        constexpr auto const & unique_copy = odr_const<unique_copy_fn>;
+    // 25.3.9 Устранение последовательных дубликатов
+    constexpr auto const & unique = odr_const<unique_fn>;
+    constexpr auto const & unique_copy = odr_const_holder<unique_copy_fn>::value;
 
-        // 25.3.10 Обращение
-        constexpr auto const & reverse = odr_const<reverse_fn>;
-        constexpr auto const & reverse_copy = odr_const<reverse_copy_fn>;
+    // 25.3.10 Обращение
+    constexpr auto const & reverse = odr_const_holder<reverse_fn>::value;
+    constexpr auto const & reverse_copy = odr_const<reverse_copy_fn>;
 
-        // 25.3.11 Вращение
-        constexpr auto const & rotate = odr_const<rotate_fn>;
-        constexpr auto const & rotate_copy = odr_const<rotate_copy_fn>;
+    // 25.3.11 Вращение
+    constexpr auto const & rotate = odr_const_holder<rotate_fn>::value;
+    constexpr auto const & rotate_copy = odr_const<rotate_copy_fn>;
 
-        // 25.3.12 Тасовка
-        constexpr auto const & shuffle = odr_const<shuffle_fn>;
-        constexpr auto const & random_shuffle = odr_const<random_shuffle_fn>;
+    // 25.3.12 Тасовка
+    constexpr auto const & shuffle = odr_const<shuffle_fn>;
 
-        // 25.3.13 Разделение
-        constexpr auto const & is_partitioned = odr_const<is_partitioned_fn>;
-        constexpr auto const & partition = odr_const<partition_fn>;
-        constexpr auto const & stable_partition = odr_const<stable_partition_fn>;
-        constexpr auto const & partition_copy = odr_const<partition_copy_fn>;
-        constexpr auto const & partition_point = odr_const<partition_point_fn>;
+    // 25.3.13 Разделение
+    constexpr auto const & is_partitioned = odr_const<is_partitioned_fn>;
+    constexpr auto const & partition = odr_const<partition_fn>;
+    constexpr auto const & stable_partition = odr_const<stable_partition_fn>;
+    constexpr auto const & partition_copy = odr_const<partition_copy_fn>;
+    constexpr auto const & partition_point = odr_const<partition_point_fn>;
 
-        // 25.4 Сортировка и связанные с ним операции
-        // 25.4.1 Сортировка
-        // @todo объект для insertion_sort?
+    // 25.4 Сортировка и связанные с ним операции
+    // 25.4.1 Сортировка
+    // @todo объект для insertion_sort?
 
-        // 25.4.1.1 Быстрая сортировка
-        constexpr auto const & sort = odr_const<sort_fn>;
+    // 25.4.1.1 Быстрая сортировка
+    constexpr auto const & sort = odr_const<sort_fn>;
 
-        // 25.4.1.2 Устойчивая сортировка
-        constexpr auto const & stable_sort = odr_const<stable_sort_fn>;
+    // 25.4.1.2 Устойчивая сортировка
+    constexpr auto const & stable_sort = odr_const<stable_sort_fn>;
 
-        // 25.4.1.3 Частичная сортировка
-        constexpr auto const & partial_sort = odr_const<partial_sort_fn>;
+    // 25.4.1.3 Частичная сортировка
+    constexpr auto const & partial_sort = odr_const<partial_sort_fn>;
 
-        // 25.4.1.4 Частичная сортировка с копированием
-        constexpr auto const & partial_sort_copy = odr_const<partial_sort_copy_fn>;
+    // 25.4.1.4 Частичная сортировка с копированием
+    constexpr auto const & partial_sort_copy = odr_const<partial_sort_copy_fn>;
 
-        // 25.4.1.5 Проверка сортированности
-        constexpr auto const & is_sorted = odr_const<is_sorted_fn>;
-        constexpr auto const & is_sorted_until = odr_const<is_sorted_until_fn>;
+    // 25.4.1.5 Проверка сортированности
+    constexpr auto const & is_sorted = odr_const<is_sorted_fn>;
+    constexpr auto const & is_sorted_until = odr_const<is_sorted_until_fn>;
 
-        // 25.4.2 N-ый элемент
-        constexpr auto const & nth_element = odr_const<nth_element_fn>;
+    // 25.4.2 N-ый элемент
+    constexpr auto const & nth_element = odr_const<nth_element_fn>;
 
-        // 25.4.3 Бинарный поиск
-        constexpr auto const & lower_bound = odr_const<lower_bound_fn>;
-        constexpr auto const & upper_bound = odr_const<upper_bound_fn>;
-        constexpr auto const & equal_range = odr_const<equal_range_fn>;
-        constexpr auto const & binary_search = odr_const<binary_search_fn>;
+    // 25.4.3 Бинарный поиск
+    constexpr auto const & lower_bound = odr_const<lower_bound_fn>;
+    constexpr auto const & upper_bound = odr_const<upper_bound_fn>;
+    constexpr auto const & equal_range = odr_const<equal_range_fn>;
+    constexpr auto const & binary_search = odr_const<binary_search_fn>;
 
-        // 25.4.4 Слияние
-        constexpr auto const & merge = odr_const<merge_fn>;
-        constexpr auto const & inplace_merge = odr_const<inplace_merge_fn>;
+    // 25.4.4 Слияние
+    constexpr auto const & merge = odr_const_holder<merge_fn>::value;
+    constexpr auto const & inplace_merge = odr_const_holder<inplace_merge_fn>::value;
 
-        // 25.4.5 Операции с сортированными множествами
-        constexpr auto const & includes = odr_const<includes_fn>;
-        constexpr auto const & set_union = odr_const<set_union_fn>;
-        constexpr auto const & set_intersection = odr_const<set_intersection_fn>;
-        constexpr auto const & set_difference = odr_const<set_difference_fn>;
-        constexpr auto const & set_symmetric_difference = odr_const<set_symmetric_difference_fn>;
+    // 25.4.5 Операции с сортированными множествами
+    constexpr auto const & includes = odr_const<includes_fn>;
+    constexpr auto const & set_union = odr_const_holder<set_union_fn>::value;
+    constexpr auto const & set_intersection = odr_const_holder<set_intersection_fn>::value;
+    constexpr auto const & set_difference = odr_const_holder<set_difference_fn>::value;
+    constexpr auto const & set_symmetric_difference = odr_const_holder<set_symmetric_difference_fn>::value;
 
-        // 25.4.6 Операции с бинарными кучами
-        constexpr auto const & push_heap = odr_const<push_heap_fn>;
-        constexpr auto const & pop_heap = odr_const<pop_heap_fn>;
-        constexpr auto const & make_heap = odr_const<make_heap_fn>;
-        constexpr auto const & sort_heap = odr_const<sort_heap_fn>;
-        constexpr auto const & is_heap = odr_const<is_heap_fn>;
-        constexpr auto const & is_heap_until = odr_const<is_heap_until_fn>;
-        constexpr auto const & heap_select = odr_const<heap_select_fn>;
+    // 25.4.6 Операции с бинарными кучами
+    constexpr auto const & push_heap = odr_const<push_heap_fn>;
+    constexpr auto const & pop_heap = odr_const<pop_heap_fn>;
+    constexpr auto const & make_heap = odr_const<make_heap_fn>;
+    constexpr auto const & sort_heap = odr_const<sort_heap_fn>;
+    constexpr auto const & is_heap = odr_const<is_heap_fn>;
+    constexpr auto const & is_heap_until = odr_const<is_heap_until_fn>;
+    constexpr auto const & heap_select = odr_const<heap_select_fn>;
 
-        // 25.4.7 Наибольшее и наименьшее значение
-        constexpr auto const & min = odr_const<min_fn>;
-        constexpr auto const & max = odr_const<max_fn>;
-        constexpr auto const & minmax = odr_const<minmax_fn>;
-        constexpr auto const & min_element = odr_const<min_element_fn>;
-        constexpr auto const & max_element = odr_const<max_element_fn>;
-        constexpr auto const & minmax_element = odr_const<minmax_element_fn>;
+    // 25.4.7 Наибольшее и наименьшее значение
+    constexpr auto const & min = odr_const<min_fn>;
+    constexpr auto const & max = odr_const<max_fn>;
+    constexpr auto const & minmax = odr_const<minmax_fn>;
+    constexpr auto const & min_element = odr_const<min_element_fn>;
+    constexpr auto const & max_element = odr_const<max_element_fn>;
+    constexpr auto const & minmax_element = odr_const<minmax_element_fn>;
 
-        // 25.4.8 Лексикографическое сравнение
-        constexpr auto const & lexicographical_compare = odr_const<lexicographical_compare_fn>;
+    // 25.4.8 Лексикографическое сравнение
+    constexpr auto const & lexicographical_compare = odr_const<lexicographical_compare_fn>;
 
-        // 25.4.9 Порождение перестановка
-        constexpr auto const & next_permutation = odr_const<next_permutation_fn>;
-        constexpr auto const & prev_permutation = odr_const<prev_permutation_fn>;
+    // 25.4.9 Порождение перестановка
+    constexpr auto const & next_permutation = odr_const<next_permutation_fn>;
+    constexpr auto const & prev_permutation = odr_const<prev_permutation_fn>;
+}
+// namespace
+}
+// namespace v1
 
-        // Расширения
-        constexpr auto const & fused_for_each = odr_const<fused_for_each_fn>;
+namespace experimental
+{
+namespace
+{
+    constexpr auto const & random_shuffle = odr_const<random_shuffle_fn>;
 
-        /** @brief Функциональный объект, проверяющий сбалансированность
-        открывающихся и закрывающихся скобок в последовательности.
-        */
-        constexpr auto const & balanced_parens = odr_const<balanced_parens_fn>;
+    constexpr auto const & fused_for_each = odr_const<fused_for_each_fn>;
 
-        /** @brief Функциональный объект, определяющий наименьший элемент
-        последовательности и количество его вхождений.
-        */
-        constexpr auto const & min_count = odr_const<min_count_fn>;
+    /** @brief Функциональный объект, проверяющий сбалансированность
+    открывающихся и закрывающихся скобок в последовательности.
+    */
+    constexpr auto const & balanced_parens = odr_const<balanced_parens_fn>;
 
-        /** @brief Функциональный объект, пропускающий начало одной
-        последовательности, если она совпадает с другой последовательностью.
-        */
-        constexpr auto const & skip_over = odr_const<skip_over_fn>;
+    /** @brief Функциональный объект, определяющий наименьший элемент
+    последовательности и количество его вхождений.
+    */
+    constexpr auto const & min_count = odr_const<min_count_fn>;
 
-        /** @brief Функциональный объект, определяющий наибольший общий префикс
-        двух последовательностей.
-        */
-        constexpr auto const & common_prefix = odr_const<common_prefix_fn>;
-    }
+    /** @brief Функциональный объект, пропускающий начало одной
+    последовательности, если она совпадает с другой последовательностью.
+    */
+    constexpr auto const & skip_over = odr_const<skip_over_fn>;
+
+    /** @brief Функциональный объект, определяющий наибольший общий префикс
+    двух последовательностей.
+    */
+    constexpr auto const & common_prefix = odr_const<common_prefix_fn>;
+}
+}
+// namespace experimental
 }
 // namespace ural
 

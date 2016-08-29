@@ -22,14 +22,19 @@
 
 #include <boost/test/unit_test.hpp>
 
-BOOST_AUTO_TEST_CASE(moved_sequence_forward_test)
+namespace
+{
+    namespace ural_ex = ::ural::experimental;
+}
+
+BOOST_AUTO_TEST_CASE(moved_cursor_forward_test)
 {
     // Настройки
     std::forward_list<int> const src1{1, 2, 2, 2, 3, 3, 2, 2, 1};
     auto const n = 5;
 
-    auto s1 = src1 | ural::moved;
-    auto s2 = src1 | ural::assumed_infinite | ural::moved;
+    auto s1 = src1 | ural_ex::moved;
+    auto s2 = src1 | ural_ex::assumed_infinite | ural_ex::moved;
 
     auto const s2_old = s2;
 

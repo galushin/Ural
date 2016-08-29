@@ -25,6 +25,8 @@
 
 namespace ural
 {
+namespace experimental
+{
 namespace meta
 {
     /** @brief Наследование от всех элементов списка типов
@@ -42,6 +44,8 @@ namespace meta
     {};
 }
 // namespace meta
+}
+// namespace experimental
 }
 // namespace ural
 

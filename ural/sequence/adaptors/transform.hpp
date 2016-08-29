@@ -35,18 +35,20 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Реализация для произвольного количества входных
     последовательнсотей
     @tparam F тип функционального объекта
     @tparam Inputs входные последовательности
     */
     template <class F, class... Inputs>
-    class transform_sequence
-     : public sequence_adaptor<transform_sequence<F, Inputs...>,
-                               zip_sequence<Inputs...>, F>
+    class transform_cursor
+     : public cursor_adaptor<transform_cursor<F, Inputs...>,
+                               zip_cursor<Inputs...>, F>
     {
-        using Base = sequence_adaptor<transform_sequence<F, Inputs...>,
-                                      zip_sequence<Inputs...>, F>;
+        using Base = cursor_adaptor<transform_cursor<F, Inputs...>,
+                                      zip_cursor<Inputs...>, F>;
 
     public:
         // Типы
@@ -74,8 +76,8 @@ namespace ural
         @post <tt> this->base() == in </tt>
         @post <tt> this->function() == f </tt>
         */
-        explicit transform_sequence(F f, Inputs... in)
-         : Base(make_zip_sequence(std::move(in)...), std::move(f))
+        explicit transform_cursor(F f, Inputs... in)
+         : Base(make_zip_cursor(std::move(in)...), std::move(f))
         {}
 
         //@{
@@ -108,7 +110,7 @@ namespace ural
         }
         //@}
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Передний элемент
         @return Ссылка на первый элемент последовательности
         @pre <tt> !*this == true </tt>
@@ -118,7 +120,7 @@ namespace ural
             return ::ural::apply(this->function(), Base::front());
         }
 
-        // Прямая последовательность
+        // Прямой курсор
 
         // Двусторонняя последовательность
         /** @brief Последний элемент
@@ -145,10 +147,10 @@ namespace ural
         friend Base;
 
         template <class... OtherInputs>
-        transform_sequence<F, OtherInputs...>
-        rebind_base(zip_sequence<OtherInputs...> new_base) const
+        transform_cursor<F, OtherInputs...>
+        rebind_base(zip_cursor<OtherInputs...> new_base) const
         {
-            using Result = transform_sequence<F, OtherInputs...>;
+            using Result = transform_cursor<F, OtherInputs...>;
             auto maker = [this](OtherInputs... inputs) -> Result
             {
                 return Result(this->function(), std::move(inputs)...);
@@ -157,69 +159,71 @@ namespace ural
             return ural::apply(maker, std::move(new_base).bases());
         }
 
-        explicit transform_sequence(zip_sequence<Inputs...> base, F f)
+        explicit transform_cursor(zip_cursor<Inputs...> base, F f)
          : Base(std::move(base), std::move(f))
         {}
     };
 
-    /** @brief Итератор, задающий начало преобразующей последовательности
-    @param s последовательность
-    @return <tt> {begin(s.bases()[ural::_1]), s.function()} </tt>
+    /** @brief Итератор, задающий начало преобразующего курсора
+    @param cur курсор
+    @return <tt> {begin(cur.bases()[ural::_1]), cur.function()} </tt>
     */
-    template <class UnaryFunction, class Sequence>
-    auto begin(transform_sequence<UnaryFunction, Sequence> const & s)
-    -> boost::transform_iterator<UnaryFunction, decltype(begin(s.bases()[ural::_1]))>
+    template <class UnaryFunction, class Cursor>
+    auto begin(transform_cursor<UnaryFunction, Cursor> const & cur)
+    -> boost::transform_iterator<UnaryFunction, decltype(begin(cur.bases()[ural::_1]))>
     {
-        return {begin(s.bases()[ural::_1]), s.function()};
+        return {begin(cur.bases()[ural::_1]), cur.function()};
     }
 
-    /** @brief Итератор, задающий конец преобразующей последовательности
-    @param s последовательность
-    @return <tt> {end(s.bases()[ural::_1]), s.function()} </tt>
+    /** @brief Итератор, задающий конец преобразующего курсора
+    @param cur курсор
+    @return <tt> {end(cur.bases()[ural::_1]), cur.function()} </tt>
     */
-    template <class UnaryFunction, class Sequence>
-    auto end(transform_sequence<UnaryFunction, Sequence> const & s)
-    -> boost::transform_iterator<UnaryFunction, decltype(begin(s.bases()[ural::_1]))>
+    template <class UnaryFunction, class Cursor>
+    auto end(transform_cursor<UnaryFunction, Cursor> const & cur)
+    -> boost::transform_iterator<UnaryFunction, decltype(begin(cur.bases()[ural::_1]))>
     {
-        return {end(s.bases()[ural::_1]), s.function()};
+        return {end(cur.bases()[ural::_1]), cur.function()};
     }
 
-    /// @brief Тип Функционального объекта для создания @c transform_sequence
-    struct make_transform_sequence_fn
+    /// @brief Тип Функционального объекта для создания @c transform_cursor
+    struct make_transform_cursor_fn
     {
     public:
-        /** @brief Функция создания @c make_transform_sequence
+        /** @brief Функция создания @c make_transform_cursor
         @param f функциональный объект, способный принимать <tt> sizeof...(in) </tt>
         аргументов
         @param in список входных последовательностей
-        @return <tt> { ::ural::make_callable(std::move(f)), ::ural::sequence_fwd<Inputs>(in)...</tt> }
+        @return <tt> { ::ural::make_callable(std::move(f)), ::ural::cursor_fwd<Inputs>(in)...</tt> }
         */
         template <class Function, class... Inputs>
-        transform_sequence<FunctionType<Function>, SequenceType<Inputs>...>
+        transform_cursor<function_type_t<Function>, cursor_type_t<Inputs>...>
         operator()(Function f, Inputs && ... in) const
         {
-            using Seq = transform_sequence<FunctionType<Function>,
-                                           SequenceType<Inputs>...>;
+            using Seq = transform_cursor<function_type_t<Function>,
+                                           cursor_type_t<Inputs>...>;
 
             return Seq(::ural::make_callable(std::move(f)),
-                       ::ural::sequence_fwd<Inputs>(in)...);
+                       ::ural::cursor_fwd<Inputs>(in)...);
         }
     };
 
     namespace
     {
-        /** @brief Функциональный объект для создания @c transform_sequence
+        /** @brief Функциональный объект для создания @c transform_cursor
         в функциональном стиле.
         */
-        constexpr auto const & make_transform_sequence
-            = odr_const<make_transform_sequence_fn>;
+        constexpr auto const & make_transform_cursor
+            = odr_const<make_transform_cursor_fn>;
 
-        /** @brief Функциональный объект для создания @c transform_sequence
+        /** @brief Функциональный объект для создания @c transform_cursor
         в конвейерном стиле.
         */
         constexpr auto const & transformed
-            = odr_const<pipeable_maker<binary_reverse_args_function<make_transform_sequence_fn>>>;
+            = odr_const<experimental::pipeable_maker<experimental::binary_reverse_args_function<make_transform_cursor_fn>>>;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

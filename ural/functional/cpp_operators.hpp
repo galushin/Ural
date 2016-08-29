@@ -26,6 +26,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /// @cond false
     namespace details
     {
@@ -40,7 +42,7 @@ namespace ural
         {};
     }
     // namespace details
-    //#endcond
+    /// @endcond
 
     /** @brief Класс-характеристика для определения того, что тип @c T
     содержит определения типа @ is_transparent
@@ -48,7 +50,7 @@ namespace ural
     */
     template <class T>
     struct has_is_transparent_type
-     : ::ural::details::has_is_transparent_type<T>
+     : ::ural::experimental::details::has_is_transparent_type<T>
     {};
 
     /** @brief Вспомогательный класс для функциональных объектов для бинарных
@@ -61,7 +63,9 @@ namespace ural
     class binary_operator_helper
     {
         static_assert(std::is_empty<F>::value, "must be empty class");
-        static_assert(ural::has_is_transparent_type<F>::value, "Must be transparent");
+        static_assert(ural::experimental::has_is_transparent_type<F>::value,
+                      "Must be transparent");
+
     public:
         /** @brief Оператор вызова функции
         @param x левый операнд
@@ -85,7 +89,8 @@ namespace ural
     class binary_operator_helper<T1, void, F>
     {
         static_assert(std::is_empty<F>::value, "must be empty class");
-        static_assert(ural::has_is_transparent_type<F>::value, "Must be transparent");
+        static_assert(ural::experimental::has_is_transparent_type<F>::value,
+                      "Must be transparent");
     public:
         /** @brief Оператор вызова функции
         @param x левый операнд
@@ -110,7 +115,8 @@ namespace ural
     class binary_operator_helper<void, T2, F>
     {
         static_assert(std::is_empty<F>::value, "must be empty class");
-        static_assert(ural::has_is_transparent_type<F>::value, "Must be transparent");
+        static_assert(ural::experimental::has_is_transparent_type<F>::value,
+                      "Must be transparent");
     public:
         /** @brief Оператор вызова функции
         @param x левый операнд
@@ -137,7 +143,8 @@ namespace ural
     class compound_assignment_helper
     {
         static_assert(std::is_empty<F>::value, "Must be empty!");
-        static_assert(ural::has_is_transparent_type<F>::value, "Must be transparent");
+        static_assert(ural::experimental::has_is_transparent_type<F>::value,
+                      "Must be transparent");
     public:
         /** @brief Оператор вызова функции
         @param x левый операнд
@@ -158,7 +165,8 @@ namespace ural
     class compound_assignment_helper<T1, void, F>
     {
         static_assert(std::is_empty<F>::value, "Must be empty!");
-        static_assert(ural::has_is_transparent_type<F>::value, "Must be transparent");
+        static_assert(ural::experimental::has_is_transparent_type<F>::value,
+                      "Must be transparent");
     public:
         /** @brief Оператор вызова функции
         @param x левый операнд
@@ -180,7 +188,8 @@ namespace ural
     class compound_assignment_helper<void, T2, F>
     {
         static_assert(std::is_empty<F>::value, "Must be empty!");
-        static_assert(ural::has_is_transparent_type<F>::value, "Must be transparent");
+        static_assert(ural::experimental::has_is_transparent_type<F>::value,
+                      "Must be transparent");
     public:
         /** @brief Оператор вызова функции
         @param x левый операнд
@@ -203,7 +212,8 @@ namespace ural
     class unary_operator_helper
     {
         static_assert(std::is_empty<F>::value, "must be empty class");
-        static_assert(ural::has_is_transparent_type<F>::value, "Must be transparent");
+        static_assert(ural::experimental::has_is_transparent_type<F>::value,
+                      "Must be transparent");
     public:
         /// @brief Тип аргумента
         typedef T argument_type;
@@ -219,446 +229,6 @@ namespace ural
         operator()(typename boost::call_traits<T>::param_type x) const
         {
             return F{}(x);
-        }
-    };
-
-// Функциональные объекты для операторов
-    /** @brief Функциональный объект для оператора "бинарный плюс"
-    @tparam T1 тип первого аргумента, если он совпадает с @b void, то тип будет
-    выведен по фактическому аргументу
-    @tparam T2 тип второго аргумента, если он совпадает с @b void, то тип будет
-    выведен по фактическому аргументу
-    */
-    template <class T1 = void, class T2 = T1>
-    class plus
-     : public binary_operator_helper<T1, T2, plus<>>
-    {};
-
-    /// @brief Специализация с выводом типов обоих аргументов
-    template <>
-    class plus<void, void>
-    {
-    public:
-        /// @brief Этот функциональный объект прозрачный
-        using is_transparent = std::true_type;
-
-        /** @brief Оператор вычисления значения
-        @param x левый операнд
-        @param y правый операнд
-        @return <tt> std::forward<T1>(x) + std::forward<T2>(y) </tt>
-        */
-        template <class T1, class T2>
-        constexpr auto operator()(T1 && x, T2 && y) const
-        -> decltype(std::forward<T1>(x) + std::forward<T2>(y))
-        {
-            return std::forward<T1>(x) + std::forward<T2>(y);
-        }
-    };
-
-    /** @brief Функциональный объект для оператора "бинарный минус"
-    @tparam T1 тип первого аргумента, если он совпадает с @b void, то тип будет
-    выведен по фактическому аргументу
-    @tparam T2 тип второго аргумента, если он совпадает с @b void, то тип будет
-    выведен по фактическому аргументу
-    */
-    template <class T1 = void, class T2 = T1>
-    class minus
-     : public binary_operator_helper<T1, T2, minus<>>
-    {};
-
-    /// @brief Специализация с выводом типов обоих аргументов
-    template <>
-    class minus<void, void>
-    {
-    public:
-        /// @brief Этот функциональный объект прозрачный
-        using is_transparent = std::true_type;
-
-        /** @brief Оператор вычисления значения
-        @param x левый операнд
-        @param y правый операнд
-        @return <tt> std::forward<T1>(x) - std::forward<T2>(y) </tt>
-        */
-        template <class T1, class T2>
-        constexpr auto operator()(T1 && x, T2 && y) const
-        -> decltype(std::forward<T1>(x) - std::forward<T2>(y))
-        {
-            return std::forward<T1>(x) - std::forward<T2>(y);
-        }
-    };
-
-    /** @brief Функциональный объект для оператора "умножить"
-    @tparam T1 тип первого аргумента, если он совпадает с @b void, то тип будет
-    выведен по фактическому аргументу
-    @tparam T2 тип второго аргумента, если он совпадает с @b void, то тип будет
-    выведен по фактическому аргументу
-    */
-    template <class T1 = void, class T2 = T1>
-    class multiplies
-     : public binary_operator_helper<T1, T2, multiplies<>>
-    {};
-
-    /// @brief Специализация с выводом типов обоих аргументов
-    template <>
-    class multiplies<void, void>
-    {
-    public:
-        /// @brief Этот функциональный объект прозрачный
-        using is_transparent = std::true_type;
-
-        /** @brief Оператор вычисления значения
-        @param x левый операнд
-        @param y правый операнд
-        @return <tt> std::forward<T1>(x) * std::forward<T2>(y) </tt>
-        */
-        template <class T1, class T2>
-        constexpr auto operator()(T1 && x, T2 && y) const
-        -> decltype(std::forward<T1>(x) * std::forward<T2>(y))
-        {
-            return std::forward<T1>(x) * std::forward<T2>(y);
-        }
-    };
-
-    /** @brief Функциональный объект для оператора "разделить"
-    @tparam T1 тип первого аргумента, если он совпадает с @b void, то тип будет
-    выведен по фактическому аргументу
-    @tparam T2 тип второго аргумента, если он совпадает с @b void, то тип будет
-    выведен по фактическому аргументу
-    */
-    template <class T1 = void, class T2 = T1>
-    class divides
-      : public binary_operator_helper<T1, T2, divides<>>
-    {};
-
-    template <>
-    class divides<void, void>
-    {
-    public:
-        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
-        typedef std::true_type is_transparent;
-
-        template <class T1, class T2>
-        constexpr auto operator()(T1 && x, T2 && y) const
-        -> decltype(std::forward<T1>(x) / std::forward<T2>(y))
-        {
-            return std::forward<T1>(x) / std::forward<T2>(y);
-        }
-    };
-
-    template <class T1 = void, class T2 = T1>
-    class modulus
-     : public binary_operator_helper<T1, T2, modulus<>>
-    {};
-
-    /** @brief Функциональный объект для оператора "остаток от деления"
-    @tparam T1 тип первого аргумента, если он совпадает с @b void, то тип будет
-    выведен по фактическому аргументу
-    @tparam T2 тип второго аргумента, если он совпадает с @b void, то тип будет
-    выведен по фактическому аргументу
-    */
-    template <>
-    class modulus<void, void>
-    {
-    public:
-        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
-        typedef std::true_type is_transparent;
-
-        template <class T1, class T2>
-        constexpr auto operator()(T1 && x, T2 && y) const
-        -> decltype(std::forward<T1>(x) % std::forward<T2>(y))
-        {
-            return std::forward<T1>(x) % std::forward<T2>(y);
-        }
-    };
-
-    /** @brief Функциональный объект для оператора "унарный минус"
-    @tparam T тип аргумента, если он совпадает с @b void, то тип будет выведен
-    по фактическому аргументу.
-    */
-    template <class T = void>
-    class negate
-     : public unary_operator_helper<T, negate<>>
-    {};
-
-    template <>
-    class negate<>
-    {
-    public:
-        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
-        typedef std::true_type is_transparent;
-
-        /** @brief Оператор вызова функции
-        @param x операнд
-        @return <tt> -std::forward<T>(x) </tt>
-        */
-        template <class T>
-        constexpr auto operator()(T && x) const
-        -> decltype(-std::forward<T>(x))
-        {
-            return -std::forward<T>(x);
-        }
-    };
-
-    /** @brief Функциональный объект для оператора "равно"
-    @tparam T1 тип первого аргумента, если он совпадает с @b void, то тип будет
-    выведен по фактическому аргументу
-    @tparam T2 тип второго аргумента, если он совпадает с @b void, то тип будет
-    выведен по фактическому аргументу
-    */
-    template <class T1 = void, class T2 = T1>
-    class equal_to
-     : public binary_operator_helper<T1, T2, equal_to<>>
-    {};
-
-    template <>
-    class equal_to<void, void>
-    {
-    public:
-        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
-        typedef std::true_type is_transparent;
-
-        /** @brief Оператор вызова функции
-        @param x левый операнд
-        @param y правй операнд
-        @return <tt> std::forward<T1>(x) == std::forward<T2>(y) </tt>
-        */
-        template <class T1, class T2>
-        constexpr auto operator()(T1 const & x, T2 const & y) const
-        -> decltype(x == y)
-        {
-            return x == y;
-        }
-    };
-
-    /** @brief Функциональный объект для оператора "не равно"
-    @tparam T1 тип первого аргумента
-    @tparam T2 тип второго аргумента
-    Если один из типов аргумента равен @b void, то его тип будет выводится
-    по типу фактического параметра
-    */
-    template <class T1 = void, class T2 = T1>
-    class not_equal_to
-     : public binary_operator_helper<T1, T2, not_equal_to<>>
-    {};
-
-    template <>
-    class not_equal_to<void, void>
-    {
-    public:
-        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
-        typedef std::true_type is_transparent;
-
-        /** @brief Оператор вызова функции
-        @param x левый операнд
-        @param y правй операнд
-        @return <tt> std::forward<T1>(x) != std::forward<T2>(y) </tt>
-        */
-        template <class T1, class T2>
-        constexpr auto operator()(T1 && x, T2 && y) const
-        -> decltype (std::forward<T1>(x) != std::forward<T2>(y))
-        {
-            return std::forward<T1>(x) != std::forward<T2>(y);
-        }
-    };
-
-    /** @brief Функциональный объект для оператора "меньше"
-    @tparam T1 тип первого аргумента
-    @tparam T2 тип второго аргумента
-    Если один из типов аргумента равен @b void, то его тип будет выводится
-    по типу фактического параметра
-    */
-    template <class T1 = void, class T2 = T1>
-    class less
-     : public binary_operator_helper<T1, T2, less<>>
-    {};
-
-    template <>
-    class less<void, void>
-    {
-    public:
-        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
-        typedef std::true_type is_transparent;
-
-        /** @brief Оператор вызова функции
-        @param x левый операнд
-        @param y правй операнд
-        @return <tt> std::forward<T1>(x) < std::forward<T2>(y) </tt>
-        */
-        template <class T1, class T2>
-        constexpr auto operator()(T1 && x, T2 && y) const
-        -> decltype (std::forward<T1>(x) < std::forward<T2>(y))
-        {
-            return std::forward<T1>(x) < std::forward<T2>(y);
-        }
-    };
-
-    /** @brief Функциональный объект для оператора "больше"
-    @tparam T1 тип первого аргумента
-    @tparam T2 тип второго аргумента
-    Если один из типов аргумента равен @b void, то его тип будет выводится
-    по типу фактического параметра
-    */
-    template <class T1 = void, class T2 = T1>
-    class greater
-     : public binary_operator_helper<T1, T2, greater<>>
-    {};
-
-    template <>
-    class greater<void, void>
-    {
-    public:
-        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
-        typedef std::true_type is_transparent;
-
-        /** @brief Оператор вызова функции
-        @param x левый операнд
-        @param y правй операнд
-        @return <tt> std::forward<T1>(x) > std::forward<T2>(y) </tt>
-        */
-        template <class T1, class T2>
-        constexpr auto operator()(T1 && x, T2 && y) const
-        -> decltype (std::forward<T1>(x) > std::forward<T2>(y))
-        {
-            return std::forward<T1>(x) > std::forward<T2>(y);
-        }
-    };
-
-    /** @brief Функциональный объект для оператора "меньше или равно"
-    @tparam T1 тип первого аргумента
-    @tparam T2 тип второго аргумента
-    Если один из типов аргумента равен @b void, то его тип будет выводится
-    по типу фактического параметра
-    */
-    template <class T1 = void, class T2 = T1>
-    class less_equal
-      : public binary_operator_helper<T1, T2, less_equal<>>
-    {};
-
-    template <>
-    class less_equal<void, void>
-    {
-    public:
-        /// @brief Этот функциональный объект прозрачный
-        using is_transparent = std::true_type;
-
-        /** @brief Оператор вызова функции
-        @param x левый операнд
-        @param y правй операнд
-        @return <tt> std::forward<T1>(x) <= std::forward<T2>(y) </tt>
-        */
-        template <class T1, class T2>
-        constexpr auto operator()(T1 && x, T2 && y) const
-        -> decltype (std::forward<T1>(x) <= std::forward<T2>(y))
-        {
-            return std::forward<T1>(x) <= std::forward<T2>(y);
-        }
-    };
-
-    /** @brief Функциональный объект для оператора "больше или равно"
-    @tparam T1 тип первого аргумента
-    @tparam T2 тип второго аргумента
-    Если один из типов аргумента равен @b void, то его тип будет выводится
-    по типу фактического параметра
-    */
-    template <class T1 = void, class T2 = T1>
-    class greater_equal
-     : public binary_operator_helper<T1, T2, greater_equal<>>
-    {};
-
-    template <>
-    class greater_equal<void, void>
-    {
-    public:
-        /// @brief Этот функциональный объект прозрачный
-        using is_transparent = std::true_type;
-
-        /** @brief Оператор вызова функции
-        @param x левый операнд
-        @param y правй операнд
-        @return <tt> std::forward<T1>(x) >= std::forward<T2>(y) </tt>
-        */
-        template <class T1, class T2>
-        constexpr auto operator()(T1 && x, T2 && y) const
-        -> decltype (std::forward<T1>(x) >= std::forward<T2>(y))
-        {
-            return std::forward<T1>(x) >= std::forward<T2>(y);
-        }
-    };
-
-    // Логические операции
-    /** @brief Функциональный объект для оператора "логическое И"
-    @tparam T1 тип первого аргумента
-    @tparam T2 тип второго аргумента
-    Если один из типов аргумента равен @b void, то его тип будет выводится
-    по типу фактического параметра
-    */
-    template <class T1 = void, class T2 = T1>
-    class logical_and
-     : public binary_operator_helper<T1, T2, logical_and<>>
-    {};
-
-    template <>
-    class logical_and<void, void>
-    {
-    public:
-        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
-        typedef std::true_type is_transparent;
-
-        template <class T1, class T2>
-        constexpr auto operator()(T1 && x, T2 && y) const
-        -> decltype(std::forward<T1>(x) && std::forward<T2>(y))
-        {
-            return std::forward<T1>(x) && std::forward<T2>(y);
-        }
-    };
-
-    /** @brief Функциональный объект для оператора "логическое ИЛИ"
-    @tparam T1 тип первого аргумента
-    @tparam T2 тип второго аргумента
-    Если один из типов аргумента равен @b void, то его тип будет выводится
-    по типу фактического параметра
-    */
-    template <class T1 = void, class T2 = T1>
-    class logical_or
-     : public binary_operator_helper<T1, T2, logical_or<>>
-    {};
-
-    template <>
-    class logical_or<void, void>
-    {
-    public:
-        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
-        typedef std::true_type is_transparent;
-
-        template <class T1, class T2>
-        constexpr auto operator()(T1 && x, T2 && y) const
-        -> decltype(std::forward<T1>(x) || std::forward<T2>(y))
-        {
-            return std::forward<T1>(x) || std::forward<T2>(y);
-        }
-    };
-
-    /** @brief Функциональный объект для оператора "логическое НЕ"
-    @tparam T тип аргумента, если этот тип совпадает с @b void, то тип будет
-    выводится по фактическому параметру.
-    */
-    template <class T = void>
-    class logical_not
-     : public unary_operator_helper<T, logical_not<>>
-    {};
-
-    template <>
-    class logical_not<void>
-    {
-    public:
-        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
-        typedef std::true_type is_transparent;
-
-        template <class T>
-        constexpr auto operator()(T && x) const
-        -> decltype(!std::forward<T>(x))
-        {
-            return !std::forward<T>(x);
         }
     };
 
@@ -706,155 +276,6 @@ namespace ural
             return ~std::forward<T>(arg);
         }
     };
-
-    /** @brief Функциональный объект для оператора "побитовое И"
-    @tparam T1 тип первого аргумента
-    @tparam T2 тип второго аргумента
-    Если один из типов аргумента равен @b void, то его тип будет выводится
-    по типу фактического параметра
-    */
-    template <class T1 = void, class T2 = T1>
-    class bit_and
-     : public binary_operator_helper<T1, T2, bit_and<void, void>>
-    {};
-
-    template <>
-    class bit_and<void, void>
-    {
-    public:
-        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
-        typedef std::true_type is_transparent;
-
-        template <class T1, class T2>
-        constexpr auto operator()(T1 && x, T2 && y) const
-        -> decltype(std::forward<T1>(x) & std::forward<T2>(y))
-        {
-            return std::forward<T1>(x) & std::forward<T2>(y);
-        }
-    };
-
-    /** @brief Функциональный объект для оператора "побитовое ИЛИ"
-    @tparam T1 тип первого аргумента
-    @tparam T2 тип второго аргумента
-    Если один из типов аргумента равен @b void, то тип будет выводится по
-    фактическому параметру
-    */
-    template <class T1 = void, class T2 = T1>
-    class bit_or
-     : public binary_operator_helper<T1, T2, bit_or<void, void>>
-    {};
-
-    /// @brief Специализация с выводом типов аргументов
-    template <>
-    class bit_or<void, void>
-    {
-    public:
-        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
-        typedef std::true_type is_transparent;
-
-        template <class T1, class T2>
-        constexpr auto operator()(T1 && x, T2 && y) const
-        -> decltype(std::forward<T1>(x) | std::forward<T2>(y))
-        {
-            return std::forward<T1>(x) | std::forward<T2>(y);
-        }
-    };
-
-    /** @brief Функциональный объект для оператора "побитовое исключающее ИЛИ"
-    @tparam T1 тип первого аргумента
-    @tparam T2 тип второго аргумента
-    Если один из типов аргумента равен @b void, то тип будет выводится по
-    фактическому параметру
-    */
-    template <class T1 = void, class T2 = T1>
-    class bit_xor
-     : public binary_operator_helper<T1, T2, bit_xor<void, void>>
-    {};
-
-    /// @brief Специализация с выводом типов аргументов
-    template <>
-    class bit_xor<void, void>
-    {
-    public:
-        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
-        typedef std::true_type is_transparent;
-
-        template <class T1, class T2>
-        constexpr auto operator()(T1 && x, T2 && y) const
-        -> decltype(std::forward<T1>(x) ^ std::forward<T2>(y))
-        {
-            return std::forward<T1>(x) ^ std::forward<T2>(y);
-        }
-    };
-
-    // Негатор
-    /** @brief Адаптор функционального объекта, применяющий к его результату
-    оператор логического отрицания
-    @tparam Predicate тип предиката
-    */
-    template <class Predicate>
-    class not_function
-     : private compose_function<ural::logical_not<>, Predicate>
-    {
-        typedef compose_function<ural::logical_not<>, Predicate> Base;
-
-        friend constexpr bool
-        operator==(not_function const & x, not_function const & y)
-        {
-            return static_cast<Base const &>(x) ==
-                    static_cast<Base const &>(y);
-        }
-
-    public:
-        /// @brief Тип базового функционального объекта
-        typedef decltype(make_callable(std::declval<Predicate>())) target_type;
-
-        // Конструкторы
-        /** @brief Конструктор
-        @post <tt> this->target() == target_type{} </tt>
-        */
-        constexpr not_function()
-         : Base{}
-        {}
-
-        /** @brief Конструктор
-        @param pred предикат
-        @post <tt> this->target() == pred </tt>
-        */
-        constexpr explicit not_function(Predicate pred)
-         : Base(ural::logical_not<>{}, std::move(pred))
-        {}
-
-        /** @brief Базовый функциональный объект
-        @return Базовый функциональный объект
-        */
-        constexpr target_type const & target() const
-        {
-            return Base::second_function();
-        }
-
-        /** @brief Применение функционального объекта
-        @param args параметры вызова
-        @return <tt> !(this->target())(args...) </tt>
-        */
-        template <class... Args>
-        constexpr auto operator()(Args && ... args) const
-        -> decltype(std::declval<Base>()(std::forward<Args>(args)...))
-        {
-            return Base::operator()(std::forward<Args>(args)...);
-        }
-    };
-
-    /** @brief Создание негатора
-    @param pred предикат
-    */
-    template <class Predicate>
-    auto not_fn(Predicate pred)
-    -> not_function<decltype(make_callable(std::move(pred)))>
-    {
-        typedef not_function<decltype(make_callable(std::move(pred)))> Function;
-        return Function{make_callable(std::move(pred))};
-    }
 
     // Составные операторы присваивания
     /** @brief Функциональный объект для оператора "плюс-присвоить"
@@ -1044,6 +465,600 @@ namespace ural
             return *std::forward<T>(x);
         }
     };
+}
+// namespace experimental
+
+inline namespace v1
+{
+// Функциональные объекты для операторов
+    /** @brief Функциональный объект для оператора "бинарный плюс"
+    @tparam T1 тип первого аргумента, если он совпадает с @b void, то тип будет
+    выведен по фактическому аргументу
+    @tparam T2 тип второго аргумента, если он совпадает с @b void, то тип будет
+    выведен по фактическому аргументу
+    */
+    template <class T1 = void, class T2 = T1>
+    class plus
+     : public experimental::binary_operator_helper<T1, T2, plus<>>
+    {};
+
+    /// @brief Специализация с выводом типов обоих аргументов
+    template <>
+    class plus<void, void>
+    {
+    public:
+        /// @brief Этот функциональный объект прозрачный
+        using is_transparent = std::true_type;
+
+        /** @brief Оператор вычисления значения
+        @param x левый операнд
+        @param y правый операнд
+        @return <tt> std::forward<T1>(x) + std::forward<T2>(y) </tt>
+        */
+        template <class T1, class T2>
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype(std::forward<T1>(x) + std::forward<T2>(y))
+        {
+            return std::forward<T1>(x) + std::forward<T2>(y);
+        }
+    };
+
+    /** @brief Функциональный объект для оператора "бинарный минус"
+    @tparam T1 тип первого аргумента, если он совпадает с @b void, то тип будет
+    выведен по фактическому аргументу
+    @tparam T2 тип второго аргумента, если он совпадает с @b void, то тип будет
+    выведен по фактическому аргументу
+    */
+    template <class T1 = void, class T2 = T1>
+    class minus
+     : public experimental::binary_operator_helper<T1, T2, minus<>>
+    {};
+
+    /// @brief Специализация с выводом типов обоих аргументов
+    template <>
+    class minus<void, void>
+    {
+    public:
+        /// @brief Этот функциональный объект прозрачный
+        using is_transparent = std::true_type;
+
+        /** @brief Оператор вычисления значения
+        @param x левый операнд
+        @param y правый операнд
+        @return <tt> std::forward<T1>(x) - std::forward<T2>(y) </tt>
+        */
+        template <class T1, class T2>
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype(std::forward<T1>(x) - std::forward<T2>(y))
+        {
+            return std::forward<T1>(x) - std::forward<T2>(y);
+        }
+    };
+
+    /** @brief Функциональный объект для оператора "умножить"
+    @tparam T1 тип первого аргумента, если он совпадает с @b void, то тип будет
+    выведен по фактическому аргументу
+    @tparam T2 тип второго аргумента, если он совпадает с @b void, то тип будет
+    выведен по фактическому аргументу
+    */
+    template <class T1 = void, class T2 = T1>
+    class multiplies
+     : public experimental::binary_operator_helper<T1, T2, multiplies<>>
+    {};
+
+    /// @brief Специализация с выводом типов обоих аргументов
+    template <>
+    class multiplies<void, void>
+    {
+    public:
+        /// @brief Этот функциональный объект прозрачный
+        using is_transparent = std::true_type;
+
+        /** @brief Оператор вычисления значения
+        @param x левый операнд
+        @param y правый операнд
+        @return <tt> std::forward<T1>(x) * std::forward<T2>(y) </tt>
+        */
+        template <class T1, class T2>
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype(std::forward<T1>(x) * std::forward<T2>(y))
+        {
+            return std::forward<T1>(x) * std::forward<T2>(y);
+        }
+    };
+
+    /** @brief Функциональный объект для оператора "разделить"
+    @tparam T1 тип первого аргумента, если он совпадает с @b void, то тип будет
+    выведен по фактическому аргументу
+    @tparam T2 тип второго аргумента, если он совпадает с @b void, то тип будет
+    выведен по фактическому аргументу
+    */
+    template <class T1 = void, class T2 = T1>
+    class divides
+      : public experimental::binary_operator_helper<T1, T2, divides<>>
+    {};
+
+    template <>
+    class divides<void, void>
+    {
+    public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
+        typedef std::true_type is_transparent;
+
+        template <class T1, class T2>
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype(std::forward<T1>(x) / std::forward<T2>(y))
+        {
+            return std::forward<T1>(x) / std::forward<T2>(y);
+        }
+    };
+
+    template <class T1 = void, class T2 = T1>
+    class modulus
+     : public experimental::binary_operator_helper<T1, T2, modulus<>>
+    {};
+
+    /** @brief Функциональный объект для оператора "остаток от деления"
+    @tparam T1 тип первого аргумента, если он совпадает с @b void, то тип будет
+    выведен по фактическому аргументу
+    @tparam T2 тип второго аргумента, если он совпадает с @b void, то тип будет
+    выведен по фактическому аргументу
+    */
+    template <>
+    class modulus<void, void>
+    {
+    public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
+        typedef std::true_type is_transparent;
+
+        template <class T1, class T2>
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype(std::forward<T1>(x) % std::forward<T2>(y))
+        {
+            return std::forward<T1>(x) % std::forward<T2>(y);
+        }
+    };
+
+    /** @brief Функциональный объект для оператора "унарный минус"
+    @tparam T тип аргумента, если он совпадает с @b void, то тип будет выведен
+    по фактическому аргументу.
+    */
+    template <class T = void>
+    class negate
+     : public experimental::unary_operator_helper<T, negate<>>
+    {};
+
+    template <>
+    class negate<>
+    {
+    public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
+        typedef std::true_type is_transparent;
+
+        /** @brief Оператор вызова функции
+        @param x операнд
+        @return <tt> -std::forward<T>(x) </tt>
+        */
+        template <class T>
+        constexpr auto operator()(T && x) const
+        -> decltype(-std::forward<T>(x))
+        {
+            return -std::forward<T>(x);
+        }
+    };
+
+    /** @brief Функциональный объект для оператора "равно"
+    @tparam T1 тип первого аргумента, если он совпадает с @b void, то тип будет
+    выведен по фактическому аргументу
+    @tparam T2 тип второго аргумента, если он совпадает с @b void, то тип будет
+    выведен по фактическому аргументу
+    */
+    template <class T1 = void, class T2 = T1>
+    class equal_to
+     : public experimental::binary_operator_helper<T1, T2, equal_to<>>
+    {};
+
+    template <>
+    class equal_to<void, void>
+    {
+    public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
+        typedef std::true_type is_transparent;
+
+        /** @brief Оператор вызова функции
+        @param x левый операнд
+        @param y правй операнд
+        @return <tt> std::forward<T1>(x) == std::forward<T2>(y) </tt>
+        */
+        template <class T1, class T2>
+        constexpr auto operator()(T1 const & x, T2 const & y) const
+        -> decltype(x == y)
+        {
+            return x == y;
+        }
+    };
+
+    /** @brief Функциональный объект для оператора "не равно"
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    Если один из типов аргумента равен @b void, то его тип будет выводится
+    по типу фактического параметра
+    */
+    template <class T1 = void, class T2 = T1>
+    class not_equal_to
+     : public experimental::binary_operator_helper<T1, T2, not_equal_to<>>
+    {};
+
+    template <>
+    class not_equal_to<void, void>
+    {
+    public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
+        typedef std::true_type is_transparent;
+
+        /** @brief Оператор вызова функции
+        @param x левый операнд
+        @param y правй операнд
+        @return <tt> std::forward<T1>(x) != std::forward<T2>(y) </tt>
+        */
+        template <class T1, class T2>
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype (std::forward<T1>(x) != std::forward<T2>(y))
+        {
+            return std::forward<T1>(x) != std::forward<T2>(y);
+        }
+    };
+
+    /** @brief Функциональный объект для оператора "меньше"
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    Если один из типов аргумента равен @b void, то его тип будет выводится
+    по типу фактического параметра
+    */
+    template <class T1 = void, class T2 = T1>
+    class less
+     : public experimental::binary_operator_helper<T1, T2, less<>>
+    {};
+
+    template <>
+    class less<void, void>
+    {
+    public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
+        typedef std::true_type is_transparent;
+
+        /** @brief Оператор вызова функции
+        @param x левый операнд
+        @param y правй операнд
+        @return <tt> std::forward<T1>(x) < std::forward<T2>(y) </tt>
+        */
+        template <class T1, class T2>
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype (std::forward<T1>(x) < std::forward<T2>(y))
+        {
+            return std::forward<T1>(x) < std::forward<T2>(y);
+        }
+    };
+
+    /** @brief Функциональный объект для оператора "больше"
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    Если один из типов аргумента равен @b void, то его тип будет выводится
+    по типу фактического параметра
+    */
+    template <class T1 = void, class T2 = T1>
+    class greater
+     : public experimental::binary_operator_helper<T1, T2, greater<>>
+    {};
+
+    template <>
+    class greater<void, void>
+    {
+    public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
+        typedef std::true_type is_transparent;
+
+        /** @brief Оператор вызова функции
+        @param x левый операнд
+        @param y правй операнд
+        @return <tt> std::forward<T1>(x) > std::forward<T2>(y) </tt>
+        */
+        template <class T1, class T2>
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype (std::forward<T1>(x) > std::forward<T2>(y))
+        {
+            return std::forward<T1>(x) > std::forward<T2>(y);
+        }
+    };
+
+    /** @brief Функциональный объект для оператора "меньше или равно"
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    Если один из типов аргумента равен @b void, то его тип будет выводится
+    по типу фактического параметра
+    */
+    template <class T1 = void, class T2 = T1>
+    class less_equal
+      : public experimental::binary_operator_helper<T1, T2, less_equal<>>
+    {};
+
+    template <>
+    class less_equal<void, void>
+    {
+    public:
+        /// @brief Этот функциональный объект прозрачный
+        using is_transparent = std::true_type;
+
+        /** @brief Оператор вызова функции
+        @param x левый операнд
+        @param y правй операнд
+        @return <tt> std::forward<T1>(x) <= std::forward<T2>(y) </tt>
+        */
+        template <class T1, class T2>
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype (std::forward<T1>(x) <= std::forward<T2>(y))
+        {
+            return std::forward<T1>(x) <= std::forward<T2>(y);
+        }
+    };
+
+    /** @brief Функциональный объект для оператора "больше или равно"
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    Если один из типов аргумента равен @b void, то его тип будет выводится
+    по типу фактического параметра
+    */
+    template <class T1 = void, class T2 = T1>
+    class greater_equal
+     : public experimental::binary_operator_helper<T1, T2, greater_equal<>>
+    {};
+
+    template <>
+    class greater_equal<void, void>
+    {
+    public:
+        /// @brief Этот функциональный объект прозрачный
+        using is_transparent = std::true_type;
+
+        /** @brief Оператор вызова функции
+        @param x левый операнд
+        @param y правй операнд
+        @return <tt> std::forward<T1>(x) >= std::forward<T2>(y) </tt>
+        */
+        template <class T1, class T2>
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype (std::forward<T1>(x) >= std::forward<T2>(y))
+        {
+            return std::forward<T1>(x) >= std::forward<T2>(y);
+        }
+    };
+
+    // Логические операции
+    /** @brief Функциональный объект для оператора "логическое И"
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    Если один из типов аргумента равен @b void, то его тип будет выводится
+    по типу фактического параметра
+    */
+    template <class T1 = void, class T2 = T1>
+    class logical_and
+     : public experimental::binary_operator_helper<T1, T2, logical_and<>>
+    {};
+
+    template <>
+    class logical_and<void, void>
+    {
+    public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
+        typedef std::true_type is_transparent;
+
+        template <class T1, class T2>
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype(std::forward<T1>(x) && std::forward<T2>(y))
+        {
+            return std::forward<T1>(x) && std::forward<T2>(y);
+        }
+    };
+
+    /** @brief Функциональный объект для оператора "логическое ИЛИ"
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    Если один из типов аргумента равен @b void, то его тип будет выводится
+    по типу фактического параметра
+    */
+    template <class T1 = void, class T2 = T1>
+    class logical_or
+     : public experimental::binary_operator_helper<T1, T2, logical_or<>>
+    {};
+
+    template <>
+    class logical_or<void, void>
+    {
+    public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
+        typedef std::true_type is_transparent;
+
+        template <class T1, class T2>
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype(std::forward<T1>(x) || std::forward<T2>(y))
+        {
+            return std::forward<T1>(x) || std::forward<T2>(y);
+        }
+    };
+
+    /** @brief Функциональный объект для оператора "логическое НЕ"
+    @tparam T тип аргумента, если этот тип совпадает с @b void, то тип будет
+    выводится по фактическому параметру.
+    */
+    template <class T = void>
+    class logical_not
+     : public experimental::unary_operator_helper<T, logical_not<>>
+    {};
+
+    template <>
+    class logical_not<void>
+    {
+    public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
+        typedef std::true_type is_transparent;
+
+        template <class T>
+        constexpr auto operator()(T && x) const
+        -> decltype(!std::forward<T>(x))
+        {
+            return !std::forward<T>(x);
+        }
+    };
+    /** @brief Функциональный объект для оператора "побитовое И"
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    Если один из типов аргумента равен @b void, то его тип будет выводится
+    по типу фактического параметра
+    */
+    template <class T1 = void, class T2 = T1>
+    class bit_and
+     : public experimental::binary_operator_helper<T1, T2, bit_and<void, void>>
+    {};
+
+    template <>
+    class bit_and<void, void>
+    {
+    public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
+        typedef std::true_type is_transparent;
+
+        template <class T1, class T2>
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype(std::forward<T1>(x) & std::forward<T2>(y))
+        {
+            return std::forward<T1>(x) & std::forward<T2>(y);
+        }
+    };
+
+    /** @brief Функциональный объект для оператора "побитовое ИЛИ"
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    Если один из типов аргумента равен @b void, то тип будет выводится по
+    фактическому параметру
+    */
+    template <class T1 = void, class T2 = T1>
+    class bit_or
+     : public experimental::binary_operator_helper<T1, T2, bit_or<void, void>>
+    {};
+
+    /// @brief Специализация с выводом типов аргументов
+    template <>
+    class bit_or<void, void>
+    {
+    public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
+        typedef std::true_type is_transparent;
+
+        template <class T1, class T2>
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype(std::forward<T1>(x) | std::forward<T2>(y))
+        {
+            return std::forward<T1>(x) | std::forward<T2>(y);
+        }
+    };
+
+    /** @brief Функциональный объект для оператора "побитовое исключающее ИЛИ"
+    @tparam T1 тип первого аргумента
+    @tparam T2 тип второго аргумента
+    Если один из типов аргумента равен @b void, то тип будет выводится по
+    фактическому параметру
+    */
+    template <class T1 = void, class T2 = T1>
+    class bit_xor
+     : public experimental::binary_operator_helper<T1, T2, bit_xor<void, void>>
+    {};
+
+    /// @brief Специализация с выводом типов аргументов
+    template <>
+    class bit_xor<void, void>
+    {
+    public:
+        /// @brief Тэг, показывающий что данный функциональный объект прозрачный
+        typedef std::true_type is_transparent;
+
+        template <class T1, class T2>
+        constexpr auto operator()(T1 && x, T2 && y) const
+        -> decltype(std::forward<T1>(x) ^ std::forward<T2>(y))
+        {
+            return std::forward<T1>(x) ^ std::forward<T2>(y);
+        }
+    };
+
+    // Негатор
+    /** @brief Адаптор функционального объекта, применяющий к его результату
+    оператор логического отрицания
+    @tparam Predicate тип предиката
+    */
+    template <class Predicate>
+    class not_function
+     : private experimental::compose_function<ural::logical_not<>, Predicate>
+    {
+        using Base = experimental::compose_function<ural::logical_not<>, Predicate>;
+
+        friend constexpr bool
+        operator==(not_function const & x, not_function const & y)
+        {
+            return static_cast<Base const &>(x) ==
+                    static_cast<Base const &>(y);
+        }
+
+    public:
+        /// @brief Тип базового функционального объекта
+        typedef decltype(make_callable(std::declval<Predicate>())) target_type;
+
+        // Конструкторы
+        /** @brief Конструктор
+        @post <tt> this->target() == target_type{} </tt>
+        */
+        constexpr not_function()
+         : Base{}
+        {}
+
+        /** @brief Конструктор
+        @param pred предикат
+        @post <tt> this->target() == pred </tt>
+        */
+        constexpr explicit not_function(Predicate pred)
+         : Base(ural::logical_not<>{}, std::move(pred))
+        {}
+
+        /** @brief Базовый функциональный объект
+        @return Базовый функциональный объект
+        */
+        constexpr target_type const & target() const
+        {
+            return Base::second_function();
+        }
+
+        /** @brief Применение функционального объекта
+        @param args параметры вызова
+        @return <tt> !(this->target())(args...) </tt>
+        */
+        template <class... Args>
+        constexpr auto operator()(Args && ... args) const
+        -> decltype(std::declval<Base>()(std::forward<Args>(args)...))
+        {
+            return Base::operator()(std::forward<Args>(args)...);
+        }
+    };
+
+    /** @brief Создание негатора
+    @param pred предикат
+    */
+    template <class Predicate>
+    auto not_fn(Predicate pred)
+    -> not_function<decltype(make_callable(std::move(pred)))>
+    {
+        typedef not_function<decltype(make_callable(std::move(pred)))> Function;
+        return Function{make_callable(std::move(pred))};
+    }
+}
+// namespace v1
 }
 // namespace ural
 

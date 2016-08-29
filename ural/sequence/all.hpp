@@ -62,16 +62,15 @@
 #include <ural/sequence/base.hpp>
 #include <ural/sequence/by_line.hpp>
 #include <ural/sequence/chunks.hpp>
-#include <ural/sequence/constant.hpp>
+#include <ural/sequence/cursor_iterator.hpp>
 #include <ural/sequence/function_output.hpp>
 #include <ural/sequence/generator.hpp>
 #include <ural/sequence/insertion.hpp>
 #include <ural/sequence/iostream.hpp>
-#include <ural/sequence/iterator_sequence.hpp>
+#include <ural/sequence/iterator_cursor.hpp>
 #include <ural/sequence/make.hpp>
 #include <ural/sequence/progression.hpp>
-#include <ural/sequence/to.hpp>
-#include <ural/sequence/sequence_iterator.hpp>
+#include <ural/sequence/repeat_value.hpp>
 #include <ural/sequence/sink.hpp>
 #include <ural/sequence/to.hpp>
 

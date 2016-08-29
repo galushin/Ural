@@ -26,22 +26,24 @@
 #include <ural/utility/pipeable.hpp>
 #include <ural/iterator/move.hpp>
 #include <ural/sequence/make.hpp>
-#include <ural/sequence/iterator_sequence.hpp>
+#include <ural/sequence/iterator_cursor.hpp>
 #include <ural/sequence/base.hpp>
 
 namespace ural
 {
-    /** @brief Адаптор последовательности, возвращающие rvalue-ссылки для
-    элементов базовой последовательности
-    @tparam Sequence тип базовой последовательности
+namespace experimental
+{
+    /** @brief Адаптор курсора , возвращающие rvalue-ссылки для элементов
+    базового курсора.
+    @tparam Input тип базового курсора
     */
-    template <class Sequence>
-    class move_sequence
-     : public sequence_adaptor<move_sequence<Sequence>, Sequence>
+    template <class Input>
+    class move_cursor
+     : public cursor_adaptor<move_cursor<Input>, Input>
     {
-        typedef sequence_adaptor<move_sequence<Sequence>, Sequence> Adaptor;
+        typedef cursor_adaptor<move_cursor, Input> Adaptor;
 
-        typedef typename Sequence::reference Base_reference;
+        typedef typename Input::reference Base_reference;
 
     public:
         // Типы
@@ -51,14 +53,14 @@ namespace ural
 
         // Конструирование, копирование, присваивание
         /** @brief Конструктор
-        @param seq базовая последовательность
-        @post <tt> this->base() == seq </tt>
+        @param cur базовый курсор
+        @post <tt> this->base() == cur </tt>
         */
-        explicit move_sequence(Sequence seq)
-         : Adaptor{std::move(seq)}
+        explicit move_cursor(Input cur)
+         : Adaptor{std::move(cur)}
         {}
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Текущий передний элемент
         @return <tt> std::move(this->base().front()) </tt>
         */
@@ -67,7 +69,7 @@ namespace ural
             return std::move(this->base().front());
         }
 
-        // Двусторонняя последовательность
+        // Двусторонний курсор
         /** @brief Текущий задний элемент
         @return <tt> std::move(this->base().back()) </tt>
         */
@@ -75,94 +77,91 @@ namespace ural
 
         // Итераторы
         /** @brief Итератор задающий начало последовательности
-        @param x последовательность
-        @return <tt> std::make_move_iterator(begin(x.base())) </tt>
+        @param cur курсор
+        @return <tt> std::make_move_iterator(begin(cur.base())) </tt>
         */
-        friend auto begin(move_sequence const & x)
-        -> ural::move_iterator<decltype(begin(x.base()))>
+        friend auto begin(move_cursor const & cur)
+        -> ural::move_iterator<decltype(begin(cur.base()))>
         {
-            return ural::make_move_iterator(begin(x.base()));
+            return ural::make_move_iterator(begin(cur.base()));
         }
 
         /** @brief Итератор задающий конец последовательности
-        @param x последовательность
+        @param cur курсор
         @return <tt> std::make_move_iterator(end(x.base())) </tt>
         */
-        friend auto end(move_sequence<Sequence> const & x)
-        -> ural::move_iterator<decltype(begin(x.base()))>
+        friend auto end(move_cursor const & cur)
+        -> ural::move_iterator<decltype(begin(cur.base()))>
         {
-            return ural::make_move_iterator(end(x.base()));
+            return ural::make_move_iterator(end(cur.base()));
         }
 
     private:
         friend Adaptor;
 
-        template <class OtherSequence>
-        move_sequence<OtherSequence>
-        rebind_base(OtherSequence s) const
+        template <class OtherCursor>
+        move_cursor<OtherCursor>
+        rebind_base(OtherCursor s) const
         {
-            return move_sequence<OtherSequence>(std::move(s));
+            return move_cursor<OtherCursor>(std::move(s));
         }
     };
 
-    /** @brief Тип функционального объекта для создания @c move_sequence в
-    функциональном стиле.
-    */
-    class make_move_sequence_fn
+    /// @brief Тип функционального объекта для создания @c move_cursor.
+    class make_move_cursor_fn
     {
     public:
-        /** @brief Создание последовательности rvalue-ссылок базовой
+        /** @brief Создание курсора последовательности rvalue-ссылок базовой
         последовательности.
         @param seq последовательность
         */
-        template <class Sequenced>
-        auto operator()(Sequenced && seq) const
+        template <class Sequence>
+        move_cursor<cursor_type_t<Sequence>>
+        operator()(Sequence && seq) const
         {
-            typedef move_sequence<SequenceType<Sequenced>> Result;
-            return Result(::ural::sequence_fwd<Sequenced>(seq));
+            using Result = move_cursor<cursor_type_t<Sequence>>;
+            return Result(::ural::cursor_fwd<Sequence>(seq));
         }
     };
 
     namespace
     {
-        /// @brief Функциональный объект для создания @c move_sequence в
-        constexpr auto const & make_move_sequence
-            = odr_const<make_move_sequence_fn>;
+        /// @brief Функциональный объект для создания @c move_cursor
+        constexpr auto const & make_move_cursor
+            = odr_const<make_move_cursor_fn>;
 
-        /// @brief Объект для создания @c move_sequence в конвейерном стиле.
+        /// @brief Объект для создания @c move_cursor в конвейерном стиле.
         constexpr auto const & moved
-            = odr_const<pipeable<make_move_sequence_fn>>;
+            = odr_const<experimental::pipeable<make_move_cursor_fn>>;
     }
 
-    /** @brief Создание последовательности на основе
-    <tt> std::move_iterator </tt>.
+    /** @brief Создание курсора на основе <tt> std::move_iterator </tt>.
     @param first итератор, задающий начало последовательности.
     @param last итератор, задающий конец последовательности.
-    @return <tt> make_move_sequence(make_iterator_sequence(first.base(), last.base())) </tt>
+    @return <tt> make_move_cursor(make_iterator_cursor(first.base(), last.base())) </tt>
     */
     template <class Iterator>
-    auto make_iterator_sequence(std::move_iterator<Iterator> first,
-                                std::move_iterator<Iterator> last)
-    -> move_sequence<decltype(make_iterator_sequence(first.base(), last.base()))>
+    auto make_iterator_cursor(std::move_iterator<Iterator> first,
+                              std::move_iterator<Iterator> last)
     {
-        return make_move_sequence(make_iterator_sequence(first.base(),
-                                                         last.base()));
+        using ::ural::make_iterator_cursor;
+        return make_move_cursor(make_iterator_cursor(first.base(), last.base()));
     }
 
-    /** @brief Создание последовательности на основе
-    <tt> ural::move_iterator </tt>.
+    /** @brief Создание курсора на основе <tt> ural::move_iterator </tt>.
     @param first итератор, задающий начало последовательности.
     @param last итератор, задающий конец последовательности.
-    @return <tt> make_move_sequence(make_iterator_sequence(first.base(), last.base())) </tt>
+    @return <tt> make_move_cursor(make_iterator_cursor(first.base(), last.base())) </tt>
     */
     template <class Iterator>
-    auto make_iterator_sequence(ural::move_iterator<Iterator> first,
-                                ural::move_iterator<Iterator> last)
-    -> move_sequence<decltype(make_iterator_sequence(first.base(), last.base()))>
+    auto make_iterator_cursor(ural::move_iterator<Iterator> first,
+                              ural::move_iterator<Iterator> last)
     {
-        return make_move_sequence(make_iterator_sequence(first.base(),
-                                                         last.base()));
+        using ::ural::make_iterator_cursor;
+        return make_move_cursor(make_iterator_cursor(first.base(), last.base()));
     }
+}
+// namespace experimental
 }
 // namespace ural
 

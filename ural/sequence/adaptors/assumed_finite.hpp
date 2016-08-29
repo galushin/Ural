@@ -1,5 +1,5 @@
-#ifndef Z_URAL_SEQUENCE_ADAPTORS_ASSUMED_FINITE_HPP_INCLUDED
-#define Z_URAL_SEQUENCE_ADAPTORS_ASSUMED_FINITE_HPP_INCLUDED
+#ifndef Z_URAL_cursor_adaptorS_ASSUMED_FINITE_HPP_INCLUDED
+#define Z_URAL_cursor_adaptorS_ASSUMED_FINITE_HPP_INCLUDED
 
 /** @file ural/sequnece/adaptors/assumed_finited.hpp
  @brief Адаптор, предпалагающий, что последовательность, то есть гарантировано
@@ -12,15 +12,17 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Шаблон адаптора, предпалагающий, что курсор конечен, то есть
     будет исчерпан в данном контексте.
     @tparam Cursor базовый курсор
     */
     template <class Cursor>
     class assumed_finite_cursor
-     : public sequence_adaptor<assumed_finite_cursor<Cursor>, Cursor>
+     : public cursor_adaptor<assumed_finite_cursor<Cursor>, Cursor>
     {
-        using Inherited = sequence_adaptor<assumed_finite_cursor, Cursor>;
+        using Inherited = cursor_adaptor<assumed_finite_cursor, Cursor>;
 
     public:
         /// @brief Категория курсора
@@ -38,9 +40,9 @@ namespace ural
     private:
         friend Inherited;
 
-        template <class OtherSequence>
-        assumed_finite_cursor<OtherSequence>
-        rebind_base(OtherSequence seq) const;
+        template <class OtherCursor>
+        assumed_finite_cursor<OtherCursor>
+        rebind_base(OtherCursor seq) const;
     };
 
      /** @brief Тип функционального объекта для создания адаптора
@@ -50,17 +52,17 @@ namespace ural
     struct assume_finite_fn
     {
     public:
-        /** @brief Создания @c assumed_infinite_sequence
+        /** @brief Создания @c assumed_infinite_cursor
         @param seq последовательность
-        @return <tt> Result(ural::sequence_fwd<Sequenced>(seq)) </tt>, где
-        @c Result -- <tt> assumed_infinite_sequence<SequenceType<Sequenced>> </tt>
+        @return <tt> Result(ural::cursor_fwd<Sequence>(seq)) </tt>, где
+        @c Result -- <tt> assumed_infinite_cursor<cursor_type_t<Sequence>> </tt>
         */
-        template <class Sequenced>
-        assumed_finite_cursor<SequenceType<Sequenced>>
-        operator()(Sequenced && seq) const
+        template <class Sequence>
+        assumed_finite_cursor<cursor_type_t<Sequence>>
+        operator()(Sequence && seq) const
         {
-            using Result = assumed_finite_cursor<SequenceType<Sequenced>>;
-            return Result(ural::sequence_fwd<Sequenced>(seq));
+            using Result = assumed_finite_cursor<cursor_type_t<Sequence>>;
+            return Result(ural::cursor_fwd<Sequence>(seq));
         }
     };
 
@@ -77,10 +79,12 @@ namespace ural
         исчерпана в данном контексте, в функциональном стиле.
         */
         constexpr auto const & assumed_finite
-            = odr_const<pipeable<assume_finite_fn>>;
+            = odr_const<experimental::pipeable<assume_finite_fn>>;
     }
+}
+// namespace experimental
 }
 // namespace ural
 
 #endif
-// Z_URAL_SEQUENCE_ADAPTORS_ASSUMED_FINITE_HPP_INCLUDED
+// Z_URAL_cursor_adaptorS_ASSUMED_FINITE_HPP_INCLUDED

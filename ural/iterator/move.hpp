@@ -29,6 +29,8 @@
 
 namespace ural
 {
+inline namespace v1
+{
     /** Адаптор итератора, который ведёт себя так же как базовый, за исключением
     того, что разыменование преобразует элемент, на который ссылается базовый
     итератор, в ссылку на временное значение. Некоторые алгоритмы могут вызваны
@@ -52,25 +54,22 @@ namespace ural
     public:
         // Типы
         /// @brief Тип базового итератора
-        typedef Iterator iterator_type;
+        using iterator_type = Iterator;
 
         /// @brief Категория итератора
-        typedef typename std::iterator_traits<Iterator>::iterator_category
-            iterator_category;
+        using iterator_category = typename std::iterator_traits<Iterator>::iterator_category;
 
         /// @brief Тип значений
-        typedef ValueType<std::iterator_traits<Iterator>> value_type;
+        using value_type = value_type_t<std::iterator_traits<Iterator>>;
 
         /// @brief Тип разности
-        typedef typename std::iterator_traits<Iterator>::difference_type
-            difference_type;
+        using difference_type = typename std::iterator_traits<Iterator>::difference_type;
 
         /// @brief Тип указателя
-        typedef Iterator pointer;
+        using pointer = Iterator;
 
         /// @brief Тип ссылки
-        typedef typename moved_type<Base_reference>::type
-            reference;
+        using reference = typename moved_type<Base_reference>::type;
 
         // Конструкторы
         /** @brief Конструктор без аргументов
@@ -261,6 +260,8 @@ namespace ural
     {
         return x.base() - y.base();
     }
+}
+// namespace v1
 }
 // namespace ural
 

@@ -29,6 +29,8 @@
 
 namespace ural
 {
+inline namespace v1
+{
     /** @brief Кортеж
     @tparam Ts типы элементов кортежа
     */
@@ -126,7 +128,7 @@ namespace ural
     /** @brief Класс функционального объекта для создания кортежей из пачки
     аргументов
     */
-    class make_tuple_function
+    class make_tuple_fn
     {
     private:
         template <class T>
@@ -153,9 +155,58 @@ namespace ural
 namespace
 {
     /// @brief Функциональный объект для создания кортежей из пачки аргументов
-    constexpr auto const & make_tuple = odr_const<make_tuple_function>;
+    constexpr auto const & make_tuple = odr_const<make_tuple_fn>;
 }
+//namespace
 
+/// @cond false
+namespace details
+{
+    struct tuple_writer
+    {
+    public:
+        template <class OStream, class Tuple>
+        void operator()(OStream & os, Tuple const & t) const
+        {
+            os << "{";
+            this->impl(os, t, ural::make_index_sequence<std::tuple_size<Tuple>::value>{});
+            os << "}";
+        }
+
+    private:
+        template <class OStream, class Tuple, size_t ... Is>
+        void impl(OStream & os, Tuple const & t, index_sequence<Is...>) const
+        {
+            using swallow = int[];
+            (void)swallow{0, (void(os << (Is == 0? "" : ", ") << std::get<Is>(t)), 0)...};
+        }
+    };
+}
+// namespace details
+/// @endcond
+
+inline namespace tuple_io
+{
+    /** @brief Вывод кортежа в поток в формате {x1, x2, ... , x3}
+    @param os поток вывода
+    @param t кортеж
+    @return os
+    */
+    template <class OStream, class Tuple>
+    typename std::enable_if<(std::tuple_size<Tuple>::value > 0), OStream>::type
+    operator<<(OStream && os, Tuple const & t)
+    {
+        details::tuple_writer{}(os, t);
+
+        return std::forward<OStream>(os);
+    }
+}
+// namespace tuple_io
+}
+// namespace v1
+
+namespace experimental
+{
 namespace tuples
 {
     /** @brief Тип функционального объекта для применения функции к каждому
@@ -230,20 +281,23 @@ namespace tuples
         }
     };
 
-    namespace
-    {
-        /** @brief Функциональный объект, применяющий функцию к каждому элементу
-        кортежа
-        */
-        constexpr auto const & for_each = ural::odr_const<for_each_fn>;
+namespace
+{
+    /** @brief Функциональный объект, применяющий функцию к каждому элементу
+    кортежа
+    */
+    constexpr auto const & for_each = ural::odr_const<for_each_fn>;
 
-        /** @brief Функциональный объект, проверящий, что все элементы кортежа
-        удовлетворяют заданному предикату.
-        */
-        constexpr auto const & any_of = ural::odr_const<any_of_fn>;
-    }
+    /** @brief Функциональный объект, проверящий, что все элементы кортежа
+    удовлетворяют заданному предикату.
+    */
+    constexpr auto const & any_of = ural::odr_const<any_of_fn>;
+}
+// namespace
 }
 // namespace tuples
+}
+// namespace experimental
 }
 // namespace ural
 

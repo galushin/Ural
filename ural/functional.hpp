@@ -34,6 +34,8 @@
 
 namespace ural
 {
+inline namespace v1
+{
     /** @brief Класс функционального объекта для создания
     <tt> std::reference_wrapper </tt> без добавления константности.
     */
@@ -127,7 +129,11 @@ namespace ural
         }
         //@}
     };
+}
+// namespace v1
 
+namespace experimental
+{
     /** @brief Функциональный объект без аргументов, возвращающий фиксированное
     знчение
     @tparam T тип значения
@@ -292,7 +298,7 @@ namespace ural
         {
             if(this->compare()(new_value, this->result()))
             {
-                ural::get(impl_, ural::_1) = std::forward<Arg>(new_value);
+                ural::experimental::get(impl_, ural::_1) = std::forward<Arg>(new_value);
                 return true;
             }
 
@@ -305,7 +311,7 @@ namespace ural
         */
         value_type const & result() const
         {
-            return ural::get(impl_, ural::_1);
+            return ural::experimental::get(impl_, ural::_1);
         }
 
         /** @brief Используемая функция сравнения
@@ -313,7 +319,7 @@ namespace ural
         */
         Compare const & compare() const
         {
-            return ural::get(impl_, ural::_2);
+            return ural::experimental::get(impl_, ural::_2);
         }
 
     private:
@@ -469,7 +475,7 @@ namespace ural
         }
 
         template <class T>
-        void operator()(T & x, DifferenceType<T> n) const
+        void operator()(T & x, difference_type_t<T> n) const
         {
             x.pop_back(n);
         }
@@ -494,7 +500,7 @@ namespace ural
     {
     public:
         template <class T>
-        decltype(auto) operator()(T const & x, DifferenceType<T> n) const
+        decltype(auto) operator()(T const & x, difference_type_t<T> n) const
         {
             return x[n];
         }
@@ -642,13 +648,13 @@ namespace ural
         @param f функция
         @param arg значение для первого аргумента
         @return <tt> Fun(make_callable(std::move(f)), std::forward<Arg>(arg)) </tt>,
-        где @c Fun -- <tt> curried_function<FunctionType<F>, Arg> <tt>
+        где @c Fun -- <tt> curried_function<function_type_t<F>, Arg> <tt>
         */
         template <class F, class Arg>
-        curried_function<FunctionType<F>, Arg>
+        curried_function<function_type_t<F>, Arg>
         operator()(F f, Arg && arg) const
         {
-            using Fun = curried_function<FunctionType<F>, Arg>;
+            using Fun = curried_function<function_type_t<F>, Arg>;
             return Fun(make_callable(std::move(f)), std::forward<Arg>(arg));
         }
     };
@@ -663,21 +669,31 @@ namespace ural
         // Обобщённые операции
         constexpr auto const & modify_return_old = odr_const<modify_return_old_fn>;
 
-        // Управление передачей параметров
-        constexpr auto const & ref = odr_const<ref_fn>;
-        constexpr auto const & cref = odr_const<cref_fn>;
-
-        // Операции контейнеров
-        constexpr auto const & empty = odr_const<empty_fn>;
-
-        constexpr auto const & pop_front = odr_const<pop_front_fn>;
-        constexpr auto const & front = odr_const<front_fn>;
-
-        constexpr auto const & pop_back = odr_const<pop_back_fn>;
-        constexpr auto const & back = odr_const<back_fn>;
-
         constexpr auto const & subscript = odr_const<subscript_fn>;
     }
+}
+// namespace experimental
+
+inline namespace v1
+{
+namespace
+{
+    // Управление передачей параметров
+    constexpr auto const & ref = odr_const<ref_fn>;
+    constexpr auto const & cref = odr_const<cref_fn>;
+
+    // Операции контейнеров
+    constexpr auto const & empty = odr_const<::ural::experimental::empty_fn>;
+
+    constexpr auto const & pop_front = odr_const<::ural::experimental::pop_front_fn>;
+    constexpr auto const & front = odr_const<::ural::experimental::front_fn>;
+
+    constexpr auto const & pop_back = odr_const<::ural::experimental::pop_back_fn>;
+    constexpr auto const & back = odr_const<::ural::experimental::back_fn>;
+}
+// namespace
+}
+// namespace v1
 }
 // namespace ural
 

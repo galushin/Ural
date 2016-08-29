@@ -28,6 +28,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /// @brief Перечисление "Сохранять ли разделитель в конце строки)
     enum class keep_delimiter
     {
@@ -35,12 +37,12 @@ namespace ural
         yes = 1
     };
 
-    /** @brief Последовательность строк потока ввода
+    /** @brief Курсор последовательности строк потока ввода
     @tparam IStream поток ввода
     */
     template <class IStream>
-    class by_line_sequence
-     : public sequence_base<by_line_sequence<IStream>>
+    class by_line_cursor
+     : public cursor_base<by_line_cursor<IStream>>
     {
     public:
         // Типы
@@ -72,9 +74,9 @@ namespace ural
         @param kd флаг, показывающий, нужно ли сохранять символ-разделитель в
         конце строки.
         */
-        explicit by_line_sequence(IStream && is,
-                                  char_type delimiter = char_type('\n'),
-                                  keep_delimiter kd = keep_delimiter::no)
+        explicit by_line_cursor(IStream && is,
+                                char_type delimiter = char_type('\n'),
+                                keep_delimiter kd = keep_delimiter::no)
          : is_{std::forward<IStream>(is)}
          , delim_(std::move(delimiter))
          , kd_{kd}
@@ -82,10 +84,10 @@ namespace ural
             this->seek();
         }
 
-        by_line_sequence(by_line_sequence const &) = default;
-        by_line_sequence(by_line_sequence &&) = default;
+        by_line_cursor(by_line_cursor const &) = default;
+        by_line_cursor(by_line_cursor &&) = default;
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Провекра исчерпания последовательности
         @return @b true, если последовательность исчерпана, иначе --- @b false.
         */
@@ -145,28 +147,28 @@ namespace ural
 
     /** @brief Создание последовательности, читающей поток ввода построчно
     @param is ссылка на поток ввода
-    @return <tt> by_line_sequence<IStream>(is) </tt>
+    @return <tt> by_line_cursor<IStream>(is) </tt>
     */
     template <class IStream>
-    by_line_sequence<IStream>
+    by_line_cursor<IStream>
     by_line(IStream && is)
     {
-        return by_line_sequence<IStream>(std::forward<IStream>(is));
+        return by_line_cursor<IStream>(std::forward<IStream>(is));
     }
 
-    /** @brief Создание последовательности, читающей поток ввода блоками,
-    разделёнными заданным символом.
+    /** @brief Создание курсора, читающего поток ввода блоками, разделёнными
+    заданным символом.
     @param is ссылка на поток ввода
     @param delimiter символ-разделитель
-    @return <tt> by_line_sequence<IStream>(is, std::move(delimiter)) </tt>
+    @return <tt> by_line_cursor<IStream>(is, std::move(delimiter)) </tt>
     */
     template <class IStream>
-    by_line_sequence<IStream>
+    by_line_cursor<IStream>
     by_line(IStream && is,
             typename std::remove_reference<IStream>::type::char_type delimiter)
     {
-        return by_line_sequence<IStream>(std::forward<IStream>(is),
-                                         std::move(delimiter));
+        return by_line_cursor<IStream>(std::forward<IStream>(is),
+                                       std::move(delimiter));
     }
 
      /** @brief Создание последовательности, читающей поток ввода блоками,
@@ -174,17 +176,19 @@ namespace ural
     @param is ссылка на поток ввода
     @param delimiter символ-разделитель
     @param kd показывает, нужно ли сохранять символы разделители
-    @return <tt> by_line_sequence<IStream>(is, std::move(delimiter), kd) </tt>
+    @return <tt> by_line_cursor<IStream>(is, std::move(delimiter), kd) </tt>
     */
     template <class IStream>
-    by_line_sequence<IStream>
+    by_line_cursor<IStream>
     by_line(IStream && is,
             typename std::remove_reference<IStream>::type::char_type delimiter,
             keep_delimiter kd)
     {
-        return by_line_sequence<IStream>(std::forward<IStream>(is),
+        return by_line_cursor<IStream>(std::forward<IStream>(is),
                                          std::move(delimiter), kd);
     }
+}
+// namespace experimental
 }
 // namespace ural
 

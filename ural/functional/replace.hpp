@@ -29,6 +29,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Функциональный объект, заменяющий значения, удовлетворяющие
     унарному предикату.
     @tparam Predicate тип предиката
@@ -50,7 +52,7 @@ namespace ural
 
         // Типы
         /// @brief Тип предиката
-        using predicate_type = FunctionType<Predicate>;
+        using predicate_type = function_type_t<Predicate>;
 
         /// @brief Тип возвращаемого значения
         typedef T const & result_type;
@@ -128,7 +130,7 @@ namespace ural
             return x.members_ == y.members_;
         }
         /// @brief Тип предиката
-        using predicate_type = FunctionType<BinaryPredicate>;
+        using predicate_type = function_type_t<BinaryPredicate>;
 
         /// @brief Тип возвращаемого значения
         typedef T const & result_type;
@@ -272,6 +274,8 @@ namespace ural
         constexpr auto const & make_replace_if_function
             = odr_const<make_replace_if_function_fn>;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

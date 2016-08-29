@@ -28,6 +28,8 @@
 
 namespace ural
 {
+namespace experimental
+{
 /** @namespace meta
  @brief Возможности, связанные с мета-программированием.
 */
@@ -159,7 +161,7 @@ namespace meta
         typedef typename List::head Head;
         typedef typename List::tail Tail;
 
-        typedef typename ::ural::meta::find<Tail, Head, not_Eq>::type skip_head;
+        typedef typename meta::find<Tail, Head, not_Eq>::type skip_head;
         typedef typename unique<skip_head>::type new_tail;
 
     public:
@@ -478,7 +480,7 @@ namespace meta
             typedef typename combine<Tail, Tuples>::type List2;
 
         public:
-            typedef typename ::ural::meta::append<List1, List2>::type type;
+            using type = typename meta::append<List1, List2>::type;
         };
 
         template <class Tuples>
@@ -492,6 +494,8 @@ namespace meta
     };
 }
 // namespace meta
+}
+// namespace experimental
 }
 // namespace ural
 

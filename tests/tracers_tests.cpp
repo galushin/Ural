@@ -18,9 +18,14 @@
 
 #include <ural/utility/tracers.hpp>
 
+namespace
+{
+    namespace ural_ex = ::ural::experimental;
+}
+
 BOOST_AUTO_TEST_CASE(regular_tracer_copy_ctor_test)
 {
-    typedef ural::regular_tracer<int> Type;
+    typedef ural_ex::regular_tracer<int> Type;
 
     Type x {0};
 
@@ -41,7 +46,7 @@ BOOST_AUTO_TEST_CASE(regular_tracer_copy_ctor_test)
 
 BOOST_AUTO_TEST_CASE(regular_tracer_assign_test)
 {
-    typedef ural::regular_tracer<int> Type;
+    typedef ural_ex::regular_tracer<int> Type;
 
     Type x {0};
     Type y {42};
@@ -61,7 +66,7 @@ BOOST_AUTO_TEST_CASE(regular_tracer_assign_test)
 
 BOOST_AUTO_TEST_CASE(regular_tracer_equality_test)
 {
-    typedef ural::regular_tracer<int> Type;
+    typedef ural_ex::regular_tracer<int> Type;
 
     Type const x {0};
     Type const y {42};
@@ -77,7 +82,7 @@ BOOST_AUTO_TEST_CASE(regular_tracer_equality_test)
 
 BOOST_AUTO_TEST_CASE(regular_tracer_less_test)
 {
-    typedef ural::regular_tracer<int> Type;
+    typedef ural_ex::regular_tracer<int> Type;
 
     Type const x {0};
     Type const y {42};

@@ -32,6 +32,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Тип для представления результата операции @c div: одновременного
     вычисления частного и остатка
     @tparam T тип операнда
@@ -138,7 +140,7 @@ namespace ural
         typedef digit<radix> value_type;
 
         // Конструкторы
-        explicit digit_arithmetics_result(ValueType<value_type> word)
+        explicit digit_arithmetics_result(value_type_t<value_type> word)
          : value_{word % radix}
          , carry_{word / radix}
         {}
@@ -194,8 +196,8 @@ namespace ural
     @tparam radix основание системы счисления
     */
     template <class IntType, IntType radix>
-    class digits_sequence
-     : public ural::sequence_base<digits_sequence<IntType, radix>>
+    class digits_cursor
+     : public ural::cursor_base<digits_cursor<IntType, radix>>
     {
     public:
         /// @brief Категорию курсора
@@ -216,13 +218,13 @@ namespace ural
         /** @brief Конструктор
         @param value число
         */
-        explicit digits_sequence(IntType value)
+        explicit digits_cursor(IntType value)
          : state_(std::div(value, radix))
         {
             assert(value >= 0);
         }
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Проверка исчерпания последовательности
         @return @b true, если последовательность исчерпана, иначе --- @b false
         */
@@ -295,8 +297,8 @@ namespace ural
             return false;
         }
 
-        return ural::lexicographical_compare(x.digits() | ural::reversed,
-                                             y.digits() | ural::reversed);
+        return ural::lexicographical_compare(x.digits() | ::ural::experimental::reversed,
+                                             y.digits() | ::ural::experimental::reversed);
     }
 
     /** @brief Оператор "меньше"
@@ -404,7 +406,7 @@ namespace ural
             is_not_negative_ref() = (init_value >= T{0});
 
             using std::abs;
-            ural::copy(digits_sequence<T, base>{abs(std::move(init_value))},
+            ural::copy(digits_cursor<T, base>{abs(std::move(init_value))},
                        this->digits_ref() | ural::back_inserter);
         }
 
@@ -704,7 +706,7 @@ namespace ural
         if(x.size() > 0 && a != 0)
         {
             using std::abs;
-            auto seq = digits_sequence<T, radix>(abs(a));
+            auto seq = digits_cursor<T, radix>(abs(a));
 
             for(size_t i = 0; !!seq; ++ i, ++ seq)
             {
@@ -757,7 +759,7 @@ namespace ural
         using std::abs;
 
         return x.is_not_negative() == (a >= 0)
-                && ural::equal(x.digits(), digits_sequence<T, radix>{abs(a)});
+                && ural::equal(x.digits(), digits_cursor<T, radix>{abs(a)});
     }
 
     template <class T, std::intmax_t radix>
@@ -797,17 +799,19 @@ namespace ural
 
         if(radix <= 16)
         {
-            ural::write_separated(os, x.digits() | ural::reversed,
-                                  ural::no_delimiter{});
+            ural::write_separated(os, x.digits() | ::ural::experimental::reversed,
+                                  ::ural::experimental::no_delimiter{});
         }
         else
         {
-            ural::write_separated(os, x.digits() | ural::reversed, ':');
+            ural::write_separated(os, x.digits() | ::ural::experimental::reversed, ':');
         }
 
 
         return os;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

@@ -29,17 +29,18 @@
 
 namespace ural
 {
-    /** @brief Адаптор последовательности, посещающий элементы исходной
+namespace experimental
+{
+    /** @brief Адаптор курсора последовательности, посещающий элементы исходной
     последовательности в обратном порядке.
-    @tparam BidirectionalSequence двусторонняя последовательность.
+    @tparam BidirectionalCursor двунаправленный курсор.
     */
-    template <class BidirectionalSequence>
-    class reverse_sequence
-     : public sequence_adaptor<reverse_sequence<BidirectionalSequence>,
-                               BidirectionalSequence>
+    template <class BidirectionalCursor>
+    class reverse_cursor
+     : public cursor_adaptor<reverse_cursor<BidirectionalCursor>,
+                             BidirectionalCursor>
     {
-        using Base = sequence_adaptor<reverse_sequence<BidirectionalSequence>,
-                                      BidirectionalSequence>;
+        using Base = cursor_adaptor<reverse_cursor, BidirectionalCursor>;
     public:
         // Типы
         /// @brief Тип ссылки
@@ -50,14 +51,14 @@ namespace ural
 
         // Конструкторы
         /** @brief Конструктор
-        @param seq базовая последовательность
-        @post <tt> this->base() == seq </tt>
+        @param cur базовый курсор
+        @post <tt> this->base() == cur </tt>
         */
-        explicit reverse_sequence(BidirectionalSequence seq)
-         : Base(std::move(seq))
+        explicit reverse_cursor(BidirectionalCursor cur)
+         : Base(std::move(cur))
         {}
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Текущий элемент последовательности
         @pre <tt> !*this == false </tt>
         @return <tt> this->base().back() </tt>
@@ -75,11 +76,11 @@ namespace ural
 
         // Прямая многопроходная последовательность
         /** @brief Пройденная передняя часть последовательности
-        @return <tt> reverse_sequence{this->base().traversed_back()} </tt>
+        @return <tt> reverse_cursor{this->base().traversed_back()} </tt>
         */
-        reverse_sequence traversed_front() const
+        reverse_cursor traversed_front() const
         {
-            return reverse_sequence{this->base().traversed_back()};
+            return reverse_cursor{this->base().traversed_back()};
         }
 
         /// @brief Отбрасывание передней пройденной части последовательности
@@ -117,9 +118,9 @@ namespace ural
         /** @brief Пройденная задняя часть последовательности
         @return Пройденная задняя часть последовательности
         */
-        reverse_sequence traversed_back() const
+        reverse_cursor traversed_back() const
         {
-            return reverse_sequence(this->base().traversed_front());
+            return reverse_cursor(this->base().traversed_front());
         }
 
         /// @brief Отбрасывает пройденную заднюю часть последовательности
@@ -153,7 +154,7 @@ namespace ural
         @pre <tt> 0 <= n && n <= this->size() </tt>
         @return <tt> *this </tt>
         */
-        reverse_sequence & operator+=(distance_type n)
+        reverse_cursor & operator+=(distance_type n)
         {
             this->mutable_base().pop_back(n);
             return *this;
@@ -169,68 +170,72 @@ namespace ural
             this->mutable_base() += n;
         }
 
-        friend auto begin(reverse_sequence const & x)
+        friend auto begin(reverse_cursor const & x)
         -> std::reverse_iterator<decltype(begin(x.base()))>
         {
             return std::reverse_iterator<decltype(begin(x.base()))>{end(x.base())};
         }
 
-        friend auto end(reverse_sequence const & x)
+        friend auto end(reverse_cursor const & x)
         -> std::reverse_iterator<decltype(begin(x.base()))>
         {
             return std::reverse_iterator<decltype(begin(x.base()))>{begin(x.base())};
         }
     };
 
-    /// @brief Тип функционального объекта для создания @c reverse_sequence
-    class make_reverse_sequence_fn
+    /// @brief Тип функционального объекта для создания @c reverse_cursor
+    class make_reverse_cursor_fn
     {
     public:
-        /** @brief Создание обратной последовательности к обратной
-        последовательности
-        @param seq обратная последовательность
-        @return <tt> seq.base() </tt>
+        /** @brief Создание курсора обратной последовательности для курсора
+        обратной последовательности.
+        @param cur курсор обратной последовательности
+        @return <tt> cur.base() </tt>
         */
-        template <class BidirectionalSequence>
-        auto operator()(reverse_sequence<BidirectionalSequence> seq) const
+        template <class BidirectionalCursor>
+        BidirectionalCursor
+        operator()(reverse_cursor<BidirectionalCursor> cur) const
         {
-            return std::move(seq.base());
+            return std::move(cur.base());
         }
 
         /** @brief Создание обратной последовательности
         @param seq исходная последовательность
         */
         template <class BidirectionalSequence>
-        auto operator()(BidirectionalSequence && seq) const
+        reverse_cursor<cursor_type_t<BidirectionalSequence>>
+        operator()(BidirectionalSequence && seq) const
         {
-            typedef reverse_sequence<SequenceType<BidirectionalSequence>> Seq;
-            return Seq(::ural::sequence_fwd<BidirectionalSequence>(seq));
+            using Cursor = reverse_cursor<cursor_type_t<BidirectionalSequence>>;
+            return Cursor(::ural::cursor_fwd<BidirectionalSequence>(seq));
         }
     };
 
     namespace
     {
-        /// @brief Функциональный объект для создания @c reverse_sequence
-        constexpr auto const & make_reverse_sequence
-            = odr_const<make_reverse_sequence_fn>;
+        /// @brief Функциональный объект для создания @c reverse_cursor
+        constexpr auto const & make_reverse_cursor
+            = odr_const<make_reverse_cursor_fn>;
 
         /// @brief Объект для создания @c reverse_sequence
         constexpr auto const & reversed
-            = odr_const<pipeable<make_reverse_sequence_fn>>;
+            = odr_const<experimental::pipeable<make_reverse_cursor_fn>>;
     }
 
-    /** @brief Создание обратной последовательности на основе
-    <tt> std::reverse_iterator </tt>
+    /** @brief Создание обратного курсора на основе <tt> std::reverse_iterator </tt>
     @param first итератор, задающий начало последовательности.
     @param last итератор, задающий конец последовательности.
-    @return <tt> make_reverse_sequence(make_iterator_sequence(last.base(), first.base())) </tt>
+    @return <tt> make_reverse_cursor(make_iterator_cursor(last.base(), first.base())) </tt>
     */
     template <class Iterator>
-    auto make_iterator_sequence(std::reverse_iterator<Iterator> first,
-                                std::reverse_iterator<Iterator> last)
+    auto make_iterator_cursor(std::reverse_iterator<Iterator> first,
+                              std::reverse_iterator<Iterator> last)
     {
-        return make_iterator_sequence(last.base(), first.base()) | reversed;
+        using ::ural::make_iterator_cursor;
+        return make_iterator_cursor(last.base(), first.base()) | reversed;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

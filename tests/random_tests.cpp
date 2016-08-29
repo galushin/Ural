@@ -89,7 +89,12 @@ md5 contributions   llvm/lib/Support/MD5.cpp llvm/include/llvm/Support/MD5.h
 
 #include <sstream>
 
-using ::ural::ValueType;
+namespace
+{
+    namespace ural_ex = ::ural::experimental;
+}
+
+using ::ural::value_type_t;
 
 // Типы
 BOOST_AUTO_TEST_CASE(discrete_distribution_types_test)
@@ -148,7 +153,7 @@ namespace
     template <class Vector>
     Vector & normalize_weights(Vector & ws)
     {
-        auto w_sum = ural::accumulate(ws, ValueType<Vector>{0});
+        auto w_sum = ural::accumulate(ws, value_type_t<Vector>{0});
 
         ural::for_each(ws, [=](typename Vector::reference x) { x /= w_sum;});
 
@@ -409,13 +414,13 @@ namespace
     }
 
     template <class InputSequence, class Probabilities>
-    ural::probability<>
+    ural_ex::probability<>
     pearson_test(InputSequence && in, Probabilities const & prob)
     {
-        std::vector<ValueType<InputSequence>> u(prob.size());
-        ValueType<InputSequence> N = 0;
+        std::vector<value_type_t<InputSequence>> u(prob.size());
+        value_type_t<InputSequence> N = 0;
 
-        for(auto s = ::ural::sequence_fwd<InputSequence>(in); !!s; ++ s)
+        for(auto s = ::ural::cursor_fwd<InputSequence>(in); !!s; ++ s)
         {
             auto v = *s;
 
@@ -444,7 +449,7 @@ namespace
 
         boost::math::chi_squared_distribution<double> d_teor{double(N)-1};
 
-        return ural::probability<>{cdf(d_teor, chi_square)};
+        return ural_ex::probability<>{cdf(d_teor, chi_square)};
     }
 
     template <class Weights>
@@ -453,7 +458,7 @@ namespace
         typedef ural::discrete_distribution<> D;
         typedef std::minstd_rand G;
 
-        ural::probability<> alpha(eps);
+        ural_ex::probability<> alpha(eps);
 
         G g;
         D d(ws.begin(), ws.end());
@@ -462,7 +467,7 @@ namespace
 
         auto gen = [&](){ return d(g); };
 
-        auto seq = ural::make_generator_sequence(std::move(gen)) | ural::taken(N);
+        auto seq = ural_ex::make_generator_cursor(std::move(gen)) | ural_ex::taken(N);
 
         auto p = pearson_test(std::move(seq), prob);
 
@@ -758,7 +763,7 @@ BOOST_AUTO_TEST_CASE(URNG_concept_test)
 {
     using namespace ural::concepts;
     BOOST_CONCEPT_ASSERT((Uniform_random_number_generator<std::mt19937>));
-    BOOST_CONCEPT_ASSERT((Uniform_random_number_generator<ural::c_rand_engine>));
+    BOOST_CONCEPT_ASSERT((Uniform_random_number_generator<ural::experimental::c_rand_engine>));
     BOOST_CONCEPT_ASSERT((Uniform_random_number_generator<ural::archetypes::URNG_archetype>));
 }
 
@@ -769,19 +774,19 @@ BOOST_AUTO_TEST_CASE(discrete_distribution_concept_check)
     typedef ural::discrete_distribution<int> D;
 
     BOOST_CONCEPT_ASSERT((RandomDistribution<D>));
-    BOOST_CONCEPT_ASSERT((RandomDistribution<ural::iid_adaptor<D>>));
-    BOOST_CONCEPT_ASSERT((RandomDistribution<ural::multivariate_normal_distribution<>>));
+    BOOST_CONCEPT_ASSERT((RandomDistribution<ural_ex::iid_adaptor<D>>));
+    BOOST_CONCEPT_ASSERT((RandomDistribution<ural_ex::multivariate_normal_distribution<>>));
 }
 
 BOOST_AUTO_TEST_CASE(multivariate_normal_equality_test)
 {
-    ural::multivariate_normal_distribution<> const d1{2};
+    ural_ex::multivariate_normal_distribution<> const d1{2};
 
     typename decltype(d1)::result_type mu{d1.dim(), 1};
     typename decltype(d1)::result_type mu_2{d1.dim()+1, 1};
 
-    ural::multivariate_normal_distribution<> const d2{mu};
-    ural::multivariate_normal_distribution<> const d3{mu_2};
+    ural_ex::multivariate_normal_distribution<> const d2{mu};
+    ural_ex::multivariate_normal_distribution<> const d3{mu_2};
 
     BOOST_CHECK_CLOSE(norm_2(d2.mean() - mu), 0, 1e-6);
     BOOST_CHECK_CLOSE(norm_2(d3.mean() - mu_2), 0, 1e-6);
@@ -799,7 +804,7 @@ BOOST_AUTO_TEST_CASE(iid_adaptor_default_ctor_test)
 {
     typedef std::bernoulli_distribution D;
 
-    ural::iid_adaptor<D> const d0{};
+    ural_ex::iid_adaptor<D> const d0{};
 
     BOOST_CHECK_EQUAL(1U, d0.count());
     BOOST_CHECK(D{} == d0.base());
@@ -809,10 +814,10 @@ BOOST_AUTO_TEST_CASE(iid_adaptor_equality_test)
 {
     typedef std::bernoulli_distribution D;
 
-    ural::iid_adaptor<D> const d0{};
-    ural::iid_adaptor<D> const d1{1, D{0.5}};
-    ural::iid_adaptor<D> const d2{1, D{0.25}};
-    ural::iid_adaptor<D> const d3{3, D{0.25}};
+    ural_ex::iid_adaptor<D> const d0{};
+    ural_ex::iid_adaptor<D> const d1{1, D{0.5}};
+    ural_ex::iid_adaptor<D> const d2{1, D{0.25}};
+    ural_ex::iid_adaptor<D> const d3{3, D{0.25}};
 
     BOOST_CHECK(d0 == d0);
     BOOST_CHECK(d0 == d1);

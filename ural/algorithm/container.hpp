@@ -24,9 +24,11 @@
 
 #include <ural/algorithm/mutating.hpp>
 
-#include <ural/sequence/iterator_sequence.hpp>
+#include <ural/sequence/iterator_cursor.hpp>
 
 namespace ural
+{
+namespace experimental
 {
     /// @brief Функциональный объект для функции-члена контейнеров @c erase
     class erase_fn
@@ -34,14 +36,13 @@ namespace ural
     public:
         /** @brief Удаление последовательности элементов из контейнера
         @param c контейнер
-        @param seq последовательность элементов контейнера @c seq
+        @param cur курсор, задающий последовательность элементов контейнера @c c
         @return Аналог <tt> c.erase(seq.begin(), seq.end()) </tt>
         */
         template <class Container, class Iterator, class Policy>
-        Container & operator()(Container & c,
-                        iterator_sequence<Iterator, Policy> seq) const
+        Container & operator()(Container & c, iterator_cursor<Iterator, Policy> const & cur) const
         {
-            c.erase(seq.begin(), seq.end());
+            c.erase(cur.begin(), cur.end());
             return c;
         }
     };
@@ -64,7 +65,7 @@ namespace ural
                    BinaryPredicate bin_pred = BinaryPredicate()) const
         {
             auto to_erase = ::ural::unique_fn{}(c, std::move(bin_pred));
-            ::ural::erase_fn{}(c, to_erase);
+            ::ural::experimental::erase_fn{}(c, to_erase);
             return c;
         }
     };
@@ -119,10 +120,10 @@ namespace ural
         в контейнер.
         @return <tt> *this </tt>
         */
-        template <class Container, class InputSequenced>
-        Container & operator()(Container & to, InputSequenced && from) const
+        template <class Container, class InputSequence>
+        Container & operator()(Container & to, InputSequence && from) const
         {
-            ural::copy_fn{}(std::forward<InputSequenced>(from),
+            ural::copy_fn{}(std::forward<InputSequence>(from),
                             to | ural::front_inserter);
             return to;
         }
@@ -140,10 +141,10 @@ namespace ural
         в контейнер.
         @return <tt> *this </tt>
         */
-        template <class Container, class InputSequenced>
-        Container & operator()(Container & to, InputSequenced && from) const
+        template <class Container, class InputSequence>
+        Container & operator()(Container & to, InputSequence && from) const
         {
-            ural::copy_fn{}(std::forward<InputSequenced>(from),
+            ural::copy_fn{}(std::forward<InputSequence>(from),
                             to | ural::back_inserter);
             return to;
         }
@@ -163,12 +164,12 @@ namespace ural
         в контейнер.
         @return <tt> *this </tt>
         */
-        template <class Container, class Iterator, class InputSequenced>
+        template <class Container, class Iterator, class InputSequence>
         Container & operator()(Container & to,
                                Iterator pos,
-                               InputSequenced && from) const
+                               InputSequence && from) const
         {
-            ural::copy_fn{}(std::forward<InputSequenced>(from),
+            ural::copy_fn{}(std::forward<InputSequence>(from),
                             std::inserter(to, pos));
             return to;
         }
@@ -188,6 +189,8 @@ namespace ural
         constexpr auto const & push_front = odr_const<push_front_fn>;
         constexpr auto const & push_back = odr_const<push_back_fn>;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

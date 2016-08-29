@@ -12,6 +12,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /// @brief Тип-тэг, обозначающий (абстрактную единицу)
     struct unit_t
     {
@@ -90,12 +92,12 @@ namespace ural
               class Plus = use_default,
               class CursorTag = use_default,
               class Step = use_default>
-    class arithmetic_progression
-     : public sequence_base<arithmetic_progression<Additive, Plus, CursorTag, Step>,
-                            FunctionType<DefaultedType<Plus, plus<>>>>
+    class arithmetic_progression_cursor
+     : public cursor_base<arithmetic_progression_cursor<Additive, Plus, CursorTag, Step>,
+                            function_type_t<experimental::defaulted_type_t<Plus, plus<>>>>
     {
-        using Base = sequence_base<arithmetic_progression,
-                                   FunctionType<DefaultedType<Plus, plus<>>>>;
+        using Base = cursor_base<arithmetic_progression_cursor,
+                                   function_type_t<experimental::defaulted_type_t<Plus, plus<>>>>;
 
         static_assert(!std::is_same<CursorTag, bidirectional_cursor_tag>::value,
                       "Infinite sequence can't be bidirectional");
@@ -105,8 +107,8 @@ namespace ural
         @param x, y операнды
         @return @b true, если последовательности равны, иначе --- @b false.
         */
-        friend bool operator==(arithmetic_progression const & x,
-                               arithmetic_progression const & y)
+        friend bool operator==(arithmetic_progression_cursor const & x,
+                               arithmetic_progression_cursor const & y)
         {
             return x.first_ == y.first_ && x.step_ == y.step_
                    && x.function() == y.function();
@@ -114,7 +116,7 @@ namespace ural
 
         // Типы
         /// @brief Тип размера шага
-        using step_type = DefaultedType<Step, Additive>;
+        using step_type = experimental::defaulted_type_t<Step, Additive>;
 
         /// @brief Тип значения
         typedef Additive value_type;
@@ -129,13 +131,13 @@ namespace ural
         @note Проблема в том, что при произвольном доступе возвращается
         вычисленное значение, а не ссылка.
         */
-        using cursor_tag = DefaultedType<CursorTag, random_access_cursor_tag>;
+        using cursor_tag = experimental::defaulted_type_t<CursorTag, random_access_cursor_tag>;
 
         /// @brief Тип указателя
         typedef value_type const * pointer;
 
         /// @brief Тип операции
-        using operation_type = FunctionType<DefaultedType<Plus, plus<>>>;
+        using operation_type = function_type_t<experimental::defaulted_type_t<Plus, plus<>>>;
 
         // Конструкторы
         /** @brief Конструктор
@@ -145,7 +147,7 @@ namespace ural
         @post <tt> **this == first </tt>
         @post <tt> this->step() == step </tt>
         */
-        arithmetic_progression(Additive first, step_type step)
+        arithmetic_progression_cursor(Additive first, step_type step)
          : Base()
          , first_{std::move(first)}
          , step_{std::move(step)}
@@ -159,7 +161,7 @@ namespace ural
         @post <tt> this->step() == step </tt>
         @post <tt> this->function() == op </tt>
         */
-        arithmetic_progression(Additive first, step_type step, operation_type op)
+        arithmetic_progression_cursor(Additive first, step_type step, operation_type op)
          : Base(std::move(op))
          , first_(std::move(first))
          , step_(std::move(step))
@@ -198,7 +200,7 @@ namespace ural
         */
         reference front() const
         {
-            return ural::get(this->first_);
+            return ural::experimental::get(this->first_);
         }
 
         /** @brief Переход к следующему элементу последовательности
@@ -207,20 +209,20 @@ namespace ural
         */
         void pop_front()
         {
-            this->first_ = this->function()(std::move(ural::get(this->first_)),
+            this->first_ = this->function()(std::move(ural::experimental::get(this->first_)),
                                             this->step_);
         }
 
-        // Прямая последовательность
+        // Прямой курсор
         /** @brief Пройденная передняя часть прогрессии
         @return Пройденная передняя часть прогрессии
         */
-        taken_exactly_sequence<arithmetic_progression, distance_type>
+        taken_exactly_cursor<arithmetic_progression_cursor, distance_type>
         traversed_front() const
         {
             distance_type n = (this->front() - this->first_.old_value()) / this->step();
-            return arithmetic_progression(this->first_.old_value(), this->step())
-                    | ural::taken_exactly(std::move(n));
+            return arithmetic_progression_cursor(this->first_.old_value(), this->step())
+                    | ::ural::experimental::taken_exactly(std::move(n));
         }
 
         /// @brief Отбрасывание пройденной части последовательности
@@ -232,9 +234,9 @@ namespace ural
         /** @brief Полная последовательность (включая пройденные части)
         @return Полная последовательность
         */
-        arithmetic_progression original() const
+        arithmetic_progression_cursor original() const
         {
-            return arithmetic_progression(first_.old_value(), this->step_);
+            return arithmetic_progression_cursor(first_.old_value(), this->step_);
         }
 
         // Последовательность произвольного доступа (бесконечная)
@@ -257,7 +259,7 @@ namespace ural
         @return <tt> *this </tt>
         @pre <tt> n > 0 </tt>
         */
-        arithmetic_progression & operator+=(distance_type n)
+        arithmetic_progression_cursor & operator+=(distance_type n)
         {
             first_ = (*this)[n];
             return *this;
@@ -272,9 +274,9 @@ namespace ural
     };
 
     /** @brief Тип Функционального объекта для создания
-    @c arithmetic_progression
+    @c arithmetic_progression_cursor
     */
-    struct make_arithmetic_progression_fn
+    struct make_arithmetic_progression_cursor_fn
     {
     public:
         /** @brief Создание последовательности, представляющей арифметическую
@@ -285,7 +287,7 @@ namespace ural
         */
         template <class Additive, class Plus>
         auto operator()(Additive first, Additive step, Plus op) const
-        -> arithmetic_progression<Additive, decltype(make_callable(std::move(op)))>
+        -> arithmetic_progression_cursor<Additive, decltype(make_callable(std::move(op)))>
         {
             return {std::move(first), std::move(step), std::move(op)};
         }
@@ -297,7 +299,7 @@ namespace ural
         @return <tt> {std::move(first), std::move(step)} </tt>
         */
         template <class Additive>
-        arithmetic_progression<Additive>
+        arithmetic_progression_cursor<Additive>
         operator()(Additive first, Additive step) const
         {
             return {std::move(first), std::move(step)};
@@ -318,7 +320,7 @@ namespace ural
         @return <tt> {std::move(first), std::move(step)} </tt>
         */
         template <class Multiplicative, class Step>
-        arithmetic_progression<Multiplicative, ural::multiplies<>, use_default, Step>
+        arithmetic_progression_cursor<Multiplicative, ural::multiplies<>, use_default, Step>
         operator()(Multiplicative first, Step step) const
         {
             return {std::move(first), std::move(step)};
@@ -327,14 +329,16 @@ namespace ural
 
     namespace
     {
-        /// @brief Функциональный объект для создания @c arithmetic_progression
+        /// @brief Функциональный объект для создания @c arithmetic_progression_cursor
         constexpr auto const & make_arithmetic_progression
-            = odr_const<make_arithmetic_progression_fn>;
+            = odr_const<make_arithmetic_progression_cursor_fn>;
 
         /// @brief Функциональный объект для создания геометрической прогрессии
         constexpr auto const & make_geometric_progression
             = odr_const<make_geometric_progression_fn>;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

@@ -30,6 +30,8 @@
 
 namespace {
 
+namespace ural_ex = ::ural::experimental;
+
 class MyOverflowingUnsigned;
 
 // This is a trivial user-defined wrapper around the built in int type.
@@ -337,7 +339,7 @@ typedef ::boost::mpl::list<short, int, long, MyInt>  all_signed_test_types;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(rational_size_check, T, all_signed_test_types)
 {
-    typedef ural::rational<T> Rational;
+    using Rational = ural_ex::rational<T>;
 
     static_assert(sizeof(Rational) <= 2*sizeof(T), "too big");
     BOOST_CHECK(true);
@@ -349,7 +351,7 @@ BOOST_AUTO_TEST_SUITE(basic_rational_suite)
 BOOST_AUTO_TEST_CASE_TEMPLATE( rational_initialization_test, T,
  all_signed_test_types )
 {
-    typedef ural::rational<T> Rational;
+    using Rational = ural_ex::rational<T>;
 
     constexpr auto r1 = Rational{};
     constexpr auto r2 = Rational( 0 );
@@ -381,22 +383,22 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_initialization_test, T,
     static_assert( r8.denominator() == static_cast<T>(3), "" );
     static_assert( r9.denominator() == static_cast<T>(5), "" );
 
-    BOOST_CHECK_THROW( ural::rational<T>( 3, 0), ural::bad_rational );
-    BOOST_CHECK_THROW( ural::rational<T>(-2, 0), ural::bad_rational );
-    BOOST_CHECK_THROW( ural::rational<T>( 0, 0), ural::bad_rational );
+    BOOST_CHECK_THROW(Rational( 3, 0), ural_ex::bad_rational );
+    BOOST_CHECK_THROW(Rational(-2, 0), ural_ex::bad_rational );
+    BOOST_CHECK_THROW(Rational( 0, 0), ural_ex::bad_rational );
 
-    auto constexpr ST = ural::safe_tag{};
+    auto constexpr ST = ural_ex::safe_tag{};
 
-    BOOST_CHECK_THROW( ural::rational<T>( 3, 0, ST), ural::bad_rational );
-    BOOST_CHECK_THROW( ural::rational<T>(-2, 0, ST), ural::bad_rational );
-    BOOST_CHECK_THROW( ural::rational<T>( 0, 0, ST), ural::bad_rational );
+    BOOST_CHECK_THROW(Rational( 3, 0, ST), ural_ex::bad_rational );
+    BOOST_CHECK_THROW(Rational(-2, 0, ST), ural_ex::bad_rational );
+    BOOST_CHECK_THROW(Rational( 0, 0, ST), ural_ex::bad_rational );
 }
 
 BOOST_AUTO_TEST_CASE(rational_three_arg_ctor_safe_tag)
 {
-    typedef ural::rational<int> Rational;
+    using Rational = ural_ex::rational<int>;
 
-    auto constexpr r = Rational(6, 8, 2, ural::safe_tag{});
+    auto constexpr r = Rational(6, 8, 2, ural_ex::safe_tag{});
 
     auto constexpr r0 = Rational(6, 8);
 
@@ -405,7 +407,7 @@ BOOST_AUTO_TEST_CASE(rational_three_arg_ctor_safe_tag)
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( rational_assign_test, T, all_signed_test_types )
 {
-    typedef ural::rational<T> Rational;
+    using Rational = ural_ex::rational<T>;
     auto r = Rational{};
 
     r.assign( 6, 8 );
@@ -416,15 +418,15 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_assign_test, T, all_signed_test_types )
     BOOST_CHECK_EQUAL( r.numerator(),   static_cast<T>(0) );
     BOOST_CHECK_EQUAL( r.denominator(), static_cast<T>(1) );
 
-    BOOST_CHECK_THROW( r.assign( 4, 0), ural::bad_rational );
-    BOOST_CHECK_THROW( r.assign( 0, 0), ural::bad_rational );
-    BOOST_CHECK_THROW( r.assign(-7, 0), ural::bad_rational );
+    BOOST_CHECK_THROW( r.assign( 4, 0), ural_ex::bad_rational );
+    BOOST_CHECK_THROW( r.assign( 0, 0), ural_ex::bad_rational );
+    BOOST_CHECK_THROW( r.assign(-7, 0), ural_ex::bad_rational );
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( rational_comparison_test, T,
  all_signed_test_types )
 {
-    typedef ural::rational<T> Rational;
+    using Rational = ural_ex::rational<T>;
 
     constexpr auto r1 = Rational{};
     constexpr auto r2 = Rational( 0 );
@@ -487,7 +489,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_comparison_test, T,
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( rational_1step_test, T, all_signed_test_types )
 {
-    typedef ural::rational<T> Rational;
+    using Rational = ural_ex::rational<T>;
 
     auto r1 = Rational{};
     auto r2 = Rational( 0 );
@@ -507,7 +509,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_1step_test, T, all_signed_test_types )
 // Absolute value tests
 BOOST_AUTO_TEST_CASE_TEMPLATE( rational_abs_test, T, all_signed_test_types )
 {
-    typedef ural::rational<T> Rational;
+    using Rational = ural_ex::rational<T>;
 
     constexpr auto r2 = Rational( 0 );
     constexpr auto r5 = Rational( 7, 2 );
@@ -525,7 +527,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_abs_test, T, all_signed_test_types )
 // Unary operator tests
 BOOST_AUTO_TEST_CASE_TEMPLATE( rational_unary_test, T, all_signed_test_types )
 {
-    typedef ural::rational<T> Rational;
+    using Rational = ural_ex::rational<T>;
 
     constexpr auto r2 = Rational( 0 );
     constexpr auto r3 = Rational( 1 );
@@ -556,7 +558,7 @@ BOOST_AUTO_TEST_SUITE( rational_arithmetic_suite )
 BOOST_AUTO_TEST_CASE_TEMPLATE( rational_additive_test, T,
  all_signed_test_types )
 {
-    typedef ural::rational<T>  rational_type;
+    using rational_type = ural_ex::rational<T>;
 
     URAL_STATIC_ASSERT_EQUAL( rational_type( 1, 2) + rational_type(1, 2),
      static_cast<T>(1) );
@@ -598,7 +600,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_additive_test, T,
 BOOST_AUTO_TEST_CASE_TEMPLATE( rational_assignment_test, T,
  all_signed_test_types )
 {
-    typedef ural::rational<T>  rational_type;
+    using rational_type = ural_ex::rational<T>;
 
     rational_type  r;
 
@@ -613,7 +615,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_assignment_test, T,
 BOOST_AUTO_TEST_CASE_TEMPLATE( rational_multiplication_test, T,
  all_signed_test_types )
 {
-    typedef ural::rational<T>  rational_type;
+    using rational_type = ural_ex::rational<T>;
 
     URAL_STATIC_ASSERT_EQUAL(rational_type(1, 3) * rational_type(-3, 4),
                              rational_type(-1, 4) );
@@ -634,7 +636,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_multiplication_test, T,
 BOOST_AUTO_TEST_CASE_TEMPLATE( rational_division_test, T,
  all_signed_test_types )
 {
-    typedef ural::rational<T>  rational_type;
+    using rational_type = ural_ex::rational<T>;
 
     URAL_STATIC_ASSERT_EQUAL( rational_type(-1, 20) / rational_type(4, 5),
                              rational_type(-1, 16) );
@@ -643,12 +645,12 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_division_test, T,
     URAL_STATIC_ASSERT_EQUAL( static_cast<T>(8) / rational_type(2, 7),
                              static_cast<T>(28) );
 
-    BOOST_CHECK_THROW( rational_type(23, 17) / rational_type(),
-     ural::bad_rational );
-    BOOST_CHECK_THROW( rational_type( 4, 15) / static_cast<T>(0),
-     ural::bad_rational );
+    BOOST_CHECK_THROW(rational_type(23, 17) / rational_type(),
+                      ural_ex::bad_rational);
+    BOOST_CHECK_THROW(rational_type( 4, 15) / static_cast<T>(0),
+                      ural_ex::bad_rational);
 
-    rational_type  r = rational_type( 4, 3 );
+    rational_type r = rational_type( 4, 3 );
 
     r /= rational_type( 5, 4 );
     BOOST_CHECK_EQUAL( r, rational_type(16, 15) );
@@ -656,8 +658,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_division_test, T,
     r /= static_cast<T>( 4 );
     BOOST_CHECK_EQUAL( r, rational_type( 4, 15) );
 
-    BOOST_CHECK_THROW( r /= rational_type(), ural::bad_rational );
-    BOOST_CHECK_THROW( r /= static_cast<T>(0), ural::bad_rational );
+    BOOST_CHECK_THROW( r /= rational_type(), ural_ex::bad_rational);
+    BOOST_CHECK_THROW( r /= static_cast<T>(0), ural_ex::bad_rational);
 
     URAL_STATIC_ASSERT_EQUAL( rational_type(-1) / rational_type(-3),
                              rational_type(1, 3) );
@@ -667,7 +669,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_division_test, T,
 BOOST_AUTO_TEST_CASE_TEMPLATE( rational_self_operations_test, T,
  all_signed_test_types )
 {
-    typedef ural::rational<T>  rational_type;
+    using rational_type = ural_ex::rational<T>;
 
     rational_type  r = rational_type( 4, 3 );
 
@@ -683,7 +685,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_self_operations_test, T,
     r -= r;
     BOOST_CHECK_EQUAL( r, rational_type( 0, 1) );
 
-    BOOST_CHECK_THROW( r /= r, ural::bad_rational );
+    BOOST_CHECK_THROW( r /= r, ural_ex::bad_rational );
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -696,12 +698,12 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_output_test, T, all_signed_test_types )
 {
     std::ostringstream  oss;
 
-    oss << ural::rational<T>( 44, 14 );
+    oss << ural_ex::rational<T>( 44, 14 );
     BOOST_CHECK_EQUAL( oss.str(), "22/7" );
 
     // n/1 выводится как n
     auto const n = T{42};
-    auto const x = ural::rational<T>{n};
+    auto const x = ural_ex::rational<T>{n};
 
     auto const n_s = ural::to_string(n);
 
@@ -716,7 +718,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_input_failing_test, T,
  all_signed_test_types )
 {
     std::istringstream  iss( "" );
-    ural::rational<T>  r;
+    ural_ex::rational<T>  r;
 
     iss >> r;
     BOOST_CHECK( !iss );
@@ -756,7 +758,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( rational_input_failing_test, T,
 BOOST_AUTO_TEST_CASE_TEMPLATE( rational_input_passing_test, T,
  all_signed_test_types )
 {
-    typedef ural::rational<T>  rational_type;
+    using rational_type = ural_ex::rational<T>;
 
     std::istringstream  iss( "1/2 12" );
     rational_type       r;
@@ -784,37 +786,37 @@ BOOST_AUTO_TEST_CASE( rational_cast_test )
     // requires a conversion from IntType to T.  However, for a user-defined
     // IntType, it is not possible to define such a conversion except as an
     // "operator T()".  This causes problems with overloading resolution.
-    constexpr ural::rational<int> const  half( 1, 2 );
+    constexpr ural_ex::rational<int> const  half( 1, 2 );
 
-    constexpr auto x = ural::rational_cast<double>(half);
+    constexpr auto x = ural_ex::rational_cast<double>(half);
 
     BOOST_CHECK_CLOSE(x, 0.5, 0.01 );
-    BOOST_CHECK_CLOSE(ural::rational_cast<double>(half), 0.5, 0.01 );
-    BOOST_CHECK_EQUAL(ural::rational_cast<int>(half), 0 );
-    BOOST_CHECK_EQUAL(ural::rational_cast<MyInt>(half), MyInt() );
-    BOOST_CHECK_EQUAL(ural::rational_cast<ural::rational<MyInt> >(half),
-                      ural::rational<MyInt>(1, 2) );
+    BOOST_CHECK_CLOSE(ural_ex::rational_cast<double>(half), 0.5, 0.01 );
+    BOOST_CHECK_EQUAL(ural_ex::rational_cast<int>(half), 0 );
+    BOOST_CHECK_EQUAL(ural_ex::rational_cast<MyInt>(half), MyInt() );
+    BOOST_CHECK_EQUAL(ural_ex::rational_cast<ural_ex::rational<MyInt> >(half),
+                      ural_ex::rational<MyInt>(1, 2) );
 
     // Conversions via explicit-marked constructors
     // (Note that the "explicit" mark prevents conversion to
     // ural::rational<MyOverflowingUnsigned>.)
-    ural::rational<MyInt> const  threehalves( 3, 2 );
+    ural_ex::rational<MyInt> const  threehalves( 3, 2 );
 
-    BOOST_CHECK_EQUAL(ural::rational_cast<MyOverflowingUnsigned>(threehalves),
+    BOOST_CHECK_EQUAL(ural_ex::rational_cast<MyOverflowingUnsigned>(threehalves),
                       MyOverflowingUnsigned(1u));
 }
 
 // Dice tests (a non-main test)
 BOOST_AUTO_TEST_CASE_TEMPLATE( dice_roll_test, T, all_signed_test_types )
 {
-    typedef ural::rational<T>  rational_type;
+    using rational_type = ural_ex::rational<T>;
 
     // Determine the mean number of times a fair six-sided die
     // must be thrown until each side has appeared at least once.
 
-    auto inverse = ural::curry(ural::constructor<rational_type>{}, T(1));
+    auto inverse = ural_ex::curry(ural_ex::constructor<rational_type>{}, T(1));
 
-    auto in = ural::numbers(1, 7) | ural::transformed(std::move(inverse));
+    auto in = ural::numbers(1, 7) | ural_ex::transformed(std::move(inverse));
 
     auto const r = ural::accumulate(in, rational_type(T(0))) * T(6);
 
@@ -828,7 +830,7 @@ all_signed_test_types так как в последний список вход�
 */
 BOOST_AUTO_TEST_CASE_TEMPLATE(rational_to_double_test, T, builtin_signed_test_types)
 {
-    typedef ural::rational<T> rational_type;
+    using rational_type = ural_ex::rational<T>;
 
     rational_type const r{4, 3};
 
@@ -836,7 +838,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(rational_to_double_test, T, builtin_signed_test_ty
 
     typedef double Real;
 
-    auto const x = ural::rational_to_real<Real>(r, eps);
+    auto const x = ural_ex::rational_to_real<Real>(r, eps);
 
     BOOST_CHECK_CLOSE_FRACTION(r.numerator(), x * r.denominator(), eps);
     BOOST_CHECK_CLOSE_FRACTION(Real(r.numerator()) / r.denominator(), x, eps);
@@ -844,7 +846,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(rational_to_double_test, T, builtin_signed_test_ty
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(negative_rational_to_double_test, T, builtin_signed_test_types)
 {
-    typedef ural::rational<T> rational_type;
+    using rational_type = ural_ex::rational<T>;
 
     rational_type const r{4, -3};
 
@@ -852,7 +854,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(negative_rational_to_double_test, T, builtin_signe
 
     typedef double Real;
 
-    auto const x = ural::rational_to_real<Real>(r, eps);
+    auto const x = ural_ex::rational_to_real<Real>(r, eps);
 
     BOOST_CHECK_CLOSE_FRACTION(r.numerator(), x * r.denominator(), eps);
     BOOST_CHECK_CLOSE_FRACTION(Real(r.numerator()) / r.denominator(), x, eps);
@@ -872,10 +874,10 @@ BOOST_AUTO_TEST_CASE( rational_less_overflow_test )
     // won't partially cancel to make smaller, more reasonable, values.)
     unsigned const  n1 = UINT_MAX - 2u, d1 = UINT_MAX - 1u;
     unsigned const  n2 = d1, d2 = UINT_MAX;
-    ural::rational<MyOverflowingUnsigned> const  r1( n1, d1 ), r2( n2, d2 );
+    ural_ex::rational<MyOverflowingUnsigned> const  r1( n1, d1 ), r2( n2, d2 );
 
-    BOOST_REQUIRE_EQUAL( ural::gcd(n1, d1), 1u );
-    BOOST_REQUIRE_EQUAL( ural::gcd(n2, d2), 1u );
+    BOOST_REQUIRE_EQUAL( ural_ex::gcd(n1, d1), 1u );
+    BOOST_REQUIRE_EQUAL( ural_ex::gcd(n2, d2), 1u );
     BOOST_REQUIRE( n1 > UINT_MAX / d2 );
     BOOST_REQUIRE( n2 > UINT_MAX / d1 );
     BOOST_CHECK( r1 < r2 );
@@ -885,8 +887,8 @@ BOOST_AUTO_TEST_CASE( rational_less_overflow_test )
 
 BOOST_AUTO_TEST_CASE(less_operator_regression_07102014)
 {
-    typedef int T;
-    typedef ural::rational<T> Rational;
+    using T = int;
+    using Rational = ural_ex::rational<T>;
 
     Rational constexpr f1{5, 12};
     Rational constexpr f2{2, 5};
@@ -900,7 +902,7 @@ BOOST_AUTO_TEST_CASE(zero_lesser_than_one_unsigned_test )
     // If a zero-rational v. positive-integer comparison involves negation, then
     // it may fail with unsigned types, which wrap around (for built-ins) or
     // throw/be-undefined (for user-defined types).
-    ural::rational<unsigned> const  r( 0u );
+    ural_ex::rational<unsigned> const  r( 0u );
 
     BOOST_CHECK( r < 1u );
 }
@@ -915,13 +917,13 @@ BOOST_AUTO_TEST_CASE( negative_gcd_test )
     // If a GCD routine takes the absolute value of an argument only before
     // processing, it won't realize that -INT_MIN -> INT_MIN (i.e. no change
     // from negation) and will propagate a negative sign to its result.
-    BOOST_REQUIRE_EQUAL( ural::gcd(INT_MIN, 6), 2 );
+    BOOST_REQUIRE_EQUAL( ural_ex::gcd(INT_MIN, 6), 2 );
 
     // That is bad if the rational number type does not check for that
     // possibility during normalization.
-    ural::rational<int> const  r1( INT_MIN / 2 + 3, 6 );
-    ural::rational<int> const  r2( INT_MIN / 2 - 3, 6 );
-    ural::rational<int> const  r3 = r1 + r2;
+    ural_ex::rational<int> const  r1( INT_MIN / 2 + 3, 6 );
+    ural_ex::rational<int> const  r2( INT_MIN / 2 - 3, 6 );
+    ural_ex::rational<int> const  r3 = r1 + r2;
 
     // If the error happens, the signs of the components will be switched.
     // (The numerators' sum is INT_MIN, and its GCD with 6 would be negated.)

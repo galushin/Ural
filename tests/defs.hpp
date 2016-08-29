@@ -33,12 +33,12 @@ namespace ural_test
     class istringstream_helper
     {
         typedef std::istringstream IStream;
-        typedef ::ural::istream_sequence<IStream, T> Sequence;
+        typedef ::ural::experimental::istream_cursor<IStream, T> Cursor;
 
-        friend Sequence
-        sequence(istringstream_helper const & x)
+        friend Cursor
+        cursor(istringstream_helper const & x)
         {
-            return Sequence(IStream(x.src_));
+            return Cursor(IStream(x.src_));
         }
 
     public:
@@ -47,14 +47,14 @@ namespace ural_test
 
         istringstream_helper() = default;
 
-        template <class Sequenced>
-        explicit istringstream_helper(Sequenced && seq)
-         : src_(istringstream_helper::make(ural::sequence_fwd<Sequenced>(seq)))
+        template <class Sequence>
+        explicit istringstream_helper(Sequence && seq)
+         : src_(istringstream_helper::make(ural::cursor_fwd<Sequence>(seq)))
         {}
 
         template <class Iterator>
         istringstream_helper(Iterator first, Iterator last)
-         : istringstream_helper(ural::make_iterator_sequence(std::move(first), std::move(last)))
+         : istringstream_helper(ural::make_iterator_cursor(std::move(first), std::move(last)))
         {}
 
         istringstream_helper(std::initializer_list<T> values)
@@ -62,11 +62,11 @@ namespace ural_test
         {}
 
     private:
-        template <class Sequence>
-        static std::string make(Sequence seq)
+        template <class Cursor>
+        static std::string make(Cursor cur)
         {
             std::ostringstream os;
-            ::ural::copy_fn{}(std::move(seq), ::ural::make_ostream_sequence(os, " "));
+            ::ural::copy_fn{}(std::move(cur), ::ural::experimental::make_ostream_cursor(os, " "));
             return os.str();
         }
 

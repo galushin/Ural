@@ -19,11 +19,16 @@
 
 #include <boost/test/unit_test.hpp>
 
+namespace
+{
+    namespace ural_ex = ::ural::experimental;
+}
+
 BOOST_AUTO_TEST_CASE(expected_value_ctor_test)
 {
-    typedef ural::expected<int> Expected;
+    typedef ural_ex::expected<int> Expected;
 
-    ::ural::ValueType<Expected> const init_value = 42;
+    ::ural::value_type_t<Expected> const init_value = 42;
 
     Expected const e{init_value};
 
@@ -37,10 +42,10 @@ BOOST_AUTO_TEST_CASE(expected_value_ctor_test)
 BOOST_AUTO_TEST_CASE(expected_move_value_ctor_test)
 {
     typedef std::unique_ptr<int> Type;
-    typedef ural::expected<Type> Expected;
+    typedef ural_ex::expected<Type> Expected;
 
     auto const init_value = 42;
-    ::ural::ValueType<Expected> init = ural::make_unique<Type::element_type>(init_value);
+    ::ural::value_type_t<Expected> init = ural::make_unique<Type::element_type>(init_value);
 
     Expected const e{std::move(init)};
 
@@ -53,11 +58,11 @@ BOOST_AUTO_TEST_CASE(expected_move_value_ctor_test)
 
 BOOST_AUTO_TEST_CASE(make_expected_test)
 {
-    typedef ural::expected<int> Expected;
+    typedef ural_ex::expected<int> Expected;
 
-    ::ural::ValueType<Expected> const init_value = 42;
+    ::ural::value_type_t<Expected> const init_value = 42;
 
-    auto e = ural::make_expected(init_value);
+    auto e = ural_ex::make_expected(init_value);
 
     BOOST_CHECK(e.has_value());
     BOOST_CHECK_EQUAL(e.value(), init_value);
@@ -68,10 +73,10 @@ BOOST_AUTO_TEST_CASE(make_expected_test)
 
 BOOST_AUTO_TEST_CASE(expected_notconst_value_test)
 {
-    typedef ural::expected<int> Expected;
+    typedef ural_ex::expected<int> Expected;
 
-    ::ural::ValueType<Expected> const x1 = 13;
-    ::ural::ValueType<Expected> const x2 = 42;
+    ::ural::value_type_t<Expected> const x1 = 13;
+    ::ural::value_type_t<Expected> const x2 = 42;
 
     Expected e{x1};
     e.value() = x2;
@@ -87,7 +92,7 @@ BOOST_AUTO_TEST_CASE(expected_notconst_value_test)
 
 BOOST_AUTO_TEST_CASE(expected_from_exception_test)
 {
-    typedef ural::expected<int> Expected;
+    typedef ural_ex::expected<int> Expected;
 
     typedef std::logic_error Exception;
 
@@ -103,7 +108,7 @@ BOOST_AUTO_TEST_CASE(expected_from_exception_test)
 
 BOOST_AUTO_TEST_CASE(expected_copy_ctor_test)
 {
-    typedef ural::expected<int> Expected;
+    typedef ural_ex::expected<int> Expected;
 
     typedef std::logic_error Exception;
 
@@ -123,7 +128,7 @@ BOOST_AUTO_TEST_CASE(expected_copy_ctor_test)
 BOOST_AUTO_TEST_CASE(expected_move_ctor_test)
 {
     typedef std::vector<int> Type;
-    typedef ural::expected<Type> Expected;
+    typedef ural_ex::expected<Type> Expected;
 
     typedef std::logic_error Exception;
 
@@ -165,14 +170,14 @@ namespace
 
 BOOST_AUTO_TEST_CASE(expected_from_call_test)
 {
-    auto const e1 = ural::expected_from_call(may_throw, true, 42);
+    auto const e1 = ural_ex::expected_from_call(may_throw, true, 42);
 
     BOOST_CHECK(e1.has_value() == true);
     BOOST_CHECK(e1.value() == 42);
 
     BOOST_CHECK(e1.get_exception<int>() == nullptr);
 
-    auto const e2 = ural::expected_from_call(may_throw, false, 42);
+    auto const e2 = ural_ex::expected_from_call(may_throw, false, 42);
 
     BOOST_CHECK(e2.get_exception<std::exception>() == nullptr);
 
@@ -187,8 +192,8 @@ BOOST_AUTO_TEST_CASE(expected_from_call_test)
 
 BOOST_AUTO_TEST_CASE(expected_swap_values_test)
 {
-    auto const e1_old = ural::expected_from_call(may_throw, true, 13);
-    auto const e2_old = ural::expected_from_call(may_throw, true, 42);
+    auto const e1_old = ural_ex::expected_from_call(may_throw, true, 13);
+    auto const e2_old = ural_ex::expected_from_call(may_throw, true, 42);
 
     auto e1 = e1_old;
     auto e2 = e2_old;
@@ -201,8 +206,8 @@ BOOST_AUTO_TEST_CASE(expected_swap_values_test)
 
 BOOST_AUTO_TEST_CASE(expected_swap_mixed_1_test)
 {
-    auto const e1_old = ural::expected_from_call(may_throw, false, 13);
-    auto const e2_old = ural::expected_from_call(may_throw, true, 42);
+    auto const e1_old = ural_ex::expected_from_call(may_throw, false, 13);
+    auto const e2_old = ural_ex::expected_from_call(may_throw, true, 42);
 
     auto e1 = e1_old;
     auto e2 = e2_old;
@@ -215,8 +220,8 @@ BOOST_AUTO_TEST_CASE(expected_swap_mixed_1_test)
 
 BOOST_AUTO_TEST_CASE(expected_swap_mixed_2_test)
 {
-    auto const e1_old = ural::expected_from_call(may_throw, true, 13);
-    auto const e2_old = ural::expected_from_call(may_throw, false, 42);
+    auto const e1_old = ural_ex::expected_from_call(may_throw, true, 13);
+    auto const e2_old = ural_ex::expected_from_call(may_throw, false, 42);
 
     auto e1 = e1_old;
     auto e2 = e2_old;
@@ -229,8 +234,8 @@ BOOST_AUTO_TEST_CASE(expected_swap_mixed_2_test)
 
 BOOST_AUTO_TEST_CASE(expected_swap_exceptions_test)
 {
-    auto const e1_old = ural::expected_from_call(may_throw, false, 13);
-    auto const e2_old = ural::expected_from_call(may_throw, false, 42);
+    auto const e1_old = ural_ex::expected_from_call(may_throw, false, 13);
+    auto const e2_old = ural_ex::expected_from_call(may_throw, false, 42);
 
     auto e1 = e1_old;
     auto e2 = e2_old;
@@ -243,8 +248,8 @@ BOOST_AUTO_TEST_CASE(expected_swap_exceptions_test)
 
 BOOST_AUTO_TEST_CASE(expected_value_or_test)
 {
-    auto const e1 = ural::expected_from_call(may_throw, true, 42);
-    auto const e2 = ural::expected_from_call(may_throw, false, 42);
+    auto const e1 = ural_ex::expected_from_call(may_throw, true, 42);
+    auto const e2 = ural_ex::expected_from_call(may_throw, false, 42);
 
     auto const r1 = e1.value_or(13);
     auto const r2 = e2.value_or(13);
@@ -258,10 +263,10 @@ BOOST_AUTO_TEST_CASE(expected_copy_assign_to_value)
     auto const old_value = 42;
     auto const new_value = 13;
 
-    auto e = ural::expected_from_call(may_throw, true, old_value);
+    auto e = ural_ex::expected_from_call(may_throw, true, old_value);
 
-    auto e_good = ural::expected_from_call(may_throw, true, new_value);
-    auto e_bad = ural::expected_from_call(may_throw, false, new_value);
+    auto e_good = ural_ex::expected_from_call(may_throw, true, new_value);
+    auto e_bad = ural_ex::expected_from_call(may_throw, false, new_value);
 
     e = e_good;
 
@@ -279,10 +284,10 @@ BOOST_AUTO_TEST_CASE(expected_copy_assign_to_exception)
     auto const old_value = 42;
     auto const new_value = 13;
 
-    auto e = ural::expected_from_call(may_throw, false, old_value);
+    auto e = ural_ex::expected_from_call(may_throw, false, old_value);
 
-    auto e_good = ural::expected_from_call(may_throw, true, new_value);
-    auto e_bad = ural::expected_from_call(may_throw, false, new_value);
+    auto e_good = ural_ex::expected_from_call(may_throw, true, new_value);
+    auto e_bad = ural_ex::expected_from_call(may_throw, false, new_value);
 
     e = e_good;
 
@@ -302,10 +307,10 @@ BOOST_AUTO_TEST_CASE(expected_move_assign_to_value)
     Type const old_value{4, 2};
     Type const new_value{1, 3};
 
-    auto e = ural::expected_from_call(may_throw, true, old_value);
+    auto e = ural_ex::expected_from_call(may_throw, true, old_value);
 
-    auto e_good = ural::expected_from_call(may_throw, true, new_value);
-    auto e_bad = ural::expected_from_call(may_throw, false, new_value);
+    auto e_good = ural_ex::expected_from_call(may_throw, true, new_value);
+    auto e_bad = ural_ex::expected_from_call(may_throw, false, new_value);
 
     e = std::move(e_good);
 
@@ -325,10 +330,10 @@ BOOST_AUTO_TEST_CASE(expected_move_assign_to_exception)
     Type const old_value{4, 2};
     Type const new_value{1, 3};
 
-    auto e = ural::expected_from_call(may_throw, false, old_value);
+    auto e = ural_ex::expected_from_call(may_throw, false, old_value);
 
-    auto e_good = ural::expected_from_call(may_throw, true, new_value);
-    auto e_bad = ural::expected_from_call(may_throw, false, new_value);
+    auto e_good = ural_ex::expected_from_call(may_throw, true, new_value);
+    auto e_bad = ural_ex::expected_from_call(may_throw, false, new_value);
 
     e = std::move(e_good);
 
@@ -346,7 +351,7 @@ BOOST_AUTO_TEST_CASE(expected_fmap_test)
 {
     auto const value = 3;
 
-    auto e_good = ural::expected_from_call(may_throw, true, value);
+    auto e_good = ural_ex::expected_from_call(may_throw, true, value);
 
     auto e_sq = e_good.fmap([](int x) { return x*x;});
 
@@ -357,7 +362,7 @@ BOOST_AUTO_TEST_CASE(unexpected_fmap_test)
 {
     auto const value = 3;
 
-    auto e_good = ural::expected_from_call(may_throw, false, value);
+    auto e_good = ural_ex::expected_from_call(may_throw, false, value);
 
     auto e_sq = e_good.fmap([](int x) { return x*x;});
 
@@ -377,7 +382,7 @@ BOOST_AUTO_TEST_CASE(unexpected_fmap_test)
 BOOST_AUTO_TEST_CASE(expected_copy_assign_value_to_value)
 {
     auto const value = std::string{"Good"};
-    auto e_good = ural::expected_from_call(may_throw, false, value);
+    auto e_good = ural_ex::expected_from_call(may_throw, false, value);
 
     std::string const s{"Bad"};
 
@@ -389,7 +394,7 @@ BOOST_AUTO_TEST_CASE(expected_copy_assign_value_to_value)
 BOOST_AUTO_TEST_CASE(expected_copy_assign_value_to_exception)
 {
     auto const value = std::string{"Good"};
-    auto e = ural::expected_from_call(may_throw, true, value);
+    auto e = ural_ex::expected_from_call(may_throw, true, value);
 
     std::string const s{"Bad"};
 
@@ -401,7 +406,7 @@ BOOST_AUTO_TEST_CASE(expected_copy_assign_value_to_exception)
 BOOST_AUTO_TEST_CASE(expected_move_assign_value_to_value)
 {
     auto const value = std::string{"Good"};
-    auto e = ural::expected_from_call(may_throw, false, value);
+    auto e = ural_ex::expected_from_call(may_throw, false, value);
 
     std::string s{"Bad"};
     auto const s_old = s;
@@ -415,7 +420,7 @@ BOOST_AUTO_TEST_CASE(expected_move_assign_value_to_value)
 BOOST_AUTO_TEST_CASE(expected_move_assign_value_to_exception)
 {
     auto const value = std::string{"Good"};
-    auto e = ural::expected_from_call(may_throw, true, value);
+    auto e = ural_ex::expected_from_call(may_throw, true, value);
 
     std::string s{"Bad"};
     auto const s_old = s;

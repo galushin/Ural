@@ -25,7 +25,8 @@
 
 namespace ural
 {
-
+namespace experimental
+{
 /** @namespace archetypes
  @brief Архетипы -- минималистичные реализации концепций
 */
@@ -73,13 +74,13 @@ namespace archetypes
         {}
     };
 
-    /** @brief Архетип последовательности ввода
+    /** @brief Архетип курсора ввода
     @tparam Value тип значения
     @tparam D тип расстояния, по умолчанию используется std::ptrdiff_t
     */
     template <class Value, class D = use_default>
-    class input_sequence
-     : public ural::sequence_base<input_sequence<Value>>
+    class input_cursor
+     : public ural::cursor_base<input_cursor<Value>>
     {
     public:
         /// @brief Тип значения
@@ -92,7 +93,7 @@ namespace archetypes
         typedef value_type * pointer;
 
         /// @brief Тип для представления расстояния
-        typedef DefaultedType<D, std::ptrdiff_t> distance_type;
+        using distance_type = experimental::defaulted_type_t<D, std::ptrdiff_t>;
 
         /// @brief Категория курсора
         using cursor_tag = input_cursor_tag;
@@ -126,6 +127,8 @@ namespace archetypes
     };
 }
 // namespace archetypes
+}
+// namespace experimental
 }
 // namespace ural
 

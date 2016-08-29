@@ -31,6 +31,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /// @brief Класс исключения "Преобразование @c any в неправильный тип"
     struct bad_any_cast
      : public std::bad_cast
@@ -358,7 +360,7 @@ namespace ural
             }
             else
             {
-                throw ural::bad_any_cast(this->type(), typeid(T));
+                throw ::ural::experimental::bad_any_cast(this->type(), typeid(T));
             }
         }
         //@}
@@ -420,6 +422,8 @@ namespace ural
         ural::function_ptr_wrapper<void*(void*)> copy_;
         ural::function_ptr_wrapper<bool(void*, void*)> equal_;
     };
+}
+// namespace experimental
 }
 // namespace ural
 

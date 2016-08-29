@@ -23,7 +23,12 @@
 #include <boost/test/unit_test.hpp>
 #include "../../defs.hpp"
 
-BOOST_AUTO_TEST_CASE(set_union_sequence_test)
+namespace
+{
+    namespace ural_ex = ::ural::experimental;
+}
+
+BOOST_AUTO_TEST_CASE(set_union_cursor_test)
 {
     std::vector<int> v1 = {1, 2, 3, 4, 5};
     std::vector<int> v2 = {      3, 4, 5, 6, 7};
@@ -32,14 +37,13 @@ BOOST_AUTO_TEST_CASE(set_union_sequence_test)
     std::set_union(v1.begin(), v1.end(), v2.begin(), v2.end(),
                    std::back_inserter(r_std));
 
-    auto const r_ural
-        = ural::make_set_union_sequence(v1, v2)
-        | ural::to_container<std::vector>{};
+    auto const r_ural = ural_ex::make_set_union_cursor(v1, v2)
+                      | ural_ex::to_container<std::vector>{};
 
     URAL_CHECK_EQUAL_RANGES(r_std, r_ural);
 }
 
-BOOST_AUTO_TEST_CASE(set_intersection_sequence_test)
+BOOST_AUTO_TEST_CASE(set_intersection_cursor_test)
 {
     std::vector<int> const v1{1,2,3,4,5,6,7,8};
     std::vector<int> const v2{        5,  7,  9,10};
@@ -50,13 +54,13 @@ BOOST_AUTO_TEST_CASE(set_intersection_sequence_test)
                           std::back_inserter(std_intersection));
 
     auto const ural_intersection
-        = ural::make_set_intersection_sequence(v1, v2)
-        | ural::to_container<std::vector>{};
+        = ural_ex::make_set_intersection_cursor(v1, v2)
+        | ural_ex::to_container<std::vector>{};
 
     URAL_CHECK_EQUAL_RANGES(std_intersection, ural_intersection);
 }
 
-BOOST_AUTO_TEST_CASE(set_difference_sequence_test)
+BOOST_AUTO_TEST_CASE(set_difference_cursor_test)
 {
     std::vector<int> v1 {1, 2, 5, 5, 5, 9};
     std::vector<int> v2 {   2, 5,       7};
@@ -64,14 +68,13 @@ BOOST_AUTO_TEST_CASE(set_difference_sequence_test)
     std::vector<int> std_diff;
     std::set_difference(v1.begin(), v1.end(), v2.begin(), v2.end(),
                         std::back_inserter(std_diff));
-    auto const ural_diff
-        = ural::make_set_difference_sequence(v1, v2)
-        | ural::to_container<std::vector>{};
+    auto const ural_diff = ural_ex::make_set_difference_cursor(v1, v2)
+                         | ural_ex::to_container<std::vector>{};
 
     URAL_CHECK_EQUAL_RANGES(std_diff, ural_diff);
 }
 
-BOOST_AUTO_TEST_CASE(set_symmetric_difference_sequence_test)
+BOOST_AUTO_TEST_CASE(set_symmetric_difference_cursor_test)
 {
     std::vector<int> const v1{1,2,3,4,5,6,7,8     };
     std::vector<int> const v2{        5,  7,  9,10};
@@ -81,8 +84,8 @@ BOOST_AUTO_TEST_CASE(set_symmetric_difference_sequence_test)
                                   std::back_inserter(r_std));
 
     auto const r_ural
-        = ural::make_set_symmetric_difference_sequence(v1, v2)
-        | ural::to_container<std::vector>{};
+        = ural_ex::make_set_symmetric_difference_cursor(v1, v2)
+        | ural_ex::to_container<std::vector>{};
 
     URAL_CHECK_EQUAL_RANGES(r_ural, r_std);
 }
@@ -90,24 +93,24 @@ BOOST_AUTO_TEST_CASE(set_symmetric_difference_sequence_test)
 namespace
 {
     template <template <class...> class SO>
-    struct set_op_sequence_maker
+    struct set_op_cursor_maker
     {
         template <class S1, class S2>
-        SO<ural::SequenceType<S1>, ural::SequenceType<S2>>
+        SO<ural::cursor_type_t<S1>, ural::cursor_type_t<S2>>
         operator()(S1 && s1, S2 && s2) const
         {
-            using Result = SO<ural::SequenceType<S1>, ural::SequenceType<S2>>;
-            using ural::sequence;
-            return Result(sequence(s1), sequence(s2));
+            using Result = SO<ural::cursor_type_t<S1>, ural::cursor_type_t<S2>>;
+            using ural::cursor;
+            return Result(cursor(s1), cursor(s2));
         }
     };
 
     using SetOperationMakers
-        = boost::mpl::list<set_op_sequence_maker<ural::merge_sequence>,
-                           set_op_sequence_maker<ural::set_union_sequence>,
-                           set_op_sequence_maker<ural::set_difference_sequence>,
-                           set_op_sequence_maker<ural::set_intersection_sequence>,
-                           set_op_sequence_maker<ural::set_symmetric_difference_sequence>>;
+        = boost::mpl::list<set_op_cursor_maker<ural_ex::merge_cursor>,
+                           set_op_cursor_maker<ural_ex::set_union_cursor>,
+                           set_op_cursor_maker<ural_ex::set_difference_cursor>,
+                           set_op_cursor_maker<ural_ex::set_intersection_cursor>,
+                           set_op_cursor_maker<ural_ex::set_symmetric_difference_cursor>>;
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(set_operations_traversed_front, Maker, SetOperationMakers)
@@ -120,7 +123,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(set_operations_traversed_front, Maker, SetOperatio
     auto const n = 2;
 
     auto s1 = maker(v1, v2);
-    auto s2 = maker(v1 | ural::assumed_infinite, v2 | ural::assumed_infinite);
+    auto s2 = maker(v1 | ural_ex::assumed_infinite, v2 | ural_ex::assumed_infinite);
 
     static_assert(!std::is_same<decltype(s2), decltype(s2.traversed_front())>::value, "");
 

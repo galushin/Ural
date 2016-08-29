@@ -31,37 +31,8 @@
 
 namespace ural
 {
-    /// @cond false
-    namespace details
-    {
-        template <class A>
-        struct allocator_is_always_equal_impl
-        {
-        private:
-            template <class U>
-            static typename U::is_always_equal
-            impl(...);
-
-            template <class U>
-            static typename std::is_empty<U>::type
-            impl(void const *);
-
-        public:
-            typedef decltype(impl<A>(nullptr)) type;
-        };
-    }
-    // namespace details
-    ///@endcond
-
-    /** @brief Временная замена (до С++17) для
-    <tt> allocator_traits<A>::is_always_equal </tt>
-    @tparam A распределитель памяти
-    */
-    template <class A>
-    struct allocator_is_always_equal
-     : public details::allocator_is_always_equal_impl<A>::type
-    {};
-
+inline namespace v1
+{
     // Создание объектов в динамической памяти, обёрнутых в unique_ptr
     /** @brief Создание объекта в динамической памяти, обёрнутого в
     @c unique_ptr
@@ -96,6 +67,41 @@ namespace ural
     typename std::enable_if<std::is_array<T>::value && std::extent<T>::value != 0,
                             std::unique_ptr<T>>::type
     make_unique(size_t size) = delete;
+}
+// inline namespace v1
+
+namespace experimental
+{
+    /// @cond false
+    namespace details
+    {
+        template <class A>
+        struct allocator_is_always_equal_impl
+        {
+        private:
+            template <class U>
+            static typename U::is_always_equal
+            impl(...);
+
+            template <class U>
+            static typename std::is_empty<U>::type
+            impl(void const *);
+
+        public:
+            typedef decltype(impl<A>(nullptr)) type;
+        };
+    }
+    // namespace details
+    ///@endcond
+
+    /** @brief Временная замена (до С++17) для
+    <tt> allocator_traits<A>::is_always_equal </tt>
+    @tparam A распределитель памяти
+    */
+    template <class A>
+    struct allocator_is_always_equal
+     : public details::allocator_is_always_equal_impl<A>::type
+    {};
 
     /** @brief Тип функционального объекта для создания копии заданного объекта
     в динамической памяти, управляемой с помощью <tt> std::unique_ptr </tt>
@@ -307,12 +313,10 @@ namespace ural
         typedef typename std::add_lvalue_reference<T>::type reference;
 
         /// @brief Тип стратегии копирования
-        typedef typename default_helper<Cloner, default_copy<element_type>>::type
-            cloner_type;
+        using cloner_type = experimental::defaulted_type_t<Cloner, default_copy<element_type>>;
 
         /// @brief Тип стратегии удаления
-        typedef typename default_helper<Deleter, std::default_delete<element_type>>::type
-            deleter_type;
+        using deleter_type = experimental::defaulted_type_t<Deleter, std::default_delete<element_type>>;
 
         static_assert(!std::is_rvalue_reference<deleter_type>::value,
                       "Deleter can't be rvalue reference");
@@ -324,8 +328,7 @@ namespace ural
         typedef typename Holder::pointer pointer;
 
         /// @brief Тип стратегии проверок
-        typedef typename default_helper<Checker, default_ptr_checker<pointer>>::type
-            checker_type;
+        using checker_type = experimental::defaulted_type_t<Checker, default_ptr_checker<pointer>>;
 
         // Конструкторы
         /** @brief Конструктор без параметров
@@ -422,7 +425,7 @@ namespace ural
         */
         copy_ptr & operator=(copy_ptr const & x)
         {
-            return ::ural::copy_and_swap(*this, x);
+            return ::ural::experimental::copy_and_swap(*this, x);
         }
 
         /** @brief Присваивание умного указателя совместимого типа
@@ -588,6 +591,8 @@ namespace ural
     {
         return copy_ptr<T>(make_unique<T>(std::forward<Args>(args)...));
     }
+}
+// namespace
 }
 // namespace ural
 

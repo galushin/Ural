@@ -26,14 +26,16 @@
 
 namespace ural
 {
-    /** @brief Последовательность на основе функции без аргументов
+namespace experimental
+{
+    /** @brief Курсор последовательности на основе функции без аргументов
     @tparam Generator функция без аргументов
     @tparam D тип расстояния, по умолчанию используется <tt>std::ptrdiff_t</tt>
     */
     template <class Generator,
               class D = use_default>
-    class generator_sequence
-     : public sequence_base<generator_sequence<Generator, D>,
+    class generator_cursor
+     : public cursor_base<generator_cursor<Generator, D>,
                             decltype(make_callable(std::declval<Generator>()))>
     {
     public:
@@ -41,7 +43,7 @@ namespace ural
             function_type;
 
     private:
-        typedef sequence_base<generator_sequence, function_type>
+        typedef cursor_base<generator_cursor, function_type>
             Base_class;
 
         template <class T>
@@ -56,7 +58,7 @@ namespace ural
         typedef decltype(make_value(std::declval<reference>())) value_type;
 
         /// @brief Тип расстояния
-        typedef typename default_helper<D, std::ptrdiff_t>::type distance_type;
+        using distance_type = experimental::defaulted_type_t<D, std::ptrdiff_t>;
 
         /// @brief Категория курсора
         using cursor_tag = input_cursor_tag;
@@ -68,7 +70,7 @@ namespace ural
         /** @brief Конструктор
         @post <tt> this->function() == Generator{} </tt>
         */
-        explicit generator_sequence()
+        explicit generator_cursor()
          : Base_class()
         {}
 
@@ -76,17 +78,17 @@ namespace ural
         @param gen функция без аргументов
         @post <tt> this->function() == gen </tt>
         */
-        explicit generator_sequence(Generator gen)
+        explicit generator_cursor(Generator gen)
          : Base_class{std::move(gen)}
         {}
 
-        generator_sequence(generator_sequence const &) = delete;
-        generator_sequence(generator_sequence &&) = default;
+        generator_cursor(generator_cursor const &) = delete;
+        generator_cursor(generator_cursor &&) = default;
 
-        generator_sequence & operator=(generator_sequence const &) = delete;
-        generator_sequence & operator=(generator_sequence &&) = default;
+        generator_cursor & operator=(generator_cursor const &) = delete;
+        generator_cursor & operator=(generator_cursor &&) = default;
 
-        // Однопроходная последовательность
+        // Однопроходный курсор
         /** @brief Провекра исчерпания последовательности
         @return @b false.
         */
@@ -121,16 +123,18 @@ namespace ural
         //@}
     };
 
-    /** @brief Создание последоательности на основе генератора
+    /** @brief Создание курсора на основе генератора
     @param g функция без аргументов
-    @return <tt> generator_sequence<Generator>{std::move(g)} </tt>
+    @return <tt> generator_cursor<Generator>{std::move(g)} </tt>
     */
     template <class Generator>
-    generator_sequence<Generator>
-    make_generator_sequence(Generator g)
+    generator_cursor<Generator>
+    make_generator_cursor(Generator g)
     {
-        return generator_sequence<Generator>{std::move(g)};
+        return generator_cursor<Generator>{std::move(g)};
     }
+}
+// namespace experimental
 }
 // namespace ural
 

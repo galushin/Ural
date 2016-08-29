@@ -38,6 +38,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Тип функционального объекта, для проверки того, что число
     является простым.
 
@@ -110,7 +112,7 @@ namespace ural
         template <class IntType, class Input>
         bool operator()(IntType const & x, Input && ds) const
         {
-            for(auto seq = ural::sequence_fwd<Input>(ds); !!seq; ++ seq)
+            for(auto seq = ural::cursor_fwd<Input>(ds); !!seq; ++ seq)
             {
                 auto const & value = *seq;
 
@@ -138,9 +140,9 @@ namespace ural
         template <class IntType, class Input>
         bool operator()(IntType const & x, Input && ds) const
         {
-            for(auto seq = ::ural::sequence_fwd<Input>(ds); !!seq; ++ seq)
+            for(auto seq = ::ural::cursor_fwd<Input>(ds); !!seq; ++ seq)
             {
-                using ural::gcd;
+                using ::ural::experimental::gcd;
                 if(gcd(x, *seq) != 1)
                 {
                     return false;
@@ -194,7 +196,7 @@ namespace ural
 
         for(auto k = primes.back() + IntType{1}; primes.size() < n; k += IntType{2})
         {
-            if(::ural::is_not_divisible_by_all_sorted(k, primes))
+            if(::ural::experimental::is_not_divisible_by_all_sorted(k, primes))
             {
                 primes.push_back(k);
             }
@@ -228,7 +230,7 @@ namespace ural
 
         std::vector<bool> seive((p_max - x_min + 1)/2, true);
 
-        for(auto pos = ural::sequence(seive); !!pos; pos = ural::find(pos, true))
+        for(auto pos = ural::cursor(seive); !!pos; pos = ural::find(pos, true))
         {
             auto const index = pos.traversed_front().size();
             auto value = 2 * index + x_min;
@@ -243,6 +245,8 @@ namespace ural
 
         return primes;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

@@ -32,6 +32,8 @@
 
 namespace ural
 {
+inline namespace v1
+{
     /** @brief Последовательность целых чисел времени компиляции
     @tparam T тип целых чисел
     @tparam Ints список целых чисел
@@ -124,6 +126,55 @@ namespace ural
         constexpr auto const & apply = odr_const<apply_fn>;
     }
 
+    /** @brief Тип функционального объекта для преобразования в ссылку на
+    константу.
+    Подробности можно найти в следующей статье комитета по стандартизации С++
+    <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/n4380.html">n4380</a>
+    */
+    struct as_const_fn
+    {
+    public:
+        //@{
+        /** @brief Оператор вызова функции
+        @param x ссылка на значение, которая должно быть преобразована в
+        константную
+        @return Если @c x -- ссылка на временный объект, то возвращает копию
+        объекта, на который она указывает, в противном случае возвращает
+        константную ссылку на тот же объект
+        */
+        template <class T>
+        constexpr T const &
+        operator()(T & x) const noexcept
+        {
+            return x;
+        }
+
+        template <class T>
+        constexpr T const &
+        operator()(T const & x) const noexcept
+        {
+            return x;
+        }
+
+        template <class T>
+        constexpr T
+        operator()(T && x) const noexcept(noexcept(T(std::move(x))))
+        {
+            return x;
+        }
+        //@}
+    };
+
+    namespace
+    {
+        /// @brief Функциональный объект для преобразования ссылок в константные
+        constexpr auto const & as_const = odr_const<as_const_fn>;
+    }
+}
+// namespace v1
+
+namespace experimental
+{
     /** @brief Обобщённая реализация присваивания "Скопировать и обменять"
     @param x объект, которому должно быть присвоено значение
     @param value присваиваемое значение
@@ -362,15 +413,39 @@ namespace ural
         return with_old_value<typename std::decay<T>::type>{std::forward<T>(x)};
     }
 
-    /** @brief Функция доступа к значению - реализация для обычных переменных
-    @param x переменная
-    @return <tt> std::forward<T>(x) </tt>
+    /** @brief Функциональный объект, выполняющий обмен распределителей памяти,
+    если это необходимо.
     */
-    template <class T>
-    constexpr T && get(T && x)
+    class swap_allocators
     {
-        return std::forward<T>(x);
-    }
+    public:
+        /** @brief Выполнение обмена
+        @param x первый распределитель памяти
+        @param y второй распределитель памяти
+        */
+        template <class A>
+        void operator()(A & x, A & y) const
+        {
+            auto constexpr tag = typename std::allocator_traits<A>::propagate_on_container_swap{};
+
+            return this->do_swap(x, y, tag);
+        }
+
+    private:
+        template <class A>
+        static void do_swap(A & x, A & y, std::true_type)
+        {
+            using std::swap;
+            swap(x, y);
+        }
+
+        template <class A>
+        static void do_swap(A & x, A & y, std::false_type)
+        {
+            // всегда возможно: Таблица 26
+            assert(x == y);
+        }
+    };
 
     ///@{
     /** @brief Функция доступа к значению @c with_old_value
@@ -389,6 +464,16 @@ namespace ural
         return x.value();
     }
     //@}
+
+    /** @brief Функция доступа к значению - реализация для обычных переменных
+    @param x переменная
+    @return <tt> std::forward<T>(x) </tt>
+    */
+    template <class T>
+    constexpr T && get(T && x)
+    {
+        return std::forward<T>(x);
+    }
 
     // Универсальный интерфейс для кортежей, pair, complex, compressed_pair
     // Кортежи
@@ -518,85 +603,8 @@ namespace ural
             return get(std::forward<Tuple>(x), ural::placeholder<Index>{});
         }
     };
-
-    /** @brief Функциональный объект, выполняющий обмен распределителей памяти,
-    если это необходимо.
-    */
-    class swap_allocators
-    {
-    public:
-        /** @brief Выполнение обмена
-        @param x первый распределитель памяти
-        @param y второй распределитель памяти
-        */
-        template <class A>
-        void operator()(A & x, A & y) const
-        {
-            auto constexpr tag = typename std::allocator_traits<A>::propagate_on_container_swap{};
-
-            return this->do_swap(x, y, tag);
-        }
-
-    private:
-        template <class A>
-        static void do_swap(A & x, A & y, std::true_type)
-        {
-            using std::swap;
-            swap(x, y);
-        }
-
-        template <class A>
-        static void do_swap(A & x, A & y, std::false_type)
-        {
-            // всегда возможно: Таблица 26
-            assert(x == y);
-        }
-    };
-
-    /** @brief Тип функционального объекта для преобразования в ссылку на
-    константу.
-    Подробности можно найти в следующей статье комитета по стандартизации С++
-    <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/n4380.html">n4380</a>
-    */
-    struct as_const_fn
-    {
-    public:
-        //@{
-        /** @brief Оператор вызова функции
-        @param x ссылка на значение, которая должно быть преобразована в
-        константную
-        @return Если @c x -- ссылка на временный объект, то возвращает копию
-        объекта, на который она указывает, в противном случае возвращает
-        константную ссылку на тот же объект
-        */
-        template <class T>
-        constexpr T const &
-        operator()(T & x) const noexcept
-        {
-            return x;
-        }
-
-        template <class T>
-        constexpr T const &
-        operator()(T const & x) const noexcept
-        {
-            return x;
-        }
-
-        template <class T>
-        constexpr T
-        operator()(T && x) const noexcept(noexcept(T(std::move(x))))
-        {
-            return x;
-        }
-        //@}
-    };
-
-    namespace
-    {
-        /// @brief Функциональный объект для преобразования ссылок в константные
-        constexpr auto const & as_const = odr_const<as_const_fn>;
-    }
+}
+// namespace experimental
 }
 // namespace ural
 

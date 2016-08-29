@@ -23,11 +23,13 @@
 #include <boost/mpl/list.hpp>
 #include <boost/test/unit_test.hpp>
 
-using ::ural::ValueType;
-
 namespace
 {
-    typedef boost::mpl::list<double, ural::rational<int>> Real_types;
+    namespace ural_ex = ::ural::experimental;
+
+    using ::ural::value_type_t;
+
+    typedef boost::mpl::list<double, ural_ex::rational<int>> Real_types;
 
     template <class R, class T>
     constexpr R make_fraction(T num, T denom)
@@ -38,21 +40,21 @@ namespace
 
 BOOST_AUTO_TEST_CASE(probability_default_param_type_test)
 {
-    typedef ural::probability<> P;
+    using P = ural::experimental::probability<>;
 
-    static_assert(std::is_same<double, ValueType<P>>::value,
+    static_assert(std::is_same<double, value_type_t<P>>::value,
                   "default is double");
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(probability_default_ctor_test, T, Real_types)
 {
-    ural::probability<T> constexpr p {};
+    ural::experimental::probability<T> constexpr p {};
 
     static_assert(p.value() == 0, "p must be 0");
     static_assert(p == 0, "p must be 0");
     static_assert(0 == p, "p must be 0");
 
-    static_assert(sizeof(p) == sizeof(ValueType<decltype(p)>),
+    static_assert(sizeof(p) == sizeof(value_type_t<decltype(p)>),
                   "Too big!");
 }
 
@@ -60,8 +62,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(probability_value_ctor_test, T, Real_types)
 {
     auto constexpr value = make_fraction<T>(1, 2);
 
-    ural::probability<T> constexpr p0{};
-    ural::probability<T> constexpr p{value};
+    ural_ex::probability<T> constexpr p0{};
+    ural_ex::probability<T> constexpr p{value};
 
     static_assert(p.value() == value, "incorrect value");
     static_assert(p == value, "incorrect value");
@@ -75,14 +77,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(probability_value_ctor_test, T, Real_types)
 BOOST_AUTO_TEST_CASE_TEMPLATE(probability_bad_value_ctor_test, T, Real_types)
 {
     auto const value = make_fraction<T>(3, 2);
-    BOOST_CHECK_THROW(ural::probability<T>{value}, std::logic_error);
+    BOOST_CHECK_THROW(ural_ex::probability<T>{value}, std::logic_error);
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(probability_assign_value_test, T, Real_types)
 {
     auto value = make_fraction<T>(1, 2);
 
-    ural::probability<T> p{};
+    ural_ex::probability<T> p{};
 
     BOOST_CHECK(value != p);
     BOOST_CHECK(p != value);
@@ -96,7 +98,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(probability_assign_value_test, T, Real_types)
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(probability_bad_value_assign_test, T, Real_types)
 {
-    ural::probability<T> p{};
+    ural_ex::probability<T> p{};
     auto const value = make_fraction<T>(3, 2);
     BOOST_CHECK_THROW(p = value, std::logic_error);
 }
@@ -114,7 +116,7 @@ BOOST_AUTO_TEST_CASE(probability_correct_istreaming_test)
 
         std::istringstream is(os.str());
 
-        ural::probability<T> p;
+        ural_ex::probability<T> p;
         is >> p;
 
         BOOST_CHECK_EQUAL(v, p.value());
@@ -134,14 +136,14 @@ BOOST_AUTO_TEST_CASE(probability_incorrect_istreaming_test)
 
         std::istringstream is(os.str());
 
-        ural::probability<T> p;
+        ural_ex::probability<T> p;
         BOOST_CHECK_THROW(is >> p, std::logic_error);
     }
 }
 
 BOOST_AUTO_TEST_CASE(average_type_test)
 {
-    typedef ural::rational<int> Rational;
+    using Rational = ural_ex::rational<int>;
 
     using std::is_same;
     using ural::average_type;
@@ -158,9 +160,9 @@ BOOST_AUTO_TEST_CASE(describe_test)
 {
     std::vector<int> const xs = {1, 2, 3, 4, 5, 6};
 
-    using namespace ural::statistics::tags;
+    using namespace ural::experimental::statistics::tags;
 
-    auto ds = ural::describe(xs, variance | range | count);
+    auto ds = ural::experimental::describe(xs, variance | range | count);
 
     BOOST_CHECK_EQUAL(xs.size(), ural::to_unsigned(ds.count()));
     BOOST_CHECK_EQUAL(xs.size(), ural::to_unsigned(ds[count]));
@@ -191,9 +193,9 @@ BOOST_AUTO_TEST_CASE(describe_test_no_count)
 {
     std::vector<int> const xs = {1, 2, 3, 4, 5, 6};
 
-    using namespace ural::statistics::tags;
+    using namespace ural_ex::statistics::tags;
 
-    auto ds = ural::describe(xs, variance | range);
+    auto ds = ural_ex::describe(xs, variance | range);
 
     BOOST_CHECK_EQUAL(xs.front(), ds.min());
     BOOST_CHECK_EQUAL(xs.front(), ds[min]);
@@ -221,9 +223,9 @@ BOOST_AUTO_TEST_CASE(describe_test_max)
     // Тэг range заменяет min и max, так что их нужно тестировать отдельно
     std::vector<int> const xs = {1, 2, 3, 4, 5, 6};
 
-    using namespace ural::statistics::tags;
+    using namespace ural_ex::statistics::tags;
 
-    auto ds = ural::describe(xs, max);
+    auto ds = ural_ex::describe(xs, max);
 
     BOOST_CHECK_EQUAL(xs.back(), ds.max());
     BOOST_CHECK_EQUAL(xs.back(), ds[max]);
@@ -234,9 +236,9 @@ BOOST_AUTO_TEST_CASE(describe_test_min)
     // Тэг range заменяет min и max, так что их нужно тестировать отдельно
     std::vector<int> const xs = {1, 2, 3, 4, 5, 6};
 
-    using namespace ural::statistics::tags;
+    using namespace ural_ex::statistics::tags;
 
-    auto ds = ural::describe(xs, min);
+    auto ds = ural_ex::describe(xs, min);
 
     BOOST_CHECK_EQUAL(xs.front(), ds.min());
     BOOST_CHECK_EQUAL(xs.front(), ds[min]);
@@ -246,9 +248,9 @@ BOOST_AUTO_TEST_CASE(describe_test_duplicated_tags)
 {
     std::vector<int> const xs = {1, 2, 3, 4, 5, 6};
 
-    using namespace ural::statistics::tags;
+    using namespace ural_ex::statistics::tags;
 
-    auto ds = ural::describe(xs, count | mean | min | variance | max | std_dev | range);
+    auto ds = ural_ex::describe(xs, count | mean | min | variance | max | std_dev | range);
 
     BOOST_CHECK_EQUAL(xs.size(), ural::to_unsigned(ds.count()));
 
@@ -268,11 +270,11 @@ BOOST_AUTO_TEST_CASE(z_score_test)
 
     std::vector<double> zs;
 
-    ural::z_score(xs, zs | ural::back_inserter);
+    ural_ex::z_score(xs, zs | ural::back_inserter);
 
     BOOST_CHECK_EQUAL(zs.size(), xs.size());
 
-    auto const ds = ural::describe(xs, ural::statistics::tags::std_dev);
+    auto const ds = ural_ex::describe(xs, ural_ex::statistics::tags::std_dev);
 
     auto const a = ds.standard_deviation();
     auto const b = ds.mean();

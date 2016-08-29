@@ -18,52 +18,56 @@
 */
 
 /** @file ural/sequence/zip.hpp
- @brief Последовательность кортежей соответствующих элементов
+ @brief Курсор последовательности кортежей соответствующих элементов базовых
  последовательностей
 */
 
+#include <ural/sequence/base.hpp>
 #include <ural/tuple.hpp>
 
 namespace ural
 {
-    /** @brief Последовательность кортежей значений базовых последовательностей
-    @tparam Inputs базовые последовательности
+namespace experimental
+{
+    /** @brief Курсор последовательности кортежей соответствующих элементов
+    базовых последовательностей
+    @tparam Inputs типы курсоров базовых последовательностей
     */
     template <class... Inputs>
-    class zip_sequence
-     : public sequence_base<zip_sequence<Inputs...>>
+    class zip_cursor
+     : public cursor_base<zip_cursor<Inputs...>>
     {
         typedef tuple<Inputs...> Bases_tuple;
 
     public:
         // Типы
         /// @brief Тип значения
-        using value_type = tuple<ValueType<Inputs>...>;
+        using value_type = tuple<value_type_t<Inputs>...>;
 
         /// @brief Тип ссылки
-        using reference = tuple<ReferenceType<Inputs>...>;
+        using reference = tuple<reference_type_t<Inputs>...>;
 
         /// @brief Тип указателя
         using pointer = void;
 
         /// @brief Тип расстояния
-        using distance_type = CommonType<DifferenceType<Inputs>...>;
+        using distance_type = common_type_t<difference_type_t<Inputs>...>;
 
         /// @brief Категория курсора
-        using cursor_tag = CommonType<typename Inputs::cursor_tag...>;
+        using cursor_tag = common_type_t<typename Inputs::cursor_tag...>;
 
         // Конструкторы
         /** @brief Конструктор
-        @param ins список входных последовательностей
+        @param ins список курсоров базовых последовательностей
         @post <tt> this->bases() == make_callable(ins...) </tt>
         */
-        zip_sequence(Inputs... ins)
+        zip_cursor(Inputs... ins)
          : bases_{std::move(ins)...}
         {}
 
         //@{
-        /** @brief Кортеж базовых последовательностей
-        @return Константная ссылка на кортеж базовых последовательностей
+        /** @brief Кортеж базовых курсоров
+        @return Константная ссылка на кортеж базовых курсоров
         */
         tuple<Inputs...> const &
         bases() const &
@@ -77,13 +81,13 @@ namespace ural
         }
         //@}
 
-        // Однопроходная последовательность
-        /** @brief Проверка исчерпания последовательности
-        @return @b true, если последовательность исчерпана, иначе --- @b false
+        // Однопроходный курсор
+        /** @brief Проверка исчерпания курсора
+        @return @b true, если курсор исчерпан, иначе --- @b false
         */
         bool operator!() const
         {
-            return ural::tuples::any_of(this->bases(), ural::logical_not<>{});
+            return experimental::tuples::any_of(this->bases(), ural::logical_not<>{});
         }
 
         /** @brief Текущий элемент
@@ -103,26 +107,26 @@ namespace ural
             return this->for_each_base(ural::pop_front);
         }
 
-        // Прямая последовательность
-        /** @brief Полная последовательность (вместе с пройденными частями)
-        @return Исходная последовательность
+        // Прямой курсор
+        /** @brief Исходный курсор (вместе с пройденными частями)
+        @return Исходный курсор
         */
-        zip_sequence original() const
+        zip_cursor original() const
         {
-            return this->transform_bases<zip_sequence>(ural::original);
+            return this->transform_bases<zip_cursor>(ural::original);
         }
 
-        /** @brief Пройденная передняя часть последовательность
-        @return Пройденная передняя часть последовательность
+        /** @brief Пройденная передняя часть курсора
+        @return Пройденная передняя часть курсора
         */
-        zip_sequence<TraversedFrontType<Inputs>...>
+        zip_cursor<TraversedFrontType<Inputs>...>
         traversed_front() const
         {
-            using Seq = zip_sequence<TraversedFrontType<Inputs>...>;
+            using Seq = zip_cursor<TraversedFrontType<Inputs>...>;
             return this->transform_bases<Seq>(ural::traversed_front);
         }
 
-        /** @brief Отбрасывание пройденной части последовательности
+        /** @brief Отбрасывание пройденной части курсора
         @post <tt> !this->traversed_front() </tt>
         */
         void shrink_front()
@@ -130,8 +134,7 @@ namespace ural
             return this->for_each_base(ural::shrink_front);
         }
 
-        /** @brief Исчерпание последовательности в прямом порядке за константное
-        время.
+        /** @brief Исчерпание курсора в прямом порядке.
         @post <tt> !*this == true </tt>
         */
         void exhaust_front()
@@ -140,7 +143,7 @@ namespace ural
         }
 
         // Двусторонняя последовательность
-        /** @brief Задний элемент последовательности
+        /** @brief Последний элемент курсора
         @pre <tt> !*this == false </tt>
         */
         reference back() const
@@ -148,28 +151,27 @@ namespace ural
             return this->transform_bases<reference>(ural::back);
         }
 
-        /// @brief Пропуск последнего элемента последовательности
+        /// @brief Пропуск последнего элемента курсора
         void pop_back()
         {
             return this->for_each_base(ural::pop_back);
         }
 
-        /** @brief Пройденная задняя часть последовательность
-        @return Пройденная задняя часть последовательность
+        /** @brief Пройденная задняя часть курсора
+        @return Пройденная задняя часть курсора
         */
-        zip_sequence traversed_back() const
+        zip_cursor traversed_back() const
         {
-            return this->transform_bases<zip_sequence>(ural::traversed_back);
+            return this->transform_bases<zip_cursor>(ural::traversed_back);
         }
 
-        /// @brief Отбрасывает пройденную заднюю часть последовательности
+        /// @brief Отбрасывает пройденную заднюю часть курсора
         void shrink_back()
         {
             return this->for_each_base(ural::shrink_back);
         }
 
-        /** @brief Исчерпание последовательности в обратном порядке за
-        константное время
+        /** @brief Исчерпание курсора в обратном порядке.
         @post <tt> !*this == true </tt>
         */
         void exhaust_back()
@@ -178,8 +180,8 @@ namespace ural
         }
 
         // Последовательность произвольного доступа
-        /** @brief Количество элементов последовательности
-        @return Минимальный из размеров базовых последовательностей
+        /** @brief Количество элементов курсора
+        @return Минимальный из размеров базовых курсоров
         */
         distance_type size() const
         {
@@ -194,25 +196,26 @@ namespace ural
         */
         reference operator[](distance_type n) const
         {
-            auto f = [&](auto const & x) -> decltype(auto) { return ural::subscript(x, n); };
+            auto f = [&](auto const & x) -> decltype(auto)
+                { return ::ural::experimental::subscript(x, n); };
 
             return this->transform_bases<reference>(std::move(f));
         }
 
         /** @brief Продвижение на заданное число элементов в передней части
-        последовательности
+        курсора.
         @param n число элементов, которые будут пропущены
         @pre <tt> 0 <= n && n <= this->size() </tt>
         @return <tt> *this </tt>
         */
-        zip_sequence & operator+=(distance_type n)
+        zip_cursor & operator+=(distance_type n)
         {
             this->for_each_base([&](auto & x) { return x += n; });
             return *this;
         }
 
         /** @brief Продвижение на заданное число элементов в задней части
-        последовательности
+        курсора.
         @param n число элементов, которые будут пропущены
         @pre <tt> 0 <= n && n <= this->size() </tt>
         */
@@ -239,7 +242,7 @@ namespace ural
             using Indices = index_sequence_for<Inputs...>;
 
             return this->transform_bases_impl<R>(std::move(f),
-                                                 ural::constructor<R>{},
+                                                 ::ural::experimental::constructor<R>{},
                                                  Indices{});
         }
 
@@ -259,18 +262,18 @@ namespace ural
 
         template <class Index1, class Index2>
         friend
-        void indirect_swap_adl_hook(zip_sequence const & x, Index1 ix,
-                                    zip_sequence const & y, Index2 iy)
+        void indirect_swap_adl_hook(zip_cursor const & x, Index1 ix,
+                                    zip_cursor const & y, Index2 iy)
         {
             //using Indices = index_sequence_for<Inputs...>;
             // @todo реализовать без псевдо-рекурсии
-            return zip_sequence::indirect_swap_impl(x, ix, y, iy, ural::_1);
+            return zip_cursor::indirect_swap_impl(x, ix, y, iy, ural::_1);
         }
 
         template <class Index1, class Index2>
         static
-        void indirect_swap_impl(zip_sequence const &, Index1,
-                                zip_sequence const &, Index2,
+        void indirect_swap_impl(zip_cursor const &, Index1,
+                                zip_cursor const &, Index2,
                                 placeholder<sizeof...(Inputs)>)
         {
             return;
@@ -278,20 +281,20 @@ namespace ural
 
         template <class Index1, class Index2, size_t I>
         static
-        void indirect_swap_impl(zip_sequence const & x, Index1 ix,
-                                zip_sequence const & y, Index2 iy,
+        void indirect_swap_impl(zip_cursor const & x, Index1 ix,
+                                zip_cursor const & y, Index2 iy,
                                 placeholder<I>)
         {
             ural::indirect_swap(std::get<I>(x.bases()), ix,
                                 std::get<I>(y.bases()), iy);
-            return zip_sequence::indirect_swap_impl(x, ix, y, iy,
-                                                    placeholder<I+1>{});
+            return zip_cursor::indirect_swap_impl(x, ix, y, iy,
+                                                  placeholder<I+1>{});
         }
 
         template <class Action>
         void for_each_base(Action action)
         {
-            ural::tuples::for_each(this->mutable_bases(), std::move(action));
+            experimental::tuples::for_each(this->mutable_bases(), std::move(action));
         }
 
     private:
@@ -303,38 +306,41 @@ namespace ural
     @return <tt> x.bases() == y.bases() </tt>
     */
     template <class... Inputs1, class... Inputs2>
-    bool operator==(zip_sequence<Inputs1...> const & x,
-                    zip_sequence<Inputs2...> const & y)
+    bool operator==(zip_cursor<Inputs1...> const & x,
+                    zip_cursor<Inputs2...> const & y)
     {
         return x.bases() == y.bases();
     }
 
-    /// @brief Тип функционального объекта для создания @c zip_sequence
-    struct make_zip_sequence_fn
+    /// @brief Тип функционального объекта для создания @c zip_cursor
+    struct make_zip_cursor_fn
     {
     public:
-        /** @brief Создание последовательности соответствующих элементов кортежей
+        /** @brief Создание курсора последовательностей кортежей соответствующих
+        элементов базовых последовательностей
         @param ins базовые последовательности
         */
         template <class... Inputs>
-        zip_sequence<SequenceType<Inputs>...>
+        zip_cursor<cursor_type_t<Inputs>...>
         operator()(Inputs && ... ins) const
         {
-            typedef zip_sequence<SequenceType<Inputs>...> Seq;
-            return Seq(::ural::sequence_fwd<Inputs>(ins)...);
+            typedef zip_cursor<cursor_type_t<Inputs>...> Seq;
+            return Seq(::ural::cursor_fwd<Inputs>(ins)...);
         }
     };
 
     namespace
     {
         //@{
-        /// @brief Функциональный объект для создания @c zip_sequence
-        constexpr auto const & make_zip_sequence
-            = odr_const<make_zip_sequence_fn>;
+        /// @brief Функциональный объект для создания @c zip_cursor
+        constexpr auto const & make_zip_cursor
+            = odr_const<make_zip_cursor_fn>;
 
-        constexpr auto const & combine = make_zip_sequence;
+        constexpr auto const & combine = make_zip_cursor;
         //@}
     }
+}
+// namespace experimental
 }
 // namespace ural
 

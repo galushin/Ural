@@ -26,6 +26,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Последовательность разностей соседних элементов базовой
     последовательности
     @tparam Input тип базовая последовательнсоть
@@ -33,24 +35,24 @@ namespace ural
     элементами
     */
     template <class Input, class BinaryOperation>
-    class adjacent_differences_sequence
-     : public sequence_base<adjacent_differences_sequence<Input, BinaryOperation>>
+    class adjacent_differences_cursor
+     : public cursor_base<adjacent_differences_cursor<Input, BinaryOperation>>
     {
     public:
         /// @brief Тип значения
-        typedef ValueType<Input> value_type;
+        using value_type = value_type_t<Input>;
 
         /// @brief Тип ссылки
-        typedef value_type const & reference;
+        using reference = value_type const &;
 
         /// @brief Категория курсора
         using cursor_tag = common_tag_t<typename Input::cursor_tag, finite_forward_cursor_tag>;
 
         /// @brief Тип указателя
-        typedef typename Input::pointer pointer;
+        using pointer = typename Input::pointer;
 
         /// @brief Тип расстояния
-        typedef DifferenceType<Input> distance_type;
+        using distance_type = difference_type_t<Input>;
 
         /** @brief Конструктор
         @param in исходная последовательность
@@ -58,7 +60,7 @@ namespace ural
         @post <tt> this->base() == in </tt>
         @post <tt> this->operation() == add </tt>
         */
-        explicit adjacent_differences_sequence(Input in, BinaryOperation op)
+        explicit adjacent_differences_cursor(Input in, BinaryOperation op)
          : members_(std::move(in), std::move(op), {}, {})
         {
             if(!!*this)
@@ -68,7 +70,7 @@ namespace ural
             }
         }
 
-        // Прямая последовательность
+        // Прямой курсор
         /** @brief Проверка исчерпания последовательности
         @return <tt> !this->base() </tt>.
         */
@@ -96,14 +98,14 @@ namespace ural
             }
         }
 
-        // Прямая последовательность
+        // Прямой курсор
         /** @brief Передняя пройденная часть последовательности
         @return Передняя пройденная часть последовательности
         */
-        adjacent_differences_sequence<TraversedFrontType<Input>, BinaryOperation>
+        adjacent_differences_cursor<TraversedFrontType<Input>, BinaryOperation>
         traversed_front() const
         {
-            using Result = adjacent_differences_sequence<TraversedFrontType<Input>, BinaryOperation>;
+            using Result = adjacent_differences_cursor<TraversedFrontType<Input>, BinaryOperation>;
             return Result(this->base().traversed_front(), this->operation());
         }
 
@@ -119,7 +121,7 @@ namespace ural
 
         Input && base() &&
         {
-            return ::ural::get(std::move(this->members_), ural::_1);
+            return ::ural::experimental::get(std::move(this->members_), ural::_1);
         }
         //@}
 
@@ -132,7 +134,7 @@ namespace ural
         }
 
     private:
-        typedef ural::optional<value_type> Optional_value;
+        typedef ural::experimental::optional<value_type> Optional_value;
 
         ural::tuple<Input, BinaryOperation, Optional_value, Optional_value> members_;
     };
@@ -150,8 +152,8 @@ namespace ural
         */
         template <class Input>
         auto operator()(Input && in) const
-        -> adjacent_differences_sequence<decltype(::ural::sequence_fwd<Input>(in)),
-                                         ural::minus<>>
+        -> adjacent_differences_cursor<decltype(::ural::cursor_fwd<Input>(in)),
+                                       ural::minus<>>
         {
             return (*this)(std::forward<Input>(in), ural::minus<>{});
         }
@@ -162,12 +164,12 @@ namespace ural
         */
         template <class Input, class BinaryOperation>
         auto operator()(Input && in, BinaryOperation sub) const
-        -> adjacent_differences_sequence<decltype(::ural::sequence_fwd<Input>(in)),
+        -> adjacent_differences_cursor<decltype(::ural::cursor_fwd<Input>(in)),
                                          decltype(make_callable(std::move(sub)))>
         {
-            typedef adjacent_differences_sequence<decltype(::ural::sequence_fwd<Input>(in)),
+            typedef adjacent_differences_cursor<decltype(::ural::cursor_fwd<Input>(in)),
                                                   decltype(make_callable(std::move(sub)))> Result;
-            return Result(::ural::sequence_fwd<Input>(in),
+            return Result(::ural::cursor_fwd<Input>(in),
                           make_callable(std::move(sub)));
         }
     };
@@ -179,19 +181,21 @@ namespace ural
         */
         constexpr auto const & adjacent_differences = odr_const<adjacent_differences_fn>;
 
-        /** @brief Объект для создания @c adjacent_differences_sequences
+        /** @brief Объект для создания @c adjacent_differences_cursor
         в конвейерном стиле.
         */
         constexpr auto const & adjacent_differenced
             = odr_const<pipeable<adjacent_differences_fn>>;
 
-        /** @brief Объект для создания @c adjacent_differences_sequences
+        /** @brief Объект для создания @c adjacent_differences_cursor
         с заданной операцией, используемой для вычисления разностей, в
         конвейерном стиле.
         */
         constexpr auto const & adjacent_differenced_with
             = odr_const<pipeable_maker<adjacent_differences_fn>>;
     }
+}
+// namespace experimental
 }
 // namespace ural
 

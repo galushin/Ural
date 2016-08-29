@@ -416,10 +416,10 @@ int main(int argc, const char** argv)
     test(rrDPb, rrDPe, D);
 
     // ural
-    auto seq = ural::sequence(data);
-    auto Seq = ural::sequence(Data);
-    auto r_seq = seq | ural::reversed;
-    auto r_Seq = Seq | ural::reversed;
+    auto seq = ural::cursor(data);
+    auto Seq = ural::cursor(Data);
+    auto r_seq = seq | ural::experimental::reversed;
+    auto r_Seq = Seq | ural::experimental::reversed;
 
     // Последовательности и обратные последовательности
     test_seq(seq, d);

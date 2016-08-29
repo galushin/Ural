@@ -25,14 +25,17 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @ingroup Sequences
-    @brief Адаптор последовательности, добавляющий к ней объект заданного типа
-    @tparam Sequence тип последовательности
+    @brief Адаптор курсора последовательности, добавляющий к ней объект
+    заданного типа.
+    @tparam Cursor тип курсора
     @tparam T тип дополнительного объекта
     @todo Покрыть тестами все функции, необходимые последовательностям
     */
-    template <class Sequence, class T>
-    class cargo_sequence
+    template <class Cursor, class T>
+    class cargo_cursor
     {
         /** @brief Оператор "равно"
         @param x левый операнд
@@ -40,18 +43,18 @@ namespace ural
         @return <tt> x.base() == y.base() </tt>
         */
         friend bool
-        operator==(cargo_sequence const & x, cargo_sequence const & y)
+        operator==(cargo_cursor const & x, cargo_cursor const & y)
         {
             return x.base() == y.base();
         }
 
         friend
-        Sequence const & sequence(cargo_sequence const & s)
+        Cursor const & cursor(cargo_cursor const & s)
         {
             return s.base();
         }
 
-        friend cargo_sequence sequence(cargo_sequence && s)
+        friend cargo_cursor cursor(cargo_cursor && s)
         {
             return std::move(s);
         }
@@ -59,19 +62,19 @@ namespace ural
     public:
         // Типы
         /// @brief Категория курсора
-        using cursor_tag = typename Sequence::cursor_tag;
+        using cursor_tag = typename Cursor::cursor_tag;
 
         /// @brief Тип ссылки
-        typedef typename Sequence::reference reference;
+        typedef typename Cursor::reference reference;
 
         /// @brief Тип значения
-        typedef ValueType<Sequence> value_type;
+        using value_type = value_type_t<Cursor>;
 
         /// @brief Тип расстояния
-        typedef DifferenceType<Sequence> distance_type;
+        using distance_type = difference_type_t<Cursor>;
 
         /// @brief Тип указателя
-        typedef typename Sequence::pointer pointer;
+        typedef typename Cursor::pointer pointer;
 
         // Создание, копирование, присваивание
         /** @brief Конструктор
@@ -80,15 +83,15 @@ namespace ural
         @post <tt> this->base() == seq </tt>
         @post <tt> this->cargo() == x </tt>
         */
-        cargo_sequence(Sequence seq, T x)
+        cargo_cursor(Cursor seq, T x)
          : members_(std::move(seq), std::move(x))
         {}
 
-        cargo_sequence(cargo_sequence const &) = delete;
-        cargo_sequence(cargo_sequence &&) = default;
+        cargo_cursor(cargo_cursor const &) = delete;
+        cargo_cursor(cargo_cursor &&) = default;
 
-        cargo_sequence & operator=(cargo_sequence const &) = delete;
-        cargo_sequence & operator=(cargo_sequence &&) = default;
+        cargo_cursor & operator=(cargo_cursor const &) = delete;
+        cargo_cursor & operator=(cargo_cursor &&) = default;
 
         // Свойства
         /** @brief Доступ к дополнительному объекту
@@ -99,7 +102,7 @@ namespace ural
             return members_[ural::_2];
         }
 
-        // Однопроходная последовательность
+        // Однопроходый курсор
         /** @brief Проверка исчерпания последовательности
         @return @b true, если в последовательности больше нет элементов,
         иначе --- @b false.
@@ -127,11 +130,11 @@ namespace ural
             return this->members_[ural::_1].pop_front();
         }
 
-        // Прямая последовательность
+        // Прямой курсор
         /** @breif Передняя пройденная часть последовательности
         @return Передняя пройденная часть последовательности
         */
-        Sequence traversed_front() const &
+        Cursor traversed_front() const &
         {
             return this->members_[ural::_1].traversed_front();
         }
@@ -145,7 +148,7 @@ namespace ural
         /** @brief Полная последовательность (включая пройденные части)
         @return Полная последовательность
         */
-        cargo_sequence original() const;
+        cargo_cursor original() const;
 
         /** @brief Исчерпание последовательности за константное время
         @post <tt> !*this == true </tt>
@@ -160,12 +163,12 @@ namespace ural
         /** @breif Задняя пройденная часть последовательности
         @return Задняя пройденная часть последовательности
         */
-        Sequence traversed_back() const &
+        Cursor traversed_back() const &
         {
             return this->members_[ural::_1].traversed_back();
         }
 
-        cargo_sequence traversed_back() &&;
+        cargo_cursor traversed_back() &&;
 
         /** @brief Доступ к последнему непройденному элементу последовательности
         @pre <tt> !*this == false </tt>
@@ -219,7 +222,7 @@ namespace ural
         @pre <tt> 0 <= index <= this->size() </tt>
         @return <tt> *this </tt>
         */
-        cargo_sequence & operator+=(distance_type n)
+        cargo_cursor & operator+=(distance_type n)
         {
             this->members_[ural::_1] += n;
             return *this;
@@ -231,13 +234,15 @@ namespace ural
         /** @brief Доступ к базовой последовательности
         @return Константная ссылка на базовую последовательность
         */
-        Sequence const & base() const
+        Cursor const & base() const
         {
             return members_[ural::_1];
         }
 
-        tuple<Sequence, T> members_;
+        tuple<Cursor, T> members_;
     };
+}
+// namespace experimental
 }
 // namespace ural
 

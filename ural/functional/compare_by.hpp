@@ -27,6 +27,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Функциональный объект, сравнивающий свои аргументы по некоторому
     их свойству.
     @tparam UnaryFunction тип унарного фукнционального объекта
@@ -151,6 +153,8 @@ namespace ural
     {
         return compare_by(std::move(f), ural::equal_to<>{});
     }
+}
+// namespace experimental
 }
 // namespace ural
 

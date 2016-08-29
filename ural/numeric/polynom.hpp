@@ -32,6 +32,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     /** @brief Функциональный объект накопитель для вычисления значений
     многочленов по схеме Горнера
     @tparam R тип значения многочлена
@@ -109,11 +111,11 @@ namespace ural
     */
     template <class Input, class X>
     auto polynom(Input && in, X const & x)
-    -> decltype(sequence(in).front() * x)
+    -> decltype(cursor(in).front() * x)
     {
-        auto s = sequence(in);
+        auto s = cursor(in);
 
-        typedef decltype(sequence(in).front() * x) result_type;
+        typedef decltype(cursor(in).front() * x) result_type;
 
         if(!s)
         {
@@ -150,7 +152,7 @@ namespace ural
         {
             auto const & r = static_cast<polynomial<A, X, Alloc> const &>(*this);
 
-            return polynom(r.coefficients() | ural::reversed, x);
+            return polynom(r.coefficients() | ::ural::experimental::reversed, x);
         }
 
     protected:
@@ -174,7 +176,7 @@ namespace ural
 
             auto const & r = static_cast<polynomial<A, void, Alloc> const &>(*this);
 
-            return polynom(r.coefficients() | ural::reversed, x);
+            return polynom(r.coefficients() | ::ural::experimental::reversed, x);
         }
 
     protected:
@@ -204,7 +206,7 @@ namespace ural
         typedef A coefficient_type;
 
         /// @brief Тип контейнера коэффициентов
-        typedef ural::vector<coefficient_type, Alloc> coefficients_container;
+        using coefficients_container = ural::experimental::vector<coefficient_type, Alloc>;
 
         /// @brief Тип для представления размера
         typedef typename coefficients_container::size_type size_type;
@@ -227,16 +229,16 @@ namespace ural
         {
             auto const zero = coefficient_type{0};
 
-            auto seq = find(ural::sequence_fwd<InputSequence>(in),
+            auto cur = find(ural::cursor_fwd<InputSequence>(in),
                             zero, not_equal_to<>{});
 
-            if (!seq)
+            if (!cur)
             {
                 cs_.assign(1, zero);
             }
             else
             {
-                cs_.assign(std::move(seq));
+                cs_.assign(std::move(cur));
                 ural::reverse(cs_);
             }
         }
@@ -246,11 +248,11 @@ namespace ural
         @param first итератор, задающий начало последовательности
         @param last итератор, задающий конец последовательности
         @pre <tt> [first; last) </tt> должен быть корректным интервалом
-        @post <tt> *this == polynomial(make_iterator_sequence(first, last)) </tt>
+        @post <tt> *this == polynomial(make_iterator_cursor(first, last)) </tt>
         */
         template <class InputIterator>
         polynomial(InputIterator first, InputIterator last)
-         : polynomial(ural::make_iterator_sequence(first, last))
+         : polynomial(ural::make_iterator_cursor(first, last))
         {}
 
         /** @brief Конструктор на основе списка коэффициентов
@@ -280,9 +282,9 @@ namespace ural
 
             auto const n = ural::min(old_size, p.cs_.size());
 
-            ural::for_each(cs_ | ural::taken_exactly(n),
-                           p.cs_ | ural::assumed_infinite,
-                           ural::plus_assign<>{});
+            ural::for_each(cs_ | ::ural::experimental::taken_exactly(n),
+                           p.cs_ | ::ural::experimental::assumed_infinite,
+                           ::ural::experimental::plus_assign<>{});
 
             this->drop_leading_zeros();
 
@@ -312,9 +314,9 @@ namespace ural
 
             auto const n = ural::min(old_size, p.cs_.size());
 
-            ural::for_each(cs_ | ural::taken_exactly(n),
-                           p.cs_ | ural::assumed_infinite,
-                           ural::minus_assign<>{});
+            ural::for_each(cs_ | ural::experimental::taken_exactly(n),
+                           p.cs_ | ::ural::experimental::assumed_infinite,
+                           ::ural::experimental::minus_assign<>{});
 
             this->drop_leading_zeros();
 
@@ -418,6 +420,8 @@ namespace ural
     private:
         coefficients_container cs_;
     };
+}
+// namespace experimental
 }
 // namespace ural
 

@@ -28,6 +28,8 @@
 
 namespace ural
 {
+namespace experimental
+{
     enum class set_operations_state
     {
         first,
@@ -35,36 +37,36 @@ namespace ural
         both,
     };
 
-    /** @brief Последовательность элементов, полученная в результате слияния
-    элементов двух базовых последовательностей
-    @tparam Input1 первая входная последовательность
-    @tparam Input2 вторая входная последовательность
+    /** @brief Курсор последовательности элементов, полученная в результате
+    слияния двух базовых последовательностей.
+    @tparam Input1 Тип первого базового курсора
+    @tparam Input2 Тип второго базового курсора
     @tparam Compare функция сравнения
     */
     template <class Input1, class Input2, class Compare = ural::less<> >
-    class merge_sequence
-     : public sequence_base<merge_sequence<Input1, Input2, Compare>,
+    class merge_cursor
+     : public cursor_base<merge_cursor<Input1, Input2, Compare>,
                              Compare>
     {
-        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input1>));
-        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input1>));
+        BOOST_CONCEPT_ASSERT((concepts::SinglePassCursor<Input1>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableCursor<Input1>));
 
-        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input2>));
-        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input2>));
+        BOOST_CONCEPT_ASSERT((concepts::SinglePassCursor<Input2>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableCursor<Input2>));
 
         typedef bool(Compare_signature)(typename Input1::reference,
                                         typename Input2::reference);
 
         BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, Compare_signature>));
 
-        typedef sequence_base<merge_sequence, Compare> Base_class;
+        typedef cursor_base<merge_cursor, Compare> Base_class;
 
     public:
         /** @brief Оператора "равно"
         @param x, y аргументы
         @return <tt> x.bases() == y.bases() && x.function() == y.function() </tt>
         */
-        friend bool operator==(merge_sequence const & x, merge_sequence const & y)
+        friend bool operator==(merge_cursor const & x, merge_cursor const & y)
         {
             return x.first_base() == y.first_base()
                     && x.second_base() == y.second_base()
@@ -72,32 +74,31 @@ namespace ural
         }
 
         /// @brief Тип ссылки
-        typedef CommonType<typename Input1::reference, typename Input2::reference>
-            reference;
+        using reference = common_type_t<typename Input1::reference, typename Input2::reference>;
 
         /// @brief Тип значения
-        typedef CommonType<ValueType<Input1>, ValueType<Input2>> value_type;
+        using value_type = common_type_t<value_type_t<Input1>, value_type_t<Input2>>;
 
         /// @brief Категория курсора
-        using cursor_tag = CommonType<typename Input1::cursor_tag,
+        using cursor_tag = common_type_t<typename Input1::cursor_tag,
                                       typename Input2::cursor_tag,
                                       finite_forward_cursor_tag>;
 
         /// @brief Тип указателя
-        typedef CommonType<typename Input1::pointer, typename Input2::pointer>
-            pointer;
+        using pointer = common_type_t<typename Input1::pointer, typename Input2::pointer>;
 
         /// @brief Тип расстояния
-        typedef CommonType<DifferenceType<Input1>, DifferenceType<Input2>>
-            distance_type;
+        using distance_type = common_type_t<difference_type_t<Input1>, difference_type_t<Input2>>;
 
         /** @brief Конструктор
-        @param in1 первая входная последовательность
-        @param in2 вторая входная последовательность
+        @param in1 первый базовый курсор
+        @param in2 второй базовый курсор
         @param cmp функция сравнения
         @post <tt> this->function() == cmp </tt>
+        @post <tt> this->first_base() == in1 </tt>
+        @post <tt> this->second_base() == in2 </tt>
         */
-        explicit merge_sequence(Input1 in1, Input2 in2, Compare cmp = Compare{})
+        explicit merge_cursor(Input1 in1, Input2 in2, Compare cmp = Compare{})
          : Base_class(std::move(cmp))
          , in1_{std::move(in1)}
          , in2_{std::move(in2)}
@@ -105,18 +106,18 @@ namespace ural
             this->seek();
         }
 
-        // Однопроходная последовательность
-        /** @brief Проверка исчерпания последовательностей
-        @return @b true, если последовательность исчерпана, иначе --- @b false.
+        // Однопроходый курсор
+        /** @brief Проверка исчерпания
+        @return @b true, если курсор исчерпан, иначе --- @b false.
         */
         bool operator!() const
         {
             return !state_;
         }
 
-        /** @brief Текущий элемент последовательности
+        /** @brief Текущий элемент
         @pre <tt> !*this == false </tt>
-        @return Ссылка на текущий элемент последовательности
+        @return Ссылка на текущий элемент
         */
         reference front() const
         {
@@ -153,21 +154,21 @@ namespace ural
             this->seek();
         }
 
-        // Прямая последовательность
-        /** @brief Передняя пройденная часть последовательности
-        @return Передняя пройденная часть последовательности
+        // Прямой курсор
+        /** @brief Передняя пройденная часть курсора
+        @return Передняя пройденная часть курсора
         */
-        merge_sequence<TraversedFrontType<Input1>, TraversedFrontType<Input2>, Compare>
+        merge_cursor<TraversedFrontType<Input1>, TraversedFrontType<Input2>, Compare>
         traversed_front() const
         {
-            using Result = merge_sequence<TraversedFrontType<Input1>,
+            using Result = merge_cursor<TraversedFrontType<Input1>,
                                           TraversedFrontType<Input2>, Compare>;
             return Result(this->first_base().traversed_front(),
                           this->second_base().traversed_front(),
                           this->function());
         }
 
-        // Адаптор последовательности
+        // Адаптор курсоров
         /** @brief Используемая функция сравнения
         @return Используемая функция сравнения
         */
@@ -177,8 +178,8 @@ namespace ural
         }
 
         //@{
-        /** @brief Первая входная последовательность
-        @return Ссылка на первую входную последовательность
+        /** @brief Первый базовый курсор
+        @return Ссылка на первый базовый курсор
         */
         Input1 const & first_base() const &
         {
@@ -192,8 +193,8 @@ namespace ural
         //@}
 
         //@{
-        /** @brief Вторая входная последовательность
-        @return Cсылка на вторую входную последовательность
+        /** @brief Второй базовый курсор
+        @return Cсылка на второй базовый курсор
         */
         Input2 const & second_base() const &
         {
@@ -211,7 +212,7 @@ namespace ural
         {
             if(!in1_ && !in2_)
             {
-                state_ = nullopt;
+                state_ = experimental::nullopt;
                 return;
             }
             if(!in2_)
@@ -242,64 +243,64 @@ namespace ural
     private:
         Input1 in1_;
         Input2 in2_;
-        ural::optional<set_operations_state> state_;
+        ::ural::experimental::optional<set_operations_state> state_;
     };
 
     template <class Input1, class Input2, class Compare>
     auto merged(Input1 && in1, Input2 && in2, Compare cmp)
-    -> merge_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
-                                 decltype(::ural::sequence_fwd<Input2>(in2)),
+    -> merge_cursor<decltype(::ural::cursor_fwd<Input1>(in1)),
+                                 decltype(::ural::cursor_fwd<Input2>(in2)),
                                  decltype(ural::make_callable(std::move(cmp)))>
     {
-        typedef merge_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
-                                 decltype(::ural::sequence_fwd<Input2>(in2)),
+        typedef merge_cursor<decltype(::ural::cursor_fwd<Input1>(in1)),
+                                 decltype(::ural::cursor_fwd<Input2>(in2)),
                                  decltype(ural::make_callable(std::move(cmp)))> Result;
 
-        return Result(::ural::sequence_fwd<Input1>(in1),
-                      ::ural::sequence_fwd<Input2>(in2),
+        return Result(::ural::cursor_fwd<Input1>(in1),
+                      ::ural::cursor_fwd<Input2>(in2),
                       ural::make_callable(std::move(cmp)));
     }
 
     template <class Input1, class Input2>
     auto merged(Input1 && in1, Input2 && in2)
-    -> merge_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
-                                 decltype(::ural::sequence_fwd<Input2>(in2))>
+    -> merge_cursor<decltype(::ural::cursor_fwd<Input1>(in1)),
+                                 decltype(::ural::cursor_fwd<Input2>(in2))>
     {
-        return ::ural::merged(std::forward<Input1>(in1),
-                              std::forward<Input2>(in2),
-                              ural::less<>{});
+        return ::ural::experimental::merged(std::forward<Input1>(in1),
+                                            std::forward<Input2>(in2),
+                                            ural::less<>{});
     }
 
-    /** @brief Последовательность элементов, полученная в результате пересечения
-    множеств элементов двух базовых последовательностей
-    @tparam Input1 первая входная последовательность
-    @tparam Input2 вторая входная последовательность
+    /** @brief Курсор последовательности элементов, полученной в результате
+    пересечения множеств элементов двух базовых последовательностей
+    @tparam Input1 Тип первого базового курсора
+    @tparam Input2 Тип второго базового курсора
     @tparam Compare функция сравнения
     */
     template <class Input1, class Input2, class Compare = ural::less<> >
-    class set_intersection_sequence
-     : public sequence_base<set_intersection_sequence<Input1, Input2, Compare>,
+    class set_intersection_cursor
+     : public cursor_base<set_intersection_cursor<Input1, Input2, Compare>,
                             Compare>
     {
-        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input1>));
-        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input1>));
+        BOOST_CONCEPT_ASSERT((concepts::SinglePassCursor<Input1>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableCursor<Input1>));
 
-        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input2>));
-        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input2>));
+        BOOST_CONCEPT_ASSERT((concepts::SinglePassCursor<Input2>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableCursor<Input2>));
 
         typedef bool(Compare_signature)(typename Input1::reference,
                                         typename Input2::reference);
 
         BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, Compare_signature>));
 
-        typedef sequence_base<set_intersection_sequence, Compare> Base_class;
+        typedef cursor_base<set_intersection_cursor, Compare> Base_class;
     public:
         /** @brief Оператора "равно"
         @param x, y аргументы
         @return <tt> x.bases() == y.bases() && x.function() == y.function() </tt>
         */
-        friend bool operator==(set_intersection_sequence const & x,
-                               set_intersection_sequence const & y)
+        friend bool operator==(set_intersection_cursor const & x,
+                               set_intersection_cursor const & y)
         {
             return x.first_base() == y.first_base()
                     && x.second_base() == y.second_base()
@@ -307,29 +308,31 @@ namespace ural
         }
 
         /// @brief Тип ссылки
-        typedef typename Input1::reference reference;
+        using reference = typename Input1::reference;
 
         /// @brief Тип значения
-        typedef ValueType<Input1> value_type;
+        using value_type = value_type_t<Input1>;
 
         /// @brief Категория курсора
-        using cursor_tag = CommonType<typename Input1::cursor_tag,
+        using cursor_tag = common_type_t<typename Input1::cursor_tag,
                                       typename Input2::cursor_tag,
                                       finite_forward_cursor_tag>;
 
         /// @brief Тип указателя
-        typedef typename Input1::pointer pointer;
+        using pointer = typename Input1::pointer;
 
         /// @brief Тип расстояния
-        typedef DifferenceType<Input1> distance_type;
+        using distance_type = difference_type_t<Input1>;
 
         /** @brief Конструктор
-        @param in1 первая входная последовательность
-        @param in2 вторая входная последовательность
+        @param in1 первый базовый курсор
+        @param in2 второй базовый курсор
         @param cmp функция сравнения
         @post <tt> this->function() == cmp </tt>
+        @post <tt> this->first_base() == in1 </tt>
+        @post <tt> this->second_base() == in2 </tt>
         */
-        explicit set_intersection_sequence(Input1 in1, Input2 in2, Compare cmp = Compare{})
+        explicit set_intersection_cursor(Input1 in1, Input2 in2, Compare cmp = Compare{})
          : Base_class{std::move(cmp)}
          , in1_(std::move(in1))
          , in2_(std::move(in2))
@@ -337,18 +340,18 @@ namespace ural
             this->seek();
         }
 
-        // Однопроходная последовательность
-        /** @brief Проверка исчерпания последовательностей
-        @return @b true, если последовательность исчерпана, иначе --- @b false.
+        // Однопроходый курсор
+        /** @brief Проверка исчерпания
+        @return @b true, если курсор исчерпан, иначе --- @b false.
         */
         bool operator!() const
         {
             return !in1_ || !in2_;
         }
 
-        /** @brief Текущий элемент последовательности
+        /** @brief Текущий элемент
         @pre <tt> !*this == false </tt>
-        @return Ссылка на текущий элемент последовательности
+        @return Ссылка на текущий элемент
         */
         reference front() const
         {
@@ -364,22 +367,22 @@ namespace ural
             this->seek();
         }
 
-        // Прямая последовательность
-        /** @brief Передняя пройденная часть последовательности
-        @return Передняя пройденная часть последовательности
+        // Прямой курсор
+        /** @brief Передняя пройденная часть курсора
+        @return Передняя пройденная часть курсора
         */
-        set_intersection_sequence<TraversedFrontType<Input1>,
+        set_intersection_cursor<TraversedFrontType<Input1>,
                                   TraversedFrontType<Input2>, Compare>
         traversed_front() const
         {
-            using Result = set_intersection_sequence<TraversedFrontType<Input1>,
-                                          TraversedFrontType<Input2>, Compare>;
+            using Result = set_intersection_cursor<TraversedFrontType<Input1>,
+                                                   TraversedFrontType<Input2>, Compare>;
             return Result(this->first_base().traversed_front(),
                           this->second_base().traversed_front(),
                           this->function());
         }
 
-        // Адаптор последовательностей
+        // Адаптор курсоров
         /** @brief Используемая функция сравнения
         @return Используемая функция сравнения
         */
@@ -389,8 +392,8 @@ namespace ural
         }
 
         //@{
-        /** @brief Первая базовая последовательность
-        @return Ссылка на первую базовую последовательность
+        /** @brief Первый базовый курсор
+        @return Ссылка на первый базовый курсор
         */
         Input1 const & first_base() const &
         {
@@ -404,8 +407,8 @@ namespace ural
         //@}
 
         //@{
-        /** @brief Вторая базовая последовательность
-        @return Ссылка на вторую базовую последовательность
+        /** @brief Второй базовый курсор
+        @return Ссылка на второй базовый курсор
         */
         Input2 const & second_base() const &
         {
@@ -443,61 +446,52 @@ namespace ural
         Input2 in2_;
     };
 
-    template <class Input1, class Input2, class Compare>
-    auto make_set_intersection_sequence(Input1 && in1, Input2 && in2, Compare cmp)
-    -> set_intersection_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
-                                 decltype(::ural::sequence_fwd<Input2>(in2)),
+    template <class Input1, class Input2, class Compare = ural::less<>>
+    auto make_set_intersection_cursor(Input1 && in1, Input2 && in2,
+                                      Compare cmp = Compare{})
+    -> set_intersection_cursor<decltype(::ural::cursor_fwd<Input1>(in1)),
+                                 decltype(::ural::cursor_fwd<Input2>(in2)),
                                  decltype(ural::make_callable(std::move(cmp)))>
     {
-        typedef set_intersection_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
-                                 decltype(::ural::sequence_fwd<Input2>(in2)),
+        typedef set_intersection_cursor<decltype(::ural::cursor_fwd<Input1>(in1)),
+                                 decltype(::ural::cursor_fwd<Input2>(in2)),
                                  decltype(ural::make_callable(std::move(cmp)))> Result;
 
-        return Result(::ural::sequence_fwd<Input1>(in1),
-                      ::ural::sequence_fwd<Input2>(in2),
+        return Result(::ural::cursor_fwd<Input1>(in1),
+                      ::ural::cursor_fwd<Input2>(in2),
                       ural::make_callable(std::move(cmp)));
     }
 
-    template <class Input1, class Input2>
-    auto make_set_intersection_sequence(Input1 && in1, Input2 && in2)
-    -> set_intersection_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
-                                 decltype(::ural::sequence_fwd<Input2>(in2))>
-    {
-        return ::ural::make_set_intersection_sequence(std::forward<Input1>(in1),
-                                                      std::forward<Input2>(in2),
-                                                      ural::less<>{});
-    }
-
-    /** @brief Последовательность элементов, полученная в результате взятия
-    разности множеств элементов двух базовых последовательностей
-    @tparam Input1 первая входная последовательность
-    @tparam Input2 вторая входная последовательность
+    /** @brief Курсор последовательности элементов, полученной в результате
+    взятия разности множеств элементов двух базовых последовательностей.
+    @tparam Input1 Тип первого базового курсора
+    @tparam Input2 Тип второго базового курсора
     @tparam Compare функция сравнения
     */
     template <class Input1, class Input2, class Compare = ural::less<> >
-    class set_difference_sequence
-     : public sequence_base<set_difference_sequence<Input1, Input2, Compare>,
+    class set_difference_cursor
+     : public cursor_base<set_difference_cursor<Input1, Input2, Compare>,
                              Compare>
     {
-        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input1>));
-        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input1>));
+        BOOST_CONCEPT_ASSERT((concepts::SinglePassCursor<Input1>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableCursor<Input1>));
 
-        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input2>));
-        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input2>));
+        BOOST_CONCEPT_ASSERT((concepts::SinglePassCursor<Input2>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableCursor<Input2>));
 
         typedef bool(Compare_signature)(typename Input1::reference,
                                         typename Input2::reference);
 
         BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, Compare_signature>));
 
-        typedef sequence_base<set_difference_sequence, Compare> Base_class;
+        typedef cursor_base<set_difference_cursor, Compare> Base_class;
     public:
         /** @brief Оператора "равно"
         @param x, y аргументы
         @return <tt> x.bases() == y.bases() && x.function() == y.function() </tt>
         */
-        friend bool operator==(set_difference_sequence const & x,
-                               set_difference_sequence const & y)
+        friend bool operator==(set_difference_cursor const & x,
+                               set_difference_cursor const & y)
         {
             return x.first_base() == y.first_base()
                     && x.second_base() == y.second_base()
@@ -505,29 +499,31 @@ namespace ural
         }
 
         /// @brief Тип ссылки
-        typedef typename Input1::reference reference;
+        using reference = typename Input1::reference;
 
         /// @brief Тип значения
-        typedef ValueType<Input1> value_type;
+        using value_type = value_type_t<Input1>;
 
         /// @brief Категория курсора
-        using cursor_tag = CommonType<typename Input1::cursor_tag,
+        using cursor_tag = common_type_t<typename Input1::cursor_tag,
                                       typename Input2::cursor_tag,
                                       finite_forward_cursor_tag>;
 
         /// @brief Тип указателя
-        typedef typename Input1::pointer pointer;
+        using pointer = typename Input1::pointer;
 
         /// @brief Тип расстояния
-        typedef DifferenceType<Input1> distance_type;
+        using distance_type = difference_type_t<Input1>;
 
         /** @brief Конструктор
-        @param in1 первая входная последовательность
-        @param in2 вторая входная последовательность
+        @param in1 первый базовый курсор
+        @param in2 второй базовый курсор
         @param cmp функция сравнения
+        @post <tt> this->first_base() == in1 </tt>
+        @post <tt> this->second_base() == in2 </tt>
         @post <tt> this->function() == cmp </tt>
         */
-        explicit set_difference_sequence(Input1 in1, Input2 in2, Compare cmp  = Compare{})
+        explicit set_difference_cursor(Input1 in1, Input2 in2, Compare cmp  = Compare{})
          : Base_class{std::move(cmp)}
          , in1_(std::move(in1))
          , in2_(std::move(in2))
@@ -535,17 +531,17 @@ namespace ural
             this->seek();
         }
 
-        /** @brief Проверка исчерпания последовательностей
-        @return @b true, если последовательность исчерпана, иначе --- @b false.
+        /** @brief Проверка исчерпания
+        @return @b true, если курсор исчерпан, иначе --- @b false.
         */
         bool operator!() const
         {
             return !in1_;
         }
 
-        /** @brief Текущий элемент последовательности
+        /** @brief Текущий элемент
         @pre <tt> !*this == false </tt>
-        @return Ссылка на текущий элемент последовательности
+        @return Ссылка на текущий элемент
         */
         reference front() const
         {
@@ -561,22 +557,22 @@ namespace ural
             this->seek();
         }
 
-        // Прямая последовательность
-        /** @brief Передняя пройденная часть последовательности
-        @return Передняя пройденная часть последовательности
+        // Прямой курсор
+        /** @brief Передняя пройденная часть курсора
+        @return Передняя пройденная часть курсора
         */
-        set_difference_sequence<TraversedFrontType<Input1>,
-                                TraversedFrontType<Input2>, Compare>
+        set_difference_cursor<TraversedFrontType<Input1>,
+                              TraversedFrontType<Input2>, Compare>
         traversed_front() const
         {
-            using Result = set_difference_sequence<TraversedFrontType<Input1>,
+            using Result = set_difference_cursor<TraversedFrontType<Input1>,
                                           TraversedFrontType<Input2>, Compare>;
             return Result(this->first_base().traversed_front(),
                           this->second_base().traversed_front(),
                           this->function());
         }
 
-        // Адаптор последовательностей
+        // Адаптор курсоров
         /** @brief Используемая функция сравнения
         @return Используемая функция сравнения
         */
@@ -586,8 +582,8 @@ namespace ural
         }
 
         //@{
-        /** @brief Первая базовая последовательность
-        @return Ссылка на первую базовую последовательность
+        /** @brief Первый базовый курсор
+        @return Ссылка на первый базовый курсор
         */
         Input1 const & first_base() const &
         {
@@ -601,8 +597,8 @@ namespace ural
         //@}
 
         //@{
-        /** @brief Вторая базовая последовательность
-        @return Ссылка на вторую базовую последовательность
+        /** @brief Второй базовый курсор
+        @return Ссылка на второй базовый курсор
         */
         Input2 const & second_base() const &
         {
@@ -641,61 +637,52 @@ namespace ural
         Input2 in2_;
     };
 
-    template <class Input1, class Input2, class Compare>
-    auto make_set_difference_sequence(Input1 && in1, Input2 && in2, Compare cmp)
-    -> set_difference_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
-                                 decltype(::ural::sequence_fwd<Input2>(in2)),
+    template <class Input1, class Input2, class Compare = less<>>
+    auto make_set_difference_cursor(Input1 && in1, Input2 && in2, Compare cmp = Compare{})
+    -> set_difference_cursor<decltype(::ural::cursor_fwd<Input1>(in1)),
+                                 decltype(::ural::cursor_fwd<Input2>(in2)),
                                  decltype(ural::make_callable(std::move(cmp)))>
     {
-        typedef set_difference_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
-                                 decltype(::ural::sequence_fwd<Input2>(in2)),
+        typedef set_difference_cursor<decltype(::ural::cursor_fwd<Input1>(in1)),
+                                 decltype(::ural::cursor_fwd<Input2>(in2)),
                                  decltype(ural::make_callable(std::move(cmp)))> Result;
 
-        return Result(::ural::sequence_fwd<Input1>(in1),
-                      ::ural::sequence_fwd<Input2>(in2),
+        return Result(::ural::cursor_fwd<Input1>(in1),
+                      ::ural::cursor_fwd<Input2>(in2),
                       ural::make_callable(std::move(cmp)));
     }
 
-    template <class Input1, class Input2>
-    auto make_set_difference_sequence(Input1 && in1, Input2 && in2)
-    -> set_difference_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
-                                 decltype(::ural::sequence_fwd<Input2>(in2))>
-    {
-        return ::ural::make_set_difference_sequence(std::forward<Input1>(in1),
-                                                    std::forward<Input2>(in2),
-                                                    ural::less<>{});
-    }
-
-    /** @brief Последовательность элементов, полученная в результате взятия
-    симметрической разности множеств элементов двух базовых последовательностей
-    @tparam Input1 первая входная последовательность
-    @tparam Input2 вторая входная последовательность
+    /** @brief Курсор последовательности элементов, полученной в результате
+    взятия симметрической разности множеств элементов двух базовых
+    последовательностей
+    @tparam Input1 Тип первого базового курсора
+    @tparam Input2 Тип второго базового курсора
     @tparam Compare функция сравнения
     */
     template <class Input1, class Input2, class Compare = ural::less<> >
-    class set_symmetric_difference_sequence
-     : public sequence_base<set_symmetric_difference_sequence<Input1, Input2, Compare>,
+    class set_symmetric_difference_cursor
+     : public cursor_base<set_symmetric_difference_cursor<Input1, Input2, Compare>,
                              Compare>
     {
-        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input1>));
-        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input1>));
+        BOOST_CONCEPT_ASSERT((concepts::SinglePassCursor<Input1>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableCursor<Input1>));
 
-        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input2>));
-        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input2>));
+        BOOST_CONCEPT_ASSERT((concepts::SinglePassCursor<Input2>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableCursor<Input2>));
 
         typedef bool(Compare_signature)(typename Input1::reference,
                                         typename Input2::reference);
 
         BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, Compare_signature>));
 
-        typedef sequence_base<set_symmetric_difference_sequence, Compare> Base_class;
+        typedef cursor_base<set_symmetric_difference_cursor, Compare> Base_class;
     public:
         /** @brief Оператора "равно"
         @param x, y аргументы
         @return <tt> x.bases() == y.bases() && x.function() == y.function() </tt>
         */
-        friend bool operator==(set_symmetric_difference_sequence const & x,
-                               set_symmetric_difference_sequence const & y)
+        friend bool operator==(set_symmetric_difference_cursor const & x,
+                               set_symmetric_difference_cursor const & y)
         {
             return x.first_base() == y.first_base()
                     && x.second_base() == y.second_base()
@@ -703,32 +690,31 @@ namespace ural
         }
 
         /// @brief Тип ссылки
-        typedef CommonType<typename Input1::reference, typename Input2::reference>
-            reference;
+        using reference = common_type_t<typename Input1::reference, typename Input2::reference>;
 
         /// @brief Тип значения
-        typedef CommonType<ValueType<Input1>, ValueType<Input2>> value_type;
+        using value_type = common_type_t<value_type_t<Input1>, value_type_t<Input2>>;
 
         /// @brief Категория курсора
-        using cursor_tag = CommonType<typename Input1::cursor_tag,
+        using cursor_tag = common_type_t<typename Input1::cursor_tag,
                                       typename Input2::cursor_tag,
                                       finite_forward_cursor_tag>;
 
         /// @brief Тип указателя
-        typedef CommonType<typename Input1::pointer, typename Input2::pointer>
-            pointer;
+        using pointer = common_type_t<typename Input1::pointer, typename Input2::pointer>;
 
         /// @brief Тип расстояния
-        typedef CommonType<DifferenceType<Input1>, DifferenceType<Input2>>
-            distance_type;
+        using distance_type = common_type_t<difference_type_t<Input1>, difference_type_t<Input2>>;
 
         /** @brief Конструктор
-        @param in1 первая входная последовательность
-        @param in2 вторая входная последовательность
+        @param in1 первый базовый курсор
+        @param in2 второй базовый курсор
         @param cmp функция сравнения
+        @post <tt> this->first_base() == in1 </tt>
+        @post <tt> this->second_base() == in2 </tt>
         @post <tt> this->function() == cmp </tt>
         */
-        explicit set_symmetric_difference_sequence(Input1 in1, Input2 in2,
+        explicit set_symmetric_difference_cursor(Input1 in1, Input2 in2,
                                                    Compare cmp = Compare{})
          : Base_class(std::move(cmp))
          , in1_{std::move(in1)}
@@ -737,17 +723,17 @@ namespace ural
             this->seek();
         }
 
-        /** @brief Проверка исчерпания последовательностей
-        @return @b true, если последовательность исчерпана, иначе --- @b false.
+        /** @brief Проверка исчерпания
+        @return @b true, если курсор исчерпан, иначе --- @b false.
         */
         bool operator!() const
         {
             return !in1_ && !in2_;
         }
 
-        /** @brief Текущий элемент последовательности
+        /** @brief Текущий элемент
         @pre <tt> !*this == false </tt>
-        @return Ссылка на текущий элемент последовательности
+        @return Ссылка на текущий элемент
         */
         reference front() const
         {
@@ -784,22 +770,22 @@ namespace ural
             this->seek();
         }
 
-        // Прямая последовательность
+        // Прямой курсор
         /** @brief Передняя пройденная часть последовательности
         @return Передняя пройденная часть последовательности
         */
-        set_symmetric_difference_sequence<TraversedFrontType<Input1>,
-                                          TraversedFrontType<Input2>, Compare>
+        set_symmetric_difference_cursor<TraversedFrontType<Input1>,
+                                        TraversedFrontType<Input2>, Compare>
         traversed_front() const
         {
-            using Result = set_symmetric_difference_sequence<TraversedFrontType<Input1>,
+            using Result = set_symmetric_difference_cursor<TraversedFrontType<Input1>,
                                           TraversedFrontType<Input2>, Compare>;
             return Result(this->first_base().traversed_front(),
                           this->second_base().traversed_front(),
                           this->function());
         }
 
-        // Адаптор последовательностей
+        // Адаптор курсоров
         /** @brief Используемая функция сравнения
         @return Используемая функция сравнения
         */
@@ -809,8 +795,8 @@ namespace ural
         }
 
         //@{
-        /** @brief Первая базовая последовательность
-        @return Ссылка на первую базовую последовательность
+        /** @brief Первый базовый курсор
+        @return Ссылка на первый базовый курсор
         */
         Input1 const & first_base() const &
         {
@@ -824,8 +810,8 @@ namespace ural
         //@}
 
         //@{
-        /** @brief Вторая базовая последовательность
-        @return Ссылка на вторую базовую последовательность
+        /** @brief Второй базовый курсор
+        @return Ссылка на второй базовый курсор
         */
         Input2 const & second_base() const &
         {
@@ -870,72 +856,61 @@ namespace ural
             }
             else
             {
-                state_ = nullopt;
+                state_ = experimental::nullopt;
             }
         }
 
     private:
         Input1 in1_;
         Input2 in2_;
-        ural::optional<set_operations_state> state_;
+        ural::experimental::optional<set_operations_state> state_;
     };
 
-    template <class Input1, class Input2, class Compare>
-    auto make_set_symmetric_difference_sequence(Input1 && in1, Input2 && in2,
-                                                Compare cmp)
-    -> set_symmetric_difference_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
-                                 decltype(::ural::sequence_fwd<Input2>(in2)),
+    template <class Input1, class Input2, class Compare = less<>>
+    auto make_set_symmetric_difference_cursor(Input1 && in1, Input2 && in2,
+                                                Compare cmp = Compare{})
+    -> set_symmetric_difference_cursor<decltype(::ural::cursor_fwd<Input1>(in1)),
+                                 decltype(::ural::cursor_fwd<Input2>(in2)),
                                  decltype(ural::make_callable(std::move(cmp)))>
     {
-        typedef set_symmetric_difference_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
-                                 decltype(::ural::sequence_fwd<Input2>(in2)),
+        typedef set_symmetric_difference_cursor<decltype(::ural::cursor_fwd<Input1>(in1)),
+                                 decltype(::ural::cursor_fwd<Input2>(in2)),
                                  decltype(ural::make_callable(std::move(cmp)))> Result;
 
-        return Result(::ural::sequence_fwd<Input1>(in1),
-                      ::ural::sequence_fwd<Input2>(in2),
+        return Result(::ural::cursor_fwd<Input1>(in1),
+                      ::ural::cursor_fwd<Input2>(in2),
                       ural::make_callable(std::move(cmp)));
     }
 
-    template <class Input1, class Input2>
-    auto make_set_symmetric_difference_sequence(Input1 && in1, Input2 && in2)
-    -> set_symmetric_difference_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
-                                 decltype(::ural::sequence_fwd<Input2>(in2))>
-    {
-        return ::ural::make_set_symmetric_difference_sequence(std::forward<Input1>(in1),
-                                                              std::forward<Input2>(in2),
-                                                              ural::less<>{});
-    }
-
-    /** @brief Последовательность элементов, полученная в результате объединения
-    множеств элементов двух базовых последовательностей
-    @tparam Input1 первая входная последовательность
-    @tparam Input2 вторая входная последовательность
+    /** @brief Курсор последовательности элементов, полученная в результате
+    объединения множеств элементов двух базовых последовательностей.
+    @tparam Input1 Тип первого базового курсора
+    @tparam Input2 Тип второго базового курсора
     @tparam Compare функция сравнения
     */
     template <class Input1, class Input2, class Compare = ural::less<> >
-    class set_union_sequence
-     : public sequence_base<set_union_sequence<Input1, Input2, Compare>,
-                             Compare>
+    class set_union_cursor
+     : public cursor_base<set_union_cursor<Input1, Input2, Compare>, Compare>
     {
-        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input1>));
-        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input1>));
+        BOOST_CONCEPT_ASSERT((concepts::SinglePassCursor<Input1>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableCursor<Input1>));
 
-        BOOST_CONCEPT_ASSERT((concepts::SinglePassSequence<Input2>));
-        BOOST_CONCEPT_ASSERT((concepts::ReadableSequence<Input2>));
+        BOOST_CONCEPT_ASSERT((concepts::SinglePassCursor<Input2>));
+        BOOST_CONCEPT_ASSERT((concepts::ReadableCursor<Input2>));
 
         typedef bool(Compare_signature)(typename Input1::reference,
                                         typename Input2::reference);
 
         BOOST_CONCEPT_ASSERT((concepts::Callable<Compare, Compare_signature>));
 
-        typedef sequence_base<set_union_sequence, Compare> Base_class;
+        typedef cursor_base<set_union_cursor, Compare> Base_class;
     public:
         /** @brief Оператора "равно"
         @param x, y аргументы
         @return <tt> x.bases() == y.bases() && x.function() == y.function() </tt>
         */
-        friend bool operator==(set_union_sequence const & x,
-                               set_union_sequence const & y)
+        friend bool operator==(set_union_cursor const & x,
+                               set_union_cursor const & y)
         {
             return x.first_base() == y.first_base()
                     && x.second_base() == y.second_base()
@@ -943,32 +918,31 @@ namespace ural
         }
 
         /// @brief Тип ссылки
-        typedef CommonType<typename Input1::reference, typename Input2::reference>
-            reference;
+        using reference = common_type_t<typename Input1::reference, typename Input2::reference>;
 
         /// @brief Тип значения
-        typedef CommonType<ValueType<Input1>, ValueType<Input2>> value_type;
+        using value_type = common_type_t<value_type_t<Input1>, value_type_t<Input2>>;
 
         /// @brief Категория курсора
-        using cursor_tag = CommonType<typename Input1::cursor_tag,
+        using cursor_tag = common_type_t<typename Input1::cursor_tag,
                                       typename Input2::cursor_tag,
                                       finite_forward_cursor_tag>;
 
         /// @brief Тип указателя
-        typedef CommonType<typename Input1::pointer, typename Input2::pointer>
-            pointer;
+        using pointer = common_type_t<typename Input1::pointer, typename Input2::pointer>;
 
         /// @brief Тип расстояния
-        typedef CommonType<DifferenceType<Input1>, DifferenceType<Input2>>
-            distance_type;
+        using distance_type = common_type_t<difference_type_t<Input1>, difference_type_t<Input2>>;
 
         /** @brief Конструктор
-        @param in1 первая входная последовательность
-        @param in2 вторая входная последовательность
+        @param in1 первый базовый курсор
+        @param in2 второй базовый курсор
         @param cmp функция сравнения
+        @post <tt> this->first_base() == in1 </tt>
+        @post <tt> this->second_base() == in2 </tt>
         @post <tt> this->function() == cmp </tt>
         */
-        explicit set_union_sequence(Input1 in1, Input2 in2, Compare cmp = Compare{})
+        explicit set_union_cursor(Input1 in1, Input2 in2, Compare cmp = Compare{})
          : Base_class(std::move(cmp))
          , in1_{std::move(in1)}
          , in2_{std::move(in2)}
@@ -976,17 +950,17 @@ namespace ural
             this->seek();
         }
 
-        /** @brief Проверка исчерпания последовательностей
-        @return @b true, если последовательность исчерпана, иначе --- @b false.
+        /** @brief Проверка исчерпания
+        @return @b true, если курсор исчерпан, иначе --- @b false.
         */
         bool operator!() const
         {
             return !in1_ && !in2_;
         }
 
-        /** @brief Текущий элемент последовательности
+        /** @brief Текущий элемент
         @pre <tt> !*this == false </tt>
-        @return Ссылка на текущий элемент последовательности
+        @return Ссылка на текущий элемент
         */
         reference front() const
         {
@@ -1024,22 +998,22 @@ namespace ural
             this->seek();
         }
 
-        // Прямая последовательность
+        // Прямой курсор
         /** @brief Передняя пройденная часть последовательности
         @return Передняя пройденная часть последовательности
         */
-        set_union_sequence<TraversedFrontType<Input1>,
+        set_union_cursor<TraversedFrontType<Input1>,
                            TraversedFrontType<Input2>, Compare>
         traversed_front() const
         {
-            using Result = set_union_sequence<TraversedFrontType<Input1>,
+            using Result = set_union_cursor<TraversedFrontType<Input1>,
                                           TraversedFrontType<Input2>, Compare>;
             return Result(this->first_base().traversed_front(),
                           this->second_base().traversed_front(),
                           this->function());
         }
 
-        // Адаптор последовательностей
+        // Адаптор курсоров
         /** @brief Используемая функция сравнения
         @return Используемая функция сравнения
         */
@@ -1049,8 +1023,8 @@ namespace ural
         }
 
         //@{
-        /** @brief Первая базовая последовательность
-        @return Ссылка на первую базовую последовательность
+        /** @brief Первый базовый курсор
+        @return Ссылка на первый базовый курсор
         */
         Input1 const & first_base() const &
         {
@@ -1064,8 +1038,8 @@ namespace ural
         //@}
 
         //@{
-        /** @brief Вторая базовая последовательность
-        @return Ссылка на вторую базовую последовательность
+        /** @brief Второй базовый курсор
+        @return Ссылка на второй базовый курсор
         */
         Input2 const & second_base() const &
         {
@@ -1083,7 +1057,7 @@ namespace ural
         {
             if(!in1_ && !in2_)
             {
-                state_ = nullopt;
+                state_ = experimental::nullopt;
                 return;
             }
             if(!in2_)
@@ -1114,33 +1088,26 @@ namespace ural
     private:
         Input1 in1_;
         Input2 in2_;
-        ural::optional<set_operations_state> state_;
+        ::ural::experimental::optional<set_operations_state> state_;
     };
 
-    template <class Input1, class Input2, class Compare>
-    auto make_set_union_sequence(Input1 && in1, Input2 && in2, Compare cmp)
-    -> set_union_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
-                          decltype(::ural::sequence_fwd<Input2>(in2)),
+    template <class Input1, class Input2, class Compare = less<>>
+    auto make_set_union_cursor(Input1 && in1, Input2 && in2,
+                                 Compare cmp = Compare{})
+    -> set_union_cursor<decltype(::ural::cursor_fwd<Input1>(in1)),
+                          decltype(::ural::cursor_fwd<Input2>(in2)),
                           decltype(ural::make_callable(std::move(cmp)))>
     {
-        typedef set_union_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
-                                   decltype(::ural::sequence_fwd<Input2>(in2)),
+        typedef set_union_cursor<decltype(::ural::cursor_fwd<Input1>(in1)),
+                                   decltype(::ural::cursor_fwd<Input2>(in2)),
                                    decltype(ural::make_callable(std::move(cmp)))> Result;
 
-        return Result(::ural::sequence_fwd<Input1>(in1),
-                      ::ural::sequence_fwd<Input2>(in2),
+        return Result(::ural::cursor_fwd<Input1>(in1),
+                      ::ural::cursor_fwd<Input2>(in2),
                       ural::make_callable(std::move(cmp)));
     }
-
-    template <class Input1, class Input2>
-    auto make_set_union_sequence(Input1 && in1, Input2 && in2)
-    -> set_union_sequence<decltype(::ural::sequence_fwd<Input1>(in1)),
-                                 decltype(::ural::sequence_fwd<Input2>(in2))>
-    {
-        return ::ural::make_set_union_sequence(std::forward<Input1>(in1),
-                                               std::forward<Input2>(in2),
-                                               ural::less<>{});
-    }
+}
+// namespace experimental
 }
 // namespace ural
 

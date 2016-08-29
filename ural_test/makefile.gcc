@@ -40,9 +40,9 @@ OBJDIR_RELEASE = obj/Release
 DEP_RELEASE = 
 OUT_RELEASE = bin/Release/ural_test
 
-OBJ_DEBUG = $(OBJDIR_DEBUG)/main.o $(OBJDIR_DEBUG)/__/tests/expected_test.o $(OBJDIR_DEBUG)/__/tests/algorithm/mutating.o $(OBJDIR_DEBUG)/__/tests/algorithm/non_modifying.o $(OBJDIR_DEBUG)/__/tests/algorithm/sorting.o $(OBJDIR_DEBUG)/__/tests/any_test.o $(OBJDIR_DEBUG)/__/tests/concepts_checks.o $(OBJDIR_DEBUG)/__/tests/container/flat_set.o $(OBJDIR_DEBUG)/__/tests/container/general.o $(OBJDIR_DEBUG)/__/tests/container/vector.o $(OBJDIR_DEBUG)/__/tests/disjoint_set_test.o $(OBJDIR_DEBUG)/__/tests/algorithm/d_algo_test.o $(OBJDIR_DEBUG)/__/tests/functional_test.o $(OBJDIR_DEBUG)/__/tests/io_tests.o $(OBJDIR_DEBUG)/__/tests/iterator_test.o $(OBJDIR_DEBUG)/__/tests/math_tests.o $(OBJDIR_DEBUG)/__/tests/memory_test.o $(OBJDIR_DEBUG)/__/tests/meta_tests.o $(OBJDIR_DEBUG)/__/tests/numeric/partial_sums.o $(OBJDIR_DEBUG)/__/tests/numeric_tests.o $(OBJDIR_DEBUG)/__/tests/optional_tests.o $(OBJDIR_DEBUG)/__/tests/random_tests.o $(OBJDIR_DEBUG)/__/boost/test/src/test_tree.o $(OBJDIR_DEBUG)/__/boost/test/src/compiler_log_formatter.o $(OBJDIR_DEBUG)/__/boost/test/src/debug.o $(OBJDIR_DEBUG)/__/boost/test/src/decorator.o $(OBJDIR_DEBUG)/__/boost/test/src/execution_monitor.o $(OBJDIR_DEBUG)/__/boost/test/src/framework.o $(OBJDIR_DEBUG)/__/boost/test/src/plain_report_formatter.o $(OBJDIR_DEBUG)/__/boost/test/src/progress_monitor.o $(OBJDIR_DEBUG)/__/boost/test/src/results_collector.o $(OBJDIR_DEBUG)/__/boost/test/src/results_reporter.o $(OBJDIR_DEBUG)/__/boost/test/src/test_tools.o $(OBJDIR_DEBUG)/__/tests/rational_tests.o $(OBJDIR_DEBUG)/__/boost/test/src/unit_test_log.o $(OBJDIR_DEBUG)/__/boost/test/src/unit_test_main.o $(OBJDIR_DEBUG)/__/boost/test/src/unit_test_monitor.o $(OBJDIR_DEBUG)/__/boost/test/src/unit_test_parameters.o $(OBJDIR_DEBUG)/__/boost/test/src/xml_log_formatter.o $(OBJDIR_DEBUG)/__/boost/test/src/xml_report_formatter.o $(OBJDIR_DEBUG)/__/tests/algorithm/container_algo.o $(OBJDIR_DEBUG)/__/tests/tracers_tests.o $(OBJDIR_DEBUG)/__/tests/tuple_tests.o $(OBJDIR_DEBUG)/__/tests/utility_test.o $(OBJDIR_DEBUG)/__/tests/statistics/statistics_tests.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/set_operations.o $(OBJDIR_DEBUG)/__/tests/rnd.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/cartesian_product.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/map.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/moved.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/outdirected.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/partition.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/remove.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/replace.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/reversed.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/simo.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/taken.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/taken_while.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/transformed.o $(OBJDIR_DEBUG)/__/tests/sequence/chunks.o $(OBJDIR_DEBUG)/__/tests/sequence/constant.o $(OBJDIR_DEBUG)/__/tests/sequence/iterator_sequence_test.o $(OBJDIR_DEBUG)/__/tests/sequence_test.o $(OBJDIR_DEBUG)/__/tests/statistics/distributions_discrete.o
+OBJ_DEBUG = $(OBJDIR_DEBUG)/__/boost/test/src/compiler_log_formatter.o $(OBJDIR_DEBUG)/__/boost/test/src/debug.o $(OBJDIR_DEBUG)/__/boost/test/src/decorator.o $(OBJDIR_DEBUG)/__/boost/test/src/execution_monitor.o $(OBJDIR_DEBUG)/__/boost/test/src/framework.o $(OBJDIR_DEBUG)/__/boost/test/src/plain_report_formatter.o $(OBJDIR_DEBUG)/__/boost/test/src/progress_monitor.o $(OBJDIR_DEBUG)/__/boost/test/src/results_collector.o $(OBJDIR_DEBUG)/__/boost/test/src/results_reporter.o $(OBJDIR_DEBUG)/__/boost/test/src/test_tools.o $(OBJDIR_DEBUG)/__/boost/test/src/test_tree.o $(OBJDIR_DEBUG)/__/boost/test/src/unit_test_log.o $(OBJDIR_DEBUG)/__/boost/test/src/unit_test_main.o $(OBJDIR_DEBUG)/__/boost/test/src/unit_test_monitor.o $(OBJDIR_DEBUG)/__/boost/test/src/unit_test_parameters.o $(OBJDIR_DEBUG)/__/boost/test/src/xml_log_formatter.o $(OBJDIR_DEBUG)/__/boost/test/src/xml_report_formatter.o $(OBJDIR_DEBUG)/__/tests/algorithm/container_algo.o $(OBJDIR_DEBUG)/__/tests/algorithm/d_algo_test.o $(OBJDIR_DEBUG)/__/tests/algorithm/mutating.o $(OBJDIR_DEBUG)/__/tests/algorithm/non_modifying.o $(OBJDIR_DEBUG)/__/tests/algorithm/sorting.o $(OBJDIR_DEBUG)/__/tests/any_test.o $(OBJDIR_DEBUG)/__/tests/concepts_checks.o $(OBJDIR_DEBUG)/__/tests/container/flat_set.o $(OBJDIR_DEBUG)/__/tests/container/general.o $(OBJDIR_DEBUG)/__/tests/container/vector.o $(OBJDIR_DEBUG)/__/tests/disjoint_set_test.o $(OBJDIR_DEBUG)/__/tests/expected_test.o $(OBJDIR_DEBUG)/__/tests/functional_test.o $(OBJDIR_DEBUG)/__/tests/io_tests.o $(OBJDIR_DEBUG)/__/tests/iterator_test.o $(OBJDIR_DEBUG)/__/tests/math_tests.o $(OBJDIR_DEBUG)/__/tests/memory_test.o $(OBJDIR_DEBUG)/__/tests/meta_tests.o $(OBJDIR_DEBUG)/__/tests/numeric/partial_sums.o $(OBJDIR_DEBUG)/__/tests/numeric_tests.o $(OBJDIR_DEBUG)/__/tests/optional_tests.o $(OBJDIR_DEBUG)/__/tests/random_tests.o $(OBJDIR_DEBUG)/__/tests/rational_tests.o $(OBJDIR_DEBUG)/__/tests/rnd.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/cartesian_product.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/map.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/moved.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/outdirected.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/partition.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/remove.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/replace.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/reversed.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/set_operations.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/simo.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/taken.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/taken_while.o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/transformed.o $(OBJDIR_DEBUG)/__/tests/sequence/chunks.o $(OBJDIR_DEBUG)/__/tests/sequence/iterator_cursor_test.o $(OBJDIR_DEBUG)/__/tests/sequence/repeat_value.o $(OBJDIR_DEBUG)/__/tests/sequence_test.o $(OBJDIR_DEBUG)/__/tests/statistics/distributions_discrete.o $(OBJDIR_DEBUG)/__/tests/statistics/statistics_tests.o $(OBJDIR_DEBUG)/__/tests/tracers_tests.o $(OBJDIR_DEBUG)/__/tests/tuple_tests.o $(OBJDIR_DEBUG)/__/tests/utility_test.o $(OBJDIR_DEBUG)/main.o
 
-OBJ_RELEASE = $(OBJDIR_RELEASE)/main.o $(OBJDIR_RELEASE)/__/tests/expected_test.o $(OBJDIR_RELEASE)/__/tests/algorithm/mutating.o $(OBJDIR_RELEASE)/__/tests/algorithm/non_modifying.o $(OBJDIR_RELEASE)/__/tests/algorithm/sorting.o $(OBJDIR_RELEASE)/__/tests/any_test.o $(OBJDIR_RELEASE)/__/tests/concepts_checks.o $(OBJDIR_RELEASE)/__/tests/container/flat_set.o $(OBJDIR_RELEASE)/__/tests/container/general.o $(OBJDIR_RELEASE)/__/tests/container/vector.o $(OBJDIR_RELEASE)/__/tests/disjoint_set_test.o $(OBJDIR_RELEASE)/__/tests/algorithm/d_algo_test.o $(OBJDIR_RELEASE)/__/tests/functional_test.o $(OBJDIR_RELEASE)/__/tests/io_tests.o $(OBJDIR_RELEASE)/__/tests/iterator_test.o $(OBJDIR_RELEASE)/__/tests/math_tests.o $(OBJDIR_RELEASE)/__/tests/memory_test.o $(OBJDIR_RELEASE)/__/tests/meta_tests.o $(OBJDIR_RELEASE)/__/tests/numeric/partial_sums.o $(OBJDIR_RELEASE)/__/tests/numeric_tests.o $(OBJDIR_RELEASE)/__/tests/optional_tests.o $(OBJDIR_RELEASE)/__/tests/random_tests.o $(OBJDIR_RELEASE)/__/boost/test/src/test_tree.o $(OBJDIR_RELEASE)/__/boost/test/src/compiler_log_formatter.o $(OBJDIR_RELEASE)/__/boost/test/src/debug.o $(OBJDIR_RELEASE)/__/boost/test/src/decorator.o $(OBJDIR_RELEASE)/__/boost/test/src/execution_monitor.o $(OBJDIR_RELEASE)/__/boost/test/src/framework.o $(OBJDIR_RELEASE)/__/boost/test/src/plain_report_formatter.o $(OBJDIR_RELEASE)/__/boost/test/src/progress_monitor.o $(OBJDIR_RELEASE)/__/boost/test/src/results_collector.o $(OBJDIR_RELEASE)/__/boost/test/src/results_reporter.o $(OBJDIR_RELEASE)/__/boost/test/src/test_tools.o $(OBJDIR_RELEASE)/__/tests/rational_tests.o $(OBJDIR_RELEASE)/__/boost/test/src/unit_test_log.o $(OBJDIR_RELEASE)/__/boost/test/src/unit_test_main.o $(OBJDIR_RELEASE)/__/boost/test/src/unit_test_monitor.o $(OBJDIR_RELEASE)/__/boost/test/src/unit_test_parameters.o $(OBJDIR_RELEASE)/__/boost/test/src/xml_log_formatter.o $(OBJDIR_RELEASE)/__/boost/test/src/xml_report_formatter.o $(OBJDIR_RELEASE)/__/tests/algorithm/container_algo.o $(OBJDIR_RELEASE)/__/tests/tracers_tests.o $(OBJDIR_RELEASE)/__/tests/tuple_tests.o $(OBJDIR_RELEASE)/__/tests/utility_test.o $(OBJDIR_RELEASE)/__/tests/statistics/statistics_tests.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/set_operations.o $(OBJDIR_RELEASE)/__/tests/rnd.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/cartesian_product.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/map.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/moved.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/outdirected.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/partition.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/remove.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/replace.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/reversed.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/simo.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/taken.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/taken_while.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/transformed.o $(OBJDIR_RELEASE)/__/tests/sequence/chunks.o $(OBJDIR_RELEASE)/__/tests/sequence/constant.o $(OBJDIR_RELEASE)/__/tests/sequence/iterator_sequence_test.o $(OBJDIR_RELEASE)/__/tests/sequence_test.o $(OBJDIR_RELEASE)/__/tests/statistics/distributions_discrete.o
+OBJ_RELEASE = $(OBJDIR_RELEASE)/__/boost/test/src/compiler_log_formatter.o $(OBJDIR_RELEASE)/__/boost/test/src/debug.o $(OBJDIR_RELEASE)/__/boost/test/src/decorator.o $(OBJDIR_RELEASE)/__/boost/test/src/execution_monitor.o $(OBJDIR_RELEASE)/__/boost/test/src/framework.o $(OBJDIR_RELEASE)/__/boost/test/src/plain_report_formatter.o $(OBJDIR_RELEASE)/__/boost/test/src/progress_monitor.o $(OBJDIR_RELEASE)/__/boost/test/src/results_collector.o $(OBJDIR_RELEASE)/__/boost/test/src/results_reporter.o $(OBJDIR_RELEASE)/__/boost/test/src/test_tools.o $(OBJDIR_RELEASE)/__/boost/test/src/test_tree.o $(OBJDIR_RELEASE)/__/boost/test/src/unit_test_log.o $(OBJDIR_RELEASE)/__/boost/test/src/unit_test_main.o $(OBJDIR_RELEASE)/__/boost/test/src/unit_test_monitor.o $(OBJDIR_RELEASE)/__/boost/test/src/unit_test_parameters.o $(OBJDIR_RELEASE)/__/boost/test/src/xml_log_formatter.o $(OBJDIR_RELEASE)/__/boost/test/src/xml_report_formatter.o $(OBJDIR_RELEASE)/__/tests/algorithm/container_algo.o $(OBJDIR_RELEASE)/__/tests/algorithm/d_algo_test.o $(OBJDIR_RELEASE)/__/tests/algorithm/mutating.o $(OBJDIR_RELEASE)/__/tests/algorithm/non_modifying.o $(OBJDIR_RELEASE)/__/tests/algorithm/sorting.o $(OBJDIR_RELEASE)/__/tests/any_test.o $(OBJDIR_RELEASE)/__/tests/concepts_checks.o $(OBJDIR_RELEASE)/__/tests/container/flat_set.o $(OBJDIR_RELEASE)/__/tests/container/general.o $(OBJDIR_RELEASE)/__/tests/container/vector.o $(OBJDIR_RELEASE)/__/tests/disjoint_set_test.o $(OBJDIR_RELEASE)/__/tests/expected_test.o $(OBJDIR_RELEASE)/__/tests/functional_test.o $(OBJDIR_RELEASE)/__/tests/io_tests.o $(OBJDIR_RELEASE)/__/tests/iterator_test.o $(OBJDIR_RELEASE)/__/tests/math_tests.o $(OBJDIR_RELEASE)/__/tests/memory_test.o $(OBJDIR_RELEASE)/__/tests/meta_tests.o $(OBJDIR_RELEASE)/__/tests/numeric/partial_sums.o $(OBJDIR_RELEASE)/__/tests/numeric_tests.o $(OBJDIR_RELEASE)/__/tests/optional_tests.o $(OBJDIR_RELEASE)/__/tests/random_tests.o $(OBJDIR_RELEASE)/__/tests/rational_tests.o $(OBJDIR_RELEASE)/__/tests/rnd.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/cartesian_product.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/map.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/moved.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/outdirected.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/partition.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/remove.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/replace.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/reversed.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/set_operations.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/simo.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/taken.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/taken_while.o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/transformed.o $(OBJDIR_RELEASE)/__/tests/sequence/chunks.o $(OBJDIR_RELEASE)/__/tests/sequence/iterator_cursor_test.o $(OBJDIR_RELEASE)/__/tests/sequence/repeat_value.o $(OBJDIR_RELEASE)/__/tests/sequence_test.o $(OBJDIR_RELEASE)/__/tests/statistics/distributions_discrete.o $(OBJDIR_RELEASE)/__/tests/statistics/statistics_tests.o $(OBJDIR_RELEASE)/__/tests/tracers_tests.o $(OBJDIR_RELEASE)/__/tests/tuple_tests.o $(OBJDIR_RELEASE)/__/tests/utility_test.o $(OBJDIR_RELEASE)/main.o
 
 all: debug release
 
@@ -50,15 +50,15 @@ clean: clean_debug clean_release
 
 before_debug: 
 	test -d bin/Debug || mkdir -p bin/Debug
-	test -d $(OBJDIR_DEBUG) || mkdir -p $(OBJDIR_DEBUG)
-	test -d $(OBJDIR_DEBUG)/__/tests || mkdir -p $(OBJDIR_DEBUG)/__/tests
+	test -d $(OBJDIR_DEBUG)/__/boost/test/src || mkdir -p $(OBJDIR_DEBUG)/__/boost/test/src
 	test -d $(OBJDIR_DEBUG)/__/tests/algorithm || mkdir -p $(OBJDIR_DEBUG)/__/tests/algorithm
+	test -d $(OBJDIR_DEBUG)/__/tests || mkdir -p $(OBJDIR_DEBUG)/__/tests
 	test -d $(OBJDIR_DEBUG)/__/tests/container || mkdir -p $(OBJDIR_DEBUG)/__/tests/container
 	test -d $(OBJDIR_DEBUG)/__/tests/numeric || mkdir -p $(OBJDIR_DEBUG)/__/tests/numeric
-	test -d $(OBJDIR_DEBUG)/__/boost/test/src || mkdir -p $(OBJDIR_DEBUG)/__/boost/test/src
-	test -d $(OBJDIR_DEBUG)/__/tests/statistics || mkdir -p $(OBJDIR_DEBUG)/__/tests/statistics
 	test -d $(OBJDIR_DEBUG)/__/tests/sequence/adaptors || mkdir -p $(OBJDIR_DEBUG)/__/tests/sequence/adaptors
 	test -d $(OBJDIR_DEBUG)/__/tests/sequence || mkdir -p $(OBJDIR_DEBUG)/__/tests/sequence
+	test -d $(OBJDIR_DEBUG)/__/tests/statistics || mkdir -p $(OBJDIR_DEBUG)/__/tests/statistics
+	test -d $(OBJDIR_DEBUG) || mkdir -p $(OBJDIR_DEBUG)
 
 after_debug: 
 
@@ -66,72 +66,6 @@ debug: before_debug out_debug after_debug
 
 out_debug: before_debug $(OBJ_DEBUG) $(DEP_DEBUG)
 	$(LD) $(LIBDIR_DEBUG) -o $(OUT_DEBUG) $(OBJ_DEBUG)  $(LDFLAGS_DEBUG) $(LIB_DEBUG)
-
-$(OBJDIR_DEBUG)/main.o: main.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c main.cpp -o $(OBJDIR_DEBUG)/main.o
-
-$(OBJDIR_DEBUG)/__/tests/expected_test.o: ../tests/expected_test.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/expected_test.cpp -o $(OBJDIR_DEBUG)/__/tests/expected_test.o
-
-$(OBJDIR_DEBUG)/__/tests/algorithm/mutating.o: ../tests/algorithm/mutating.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/algorithm/mutating.cpp -o $(OBJDIR_DEBUG)/__/tests/algorithm/mutating.o
-
-$(OBJDIR_DEBUG)/__/tests/algorithm/non_modifying.o: ../tests/algorithm/non_modifying.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/algorithm/non_modifying.cpp -o $(OBJDIR_DEBUG)/__/tests/algorithm/non_modifying.o
-
-$(OBJDIR_DEBUG)/__/tests/algorithm/sorting.o: ../tests/algorithm/sorting.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/algorithm/sorting.cpp -o $(OBJDIR_DEBUG)/__/tests/algorithm/sorting.o
-
-$(OBJDIR_DEBUG)/__/tests/any_test.o: ../tests/any_test.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/any_test.cpp -o $(OBJDIR_DEBUG)/__/tests/any_test.o
-
-$(OBJDIR_DEBUG)/__/tests/concepts_checks.o: ../tests/concepts_checks.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/concepts_checks.cpp -o $(OBJDIR_DEBUG)/__/tests/concepts_checks.o
-
-$(OBJDIR_DEBUG)/__/tests/container/flat_set.o: ../tests/container/flat_set.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/container/flat_set.cpp -o $(OBJDIR_DEBUG)/__/tests/container/flat_set.o
-
-$(OBJDIR_DEBUG)/__/tests/container/general.o: ../tests/container/general.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/container/general.cpp -o $(OBJDIR_DEBUG)/__/tests/container/general.o
-
-$(OBJDIR_DEBUG)/__/tests/container/vector.o: ../tests/container/vector.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/container/vector.cpp -o $(OBJDIR_DEBUG)/__/tests/container/vector.o
-
-$(OBJDIR_DEBUG)/__/tests/disjoint_set_test.o: ../tests/disjoint_set_test.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/disjoint_set_test.cpp -o $(OBJDIR_DEBUG)/__/tests/disjoint_set_test.o
-
-$(OBJDIR_DEBUG)/__/tests/algorithm/d_algo_test.o: ../tests/algorithm/d_algo_test.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/algorithm/d_algo_test.cpp -o $(OBJDIR_DEBUG)/__/tests/algorithm/d_algo_test.o
-
-$(OBJDIR_DEBUG)/__/tests/functional_test.o: ../tests/functional_test.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/functional_test.cpp -o $(OBJDIR_DEBUG)/__/tests/functional_test.o
-
-$(OBJDIR_DEBUG)/__/tests/io_tests.o: ../tests/io_tests.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/io_tests.cpp -o $(OBJDIR_DEBUG)/__/tests/io_tests.o
-
-$(OBJDIR_DEBUG)/__/tests/iterator_test.o: ../tests/iterator_test.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/iterator_test.cpp -o $(OBJDIR_DEBUG)/__/tests/iterator_test.o
-
-$(OBJDIR_DEBUG)/__/tests/math_tests.o: ../tests/math_tests.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/math_tests.cpp -o $(OBJDIR_DEBUG)/__/tests/math_tests.o
-
-$(OBJDIR_DEBUG)/__/tests/memory_test.o: ../tests/memory_test.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/memory_test.cpp -o $(OBJDIR_DEBUG)/__/tests/memory_test.o
-
-$(OBJDIR_DEBUG)/__/tests/meta_tests.o: ../tests/meta_tests.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/meta_tests.cpp -o $(OBJDIR_DEBUG)/__/tests/meta_tests.o
-
-$(OBJDIR_DEBUG)/__/tests/numeric/partial_sums.o: ../tests/numeric/partial_sums.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/numeric/partial_sums.cpp -o $(OBJDIR_DEBUG)/__/tests/numeric/partial_sums.o
-
-$(OBJDIR_DEBUG)/__/tests/numeric_tests.o: ../tests/numeric_tests.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/numeric_tests.cpp -o $(OBJDIR_DEBUG)/__/tests/numeric_tests.o
-
-$(OBJDIR_DEBUG)/__/tests/optional_tests.o: ../tests/optional_tests.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/optional_tests.cpp -o $(OBJDIR_DEBUG)/__/tests/optional_tests.o
-
-$(OBJDIR_DEBUG)/__/boost/test/src/test_tree.o: ../boost/test/src/test_tree.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../boost/test/src/test_tree.cpp -o $(OBJDIR_DEBUG)/__/boost/test/src/test_tree.o
 
 $(OBJDIR_DEBUG)/__/boost/test/src/compiler_log_formatter.o: ../boost/test/src/compiler_log_formatter.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../boost/test/src/compiler_log_formatter.cpp -o $(OBJDIR_DEBUG)/__/boost/test/src/compiler_log_formatter.o
@@ -163,9 +97,8 @@ $(OBJDIR_DEBUG)/__/boost/test/src/results_reporter.o: ../boost/test/src/results_
 $(OBJDIR_DEBUG)/__/boost/test/src/test_tools.o: ../boost/test/src/test_tools.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../boost/test/src/test_tools.cpp -o $(OBJDIR_DEBUG)/__/boost/test/src/test_tools.o
 
-$(OBJDIR_DEBUG)/__/tests/random_tests.o: ../tests/random_tests.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/random_tests.cpp -o $(OBJDIR_DEBUG)/__/tests/random_tests.o
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/rational_tests.cpp -o $(OBJDIR_DEBUG)/__/tests/rational_tests.o
+$(OBJDIR_DEBUG)/__/boost/test/src/test_tree.o: ../boost/test/src/test_tree.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../boost/test/src/test_tree.cpp -o $(OBJDIR_DEBUG)/__/boost/test/src/test_tree.o
 
 $(OBJDIR_DEBUG)/__/boost/test/src/unit_test_log.o: ../boost/test/src/unit_test_log.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../boost/test/src/unit_test_log.cpp -o $(OBJDIR_DEBUG)/__/boost/test/src/unit_test_log.o
@@ -188,21 +121,71 @@ $(OBJDIR_DEBUG)/__/boost/test/src/xml_report_formatter.o: ../boost/test/src/xml_
 $(OBJDIR_DEBUG)/__/tests/algorithm/container_algo.o: ../tests/algorithm/container_algo.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/algorithm/container_algo.cpp -o $(OBJDIR_DEBUG)/__/tests/algorithm/container_algo.o
 
-$(OBJDIR_DEBUG)/__/tests/tracers_tests.o: ../tests/tracers_tests.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/tracers_tests.cpp -o $(OBJDIR_DEBUG)/__/tests/tracers_tests.o
+$(OBJDIR_DEBUG)/__/tests/algorithm/d_algo_test.o: ../tests/algorithm/d_algo_test.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/algorithm/d_algo_test.cpp -o $(OBJDIR_DEBUG)/__/tests/algorithm/d_algo_test.o
 
-$(OBJDIR_DEBUG)/__/tests/tuple_tests.o: ../tests/tuple_tests.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/tuple_tests.cpp -o $(OBJDIR_DEBUG)/__/tests/tuple_tests.o
+$(OBJDIR_DEBUG)/__/tests/algorithm/mutating.o: ../tests/algorithm/mutating.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/algorithm/mutating.cpp -o $(OBJDIR_DEBUG)/__/tests/algorithm/mutating.o
 
-$(OBJDIR_DEBUG)/__/tests/utility_test.o: ../tests/utility_test.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/utility_test.cpp -o $(OBJDIR_DEBUG)/__/tests/utility_test.o
+$(OBJDIR_DEBUG)/__/tests/algorithm/non_modifying.o: ../tests/algorithm/non_modifying.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/algorithm/non_modifying.cpp -o $(OBJDIR_DEBUG)/__/tests/algorithm/non_modifying.o
 
-$(OBJDIR_DEBUG)/__/tests/statistics/statistics_tests.o: ../tests/statistics/statistics_tests.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/statistics/statistics_tests.cpp -o $(OBJDIR_DEBUG)/__/tests/statistics/statistics_tests.o
+$(OBJDIR_DEBUG)/__/tests/algorithm/sorting.o: ../tests/algorithm/sorting.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/algorithm/sorting.cpp -o $(OBJDIR_DEBUG)/__/tests/algorithm/sorting.o
 
-$(OBJDIR_DEBUG)/__/tests/sequence/adaptors/replace.o: ../tests/sequence/adaptors/replace.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/sequence/adaptors/replace.cpp -o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/replace.o
+$(OBJDIR_DEBUG)/__/tests/any_test.o: ../tests/any_test.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/any_test.cpp -o $(OBJDIR_DEBUG)/__/tests/any_test.o
 
+$(OBJDIR_DEBUG)/__/tests/concepts_checks.o: ../tests/concepts_checks.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/concepts_checks.cpp -o $(OBJDIR_DEBUG)/__/tests/concepts_checks.o
+
+$(OBJDIR_DEBUG)/__/tests/container/flat_set.o: ../tests/container/flat_set.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/container/flat_set.cpp -o $(OBJDIR_DEBUG)/__/tests/container/flat_set.o
+
+$(OBJDIR_DEBUG)/__/tests/container/general.o: ../tests/container/general.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/container/general.cpp -o $(OBJDIR_DEBUG)/__/tests/container/general.o
+
+$(OBJDIR_DEBUG)/__/tests/container/vector.o: ../tests/container/vector.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/container/vector.cpp -o $(OBJDIR_DEBUG)/__/tests/container/vector.o
+
+$(OBJDIR_DEBUG)/__/tests/disjoint_set_test.o: ../tests/disjoint_set_test.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/disjoint_set_test.cpp -o $(OBJDIR_DEBUG)/__/tests/disjoint_set_test.o
+
+$(OBJDIR_DEBUG)/__/tests/expected_test.o: ../tests/expected_test.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/expected_test.cpp -o $(OBJDIR_DEBUG)/__/tests/expected_test.o
+
+$(OBJDIR_DEBUG)/__/tests/functional_test.o: ../tests/functional_test.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/functional_test.cpp -o $(OBJDIR_DEBUG)/__/tests/functional_test.o
+
+$(OBJDIR_DEBUG)/__/tests/io_tests.o: ../tests/io_tests.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/io_tests.cpp -o $(OBJDIR_DEBUG)/__/tests/io_tests.o
+
+$(OBJDIR_DEBUG)/__/tests/iterator_test.o: ../tests/iterator_test.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/iterator_test.cpp -o $(OBJDIR_DEBUG)/__/tests/iterator_test.o
+
+$(OBJDIR_DEBUG)/__/tests/math_tests.o: ../tests/math_tests.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/math_tests.cpp -o $(OBJDIR_DEBUG)/__/tests/math_tests.o
+
+$(OBJDIR_DEBUG)/__/tests/memory_test.o: ../tests/memory_test.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/memory_test.cpp -o $(OBJDIR_DEBUG)/__/tests/memory_test.o
+
+$(OBJDIR_DEBUG)/__/tests/meta_tests.o: ../tests/meta_tests.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/meta_tests.cpp -o $(OBJDIR_DEBUG)/__/tests/meta_tests.o
+
+$(OBJDIR_DEBUG)/__/tests/numeric/partial_sums.o: ../tests/numeric/partial_sums.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/numeric/partial_sums.cpp -o $(OBJDIR_DEBUG)/__/tests/numeric/partial_sums.o
+
+$(OBJDIR_DEBUG)/__/tests/numeric_tests.o: ../tests/numeric_tests.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/numeric_tests.cpp -o $(OBJDIR_DEBUG)/__/tests/numeric_tests.o
+
+$(OBJDIR_DEBUG)/__/tests/optional_tests.o: ../tests/optional_tests.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/optional_tests.cpp -o $(OBJDIR_DEBUG)/__/tests/optional_tests.o
+
+$(OBJDIR_DEBUG)/__/tests/random_tests.o: ../tests/random_tests.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/random_tests.cpp -o $(OBJDIR_DEBUG)/__/tests/random_tests.o
+
+$(OBJDIR_DEBUG)/__/tests/rational_tests.o: ../tests/rational_tests.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/rational_tests.cpp -o $(OBJDIR_DEBUG)/__/tests/rational_tests.o
 
 $(OBJDIR_DEBUG)/__/tests/rnd.o: ../tests/rnd.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/rnd.cpp -o $(OBJDIR_DEBUG)/__/tests/rnd.o
@@ -225,6 +208,9 @@ $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/partition.o: ../tests/sequence/adapto
 $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/remove.o: ../tests/sequence/adaptors/remove.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/sequence/adaptors/remove.cpp -o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/remove.o
 
+$(OBJDIR_DEBUG)/__/tests/sequence/adaptors/replace.o: ../tests/sequence/adaptors/replace.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/sequence/adaptors/replace.cpp -o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/replace.o
+
 $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/reversed.o: ../tests/sequence/adaptors/reversed.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/sequence/adaptors/reversed.cpp -o $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/reversed.o
 
@@ -246,11 +232,11 @@ $(OBJDIR_DEBUG)/__/tests/sequence/adaptors/transformed.o: ../tests/sequence/adap
 $(OBJDIR_DEBUG)/__/tests/sequence/chunks.o: ../tests/sequence/chunks.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/sequence/chunks.cpp -o $(OBJDIR_DEBUG)/__/tests/sequence/chunks.o
 
-$(OBJDIR_DEBUG)/__/tests/sequence/constant.o: ../tests/sequence/constant.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/sequence/constant.cpp -o $(OBJDIR_DEBUG)/__/tests/sequence/constant.o
+$(OBJDIR_DEBUG)/__/tests/sequence/iterator_cursor_test.o: ../tests/sequence/iterator_cursor_test.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/sequence/iterator_cursor_test.cpp -o $(OBJDIR_DEBUG)/__/tests/sequence/iterator_cursor_test.o
 
-$(OBJDIR_DEBUG)/__/tests/sequence/iterator_sequence_test.o: ../tests/sequence/iterator_sequence_test.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/sequence/iterator_sequence_test.cpp -o $(OBJDIR_DEBUG)/__/tests/sequence/iterator_sequence_test.o
+$(OBJDIR_DEBUG)/__/tests/sequence/repeat_value.o: ../tests/sequence/repeat_value.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/sequence/repeat_value.cpp -o $(OBJDIR_DEBUG)/__/tests/sequence/repeat_value.o
 
 $(OBJDIR_DEBUG)/__/tests/sequence_test.o: ../tests/sequence_test.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/sequence_test.cpp -o $(OBJDIR_DEBUG)/__/tests/sequence_test.o
@@ -258,30 +244,45 @@ $(OBJDIR_DEBUG)/__/tests/sequence_test.o: ../tests/sequence_test.cpp
 $(OBJDIR_DEBUG)/__/tests/statistics/distributions_discrete.o: ../tests/statistics/distributions_discrete.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/statistics/distributions_discrete.cpp -o $(OBJDIR_DEBUG)/__/tests/statistics/distributions_discrete.o
 
+$(OBJDIR_DEBUG)/__/tests/statistics/statistics_tests.o: ../tests/statistics/statistics_tests.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/statistics/statistics_tests.cpp -o $(OBJDIR_DEBUG)/__/tests/statistics/statistics_tests.o
+
+$(OBJDIR_DEBUG)/__/tests/tracers_tests.o: ../tests/tracers_tests.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/tracers_tests.cpp -o $(OBJDIR_DEBUG)/__/tests/tracers_tests.o
+
+$(OBJDIR_DEBUG)/__/tests/tuple_tests.o: ../tests/tuple_tests.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/tuple_tests.cpp -o $(OBJDIR_DEBUG)/__/tests/tuple_tests.o
+
+$(OBJDIR_DEBUG)/__/tests/utility_test.o: ../tests/utility_test.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ../tests/utility_test.cpp -o $(OBJDIR_DEBUG)/__/tests/utility_test.o
+
+$(OBJDIR_DEBUG)/main.o: main.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c main.cpp -o $(OBJDIR_DEBUG)/main.o
+
 clean_debug: 
 	rm -f $(OBJ_DEBUG) $(OUT_DEBUG)
 	rm -rf bin/Debug
-	rm -rf $(OBJDIR_DEBUG)
-	rm -rf $(OBJDIR_DEBUG)/__/tests
+	rm -rf $(OBJDIR_DEBUG)/__/boost/test/src
 	rm -rf $(OBJDIR_DEBUG)/__/tests/algorithm
+	rm -rf $(OBJDIR_DEBUG)/__/tests
 	rm -rf $(OBJDIR_DEBUG)/__/tests/container
 	rm -rf $(OBJDIR_DEBUG)/__/tests/numeric
-	rm -rf $(OBJDIR_DEBUG)/__/boost/test/src
-	rm -rf $(OBJDIR_DEBUG)/__/tests/statistics
 	rm -rf $(OBJDIR_DEBUG)/__/tests/sequence/adaptors
 	rm -rf $(OBJDIR_DEBUG)/__/tests/sequence
+	rm -rf $(OBJDIR_DEBUG)/__/tests/statistics
+	rm -rf $(OBJDIR_DEBUG)
 
 before_release: 
 	test -d bin/Release || mkdir -p bin/Release
-	test -d $(OBJDIR_RELEASE) || mkdir -p $(OBJDIR_RELEASE)
-	test -d $(OBJDIR_RELEASE)/__/tests || mkdir -p $(OBJDIR_RELEASE)/__/tests
+	test -d $(OBJDIR_RELEASE)/__/boost/test/src || mkdir -p $(OBJDIR_RELEASE)/__/boost/test/src
 	test -d $(OBJDIR_RELEASE)/__/tests/algorithm || mkdir -p $(OBJDIR_RELEASE)/__/tests/algorithm
+	test -d $(OBJDIR_RELEASE)/__/tests || mkdir -p $(OBJDIR_RELEASE)/__/tests
 	test -d $(OBJDIR_RELEASE)/__/tests/container || mkdir -p $(OBJDIR_RELEASE)/__/tests/container
 	test -d $(OBJDIR_RELEASE)/__/tests/numeric || mkdir -p $(OBJDIR_RELEASE)/__/tests/numeric
-	test -d $(OBJDIR_RELEASE)/__/boost/test/src || mkdir -p $(OBJDIR_RELEASE)/__/boost/test/src
-	test -d $(OBJDIR_RELEASE)/__/tests/statistics || mkdir -p $(OBJDIR_RELEASE)/__/tests/statistics
 	test -d $(OBJDIR_RELEASE)/__/tests/sequence/adaptors || mkdir -p $(OBJDIR_RELEASE)/__/tests/sequence/adaptors
 	test -d $(OBJDIR_RELEASE)/__/tests/sequence || mkdir -p $(OBJDIR_RELEASE)/__/tests/sequence
+	test -d $(OBJDIR_RELEASE)/__/tests/statistics || mkdir -p $(OBJDIR_RELEASE)/__/tests/statistics
+	test -d $(OBJDIR_RELEASE) || mkdir -p $(OBJDIR_RELEASE)
 
 after_release: 
 
@@ -289,72 +290,6 @@ release: before_release out_release after_release
 
 out_release: before_release $(OBJ_RELEASE) $(DEP_RELEASE)
 	$(LD) $(LIBDIR_RELEASE) -o $(OUT_RELEASE) $(OBJ_RELEASE)  $(LDFLAGS_RELEASE) $(LIB_RELEASE)
-
-$(OBJDIR_RELEASE)/main.o: main.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c main.cpp -o $(OBJDIR_RELEASE)/main.o
-
-$(OBJDIR_RELEASE)/__/tests/expected_test.o: ../tests/expected_test.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/expected_test.cpp -o $(OBJDIR_RELEASE)/__/tests/expected_test.o
-
-$(OBJDIR_RELEASE)/__/tests/algorithm/mutating.o: ../tests/algorithm/mutating.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/algorithm/mutating.cpp -o $(OBJDIR_RELEASE)/__/tests/algorithm/mutating.o
-
-$(OBJDIR_RELEASE)/__/tests/algorithm/non_modifying.o: ../tests/algorithm/non_modifying.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/algorithm/non_modifying.cpp -o $(OBJDIR_RELEASE)/__/tests/algorithm/non_modifying.o
-
-$(OBJDIR_RELEASE)/__/tests/algorithm/sorting.o: ../tests/algorithm/sorting.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/algorithm/sorting.cpp -o $(OBJDIR_RELEASE)/__/tests/algorithm/sorting.o
-
-$(OBJDIR_RELEASE)/__/tests/any_test.o: ../tests/any_test.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/any_test.cpp -o $(OBJDIR_RELEASE)/__/tests/any_test.o
-
-$(OBJDIR_RELEASE)/__/tests/concepts_checks.o: ../tests/concepts_checks.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/concepts_checks.cpp -o $(OBJDIR_RELEASE)/__/tests/concepts_checks.o
-
-$(OBJDIR_RELEASE)/__/tests/container/flat_set.o: ../tests/container/flat_set.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/container/flat_set.cpp -o $(OBJDIR_RELEASE)/__/tests/container/flat_set.o
-
-$(OBJDIR_RELEASE)/__/tests/container/general.o: ../tests/container/general.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/container/general.cpp -o $(OBJDIR_RELEASE)/__/tests/container/general.o
-
-$(OBJDIR_RELEASE)/__/tests/container/vector.o: ../tests/container/vector.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/container/vector.cpp -o $(OBJDIR_RELEASE)/__/tests/container/vector.o
-
-$(OBJDIR_RELEASE)/__/tests/disjoint_set_test.o: ../tests/disjoint_set_test.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/disjoint_set_test.cpp -o $(OBJDIR_RELEASE)/__/tests/disjoint_set_test.o
-
-$(OBJDIR_RELEASE)/__/tests/algorithm/d_algo_test.o: ../tests/algorithm/d_algo_test.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/algorithm/d_algo_test.cpp -o $(OBJDIR_RELEASE)/__/tests/algorithm/d_algo_test.o
-
-$(OBJDIR_RELEASE)/__/tests/functional_test.o: ../tests/functional_test.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/functional_test.cpp -o $(OBJDIR_RELEASE)/__/tests/functional_test.o
-
-$(OBJDIR_RELEASE)/__/tests/io_tests.o: ../tests/io_tests.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/io_tests.cpp -o $(OBJDIR_RELEASE)/__/tests/io_tests.o
-
-$(OBJDIR_RELEASE)/__/tests/iterator_test.o: ../tests/iterator_test.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/iterator_test.cpp -o $(OBJDIR_RELEASE)/__/tests/iterator_test.o
-
-$(OBJDIR_RELEASE)/__/tests/math_tests.o: ../tests/math_tests.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/math_tests.cpp -o $(OBJDIR_RELEASE)/__/tests/math_tests.o
-
-$(OBJDIR_RELEASE)/__/tests/memory_test.o: ../tests/memory_test.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/memory_test.cpp -o $(OBJDIR_RELEASE)/__/tests/memory_test.o
-
-$(OBJDIR_RELEASE)/__/tests/meta_tests.o: ../tests/meta_tests.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/meta_tests.cpp -o $(OBJDIR_RELEASE)/__/tests/meta_tests.o
-
-$(OBJDIR_RELEASE)/__/tests/numeric/partial_sums.o: ../tests/numeric/partial_sums.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/numeric/partial_sums.cpp -o $(OBJDIR_RELEASE)/__/tests/numeric/partial_sums.o
-
-$(OBJDIR_RELEASE)/__/tests/numeric_tests.o: ../tests/numeric_tests.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/numeric_tests.cpp -o $(OBJDIR_RELEASE)/__/tests/numeric_tests.o
-
-$(OBJDIR_RELEASE)/__/tests/optional_tests.o: ../tests/optional_tests.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/optional_tests.cpp -o $(OBJDIR_RELEASE)/__/tests/optional_tests.o
-
-$(OBJDIR_RELEASE)/__/boost/test/src/test_tree.o: ../boost/test/src/test_tree.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../boost/test/src/test_tree.cpp -o $(OBJDIR_RELEASE)/__/boost/test/src/test_tree.o
 
 $(OBJDIR_RELEASE)/__/boost/test/src/compiler_log_formatter.o: ../boost/test/src/compiler_log_formatter.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../boost/test/src/compiler_log_formatter.cpp -o $(OBJDIR_RELEASE)/__/boost/test/src/compiler_log_formatter.o
@@ -386,8 +321,8 @@ $(OBJDIR_RELEASE)/__/boost/test/src/results_reporter.o: ../boost/test/src/result
 $(OBJDIR_RELEASE)/__/boost/test/src/test_tools.o: ../boost/test/src/test_tools.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../boost/test/src/test_tools.cpp -o $(OBJDIR_RELEASE)/__/boost/test/src/test_tools.o
 
-$(OBJDIR_RELEASE)/__/tests/random_tests.o: ../tests/random_tests.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/random_tests.cpp -o $(OBJDIR_RELEASE)/__/tests/random_tests.o
+$(OBJDIR_RELEASE)/__/boost/test/src/test_tree.o: ../boost/test/src/test_tree.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../boost/test/src/test_tree.cpp -o $(OBJDIR_RELEASE)/__/boost/test/src/test_tree.o
 
 $(OBJDIR_RELEASE)/__/boost/test/src/unit_test_log.o: ../boost/test/src/unit_test_log.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../boost/test/src/unit_test_log.cpp -o $(OBJDIR_RELEASE)/__/boost/test/src/unit_test_log.o
@@ -410,20 +345,68 @@ $(OBJDIR_RELEASE)/__/boost/test/src/xml_report_formatter.o: ../boost/test/src/xm
 $(OBJDIR_RELEASE)/__/tests/algorithm/container_algo.o: ../tests/algorithm/container_algo.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/algorithm/container_algo.cpp -o $(OBJDIR_RELEASE)/__/tests/algorithm/container_algo.o
 
-$(OBJDIR_RELEASE)/__/tests/tracers_tests.o: ../tests/tracers_tests.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/tracers_tests.cpp -o $(OBJDIR_RELEASE)/__/tests/tracers_tests.o
+$(OBJDIR_RELEASE)/__/tests/algorithm/d_algo_test.o: ../tests/algorithm/d_algo_test.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/algorithm/d_algo_test.cpp -o $(OBJDIR_RELEASE)/__/tests/algorithm/d_algo_test.o
 
-$(OBJDIR_RELEASE)/__/tests/tuple_tests.o: ../tests/tuple_tests.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/tuple_tests.cpp -o $(OBJDIR_RELEASE)/__/tests/tuple_tests.o
+$(OBJDIR_RELEASE)/__/tests/algorithm/mutating.o: ../tests/algorithm/mutating.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/algorithm/mutating.cpp -o $(OBJDIR_RELEASE)/__/tests/algorithm/mutating.o
 
-$(OBJDIR_RELEASE)/__/tests/utility_test.o: ../tests/utility_test.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/utility_test.cpp -o $(OBJDIR_RELEASE)/__/tests/utility_test.o
+$(OBJDIR_RELEASE)/__/tests/algorithm/non_modifying.o: ../tests/algorithm/non_modifying.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/algorithm/non_modifying.cpp -o $(OBJDIR_RELEASE)/__/tests/algorithm/non_modifying.o
 
-$(OBJDIR_RELEASE)/__/tests/statistics/statistics_tests.o: ../tests/statistics/statistics_tests.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/statistics/statistics_tests.cpp -o $(OBJDIR_RELEASE)/__/tests/statistics/statistics_tests.o
+$(OBJDIR_RELEASE)/__/tests/algorithm/sorting.o: ../tests/algorithm/sorting.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/algorithm/sorting.cpp -o $(OBJDIR_RELEASE)/__/tests/algorithm/sorting.o
 
-$(OBJDIR_RELEASE)/__/tests/sequence/adaptors/replace.o: ../tests/sequence/adaptors/replace.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/sequence/adaptors/replace.cpp -o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/replace.o
+$(OBJDIR_RELEASE)/__/tests/any_test.o: ../tests/any_test.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/any_test.cpp -o $(OBJDIR_RELEASE)/__/tests/any_test.o
+
+$(OBJDIR_RELEASE)/__/tests/concepts_checks.o: ../tests/concepts_checks.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/concepts_checks.cpp -o $(OBJDIR_RELEASE)/__/tests/concepts_checks.o
+
+$(OBJDIR_RELEASE)/__/tests/container/flat_set.o: ../tests/container/flat_set.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/container/flat_set.cpp -o $(OBJDIR_RELEASE)/__/tests/container/flat_set.o
+
+$(OBJDIR_RELEASE)/__/tests/container/general.o: ../tests/container/general.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/container/general.cpp -o $(OBJDIR_RELEASE)/__/tests/container/general.o
+
+$(OBJDIR_RELEASE)/__/tests/container/vector.o: ../tests/container/vector.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/container/vector.cpp -o $(OBJDIR_RELEASE)/__/tests/container/vector.o
+
+$(OBJDIR_RELEASE)/__/tests/disjoint_set_test.o: ../tests/disjoint_set_test.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/disjoint_set_test.cpp -o $(OBJDIR_RELEASE)/__/tests/disjoint_set_test.o
+
+$(OBJDIR_RELEASE)/__/tests/expected_test.o: ../tests/expected_test.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/expected_test.cpp -o $(OBJDIR_RELEASE)/__/tests/expected_test.o
+
+$(OBJDIR_RELEASE)/__/tests/functional_test.o: ../tests/functional_test.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/functional_test.cpp -o $(OBJDIR_RELEASE)/__/tests/functional_test.o
+
+$(OBJDIR_RELEASE)/__/tests/io_tests.o: ../tests/io_tests.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/io_tests.cpp -o $(OBJDIR_RELEASE)/__/tests/io_tests.o
+
+$(OBJDIR_RELEASE)/__/tests/iterator_test.o: ../tests/iterator_test.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/iterator_test.cpp -o $(OBJDIR_RELEASE)/__/tests/iterator_test.o
+
+$(OBJDIR_RELEASE)/__/tests/math_tests.o: ../tests/math_tests.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/math_tests.cpp -o $(OBJDIR_RELEASE)/__/tests/math_tests.o
+
+$(OBJDIR_RELEASE)/__/tests/memory_test.o: ../tests/memory_test.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/memory_test.cpp -o $(OBJDIR_RELEASE)/__/tests/memory_test.o
+
+$(OBJDIR_RELEASE)/__/tests/meta_tests.o: ../tests/meta_tests.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/meta_tests.cpp -o $(OBJDIR_RELEASE)/__/tests/meta_tests.o
+
+$(OBJDIR_RELEASE)/__/tests/numeric/partial_sums.o: ../tests/numeric/partial_sums.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/numeric/partial_sums.cpp -o $(OBJDIR_RELEASE)/__/tests/numeric/partial_sums.o
+
+$(OBJDIR_RELEASE)/__/tests/numeric_tests.o: ../tests/numeric_tests.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/numeric_tests.cpp -o $(OBJDIR_RELEASE)/__/tests/numeric_tests.o
+
+$(OBJDIR_RELEASE)/__/tests/optional_tests.o: ../tests/optional_tests.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/optional_tests.cpp -o $(OBJDIR_RELEASE)/__/tests/optional_tests.o
+
+$(OBJDIR_RELEASE)/__/tests/random_tests.o: ../tests/random_tests.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/random_tests.cpp -o $(OBJDIR_RELEASE)/__/tests/random_tests.o
 
 $(OBJDIR_RELEASE)/__/tests/rational_tests.o: ../tests/rational_tests.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/rational_tests.cpp -o $(OBJDIR_RELEASE)/__/tests/rational_tests.o
@@ -449,6 +432,9 @@ $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/partition.o: ../tests/sequence/adap
 $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/remove.o: ../tests/sequence/adaptors/remove.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/sequence/adaptors/remove.cpp -o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/remove.o
 
+$(OBJDIR_RELEASE)/__/tests/sequence/adaptors/replace.o: ../tests/sequence/adaptors/replace.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/sequence/adaptors/replace.cpp -o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/replace.o
+
 $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/reversed.o: ../tests/sequence/adaptors/reversed.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/sequence/adaptors/reversed.cpp -o $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/reversed.o
 
@@ -470,11 +456,11 @@ $(OBJDIR_RELEASE)/__/tests/sequence/adaptors/transformed.o: ../tests/sequence/ad
 $(OBJDIR_RELEASE)/__/tests/sequence/chunks.o: ../tests/sequence/chunks.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/sequence/chunks.cpp -o $(OBJDIR_RELEASE)/__/tests/sequence/chunks.o
 
-$(OBJDIR_RELEASE)/__/tests/sequence/constant.o: ../tests/sequence/constant.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/sequence/constant.cpp -o $(OBJDIR_RELEASE)/__/tests/sequence/constant.o
+$(OBJDIR_RELEASE)/__/tests/sequence/iterator_cursor_test.o: ../tests/sequence/iterator_cursor_test.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/sequence/iterator_cursor_test.cpp -o $(OBJDIR_RELEASE)/__/tests/sequence/iterator_cursor_test.o
 
-$(OBJDIR_RELEASE)/__/tests/sequence/iterator_sequence_test.o: ../tests/sequence/iterator_sequence_test.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/sequence/iterator_sequence_test.cpp -o $(OBJDIR_RELEASE)/__/tests/sequence/iterator_sequence_test.o
+$(OBJDIR_RELEASE)/__/tests/sequence/repeat_value.o: ../tests/sequence/repeat_value.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/sequence/repeat_value.cpp -o $(OBJDIR_RELEASE)/__/tests/sequence/repeat_value.o
 
 $(OBJDIR_RELEASE)/__/tests/sequence_test.o: ../tests/sequence_test.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/sequence_test.cpp -o $(OBJDIR_RELEASE)/__/tests/sequence_test.o
@@ -482,18 +468,33 @@ $(OBJDIR_RELEASE)/__/tests/sequence_test.o: ../tests/sequence_test.cpp
 $(OBJDIR_RELEASE)/__/tests/statistics/distributions_discrete.o: ../tests/statistics/distributions_discrete.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/statistics/distributions_discrete.cpp -o $(OBJDIR_RELEASE)/__/tests/statistics/distributions_discrete.o
 
+$(OBJDIR_RELEASE)/__/tests/statistics/statistics_tests.o: ../tests/statistics/statistics_tests.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/statistics/statistics_tests.cpp -o $(OBJDIR_RELEASE)/__/tests/statistics/statistics_tests.o
+
+$(OBJDIR_RELEASE)/__/tests/tracers_tests.o: ../tests/tracers_tests.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/tracers_tests.cpp -o $(OBJDIR_RELEASE)/__/tests/tracers_tests.o
+
+$(OBJDIR_RELEASE)/__/tests/tuple_tests.o: ../tests/tuple_tests.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/tuple_tests.cpp -o $(OBJDIR_RELEASE)/__/tests/tuple_tests.o
+
+$(OBJDIR_RELEASE)/__/tests/utility_test.o: ../tests/utility_test.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ../tests/utility_test.cpp -o $(OBJDIR_RELEASE)/__/tests/utility_test.o
+
+$(OBJDIR_RELEASE)/main.o: main.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c main.cpp -o $(OBJDIR_RELEASE)/main.o
+
 clean_release: 
 	rm -f $(OBJ_RELEASE) $(OUT_RELEASE)
 	rm -rf bin/Release
-	rm -rf $(OBJDIR_RELEASE)
-	rm -rf $(OBJDIR_RELEASE)/__/tests
+	rm -rf $(OBJDIR_RELEASE)/__/boost/test/src
 	rm -rf $(OBJDIR_RELEASE)/__/tests/algorithm
+	rm -rf $(OBJDIR_RELEASE)/__/tests
 	rm -rf $(OBJDIR_RELEASE)/__/tests/container
 	rm -rf $(OBJDIR_RELEASE)/__/tests/numeric
-	rm -rf $(OBJDIR_RELEASE)/__/boost/test/src
-	rm -rf $(OBJDIR_RELEASE)/__/tests/statistics
 	rm -rf $(OBJDIR_RELEASE)/__/tests/sequence/adaptors
 	rm -rf $(OBJDIR_RELEASE)/__/tests/sequence
+	rm -rf $(OBJDIR_RELEASE)/__/tests/statistics
+	rm -rf $(OBJDIR_RELEASE)
 
 .PHONY: before_debug after_debug clean_debug before_release after_release clean_release
 

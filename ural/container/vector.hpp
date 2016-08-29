@@ -22,10 +22,10 @@
 */
 
 #include <ural/sequence/adaptors/assumed_infinite.hpp>
-#include <ural/sequence/constant.hpp>
+#include <ural/sequence/repeat_value.hpp>
 #include <ural/container/container_facade.hpp>
 #include <ural/memory.hpp>
-#include <ural/sequence/iterator_sequence.hpp>
+#include <ural/sequence/iterator_cursor.hpp>
 #include <ural/container/policy.hpp>
 #include <ural/sequence/adaptors/taken.hpp>
 #include <ural/algorithm.hpp>
@@ -35,6 +35,8 @@
 #include <memory>
 
 namespace ural
+{
+namespace experimental
 {
     template <class T, class Alloc>
     class buffer;
@@ -70,11 +72,11 @@ namespace ural
 
     public:
         // Типы
-        typedef Alloc allocator_type;
-        typedef ValueType<Traits> value_type;
-        typedef typename Traits::pointer pointer;
-        typedef typename Traits::size_type size_type;
-        typedef typename Traits::difference_type difference_type;
+        using allocator_type = Alloc ;
+        using value_type = value_type_t<Traits>;
+        using pointer = typename Traits::pointer;
+        using size_type = typename Traits::size_type;
+        using difference_type = typename Traits::difference_type;
 
         // Создание, копирование, уничтожение
         buffer(Alloc const & a, size_type capacity = 0)
@@ -156,7 +158,7 @@ namespace ural
         {
             // @todo Устранить дублирование с копирующим присваиванием
             static_assert(Traits::propagate_on_container_move_assignment::value
-                          || ural::allocator_is_always_equal<allocator_type>::value, "");
+                          || ::ural::experimental::allocator_is_always_equal<allocator_type>::value, "");
 
             // Если нельзя передать владение, то придётся освобождать память
             // А если можно, то просто обмениваем указатели
@@ -207,7 +209,8 @@ namespace ural
 
         void swap(buffer & x)
         {
-            ural::swap_allocators{}(this->allocator_ref(), x.allocator_ref());
+            ::ural::experimental::swap_allocators{}(this->allocator_ref(),
+                                                    x.allocator_ref());
             this->unsafe_swap_pointers(x);
         }
 
@@ -365,7 +368,7 @@ namespace ural
     */
     template <class T, class Alloc = use_default, class Policy = use_default>
     class vector
-     : ural::container_facade<vector<T, Alloc, Policy>>
+     : ::ural::experimental::container_facade<vector<T, Alloc, Policy>>
     {
     public:
         // Типы
@@ -373,8 +376,7 @@ namespace ural
         typedef T value_type;
 
         /// @brief Тип распределителя памяти
-        typedef typename default_helper<Alloc, std::allocator<T>>::type
-            allocator_type;
+        using allocator_type = experimental::defaulted_type_t<Alloc, std::allocator<T>>;
 
         /// @brief Тип ссылки
         typedef value_type & reference;
@@ -410,8 +412,7 @@ namespace ural
         typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
         /// @brief Класс-стратегия проверок
-        typedef typename default_helper<Policy, container_checking_assert_policy>::type
-            policy_type;
+        using policy_type = experimental::defaulted_type_t<Policy, container_checking_assert_policy>;
 
         // Конструкторы
         /** @brief Создание пустого контейнера
@@ -563,7 +564,7 @@ namespace ural
         */
         vector & operator=(vector && x)
             noexcept(std::allocator_traits<allocator_type>::propagate_on_container_move_assignment::value
-                     || ural::allocator_is_always_equal<allocator_type>::value)
+                     || ::ural::experimental::allocator_is_always_equal<allocator_type>::value)
         {
             data_ = std::move(x.data_);
             return *this;
@@ -617,7 +618,7 @@ namespace ural
             // @todo Проверка, что first и last не ссылаются внутрь контейнера
             // Проблема в том, что first и last могут ссылаться внутрь
             // контейнера косвенно
-            return this->assign(ural::make_iterator_sequence(first, last));
+            return this->assign(ural::make_iterator_cursor(first, last));
         }
 
         /** @brief Замена элементов контейнера на @c n элементов, каждый из
@@ -628,7 +629,8 @@ namespace ural
         */
         void assign(size_type n, value_type const & value)
         {
-            auto seq = ural::make_constant_sequence(std::cref(value)) | ural::taken(n);
+            auto seq = ::ural::experimental::make_repeat_value_cursor(std::cref(value))
+                     | ::ural::experimental::taken(n);
 
             return this->assign(std::move(seq));
         }
@@ -1043,12 +1045,12 @@ namespace ural
             policy_type::assert_can_insert_before(this->cbegin(), this->cend(),
                                                   position);
 
-            auto s = ural::sequence_fwd<InputSequence>(seq);
+            auto cur = ural::cursor_fwd<InputSequence>(seq);
 
-            using Category = typename decltype(s)::cursor_tag;
+            using Category = typename decltype(cur)::cursor_tag;
 
             return this->insert_impl(position - this->cbegin(),
-                                     std::move(s), Category{});
+                                     std::move(cur), Category{});
         }
 
         /** @brief Вставка копий заданного значения в заданную точку
@@ -1060,7 +1062,8 @@ namespace ural
         */
         iterator insert(const_iterator position, size_type const n, value_type const & value)
         {
-            auto seq = ural::make_constant_sequence(std::cref(value)) | ural::taken(n);
+            auto seq = ::ural::experimental::make_repeat_value_cursor(std::cref(value))
+                     | ::ural::experimental::taken(n);
 
             return this->insert(position, std::move(seq));
         }
@@ -1077,8 +1080,8 @@ namespace ural
         insert(const_iterator position, InputIterator first, InputIterator last)
         {
             // @todo Проверка предусловия
-            return this->insert(position, ural::make_iterator_sequence(std::move(first),
-                                                                       std::move(last)));
+            auto cur = ural::make_iterator_cursor(std::move(first), std::move(last));
+            return this->insert(position, std::move(cur));
         }
 
         /** @brief Вставка элементов списка инициализаторов перед указанной
@@ -1138,8 +1141,8 @@ namespace ural
             auto source = this->begin() + (last - this->cbegin());
 
             // 2. Перемещаем последние элементы на места удаляемых
-            auto in  = ural::make_iterator_sequence(source, this->end());
-            auto out = ural::make_iterator_sequence(sink,   this->end());
+            auto in  = ::ural::make_iterator_cursor(source, this->end());
+            auto out = ::ural::make_iterator_cursor(sink,   this->end());
 
             // first < last, значит sink < source, значит
             // out исчерпается позже, чем in
@@ -1160,7 +1163,7 @@ namespace ural
         */
         void swap(vector & x)
             noexcept(std::allocator_traits<allocator_type>::propagate_on_container_swap::value
-                     || ural::allocator_is_always_equal<allocator_type>::value)
+                     || ::ural::experimental::allocator_is_always_equal<allocator_type>::value)
         {
             data_.swap(x.data_);
         }
@@ -1177,35 +1180,37 @@ namespace ural
         }
 
     private:
-        template <class InputSequence>
-        iterator insert_impl(size_type index, InputSequence seq,
+        template <class InputCursor>
+        iterator insert_impl(size_type index, InputCursor cur,
                              finite_single_pass_cursor_tag)
         {
             auto const old_size = this->size();
 
             assert(index <= old_size);
 
-            ural::copy(std::move(seq), *this | ural::back_inserter);
+            ural::copy(std::move(cur), *this | ural::back_inserter);
 
             std::rotate(this->begin() + index, this->begin() + old_size, this->end());
 
             return this->begin() + index;
         }
 
-        template <class InputSequence>
+        template <class InputCursor>
         iterator insert_impl(size_type index,
-                             InputSequence seq,
+                             InputCursor cur,
                              finite_forward_cursor_tag)
         {
-            this->reserve(this->size() + ural::size(seq));
+            this->reserve(this->size() + ural::size(cur));
 
-            return this->insert_impl(index, std::move(seq),
+            return this->insert_impl(index, std::move(cur),
                                      finite_single_pass_cursor_tag{});
         }
 
     private:
         buffer<value_type, allocator_type> data_;
     };
+}
+// namespace experimental
 }
 // namespace ural
 

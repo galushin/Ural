@@ -23,13 +23,14 @@
  @todo istringstream для произвольных строк, не обязательно basic_string<>
 */
 
-#include <ural/format/stream_traits.hpp>
 #include <ural/algorithm.hpp>
+#include <ural/format/stream_traits.hpp>
 #include <ural/sequence/adaptors/transform.hpp>
-#include <ural/sequence/to.hpp>
-#include <ural/sequence/iostream.hpp>
-#include <ural/sequence/insertion.hpp>
+#include <ural/sequence/base.hpp>
 #include <ural/sequence/by_line.hpp>
+#include <ural/sequence/insertion.hpp>
+#include <ural/sequence/iostream.hpp>
+#include <ural/sequence/to.hpp>
 
 #include <cassert>
 #include <vector>
@@ -37,6 +38,8 @@
 #include <sstream>
 
 namespace ural
+{
+inline namespace v1
 {
     /** @brief Вывод в поток элементов последовательности, разделённых заданным
     объектом.
@@ -51,7 +54,7 @@ namespace ural
     OStream &
     write_separated(OStream & os, Sequence && seq, Delim const & delim)
     {
-        auto s = ::ural::sequence_fwd<Sequence>(seq);
+        auto s = ural::cursor_fwd<Sequence>(seq);
 
         if(!s)
         {
@@ -69,23 +72,23 @@ namespace ural
         return os;
     }
 
-    template <class Sequence, class Separator>
+    template <class Cursor, class Separator>
     class separated_helper
     {
     public:
         /** @brief Конструктор
-        @param seq последовательность
+        @param seq Курсор
         @param delim разделитель
-        @post <tt> this->sequence == seq </tt>
+        @post <tt> this->cursor == seq </tt>
         @post <tt> this->separator == delim </tt>
         */
-        separated_helper(Sequence seq, Separator delim)
-         : sequence(std::move(seq))
+        separated_helper(Cursor cur, Separator delim)
+         : cursor(std::move(cur))
          , separator(std::move(delim))
         {}
 
         /// @brief Последовательность
-        Sequence sequence;
+        Cursor cursor;
 
         /// @brief Разделитель
         Separator separator;
@@ -94,15 +97,15 @@ namespace ural
     template <class OStream, class Seq, class Separator>
     OStream & operator<<(OStream & os, separated_helper<Seq, Separator> && d)
     {
-        return ural::write_separated(os, std::move(d.sequence),
+        return ural::write_separated(os, std::move(d.cursor),
                                      std::move(d.separator));
     }
 
     template <class Sequence, class Separator>
     auto separated(Sequence && seq, Separator separator)
-    -> separated_helper<decltype(::ural::sequence_fwd<Sequence>(seq)), Separator>
+    -> separated_helper<decltype(::ural::cursor_fwd<Sequence>(seq)), Separator>
     {
-        return {::ural::sequence_fwd<Sequence>(seq), std::move(separator)};
+        return {::ural::cursor_fwd<Sequence>(seq), std::move(separator)};
     }
 
     /** @brief Вывод таблицы в поток
@@ -123,10 +126,10 @@ namespace ural
 
     template <class String>
     class basic_istringstream
-     : public std::basic_istringstream<ValueType<String>,
+     : public std::basic_istringstream<value_type_t<String>,
                                        typename String::traits_type>
     {
-        typedef std::basic_istringstream<ValueType<String>,
+        typedef std::basic_istringstream<value_type_t<String>,
                                          typename String::traits_type> Base;
 
     public:
@@ -210,7 +213,7 @@ namespace ural
         // @todo Проверка концепций
         std::vector<std::vector<T>> result;
 
-        for(auto seq = ural::by_line(is, '\n'); !!seq && !seq.front().empty(); ++ seq)
+        for(auto seq = ::ural::experimental::by_line(is, '\n'); !!seq && !seq.front().empty(); ++ seq)
         {
             typedef typename stream_traits<input_stream_type>::string_type
                 String;
@@ -220,9 +223,9 @@ namespace ural
 
             from_string_policy<String, T> constexpr converter{};
 
-            auto row = ural::by_line(str_is, '\t')
-                     | ural::transformed(converter)
-                     | ural::to_container<std::vector>{};
+            auto row = ::ural::experimental::by_line(str_is, '\t')
+                     | ::ural::experimental::transformed(converter)
+                     | ::ural::experimental::to_container<std::vector>{};
 
             result.push_back(std::move(row));
         }
@@ -275,6 +278,8 @@ namespace details
         /// @brief Функциональный объект преобразования в <tt> std::wstring </tt>s
         constexpr auto & to_wstring = odr_const<to_string_function<wchar_t>>;
     }
+}
+// namespace v1
 }
 // namespace ural
 
