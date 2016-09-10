@@ -247,6 +247,7 @@ int iterations = 250000;
 #define SIZE 2000
 
 std::vector<double> result_times;
+std::vector<std::string> descriptions;
 
 void summarize()
 {
@@ -264,11 +265,12 @@ void summarize()
             printf("------------------------------------------------\n");
         }
 
-        printf("%2i       %5.2fsec    %5.2fM         %.2f\n",
+        printf("%2i       %5.2fsec    %5.2fM   %.2f   %s\n",
                i,
-               result_times[i],
-               millions/result_times[i],
-               result_times[i]/result_times[0]);
+               result_times.at(i),
+               millions/result_times.at(i),
+               result_times.at(i)/result_times[0],
+               descriptions.at(i).c_str());
     }
     printf("------------------------------------------------\n");
 
@@ -306,8 +308,6 @@ inline double timer()
 
 const double init_value = 3.;
 
-
-
 double data[SIZE];
 
 Double Data[SIZE];
@@ -319,7 +319,7 @@ inline void check(double result)
     if (result != SIZE * init_value) printf("test %i failed\n", current_test);
 }
 
-void test0(double* first, double* last)
+void test0(double* first, double* last, std::string description)
 {
     start_timer();
     for(int i = 0; i < iterations; ++i)
@@ -330,16 +330,18 @@ void test0(double* first, double* last)
     }
 
     result_times.push_back(timer());
+    descriptions.push_back(std::move(description));
 }
 
 
 template <class Iterator, class T>
-void test(Iterator first, Iterator last, T zero)
+void test(Iterator first, Iterator last, T zero, std::string description)
 {
     start_timer();
     for(int i = 0; i < iterations; ++i)
         check(double(::accumulate(first, last, zero)));
     result_times.push_back(timer());
+    descriptions.push_back(std::move(description));
 }
 
 template <class Iterator, class T>
@@ -349,12 +351,13 @@ void fill(Iterator first, Iterator last, T value)
 }
 
 template <class Sequence, class T>
-void test_seq(Sequence seq, T zero)
+void test_seq(Sequence seq, T zero, std::string description)
 {
     start_timer();
     for(int i = 0; i < iterations; ++i)
         check(double(ural::accumulate(std::move(seq), zero)));
     result_times.push_back(timer());
+    descriptions.push_back(std::move(description));
 }
 
 double d = 0.;
@@ -399,21 +402,23 @@ rrDP rrDPe(rDPb);
 int main(int argc, const char** argv)
 {
     if (argc > 1) iterations = atoi(argv[1]);
+
     fill(dpb, dpe, double(init_value));
     fill(Dpb, Dpe, Double(init_value));
-    test0(dpb, dpe);
-    test(dpb, dpe, d);
-    test(Dpb, Dpe, D);
-    test(dPb, dPe, d);
-    test(DPb, DPe, D);
-    test(rdpb, rdpe, d);
-    test(rDpb, rDpe, D);
-    test(rdPb, rdPe, d);
-    test(rDPb, rDPe, D);
-    test(rrdpb, rrdpe, d);
-    test(rrDpb, rrDpe, D);
-    test(rrdPb, rrdPe, d);
-    test(rrDPb, rrDPe, D);
+
+    test0(dpb, dpe,     "Raw loop - baseline");
+    test(dpb, dpe, d,   "Pointers, double");
+    test(Dpb, Dpe, D,   "Pointers, wrapped double");
+    test(dPb, dPe, d,   "Wrapped pointers, double");
+    test(DPb, DPe, D,   "Wrapped pointers, wrapped double");
+    test(rdpb, rdpe, d, "Reversed pointers, double");
+    test(rDpb, rDpe, D, "Reversed pointers, wrapped double");
+    test(rdPb, rdPe, d, "Reversed wrapped pointers, double");
+    test(rDPb, rDPe, D, "Reversed wrapped pointers, wrapped double");
+    test(rrdpb, rrdpe, d, "Reversed reversed pointer, double");
+    test(rrDpb, rrDpe, D, "Reversed reversed pointer, wrapped double");
+    test(rrdPb, rrdPe, d, "Reversed reversed wrapped pointer, double");
+    test(rrDPb, rrDPe, D, "Reversed reversed wrapped pointer, wrapped double");
 
     // ural
     auto seq = ural::cursor(data);
@@ -422,10 +427,10 @@ int main(int argc, const char** argv)
     auto r_Seq = Seq | ural::experimental::reversed;
 
     // Последовательности и обратные последовательности
-    test_seq(seq, d);
-    test_seq(Seq, D);
-    test_seq(r_seq, d);
-    test_seq(r_Seq, D);
+    test_seq(seq, d, "Cursor, double");
+    test_seq(Seq, D, "Cursor, wrapped double");
+    test_seq(r_seq, d, "Reversed cursor, dobule");
+    test_seq(r_Seq, D, "Reversed cursor, wrapped double");
 
     summarize();
     return 0;

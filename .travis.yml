@@ -10,6 +10,13 @@ language: cpp
 compiler: gcc
 
 script:
+    # main tests
     - cd ./ural_test 
     - make -f makefile.gcc debug && ./bin/Debug/ural_test
     - make -f makefile.gcc release && ./bin/Release/ural_test
+    # compare pointer, iterator and cursor traversal
+    - cd ../benchmarks/abstraction_penalty
+    - make -f makefile.gcc release && ./bin/Release/abstraction_penalty
+    # randomness
+    - cd ../stochastic_tests
+    - make -f makefile.gcc release && ./bin/Release/stochastic_tests

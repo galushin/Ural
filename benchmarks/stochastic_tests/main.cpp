@@ -29,15 +29,9 @@ int main(int argc, char const * argv[])
 
     auto const p_expected = double(iterations) / counter.size();
 
-    for(auto const & p : counter)
-    {
-        std::cout << p.first << "\t" << p.second / p_expected << "\n";
-    }
-
     auto mm = ural::minmax_element(counter | ural::experimental::map_values);
 
-    std::cout << "\n"
-              << mm[ural::_1].front() / p_expected << "\n"
+    std::cout << mm[ural::_1].front() / p_expected << "\n"
               << mm[ural::_2].front() / p_expected << "\n";
 
     return 0;
