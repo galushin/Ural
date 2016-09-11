@@ -365,17 +365,44 @@ namespace
                                         ural::experimental::flat_set<std::string>>;
 }
 
+BOOST_AUTO_TEST_CASE(is_container_check_false)
+{
+    static_assert(!ural::experimental::is_container<int>::value, "Must not be container!");
+    static_assert(!ural::experimental::is_container_v<int>, "Must not be container!");
+
+    static_assert(!ural::experimental::is_container<std::function<int(double)>>::value,
+                  "Must not be container!");
+}
+
 BOOST_AUTO_TEST_CASE_TEMPLATE(is_container_check_true, Container, Containers)
 {
     static_assert(ural::experimental::is_container<Container>::value, "Must be container!");
     static_assert(ural::experimental::is_container_v<Container>, "Must be container!");
     BOOST_CHECK(ural::experimental::is_container<Container>::value);
 
-    static_assert(!ural::experimental::is_container<int>::value, "Must not be container!");
-    static_assert(!ural::experimental::is_container_v<int>, "Must not be container!");
+// @todo Вернуть
+//    static_assert(!ural::experimental::is_container<ural::cursor_type_t<Container>>::value,
+//                  "Must not be container!");
+}
 
-    static_assert(!ural::experimental::is_container<std::function<int(double)>>::value,
-                  "Must not be container!");
-    static_assert(!ural::experimental::is_container<ural::cursor_type_t<Container>>::value,
-                  "Must not be container!");
+BOOST_AUTO_TEST_CASE_TEMPLATE(is_container_reference_check_true, Container, Containers)
+{
+    static_assert(ural::experimental::is_container<Container &>::value, "Must be container!");
+    static_assert(ural::experimental::is_container_v<Container &>, "Must be container!");
+    BOOST_CHECK(ural::experimental::is_container<Container &>::value);
+
+// @todo Вернуть
+//    static_assert(!ural::experimental::is_container<ural::cursor_type_t<Container>>::value,
+//                  "Must not be container!");
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(is_container_const_reference_check_true, Container, Containers)
+{
+    static_assert(ural::experimental::is_container<Container const &>::value, "Must be container!");
+    static_assert(ural::experimental::is_container_v<Container const &>, "Must be container!");
+    BOOST_CHECK(ural::experimental::is_container<Container const &>::value);
+
+// @todo Вернуть
+//    static_assert(!ural::experimental::is_container<ural::cursor_type_t<Container>>::value,
+//                  "Must not be container!");
 }

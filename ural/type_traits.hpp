@@ -198,6 +198,16 @@ namespace experimental
     {};
 
     template <class T>
+    struct is_container<T&>
+     : is_container<T>
+    {};
+
+    template <class T>
+    struct is_container<T const>
+     : is_container<T>
+    {};
+
+    template <class T>
     constexpr bool const is_container_v = is_container<T>::value;
 }
 // namespace experimental

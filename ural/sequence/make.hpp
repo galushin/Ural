@@ -24,7 +24,6 @@
 #include <iterator>
 #include <valarray>
 
-#include <ural/sequence/cargo.hpp>
 #include <ural/sequence/iostream.hpp>
 #include <ural/sequence/iterator_cursor.hpp>
 #include <ural/sequence/insertion.hpp>
@@ -41,7 +40,7 @@ inline namespace v1
     */
     template <class Container>
     auto cursor(Container && c)
-    -> typename std::enable_if<std::is_lvalue_reference<Container>::value,
+    -> typename std::enable_if<experimental::is_container<Container>::value && std::is_lvalue_reference<Container>::value,
                                ::ural::iterator_cursor<decltype(c.begin())>>::type
     {
         return iterator_cursor<decltype(c.begin())>(c.begin(), c.end());
@@ -49,14 +48,8 @@ inline namespace v1
 
     template <class Container>
     auto cursor(Container && c)
-    -> typename std::enable_if<!std::is_lvalue_reference<Container>::value,
-                               experimental::cargo_cursor<iterator_cursor<decltype(c.begin())>, Container>>::type
-    {
-        typedef ::ural::experimental::cargo_cursor<::ural::iterator_cursor<decltype(c.begin())>, Container>
-            Result;
-        auto seq = ::ural::iterator_cursor<decltype(c.begin())>(c.begin(), c.end());
-        return Result(std::move(seq), std::move(c));
-    }
+    -> typename std::enable_if<experimental::is_container<Container>::value && !std::is_lvalue_reference<Container>::value,
+                               iterator_cursor<decltype(c.begin())>>::type = delete;
 
     /** @brief Создание курсора на основе массива фиксированной длины
     @param x массив
