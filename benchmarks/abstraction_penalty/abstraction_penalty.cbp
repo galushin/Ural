@@ -32,6 +32,16 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 			<Add directory="../../../Ural" />
+			<Add directory="../../boost/concept_check/include" />
+			<Add directory="../../boost/config/include" />
+			<Add directory="../../boost/core/include" />
+			<Add directory="../../boost/iterator/include" />
+			<Add directory="../../boost/mpl/include" />
+			<Add directory="../../boost/preprocessor/include" />
+			<Add directory="../../boost/static_assert/include" />
+			<Add directory="../../boost/type_traits/include" />
+			<Add directory="../../boost/utility/include" />
+			<Add directory="../../boostorg/detail/include" />
 		</Compiler>
 		<Unit filename="main.cpp" />
 		<Extensions>
