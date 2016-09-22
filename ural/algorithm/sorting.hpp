@@ -609,40 +609,6 @@ inline namespace v1
     };
 
     /** @ingroup SortingOperations
-    @brief Тип функционального объекта для быстрой сортировки
-    */
-    class sort_fn
-    {
-    public:
-        /** @brief Сортировка со сложностью <tt> N log(N) </tt>
-        @param s сортируемая последовательность
-        @param cmp функция сравнения, по умолчанию используется
-        <tt> less<> </tt>, то есть оператор "меньше".
-        @return Последовательность, полученная из @c s путём продвижения до
-        исчерпания.
-        */
-        template <class RASequence, class Compare = ::ural::less<>>
-        cursor_type_t<RASequence>
-        operator()(RASequence && s, Compare cmp = Compare()) const
-        {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<cursor_type_t<RASequence>, Compare>));
-
-            return this->impl(::ural::cursor_fwd<RASequence>(s),
-                              ::ural::make_callable(std::move(cmp)));
-        }
-    private:
-        template <class RACursor, class Compare>
-        static RACursor impl(RACursor cur, Compare cmp)
-        {
-            BOOST_CONCEPT_ASSERT((concepts::RandomAccessCursor<RACursor>));
-            BOOST_CONCEPT_ASSERT((concepts::Sortable<RACursor, Compare>));
-
-            return ::ural::insertion_sort_fn{}(std::move(cur), std::move(cmp));
-        }
-    };
-
-    /** @ingroup SortingOperations
     @brief Тип функционального объекта для устойчивой сортировки
     */
     class stable_sort_fn
@@ -792,6 +758,41 @@ inline namespace v1
             sort_heap_fn{}(std::move(to_sort), cmp);
 
             return out;
+        }
+    };
+
+    /** @ingroup SortingOperations
+    @brief Тип функционального объекта для быстрой сортировки
+    */
+    class sort_fn
+    {
+    public:
+        /** @brief Сортировка со сложностью <tt> N log(N) </tt>
+        @param s сортируемая последовательность
+        @param cmp функция сравнения, по умолчанию используется
+        <tt> less<> </tt>, то есть оператор "меньше".
+        @return Последовательность, полученная из @c s путём продвижения до
+        исчерпания.
+        */
+        template <class RASequence, class Compare = ::ural::less<>>
+        cursor_type_t<RASequence>
+        operator()(RASequence && s, Compare cmp = Compare()) const
+        {
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessSequence<RASequence>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<cursor_type_t<RASequence>, Compare>));
+
+            return this->impl(::ural::cursor_fwd<RASequence>(s),
+                              ::ural::make_callable(std::move(cmp)));
+        }
+    private:
+        template <class RACursor, class Compare>
+        static RACursor impl(RACursor cur, Compare cmp)
+        {
+            BOOST_CONCEPT_ASSERT((concepts::RandomAccessCursor<RACursor>));
+            BOOST_CONCEPT_ASSERT((concepts::Sortable<RACursor, Compare>));
+
+            auto const n = ural::size(cur);
+            return ::ural::partial_sort_fn{}(std::move(cur), n, std::move(cmp));
         }
     };
 
