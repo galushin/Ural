@@ -11,7 +11,7 @@ AR = ar
 LD = g++-5
 WINDRES = windres
 
-INC = -I../../../Ural -I../../boost/concept_check/include -I../../boost/config/include -I../../boost/core/include -I../../boost/iterator/include -I../../boost/mpl/include -I../../boost/preprocessor/include -I../../boost/static_assert/include -I../../boost/type_traits/include -I../../boost/utility/include -I../../boostorg/detail/include
+INC = -I../../../Ural -I../../boost/array/include -I../../boost/assert/include -I../../boost/concept_check/include -I../../boost/config/include -I../../boost/container/include -I../../boost/core/include -I../../boost/format/include -I../../boost/integer/include -I../../boost/iterator/include -I../../boost/lexical_cast/include -I../../boost/math/include -I../../boost/move/include -I../../boost/mpl/include -I../../boost/numeric_conversion/include -I../../boost/optional/include -I../../boost/predef/include -I../../boost/preprocessor/include -I../../boost/range/include -I../../boost/smart_ptr/include -I../../boost/static_assert/include -I../../boost/throw_exception/include -I../../boost/type_traits/include -I../../boost/utility/include -I../../boostorg/detail/include
 CFLAGS = -Wall -fexceptions -std=gnu++14 -DBOOST_NO_AUTO_PTR
 RESINC = 
 LIBDIR = 
